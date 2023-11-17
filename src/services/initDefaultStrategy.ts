@@ -7,6 +7,7 @@ const initDefaultStrategy = {
     defaultPointsTaskCampaign: 10,
     weightIndividualImprove: 10,
     weightGlobalImprove: 10,
+    minorBonus: 5,
     cases: {
       case1: {
         description:
