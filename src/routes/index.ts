@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import dotenv from "dotenv";
-import { authenticateApiKey } from "../../middlewares";
+import { authenticateApiKey } from "../middlewares";
 dotenv.config();
 
 const router = Router();

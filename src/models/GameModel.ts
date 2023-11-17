@@ -4,22 +4,23 @@ interface Game extends Document {
   identification: string;
   timestampEnd: Date;
   timestampStart: Date;
-  idStrategy?: Types.ObjectId; // Optional, reference to another model if needed
+  currentStrategy: Types.ObjectId; // Reference to the current strategy model
   description?: string; // Optional
   defaultPointsTaskCampaign: number;
-  weightIndividualImprove: number;
-  weightGlobalImprove: number;
+  createdBy: string;
 }
 
 const gameSchema = new Schema<Game>({
   identification: { type: String, required: true },
   timestampEnd: { type: Date },
   timestampStart: { type: Date, default: Date.now },
-  idStrategy: { type: Schema.Types.ObjectId, ref: "Strategy", required: false },
-  description: { type: String, required: false },
+  currentStrategy: {
+    type: Schema.Types.ObjectId,
+    ref: "Strategy",
+    required: true,
+  },
+  description: { type: String },
   defaultPointsTaskCampaign: { type: Number, required: true },
-  weightIndividualImprove: { type: Number, required: true },
-  weightGlobalImprove: { type: Number, required: true },
 });
 
 const GameModel = model<Game>("Game", gameSchema);

@@ -1,14 +1,14 @@
-import { Document, model, Schema, Types } from "mongoose";
+import { Document, model, Schema } from "mongoose";
 
-interface StrategyCaseSubCase {
+interface CaseSub {
   condition: string;
   calculatePoints: string;
 }
 
-interface StrategyCase {
+interface Case {
   description: string;
   calculatePoints?: string;
-  subCases?: Record<string, StrategyCaseSubCase>;
+  subCases?: Record<string, CaseSub>;
 }
 
 interface StrategyParameters {
@@ -16,41 +16,48 @@ interface StrategyParameters {
   weightIndividualImprove: number;
   weightGlobalImprove: number;
   minorBonus: number;
-  cases: Record<string, StrategyCase>;
 }
 
 interface Strategy extends Document {
   name: string;
-  description?: string;
+  description: string;
   strategyType: string;
   parameters: StrategyParameters;
+  cases: Record<string, Case>;
 }
 
-const strategyCaseSubCaseSchema = new Schema<StrategyCaseSubCase>({
+const caseSubSchema = new Schema<CaseSub>({
   condition: { type: String, required: true },
   calculatePoints: { type: String, required: true },
 });
 
-const strategyCaseSchema = new Schema<StrategyCase>({
+const caseSchema = new Schema<Case>({
   description: { type: String, required: true },
   calculatePoints: { type: String },
-  subCases: { type: Map, of: strategyCaseSubCaseSchema },
+  subCases: {
+    type: Map,
+    of: caseSubSchema,
+  },
 });
 
 const strategyParametersSchema = new Schema<StrategyParameters>({
   defaultPointsTaskCampaign: { type: Number, required: true },
   weightIndividualImprove: { type: Number, required: true },
   weightGlobalImprove: { type: Number, required: true },
-  cases: { type: Map, of: strategyCaseSchema, required: true },
+  minorBonus: { type: Number, required: true },
 });
 
 const strategySchema = new Schema<Strategy>({
   name: { type: String, required: true },
-  description: { type: String, required: false },
+  description: { type: String, required: true },
   strategyType: { type: String, required: true },
   parameters: { type: strategyParametersSchema, required: true },
+  cases: {
+    type: Map,
+    of: caseSchema,
+  },
 });
 
 const StrategyModel = model<Strategy>("Strategy", strategySchema);
 
-export { StrategyModel };
+export { StrategyModel, Strategy };

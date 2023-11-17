@@ -1,12 +1,13 @@
 {
   "name": "gamificationengine",
+  "title": "GAME",
   "version": "1.0.0",
-  "description": "",
+  "description": "GAME (Goals And Motivation Engine) enhances user engagement through dynamic, goal-oriented gamification strategies.",
   "main": "src/index.ts",
   "type": "commonjs",
   "scripts": {
     "build": "tsc && node dist/index.js",
-    "start": "ts-node src/index.ts",
+    "start": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "jest": {

@@ -1,5 +1,6 @@
 import { app } from "./app";
 import { initDefaultApiKeys } from "./services";
+import { initDefaultStrategy } from "./services/initDefaultStrategy";
 import connectDB from "./database";
 
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ connectDB()
   .then(async () => {
     try {
       await initDefaultApiKeys();
+      await initDefaultStrategy();
     } catch (error) {
       console.error("Error during API key initialization:", error);
     }

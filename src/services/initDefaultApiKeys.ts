@@ -1,8 +1,5 @@
-import dotenv from "dotenv";
 import { ApiKeyModel } from "../models/ApiKeyModel";
 import { generateApiKey } from "./index";
-import connectDB from "../database";
-dotenv.config();
 
 const initDefaultApiKeys = async () => {
   try {

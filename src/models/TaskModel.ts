@@ -14,4 +14,4 @@ const taskSchema = new Schema<Task>({
 
 const TaskModel = model<Task>("Task", taskSchema);
 
-export { TaskModel };
+export { TaskModel, Task };

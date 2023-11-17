@@ -1,12 +1,23 @@
-const options = {
-  definition: {
-    openapi: "3.0.0", // Specification (optional, defaults to swagger: '2.0')
-    info: {
-      title: "Gamification Engine", // Title (required)
-      version: "0.1.0", // Version (required)
-    },
+const { version, title, description } = require("../package.json");
+
+const swaggerDefinition = {
+  openapi: "3.0.0",
+  info: {
+    title,
+    description,
+    version,
   },
-  apis: ["./routes/*.ts"], // Path to the API docs
+  servers: [
+    {
+      url: "http://localhost:3000",
+      description: "Development server",
+    },
+  ],
+};
+
+const options = {
+  swaggerDefinition,
+  apis: ["./src/routes/*.ts"],
 };
 
 export { options };

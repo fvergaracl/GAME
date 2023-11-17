@@ -5,6 +5,12 @@ import indexRoute from "./routes/index";
 import { options } from "./swaggerOptions";
 import swaggerUi from "swagger-ui-express";
 
+import gameRoutes from "./routes/gameRoutes";
+import pointsRoutes from "./routes/pointsRoutes";
+import strategyRoutes from "./routes/strategyRoutes";
+import taskRoutes from "./routes/taskRoutes";
+import userRoutes from "./routes/userRoutes";
+
 export const app = express();
 
 const swaggerSpec = swaggerJsdoc(options);
@@ -16,35 +22,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
-app.use("/api/", indexRoute);
+app.use("/", indexRoute);
+// Routes
+app.use("/games", gameRoutes);
+app.use("/points", pointsRoutes);
+app.use("/strategies", strategyRoutes);
+app.use("/tasks", taskRoutes);
+app.use("/users", userRoutes);
 
 // Catch 404 and forward to error handler
 app.use((req, res, next) => {
-  const err = new Error("Not Found");
+  const err = new Error("Endpoint Not Found");
   res.status(404).json({ message: err.message });
-});
-/**
- * @swagger
- * /users:
- *   get:
- *     summary: Returns a list of users.
- *     responses:
- *       200:
- *         description: A list of users.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   name:
- *                     type: string
- *                   email:
- *                     type: string
- */
-app.use("/", (req, res) => {
-  res.status(200).json({ message: "Welcome to the API" });
 });
 
 // Error handler
