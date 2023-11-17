@@ -1,14 +1,14 @@
-import { MongoClient } from "mongodb";
-import { dbConfig } from "./config";
+import mongoose from 'mongoose';
+import dbConfig from './config/dbConfig';
 
-const client = new MongoClient(dbConfig.uri);
-
-export const connectDB = async () => {
+const connectDB = async () => {
   try {
-    await client.connect();
-    console.log("Conectado a la base de datos MongoDB");
+    await mongoose.connect(dbConfig.uri);
+    console.log("Connected to MongoDB");
   } catch (error) {
-    console.error("No se pudo conectar a la base de datos MongoDB", error);
-    process.exit(1);
+    console.error("Error connecting to MongoDB:", error);
+    throw error;
   }
 };
+
+export default connectDB;

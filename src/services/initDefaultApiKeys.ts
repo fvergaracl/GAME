@@ -1,21 +1,22 @@
 import dotenv from "dotenv";
 import { ApiKeyModel } from "../models/ApiKeyModel";
 import { generateApiKey } from "./index";
-
+import connectDB from "../database";
 dotenv.config();
 
 const initDefaultApiKeys = async () => {
   try {
     console.log("Initializing default API keys...");
+    if (!process.env.DEFAULT_API_KEYS) {
+      throw new Error("DEFAULT_API_KEYS environment variable is not set");
+    }
     const defaultApiKeys = JSON.parse(process.env.DEFAULT_API_KEYS || "[]");
-
     for (const apiKeyInfo of defaultApiKeys) {
       const { toolName } = apiKeyInfo;
       const key = generateApiKey();
-      const existingApiKey = await ApiKeyModel.findOne({ toolName });
 
+      const existingApiKey = await ApiKeyModel.findOne({ toolName });
       if (!existingApiKey) {
-        // La API key no existe, así que la creamos
         const newApiKey = new ApiKeyModel({
           key,
           toolName,

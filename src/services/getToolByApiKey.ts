@@ -7,7 +7,7 @@ import { ApiKeyModel } from "../models";
  */
 export async function getToolByApiKey(apiKey: string) {
   try {
-    const tool = await ApiKeyModel.findOne({ key: apiKey }); // Asumiendo que tus usuarios tienen un campo 'apiKey'
+    const tool = await ApiKeyModel.findOne({ key: apiKey });
     return tool;
   } catch (error) {
     console.error("Error fetching user by API key:", error);
