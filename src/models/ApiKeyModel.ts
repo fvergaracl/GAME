@@ -29,4 +29,4 @@ const apiKeySchema = new Schema<ApiKey>({
 
 const ApiKeyModel = model<ApiKey>("ApiKey", apiKeySchema);
 
-export default ApiKeyModel;
+export { ApiKeyModel };

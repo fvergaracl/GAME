@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import ApiKeyModel from "../models/ApiKeyModel";
+import { ApiKeyModel } from "../models/ApiKeyModel";
 import { generateApiKey } from "./index";
 
 dotenv.config();

@@ -1,4 +1,4 @@
-import ApiKeyModel from "../models/ApiKeyModel";
+import { ApiKeyModel } from "../models";
 
 /**
  * Retrieves a user by their API key.
