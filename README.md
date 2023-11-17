@@ -6,7 +6,7 @@ This Gamification Engine API is a Node.js application using Express and TypeScri
 
 ## Prerequisites
 
-- Node.js
+- Node.js >= 15.0.0
 - npm (Node Package Manager)
 - MongoDB
 
