@@ -30,6 +30,47 @@ This Gamification Engine API is a Node.js application using Express and TypeScri
    npm install -g typescript
    ```
 
+# How to define your stategy
+
+### Constants for Criteria
+
+| Name                        | Description                                                      | Type    | Condition Used                      | Mandatory |
+| --------------------------- | ---------------------------------------------------------------- | ------- | ----------------------------------- | --------- |
+| EARLY_TASK_NO_GLOBAL        | Identifies early tasks of a user without global data.            | Boolean | `numberOfTasks <= 2 && !globalData` | Yes       |
+| SECOND_TASK_GLOBAL_DATA     | Indicates the second task of a user with global data.            | Boolean | `numberOfTasks == 2 && globalData`  | Yes       |
+| INDIVIDUAL_DATA_NO_GLOBAL   | Scenario where individual data is available, but no global data. | Boolean | `individualData && !globalData`     | Yes       |
+| BOTH_INDIVIDUAL_GLOBAL_DATA | Applies when both individual and global data are available.      | Boolean | `individualData && globalData`      | Yes       |
+
+### Criteria Variables
+
+| Name                    | Description                                          | Used As Criterion |
+| ----------------------- | ---------------------------------------------------- | ----------------- |
+| TIME_INVESTED_LAST_TASK | The time a user invested in their last task.         | Yes               |
+| GLOBAL_AVERAGE          | The average time invested in tasks across all users. | Yes               |
+
+### Constants for Point Calculation Formulas
+
+| Name                          | Description                                                     | Type   | Mandatory |
+| ----------------------------- | --------------------------------------------------------------- | ------ | --------- |
+| BASIC_POINTS                  | Base points awarded for tasks.                                  | Number | Yes       |
+| BONUS_FACTOR                  | Additional points for better performance than global average.   | Number | No        |
+| SMALLER_BONUS                 | Smaller bonus points for performance worse than global average. | Number | No        |
+| INDIVIDUAL_IMPROVEMENT_FACTOR | Factor to enhance points based on individual improvement.       | Number | No        |
+| WEIGHT_GLOBAL_IMPROVE         | Weight for improvement relative to global average.              | Number | No        |
+| WEIGHT_INDIVIDUAL_IMPROVE     | Weight for improvement relative to individual average.          | Number | No        |
+
+### Additional Considerations
+
+| Name                                | Description                                             | Type   | Mandatory |
+| ----------------------------------- | ------------------------------------------------------- | ------ | --------- |
+| BONUS_FACTOR_VALUE                  | The constant value for `bonus_factor`.                  | Number | Yes       |
+| SMALLER_BONUS_VALUE                 | The constant value for `smaller_bonus`.                 | Number | Yes       |
+| INDIVIDUAL_IMPROVEMENT_FACTOR_VALUE | The constant value for `individual_improvement_factor`. | Number | Yes       |
+| WEIGHT_GLOBAL_IMPROVE_VALUE         | The constant value for `weight_global_improve`.         | Number | Yes       |
+| WEIGHT_INDIVIDUAL_IMPROVE_VALUE     | The constant value for `weight_individual_improve`.     | Number | Yes       |
+
+This revised structure ensures that the constants and criteria are clearly defined and standardized, facilitating their adaptation and application in various gamification strategies. The conditions column in the criteria table specifies under what circumstances each criterion is relevant, enhancing the clarity of their application in the strategy.
+
 ## Setting up the Project
 
 - **TypeScript Configuration**:
