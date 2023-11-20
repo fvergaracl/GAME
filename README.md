@@ -69,7 +69,6 @@ This Gamification Engine API is a Node.js application using Express and TypeScri
 | WEIGHT_GLOBAL_IMPROVE_VALUE         | The constant value for `weight_global_improve`.         | Number | Yes       |
 | WEIGHT_INDIVIDUAL_IMPROVE_VALUE     | The constant value for `weight_individual_improve`.     | Number | Yes       |
 
-This revised structure ensures that the constants and criteria are clearly defined and standardized, facilitating their adaptation and application in various gamification strategies. The conditions column in the criteria table specifies under what circumstances each criterion is relevant, enhancing the clarity of their application in the strategy.
 
 ## Setting up the Project
 
