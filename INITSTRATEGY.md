@@ -1,6 +1,6 @@
 
 
-## 🌟 Gamification Point Calculation Strategy 🌟
+## Gamification Point Calculation Strategy 
 
 ### 1. 🚀 Basic Point Calculation (For Early Tasks without Global Data)
 - **Formula**: 
