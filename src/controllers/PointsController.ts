@@ -7,7 +7,6 @@ import {
   Strategy,
   GameModel,
   UserModel,
-  GlobalBehaviorModel,
 } from "../models";
 
 class PointsController {
