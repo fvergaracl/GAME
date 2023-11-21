@@ -23,6 +23,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.use("/", indexRoute);
+app.use("/api/", indexRoute);
 // Routes
 app.use("/games", gameRoutes);
 app.use("/points", pointsRoutes);

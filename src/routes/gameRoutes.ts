@@ -5,19 +5,46 @@ const router = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     Game:
+ *       type: object
+ *       required:
+ *         - identification
+ *         - timestampStart
+ *         - currentStrategyId
+ *         - createdBy
+ *       properties:
+ *         identification:
+ *           type: string
+ *         timestampEnd:
+ *           type: string
+ *           format: date-time
+ *         timestampStart:
+ *           type: string
+ *           format: date-time
+ *         currentStrategyId:
+ *           type: string
+ *           format: uuid
+ *         description:
+ *           type: string
+ *         createdBy:
+ *           type: string
  * /games:
  *   get:
  *     tags: [Games]
  *     summary: Retrieve a list of all games.
  *     responses:
  *       200:
- *         description: A list of games.
+ *         description: A list of games. Can be empty if no games are available.
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Game'
+ *       500:
+ *         description: Internal server error. Error details are not exposed to the client.
  */
 router.get("/", GameController.getAllGames);
 
@@ -57,63 +84,51 @@ router.get("/:gameId", GameController.getGameById);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Game'
+ *             type: object
+ *             required:
+ *               - identification
+ *               - timestampStart
+ *               - currentStrategy
+ *               - defaultPointsTaskCampaign
+ *               - createdBy
+ *             properties:
+ *               identification:
+ *                 type: string
+ *                 example: "Game123"
+ *               timestampEnd:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2023-12-31T23:59:59Z"
+ *               timestampStart:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2023-01-01T00:00:00Z"
+ *               currentStrategyId:
+ *                 type: string
+ *                 example: "625f6f5e6b0915c7f4fbdc62"
+ *               description:
+ *                 type: string
+ *                 example: "This is a strategy game focusing on individual and team challenges."
+ *               createdBy:
+ *                 type: string
+ *                 example: "user123"
  *     responses:
  *       201:
- *         description: New game created successfully.
+ *         description: Game created successfully. Returns the ID of the new game.
  *       400:
- *         description: Invalid input data.
+ *         description: >
+ *           Invalid input data. Possible reasons: missing fields (identification, timestamps, currentStrategyId, createdBy),
+ *           invalid timestamps, end timestamp is before the start timestamp.
+ *       404:
+ *         description: Strategy not found. The provided currentStrategyId does not correspond to any existing strategy.
+ *       500:
+ *         description: Internal server error. Error details are not exposed to the client.
  */
 router.post("/", GameController.createGame);
 
-/**
- * @swagger
- * /games/{gameId}:
- *   put:
- *     tags: [Games]
- *     summary: Update an existing game.
- *     parameters:
- *       - in: path
- *         name: gameId
- *         required: true
- *         description: Unique ID of the game to be updated.
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Game'
- *     responses:
- *       200:
- *         description: Game updated successfully.
- *       404:
- *         description: Game not found.
- *       400:
- *         description: Invalid input data.
- */
-router.put("/:gameId", GameController.updateGame);
+/*
 
-/**
- * @swagger
- * /games/{gameId}:
- *   delete:
- *     tags: [Games]
- *     summary: Delete a game.
- *     parameters:
- *       - in: path
- *         name: gameId
- *         required: true
- *         description: Unique ID of the game to be deleted.
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Game deleted successfully.
- *       404:
- *         description: Game not found.
- */
 router.delete("/:gameId", GameController.deleteGame);
+*/
 
 export default router;

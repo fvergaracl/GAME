@@ -2,41 +2,15 @@ import express from "express";
 import { PointsController } from "../controllers/PointsController";
 
 const router = express.Router();
+// GET points/:userId (all points for a user)
+// GET points/:userId/:taskId (points for a user in a task)
+// GET points/:userId/:gameId (all points for a user in a game)
+// POST points/:userId/:taskId (create points for a user in a task)
 
-/**
- * @swagger
- * /points/assign:
- *   post:
- *     tags: [Points]
- *     summary: Assign points to a user for completing a task in a game.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - userId
- *               - gameId
- *               - points
- *             properties:
- *               userId:
- *                 type: string
- *                 description: ID of the user to whom the points will be assigned.
- *               gameId:
- *                 type: string
- *                 description: ID of the game for which points are being assigned.
- *               points:
- *                 type: number
- *                 description: Number of points to be assigned.
- *     responses:
- *       200:
- *         description: Points successfully assigned to the user.
- *       400:
- *         description: Invalid input data.
- *       404:
- *         description: User or game not found.
- */
-router.post("/assign", PointsController.assignPointsToUser);
+router.get("/:userId", PointsController.getUserPoints);
+router.get("/:userId/:taskId", PointsController.getUserPointsInTask);
+router.get("/:userId/:gameId", PointsController.getUserPointsInGame);
+router.post("/:userId/:taskId", PointsController.assignPointsToUser);
+
 
 export default router;

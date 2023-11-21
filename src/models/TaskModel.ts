@@ -1,17 +1,23 @@
 import { Document, model, Schema, Types } from "mongoose";
-
+import { Game, gameSchema } from "./GameModel";
 interface Task extends Document {
-  timestamp: Date;
-  idUser: Types.ObjectId;
-  idGame: Types.ObjectId;
+  name: string;
+  description: string;
+  idGame?: Types.ObjectId;
+  game?: Game;
+  createdBy: string;
+  createdAt?: Date;
 }
 
 const taskSchema = new Schema<Task>({
-  timestamp: { type: Date, default: Date.now },
-  idUser: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  idGame: { type: Schema.Types.ObjectId, ref: "Game", required: true },
+  name: { type: String, required: true },
+  description: { type: String },
+  idGame: { type: Types.ObjectId, required: false },
+  game: { type: gameSchema, required: false },
+  createdBy: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
 });
 
 const TaskModel = model<Task>("Task", taskSchema);
 
-export { TaskModel, Task };
+export { TaskModel, Task, taskSchema };

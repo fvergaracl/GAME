@@ -10,25 +10,25 @@ const initDefaultStrategyJson = {
     INDIVIDUAL_IMPROVEMENT_FACTOR: 1.5,
     WEIGHT_GLOBAL_IMPROVE: 0.5,
     WEIGHT_INDIVIDUAL_IMPROVE: 0.5,
-    cases: [
-      {
-        criteria: "EARLY_TASK_NO_GLOBAL",
-        formula: "FORMULA_BASIC_POINTS",
-      },
-      {
-        criteria: "SECOND_TASK_GLOBAL_DATA",
-        formula: "FORMULA_GLOBAL_AVERAGE_COMPARISON",
-      },
-      {
-        criteria: "INDIVIDUAL_DATA_NO_GLOBAL",
-        formula: "FORMULA_USER_AVERAGE_COMPARISON",
-      },
-      {
-        criteria: "BOTH_INDIVIDUAL_GLOBAL_DATA",
-        formula: "FORMULA_GLOBAL_AND_INDIVIDUAL_IMPROVEMENT",
-      },
-    ],
   },
+  cases: [
+    {
+      criteria: "EARLY_TASK_NO_GLOBAL",
+      formula: "FORMULA_BASIC_POINTS",
+    },
+    {
+      criteria: "SECOND_TASK_GLOBAL_DATA",
+      formula: "FORMULA_GLOBAL_AVERAGE_COMPARISON",
+    },
+    {
+      criteria: "INDIVIDUAL_DATA_NO_GLOBAL",
+      formula: "FORMULA_USER_AVERAGE_COMPARISON",
+    },
+    {
+      criteria: "BOTH_INDIVIDUAL_GLOBAL_DATA",
+      formula: "FORMULA_GLOBAL_AND_INDIVIDUAL_IMPROVEMENT",
+    },
+  ],
 };
 
 import { StrategyModel } from "../models";

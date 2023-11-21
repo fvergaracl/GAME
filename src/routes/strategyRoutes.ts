@@ -74,31 +74,38 @@ router.get("/:strategyId", StrategyController.getStrategyById);
  *               parameters:
  *                 type: object
  *                 properties:
- *                   defaultPointsTaskCampaign:
+ *                   BASIC_POINTS:
  *                     type: number
- *                   weightIndividualImprove:
+ *                   BONUS_FACTOR:
  *                     type: number
- *                   weightGlobalImprove:
+ *                   SMALLER_BONUS:
  *                     type: number
- *                   minorBonus:
+ *                   INDIVIDUAL_IMPROVEMENT_FACTOR:
+ *                     type: number
+ *                   WEIGHT_GLOBAL_IMPROVE:
+ *                     type: number
+ *                   WEIGHT_INDIVIDUAL_IMPROVE:
  *                     type: number
  *               cases:
- *                 type: object
- *                 additionalProperties:
+ *                 type: array
+ *                 items:
  *                   type: object
+ *                   required:
+ *                     - criteria
+ *                     - formula
  *                   properties:
- *                     description:
+ *                     criteria:
  *                       type: string
- *                     calculatePoints:
+ *                     formula:
  *                       type: string
  *                     subCases:
  *                       type: object
  *                       additionalProperties:
  *                         type: object
  *                         properties:
- *                           condition:
+ *                           criteria:
  *                             type: string
- *                           calculatePoints:
+ *                           formula:
  *                             type: string
  *     responses:
  *       201:
@@ -112,43 +119,22 @@ router.get("/:strategyId", StrategyController.getStrategyById);
  *           description: "Strategy to calculate points based on individual and global behavior."
  *           strategyType: "BehaviorBasedPoints"
  *           parameters:
- *             defaultPointsTaskCampaign: 10
- *             weightIndividualImprove: 10
- *             weightGlobalImprove: 10
- *             minorBonus: 5
+ *             BASIC_POINTS: 10
+ *             BONUS_FACTOR: 1.5
+ *             SMALLER_BONUS: 0.5
+ *             INDIVIDUAL_IMPROVEMENT_FACTOR: 1.5
+ *             WEIGHT_GLOBAL_IMPROVE: 0.5
+ *             WEIGHT_INDIVIDUAL_IMPROVE: 0.5
  *           cases:
- *             case1:
- *               description: "First or second task of the user without global behavior data."
- *               calculatePoints: "defaultPointsTaskCampaign"
- *             case2:
- *               description: "Second task of the user with available global behavior data."
- *               subCases:
- *                 "2.1":
- *                   condition: "timeInvestedLastTask > globalCalculation"
- *                   calculatePoints: "defaultPointsTaskCampaign"
- *                 "2.2":
- *                   condition: "timeInvestedLastTask < globalCalculation"
- *                   calculatePoints: "defaultPointsTaskCampaign + Bonus"
- *             case3:
- *               description: "Individual behavior data available, no global behavior."
- *               calculatePoints: "defaultPointsTaskCampaign"
- *             case4:
- *               description: "Complete individual and global behavior data."
- *               subCases:
- *                 "4.1":
- *                   condition: "timeInvestedLastTask < individualCalculation AND timeInvestedLastTask > globalCalculation"
- *                   calculatePoints: "FormulaBased"
- *                 "4.2":
- *                   condition: "timeInvestedLastTask > individualCalculation AND timeInvestedLastTask > globalCalculation"
- *                   calculatePoints: "defaultPointsTaskCampaign"
- *                 "4.3":
- *                   condition: "timeInvestedLastTask < individualCalculation AND timeInvestedLastTask < globalCalculation"
- *                   calculatePoints: "FormulaBasedMaxBonus"
- *                 "4.4":
- *                   condition: "timeInvestedLastTask > individualCalculation AND timeInvestedLastTask < globalCalculation"
- *                   calculatePoints: "defaultPointsTaskCampaign + MinorBonus"
+ *             - criteria: "EARLY_TASK_NO_GLOBAL"
+ *               formula: "FORMULA_BASIC_POINTS"
+ *             - criteria: "SECOND_TASK_GLOBAL_DATA"
+ *               formula: "FORMULA_GLOBAL_AVERAGE_COMPARISON"
+ *             - criteria: "INDIVIDUAL_DATA_NO_GLOBAL"
+ *               formula: "FORMULA_USER_AVERAGE_COMPARISON"
+ *             - criteria: "BOTH_INDIVIDUAL_GLOBAL_DATA"
+ *               formula: "FORMULA_GLOBAL_AND_INDIVIDUAL_IMPROVEMENT"
  */
-
 router.post("/", StrategyController.createStrategy);
 
 /**
@@ -175,35 +161,5 @@ router.post("/", StrategyController.createStrategy);
  *         description: Game or strategy not found.
  */
 router.get("/game/:gameId", StrategyController.getStrategyForGame);
-
-/**
- * @swagger
- * /strategies/copy/{strategyId}:
- *   post:
- *     tags: [Strategies]
- *     summary: Copy an existing strategy.
- *     parameters:
- *       - in: path
- *         name: strategyId
- *         required: true
- *         description: Unique ID of the strategy to be copied.
- *         schema:
- *           type: string
- *     requestBody:
- *       description: Optional modifications to apply to the copied strategy.
- *       required: false
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *     responses:
- *       201:
- *         description: Strategy copied successfully.
- *       404:
- *         description: Original strategy not found.
- *       400:
- *         description: Invalid input data.
- */
-router.post("/copy/:strategyId", StrategyController.copyStrategy);
 
 export default router;

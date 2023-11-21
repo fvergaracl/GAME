@@ -1,28 +1,30 @@
 import { Document, model, Schema, Types } from "mongoose";
+import { Strategy, strategySchema } from "./StrategyModel";
 
 interface Game extends Document {
   identification: string;
   timestampEnd: Date;
   timestampStart: Date;
-  currentStrategy: Types.ObjectId; // Reference to the current strategy model
+  currentStrategyId: Types.ObjectId; // Reference to the current strategy model
+  strategy?: Strategy; // Optional
   description?: string; // Optional
-  defaultPointsTaskCampaign: number;
   createdBy: string;
+  createdAt?: Date;
 }
 
-const gameSchema = new Schema<Game>({
-  identification: { type: String, required: true },
-  timestampEnd: { type: Date },
-  timestampStart: { type: Date, default: Date.now },
-  currentStrategy: {
-    type: Schema.Types.ObjectId,
-    ref: "Strategy",
-    required: true,
+const gameSchema = new Schema<Game>(
+  {
+    identification: { type: String, required: true },
+    timestampEnd: { type: Date },
+    timestampStart: { type: Date, default: Date.now },
+    strategy: { type: strategySchema, required: false },
+    description: { type: String },
+    createdBy: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
   },
-  description: { type: String },
-  defaultPointsTaskCampaign: { type: Number, required: true },
-});
+  { versionKey: false }
+);
 
 const GameModel = model<Game>("Game", gameSchema);
 
-export { GameModel };
+export { GameModel, Game, gameSchema };

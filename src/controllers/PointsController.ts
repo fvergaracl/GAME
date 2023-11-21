@@ -11,12 +11,38 @@ import {
 } from "../models";
 
 class PointsController {
+  /*
+  router.get("/:userId", PointsController.getUserPoints);
+router.get("/:userId/:taskId", PointsController.getUserPointsInTask);
+router.get("/:userId/:gameId", PointsController.getUserPointsInGame);
+  */
+
+  static async getUserPoints(req: Request, res: Response) {
+    try {
+      res.status(200).json({ message: "getUserPoints" });
+    } catch (error) {
+      res.status(500).json({ message: "getUserPoints -ERROR" });
+    }
+  }
+
+  static async getUserPointsInTask(req: Request, res: Response) {
+    try {
+      res.status(200).json({ message: "getUserPointsInTask" });
+    } catch (error) {
+      res.status(500).json({ message: "getUserPointsInTask -ERROR" });
+    }
+  }
+
+  static async getUserPointsInGame(req: Request, res: Response) {
+    try {
+      res.status(200).json({ message: "getUserPointsInGame" });
+    } catch (error) {
+      res.status(500).json({ message: "getUserPointsInGame -ERROR" });
+    }
+  }
   static async assignPointsToUser(req: Request, res: Response) {
     try {
-      
-    } catch (error) {
-      
-    }
+    } catch (error) {}
     /*
     try {
       
@@ -90,54 +116,6 @@ class PointsController {
     }
     */
   }
-}
-
-function calculateIndividualAverageTime(tasks: Task[]): number | null {
-  if (tasks.length < 2) {
-    // If there are fewer than two tasks, it's not possible to calculate an average time
-    return null;
-  }
-
-  let totalTimeInterval = 0;
-  for (let i = 1; i < tasks.length; i++) {
-    const previousTaskTime = tasks[i - 1].timestamp.getTime();
-    const currentTaskTime = tasks[i].timestamp.getTime();
-    totalTimeInterval += currentTaskTime - previousTaskTime;
-  }
-
-  // Calculate average time in milliseconds
-  const averageTimeInterval = totalTimeInterval / (tasks.length - 1);
-
-  // Convert milliseconds to a more suitable time unit if needed, e.g., seconds or minutes
-  const averageTimeInSeconds = averageTimeInterval / 1000;
-
-  return averageTimeInSeconds;
-}
-
-function calculateStrategyPoints(
-  individualAverageTime: number,
-  strategy: Strategy,
-  globalAverageTime: number,
-  previousGlobalAverageTime?: number
-): number {
-  let points = 0;
-
-  // Calculate points based on individual average time
-  if (individualAverageTime < globalAverageTime) {
-    // User performs better than the global average
-    points += strategy.parameters.weightIndividualImprove;
-  }
-
-  // Calculate points based on global average time
-  if (
-    previousGlobalAverageTime &&
-    individualAverageTime < previousGlobalAverageTime
-  ) {
-    // User performs better than the previous global average
-    points += strategy.parameters.weightGlobalImprove;
-  }
-
-  return points;
 }
 
 export { PointsController };

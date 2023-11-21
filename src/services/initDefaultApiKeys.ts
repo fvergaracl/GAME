@@ -1,5 +1,8 @@
 import { ApiKeyModel } from "../models/ApiKeyModel";
 import { generateApiKey } from "./index";
+import dot from "dotenv";
+
+dot.config();
 
 const initDefaultApiKeys = async () => {
   try {
