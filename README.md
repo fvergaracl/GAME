@@ -32,6 +32,17 @@ This Gamification Engine API is a Node.js application using Express and TypeScri
 
 # How to define your stategy
 
+### Constants for Point Calculation Formulas
+
+| Name                          | Description                                                     | Type   | Mandatory |
+| ----------------------------- | --------------------------------------------------------------- | ------ | --------- |
+| BASIC_POINTS                  | Base points awarded for tasks.                                  | Number | Yes       |
+| BONUS_FACTOR                  | Additional points for better performance than global average.   | Number | No        |
+| SMALLER_BONUS                 | Smaller bonus points for performance worse than global average. | Number | No        |
+| INDIVIDUAL_IMPROVEMENT_FACTOR | Factor to enhance points based on individual improvement.       | Number | No        |
+| WEIGHT_GLOBAL_IMPROVE         | Weight for improvement relative to global average.              | Number | No        |
+| WEIGHT_INDIVIDUAL_IMPROVE     | Weight for improvement relative to individual average.          | Number | No        |
+
 ### Constants for Criteria
 
 | Name                        | Description                                                      | Type    | Condition Used                      | Mandatory |
@@ -47,28 +58,16 @@ This Gamification Engine API is a Node.js application using Express and TypeScri
 | ----------------------- | ---------------------------------------------------- | ----------------- |
 | TIME_INVESTED_LAST_TASK | The time a user invested in their last task.         | Yes               |
 | GLOBAL_AVERAGE          | The average time invested in tasks across all users. | Yes               |
+| USER_AVERAGE            | The average time invested in tasks across all users. | Yes               |
 
-### Constants for Point Calculation Formulas
+### Formula Constants
 
-| Name                          | Description                                                     | Type   | Mandatory |
-| ----------------------------- | --------------------------------------------------------------- | ------ | --------- |
-| BASIC_POINTS                  | Base points awarded for tasks.                                  | Number | Yes       |
-| BONUS_FACTOR                  | Additional points for better performance than global average.   | Number | No        |
-| SMALLER_BONUS                 | Smaller bonus points for performance worse than global average. | Number | No        |
-| INDIVIDUAL_IMPROVEMENT_FACTOR | Factor to enhance points based on individual improvement.       | Number | No        |
-| WEIGHT_GLOBAL_IMPROVE         | Weight for improvement relative to global average.              | Number | No        |
-| WEIGHT_INDIVIDUAL_IMPROVE     | Weight for improvement relative to individual average.          | Number | No        |
-
-### Additional Considerations
-
-| Name                                | Description                                             | Type   | Mandatory |
-| ----------------------------------- | ------------------------------------------------------- | ------ | --------- |
-| BONUS_FACTOR_VALUE                  | The constant value for `bonus_factor`.                  | Number | Yes       |
-| SMALLER_BONUS_VALUE                 | The constant value for `smaller_bonus`.                 | Number | Yes       |
-| INDIVIDUAL_IMPROVEMENT_FACTOR_VALUE | The constant value for `individual_improvement_factor`. | Number | Yes       |
-| WEIGHT_GLOBAL_IMPROVE_VALUE         | The constant value for `weight_global_improve`.         | Number | Yes       |
-| WEIGHT_INDIVIDUAL_IMPROVE_VALUE     | The constant value for `weight_individual_improve`.     | Number | Yes       |
-
+| Constant Name                             | Formula Description and Calculation                                                                                                                                                                                                                                                                                     |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FORMULA_BASIC_POINTS                      | Basic points awarded without any additional factors.<br>Calculation: `BASIC_POINTS`                                                                                                                                                                                                                                     |
+| FORMULA_GLOBAL_AVERAGE_COMPARISON         | Points calculated based on comparison with the global average time.<br>Calculation: `BASIC_POINTS + (TIME_INVESTED_LAST_TASK > GLOBAL_AVERAGE ? SMALLER_BONUS : BONUS_FACTOR)`                                                                                                                                          |
+| FORMULA_USER_AVERAGE_COMPARISON           | Points calculated based on comparison with the user's average time.<br>Calculation: `BASIC_POINTS + (TIME_INVESTED_LAST_TASK > USER_AVERAGE ? -SMALLER_BONUS : BONUS_FACTOR)`                                                                                                                                           |
+| FORMULA_GLOBAL_AND_INDIVIDUAL_IMPROVEMENT | Points calculated incorporating both global and individual improvements in task completion time.<br>Calculation: `BASIC_POINTS + WEIGHT_GLOBAL_IMPROVE * max[0, (GLOBAL_AVERAGE - TIME_INVESTED_LAST_TASK)/GLOBAL_AVERAGE] + WEIGHT_INDIVIDUAL_IMPROVE * max[0, (USER_AVERAGE - TIME_INVESTED_LAST_TASK)/USER_AVERAGE]` |
 
 ## Setting up the Project
 

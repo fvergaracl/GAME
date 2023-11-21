@@ -13,6 +13,13 @@ import {
 class PointsController {
   static async assignPointsToUser(req: Request, res: Response) {
     try {
+      
+    } catch (error) {
+      
+    }
+    /*
+    try {
+      
       const { userId, gameId } = req.params;
 
       // Retrieve the game strategy
@@ -81,6 +88,7 @@ class PointsController {
       console.error(error);
       res.status(500).send(error);
     }
+    */
   }
 }
 

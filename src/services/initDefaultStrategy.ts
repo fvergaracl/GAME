@@ -4,60 +4,30 @@ const initDefaultStrategyJson = {
     "Strategy to calculate points based on individual and global behavior.",
   strategyType: "BehaviorBasedPoints",
   parameters: {
-    defaultPointsTaskCampaign: 10,
-    weightIndividualImprove: 10,
-    weightGlobalImprove: 10,
-    minorBonus: 5,
-    cases: {
-      case1: {
-        description:
-          "First or second task of the user without global behavior data.",
-        calculatePoints: "defaultPointsTaskCampaign",
+    BASIC_POINTS: 10,
+    BONUS_FACTOR: 1.5,
+    SMALLER_BONUS: 0.5,
+    INDIVIDUAL_IMPROVEMENT_FACTOR: 1.5,
+    WEIGHT_GLOBAL_IMPROVE: 0.5,
+    WEIGHT_INDIVIDUAL_IMPROVE: 0.5,
+    cases: [
+      {
+        criteria: "EARLY_TASK_NO_GLOBAL",
+        formula: "FORMULA_BASIC_POINTS",
       },
-      case2: {
-        description:
-          "Second task of the user with available global behavior data.",
-        subCases: {
-          "2.1": {
-            condition: "timeInvestedLastTask > globalCalculation",
-            calculatePoints: "defaultPointsTaskCampaign",
-          },
-          "2.2": {
-            condition: "timeInvestedLastTask < globalCalculation",
-            calculatePoints: "defaultPointsTaskCampaign + Bonus",
-          },
-        },
+      {
+        criteria: "SECOND_TASK_GLOBAL_DATA",
+        formula: "FORMULA_GLOBAL_AVERAGE_COMPARISON",
       },
-      case3: {
-        description: "Individual behavior data available, no global behavior.",
-        calculatePoints: "defaultPointsTaskCampaign",
+      {
+        criteria: "INDIVIDUAL_DATA_NO_GLOBAL",
+        formula: "FORMULA_USER_AVERAGE_COMPARISON",
       },
-      case4: {
-        description: "Complete individual and global behavior data.",
-        subCases: {
-          "4.1": {
-            condition:
-              "timeInvestedLastTask < individualCalculation AND timeInvestedLastTask > globalCalculation",
-            calculatePoints: "FormulaBased",
-          },
-          "4.2": {
-            condition:
-              "timeInvestedLastTask > individualCalculation AND timeInvestedLastTask > globalCalculation",
-            calculatePoints: "defaultPointsTaskCampaign",
-          },
-          "4.3": {
-            condition:
-              "timeInvestedLastTask < individualCalculation AND timeInvestedLastTask < globalCalculation",
-            calculatePoints: "FormulaBasedMaxBonus",
-          },
-          "4.4": {
-            condition:
-              "timeInvestedLastTask > individualCalculation AND timeInvestedLastTask < globalCalculation",
-            calculatePoints: "defaultPointsTaskCampaign + MinorBonus",
-          },
-        },
+      {
+        criteria: "BOTH_INDIVIDUAL_GLOBAL_DATA",
+        formula: "FORMULA_GLOBAL_AND_INDIVIDUAL_IMPROVEMENT",
       },
-    },
+    ],
   },
 };
 
