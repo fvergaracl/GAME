@@ -3,11 +3,20 @@ import {
   PointsModel,
   TaskModel,
   Task,
+  Points,
   StrategyModel,
   Strategy,
   GameModel,
   UserModel,
+  Game,
+  StrategyParameters,
 } from "../models";
+
+import {
+  parseAndComputeFormula,
+  TaskData,
+  calculateAverage,
+} from "../utils/parseAndComputeFormula";
 
 class PointsController {
   /*
@@ -39,81 +48,131 @@ router.get("/:userId/:gameId", PointsController.getUserPointsInGame);
       res.status(500).json({ message: "getUserPointsInGame -ERROR" });
     }
   }
+
   static async assignPointsToUser(req: Request, res: Response) {
     try {
-    } catch (error) {}
-    /*
-    try {
-      
-      const { userId, gameId } = req.params;
-
-      // Retrieve the game strategy
-      const game = await GameModel.findById(gameId);
+      const body = req.body as Points;
+      const { idGame, idTask } = body;
+      let idUser = body?.idUser;
+      // Check if idGame exists
+      let game = await GameModel.findById(idGame);
+      console.log({ game });
       if (!game) {
         return res.status(404).json({ message: "Game not found" });
       }
-      const strategy = await StrategyModel.findById(game.currentStrategy);
-      if (!strategy) {
+
+      if (idTask) {
+        // Check if idTask exists
+        let task = await TaskModel.findById(idTask);
+        if (!task) {
+          return res.status(404).json({ message: "Task not found" });
+        }
+      }
+
+      // Check if idUser exists and create if not exists
+      let userIsCreated = undefined;
+      let user;
+      console.log("-122");
+      console.log({ idUser });
+      if (idUser) {
+        user = await UserModel.findOne({ userId: idUser });
+      }
+      console.log("-1");
+      if (!user || !idUser) {
+        console.log("------------------------------------------------------");
+        const newUser = new UserModel({ userId: idUser });
+        user = await newUser.save();
+        userIsCreated = true;
+      }
+
+      const allActionsUsers = await UserModel.find({}).select("actions");
+      const allActions = allActionsUsers.map((user) => user.actions);
+
+      const userActions = user?.actions;
+      let TIME_INVESTED_LAST_TASK = undefined;
+      let GLOBAL_AVERAGE = undefined;
+      let USER_AVERAGE = undefined;
+
+      if (userActions && userActions.length > 2) {
+        // get difference between last action and previous action
+        const lastAction = userActions[userActions.length - 1];
+        const previousAction = userActions[userActions.length - 2];
+        const difference = lastAction.timestamp - previousAction.timestamp;
+        const differenceInMinutes = difference / 60000;
+        TIME_INVESTED_LAST_TASK = differenceInMinutes;
+      }
+      // if allActions is an array of arrays
+
+      if (allActions && allActions.length > 0) {
+        const allActionsFlat = allActions.flat();
+        const allActionsTimestamps =
+          allActionsFlat
+            .map((action) => action?.timestamp)
+            .filter(
+              (timestamp): timestamp is number => typeof timestamp === "number"
+            ) || [];
+
+        let average = undefined;
+        if (allActionsTimestamps.length > 0) {
+          average = calculateAverage(allActionsTimestamps);
+          GLOBAL_AVERAGE = average;
+        }
+        GLOBAL_AVERAGE = average;
+      }
+
+      if (userActions && userActions.length > 0) {
+        const userActionsTimestamps = userActions.map(
+          (action) => action?.timestamp
+        );
+        let average = undefined;
+        if (userActionsTimestamps && userActionsTimestamps.length > 0) {
+          average = calculateAverage(userActionsTimestamps);
+          USER_AVERAGE = average;
+        }
+        USER_AVERAGE = average;
+      }
+
+      const taskData: TaskData = {
+        TIME_INVESTED_LAST_TASK,
+        GLOBAL_AVERAGE,
+        USER_AVERAGE,
+      };
+
+      const gameStrategyParams = game?.strategy?.parameters;
+      if (!gameStrategyParams) {
         return res.status(404).json({ message: "Strategy not found" });
       }
-
-      // Retrieve user's tasks and global behavior for the game
-      const tasks = await TaskModel.find({
-        idUser: userId,
-        idGame: gameId,
-      }).sort("timestamp");
-      const globalBehavior = await GlobalBehaviorModel.findOne({
-        gameId: gameId,
-      });
-
-      // Calculate individual behavior
-      const individualAverageTime = calculateIndividualAverageTime(tasks);
-
-      // Calculate points based on strategy
-      let points = game.defaultPointsTaskCampaign; // Starting with default points
-      if (individualAverageTime && globalBehavior) {
-        points += calculateStrategyPoints(
-          individualAverageTime,
-          strategy,
-          globalBehavior.averageTime,
-          globalBehavior.previousAverageTime
-        );
-      }
-
-      // Update or create points record
-      const pointsRecord = await PointsModel.findOne({
-        idUser: userId,
-        idGame: gameId,
-      });
-      if (pointsRecord) {
-        pointsRecord.points += points;
-        await pointsRecord.save();
-      }
-      if (!pointsRecord) {
-        const newPointsRecord = new PointsModel({
-          idUser: userId,
-          idGame: gameId,
-          points: points,
-          strategyUsed: game.currentStrategy,
-        });
-        await newPointsRecord.save();
-      }
-
-      // Update user's game points
-      await UserModel.updateOne(
-        { userId: userId, "games.gameId": gameId },
-        { $inc: { "games.$.points": points } },
-        { upsert: true }
+      const cases = game?.strategy?.cases;
+      // calculate all classes
+      const allClasses = cases?.map((caseItem) =>
+        parseAndComputeFormula(caseItem.formula, gameStrategyParams, taskData)
       );
-
+      // get max points and formula
+      const maxPoints = allClasses
+        ?.map((item) => {
+          if (item?.points) {
+            return item.points;
+          }
+          return 0;
+        })
+        .reduce((a, b) => Math.max(a, b));
+        
+      // const maxPoints = allClasses
+      //   ?.map((item) => {
+      //     if (item?.points) {
+      //       return item.points;
+      //     }
+      //     return 0;
+      //   })
+      //   .reduce((a, b) => Math.max(a, b));
+      console.log("maxPoints", maxPoints);
+      console.log("==================================");
       res
         .status(200)
-        .json({ message: "Points successfully assigned", points: points });
+        .json({ message: "assignPointsToUser", maxPoints, allClasses });
     } catch (error) {
-      console.error(error);
       res.status(500).send(error);
     }
-    */
   }
 }
 

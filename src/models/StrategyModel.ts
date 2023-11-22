@@ -70,4 +70,11 @@ const strategySchema = new Schema<Strategy>(
 
 const StrategyModel = model<Strategy>("Strategy", strategySchema);
 
-export { StrategyModel, Strategy, strategySchema };
+export {
+  StrategyModel,
+  Strategy,
+  StrategyParameters,
+  strategySchema,
+  caseSubSchema,
+  CaseSub,
+};

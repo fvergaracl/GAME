@@ -1,26 +1,27 @@
 import { Document, model, Schema, Types } from "mongoose";
 
-interface User extends Document {
-  userId: string;
-  games: [
-    {
-      gameId: Types.ObjectId;
-      points: number; // Points in each game
-      strategyUsed: Types.ObjectId; // Strategy used for point allocation
-    }
-  ];
+interface Action {
+  name: string;
+  timestamp: number;
 }
 
-const userSchema = new Schema<User>({
-  userId: { type: String, required: true, unique: true },
-  games: [
-    {
-      gameId: { type: Schema.Types.ObjectId, ref: "Game", required: true },
-      points: { type: Number, default: 0 },
-      strategyUsed: { type: Schema.Types.ObjectId, ref: "Strategy" },
-    },
-  ],
+interface User extends Document {
+  userId: string;
+  actions?: Action[] | [];
+}
+
+const actionSchema = new Schema<Action>({
+  name: { type: String, required: true },
+  timestamp: { type: Number, default: Date.now },
 });
+
+const userSchema = new Schema<User>(
+  {
+    userId: { type: String, required: true, unique: true },
+    actions: { type: [actionSchema], default: [] },
+  },
+  { versionKey: false }
+);
 
 const UserModel = model<User>("User", userSchema);
 
