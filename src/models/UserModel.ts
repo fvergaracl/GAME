@@ -1,4 +1,4 @@
-import { Document, model, Schema, Types } from "mongoose";
+import { Document, model, Schema } from "mongoose";
 
 interface Action {
   name: string;

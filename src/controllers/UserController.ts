@@ -3,14 +3,24 @@ import { UserModel } from "../models/UserModel";
 
 class UserController {
   // Get a specific user by ID
-  static async getUserById(req: Request, res: Response) {
+  static async getUserByUserId(req: Request, res: Response) {
     try {
-      const userId = req.params.id;
-      const user = await UserModel.findById(userId);
+      const userId = req.params.userId;
+      const user = await UserModel.findOne({ userId });
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
       res.json(user);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+
+  // Get a list of all users
+  static async getAllUsers(_: Request, res: Response) {
+    try {
+      const users = await UserModel.find({});
+      res.status(200).json(users);
     } catch (error) {
       res.status(500).send(error);
     }
