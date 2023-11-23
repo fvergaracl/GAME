@@ -10,6 +10,8 @@ COPY package*.json ./
 # Install dependencies, including development dependencies
 RUN npm install --version 9.6.6
 
+RUN npm install -g typescript
+
 # Install nodemon and ts-node globally
 RUN npm install -g nodemon ts-node
 
@@ -20,4 +22,4 @@ COPY . .
 EXPOSE 3000
 
 # Define the command to run your app using CMD which defines your runtime
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "build" ]

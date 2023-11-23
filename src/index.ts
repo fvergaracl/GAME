@@ -2,9 +2,10 @@ import { app } from "./app";
 import { initDefaultApiKeys } from "./services";
 import { initDefaultStrategy } from "./services/initDefaultStrategy";
 import connectDB from "./database";
-import dot from "dotenv";
+import * as dotenv from "dotenv";
 
-dot.config();
+dotenv.config();
+
 const PORT = process.env.PORT || 3000;
 
 connectDB()
