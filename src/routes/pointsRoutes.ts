@@ -81,10 +81,11 @@ router.get("/:userId", PointsController.getUserPoints);
  * /points/{userId}/task/{idTask}:
  *   get:
  *     tags: [Points]
- *     summary: Retrieve the total points of a user for a specific task
+ *     summary: Retrieve the total points of a user for a specific task within a time range
  *     description: >
- *       This endpoint retrieves the total points accumulated by a user for a specific task.
- *       It requires both user ID and task ID, checks if the user exists, and sums up
+ *       This endpoint retrieves the total points accumulated by a user for a specific task,
+ *       optionally within a specified time range. It requires both user ID and task ID, and
+ *       optionally 'from' and 'to' date parameters, checks if the user exists, and sums up
  *       the points assigned for that task.
  *     parameters:
  *       - in: path
@@ -99,6 +100,20 @@ router.get("/:userId", PointsController.getUserPoints);
  *         schema:
  *           type: string
  *         description: ID of the task for which points are being retrieved.
+ *       - in: query
+ *         name: from
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Start date to filter the points calculation. Should be in ISO format.
+ *       - in: query
+ *         name: to
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: End date to filter the points calculation. Should be in ISO format.
  *     responses:
  *       200:
  *         description: Sum of points for the task successfully retrieved
@@ -113,7 +128,7 @@ router.get("/:userId", PointsController.getUserPoints);
  *                   type: number
  *                   description: Total points accumulated by the user for the task.
  *       400:
- *         description: User ID is required but was not provided
+ *         description: User ID is required but was not provided, or 'from'/'to' date parameters are invalid
  *       404:
  *         description: User or task not found, or user doesn't have actions/points for this task
  *         content:
