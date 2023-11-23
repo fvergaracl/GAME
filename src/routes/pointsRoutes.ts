@@ -159,10 +159,11 @@ router.get("/:userId/task/:idTask", PointsController.getUserPointsInTask);
  * /points/{userId}/game/{idGame}:
  *   get:
  *     tags: [Points]
- *     summary: Retrieve the total points of a user in a specific game
+ *     summary: Retrieve the total points of a user in a specific game within a time range
  *     description: >
- *       This endpoint retrieves the total points accumulated by a user in a specified game.
- *       It requires both user ID and game ID, checks if the user exists, and calculates
+ *       This endpoint retrieves the total points accumulated by a user in a specified game,
+ *       optionally within a specified time range. It requires both user ID and game ID, and
+ *       optionally 'from' and 'to' date parameters, checks if the user exists, and calculates
  *       the sum of points assigned in the game.
  *     parameters:
  *       - in: path
@@ -170,13 +171,27 @@ router.get("/:userId/task/:idTask", PointsController.getUserPointsInTask);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the user whose points are to be retrieved.
+ *         description: ID of the user whose points in the game are to be retrieved.
  *       - in: path
  *         name: idGame
  *         required: true
  *         schema:
  *           type: string
  *         description: ID of the game for which points are being retrieved.
+ *       - in: query
+ *         name: from
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Start date to filter the points calculation. Should be in ISO format.
+ *       - in: query
+ *         name: to
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: End date to filter the points calculation. Should be in ISO format.
  *     responses:
  *       200:
  *         description: Sum of points in the game successfully retrieved
@@ -191,7 +206,7 @@ router.get("/:userId/task/:idTask", PointsController.getUserPointsInTask);
  *                   type: number
  *                   description: Total points accumulated by the user in the game.
  *       400:
- *         description: User ID is required but was not provided
+ *         description: User ID is required but was not provided, or 'from'/'to' date parameters are invalid
  *       404:
  *         description: User or game not found, or user doesn't have actions/points in this game
  *         content:
