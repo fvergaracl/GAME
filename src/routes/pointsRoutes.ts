@@ -123,7 +123,7 @@ router.post("/:idGame", PointsController.assignPointsToUser);
  *       400:
  *         description: User ID is required but was not provided
  *       404:
- *         description: Game, Task, or Strategy not found
+ *         description: Game, Task, or Strategy not found or Task is not part of the Game
  *       500:
  *         description: Internal server error
  */
