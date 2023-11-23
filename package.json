@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc && node dist/index.js",
     "start": "node -r dotenv/config dist/index.js",
-    "dev": "nodemon --watch 'src/**/*' -e ts --exec 'ts-node' src/index.ts",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node --files' src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "jest": {

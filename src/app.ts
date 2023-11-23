@@ -32,7 +32,7 @@ app.use("/tasks", taskRoutes);
 app.use("/users", userRoutes);
 
 // Catch 404 and forward to error handler
-app.use((req, res, next) => {
+app.use((_, res, __) => {
   const err = new Error("Endpoint Not Found");
   res.status(404).json({ message: err.message });
 });
@@ -41,9 +41,9 @@ app.use((req, res, next) => {
 app.use(
   (
     err: any,
-    req: express.Request,
+    _: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    __: express.NextFunction
   ) => {
     res.status(err.status || 500);
     res.json({
