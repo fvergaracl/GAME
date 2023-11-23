@@ -74,6 +74,9 @@ router.get("/:userId/:gameId", PointsController.getUserPointsInGame);
         if (!task) {
           return res.status(404).json({ message: "Task not found" });
         }
+        if (task?.game?._id.toString() !== idGame) {
+          return res.status(404).json({ message: "Task is not in this game" });
+        }
       }
 
       // Check if idUser exists and create if not exists

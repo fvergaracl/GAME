@@ -39,7 +39,7 @@ router.get("/:userId/:gameId", PointsController.getUserPointsInGame);
  *                 type: string
  *                 description: ID of the user to whom points are to be assigned.
  *     responses:
- *       200:
+ *       201:
  *         description: Points successfully assigned to the user
  *         content:
  *           application/json:
@@ -48,17 +48,20 @@ router.get("/:userId/:gameId", PointsController.getUserPointsInGame);
  *               properties:
  *                 message:
  *                   type: string
- *                 maxPoints:
+ *                   description: Success message.
+ *                 points:
  *                   type: number
- *                   description: Maximum points calculated for the user.
- *                 allClasses:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       # Define the structure for items in allClasses here
+ *                   description: Points assigned to the user.
+ *                 formula:
+ *                   type: string
+ *                   description: The formula used to calculate the points.
+ *                 userIsCreated:
+ *                   type: boolean
+ *                   description: Indicates if a new user was created during the process.
+ *       400:
+ *         description: User ID is required but was not provided
  *       404:
- *         description: Game or Task not found
+ *         description: Game, Task, or Strategy not found
  *       500:
  *         description: Internal server error
  */
@@ -66,28 +69,27 @@ router.post("/:idGame", PointsController.assignPointsToUser);
 
 /**
  * @swagger
- * /points/:idGame/:idTask:
+ * /points/{idGame}/{idTask}:
  *   post:
  *     tags: [Points]
- *     summary: Assign points to a user for a task within a game
+ *     summary: Assign points to a user for a specific task within a game
  *     description: >
- *      This endpoint assigns points to a user based on their actions and
- *      the strategy parameters of a specified game. It handles user and game
- *      validation, task checks, and complex calculations for point assignment.
+ *       This endpoint assigns points to a user based on their actions, the task performed,
+ *       and the strategy parameters of a specified game. It validates the user, game, task,
+ *       and performs complex calculations for point assignment.
  *     parameters:
  *       - in: path
  *         name: idGame
  *         required: true
  *         schema:
  *           type: string
- *
  *         description: ID of the game related to the task.
  *       - in: path
  *         name: idTask
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the task related to the points.
+ *         description: ID of the task for which points are being assigned.
  *     requestBody:
  *       required: true
  *       content:
@@ -99,7 +101,7 @@ router.post("/:idGame", PointsController.assignPointsToUser);
  *                 type: string
  *                 description: ID of the user to whom points are to be assigned.
  *     responses:
- *       200:
+ *       201:
  *         description: Points successfully assigned to the user
  *         content:
  *           application/json:
@@ -108,17 +110,20 @@ router.post("/:idGame", PointsController.assignPointsToUser);
  *               properties:
  *                 message:
  *                   type: string
- *                 maxPoints:
+ *                   description: Success message.
+ *                 points:
  *                   type: number
- *                   description: Maximum points calculated for the user.
- *                 allClasses:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       # Define the structure for items in allClasses here
+ *                   description: Points assigned to the user.
+ *                 formula:
+ *                   type: string
+ *                   description: The formula used to calculate the points.
+ *                 userIsCreated:
+ *                   type: boolean
+ *                   description: Indicates if a new user was created during the process.
+ *       400:
+ *         description: User ID is required but was not provided
  *       404:
- *         description: Game or Task not found
+ *         description: Game, Task, or Strategy not found
  *       500:
  *         description: Internal server error
  */
