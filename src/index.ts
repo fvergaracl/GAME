@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import { app } from "./app";
 import { initDefaultApiKeys } from "./services";
 import { initDefaultStrategy } from "./services/initDefaultStrategy";
@@ -6,9 +7,9 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const PORT = process.env["PORT"] || 3000;
+const PORT = process.env["PORT"] ? parseInt(process.env["PORT"], 10) : 3000;
 
-connectDB()
+void connectDB()
   .then(async () => {
     try {
       app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

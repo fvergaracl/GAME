@@ -3,26 +3,24 @@ import { StrategyModel, Strategy, GameModel } from "../models";
 
 class StrategyController {
   // Retrieves the strategy for a specific game
-  static async getStrategyForGame(req: Request, res: Response) {
+  static async getStrategyForGame(req: Request, res: Response): Promise<void> {
     try {
       const { gameId } = req.params;
       if (!gameId) {
-        return res.status(400).json({ message: "Game ID is required" });
+        res.status(400).json({ message: "Game ID is required" });
       }
 
       // Find the game
       const game = await GameModel.findById(gameId).lean();
       if (!game) {
-        return res.status(404).json({ message: "Game not found" });
+        res.status(404).json({ message: "Game not found" });
       }
 
-      const { strategy } = game;
+      const strategy = game?.strategy;
       if (!strategy) {
-        return res
-          .status(404)
-          .json({ message: "Strategy not found for this game" });
+        res.status(404).json({ message: "Strategy not found for this game" });
       }
-      return res.status(200).json(strategy);
+      res.status(200).json(strategy);
     } catch (error) {
       res.status(500).send(error);
     }
@@ -39,25 +37,25 @@ class StrategyController {
     }
   }
 
-  static async createStrategy(req: Request, res: Response) {
+  static async createStrategy(req: Request, res: Response): Promise<void> {
     try {
       const body = req.body as Strategy;
 
       // Validate and sanitize input
       if (!body.name) {
-        return res.status(400).json({ message: "Name is required" });
+        res.status(400).json({ message: "Name is required" });
       }
       if (!body.description) {
-        return res.status(400).json({ message: "Description is required" });
+        res.status(400).json({ message: "Description is required" });
       }
       if (!body.strategyType) {
-        return res.status(400).json({ message: "Strategy type is required" });
+        res.status(400).json({ message: "Strategy type is required" });
       }
       if (!body.parameters) {
-        return res.status(400).json({ message: "Parameters are required" });
+        res.status(400).json({ message: "Parameters are required" });
       }
       if (!body.cases) {
-        return res.status(400).json({ message: "Cases are required" });
+        res.status(400).json({ message: "Cases are required" });
       }
       if (body?._id) {
         delete body._id;
@@ -79,7 +77,7 @@ class StrategyController {
 
       const strategy = await StrategyModel.findById(strategyId);
       if (!strategy) {
-        return res.status(404).json({ message: "Strategy not found" });
+        res.status(404).json({ message: "Strategy not found" });
       }
 
       res.status(200).json(strategy);
@@ -98,7 +96,7 @@ class StrategyController {
         currentStrategy: strategyId,
       });
       if (gamesUsingStrategy.length > 0) {
-        return res.status(400).json({
+        res.status(400).json({
           message: "Cannot delete strategy as it is currently in use by games",
         });
       }
@@ -106,7 +104,7 @@ class StrategyController {
       // Delete the strategy
       const strategy = await StrategyModel.findByIdAndDelete(strategyId);
       if (!strategy) {
-        return res.status(404).json({ message: "Strategy not found" });
+        res.status(404).json({ message: "Strategy not found" });
       }
 
       res.status(200).json({ message: "Strategy deleted successfully" });
@@ -121,7 +119,7 @@ class StrategyController {
       const { name, dateFrom, dateTo } = req.query;
 
       // Validate and sanitize criteria
-      let query: any = {};
+      const query: any = {};
       if (name) {
         query.name = new RegExp(String(name), "i"); // Case-insensitive match for the name
       }
@@ -139,7 +137,7 @@ class StrategyController {
       // Find strategies based on criteria
       const strategies = await StrategyModel.find(query);
       if (strategies.length === 0) {
-        return res
+        res
           .status(404)
           .json({ message: "No strategies found matching the given criteria" });
       }

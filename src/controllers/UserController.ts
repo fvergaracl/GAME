@@ -3,12 +3,12 @@ import { UserModel } from "../models/UserModel";
 
 class UserController {
   // Get a specific user by ID
-  static async getUserByUserId(req: Request, res: Response) {
+  static async getUserByUserId(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.params.userId;
+      const userId = req.params["userId"];
       const user = await UserModel.findOne({ userId });
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: "User not found" });
       }
       res.json(user);
     } catch (error) {
@@ -27,12 +27,12 @@ class UserController {
   }
 
   // Delete a user
-  static async deleteUser(req: Request, res: Response) {
+  static async deleteUser(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.params.id;
+      const userId = req.params["id"];
       const deletedUser = await UserModel.findByIdAndDelete(userId);
       if (!deletedUser) {
-        return res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: "User not found" });
       }
       res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {

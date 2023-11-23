@@ -5,7 +5,7 @@ class TaskController {
   // Method to retrieve tasks for a specific user
   static async getUserTasks(req: Request, res: Response) {
     try {
-      const userId = req.params.id_user;
+      const userId = req.params["userId"];
       const tasks = await TaskModel.find({ idUser: userId });
       res.json(tasks);
     } catch (error) {
@@ -23,12 +23,12 @@ class TaskController {
     }
   }
 
-  static async getTaskById(req: Request, res: Response) {
+  static async getTaskById(req: Request, res: Response): Promise<void> {
     try {
-      const taskId = req.params.taskId;
+      const taskId = req.params["taskId"];
       const task = await TaskModel.findById(taskId);
       if (!task) {
-        return res.status(404).json({ message: "Task not found" });
+        res.status(404).json({ message: "Task not found" });
       }
       res.status(200).json(task);
     } catch (error) {
@@ -36,7 +36,7 @@ class TaskController {
     }
   }
 
-  static async createTask(req: Request, res: Response) {
+  static async createTask(req: Request, res: Response): Promise<void> {
     try {
       const body = req.body;
       // Check if idGame exists
@@ -48,7 +48,7 @@ class TaskController {
       if (body?.idGame) {
         game = await GameModel.findById(body.idGame);
         if (!game) {
-          return res.status(404).json({ message: "Game not found" });
+          res.status(404).json({ message: "Game not found" });
         }
       }
       if (game) {

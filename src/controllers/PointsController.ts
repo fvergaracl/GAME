@@ -19,30 +19,28 @@ import {
 } from "../utils/parseAndComputeFormula";
 
 class PointsController {
-  static async getUserPoints(req: Request, res: Response) {
+  static async getUserPoints(req: Request, res: Response): Promise<void> {
     try {
       const { userId } = req.params;
       const { from, to } = req.query;
       if (from && isNaN(new Date(String(from)).getTime())) {
-        return res.status(400).json({ message: "'from' is invalid" });
+        res.status(400).json({ message: "'from' is invalid" });
       }
       if (to && isNaN(new Date(String(to)).getTime())) {
-        return res.status(400).json({ message: "'to' is invalid" });
+        res.status(400).json({ message: "'to' is invalid" });
       }
 
       if (!userId) {
-        return res.status(400).json({ message: "idUser is required" });
+        res.status(400).json({ message: "idUser is required" });
       }
 
       const userData = await UserModel.findOne({ userId });
       if (!userData) {
-        return res
-          .status(404)
-          .json({ message: "User doesn't exist", points: 0 });
+        res.status(404).json({ message: "User doesn't exist", points: 0 });
       }
-      const userActions = userData.actions;
+      const userActions = userData?.actions;
       if (!userActions) {
-        return res
+        res
           .status(404)
           .json({ message: "User doesn't have actions", points: 0 });
       }
@@ -71,7 +69,7 @@ class PointsController {
 
       const usersPoints = await PointsModel.find(query);
       if (!usersPoints) {
-        return res
+        res
           .status(404)
           .json({ message: "User doesn't have points", points: 0 });
       }
@@ -85,7 +83,7 @@ class PointsController {
     }
   }
 
-  static async getUserPointsInTask(req: Request, res: Response) {
+  static async getUserPointsInTask(req: Request, res: Response): Promise<void> {
     try {
       // /points/:userId/:idTask
       // with from /points/:userId/:idTask?from=2021-05-01T00:00:00.000Z
@@ -94,27 +92,25 @@ class PointsController {
       const { userId, idTask } = req.params;
       const { from, to } = req.query;
       if (from && isNaN(new Date(String(from)).getTime())) {
-        return res.status(400).json({ message: "'from' is invalid" });
+        res.status(400).json({ message: "'from' is invalid" });
       }
       if (to && isNaN(new Date(String(to)).getTime())) {
-        return res.status(400).json({ message: "'to' is invalid" });
+        res.status(400).json({ message: "'to' is invalid" });
       }
       if (!userId) {
-        return res.status(400).json({ message: "idUser is required" });
+        res.status(400).json({ message: "idUser is required" });
       }
       if (!idTask) {
-        return res.status(404).json({ message: "idTask not found" });
+        res.status(404).json({ message: "idTask not found" });
       }
 
       const userData = await UserModel.findOne({ userId });
       if (!userData) {
-        return res
-          .status(404)
-          .json({ message: "User doesn't exist", points: 0 });
+        res.status(404).json({ message: "User doesn't exist", points: 0 });
       }
-      const userActions = userData.actions;
+      const userActions = userData?.actions;
       if (!userActions) {
-        return res
+        res
           .status(404)
           .json({ message: "User doesn't have actions", points: 0 });
       }
@@ -145,7 +141,7 @@ class PointsController {
 
       const usersTaskPoints = await PointsModel.find(query);
       if (!usersTaskPoints) {
-        return res.status(404).json({
+        res.status(404).json({
           message: "User doesn't have points in this task",
           points: 0,
         });
@@ -160,33 +156,31 @@ class PointsController {
     }
   }
 
-  static async getUserPointsInGame(req: Request, res: Response) {
+  static async getUserPointsInGame(req: Request, res: Response): Promise<void> {
     try {
       const { userId, idGame } = req.params;
       const { from, to } = req.query;
       if (from && isNaN(new Date(String(from)).getTime())) {
-        return res.status(400).json({ message: "'from' is invalid" });
+        res.status(400).json({ message: "'from' is invalid" });
       }
       if (to && isNaN(new Date(String(to)).getTime())) {
-        return res.status(400).json({ message: "'to' is invalid" });
+        res.status(400).json({ message: "'to' is invalid" });
       }
 
       if (!userId) {
-        return res.status(400).json({ message: "idUser is required" });
+        res.status(400).json({ message: "idUser is required" });
       }
       if (!idGame) {
-        return res.status(404).json({ message: "idGame not found" });
+        res.status(404).json({ message: "idGame not found" });
       }
 
       const userData = await UserModel.findOne({ userId });
       if (!userData) {
-        return res
-          .status(404)
-          .json({ message: "User doesn't exist", points: 0 });
+        res.status(404).json({ message: "User doesn't exist", points: 0 });
       }
-      const userActions = userData.actions;
+      const userActions = userData?.actions;
       if (!userActions) {
-        return res
+        res
           .status(404)
           .json({ message: "User doesn't have actions", points: 0 });
       }
@@ -217,7 +211,7 @@ class PointsController {
 
       const usersGamePoints = await PointsModel.find(query);
       if (!usersGamePoints) {
-        return res.status(404).json({
+        res.status(404).json({
           message: "User doesn't have points in this game",
           points: 0,
         });
@@ -232,32 +226,32 @@ class PointsController {
     }
   }
 
-  static async assignPointsToUser(req: Request, res: Response) {
+  static async assignPointsToUser(req: Request, res: Response): Promise<void> {
     try {
       const body = req.body as Points;
       const { userId } = body;
       const { idGame, idTask } = req.params;
       let task;
       if (!userId) {
-        return res.status(400).json({ message: "idUser is required" });
+        res.status(400).json({ message: "idUser is required" });
       }
       if (!idGame) {
-        return res.status(404).json({ message: "Game not found" });
+        res.status(404).json({ message: "Game not found" });
       }
 
-      let game = await GameModel.findById(idGame);
+      const game = await GameModel.findById(idGame);
       if (!game) {
-        return res.status(404).json({ message: "Game not found" });
+        res.status(404).json({ message: "Game not found" });
       }
 
       if (idTask) {
         // Check if idTask exists
         task = await TaskModel.findById(idTask);
         if (!task) {
-          return res.status(404).json({ message: "Task not found" });
+          res.status(404).json({ message: "Task not found" });
         }
         if (task?.game?._id.toString() !== idGame) {
-          return res.status(404).json({ message: "Task is not in this game" });
+          res.status(404).json({ message: "Task is not in this game" });
         }
       }
 
@@ -286,9 +280,12 @@ class PointsController {
         // get difference between last action and previous action
         const lastAction = userActions[userActions.length - 1];
         const previousAction = userActions[userActions.length - 2];
-        const difference = lastAction.timestamp - previousAction.timestamp;
-        const differenceInMinutes = difference / 60000;
-        TIME_INVESTED_LAST_TASK = differenceInMinutes;
+
+        if (lastAction && previousAction) {
+          const difference = lastAction.timestamp - previousAction.timestamp;
+          const differenceInMinutes = difference / 60000;
+          TIME_INVESTED_LAST_TASK = differenceInMinutes;
+        }
       }
       // if allActions is an array of arrays
 
@@ -328,14 +325,18 @@ class PointsController {
       };
 
       const gameStrategyParams = game?.strategy?.parameters;
-      if (!gameStrategyParams) {
-        return res.status(404).json({ message: "Strategy not found" });
+
+      let allCasesPoints = undefined;
+      if (gameStrategyParams) {
+        const cases = game?.strategy?.cases;
+        // calculate all classes
+        allCasesPoints = cases?.map((caseItem) =>
+          parseAndComputeFormula(caseItem.formula, gameStrategyParams, taskData)
+        );
+      } else {
+        res.status(404).json({ message: "Strategy not found" });
       }
-      const cases = game?.strategy?.cases;
-      // calculate all classes
-      const allCasesPoints = cases?.map((caseItem) =>
-        parseAndComputeFormula(caseItem.formula, gameStrategyParams, taskData)
-      );
+
       // get max points and formula
       const pointsAssigned = allCasesPoints?.reduce((a, b) =>
         a.points > b.points ? a : b
@@ -345,7 +346,7 @@ class PointsController {
       const formula = pointsAssigned?.formula ?? "No formula";
       if (points < 0) {
         // negative points because the formula's strategy is not correct
-        return res.status(400).json({
+        res.status(400).json({
           message: "Error in calculation",
           points: pointsAssigned?.points,
           formula: pointsAssigned?.formula,
