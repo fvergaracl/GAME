@@ -52,18 +52,25 @@ router.get("/:userId/:gameId", PointsController.getUserPointsInGame);
   static async assignPointsToUser(req: Request, res: Response) {
     try {
       const body = req.body as Points;
-      const { idGame, idTask } = body;
-      let idUser = body?.idUser;
-      // Check if idGame exists
+      const { userId } = body;
+      const { idGame, idTask } = req.params;
+      let task;
+      if (!userId) {
+        return res.status(400).json({ message: "idUser is required" });
+      }
+      if (!idGame) {
+        return res.status(404).json({ message: "Game not found" });
+      }
+
+
       let game = await GameModel.findById(idGame);
-      console.log({ game });
       if (!game) {
         return res.status(404).json({ message: "Game not found" });
       }
 
       if (idTask) {
         // Check if idTask exists
-        let task = await TaskModel.findById(idTask);
+        task = await TaskModel.findById(idTask);
         if (!task) {
           return res.status(404).json({ message: "Task not found" });
         }
@@ -72,15 +79,12 @@ router.get("/:userId/:gameId", PointsController.getUserPointsInGame);
       // Check if idUser exists and create if not exists
       let userIsCreated = undefined;
       let user;
-      console.log("-122");
-      console.log({ idUser });
-      if (idUser) {
-        user = await UserModel.findOne({ userId: idUser });
+      if (userId) {
+        user = await UserModel.findOne({ userId: userId });
       }
-      console.log("-1");
-      if (!user || !idUser) {
-        console.log("------------------------------------------------------");
-        const newUser = new UserModel({ userId: idUser });
+
+      if (!user) {
+        const newUser = new UserModel({ userId: userId });
         user = await newUser.save();
         userIsCreated = true;
       }
@@ -144,33 +148,45 @@ router.get("/:userId/:gameId", PointsController.getUserPointsInGame);
       }
       const cases = game?.strategy?.cases;
       // calculate all classes
-      const allClasses = cases?.map((caseItem) =>
+      const allCasesPoints = cases?.map((caseItem) =>
         parseAndComputeFormula(caseItem.formula, gameStrategyParams, taskData)
       );
       // get max points and formula
-      const maxPoints = allClasses
-        ?.map((item) => {
-          if (item?.points) {
-            return item.points;
-          }
-          return 0;
-        })
-        .reduce((a, b) => Math.max(a, b));
-        
-      // const maxPoints = allClasses
-      //   ?.map((item) => {
-      //     if (item?.points) {
-      //       return item.points;
-      //     }
-      //     return 0;
-      //   })
-      //   .reduce((a, b) => Math.max(a, b));
-      console.log("maxPoints", maxPoints);
-      console.log("==================================");
-      res
-        .status(200)
-        .json({ message: "assignPointsToUser", maxPoints, allClasses });
+      const pointsAssigned = allCasesPoints?.reduce((a, b) =>
+        a.points > b.points ? a : b
+      );
+
+      const newPoints = new PointsModel({
+        userId,
+        game,
+        task,
+        points: pointsAssigned?.points,
+        formula: pointsAssigned?.formula,
+      });
+      const newPointsSaved = await newPoints.save();
+
+      // update user with new action
+      const newAction = {
+        timestamp: new Date(),
+        points: pointsAssigned?.points,
+        formula: pointsAssigned?.formula,
+      };
+      const updatedUser = await UserModel.findByIdAndUpdate(
+        user?._id,
+        {
+          $push: { actions: newAction },
+        },
+        { new: true }
+      );
+
+      res.status(201).json({
+        message: "Points assigned successfully",
+        points: pointsAssigned?.points,
+        formula: pointsAssigned?.formula,
+        userIsCreated,
+      });
     } catch (error) {
+      console.error(error);
       res.status(500).send(error);
     }
   }

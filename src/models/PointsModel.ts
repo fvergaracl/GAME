@@ -1,27 +1,23 @@
 import { Document, model, Schema, Types } from "mongoose";
-import {
-  Strategy,
-  strategySchema,
-  caseSubSchema,
-  CaseSub,
-} from "./StrategyModel";
+import { Game, gameSchema } from "./GameModel";
+import { Task, taskSchema } from "./TaskModel";
 
 interface Points extends Document {
-  idUser: string;
-  idGame: Types.ObjectId;
-  idTask?: Types.ObjectId;
+  userId: string;
+  game?: Game;
+  task?: Task;
   points?: number;
-  strategy?: Strategy;
-  strategyUsed?: CaseSub; // Strategy used for this points allocation
+  formula?: string;
+  createdAt?: Date;
 }
 
 const pointsSchema = new Schema<Points>({
-  idUser: { type: String, required: true },
-  idGame: { type: Schema.Types.ObjectId, ref: "Game", required: true },
-  idTask: { type: Schema.Types.ObjectId, ref: "Task", required: false },
+  userId: { type: String, required: true },
+  game: { type: gameSchema, required: true },
+  task: { type: taskSchema, required: false },
   points: { type: Number, required: true },
-  strategy: { type: strategySchema, required: true },
-  strategyUsed: { type: caseSubSchema, required: true },
+  formula: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
 });
 
 const PointsModel = model<Points>("Points", pointsSchema);
