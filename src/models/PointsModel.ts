@@ -1,25 +1,49 @@
-import { Document, model, Schema, Types } from "mongoose";
-import { Game, gameSchema } from "./GameModel";
-import { Task, taskSchema } from "./TaskModel";
+// src/models/PointsModel.ts
+import { Model, DataTypes } from "sequelize";
+import sequelize from "../database";
+import { TaskUser } from "./TaskUserModel";
 
-interface Points extends Document {
-  userId: string;
-  game?: Game;
-  task?: Task;
-  points?: number;
-  formula?: string;
-  createdAt?: Date;
+interface PointsAttributes {
+  id: string; // ID único
+  points: number; // Puntos
+  formula: string; // Fórmula utilizada para calcular los puntos
+  taskUserId: string; // Clave foránea a TaskUser
 }
 
-const pointsSchema = new Schema<Points>({
-  userId: { type: String, required: true },
-  game: { type: gameSchema, required: true },
-  task: { type: taskSchema, required: false },
-  points: { type: Number, required: true },
-  formula: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-});
+class Points extends Model<PointsAttributes> implements PointsAttributes {
+  public id!: string;
+  public points!: number;
+  public formula!: string;
+  public taskUserId!: string;
+}
 
-const PointsModel = model<Points>("Points", pointsSchema);
+Points.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+    },
+    points: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    formula: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    taskUserId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: { model: "TaskUsers", key: "id" }, // Referencia a la tabla TaskUsers
+      unique: true, // Asegura que cada TaskUser esté asociado a un solo Points
+    },
+  },
+  {
+    sequelize,
+    modelName: "Points",
+    updatedAt: false,
+  }
+);
 
-export { PointsModel, Points };
+export { Points };

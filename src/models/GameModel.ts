@@ -1,30 +1,57 @@
-import { Document, model, Schema, Types } from "mongoose";
-import { Strategy, strategySchema } from "./StrategyModel";
+import { Model, DataTypes, Sequelize, UUIDV4 } from "sequelize";
+import sequelize from "../database"; // Asegúrate de que este importe apunte a tu archivo de configuración de Sequelize
+import { Strategy } from "./StrategyModel"; // Importar el modelo de Strategy si es necesario
 
-interface Game extends Document {
-  identification: string;
+interface GameAttributes {
+  id: string;
   timestampEnd: Date;
   timestampStart: Date;
-  currentStrategyId: Types.ObjectId; // Reference to the current strategy model
-  strategy?: Strategy; // Optional
-  description?: string; // Optional
+  currentStrategyId?: string;
+  strategy?: Strategy;
+  description?: string;
   createdBy: string;
   createdAt?: Date;
 }
 
-const gameSchema = new Schema<Game>(
+class Game extends Model<GameAttributes> implements GameAttributes {
+  public id!: string;
+  public timestampEnd!: Date;
+  public timestampStart!: Date;
+  public strategy?: Strategy;
+  public description?: string;
+  public createdBy!: string;
+  public createdAt!: Date;
+}
+
+Game.init(
   {
-    identification: { type: String, required: true },
-    timestampEnd: { type: Date },
-    timestampStart: { type: Date, default: Date.now },
-    strategy: { type: strategySchema, required: false },
-    description: { type: String },
-    createdBy: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
+    id: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+    },
+    timestampEnd: {
+      type: DataTypes.DATE,
+    },
+    timestampStart: {
+      type: DataTypes.DATE,
+      defaultValue: Sequelize.fn("NOW"),
+    },
+    description: {
+      type: DataTypes.STRING,
+    },
+    createdBy: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: Sequelize.fn("NOW"),
+    },
   },
-  { versionKey: false }
+  {
+    sequelize,
+    modelName: "Game",
+  }
 );
 
-const GameModel = model<Game>("Game", gameSchema);
-
-export { GameModel, Game, gameSchema };
+export { Game };

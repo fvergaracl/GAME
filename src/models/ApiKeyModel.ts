@@ -1,32 +1,47 @@
-import { Document, model, Schema } from "mongoose";
+// src/models/ApiKeyModel.ts
+import { Model, DataTypes } from "sequelize";
+import sequelize from "../database"; // Asegúrate de que este importe apunte a tu archivo de configuración de Sequelize
 
-interface ApiKey extends Document {
+interface ApiKeyAttributes {
+  id: string;
   key: string;
   toolName: string;
-  creationDate: Date;
-  expirationDate?: Date; // Optional
+  expirationDate?: Date; // Opcional
 }
 
-const apiKeySchema = new Schema<ApiKey>({
-  key: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  toolName: {
-    type: String,
-    required: true,
-  },
-  creationDate: {
-    type: Date,
-    default: Date.now,
-  },
-  expirationDate: {
-    type: Date,
-    required: false,
-  },
-});
+class ApiKey extends Model<ApiKeyAttributes> implements ApiKeyAttributes {
+  public id!: string;
+  public key!: string;
+  public toolName!: string;
+  public expirationDate?: Date;
+}
 
-const ApiKeyModel = model<ApiKey>("ApiKey", apiKeySchema);
+ApiKey.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+    },
+    key: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    toolName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    expirationDate: {
+      type: DataTypes.DATE,
+      allowNull: true, // Permite que el campo sea opcional
+    },
+  },
+  {
+    sequelize,
+    modelName: "ApiKey",
+    updatedAt: false,
+  }
+);
 
-export { ApiKeyModel };
+export { ApiKey };

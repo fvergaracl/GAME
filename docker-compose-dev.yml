@@ -1,15 +1,16 @@
 version: "3.3"
 services:
-  mongo:
-    container_name: "mongoGAME-DEV"
-    image: mongo
+  postgres:
+    container_name: "postgresGAME-DEV"
+    image: postgres
     ports:
-      - "27017:27017"
+      - "5432:5432"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      POSTGRES_DB: game_dev_db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: example
     volumes:
-      - mongo-data:/data/db
+      - postgres-data:/var/lib/postgresql/data
 
 volumes:
-  mongo-data:
+  postgres-data:

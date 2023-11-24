@@ -4,3 +4,4 @@ export * from "./TaskModel";
 export * from "./PointsModel";
 export * from "./UserModel";
 export * from "./StrategyModel";
+export * from "./TaskUserModel";

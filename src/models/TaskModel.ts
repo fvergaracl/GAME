@@ -1,26 +1,52 @@
-import { Document, model, Schema, Types } from "mongoose";
-import { Game, gameSchema } from "./GameModel";
-interface Task extends Document {
+// src/models/TaskModel.ts
+import { Model, DataTypes } from "sequelize";
+import sequelize from "../database";
+import { Game } from "./GameModel"; // Importa el modelo de Game
+
+interface TaskAttributes {
+  id: string;
   name: string;
   description?: string;
-  idGame?: Types.ObjectId;
-  game?: Game;
+  gameId?: string; 
   createdBy: string;
   createdAt?: Date;
 }
 
-const taskSchema = new Schema<Task>(
+class Task extends Model<TaskAttributes> implements TaskAttributes {
+  public id!: string;
+  public name!: string;
+  public description?: string;
+  public createdBy!: string;
+  public createdAt!: Date;
+}
+
+Task.init(
   {
-    name: { type: String, required: true },
-    description: { type: String, required: false },
-    idGame: { type: Types.ObjectId, required: false },
-    game: { type: gameSchema, required: false },
-    createdBy: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
+    id: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4, // Usando UUID para el ID de la tarea
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+    },
+    createdBy: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
   },
-  { versionKey: false }
+  {
+    sequelize,
+    modelName: "Task",
+  }
 );
 
-const TaskModel = model<Task>("Task", taskSchema);
-
-export { TaskModel, Task, taskSchema };
+export { Task };

@@ -5,11 +5,11 @@ import indexRoute from "./routes/index";
 import { options } from "./swaggerOptions";
 import swaggerUi from "swagger-ui-express";
 
-import gameRoutes from "./routes/gameRoutes";
-import pointsRoutes from "./routes/pointsRoutes";
+// import gameRoutes from "./routes/gameRoutes";
+// import pointsRoutes from "./routes/pointsRoutes";
 import strategyRoutes from "./routes/strategyRoutes";
-import taskRoutes from "./routes/taskRoutes";
-import userRoutes from "./routes/userRoutes";
+// import taskRoutes from "./routes/taskRoutes";
+// import userRoutes from "./routes/userRoutes";
 
 export const app = express();
 
@@ -25,11 +25,11 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/", indexRoute);
 app.use("/api/", indexRoute);
 // Routes
-app.use("/games", gameRoutes);
-app.use("/points", pointsRoutes);
+// app.use("/games", gameRoutes);
+// app.use("/points", pointsRoutes);
 app.use("/strategies", strategyRoutes);
-app.use("/tasks", taskRoutes);
-app.use("/users", userRoutes);
+// app.use("/tasks", taskRoutes);
+// app.use("/users", userRoutes);
 
 // Catch 404 and forward to error handler
 app.use((_, res, __) => {

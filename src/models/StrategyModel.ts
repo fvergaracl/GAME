@@ -1,5 +1,8 @@
-import { Document, model, Schema } from "mongoose";
+import { Model, DataTypes, Sequelize, UUIDV4 } from "sequelize";
+import sequelize from "../database"; // Asegúrate de que este importe apunte a tu archivo de configuración de Sequelize
+import { Game } from "./GameModel"; // Importar el modelo de Game si es necesario
 
+// Definición de las interfaces
 interface CaseSub {
   criteria: string;
   formula: string;
@@ -8,7 +11,7 @@ interface CaseSub {
 interface Case {
   criteria: string;
   formula: string;
-  subCases?: Record<string, CaseSub>;
+  subCases?: CaseSub[];
 }
 
 interface StrategyParameters {
@@ -20,7 +23,8 @@ interface StrategyParameters {
   WEIGHT_INDIVIDUAL_IMPROVE?: number;
 }
 
-interface Strategy extends Document {
+interface StrategyAttributes {
+  id?: string;
   name: string;
   description: string;
   strategyType: string;
@@ -28,53 +32,47 @@ interface Strategy extends Document {
   cases: Case[];
 }
 
-const caseSubSchema = new Schema<CaseSub>({
-  criteria: { type: String, required: true },
-  formula: { type: String, required: true },
-});
+// Modelo Strategy
+class Strategy extends Model<StrategyAttributes> implements StrategyAttributes {
+  public id!: string;
+  public name!: string;
+  public description!: string;
+  public strategyType!: string;
+  public parameters!: StrategyParameters;
+  public cases!: Case[];
+}
 
-const caseSchema = new Schema<Case>(
+Strategy.init(
   {
-    criteria: { type: String, required: true },
-    formula: { type: String },
-    subCases: {
-      type: Map,
-      of: caseSubSchema,
+    id: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    strategyType: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    parameters: {
+      type: DataTypes.JSON,
+      allowNull: false,
+    },
+    cases: {
+      type: DataTypes.JSON,
+      allowNull: false,
     },
   },
-  { _id: false }
-);
-
-const strategyParametersSchema = new Schema<StrategyParameters>(
   {
-    BASIC_POINTS: { type: Number, required: true },
-    BONUS_FACTOR: { type: Number },
-    SMALLER_BONUS: { type: Number },
-    INDIVIDUAL_IMPROVEMENT_FACTOR: { type: Number },
-    WEIGHT_GLOBAL_IMPROVE: { type: Number },
-    WEIGHT_INDIVIDUAL_IMPROVE: { type: Number },
-  },
-  { _id: false }
+    sequelize,
+    modelName: "Strategy",
+  }
 );
 
-const strategySchema = new Schema<Strategy>(
-  {
-    name: { type: String, required: true },
-    description: { type: String, required: true },
-    strategyType: { type: String, required: true },
-    parameters: { type: strategyParametersSchema, required: true },
-    cases: [caseSchema],
-  },
-  { versionKey: false }
-);
-
-const StrategyModel = model<Strategy>("Strategy", strategySchema);
-
-export {
-  StrategyModel,
-  Strategy,
-  StrategyParameters,
-  strategySchema,
-  caseSubSchema,
-  CaseSub,
-};
+export { Strategy };

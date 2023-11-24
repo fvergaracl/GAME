@@ -1,28 +1,29 @@
-import { Document, model, Schema } from "mongoose";
+// src/models/UserModel.ts
+import { Model, DataTypes } from "sequelize";
+import sequelize from "../database"; // Asegúrate de que este importe apunte a tu archivo de configuración de Sequelize
 
-interface Action {
-  name: string;
-  timestamp: number;
+interface UserAttributes {
+  userId: string; // ID manejado por un usuario externo
 }
 
-interface User extends Document {
-  userId: string;
-  actions?: Action[] | [];
+class User extends Model<UserAttributes> implements UserAttributes {
+  public userId!: string;
 }
 
-const actionSchema = new Schema<Action>({
-  name: { type: String, required: true },
-  timestamp: { type: Number, default: Date.now },
-});
-
-const userSchema = new Schema<User>(
+User.init(
   {
-    userId: { type: String, required: true, unique: true },
-    actions: { type: [actionSchema], default: [] },
+    userId: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false, // Asegurando que userId sea siempre proporcionado
+    },
   },
-  { versionKey: false }
+  {
+    sequelize,
+    modelName: "Users",
+    updatedAt: false, // Evitando que se cree el campo "updatedAt"
+  }
 );
 
-const UserModel = model<User>("User", userSchema);
-
-export { UserModel };
+export { User };
+  
