@@ -1,20 +1,21 @@
 // src/models/PointsModel.ts
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../database";
-import { TaskUser } from "./TaskUserModel";
 
 interface PointsAttributes {
-  id: string; // ID único
-  points: number; // Puntos
-  formula: string; // Fórmula utilizada para calcular los puntos
-  taskUserId: string; // Clave foránea a TaskUser
+  id: string;
+  points: number;
+  formula: string;
+  taskUserId: string | null;
+  gameUserId: string | null;
 }
 
 class Points extends Model<PointsAttributes> implements PointsAttributes {
   public id!: string;
   public points!: number;
   public formula!: string;
-  public taskUserId!: string;
+  public taskUserId!: string | null;
+  public gameUserId!: string | null;
 }
 
 Points.init(
@@ -34,15 +35,32 @@ Points.init(
     },
     taskUserId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
       references: { model: "TaskUsers", key: "id" }, // Referencia a la tabla TaskUsers
       unique: true, // Asegura que cada TaskUser esté asociado a un solo Points
+    },
+    gameUserId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: { model: "GameUsers", key: "id" },
     },
   },
   {
     sequelize,
     modelName: "Points",
     updatedAt: false,
+    hooks: {
+      beforeValidate: (points, options) => {
+        if (
+          (points.taskUserId && points.gameUserId) ||
+          (!points.taskUserId && !points.gameUserId)
+        ) {
+          throw new Error(
+            "You must provide either a taskUserId or a gameUserId"
+          );
+        }
+      },
+    },
   }
 );
 

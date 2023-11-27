@@ -47,6 +47,7 @@ Strategy.init(
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
+      defaultValue: UUIDV4,
     },
     name: {
       type: DataTypes.STRING,
@@ -75,4 +76,4 @@ Strategy.init(
   }
 );
 
-export { Strategy };
+export { Strategy, StrategyAttributes };

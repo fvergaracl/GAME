@@ -5,7 +5,7 @@ import indexRoute from "./routes/index";
 import { options } from "./swaggerOptions";
 import swaggerUi from "swagger-ui-express";
 
-// import gameRoutes from "./routes/gameRoutes";
+import gameRoutes from "./routes/gameRoutes";
 // import pointsRoutes from "./routes/pointsRoutes";
 import strategyRoutes from "./routes/strategyRoutes";
 // import taskRoutes from "./routes/taskRoutes";
@@ -25,7 +25,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/", indexRoute);
 app.use("/api/", indexRoute);
 // Routes
-// app.use("/games", gameRoutes);
+app.use("/games", gameRoutes);
 // app.use("/points", pointsRoutes);
 app.use("/strategies", strategyRoutes);
 // app.use("/tasks", taskRoutes);

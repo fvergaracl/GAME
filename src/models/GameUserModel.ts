@@ -2,22 +2,21 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../database";
 
-
-interface TaskUserAttributes {
+interface GameUserAttributes {
   id: string; // ID único
   timestamp: Date; // Timestamp de la asociación
-  taskId: string; // Clave foránea a Task
+  gameId: string; // Clave foránea a Task
   userId: string; // Clave foránea a User
 }
 
-class TaskUser extends Model<TaskUserAttributes> implements TaskUserAttributes {
+class GameUser extends Model<GameUserAttributes> implements GameUserAttributes {
   public id!: string;
   public timestamp!: Date;
-  public taskId!: string;
+  public gameId!: string;
   public userId!: string;
 }
 
-TaskUser.init(
+GameUser.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -28,9 +27,9 @@ TaskUser.init(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
-    taskId: {
+    gameId: {
       type: DataTypes.STRING,
-      references: { model: "Tasks", key: "id" },
+      references: { model: "Game", key: "id" },
       allowNull: false,
     },
     userId: {
@@ -41,9 +40,9 @@ TaskUser.init(
   },
   {
     sequelize,
-    modelName: "TaskUser",
+    modelName: "GameUser",
     updatedAt: false,
   }
 );
 
-export { TaskUser };
+export { GameUser };

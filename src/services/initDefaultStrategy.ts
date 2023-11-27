@@ -1,4 +1,5 @@
 const initDefaultStrategyJson = {
+  id: "5cc63cee-93e7-4007-9129-75deaaaa89f3",
   name: "StandardGamificationStrategy",
   description:
     "Strategy to calculate points based on individual and global behavior.",
@@ -31,21 +32,17 @@ const initDefaultStrategyJson = {
   ],
 };
 
-import { StrategyModel } from "../models";
+import { Strategy } from "../models";
 
 const initDefaultStrategy = async () => {
   try {
     console.log("Initializing default strategy...");
-    const existingStrategy = await StrategyModel.findOne({
-      name: initDefaultStrategyJson.name,
+    const defaultStrategy = await Strategy.findOne({
+      where: { name: initDefaultStrategyJson?.name },
     });
-
-    if (!existingStrategy) {
-      const newStrategy = new StrategyModel(initDefaultStrategyJson);
-      await newStrategy.save();
-      console.log(`Created default strategy`);
+    if (!defaultStrategy) {
+      await Strategy.create(initDefaultStrategyJson);
     }
-
     console.log("Default strategy initialized");
   } catch (error) {
     console.error("Error initializing default strategy:", error);
