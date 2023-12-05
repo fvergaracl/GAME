@@ -1,7 +1,0 @@
-node_modules
-.env
-package-lock.json
-*.log
-src/**/*.js
-dist
-```
