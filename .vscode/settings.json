@@ -1,3 +1,9 @@
 {
-  "editor.inlineSuggest.showToolbar": "onHover"
+  "editor.inlineSuggest.showToolbar": "onHover",
+  "files.exclude": {
+    "**/*.pyc": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true
+  }
 }
