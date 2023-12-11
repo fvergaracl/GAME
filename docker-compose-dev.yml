@@ -1,21 +1,6 @@
-version: '3.7'
+version: "3.7"
 
 services:
-  api:
-    build:
-      context: .
-      dockerfile: docker/api/Dockerfile
-    container_name: api
-    hostname: api
-    ports:
-      - '8000:8000'
-    networks:
-      - backend
-    tty: true
-    depends_on:
-      - db
-    volumes:
-      - $PWD:/home
   postgres:
     container_name: "db"
     image: postgres
@@ -38,14 +23,13 @@ services:
     container_name: redis
     hostname: redis
     ports:
-      - '6379:6379'
+      - "6379:6379"
     networks:
       - backend
 
 networks:
   backend:
-    driver: 'bridge'
-
+    driver: "bridge"
 
 volumes:
   postgres-data:
