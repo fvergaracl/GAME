@@ -1,0 +1,50 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:latest
+    container_name: fastapi-postgres
+    restart: always
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgresdb:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.2.6
+    container_name: fastapi-redis
+    command: redis-server --port 6379
+    restart: always
+    ports:
+      - "6379:6379"
+
+  # app:
+  #   build: .
+  #   container_name: fastapi-app
+  #   restart: always
+  #   environment:
+  #     ENV: ${ENV}
+  #     DEBUG: ${DEBUG}
+  #     APP_HOST: ${APP_HOST}
+  #     APP_PORT: ${APP_PORT}
+  #     DB_DRIVER: ${DB_DRIVER}
+  #     DB_NAME: ${DB_NAME}
+  #     DB_USER: ${DB_USER}
+  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_HOST: ${DB_HOST}
+  #     DB_PORT: ${DB_PORT}
+  #     DB_TEST_DRIVER: ${DB_TEST_DRIVER}
+  #     DB_TEST_NAME: ${DB_TEST_NAME}
+  #     DB_TEST_USER: ${DB_TEST_USER}
+  #     DB_TEST_PASSWORD: ${DB_TEST_PASSWORD}
+  #     DB_TEST_HOST: ${DB_TEST_HOST}
+  #     DB_TEST_PORT: ${DB_TEST_PORT}
+  #     CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+  #   ports:
+  #     - "${APP_PORT}:${APP_PORT}"
+
+volumes:
+  postgresdb:
