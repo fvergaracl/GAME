@@ -15,8 +15,13 @@ class Configs(BaseSettings):
     API: str = "/api"
     API_V1_STR: str = "/api/v1"
     API_V2_STR: str = "/api/v2"
-    PROJECT_NAME: str = "GAME"
-
+    PROJECT_NAME: str = "fca-api"
+    ENV_DATABASE_MAPPER: dict = {
+        "prod": "game_dev_db",
+        "stage": "game_dev_db",
+        "dev": "game_dev_db",
+        "test": "test-game_dev_db",
+    }
     DB_ENGINE_MAPPER: dict = {
         "postgresql": "postgresql",
         "mysql": "mysql+pymysql",
@@ -53,7 +58,7 @@ class Configs(BaseSettings):
         password=DB_PASSWORD,
         host=DB_HOST,
         port=DB_PORT,
-        database=DB,
+        database=ENV_DATABASE_MAPPER[ENV],
     )
 
     # find query
