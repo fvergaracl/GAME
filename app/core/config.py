@@ -63,7 +63,7 @@ class Configs(BaseSettings):
 
     # find query
     PAGE = 1
-    PAGE_SIZE = 20
+    PAGE_SIZE = 10
     ORDERING = "-id"
 
     class Config:

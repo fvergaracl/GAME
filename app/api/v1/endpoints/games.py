@@ -2,13 +2,13 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
 from app.core.container import Container
-from app.schema.games_schema import FindGameResult, FindGame
+from app.schema.games_schema import FindGameResult, CreateGame, Game, FindGame
 
 from app.services.game_service import GameService
 
 router = APIRouter(
     prefix="/games",
-    tags=["auth"],
+    tags=["games"],
 )
 
 
@@ -19,3 +19,21 @@ def get_games_list(
     service: GameService = Depends(Provide[Container.game_service]),
 ):
     return service.get_list(find_query)
+
+
+@router.post("/", response_model=Game)
+@inject
+def create_game(
+    schema: CreateGame,
+    service: GameService = Depends(Provide[Container.game_service]),
+):
+    return service.create(schema)
+
+
+@router.get("/externalId/{externalGameID}", response_model=Game)
+@inject
+def get_game_by_externalId(
+    externalGameID: str,
+    service: GameService = Depends(Provide[Container.game_service]),
+):
+    return service.get_by_externalId(externalGameID)
