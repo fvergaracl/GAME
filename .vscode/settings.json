@@ -1,0 +1,15 @@
+{
+  "editor.inlineSuggest.showToolbar": "onHover",
+  "files.exclude": {
+    "**/*.pyc": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true
+  },
+  "[python]": {
+    "editor.formatOnSave": true
+  },
+  "migrations/env.py": {
+    "editor.formatOnSave": false
+  }
+}
