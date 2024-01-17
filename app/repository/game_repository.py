@@ -26,16 +26,6 @@ class GameRepository(BaseRepository):
                     detail=f"Not found externalGameID : {externalGameID}")
             return query
 
-    def create_with_params(self, schema: UpsertGameWithGameParams, params):
-        with self.session_factory() as session:
-            query = self.model(**schema.dict())
-            session.add(query)
-            if params:
-                query.params = params
-            session.commit()
-            session.refresh(query)
-            return query
-
     def update_with_params(self, id: int, schema: UpsertGameWithGameParams, params):
         with self.session_factory() as session:
             session.query(self.model).filter(self.model.id == id).update(

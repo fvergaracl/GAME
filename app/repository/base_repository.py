@@ -25,17 +25,20 @@ class BaseRepository:
             )
             page = schema_as_dict.get("page", configs.PAGE)
             page_size = schema_as_dict.get("page_size", configs.PAGE_SIZE)
-            filter_options = dict_to_sqlalchemy_filter_options(self.model, schema.dict(exclude_none=True))
+            filter_options = dict_to_sqlalchemy_filter_options(
+                self.model, schema.dict(exclude_none=True))
             query = session.query(self.model)
             if eager:
                 for eager in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(getattr(self.model, eager)))
+                    query = query.options(
+                        joinedload(getattr(self.model, eager)))
             filtered_query = query.filter(filter_options)
             query = filtered_query.order_by(order_query)
             if page_size == "all":
                 query = query.all()
             else:
-                query = query.limit(page_size).offset((page - 1) * page_size).all()
+                query = query.limit(page_size).offset(
+                    (page - 1) * page_size).all()
             total_count = filtered_query.count()
             return {
                 "founds": query,
@@ -52,7 +55,8 @@ class BaseRepository:
             query = session.query(self.model)
             if eager:
                 for eager in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(getattr(self.model, eager)))
+                    query = query.options(
+                        joinedload(getattr(self.model, eager)))
             query = query.filter(self.model.id == id).first()
             if not query:
                 raise NotFoundError(detail=f"not found id : {id}")
@@ -71,25 +75,29 @@ class BaseRepository:
 
     def update(self, id: int, schema):
         with self.session_factory() as session:
-            session.query(self.model).filter(self.model.id == id).update(schema.dict(exclude_none=True))
+            session.query(self.model).filter(self.model.id == id).update(
+                schema.dict(exclude_none=True))
             session.commit()
             return self.read_by_id(id)
 
     def update_attr(self, id: int, column: str, value):
         with self.session_factory() as session:
-            session.query(self.model).filter(self.model.id == id).update({column: value})
+            session.query(self.model).filter(
+                self.model.id == id).update({column: value})
             session.commit()
             return self.read_by_id(id)
 
     def whole_update(self, id: int, schema):
         with self.session_factory() as session:
-            session.query(self.model).filter(self.model.id == id).update(schema.dict())
+            session.query(self.model).filter(
+                self.model.id == id).update(schema.dict())
             session.commit()
             return self.read_by_id(id)
 
     def delete_by_id(self, id: int):
         with self.session_factory() as session:
-            query = session.query(self.model).filter(self.model.id == id).first()
+            query = session.query(self.model).filter(
+                self.model.id == id).first()
             if not query:
                 raise NotFoundError(detail=f"not found id : {id}")
             session.delete(query)
