@@ -1,1 +1,2 @@
 from app.repository.game_repository import GameRepository
+from app.repository.game_params_repository import GameParamsRepository

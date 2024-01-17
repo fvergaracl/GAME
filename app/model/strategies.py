@@ -2,15 +2,17 @@
 CREATE TABLE Strategies (
   id SERIAL PRIMARY KEY,
   strategy VARCHAR(255) UNIQUE
+  FOREIGN KEY (taskId) REFERENCES Tasks(id)
 );
 """
 
 from app.model.base_model import BaseModel
-from sqlmodel import Column, Field, String
+from sqlmodel import Column, Field, String, Integer, ForeignKey
 
 
 class Strategies(BaseModel, table=True):
     strategy: str = Field(sa_column=Column(String, unique=True))
+    taskId: int = Field(sa_column=Column(Integer, ForeignKey("tasks.id")))
 
     def __str__(self):
         return f"Strategy: {self.strategy}"

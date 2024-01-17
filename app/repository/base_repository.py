@@ -3,7 +3,7 @@ from typing import Callable
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
-
+from app.schema.games_params_schema import BaseGameParams
 from app.core.config import configs
 from app.core.exceptions import DuplicatedError, NotFoundError
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
@@ -50,7 +50,7 @@ class BaseRepository:
                 },
             }
 
-    def read_by_id(self, id: int, eager=False):
+    def read_by_id(self, id: int, eager=False, not_found_message="Not found id : {id}"):
         with self.session_factory() as session:
             query = session.query(self.model)
             if eager:
@@ -59,7 +59,7 @@ class BaseRepository:
                         joinedload(getattr(self.model, eager)))
             query = query.filter(self.model.id == id).first()
             if not query:
-                raise NotFoundError(detail=f"not found id : {id}")
+                raise NotFoundError(detail=not_found_message.format(id=id))
             return query
 
     def create(self, schema):

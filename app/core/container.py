@@ -17,6 +17,8 @@ class Container(containers.DeclarativeContainer):
 
     game_repository = providers.Factory(
         GameRepository, session_factory=db.provided.session)
+    game_params_repository = providers.Factory(
+        GameParamsRepository, session_factory=db.provided.session)
 
     game_service = providers.Factory(
-        GameService, game_repository=game_repository)
+        GameService, game_repository=game_repository, game_params_repository=game_params_repository)

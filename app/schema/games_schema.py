@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from app.schema.games_params_schema import BaseGameParams
+from app.schema.games_params_schema import CreateGameParams, UpdateGameParams
 from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
 from app.util.schema import AllOptional
 
@@ -21,7 +21,14 @@ class CreateGame(BaseModel):
     externalGameID: str
     platform: str
     endDateTime: Optional[datetime]
-    params: Optional[List[BaseGameParams]]
+    params: Optional[List[CreateGameParams]]
+
+
+class UpdateGame(BaseModel):
+    externalGameID: Optional[str]
+    platform: Optional[str]
+    endDateTime: Optional[datetime]
+    params: Optional[List[UpdateGameParams]]
 
 
 class Game(ModelBaseInfo, BaseGame, metaclass=AllOptional):
