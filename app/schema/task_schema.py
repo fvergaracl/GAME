@@ -25,3 +25,8 @@ class FindTask(FindBase, metaclass=AllOptional):
 
 class FindTaskByExternalGameID(FindBase, metaclass=AllOptional):
     externalGameId: str
+
+class CreateTask(BaseModel):
+    externalGameId: str
+    externalTaskID: str
+    gameId: int

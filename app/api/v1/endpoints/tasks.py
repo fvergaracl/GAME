@@ -2,7 +2,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
 from app.core.container import Container
-from app.schema.task_schema import FindTaskResult, FindTaskByExternalGameID
+from app.schema.task_schema import FindTaskResult, FindTaskByExternalGameID, CreateTask
 from app.schema.games_params_schema import BaseGameParams
 from app.services.task_service import TaskService
 from app.services.game_params_service import GameParamsService

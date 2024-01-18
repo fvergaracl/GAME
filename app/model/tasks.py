@@ -7,12 +7,28 @@ CREATE TABLE Tasks (
 """
 
 from app.model.base_model import BaseModel
-from sqlmodel import Column, Field, ForeignKey, Integer, String
+from sqlmodel import Field, SQLModel, Column, Integer, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
+import sqlalchemy as sa
 
 
 class Tasks(BaseModel, table=True):
-    externalTaskID: str = Field(sa_column=Column(String, unique=True))
-    gameId: int = Field(sa_column=Column(Integer, ForeignKey("games.id")))
+    externalTaskId: uuid.UUID = Field(
+        default_factory=uuid.uuid4,
+        sa_column=Column(
+            UUID(
+                as_uuid=True
+            ),
+            unique=True
+        )
+    )
+    gameId: int = Field(
+        sa_column=Column(
+            Integer,
+            ForeignKey("games.id")
+        )
+    )
 
     def __str__(self):
         return f"Tasks(externalTaskID={self.externalTaskID}, gameId={self.gameId})"
