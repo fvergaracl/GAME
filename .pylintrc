@@ -1,0 +1,6 @@
+[MASTER]
+extension-pkg-allow-list=dependency_injector.providers
+
+[MESSAGES CONTROL]
+disable=wildcard-import
+disable=no-member
