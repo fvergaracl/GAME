@@ -5,7 +5,7 @@ from app.model.strategies import Strategies
 from app.repository.base_repository import BaseRepository
 
 
-class StrategiesRepository(BaseRepository):
+class StrategyRepository(BaseRepository):
 
     def __init__(
         self,
