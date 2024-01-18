@@ -5,7 +5,7 @@ from app.model.wallet_transactions import WalletTransactions
 from app.repository.base_repository import BaseRepository
 
 
-class WalletTransactionsRepository(BaseRepository):
+class WalletTransactionRepository(BaseRepository):
 
     def __init__(
         self,
