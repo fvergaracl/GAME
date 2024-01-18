@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.get("/{externalGameID}", response_model=FindTaskResult)
+@router.get("/{externalGameId}", response_model=FindTaskResult)
 @inject
 def get_tasks_list_by_externalGameId(
     find_query: FindTaskByExternalGameID = Depends(),

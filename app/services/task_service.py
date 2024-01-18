@@ -15,10 +15,10 @@ class TaskService(BaseService):
         super().__init__(task_repository)
 
     def get_tasks_list_by_externalGameId(self, find_query):
-        externalGameID = find_query.externalGameID
+        externalGameId = find_query.externalGameId
         game = self.game_repository.read_by_externalId(
-            externalGameID, not_found_message="Task not found with externalGameID : {externalGameID} ")
-        del find_query.externalGameID
+            externalGameId, not_found_message="Task not found with externalGameId : {externalGameID} ")
+        del find_query.externalGameId
         find_task_query = FindTask(
             gameId=game.id, **find_query.dict(exclude_none=True))
         return self.task_repository.read_by_gameId(find_task_query)

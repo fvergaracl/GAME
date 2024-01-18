@@ -24,4 +24,4 @@ class FindTask(FindBase, metaclass=AllOptional):
 
 
 class FindTaskByExternalGameID(FindBase, metaclass=AllOptional):
-    externalGameID: str
+    externalGameId: str
