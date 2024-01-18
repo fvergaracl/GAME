@@ -18,5 +18,10 @@ class FindTaskResult(BaseModel):
     founds: Optional[List[Task]]
     search_options: Optional[SearchOptions]
 
-class FindTask(FindBase, BaseTask, metaclass=AllOptional):
-    ...
+
+class FindTask(FindBase, metaclass=AllOptional):
+    gameId: int
+
+
+class FindTaskByExternalGameID(FindBase, metaclass=AllOptional):
+    externalGameID: str

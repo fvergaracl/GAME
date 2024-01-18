@@ -45,25 +45,43 @@ class Container(containers.DeclarativeContainer):
     # Services (Add in here)
 
     game_service = providers.Factory(
-        GameService, game_repository=game_repository, game_params_repository=game_params_repository)
+        GameService,
+        game_repository=game_repository,
+        game_params_repository=game_params_repository
+    )
 
     game_params_service = providers.Factory(
-        GameParamsService, game_params_repository=game_params_repository)
+        GameParamsService,
+        game_params_repository=game_params_repository
+    )
 
     strategy_service = providers.Factory(
-        StrategyService, strategy_repository=strategy_repository)
+        StrategyService,
+        strategy_repository=strategy_repository
+    )
 
     task_service = providers.Factory(
-        TaskService, task_repository=task_repository)
+        TaskService,
+        task_repository=task_repository,
+        game_repository=game_repository
+    )
 
     user_points_service = providers.Factory(
-        UserPointsService, user_points_repository=user_points_repository)
+        UserPointsService,
+        user_points_repository=user_points_repository
+    )
 
     user_service = providers.Factory(
-        UserService, user_repository=user_repository)
+        UserService,
+        user_repository=user_repository
+    )
 
     wallet_service = providers.Factory(
-        WalletService, wallet_repository=wallet_repository)
+        WalletService,
+        wallet_repository=wallet_repository
+    )
 
     wallet_transaction_service = providers.Factory(
-        WalletTransactionService, wallet_transaction_repository=wallet_transaction_repository)
+        WalletTransactionService,
+        wallet_transaction_repository=wallet_transaction_repository
+    )

@@ -15,19 +15,19 @@ class Tasks(BaseModel, table=True):
     gameId: int = Field(sa_column=Column(Integer, ForeignKey("games.id")))
 
     def __str__(self):
-        return f"Tasks: {self.externalTaskID}, {self.strategyId}"
+        return f"Tasks(externalTaskID={self.externalTaskID}, gameId={self.gameId})"
 
     def __repr__(self):
-        return f"Tasks: {self.externalTaskID}, {self.strategyId}"
+        return f"Tasks(externalTaskID={self.externalTaskID}, gameId={self.gameId})"
 
     def __eq__(self, other):
-        return self.externalTaskID == other.externalTaskID and self.strategyId == other.strategyId
+        return self.externalTaskID == other.externalTaskID and self.gameId == other.gameId
 
     def __hash__(self):
-        return hash((self.externalTaskID, self.strategyId))
-
-    def __ne__(self, other):
-        return not (self == other)
+        return hash((self.externalTaskID, self.gameId))
 
     def __lt__(self, other):
-        return self.strategyId < other.strategyId
+        return self.externalTaskID < other.externalTaskID and self.gameId < other.gameId
+
+    def __le__(self, other):
+        return self.externalTaskID <= other.externalTaskID and self.gameId <= other.gameId
