@@ -31,35 +31,6 @@ def get_game_by_externalId(
     return service.get_by_externalId(externalGameID)
 
 
-# @router.post("/", response_model=Game)
-# @inject
-# def create_game(
-#     schema: CreateGame,
-#     service: GameService = Depends(Provide[Container.game_service]),
-#     service_game_params: GameParamsService = Depends(
-#         Provide[Container.game_service]),
-# ):
-#     params = schema.params
-#     print('******************************')
-#     print(params)
-#     if params:
-#         print('******************************1')
-#         del schema.params
-#         game = service.create(schema)
-#         print('******************************2')
-#         print(game)
-#         for param in params:
-#             print('******************************3')
-#             print(param)
-
-#             param.gameID = game.id
-#             game_params_result = service_game_params.add(param)
-#             print('******************************4')
-#             print(game_params_result)
-#         return game
-#     return service.create(schema)
-
-
 @router.post("/", response_model=Game)
 @inject
 def create_game(

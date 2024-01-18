@@ -33,7 +33,5 @@ class GameService(BaseService):
         if params:
             for param in params:
                 self.game_params_repository.update_params_gameId(id, param)
-        print('******************************')
-        print(schema)
-        # ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        del schema.params
         return self.game_repository.update(id, schema)
