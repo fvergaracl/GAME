@@ -7,10 +7,13 @@ services:
     hostname: db
     ports:
       - "5432:5432"
+    env_file:
+      - .env
+
     environment:
-      POSTGRES_DB: game_dev_db
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: example
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     networks:
       - backend
     volumes:

@@ -11,6 +11,7 @@ class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
         modules=[
             "app.api.v1.endpoints.games",
+            "app.api.v1.endpoints.tasks",
         ]
     )
 

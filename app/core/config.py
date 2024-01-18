@@ -22,10 +22,6 @@ class Configs(BaseSettings):
         "dev": "game_dev_db",
         "test": "test_game_dev_db",
     }
-    DB_ENGINE_MAPPER: dict = {
-        "postgresql": "postgresql",
-        "mysql": "mysql+pymysql",
-    }
 
     PROJECT_ROOT: str = os.path.dirname(os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))))
@@ -48,7 +44,7 @@ class Configs(BaseSettings):
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")
     DB_HOST: str = os.getenv("DB_HOST")
     DB_PORT: str = os.getenv("DB_PORT", "3306")
-    DB_ENGINE: str = DB_ENGINE_MAPPER.get(DB, "postgresql")
+    DB_ENGINE: str = os.getenv("DB_ENGINE", "postgresql")
 
     DATABASE_URI_FORMAT: str = "{db_engine}://{user}:{password}@{host}:{port}/{database}"
 

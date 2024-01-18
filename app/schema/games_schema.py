@@ -57,6 +57,3 @@ class FindGameResult(BaseModel):
     search_options: Optional[SearchOptions]
 
 
-class FindGameResultByExternalId(BaseModel):
-    found: Optional[Game]
-    search_options: Optional[SearchOptions]
