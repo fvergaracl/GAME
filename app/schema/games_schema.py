@@ -9,7 +9,7 @@ from app.util.schema import AllOptional
 
 
 class BaseGame(BaseModel):
-    externalGameID: str
+    externalGameId: str
     platform: str
     endDateTime: datetime
 
@@ -18,14 +18,14 @@ class BaseGame(BaseModel):
 
 
 class CreateGame(BaseModel):
-    externalGameID: str
+    externalGameId: str
     platform: str
     endDateTime: Optional[datetime]
     params: Optional[List[CreateGameParams]]
 
 
 class UpdateGame(BaseModel):
-    externalGameID: Optional[str]
+    externalGameId: Optional[str]
     platform: Optional[str]
     endDateTime: Optional[datetime]
     params: Optional[List[UpdateGameParams]]
@@ -40,7 +40,7 @@ class FindGame(FindBase, BaseGame, metaclass=AllOptional):
 
 
 class FindGameByExternalId(FindBase, BaseGame, metaclass=AllOptional):
-    externalGameID: str
+    externalGameId: str
 
 
 class UpsertGame(BaseGame, metaclass=AllOptional):
@@ -55,5 +55,3 @@ class UpsertGameWithGameParams(BaseGame, metaclass=AllOptional):
 class FindGameResult(BaseModel):
     founds: Optional[List[Game]]
     search_options: Optional[SearchOptions]
-
-

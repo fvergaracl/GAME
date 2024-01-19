@@ -85,3 +85,10 @@ class Container(containers.DeclarativeContainer):
         WalletTransactionService,
         wallet_transaction_repository=wallet_transaction_repository
     )
+
+
+def upgrade():
+    op.alter_column('tu_tabla', 'tu_columna',
+                    type_=sa.String(),
+                    existing_type=sa.UUID(),
+                    existing_nullable=False)

@@ -59,3 +59,9 @@ class TaskRepository(BaseRepository):
                     "total_count": total_count,
                 },
             }
+
+    def read_by_externalTaskId(self, externalTaskId):
+        with self.session_factory() as session:
+            query = session.query(self.model).filter(
+                self.model.externalTaskId == externalTaskId).first()
+            return query

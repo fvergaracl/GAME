@@ -22,13 +22,13 @@ def get_games_list(
     return service.get_list(find_query)
 
 
-@router.get("/externalId/{externalGameID}", response_model=Game)
+@router.get("/externalId/{externalGameId}", response_model=Game)
 @inject
 def get_game_by_externalId(
-    externalGameID: str,
+    externalGameId: str,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
-    return service.get_by_externalId(externalGameID)
+    return service.get_by_externalId(externalGameId)
 
 
 @router.post("/", response_model=Game)

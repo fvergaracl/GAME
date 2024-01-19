@@ -32,5 +32,9 @@ class FindDateRange(BaseModel):
     created_at__gte: str
 
 
+class SuccesfullyCreated(BaseModel):
+    message: Optional[str] = "Successfully created"
+
+
 class Blank(BaseModel):
     pass

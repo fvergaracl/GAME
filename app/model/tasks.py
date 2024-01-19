@@ -1,28 +1,23 @@
 """
 CREATE TABLE Tasks (
   id SERIAL PRIMARY KEY,
-  externalTaskID VARCHAR(255) UNIQUE,
+  externalTaskId VARCHAR(255) UNIQUE,
   strategyId INT,
   FOREIGN KEY (gameId) REFERENCES Games(id)
 """
 
 from app.model.base_model import BaseModel
-from sqlmodel import Field, SQLModel, Column, Integer, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
-import uuid
-import sqlalchemy as sa
+from sqlmodel import Field, Column, Integer, ForeignKey, String
 
 
 class Tasks(BaseModel, table=True):
-    externalTaskId: uuid.UUID = Field(
-        default_factory=uuid.uuid4,
+    externalTaskId: str = Field(
         sa_column=Column(
-            UUID(
-                as_uuid=True
-            ),
+            String,
             unique=True
         )
     )
+
     gameId: int = Field(
         sa_column=Column(
             Integer,
@@ -31,19 +26,19 @@ class Tasks(BaseModel, table=True):
     )
 
     def __str__(self):
-        return f"Tasks(externalTaskID={self.externalTaskID}, gameId={self.gameId})"
+        return f"Tasks(externalTaskId={self.externalTaskId}, gameId={self.gameId})"
 
     def __repr__(self):
-        return f"Tasks(externalTaskID={self.externalTaskID}, gameId={self.gameId})"
+        return f"Tasks(externalTaskId={self.externalTaskId}, gameId={self.gameId})"
 
     def __eq__(self, other):
-        return self.externalTaskID == other.externalTaskID and self.gameId == other.gameId
+        return self.externalTaskId == other.externalTaskId and self.gameId == other.gameId
 
     def __hash__(self):
-        return hash((self.externalTaskID, self.gameId))
+        return hash((self.externalTaskId, self.gameId))
 
     def __lt__(self, other):
-        return self.externalTaskID < other.externalTaskID and self.gameId < other.gameId
+        return self.externalTaskId < other.externalTaskId and self.gameId < other.gameId
 
     def __le__(self, other):
-        return self.externalTaskID <= other.externalTaskID and self.gameId <= other.gameId
+        return self.externalTaskId <= other.externalTaskId and self.gameId <= other.gameId

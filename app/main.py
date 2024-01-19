@@ -36,7 +36,14 @@ class AppCreator:
         # set routes
         @self.app.get("/")
         def root():
-            return {"message": "Hello World"}
+            version = configs.VERSION
+            project_name = configs.PROJECT_NAME
+            return {
+                "projectName": project_name,
+                "version": version,
+                "message": "Welcome to GAME API",
+                "docs": f"/docs",
+            }
 
         self.app.include_router(v1_routers, prefix=configs.API_V1_STR)
 

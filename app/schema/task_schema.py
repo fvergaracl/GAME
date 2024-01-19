@@ -1,12 +1,12 @@
 from typing import List, Optional
 
 from pydantic import BaseModel
-from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
+from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions, SuccesfullyCreated
 from app.util.schema import AllOptional
 
 
 class BaseTask(BaseModel):
-    externalTaskID: str
+    externalTaskId: str
     gameId: str
 
 
@@ -26,7 +26,13 @@ class FindTask(FindBase, metaclass=AllOptional):
 class FindTaskByExternalGameID(FindBase, metaclass=AllOptional):
     externalGameId: str
 
-class CreateTask(BaseModel):
+
+class CreateTaskPost(BaseModel):
     externalGameId: str
-    externalTaskID: str
+    externalTaskId: str
+
+
+class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
+    externalGameId: str
+    externalTaskId: str
     gameId: int
