@@ -67,6 +67,7 @@ class BaseRepository:
             column: str,
             value: str,
             eager=False,
+            not_found_raise_exception=True,
             not_found_message="Not found {column} : {value}"
     ):
         with self.session_factory() as session:
@@ -76,7 +77,7 @@ class BaseRepository:
                     query = query.options(
                         joinedload(getattr(self.model, eager)))
             query = query.filter(getattr(self.model, column) == value).first()
-            if not query:
+            if not query and not_found_raise_exception:
                 raise NotFoundError(detail=not_found_message.format(
                     column=column, value=value))
             return query
