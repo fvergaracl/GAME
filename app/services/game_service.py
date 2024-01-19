@@ -4,6 +4,8 @@ from app.schema.games_schema import CreateGame, FindGameByExternalId, UpdateGame
 from app.schema.games_params_schema import BaseGameParams
 from app.services.base_service import BaseService
 
+from app.core.exceptions import ConflictError
+
 
 class GameService(BaseService):
     def __init__(self, game_repository: GameRepository, game_params_repository: GameParamsRepository):
@@ -16,6 +18,14 @@ class GameService(BaseService):
 
     def create(self, schema: CreateGame):
         params = schema.params
+        externalGameId = schema.externalGameId
+
+        externalGameId_exist = self.game_repository.read_by_externalId(
+            externalGameId)
+        if externalGameId_exist:
+            raise ConflictError(
+                detail=f"Game already exist with externalGameId : {externalGameId}")
+
         if params:
             del schema.params
             game = self.game_repository.create(schema)

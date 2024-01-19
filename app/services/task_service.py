@@ -26,8 +26,7 @@ class TaskService(BaseService):
         return self.task_repository.read_by_gameId(find_task_query)
 
     def create_task_by_externalGameId(self, create_query):
-        print('*************************************')
-        print(create_query)
+
         externalGameId = create_query.externalGameId
         game = self.game_repository.read_by_externalId(
             externalGameId, not_found_message="Game not found with externalGameId : {externalGameId} ")
@@ -37,18 +36,12 @@ class TaskService(BaseService):
         externalTaskId = create_query_dict.get('externalTaskId')
         create_query_dict['externalTaskId'] = f"{externalGameId}_{externalTaskId}"
         create_query = BaseTask(**create_query_dict)
-        print('*************************************11111111')
-        print(create_query)
         is_exist = self.task_repository.read_by_externalTaskId(
             create_query.externalTaskId)
-        print('*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-        print(is_exist)
         if (is_exist):
             raise ConflictError(
                 detail=f"Task already exist with externalTaskId : {externalTaskId}")
         created_task = self.task_repository.create(create_query)
-        print('*************************************222222222')
-        print(created_task)
 
         if (created_task):
             response_dict = {
