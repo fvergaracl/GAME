@@ -12,6 +12,7 @@ class Container(containers.DeclarativeContainer):
         modules=[
             "app.api.v1.endpoints.games",
             "app.api.v1.endpoints.tasks",
+            "app.api.v1.endpoints.strategy",
         ]
     )
 
