@@ -13,7 +13,18 @@ class Strategy(ModelBaseInfo):
     ...
 
 
-class FindStrategyResult(BaseModel):
+class FindAllStrategyResult(BaseModel):
     founds: Optional[List[Strategy]]
     search_options: Optional[SearchOptions]
+
+
+class FindStrategyResult(Strategy):
+    ...
+
+
+class CreateStrategyPost(BaseStrategy):
+    ...
+
+class CreateStrategyResult(Strategy):
+    ...
 

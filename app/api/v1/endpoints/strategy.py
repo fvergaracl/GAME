@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 
 from app.core.container import Container
 from app.schema.strategy_schema import (
+    FindAllStrategyResult,
     FindStrategyResult
 )
 from app.schema.base_schema import FindBase
@@ -14,10 +15,20 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=FindStrategyResult)
+@router.get("/", response_model=FindAllStrategyResult)
 @inject
 def get_strategy_list(
     schema: FindBase = Depends(),
     service: StrategyService = Depends(Provide[Container.strategy_service]),
 ):
     return service.get_list(schema)
+
+@router.get("/{strategyName}", response_model=FindStrategyResult)
+@inject
+def get_strategy_by_strategyName(
+    strategyName: str,
+    service: StrategyService = Depends(Provide[Container.strategy_service]),
+):
+    return service.get_strategy_by_strategyName(strategyName)
+
+

@@ -62,6 +62,25 @@ class BaseRepository:
                 raise NotFoundError(detail=not_found_message.format(id=id))
             return query
 
+    def read_by_column(
+            self,
+            column: str,
+            value: str,
+            eager=False,
+            not_found_message="Not found {column} : {value}"
+    ):
+        with self.session_factory() as session:
+            query = session.query(self.model)
+            if eager:
+                for eager in getattr(self.model, "eagers", []):
+                    query = query.options(
+                        joinedload(getattr(self.model, eager)))
+            query = query.filter(getattr(self.model, column) == value).first()
+            if not query:
+                raise NotFoundError(detail=not_found_message.format(
+                    column=column, value=value))
+            return query
+
     def create(self, schema):
         with self.session_factory() as session:
             query = self.model(**schema.dict())
