@@ -14,7 +14,7 @@ class Tasks(BaseModel, table=True):
     externalTaskId: str = Field(
         sa_column=Column(
             String,
-            unique=True
+            unique=False
         )
     )
 

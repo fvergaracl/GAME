@@ -53,8 +53,17 @@ class TaskRepository(BaseRepository):
                 },
             }
 
-    def read_by_externalTaskId(self, externalTaskId):
+    # gameId and externalTaskId
+    def read_by_gameId_and_externalTaskId(
+            self,
+            gameId: int,
+            externalTaskId: str,
+    ):
+        print('*----')
+        print(gameId)
+        print(externalTaskId)
         with self.session_factory() as session:
-            query = session.query(self.model).filter(
-                self.model.externalTaskId == externalTaskId).first()
+            query = session.query(self.model)
+            query = query.filter(
+                self.model.gameId == gameId, self.model.externalTaskId == externalTaskId).first()
             return query
