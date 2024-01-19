@@ -1,7 +1,7 @@
 from contextlib import AbstractContextManager
 from typing import Callable
 from sqlalchemy.orm import Session
-from app.model.strategies import Strategies
+from app.model.strategy import Strategy
 from app.repository.base_repository import BaseRepository
 
 
@@ -12,5 +12,5 @@ class StrategyRepository(BaseRepository):
         session_factory: Callable[
             ...,
             AbstractContextManager[Session]],
-            model=Strategies) -> None:
+            model=Strategy) -> None:
         super().__init__(session_factory, model)

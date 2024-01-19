@@ -1,18 +1,19 @@
 """
-CREATE TABLE Strategies (
+CREATE TABLE Strategy (
   id SERIAL PRIMARY KEY,
-  strategy VARCHAR(255) UNIQUE
+  strategyName VARCHAR(255) UNIQUE
+  data JSONB NOT NULL,
   FOREIGN KEY (taskId) REFERENCES Tasks(id)
 );
 """
 
 from app.model.base_model import BaseModel
-from sqlmodel import Column, Field, String, Integer, ForeignKey
+from sqlmodel import Column, Field, String
 
 
-class Strategies(BaseModel, table=True):
-    strategy: str = Field(sa_column=Column(String, unique=True))
-    taskId: int = Field(sa_column=Column(Integer, ForeignKey("tasks.id")))
+class Strategy(BaseModel, table=True):
+    strategyName: str = Field(sa_column=Column(String, unique=True))
+    data: dict = Field(sa_column=Column(String), nullable=False)
 
     def __str__(self):
         return f"Strategy: {self.strategy}"

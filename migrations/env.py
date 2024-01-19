@@ -8,7 +8,7 @@ from sqlmodel import SQLModel
 from app.core.config import configs
 from app.model.games import Games
 from app.model.game_params import GameParams
-from app.model.strategies import Strategies
+from app.model.strategy import Strategy
 from app.model.tasks import Tasks
 from app.model.users import Users
 from app.model.wallet import Wallet

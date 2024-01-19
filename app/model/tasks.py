@@ -2,7 +2,7 @@
 CREATE TABLE Tasks (
   id SERIAL PRIMARY KEY,
   externalTaskId VARCHAR(255) UNIQUE,
-  strategyId INT,
+  strategyId INT , -- could be null
   FOREIGN KEY (gameId) REFERENCES Games(id)
 """
 
@@ -23,6 +23,14 @@ class Tasks(BaseModel, table=True):
             Integer,
             ForeignKey("games.id")
         )
+    )
+
+    strategyId: int = Field(
+        sa_column=Column(
+            Integer,
+            ForeignKey("strategy.id")
+        ),
+        nullable=True
     )
 
     def __str__(self):
