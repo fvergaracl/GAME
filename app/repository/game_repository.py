@@ -12,20 +12,6 @@ class GameRepository(BaseRepository):
     def __init__(self, session_factory: Callable[..., AbstractContextManager[Session]], model=Games) -> None:
         super().__init__(session_factory, model)
 
-    def read_by_externalId(self, externalGameId: str, eager=False, not_found_message="Not found externalGameId : {externalGameId}"):
-        with self.session_factory() as session:
-            query = session.query(self.model)
-            if eager:
-                for eager in getattr(self.model, "eagers", []):
-                    query = query.options(
-                        joinedload(getattr(self.model, eager)))
-            query = query.filter(
-                self.model.externalGameId == externalGameId).first()
-            if not query:
-                raise NotFoundError(
-                    detail=not_found_message.format(externalGameId=externalGameId))
-            return query
-
     def update_with_params(self, id: int, schema: UpsertGameWithGameParams, params):
         with self.session_factory() as session:
             session.query(self.model).filter(self.model.id == id).update(

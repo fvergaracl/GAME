@@ -18,8 +18,13 @@ class TaskService(BaseService):
 
     def get_tasks_list_by_externalGameId(self, find_query):
         externalGameId = find_query.externalGameId
-        game = self.game_repository.read_by_externalId(
-            externalGameId, not_found_message="Task not found with externalGameId : {externalGameId} ")
+
+        game = self.game_repository.read_by_column(
+            "externalGameId", 
+            externalGameId,
+            not_found_message="Task not found with externalGameId : {externalGameId} "
+            )
+        
         del find_query.externalGameId
         find_task_query = FindTask(
             gameId=game.id, **find_query.dict(exclude_none=True))
@@ -27,9 +32,13 @@ class TaskService(BaseService):
 
     def create_task_by_externalGameId(self, create_query):
         externalGameId = create_query.externalGameId
-        game = self.game_repository.read_by_externalId(
-            externalGameId, not_found_message="Game not found with externalGameId : {externalGameId} ")
-
+    
+        game = self.game_repository.read_by_column(
+            "externalGameId", 
+            externalGameId,
+            not_found_message="Game not found with externalGameId : {externalGameId} "
+            )
+        
         del create_query.externalGameId
         create_query_dict = create_query.dict(exclude_none=True)
         create_query_dict['gameId'] = game.id
@@ -54,11 +63,12 @@ class TaskService(BaseService):
     def get_task_by_externalGameId_and_externalTaskId(self, schema):
         externalGameId = schema.externalGameId
         externalTaskId = schema.externalTaskId
-        game = self.game_repository.read_by_externalId(
-            externalGameId, not_found_message="Game not found with externalGameId : {externalGameId} ")
-        if (not game):
-            raise NotFoundError(
-                detail=f"Game not found with externalGameId : \"{externalGameId}\"")
+       
+        game = self.game_repository.read_by_column(
+            "externalGameId", 
+            externalGameId,
+            not_found_message="Game not found with externalGameId : {externalGameId} "
+            )
 
         task = self.task_repository.read_by_gameId_and_externalTaskId(
             game.id, externalTaskId)
