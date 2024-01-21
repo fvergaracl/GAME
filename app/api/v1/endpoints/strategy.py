@@ -8,8 +8,13 @@ from app.schema.strategy_schema import (
     CreateStrategyPost,
     CreateStrategyResult
 )
+
+from app.schema.rules_schema import (
+    ResponseFindAllRuleVariables
+)
 from app.schema.base_schema import FindBase
 from app.services.strategy_service import StrategyService
+from app.services.rules_service import RulesService
 
 router = APIRouter(
     prefix="/strategy",
@@ -42,3 +47,16 @@ def create_strategy(
     service: StrategyService = Depends(Provide[Container.strategy_service]),
 ):
     return service.create_strategy(schema)
+
+
+@router.get("/rules/variable", response_model=ResponseFindAllRuleVariables)
+@inject
+def get_variables_available_to_strategy(
+    service: RulesService = Depends(Provide[Container.rules_service]),
+):
+    all_variables = service.get_all_variables()
+    all_variables = [variable.get_data() for variable in all_variables]
+    response = {
+        "founds": all_variables
+    }
+    return response

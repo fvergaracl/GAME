@@ -59,9 +59,6 @@ class TaskRepository(BaseRepository):
             gameId: int,
             externalTaskId: str,
     ):
-        print('*----')
-        print(gameId)
-        print(externalTaskId)
         with self.session_factory() as session:
             query = session.query(self.model)
             query = query.filter(

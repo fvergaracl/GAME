@@ -61,6 +61,11 @@ class Container(containers.DeclarativeContainer):
         strategy_repository=strategy_repository
     )
 
+    rules_service = providers.Factory(
+        RulesService,
+        db=db.provided.session
+    )
+
     task_service = providers.Factory(
         TaskService,
         task_repository=task_repository,

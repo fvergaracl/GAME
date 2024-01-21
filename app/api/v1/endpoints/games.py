@@ -3,9 +3,7 @@ from fastapi import APIRouter, Depends
 
 from app.core.container import Container
 from app.schema.games_schema import FindGameResult, CreateGame, UpdateGame, Game, FindGame
-from app.schema.games_params_schema import BaseGameParams
 from app.services.game_service import GameService
-from app.services.game_params_service import GameParamsService
 
 router = APIRouter(
     prefix="/games",

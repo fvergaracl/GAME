@@ -1,6 +1,6 @@
 
 
-sub_variables = {
+sub_variables = [
     {
         "name": "#EXTERNAL_USER_ID",
         "type": "string",
@@ -16,7 +16,7 @@ sub_variables = {
         "type": "string",
         "description": "External game id"
     }
-}
+]
 
 
 def get_sub_variables_by_name(name):

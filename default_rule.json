@@ -1,0 +1,13 @@
+{
+    "@BASIC_POINTS": 100,
+    "@BONUS_FACTOR": 1.5,
+    "rules": [
+        {
+            "name": "default",
+            "description": "Default rule",
+            "conditions": [],
+            "reward": "@BASIC_POINTS",
+            "priority": 1
+        }
+    ]
+}

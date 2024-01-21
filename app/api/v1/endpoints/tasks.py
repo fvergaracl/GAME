@@ -10,9 +10,7 @@ from app.schema.task_schema import (
     CreateTaskPost,
     CreateTaskPostSuccesfullyCreated
 )
-from app.schema.games_params_schema import BaseGameParams
 from app.services.task_service import TaskService
-from app.services.game_params_service import GameParamsService
 
 router = APIRouter(
     prefix="/tasks",

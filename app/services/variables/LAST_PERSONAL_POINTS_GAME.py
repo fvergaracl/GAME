@@ -1,12 +1,12 @@
 from app.repository.task_repository import TaskRepository
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.user_points_repository import UserPointsRepository
-from app.services.base_service import BaseService
+from app.services.variables.variableBase import VariableBase
 from app.services.variables.sub_variables import get_sub_variables_by_name
 from app.core.exceptions import NotFoundError
 
 
-class LAST_PERSONAL_GAME_POINTS_TASKService(BaseService):
+class LastPersonalPointsGameService(VariableBase):
 
     def __init__(
             self,
@@ -15,10 +15,10 @@ class LAST_PERSONAL_GAME_POINTS_TASKService(BaseService):
             user_points_repository: UserPointsRepository
 
     ):
-        self.variable_name = "@LAST_PERSONAL_POINT_TASK"
-        self.variable_description = "Last personal point of task by externalTaskId"
+        self.variable_name = "@LAST_PERSONAL_POINT_GAME"
+        self.variable_description = "Last personal point of task by externalGameId"
         self.sub_variables = [
-            get_sub_variables_by_name("#EXTERNAL_TASK_ID"),
+            get_sub_variables_by_name("#EXTERNAL_GAME_ID"),
             get_sub_variables_by_name("#EXTERNAL_USER_ID")
         ]
         self.task_repository = task_repository
@@ -26,15 +26,19 @@ class LAST_PERSONAL_GAME_POINTS_TASKService(BaseService):
         self.user_points_repository = user_points_repository
 
         super().__init__(
-            task_repository,
-            game_params_repository,
-            user_points_repository,
             self.variable_name,
             self.variable_description,
             self.sub_variables
         )
 
-    def last_personal_point_task(self, externalTaskId, externalUserId):
+    def last_personal_point_task(self, externalGameId, externalUserId):
+        game = self.game_params_repository.read_by_column(
+            "externalGameId",
+            externalGameId,
+            not_found_message="Game not found with externalGameId : {externalGameId} "
+        )
+
+        externalTaskId = game.externalTaskId
         task = self.task_repository.read_by_column(
             "externalTaskId",
             externalTaskId,

@@ -67,6 +67,7 @@ class BaseRepository:
             column: str,
             value: str,
             eager=False,
+            only_one=True,
             not_found_raise_exception=True,
             not_found_message="Not found {column} : {value}"
     ):
@@ -76,10 +77,14 @@ class BaseRepository:
                 for eager in getattr(self.model, "eagers", []):
                     query = query.options(
                         joinedload(getattr(self.model, eager)))
-            query = query.filter(getattr(self.model, column) == value).first()
-            if not query and not_found_raise_exception:
-                raise NotFoundError(detail=not_found_message.format(
-                    column=column, value=value))
+            if only_one:
+                query = query.filter(
+                    getattr(self.model, column) == value).first()
+                if not query and not_found_raise_exception:
+                    raise NotFoundError(detail=not_found_message.format(
+                        column=column, value=value))
+                return query
+            query = query.filter(getattr(self.model, column) == value).all()
             return query
 
     def create(self, schema):
