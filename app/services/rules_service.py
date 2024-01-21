@@ -1,5 +1,5 @@
 from app.services.variables.AVG_POINTS_GAME_BY_USER import AveragePointsGameService
-from app.services.variables.AVERAGE_POINTS_TASK_BY_USER import AveragePointsTaskService
+from app.services.variables.AVG_POINTS_TASK_BY_USER import AveragePointsTaskService
 from app.services.variables.LAST_PERSONAL_POINTS_GAME import LastPersonalPointsGameService
 from app.services.variables.LAST_PERSONAL_POINTS_TASK import LastPersonalPointsTaskService
 
