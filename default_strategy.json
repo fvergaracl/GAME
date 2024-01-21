@@ -1,8 +1,3 @@
-from typing import List, Optional
-from pydantic import BaseModel
-
-from app.schema.base_schema import ModelBaseInfo, SearchOptions
-"""
 {
     "label": "Default",
     "description": "Default rule",
@@ -39,51 +34,3 @@ from app.schema.base_schema import ModelBaseInfo, SearchOptions
         }
     ]
 }
-"""
-
-
-class RuleBase(BaseModel):
-    name: str
-    description: str
-    conditions: List[str]
-    reward: str
-    priority: int
-
-
-class StaticVariables(BaseModel):
-    BASIC_POINTS: int
-    BONUS_FACTOR: float
-
-
-class DataStrategy(BaseModel):
-    label: str
-    description: str
-    tags: List[str]
-    static_variables: StaticVariables
-    rules: List[RuleBase]
-
-
-class BaseStrategy(BaseModel):
-    strategyName: str
-    data: DataStrategy
-
-
-class Strategy(ModelBaseInfo):
-    ...
-
-
-class FindAllStrategyResult(BaseModel):
-    founds: Optional[List[Strategy]]
-    search_options: Optional[SearchOptions]
-
-
-class FindStrategyResult(Strategy):
-    ...
-
-
-class CreateStrategyPost(BaseStrategy):
-    ...
-
-
-class CreateStrategyResult(Strategy):
-    ...

@@ -45,7 +45,11 @@ def get_strategy_by_strategyName(
 def create_strategy(
     schema: CreateStrategyPost,
     service: StrategyService = Depends(Provide[Container.strategy_service]),
+    service_rules: RulesService = Depends(Provide[Container.rules_service]),
+
 ):
+    all_variables = service_rules.get_all_variables()
+    all_variables = [variable.get_data() for variable in all_variables]
     return service.create_strategy(schema)
 
 

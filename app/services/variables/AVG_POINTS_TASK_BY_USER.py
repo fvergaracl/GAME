@@ -9,7 +9,6 @@ class AveragePointsTaskService(VariableBase):
 
     def __init__(
             self,
-
             task_repository: TaskRepository,
             user_points_repository: UserPointsRepository
 

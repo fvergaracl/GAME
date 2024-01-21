@@ -9,11 +9,12 @@ CREATE TABLE Strategy (
 
 from app.model.base_model import BaseModel
 from sqlmodel import Column, Field, String
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 class Strategy(BaseModel, table=True):
     strategyName: str = Field(sa_column=Column(String, unique=True))
-    data: dict = Field(sa_column=Column(String), nullable=False)
+    data: dict = Field(sa_column=Column(JSONB), nullable=False)
 
     def __str__(self):
         return f"Strategy: {self.strategy}"
