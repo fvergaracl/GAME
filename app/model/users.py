@@ -1,7 +1,7 @@
 """
 CREATE TABLE Users (
   id SERIAL PRIMARY KEY,
-  externalUserID VARCHAR(255) UNIQUE NOT NULL
+  externalUserId VARCHAR(255) UNIQUE NOT NULL
 );
 """
 
@@ -10,22 +10,22 @@ from sqlmodel import Column, Field, String
 
 
 class Users(BaseModel, table=True):
-    externalUserID: str = Field(sa_column=Column(String, unique=True))
+    externalUserId: str = Field(sa_column=Column(String, unique=True))
 
     def __str__(self):
-        return f"User: {self.externalUserID}"
+        return f"User: {self.externalUserId}"
 
     def __repr__(self):
-        return f"User: {self.externalUserID}"
+        return f"User: {self.externalUserId}"
 
     def __eq__(self, other):
-        return self.externalUserID == other.externalUserID
+        return self.externalUserId == other.externalUserId
 
     def __hash__(self):
-        return hash((self.externalUserID))
+        return hash((self.externalUserId))
 
     def __ne__(self, other):
         return not (self == other)
 
     def __lt__(self, other):
-        return self.externalUserID < other.externalUserID
+        return self.externalUserId < other.externalUserId

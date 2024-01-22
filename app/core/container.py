@@ -13,6 +13,7 @@ class Container(containers.DeclarativeContainer):
             "app.api.v1.endpoints.games",
             "app.api.v1.endpoints.tasks",
             "app.api.v1.endpoints.strategy",
+            "app.api.v1.endpoints.userPoints"
         ]
     )
 
@@ -74,7 +75,10 @@ class Container(containers.DeclarativeContainer):
 
     user_points_service = providers.Factory(
         UserPointsService,
-        user_points_repository=user_points_repository
+        user_points_repository=user_points_repository,
+        users_repository=user_repository,
+        game_repository=game_repository,
+        task_repository=task_repository
     )
 
     user_service = providers.Factory(

@@ -14,3 +14,9 @@ class UserPointsRepository(BaseRepository):
             AbstractContextManager[Session]],
             model=UserPoints) -> None:
         super().__init__(session_factory, model)
+
+    def get_all_UserPoints_by_taskId(self, taskId):
+        with self.session_factory() as session:
+            query = session.query(self.model).filter(
+                self.model.taskId == taskId).all()
+            return query
