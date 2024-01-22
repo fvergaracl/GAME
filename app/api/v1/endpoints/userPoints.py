@@ -8,7 +8,8 @@ from app.schema.user_points_schema import (
     FindQueryByExternalTaskId,
     FindQueryByExternalTaskIdExternalUserId,
     PostAssignPointsToUser,
-    ResponseAssignPointsToUser
+    ResponseAssignPointsToUser,
+    ResponsePointsByExternalUserId
 )
 from app.services.user_points_service import UserPointsService
 
@@ -60,3 +61,16 @@ def assign_points_to_user(
         Provide[Container.user_points_service]),
 ):
     return service.assign_points_to_user(schema)
+
+# get points of a user
+
+
+@router.get("/user/{externalUserId}", response_model=ResponsePointsByExternalUserId)
+@inject
+def get_points_of_user(
+    schema: FindQueryByExternalTaskIdExternalUserId = Depends(),
+    service: UserPointsService = Depends(
+        Provide[Container.user_points_service]),
+):
+    externalUserId = schema.externalUserId
+    return service.get_points_of_user(externalUserId)

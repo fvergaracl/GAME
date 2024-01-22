@@ -7,7 +7,8 @@ from app.schema.user_schema import (
 )
 from app.schema.user_points_schema import (
     BaseUserPointsBaseModel,
-    ResponseAssignPointsToUser
+    ResponseAssignPointsToUser,
+    ResponsePointsByExternalUserId
 )
 from app.services.base_service import BaseService
 from app.core.exceptions import NotFoundError
@@ -128,5 +129,29 @@ class UserPointsService(BaseService):
             externalTaskId=schema.externalTaskId,
             externalUserId=schema.externalUserId,
             isNewUser=is_new_user
+        )
+        return response
+
+    def get_points_of_user(self, externalUserId):
+        user = self.users_repository.read_by_column(
+            column="externalUserId",
+            value=externalUserId,
+            not_found_message=f"User with externalUserId {externalUserId} not found",
+        )
+
+        print('-------------------------------------------------------222')
+        print(user.id)
+
+        points = self.user_points_repository.get_task_and_sum_points_by_userId(
+            user.id)
+        # ResponsePointsByExternalUserId
+        total_points = 0
+        for point in points:
+            total_points += point.points
+
+        response = ResponsePointsByExternalUserId(
+            externalUserId=externalUserId,
+            points=total_points,
+            points_by_task=points
         )
         return response

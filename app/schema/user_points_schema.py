@@ -8,7 +8,7 @@ from app.util.schema import AllOptional
 class BaseUserPointsBaseModel(BaseModel):
     points: int
     description: Optional[str]
-    timestamp: str 
+    timestamp: str
     userId: int
     taskId: int
 
@@ -23,6 +23,10 @@ class FindQueryByExternalGameId(FindBase, metaclass=AllOptional):
 
 class FindQueryByExternalTaskId(FindBase, metaclass=AllOptional):
     externalTaskId: str
+
+
+class FindQueryByExternalUserId(FindBase, metaclass=AllOptional):
+    externalUserId: str
 
 
 class FindQueryByExternalTaskIdExternalUserId(FindBase, metaclass=AllOptional):
@@ -41,6 +45,7 @@ class PostAssignPointsToUser(BaseModel):
     points:  Optional[int]
     description: Optional[str]
 
+
 class ResponseAssignPointsToUser(BaseModel):
     points: int
     description: Optional[str]
@@ -48,3 +53,16 @@ class ResponseAssignPointsToUser(BaseModel):
     externalTaskId: str
     externalUserId: str
     isNewUser: bool
+
+
+# [(1, 'string', 129), (2, 'eeeeeeeeeeeeee', 100)]
+
+class PointsByUserInTask(BaseModel):
+    externalTaskId: str
+    points: int
+
+
+class ResponsePointsByExternalUserId(BaseModel):
+    externalUserId: str
+    points: int
+    points_by_task: List[PointsByUserInTask]

@@ -13,7 +13,8 @@ class Container(containers.DeclarativeContainer):
             "app.api.v1.endpoints.games",
             "app.api.v1.endpoints.tasks",
             "app.api.v1.endpoints.strategy",
-            "app.api.v1.endpoints.userPoints"
+            "app.api.v1.endpoints.userPoints",
+            "app.api.v1.endpoints.users"
         ]
     )
 
