@@ -64,8 +64,7 @@ class UserPointsService(BaseService):
                             points=point.points
                         )
                     )
-            print('-------------------------------------------------------222')
-            print(response_by_task)
+
             if response_by_task:
                 response.append(
                     ResponseGetPointsByGame(
@@ -167,12 +166,9 @@ class UserPointsService(BaseService):
             not_found_message=f"User with externalUserId {externalUserId} not found",
         )
 
-        print('-------------------------------------------------------222')
-        print(user.id)
-
         points = self.user_points_repository.get_task_and_sum_points_by_userId(
             user.id)
-        # ResponsePointsByExternalUserId
+
         total_points = 0
         for point in points:
             total_points += point.points
