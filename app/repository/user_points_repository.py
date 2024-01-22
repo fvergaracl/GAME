@@ -41,10 +41,9 @@ class UserPointsRepository(BaseRepository):
     def get_points_and_users_by_taskId(self, taskId):
         with self.session_factory() as session:
             query = session.query(
-                Tasks.id.label("task_id"),
-                Users.id.label("user_id"),
+                Tasks.externalTaskId.label("externalTaskId"),
                 Users.externalUserId.label("externalUserId"),
-                func.sum(UserPoints.points).label("total_points")
+                func.sum(UserPoints.points).label("points")
             ).join(
                 UserPoints, Tasks.id == UserPoints.taskId
             ).join(

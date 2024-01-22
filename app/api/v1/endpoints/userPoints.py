@@ -1,6 +1,6 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
-
+from typing import List
 from app.core.container import Container
 from app.schema.user_points_schema import (
     FindQueryByExternalGameId,
@@ -9,7 +9,9 @@ from app.schema.user_points_schema import (
     FindQueryByExternalTaskIdExternalUserId,
     PostAssignPointsToUser,
     ResponseAssignPointsToUser,
-    ResponsePointsByExternalUserId
+    ResponsePointsByExternalUserId,
+    ResponseGetPointsByTask,
+    ResponseGetPointsByGame
 )
 from app.services.user_points_service import UserPointsService
 
@@ -19,7 +21,7 @@ router = APIRouter(
 )
 
 
-@router.get("/game/{externalGameId}", response_model=FindAllUserPointsResult)
+@router.get("/game/{externalGameId}", response_model=List[ResponseGetPointsByGame])
 @inject
 def get_users_points_by_externalGameId(
     schema: FindQueryByExternalGameId = Depends(),
@@ -30,7 +32,7 @@ def get_users_points_by_externalGameId(
     return service.get_users_points_by_externalGameId(externalGameId)
 
 
-@router.get("/task/{externalTaskId}", response_model=FindAllUserPointsResult)
+@router.get("/task/{externalTaskId}", response_model=List[ResponseGetPointsByTask])
 @inject
 def get_users_points_by_externalTaskId(
     schema: FindQueryByExternalTaskId = Depends(),

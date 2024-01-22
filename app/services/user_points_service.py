@@ -8,7 +8,9 @@ from app.schema.user_schema import (
 from app.schema.user_points_schema import (
     BaseUserPointsBaseModel,
     ResponseAssignPointsToUser,
-    ResponsePointsByExternalUserId
+    ResponsePointsByExternalUserId,
+    ResponseGetPointsByTask,
+    ResponseGetPointsByGame
 )
 from app.services.base_service import BaseService
 from app.core.exceptions import NotFoundError
@@ -53,7 +55,25 @@ class UserPointsService(BaseService):
         for task in tasks:
             points = self.user_points_repository.get_points_and_users_by_taskId(
                 task)
-            response.append(points)
+            response_by_task = []
+            if points:
+                for point in points:
+                    response_by_task.append(
+                        ResponseGetPointsByTask(
+                            externalUserId=point.externalUserId,
+                            points=point.points
+                        )
+                    )
+            print('-------------------------------------------------------222')
+            print(response_by_task)
+            if response_by_task:
+                response.append(
+                    ResponseGetPointsByGame(
+                        externalTaskId=point.externalTaskId,
+                        points=response_by_task
+                    )
+                )
+
         return response
 
     def get_users_points_by_externalTaskId(self, externalTaskId):
@@ -63,10 +83,18 @@ class UserPointsService(BaseService):
             not_found_message=f"Task with externalTaskId {externalTaskId} not found",
         )
 
-        points = self.user_points_repository.get_points_and_users_by_taskId(
+        points_by_task = self.user_points_repository.get_points_and_users_by_taskId(
             task.id)
-
-        return points
+        cleaned_points_by_task = []
+        if points_by_task:
+            for point in points_by_task:
+                cleaned_points_by_task.append(
+                    ResponseGetPointsByTask(
+                        externalUserId=point.externalUserId,
+                        points=point.points
+                    )
+                )
+        return cleaned_points_by_task
 
     def get_users_points_by_externalTaskId_and_externalUserId(self, externalTaskId, externalUserId):
         task = self.task_repository.read_by_column(

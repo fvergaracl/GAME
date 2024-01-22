@@ -52,10 +52,22 @@ class ResponseAssignPointsToUser(BaseModel):
     timestamp: str
     externalTaskId: str
     externalUserId: str
-    isNewUser: bool
+    isNewUser: Optional[bool]
 
 
-# [(1, 'string', 129), (2, 'eeeeeeeeeeeeee', 100)]
+class ResponseGetPointsByTask(BaseModel):
+    externalUserId: str
+    points: int
+
+
+class ResponseGetPointsByGame(BaseModel):
+    externalTaskId: str
+    points: List[ResponseGetPointsByTask]
+
+
+class ResponseGetPointsByTasks(BaseModel, metaclass=AllOptional):
+    founds: Optional[List[ResponseGetPointsByTask]]
+
 
 class PointsByUserInTask(BaseModel):
     externalTaskId: str
