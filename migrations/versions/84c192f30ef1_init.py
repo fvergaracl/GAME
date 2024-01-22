@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 47883a608bdc
+Revision ID: 84c192f30ef1
 Revises: 
-Create Date: 2024-01-22 10:16:05.047217
+Create Date: 2024-01-23 00:51:10.252397
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '47883a608bdc'
+revision = '84c192f30ef1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -71,11 +71,12 @@ def upgrade():
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('coinsBalance', sa.Float(), nullable=True),
     sa.Column('pointsBalance', sa.Float(), nullable=True),
-    sa.Column('conversionRate', sa.Float(), nullable=True),
-    sa.Column('userId', sa.Integer(), nullable=True),
+    sa.Column('conversionRate', sa.Integer(), nullable=True),
+    sa.Column('userId', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['userId'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('userId')
     )
     op.create_table('userpoints',
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),

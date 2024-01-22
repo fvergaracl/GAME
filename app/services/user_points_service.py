@@ -2,6 +2,7 @@ from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_repository import UserRepository
 from app.repository.user_points_repository import UserPointsRepository
+from app.repository.wallet_repository import WalletRepository
 from app.schema.user_schema import (
     BaseUser
 )
@@ -11,6 +12,9 @@ from app.schema.user_points_schema import (
     ResponsePointsByExternalUserId,
     ResponseGetPointsByTask,
     ResponseGetPointsByGame
+)
+from app.schema.wallet_schema import (
+    BaseWalletOnlyUserId
 )
 from app.services.base_service import BaseService
 from app.core.exceptions import NotFoundError
@@ -23,12 +27,14 @@ class UserPointsService(BaseService):
             user_points_repository: UserPointsRepository,
             users_repository: UserRepository,
             game_repository: GameRepository,
-            task_repository: TaskRepository
+            task_repository: TaskRepository,
+            wallet_repository: WalletRepository,
     ):
         self.user_points_repository = user_points_repository
         self.users_repository = users_repository
         self.game_repository = game_repository
         self.task_repository = task_repository
+        self.wallet_repository = wallet_repository
         super().__init__(user_points_repository)
 
     def get_users_points_by_externalGameId(self, externalGameId):
@@ -132,12 +138,23 @@ class UserPointsService(BaseService):
                 user_data
             )
             is_new_user = True
-        if (schema.points == None):
-            schema.points = 1
+        points_to_assign = schema.points
+
+        if (points_to_assign == None):
+            points_to_assign = 1  # here apply strategy WIP
             if (schema.description == None):
                 schema.description = "Points assigned by strategy"
             else:
                 schema.description = schema.description + "| Points assigned by strategy"
+
+        if is_new_user:
+            wallet_data = BaseWalletOnlyUserId(
+                userId=user.id,
+                pointsBalance=points_to_assign
+            )
+            self.wallet_repository.create(
+                wallet_data
+            )
 
         data_user_points = BaseUserPointsBaseModel(
             points=schema.points,

@@ -23,6 +23,8 @@ class Configs(BaseSettings):
         "dev": "game_dev_db",
         "test": "test_game_dev_db",
     }
+    DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
+        "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100)
 
     PROJECT_ROOT: str = os.path.dirname(os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))))

@@ -6,6 +6,7 @@ CREATE TABLE WalletTransactions (
   appliedConversionRate DECIMAL(10, 2),
   walletId INT,
   FOREIGN KEY (walletId) REFERENCES Wallet(id)
+
 );
 """
 

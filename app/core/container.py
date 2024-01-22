@@ -14,7 +14,8 @@ class Container(containers.DeclarativeContainer):
             "app.api.v1.endpoints.tasks",
             "app.api.v1.endpoints.strategy",
             "app.api.v1.endpoints.userPoints",
-            "app.api.v1.endpoints.users"
+            "app.api.v1.endpoints.users",
+            "app.api.v1.endpoints.wallet"
         ]
     )
 
@@ -79,7 +80,8 @@ class Container(containers.DeclarativeContainer):
         user_points_repository=user_points_repository,
         users_repository=user_repository,
         game_repository=game_repository,
-        task_repository=task_repository
+        task_repository=task_repository,
+        wallet_repository=wallet_repository
     )
 
     user_service = providers.Factory(
