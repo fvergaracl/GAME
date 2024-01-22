@@ -16,8 +16,18 @@ class BaseUserPointsBaseModel(BaseModel):
 class UserPoints(ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional):
     ...
 
+
 class FindQueryByExternalGameId(FindBase, metaclass=AllOptional):
     externalGameId: str
+
+
+class FindQueryByExternalTaskId(FindBase, metaclass=AllOptional):
+    externalTaskId: str
+
+
+class FindQueryByExternalTaskIdExternalUserId(FindBase, metaclass=AllOptional):
+    externalTaskId: str
+    externalUserId: str
 
 
 class FindAllUserPointsResult(BaseModel):

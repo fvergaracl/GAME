@@ -42,10 +42,36 @@ class UserPointsService(BaseService):
 
         response = []
         for task in tasks:
-            user_points = self.user_points_repository.read_by_column(
-                "taskId", task,
-                only_one=False,
-                not_found_raise_exception=False
-            )
-            # ACAAAAAAAAAAAAAAAAAA
+            points = self.user_points_repository.get_points_and_users_by_taskId(
+                task)
+            response.append(points)
         return response
+
+    def get_users_points_by_externalTaskId(self, externalTaskId):
+        task = self.task_repository.read_by_column(
+            column="externalTaskId",
+            value=externalTaskId,
+            not_found_message=f"Task with externalTaskId {externalTaskId} not found",
+        )
+
+        points = self.user_points_repository.get_points_and_users_by_taskId(
+            task.id)
+
+        return points
+
+    def get_users_points_by_externalTaskId_and_externalUserId(self, externalTaskId, externalUserId):
+        task = self.task_repository.read_by_column(
+            column="externalTaskId",
+            value=externalTaskId,
+            not_found_message=f"Task with externalTaskId {externalTaskId} not found",
+        )
+        user = self.users_repository.read_by_column(
+            column="externalUserId",
+            value=externalUserId,
+            not_found_message=f"User with externalUserId {externalUserId} not found",
+        )
+
+        points = self.user_points_repository.read_by_columns(
+            {"taskId": task.id, "userId": user.id})
+
+        return points
