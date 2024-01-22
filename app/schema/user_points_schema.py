@@ -7,8 +7,8 @@ from app.util.schema import AllOptional
 
 class BaseUserPointsBaseModel(BaseModel):
     points: int
-    description: str
-    timestamp: str
+    description: Optional[str]
+    timestamp: str 
     userId: int
     taskId: int
 
@@ -33,3 +33,18 @@ class FindQueryByExternalTaskIdExternalUserId(FindBase, metaclass=AllOptional):
 class FindAllUserPointsResult(BaseModel):
     founds: Optional[List[UserPoints]]
     search_options: Optional[SearchOptions]
+
+
+class PostAssignPointsToUser(BaseModel):
+    externalTaskId: str
+    externalUserId: str
+    points:  Optional[int]
+    description: Optional[str]
+
+class ResponseAssignPointsToUser(BaseModel):
+    points: int
+    description: Optional[str]
+    timestamp: str
+    externalTaskId: str
+    externalUserId: str
+    isNewUser: bool
