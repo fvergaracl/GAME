@@ -2,7 +2,13 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
 from app.core.container import Container
-from app.schema.games_schema import FindGameResult, CreateGame, UpdateGame, Game, FindGame
+from app.schema.games_schema import (
+    PostFindGame,
+    FindGameResult,
+    CreateGame,
+    UpdateGame,
+    Game
+)
 from app.services.game_service import GameService
 
 router = APIRouter(
@@ -11,22 +17,34 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=FindGameResult)
+summary_get_games_list = "Get Games List"
+description_get_games_list = """
+## Find Game
+### Find game by externalGameId
+"""
+
+
+@router.get(
+    "/",
+    response_model=FindGameResult,
+    description=description_get_games_list,
+    summary=summary_get_games_list,
+)
 @inject
 def get_games_list(
-    find_query: FindGame = Depends(),
+    schema: PostFindGame = Depends(),
     service: GameService = Depends(Provide[Container.game_service]),
 ):
-    return service.get_list(find_query)
+    return service.get_list(schema)
 
 
-@router.get("/{externalGameId}", response_model=Game)
+@router.get("/{id}", response_model=Game)
 @inject
 def get_game_by_externalId(
-    externalGameId: str,
+    id: str,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
-    return service.get_by_externalId(externalGameId)
+    return service.get_by_id(id)
 
 
 @router.post("/", response_model=Game)

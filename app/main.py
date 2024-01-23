@@ -15,6 +15,7 @@ class AppCreator:
             title=configs.PROJECT_NAME,
             openapi_url=f"{configs.API}/openapi.json",
             version="0.0.1",
+            redoc_url="/redocs",
         )
 
         # set db and container
@@ -43,9 +44,10 @@ class AppCreator:
                 "version": version,
                 "message": "Welcome to GAME API",
                 "docs": f"/docs",
+                "redocs": f"/redocs",
             }
 
-        self.app.include_router(v1_routers, prefix=configs.API_V1_STR)
+        self.app.include_router(v1_routers)
 
 
 app_creator = AppCreator()

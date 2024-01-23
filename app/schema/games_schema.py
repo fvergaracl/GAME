@@ -9,9 +9,7 @@ from app.util.schema import AllOptional
 
 
 class BaseGame(BaseModel):
-    externalGameId: str
     platform: str
-    endDateTime: datetime
 
     class Config:
         orm_mode = True
@@ -35,7 +33,7 @@ class Game(ModelBaseInfo, BaseGame, metaclass=AllOptional):
     ...
 
 
-class FindGame(FindBase, BaseGame, metaclass=AllOptional):
+class PostFindGame(FindBase, BaseGame, metaclass=AllOptional):
     ...
 
 
