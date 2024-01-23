@@ -20,7 +20,7 @@ def get_games_list(
     return service.get_list(find_query)
 
 
-@router.get("/externalId/{externalGameId}", response_model=Game)
+@router.get("/{externalGameId}", response_model=Game)
 @inject
 def get_game_by_externalId(
     externalGameId: str,

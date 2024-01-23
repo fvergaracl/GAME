@@ -91,7 +91,8 @@ class Container(containers.DeclarativeContainer):
 
     wallet_service = providers.Factory(
         WalletService,
-        wallet_repository=wallet_repository
+        wallet_repository=wallet_repository,
+        user_repository=user_repository
     )
 
     wallet_transaction_service = providers.Factory(
