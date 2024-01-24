@@ -37,9 +37,6 @@ def get_games_list(
     schema: PostFindGame = Depends(),
     service: GameService = Depends(Provide[Container.game_service]),
 ):
-    print(' ........................ ')
-    print("schema", schema)
-    print(' ........................ ')
     return service.get_list(schema)
 
 
