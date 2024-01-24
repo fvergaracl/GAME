@@ -21,7 +21,7 @@ class SearchOptions(FindBase):
 
 
 class FindResult(BaseModel):
-    founds: Optional[List]
+    items: Optional[List]
     search_options: Optional[SearchOptions]
 
 

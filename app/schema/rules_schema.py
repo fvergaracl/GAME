@@ -16,4 +16,4 @@ class BaseRuleVariable(BaseModel):
 
 
 class ResponseFindAllRuleVariables(BaseModel):
-    founds: Optional[List[BaseRuleVariable]]
+    items: Optional[List[BaseRuleVariable]]

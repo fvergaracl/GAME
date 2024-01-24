@@ -61,6 +61,6 @@ def get_variables_available_to_strategy(
     all_variables = service.get_all_variables()
     all_variables = [variable.get_data() for variable in all_variables]
     response = {
-        "founds": all_variables
+        "items": all_variables
     }
     return response

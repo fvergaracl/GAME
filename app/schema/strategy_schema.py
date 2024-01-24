@@ -73,7 +73,7 @@ class Strategy(ModelBaseInfo):
 
 
 class FindAllStrategyResult(BaseModel):
-    founds: Optional[List[BaseStrategy]]
+    items: Optional[List[BaseStrategy]]
     search_options: Optional[SearchOptions]
 
 

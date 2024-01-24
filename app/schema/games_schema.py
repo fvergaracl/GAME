@@ -15,6 +15,17 @@ class BaseGame(BaseModel):
         orm_mode = True
 
 
+class BaseGameResult(BaseModel):
+    id: Optional[int] = None
+    created_at: Optional[datetime] = None
+    externalGameId: Optional[str] = None
+    platform: Optional[str] = None
+    endDateTime: Optional[datetime] = None
+
+    class Config:
+        orm_mode = True
+
+
 class CreateGame(BaseModel):
     externalGameId: str
     platform: str
@@ -46,10 +57,10 @@ class UpsertGame(BaseGame, metaclass=AllOptional):
 
 
 class UpsertGameWithGameParams(BaseGame, metaclass=AllOptional):
-    param: str
+    paramKey: str
     value: str
 
 
 class FindGameResult(BaseModel):
-    founds: Optional[List[Game]]
+    items: Optional[List[BaseGameResult]]
     search_options: Optional[SearchOptions]

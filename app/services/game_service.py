@@ -13,6 +13,9 @@ class GameService(BaseService):
         self.game_params_repository = game_params_repository
         super().__init__(game_repository)
 
+    def get_all_games(self):
+        return self.game_repository.read_all()
+
     def get_by_externalId(self, externalGameId: str):
         return self.game_repository.read_by_column(
             "externalGameId", externalGameId
@@ -25,7 +28,7 @@ class GameService(BaseService):
         externalGameId_exist = self.game_repository.read_by_column(
             "externalGameId", externalGameId,
             not_found_raise_exception=False
-            )
+        )
         if externalGameId_exist:
             raise ConflictError(
                 detail=f"Game already exist with externalGameId : {externalGameId}")

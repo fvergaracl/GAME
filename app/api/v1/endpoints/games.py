@@ -5,6 +5,7 @@ from app.core.container import Container
 from app.schema.games_schema import (
     PostFindGame,
     FindGameResult,
+    BaseGameResult,
     CreateGame,
     UpdateGame,
     Game
@@ -12,6 +13,7 @@ from app.schema.games_schema import (
 from app.services.game_service import GameService
 
 router = APIRouter(
+
     prefix="/games",
     tags=["games"],
 )
@@ -35,12 +37,27 @@ def get_games_list(
     schema: PostFindGame = Depends(),
     service: GameService = Depends(Provide[Container.game_service]),
 ):
+    print(' ........................ ')
+    print("schema", schema)
+    print(' ........................ ')
     return service.get_list(schema)
 
 
-@router.get("/{id}", response_model=Game)
+summary_get_game_by_id = "Get Game by Id"
+description_get_game_by_id = """
+## Get Game by Id
+### Get game by id 
+"""
+
+
+@router.get(
+    "/{id}",
+    response_model=Game,
+    description=description_get_game_by_id,
+    summary=summary_get_game_by_id
+)
 @inject
-def get_game_by_externalId(
+def get_game_by_id(
     id: str,
     service: GameService = Depends(Provide[Container.game_service]),
 ):

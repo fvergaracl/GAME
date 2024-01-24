@@ -35,7 +35,7 @@ class FindQueryByExternalTaskIdExternalUserId(FindBase, metaclass=AllOptional):
 
 
 class FindAllUserPointsResult(BaseModel):
-    founds: Optional[List[UserPoints]]
+    items: Optional[List[UserPoints]]
     search_options: Optional[SearchOptions]
 
 
@@ -66,7 +66,7 @@ class ResponseGetPointsByGame(BaseModel):
 
 
 class ResponseGetPointsByTasks(BaseModel, metaclass=AllOptional):
-    founds: Optional[List[ResponseGetPointsByTask]]
+    items: Optional[List[ResponseGetPointsByTask]]
 
 
 class PointsByUserInTask(BaseModel):

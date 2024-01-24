@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class CreateGameParams(BaseModel):
-    param: str
+    paramKey: str
     value: str | int | float | bool
 
     class Config:
@@ -11,11 +11,11 @@ class CreateGameParams(BaseModel):
 
 class BaseGameParams(CreateGameParams):
     gameId: int
-    param: str
+    paramKey: str
     value: str | int | float | bool
 
 
 class UpdateGameParams(CreateGameParams):
     id: int
-    param: str
+    paramKey: str
     value: str | int | float | bool

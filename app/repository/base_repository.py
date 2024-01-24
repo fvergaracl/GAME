@@ -41,7 +41,7 @@ class BaseRepository:
                     (page - 1) * page_size).all()
             total_count = filtered_query.count()
             return {
-                "founds": query,
+                "items": query,
                 "search_options": {
                     "page": page,
                     "page_size": page_size,

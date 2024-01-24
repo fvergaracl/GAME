@@ -16,6 +16,8 @@ class AppCreator:
             openapi_url=f"{configs.API}/openapi.json",
             version="0.0.1",
             redoc_url="/redocs",
+            docs_url="/docs",
+
         )
 
         # set db and container
@@ -46,8 +48,10 @@ class AppCreator:
                 "docs": f"/docs",
                 "redocs": f"/redocs",
             }
+        # set routers API_V1_STR
 
-        self.app.include_router(v1_routers)
+        # self.app.include_router(v1_routers)
+        self.app.include_router(v1_routers, prefix=configs.API_V1_STR)
 
 
 app_creator = AppCreator()

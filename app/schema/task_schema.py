@@ -15,7 +15,7 @@ class Task(ModelBaseInfo, BaseTask, metaclass=AllOptional):
 
 
 class FindTaskResult(BaseModel):
-    founds: Optional[List[Task]]
+    items: Optional[List[Task]]
     search_options: Optional[SearchOptions]
 
 
