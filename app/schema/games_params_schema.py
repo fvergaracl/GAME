@@ -1,12 +1,15 @@
 from pydantic import BaseModel
 
 
-class CreateGameParams(BaseModel):
+class BaseGameParams(BaseModel):
     paramKey: str
     value: str | int | float | bool
 
     class Config:
         orm_mode = True
+
+class CreateGameParams(BaseGameParams):
+    ...
 
 
 class BaseGameParams(CreateGameParams):

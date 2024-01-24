@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from app.schema.games_params_schema import CreateGameParams, UpdateGameParams
+from app.schema.games_params_schema import BaseGameParams, CreateGameParams, UpdateGameParams
 from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
 from app.util.schema import AllOptional
 
@@ -21,16 +21,25 @@ class BaseGameResult(BaseModel):
     externalGameId: Optional[str] = None
     platform: Optional[str] = None
     endDateTime: Optional[datetime] = None
+    params: Optional[List[BaseGameParams]] = None
 
     class Config:
         orm_mode = True
 
 
-class CreateGame(BaseModel):
+class PostCreateGame(BaseModel):
     externalGameId: str
     platform: str
     endDateTime: Optional[datetime]
     params: Optional[List[CreateGameParams]]
+
+
+class GameCreated(BaseGameResult):
+    message: Optional[str] = "Successfully created"
+
+
+class GameUpdated(BaseGameResult):
+    message: Optional[str] = "Successfully updated"
 
 
 class UpdateGame(BaseModel):

@@ -5,9 +5,10 @@ from app.core.container import Container
 from app.schema.games_schema import (
     PostFindGame,
     FindGameResult,
-    BaseGameResult,
-    CreateGame,
+    PostCreateGame,
+    GameCreated,
     UpdateGame,
+    GameUpdated,
     Game
 )
 from app.services.game_service import GameService
@@ -37,7 +38,7 @@ def get_games_list(
     schema: PostFindGame = Depends(),
     service: GameService = Depends(Provide[Container.game_service]),
 ):
-    return service.get_list(schema)
+    return service.get_all_games(schema)
 
 
 summary_get_game_by_id = "Get Game by Id"
@@ -61,16 +62,30 @@ def get_game_by_id(
     return service.get_by_id(id)
 
 
-@router.post("/", response_model=Game)
+summary_create_game = "Create Game"
+description_create_game = """
+## Create Game
+"""
+
+
+@router.post(
+    "/",
+    response_model=GameCreated,
+    summary=summary_create_game,
+    description=description_create_game
+)
 @inject
 def create_game(
-    schema: CreateGame,
+    schema: PostCreateGame,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
     return service.create(schema)
 
 
-@router.put("/{id}", response_model=Game)
+########################## Línea de corte #####################################
+
+
+@router.put("/{id}", response_model=GameUpdated)
 @inject
 def update_game(
     id: int,

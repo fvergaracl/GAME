@@ -2,7 +2,7 @@ from app.model.base_model import BaseModel
 from sqlmodel import Column, Field, ForeignKey, Integer, String
 
 
-class GameParams(BaseModel, table=True):
+class GamesParams(BaseModel, table=True):
     paramKey: str = Field(sa_column=Column(String))
     value: str = Field(sa_column=Column(String))
     gameId: int = Field(sa_column=Column(Integer, ForeignKey("games.id")))

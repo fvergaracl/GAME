@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 84c192f30ef1
+Revision ID: e468d14c847b
 Revises: 
-Create Date: 2024-01-23 00:51:10.252397
+Create Date: 2024-01-24 15:42:05.655181
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '84c192f30ef1'
+revision = 'e468d14c847b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -45,10 +45,10 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('externalUserId')
     )
-    op.create_table('gameparams',
+    op.create_table('gamesparams',
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('param', sa.String(), nullable=True),
+    sa.Column('paramKey', sa.String(), nullable=True),
     sa.Column('value', sa.String(), nullable=True),
     sa.Column('gameId', sa.Integer(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
@@ -111,7 +111,7 @@ def downgrade():
     op.drop_table('userpoints')
     op.drop_table('wallet')
     op.drop_table('tasks')
-    op.drop_table('gameparams')
+    op.drop_table('gamesparams')
     op.drop_table('users')
     op.drop_table('strategy')
     op.drop_table('games')

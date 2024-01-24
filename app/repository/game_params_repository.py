@@ -1,14 +1,14 @@
 from contextlib import AbstractContextManager
 from typing import Callable
 from sqlalchemy.orm import Session, joinedload
-from app.model.game_params import GameParams
+from app.model.game_params import GamesParams
 from app.repository.base_repository import BaseRepository
 from app.core.exceptions import NotFoundError
 from app.schema.games_params_schema import BaseGameParams
 
 
 class GameParamsRepository(BaseRepository):
-    def __init__(self, session_factory: Callable[..., AbstractContextManager[Session]], model=GameParams) -> None:
+    def __init__(self, session_factory: Callable[..., AbstractContextManager[Session]], model=GamesParams) -> None:
         super().__init__(session_factory, model)
 
     def update_params_gameId(self, gameId: int, param: BaseGameParams):

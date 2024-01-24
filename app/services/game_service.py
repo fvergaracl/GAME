@@ -1,6 +1,6 @@
 from app.repository.game_repository import GameRepository
 from app.repository.game_params_repository import GameParamsRepository
-from app.schema.games_schema import CreateGame, FindGameByExternalId, UpdateGame
+from app.schema.games_schema import PostCreateGame, FindGameByExternalId, UpdateGame
 from app.schema.games_params_schema import BaseGameParams
 from app.services.base_service import BaseService
 
@@ -8,20 +8,24 @@ from app.core.exceptions import ConflictError
 
 
 class GameService(BaseService):
-    def __init__(self, game_repository: GameRepository, game_params_repository: GameParamsRepository):
+    def __init__(
+            self,
+            game_repository: GameRepository,
+            game_params_repository: GameParamsRepository
+    ):
         self.game_repository = game_repository
         self.game_params_repository = game_params_repository
         super().__init__(game_repository)
 
-    def get_all_games(self):
-        return self.game_repository.read_all()
+    def get_all_games(self, schema):
+        return self.game_repository.get_all_games(schema)
 
     def get_by_externalId(self, externalGameId: str):
         return self.game_repository.read_by_column(
             "externalGameId", externalGameId
         )
 
-    def create(self, schema: CreateGame):
+    def create(self, schema: PostCreateGame):
         params = schema.params
         externalGameId = schema.externalGameId
 
