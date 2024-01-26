@@ -8,12 +8,13 @@ class BaseGameParams(BaseModel):
     class Config:
         orm_mode = True
 
+
 class CreateGameParams(BaseGameParams):
     ...
 
 
 class BaseGameParams(CreateGameParams):
-    gameId: int
+    id: int
     paramKey: str
     value: str | int | float | bool
 

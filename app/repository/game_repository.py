@@ -27,7 +27,6 @@ class GameRepository(BaseRepository):
         super().__init__(session_factory, model)
 
     def get_all_games(self, schema):
-        # ACAAAAA
         with self.session_factory() as session:
             schema_as_dict = schema.dict(exclude_none=True)
             ordering = schema_as_dict.get("ordering", configs.ORDERING)
@@ -41,7 +40,14 @@ class GameRepository(BaseRepository):
             filter_options = dict_to_sqlalchemy_filter_options(
                 self.model, schema_as_dict)
 
-            query = session.query(self.model)
+            query = session.query(
+                Games.id.label("id"),
+                Games.created_at.label("created_at"),
+                Games.platform.label("platform"),
+                Games.endDateTime.label("endDateTime"),
+                Games.externalGameId.label("externalGameId"),
+                GamesParams,
+            )
             eager_loading = schema_as_dict.get("eager", False)
             if eager_loading:
                 for relation in getattr(self.model, "eagers", []):
@@ -49,6 +55,18 @@ class GameRepository(BaseRepository):
 
             filtered_query = query.filter(filter_options)
             query = filtered_query.order_by(order_query)
+
+            query = query.join(
+                GamesParams, Games.id == GamesParams.gameId
+            )
+            query = query.group_by(
+                Games.id,
+                Games.created_at,
+                Games.platform,
+                Games.endDateTime,
+                Games.externalGameId,
+                GamesParams
+            )
 
             if page_size == "all":
                 games = query.all()
@@ -58,11 +76,27 @@ class GameRepository(BaseRepository):
 
             total_count = filtered_query.count()
 
-            # Transformar los resultados de la consulta en objetos Pydantic
-            game_results = [BaseGameResult.from_orm(game) for game in games]
+            game_results = {}
+            for game in games:
+                game_id = game.id
+                if game_id not in game_results:
+                    game_results[game_id] = BaseGameResult(
+                        id=game.id,
+                        created_at=game.created_at,
+                        externalGameId=game.externalGameId,
+                        platform=game.platform,
+                        endDateTime=game.endDateTime,
+                        params=[]
+                    )
+                game_results[game_id].params.append({
+                    "id": game.GamesParams.id,
+                    "paramKey": game.GamesParams.paramKey,
+                    "value": game.GamesParams.value,
+
+                })
 
             return FindGameResult(
-                items=game_results,
+                items=list(game_results.values()),
                 search_options={
                     "page": page,
                     "page_size": page_size,
