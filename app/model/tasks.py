@@ -8,6 +8,7 @@ CREATE TABLE Tasks (
 
 from app.model.base_model import BaseModel
 from sqlmodel import Field, Column, Integer, ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class Tasks(BaseModel, table=True):
@@ -20,14 +21,14 @@ class Tasks(BaseModel, table=True):
 
     gameId: int = Field(
         sa_column=Column(
-            Integer,
+            UUID(as_uuid=True),
             ForeignKey("games.id")
         )
     )
 
     strategyId: int = Field(
         sa_column=Column(
-            Integer,
+            UUID(as_uuid=True),
             ForeignKey("strategy.id")
         ),
         nullable=True

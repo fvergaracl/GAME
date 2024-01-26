@@ -1,19 +1,8 @@
-"""
 
-CREATE TABLE UserPoints (
-  id SERIAL PRIMARY KEY,
-  points INT,
-  description TEXT NULL,
-  timestamp TIMESTAMP,
-  userId INT,
-  taskId INT,
-  FOREIGN KEY (userId) REFERENCES Users(id),
-  FOREIGN KEY (taskId) REFERENCES Tasks(id)
-);
-"""
 
 from app.model.base_model import BaseModel
 from sqlmodel import Column, Field, ForeignKey, Integer, String, DateTime
+from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 
 
@@ -21,8 +10,10 @@ class UserPoints(BaseModel, table=True):
     points: int = Field(sa_column=Column(Integer))
     description: str = Field(sa_column=Column(String))
     timestamp: datetime = Field(sa_column=Column(DateTime))
-    userId: int = Field(sa_column=Column(Integer, ForeignKey("users.id")))
-    taskId: int = Field(sa_column=Column(Integer, ForeignKey("tasks.id")))
+    userId: int = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("users.id")))
+    taskId: int = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("tasks.id")))
 
     def __str__(self):
         return f"UserPoints: {self.points}, {self.description}, {self.timestamp}, {self.userId}, {self.taskId}"

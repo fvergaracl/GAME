@@ -9,7 +9,6 @@ from app.schema.games_schema import (
     FindGameResult,
     BaseGameResult
 )
-from app.schema.games_params_schema import BaseGameParams
 from sqlalchemy.orm import Session, joinedload
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
 from app.core.config import configs

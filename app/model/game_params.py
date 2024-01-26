@@ -1,11 +1,13 @@
 from app.model.base_model import BaseModel
-from sqlmodel import Column, Field, ForeignKey, Integer, String
+from sqlmodel import Column, Field, ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class GamesParams(BaseModel, table=True):
     paramKey: str = Field(sa_column=Column(String))
     value: str = Field(sa_column=Column(String))
-    gameId: int = Field(sa_column=Column(Integer, ForeignKey("games.id")))
+    gameId: str = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("games.id")))
 
     def __str__(self):
         return f"GameParams: {self.paramKey}, {self.value}, {self.gameId}"

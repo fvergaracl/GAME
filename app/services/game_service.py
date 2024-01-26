@@ -1,7 +1,11 @@
 from app.repository.game_repository import GameRepository
 from app.repository.game_params_repository import GameParamsRepository
-from app.schema.games_schema import PostCreateGame, FindGameByExternalId, UpdateGame
-from app.schema.games_params_schema import BaseGameParams
+from app.schema.games_schema import (
+    PostCreateGame,
+    GameCreated,
+    UpdateGame
+)
+from app.schema.games_params_schema import InsertGameParams
 from app.services.base_service import BaseService
 
 from app.core.exceptions import ConflictError
@@ -36,18 +40,30 @@ class GameService(BaseService):
         if externalGameId_exist:
             raise ConflictError(
                 detail=f"Game already exist with externalGameId : {externalGameId}")
+        created_params = []
+        game = self.game_repository.create(schema)
 
         if params:
             del schema.params
-            game = self.game_repository.create(schema)
+
             for param in params:
                 # BaseGameParams
                 params_dict = param.dict()
-                params_dict['gameId'] = game.id
-                params_to_insert = BaseGameParams(**params_dict)
-                self.game_params_repository.create(params_to_insert)
-            return game
-        return self.game_repository.create(schema)
+                params_dict['gameId'] = str(game.id)
+
+                params_to_insert = InsertGameParams(**params_dict)
+                created_param = self.game_params_repository.create(
+                    params_to_insert)
+              
+
+                created_params.append(created_param)
+
+        response = GameCreated(
+            **game.dict(),
+            params=created_params,
+            message="Successfully created"
+        )
+        return response
 
     def update(self, id: int, schema: UpdateGame):
         params = schema.params

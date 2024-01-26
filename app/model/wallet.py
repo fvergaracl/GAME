@@ -13,6 +13,7 @@ CREATE TABLE Wallet (
 from app.model.base_model import BaseModel
 from sqlmodel import Column, Field, ForeignKey, Integer, Float
 from app.core.config import configs
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class Wallet(BaseModel, table=True):
@@ -21,7 +22,7 @@ class Wallet(BaseModel, table=True):
     conversionRate: float = Field(sa_column=Column(
         Integer), default=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN)
     userId: int = Field(sa_column=Column(
-        Integer, ForeignKey("users.id"), unique=True, nullable=False))
+        UUID(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False))
 
     def __str__(self):
         return f"Wallet: {self.coinsBalance}, {self.pointsBalance}, {self.conversionRate}, {self.userId}"

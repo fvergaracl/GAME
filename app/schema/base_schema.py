@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class ModelBaseInfo(BaseModel):
-    id: int
+    id: str
     created_at: datetime
     updated_at: datetime
 

@@ -1,5 +1,6 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
+from uuid import UUID
 
 from app.core.container import Container
 from app.schema.games_schema import (
@@ -56,10 +57,13 @@ description_get_game_by_id = """
 )
 @inject
 def get_game_by_id(
-    id: str,
+    id: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
-    return service.get_by_id(id)
+
+    response = service.get_by_id(id)
+    response.id = str(response.id)
+    return response
 
 
 summary_create_game = "Create Game"
@@ -88,7 +92,7 @@ def create_game(
 @router.put("/{id}", response_model=GameUpdated)
 @inject
 def update_game(
-    id: int,
+    id: str,
     schema: UpdateGame,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
