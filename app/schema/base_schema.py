@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import List, Optional, Union
-
+from uuid import UUID
 from pydantic import BaseModel
 
 
 class ModelBaseInfo(BaseModel):
-    id: str
+    id: UUID
     created_at: datetime
     updated_at: datetime
 

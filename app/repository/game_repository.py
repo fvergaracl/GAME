@@ -1,6 +1,7 @@
 from contextlib import AbstractContextManager
 from typing import Callable
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from app.model.games import Games
 from app.model.game_params import GamesParams
 from app.repository.base_repository import BaseRepository
@@ -12,6 +13,7 @@ from app.schema.games_schema import (
 from sqlalchemy.orm import Session, joinedload
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
 from app.core.config import configs
+from app.core.exceptions import NotFoundError, DuplicatedError
 
 
 class GameRepository(BaseRepository):
@@ -104,18 +106,40 @@ class GameRepository(BaseRepository):
                 }
             )
 
-    def update_with_params(self, id: int, schema: UpsertGameWithGameParams, params):
+    def get_game_by_id(self, id: str):
         with self.session_factory() as session:
-            session.query(self.model).filter(self.model.id == id).update(
-                schema.dict(exclude_none=True))
-            query = session.query(self.model).filter(
+            game = session.query(self.model).filter(
                 self.model.id == id).first()
-            if params:
-                query.params = []
-                session.flush()
-                query.params = params
-            else:
-                query.params = []
-            session.commit()
-            session.refresh(query)
-            return self.read_by_id(id)
+            if not game:
+                raise NotFoundError(detail=f"Not found id : {id}")
+            # buscando los parametros del juego
+            params = session.query(self.model_game_params).filter(
+                self.model_game_params.gameId == id).all()
+            game_params = []
+            for param in params:
+                game_params.append({
+                    "id": param.id,
+                    "paramKey": param.paramKey,
+                    "value": param.value,
+                })
+
+            return BaseGameResult(
+                id=game.id,
+                created_at=game.created_at,
+                updated_at=game.updated_at,
+                externalGameId=game.externalGameId,
+                platform=game.platform,
+                endDateTime=game.endDateTime,
+                params=game_params
+            )
+
+    def patch_game_by_id(self, id: str, schema):
+        with self.session_factory() as session:
+            schema_as_dict = schema.dict(exclude_none=True)
+            for key, value in schema_as_dict.items():
+                try:
+                    self.update_attr(id, key, value)
+                except IntegrityError as e:
+                    raise DuplicatedError(detail=str(e.orig))
+
+            return self.get_game_by_id(id)

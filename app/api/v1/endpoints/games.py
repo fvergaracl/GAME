@@ -8,14 +8,13 @@ from app.schema.games_schema import (
     FindGameResult,
     PostCreateGame,
     GameCreated,
-    UpdateGame,
+    PatchGame,
     GameUpdated,
-    Game
+    FindGameById
 )
 from app.services.game_service import GameService
 
 router = APIRouter(
-
     prefix="/games",
     tags=["games"],
 )
@@ -51,7 +50,7 @@ description_get_game_by_id = """
 
 @router.get(
     "/{id}",
-    response_model=Game,
+    response_model=FindGameById,
     description=description_get_game_by_id,
     summary=summary_get_game_by_id
 )
@@ -62,7 +61,6 @@ def get_game_by_id(
 ):
 
     response = service.get_by_id(id)
-    response.id = str(response.id)
     return response
 
 
@@ -88,12 +86,19 @@ def create_game(
 
 ########################## Línea de corte #####################################
 
+summary_patch_game = "Update Game"
+description_patch_game = """
+## Update Game
+can update even the GameParams
+"""
 
-@router.put("/{id}", response_model=GameUpdated)
+
+@router.patch("/{id}", response_model=GameUpdated)
 @inject
-def update_game(
+def patch_game(
     id: str,
-    schema: UpdateGame,
+    schema: PatchGame,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
-    return service.update(id, schema)
+    # ACA
+    return service.patch_game_by_id(id, schema)

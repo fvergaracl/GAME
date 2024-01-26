@@ -22,6 +22,7 @@ class BaseGame(BaseModel):
 class BaseGameResult(BaseModel):
     id: Optional[UUID] = None
     created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     externalGameId: Optional[str] = None
     platform: Optional[str] = None
     endDateTime: Optional[datetime] = None
@@ -38,6 +39,12 @@ class PostCreateGame(BaseModel):
     params: Optional[List[CreateGameParams]]
 
 
+class PatchGame(BaseModel):
+    externalGameId: Optional[str]
+    platform: Optional[str]
+    endDateTime: Optional[datetime]
+    params: Optional[List[UpdateGameParams]]
+
 class GameCreated(BaseGameResult):
     message: Optional[str] = "Successfully created"
 
@@ -47,6 +54,14 @@ class GameUpdated(BaseGameResult):
 
 
 class UpdateGame(BaseModel):
+    id: UUID
+    externalGameId: Optional[str]
+    platform: Optional[str]
+    endDateTime: Optional[datetime]
+    params: Optional[List[UpdateGameParams]]
+
+
+class FindGameById(ModelBaseInfo):
     externalGameId: Optional[str]
     platform: Optional[str]
     endDateTime: Optional[datetime]
