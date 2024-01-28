@@ -33,3 +33,20 @@ class GameParamsRepository(BaseRepository):
                     game_param_model.id, not_found_message=f"GameParams not found (id) : {game_param_model.id}")
             raise NotFoundError(
                 f"GameParams not found (id) : {param.id}")
+
+    def patch_game_params_by_id(self, id: str, schema):
+        with self.session_factory() as session:
+            game_params_model = session.query(self.model).filter(
+                self.model.id == id
+            ).first()
+
+            if game_params_model:
+                for key, value in schema.dict(exclude_none=True).items():
+                    setattr(game_params_model, key, value)
+
+                session.commit()
+
+                return self.read_by_id(
+                    game_params_model.id, not_found_message=f"GameParams not found (id) : {game_params_model.id}")
+            raise NotFoundError(
+                f"GameParams not found (id) : {id}")

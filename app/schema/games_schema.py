@@ -45,11 +45,16 @@ class PatchGame(BaseModel):
     endDateTime: Optional[datetime]
     params: Optional[List[UpdateGameParams]]
 
+
 class GameCreated(BaseGameResult):
     message: Optional[str] = "Successfully created"
 
 
 class GameUpdated(BaseGameResult):
+    message: Optional[str] = "Successfully updated"
+
+
+class ResponsePatchGame(BaseGameResult):
     message: Optional[str] = "Successfully updated"
 
 

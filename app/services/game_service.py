@@ -4,9 +4,9 @@ from app.schema.games_schema import (
     PostCreateGame,
     GameCreated,
     PatchGame,
-    FindGameById
+    ResponsePatchGame
 )
-from app.schema.games_params_schema import InsertGameParams
+from app.schema.games_params_schema import InsertGameParams, BaseFindGameParams
 from app.services.base_service import BaseService
 from app.core.exceptions import ConflictError
 from uuid import UUID
@@ -72,17 +72,22 @@ class GameService(BaseService):
     def patch_game_by_id(self, id: UUID, schema: PatchGame):
         params = schema.params
         del schema.params
-        print('***********************************************')
-        print(schema)
-        self.game_repository.patch_game_by_id(id, schema)
 
+        updated_game = self.game_repository.patch_game_by_id(id, schema)
+        updated_params = []
         if params:
-            for param in params:
-                # patch_by_attr
-                if (param['id'] and param['paramKey'] and param['value']):
-                    self.game_params_repository.update_attr(
-                        param.id, "paramKey", param.paramKey)
-                    self.game_params_repository.update_attr(
-                        param.id, "value", param.value)
 
-        return self.game_repository.get_game_by_id(id)
+            for param in params:
+                self.game_params_repository.patch_game_params_by_id(
+                    param.id, param)
+                updated_params.append(param)
+
+        updated_game_dict = updated_game.dict()
+        updated_game_dict.pop('params', None)
+
+        response = ResponsePatchGame(
+            **updated_game_dict,
+            params=updated_params,
+            message="Successfully updated"
+        )
+        return response

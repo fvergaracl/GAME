@@ -9,7 +9,7 @@ from app.schema.games_schema import (
     PostCreateGame,
     GameCreated,
     PatchGame,
-    GameUpdated,
+    ResponsePatchGame,
     FindGameById
 )
 from app.services.game_service import GameService
@@ -23,7 +23,7 @@ router = APIRouter(
 summary_get_games_list = "Get Games List"
 description_get_games_list = """
 ## Find Game
-### Find game by externalGameId
+### Find all games and params
 """
 
 
@@ -84,8 +84,6 @@ def create_game(
     return service.create(schema)
 
 
-########################## Línea de corte #####################################
-
 summary_patch_game = "Update Game"
 description_patch_game = """
 ## Update Game
@@ -93,12 +91,11 @@ can update even the GameParams
 """
 
 
-@router.patch("/{id}", response_model=GameUpdated)
+@router.patch("/{id}", response_model=ResponsePatchGame)
 @inject
 def patch_game(
     id: str,
     schema: PatchGame,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
-    # ACA
     return service.patch_game_by_id(id, schema)
