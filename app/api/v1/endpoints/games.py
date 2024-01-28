@@ -10,7 +10,8 @@ from app.schema.games_schema import (
     GameCreated,
     PatchGame,
     ResponsePatchGame,
-    FindGameById
+    FindGameById,
+    FindTaskGameById
 )
 from app.services.game_service import GameService
 
@@ -99,3 +100,25 @@ def patch_game(
     service: GameService = Depends(Provide[Container.game_service]),
 ):
     return service.patch_game_by_id(id, schema)
+
+
+summary_get_task_by_id_game = "Get Task by Id Game"
+description_get_task_by_id_game = """
+## Get Task by Id Game
+"""
+
+
+@router.get(
+    "/{id}/tasks",
+    response_model=FindTaskGameById,
+    description=description_get_task_by_id_game,
+    summary=summary_get_task_by_id_game
+)
+@inject
+def get_task_by_id_game(
+    id: UUID,
+    service: GameService = Depends(Provide[Container.game_service]),
+):
+
+    response = service.get_tasks_by_gameId(id)
+    return response

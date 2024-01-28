@@ -1,14 +1,15 @@
 from app.repository.game_repository import GameRepository
 from app.repository.game_params_repository import GameParamsRepository
+from app.repository.task_repository import TaskRepository
 from app.schema.games_schema import (
     PostCreateGame,
     GameCreated,
     PatchGame,
     ResponsePatchGame
 )
-from app.schema.games_params_schema import InsertGameParams, BaseFindGameParams
+from app.schema.games_params_schema import InsertGameParams
 from app.services.base_service import BaseService
-from app.core.exceptions import ConflictError
+from app.core.exceptions import ConflictError, NotFoundError
 from uuid import UUID
 
 
@@ -16,10 +17,12 @@ class GameService(BaseService):
     def __init__(
             self,
             game_repository: GameRepository,
-            game_params_repository: GameParamsRepository
+            game_params_repository: GameParamsRepository,
+            trask_repository: TaskRepository
     ):
         self.game_repository = game_repository
         self.game_params_repository = game_params_repository
+        self.trask_repository = trask_repository
         super().__init__(game_repository)
 
     def get_by_id(self, id: UUID):
@@ -76,7 +79,6 @@ class GameService(BaseService):
         updated_game = self.game_repository.patch_game_by_id(id, schema)
         updated_params = []
         if params:
-
             for param in params:
                 self.game_params_repository.patch_game_params_by_id(
                     param.id, param)
@@ -91,3 +93,21 @@ class GameService(BaseService):
             message="Successfully updated"
         )
         return response
+
+    def get_tasks_by_gameId(self, gameId: UUID):
+        game = self.game_repository.read_by_id(gameId)
+        if not game:
+            raise NotFoundError(detail=f"Game not found by id : {gameId}")
+
+        tasks = self.trask_repository.read_by_column(
+            "gameId", gameId,
+            not_found_raise_exception=False
+
+        )
+        tasks_list = []
+        if tasks:
+            for task in tasks:
+                tasks_list.append(task.dict())
+        game_dict = game.dict()
+        game_dict['tasks'] = tasks_list
+        return game_dict

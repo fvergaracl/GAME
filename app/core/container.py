@@ -51,7 +51,8 @@ class Container(containers.DeclarativeContainer):
     game_service = providers.Factory(
         GameService,
         game_repository=game_repository,
-        game_params_repository=game_params_repository
+        game_params_repository=game_params_repository,
+        trask_repository=task_repository
     )
 
     game_params_service = providers.Factory(

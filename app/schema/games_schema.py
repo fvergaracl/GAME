@@ -72,6 +72,12 @@ class FindGameById(ModelBaseInfo):
     endDateTime: Optional[datetime]
     params: Optional[List[UpdateGameParams]]
 
+class FindTaskGameById(ModelBaseInfo):
+    externalGameId: Optional[str]
+    platform: Optional[str]
+    endDateTime: Optional[datetime]
+    tasks: Optional[List[UpdateGameParams]]
+
 
 class Game(ModelBaseInfo, BaseGame, metaclass=AllOptional):
     ...
