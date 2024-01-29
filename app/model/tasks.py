@@ -19,14 +19,14 @@ class Tasks(BaseModel, table=True):
         )
     )
 
-    gameId: int = Field(
+    gameId: str = Field(
         sa_column=Column(
             UUID(as_uuid=True),
             ForeignKey("games.id")
         )
     )
 
-    strategyId: int = Field(
+    strategyId: str = Field(
         sa_column=Column(
             UUID(as_uuid=True),
             ForeignKey("strategy.id")

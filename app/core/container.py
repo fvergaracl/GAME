@@ -73,7 +73,8 @@ class Container(containers.DeclarativeContainer):
     task_service = providers.Factory(
         TaskService,
         task_repository=task_repository,
-        game_repository=game_repository
+        game_repository=game_repository,
+        strategy_repository=strategy_repository
     )
 
     user_points_service = providers.Factory(

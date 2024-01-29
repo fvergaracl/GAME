@@ -3,8 +3,10 @@ from typing import Callable
 from app.core.config import configs
 from sqlalchemy.orm import Session, joinedload
 from app.model.tasks import Tasks
+from app.model.strategy import Strategy
 from app.repository.base_repository import BaseRepository
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
+from app.core.exceptions import NotFoundError
 
 
 class TaskRepository(BaseRepository):
@@ -14,7 +16,9 @@ class TaskRepository(BaseRepository):
         session_factory: Callable[
             ...,
             AbstractContextManager[Session]],
-            model=Tasks) -> None:
+            model=Tasks,
+            model_strategy=Strategy) -> None:
+        self.model_strategy = model_strategy
         super().__init__(session_factory, model)
 
     def read_by_gameId(self, schema, eager=False):
@@ -64,3 +68,13 @@ class TaskRepository(BaseRepository):
             query = query.filter(
                 self.model.gameId == gameId, self.model.externalTaskId == externalTaskId).first()
             return query
+
+    def get_task_and_strategy_by_id(self, id):
+        with self.session_factory() as session:
+            query = session.query(self.model)
+            query = query.filter(self.model.id == id).first()
+            if not query:
+                raise NotFoundError(detail=f"Task not found by id : {id}")
+            strategy = session.query(self.model_strategy).filter(
+                self.model_strategy.id == query.strategyId).first()
+            return query, strategy
