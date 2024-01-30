@@ -44,13 +44,12 @@ class FindTaskByExternalGameID(FindBase, metaclass=AllOptional):
 
 
 class GetTaskById(BaseModel):
-    gameId: UUID
     taskId: UUID
 
 
-class FoundTaskByExternalTaskId(BaseTask):
-    ...
-    # using
+class FoundTaskById(BaseModel):
+    task: Task
+    strategy: Optional[BaseStrategy]
 
 
 class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):

@@ -7,7 +7,7 @@ from app.schema.task_schema import (
     GetTaskById,
     FindTaskResult,
     FindTaskByExternalGameID,
-    FoundTaskByExternalTaskId,
+    FoundTaskById,
     CreateTaskPost,
     CreateTaskPostSuccesfullyCreated
 )
@@ -31,9 +31,9 @@ description_get_tasks_list = """
 """
 
 
-@game_task_router.get(
-    "/{gameId}/tasks/{taskId}",
-    response_model=FoundTaskByExternalTaskId,
+@router.get(
+    "/{taskId}",
+    response_model=FoundTaskById,
     summary=summary_get_tasks_list,
     description=description_get_tasks_list,
 )
@@ -43,7 +43,7 @@ def get_task_detail_by_id(
     service: TaskService = Depends(
         Provide[Container.task_service]),
 ):
-    return service.get_task_by_externalGameId_and_externalTaskId(schema)
+    return service.get_task_detail_by_id(schema)
 
 
 @game_task_router.post("/{id}/tasks", response_model=CreateTaskPostSuccesfullyCreated)

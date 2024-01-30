@@ -82,25 +82,18 @@ class TaskService(BaseService):
 
         return response
 
-    def get_task_by_externalGameId_and_externalTaskId(self, schema):
-        externalGameId = schema.externalGameId
-        externalTaskId = schema.externalTaskId
-
-        game = self.game_repository.read_by_column(
-            "externalGameId",
-            externalGameId,
-            not_found_message="Game not found with externalGameId : {externalGameId} "
-        )
-
-        task = self.task_repository.read_by_gameId_and_externalTaskId(
-            game.id, externalTaskId)
-        if (task):
-            response_dict = {
-                "externalTaskId": task.externalTaskId,
-                "gameId": task.gameId,
-                "externalGameId": externalGameId
-            }
-            return response_dict
-
-        raise NotFoundError(
-            detail=f"Task not found with externalTaskId : \"{externalTaskId}\" To game with externalGameId : \"{externalGameId}\"")
+    def get_task_detail_by_id(self, schema):
+        taskId = schema.taskId
+        task = self.task_repository.read_by_id(
+            taskId, not_found_message="Task not found by id : {taskId}")
+        strategyId = task.strategyId
+        strategy = None
+        if (strategyId):
+            strategy = self.strategy_repository.read_by_id(
+                strategyId,
+                not_found_message="Strategy not found by id : {strategyId}"
+            )
+        return {
+            "task": task,
+            "strategy": strategy
+        }
