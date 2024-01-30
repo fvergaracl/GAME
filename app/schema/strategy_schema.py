@@ -2,44 +2,6 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
 
 from app.schema.base_schema import ModelBaseInfo, SearchOptions
-"""
-{
-    "label": "Default",
-    "description": "Default rule",
-    "tags": [
-        "default"
-    ],
-    "static_variables": {
-        "BASIC_POINTS": 100,
-        "BONUS_FACTOR": 1.5
-    },
-    "rules": [
-        {
-            "name": "Default",
-            "description": "Default rule",
-            "conditions": [],
-            "reward": "@BASIC_POINTS",
-            "priority": 1
-        },
-        {
-            "name": "First_action_game",
-            "description": "First action in game",
-            "conditions": [
-                "@AVG_POINTS_GAME_BY_USER == 0"
-            ],
-            "reward": "@BASIC_POINTS * @BONUS_FACTOR"
-        },
-        {
-            "name": "First_action_task",
-            "description": "First action in task",
-            "conditions": [
-                "@AVG_POINTS_TASK_BY_USER == 0"
-            ],
-            "reward": "@BASIC_POINTS * @BONUS_FACTOR"
-        }
-    ]
-}
-"""
 
 
 class RuleBase(BaseModel):
@@ -63,7 +25,7 @@ class DataStrategy(BaseModel):
     rules: List[RuleBase]
 
 
-class BaseStrategy(BaseModel):
+class BaseStrategy(ModelBaseInfo):
     strategyName: str
     data: DataStrategy
 

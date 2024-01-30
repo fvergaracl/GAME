@@ -1,7 +1,13 @@
 from typing import List, Optional
 from uuid import UUID
 from pydantic import BaseModel
-from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions, SuccesfullyCreated
+from app.schema.base_schema import (
+    FindBase,
+    ModelBaseInfo,
+    SearchOptions,
+    SuccesfullyCreated
+)
+from app.schema.strategy_schema import BaseStrategy
 from app.util.schema import AllOptional
 
 
@@ -12,7 +18,7 @@ class BaseTask(BaseModel):
 
 class CreateTaskPost(BaseModel):
     externalTaskId: str
-    strategyId: Optional[UUID]
+    strategyId: Optional[str]
 
 
 class CreateTask(CreateTaskPost, metaclass=AllOptional):
@@ -44,10 +50,10 @@ class GetTaskById(BaseModel):
 
 class FoundTaskByExternalTaskId(BaseTask):
     ...
-    # using 
+    # using
 
 
 class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
-
     externalTaskId: str
-    gameId: int
+    gameId: str
+    strategy: Optional[BaseStrategy]

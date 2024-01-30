@@ -43,8 +43,6 @@ def get_task_detail_by_id(
     service: TaskService = Depends(
         Provide[Container.task_service]),
 ):
-    print('-------------------------- get_task_detail_by_id ------------------------------')
-    print(schema)
     return service.get_task_by_externalGameId_and_externalTaskId(schema)
 
 

@@ -8,7 +8,14 @@ from app.schema.games_params_schema import (
     CreateGameParams,
     UpdateGameParams
 )
-from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
+from app.schema.base_schema import (
+    FindBase,
+    ModelBaseInfo,
+    SearchOptions
+)
+
+from app.schema.task_schema import Task
+
 from app.util.schema import AllOptional
 
 
@@ -72,11 +79,12 @@ class FindGameById(ModelBaseInfo):
     endDateTime: Optional[datetime]
     params: Optional[List[UpdateGameParams]]
 
+
 class FindTaskGameById(ModelBaseInfo):
     externalGameId: Optional[str]
     platform: Optional[str]
     endDateTime: Optional[datetime]
-    tasks: Optional[List[UpdateGameParams]]
+    tasks: Optional[List[Task]]
 
 
 class Game(ModelBaseInfo, BaseGame, metaclass=AllOptional):

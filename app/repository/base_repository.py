@@ -49,7 +49,7 @@ class BaseRepository:
                 },
             }
 
-    def read_by_id(self, id: int, eager=False, not_found_message="Not found id : {id}"):
+    def read_by_id(self, id: int, eager=False, not_found_raise_exception=True, not_found_message="Not found id : {id}"):
         with self.session_factory() as session:
             query = session.query(self.model)
             if eager:
@@ -57,8 +57,10 @@ class BaseRepository:
                     query = query.options(
                         joinedload(getattr(self.model, eager)))
             query = query.filter(self.model.id == id).first()
-            if not query:
+            if not query and not_found_raise_exception:
                 raise NotFoundError(detail=not_found_message.format(id=id))
+            if (not not_found_raise_exception and not query):
+                return None
             return query
 
     def read_by_column(

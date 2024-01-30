@@ -35,19 +35,27 @@ class Tasks(BaseModel, table=True):
     )
 
     def __str__(self):
-        return f"Tasks(externalTaskId={self.externalTaskId}, gameId={self.gameId})"
+        return f"Tasks(id={self.id}, externalTaskId={self.externalTaskId}, gameId={self.gameId}, strategyId={self.strategyId})"
 
     def __repr__(self):
-        return f"Tasks(externalTaskId={self.externalTaskId}, gameId={self.gameId})"
+        return f"Tasks(id={self.id}, externalTaskId={self.externalTaskId}, gameId={self.gameId}, strategyId={self.strategyId})"
 
     def __eq__(self, other):
-        return self.externalTaskId == other.externalTaskId and self.gameId == other.gameId
+        return (
+            self.id == other.id
+            and self.externalTaskId == other.externalTaskId
+            and self.gameId == other.gameId
+            and self.strategyId == other.strategyId
+        )
 
     def __hash__(self):
-        return hash((self.externalTaskId, self.gameId))
+        return hash((self.id, self.externalTaskId, self.gameId, self.strategyId))
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __lt__(self, other):
-        return self.externalTaskId < other.externalTaskId and self.gameId < other.gameId
+        return self.id < other.id
 
     def __le__(self, other):
-        return self.externalTaskId <= other.externalTaskId and self.gameId <= other.gameId
+        return self.id <= other.id

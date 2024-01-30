@@ -18,11 +18,11 @@ class GameService(BaseService):
             self,
             game_repository: GameRepository,
             game_params_repository: GameParamsRepository,
-            trask_repository: TaskRepository
+            task_repository: TaskRepository
     ):
         self.game_repository = game_repository
         self.game_params_repository = game_params_repository
-        self.trask_repository = trask_repository
+        self.task_repository = task_repository
         super().__init__(game_repository)
 
     def get_by_id(self, id: UUID):
@@ -99,9 +99,11 @@ class GameService(BaseService):
         if not game:
             raise NotFoundError(detail=f"Game not found by id : {gameId}")
 
-        tasks = self.trask_repository.read_by_column(
-            "gameId", gameId,
-            not_found_raise_exception=False
+        tasks = self.task_repository.read_by_column(
+            "gameId",
+            gameId,
+            not_found_raise_exception=False,
+            only_one=False
 
         )
         tasks_list = []
@@ -110,4 +112,5 @@ class GameService(BaseService):
                 tasks_list.append(task.dict())
         game_dict = game.dict()
         game_dict['tasks'] = tasks_list
+
         return game_dict
