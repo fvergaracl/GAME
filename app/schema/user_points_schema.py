@@ -40,8 +40,8 @@ class FindAllUserPointsResult(BaseModel):
 
 
 class PostAssignPointsToUser(BaseModel):
-    externalTaskId: str
-    externalUserId: str
+    taskId: str
+    userId: str
     points:  Optional[int]
     description: Optional[str]
 

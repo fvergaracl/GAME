@@ -7,9 +7,25 @@ from app.schema.user_points_schema import (
     FindAllUserPointsResult,
 
 )
-from app.services.user_points_service import UserPointsService
+
+from app.schema.user_schema import (
+    PostCreateUser,
+    CreatedUser
+)
+from app.services.user_service import UserService
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
 )
+
+
+# create user
+@router.post("/", response_model=CreatedUser)
+@inject
+def create_user(
+    schema: PostCreateUser,
+    service: UserService = Depends(
+        Provide[Container.user_service]),
+):
+    return service.create_user(schema)

@@ -43,8 +43,9 @@ class FindStrategyResult(Strategy):
     ...
 
 
-class CreateStrategyPost(BaseStrategy):
-    ...
+class CreateStrategyPost(BaseModel):
+    strategyName: str
+    data: DataStrategy
 
 
 class CreateStrategyResult(Strategy):
