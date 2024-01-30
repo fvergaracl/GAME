@@ -54,12 +54,3 @@ def create_task(
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
     return service.create_task_by_game_id(id, create_query)
-
-
-@router.get("/{externalGameId}", response_model=FindTaskResult)
-@inject
-def get_tasks_list_by_externalGameId(
-    find_query: FindTaskByExternalGameID = Depends(),
-    service: TaskService = Depends(Provide[Container.task_service]),
-):
-    return service.get_tasks_list_by_externalGameId(find_query)
