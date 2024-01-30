@@ -10,16 +10,16 @@ class UserPoints(BaseModel, table=True):
     points: int = Field(sa_column=Column(Integer))
     # data: is a json object
     data: dict = Field(sa_column=Column(JSONB), nullable=True)
-    userId: int = Field(sa_column=Column(
+    userId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("users.id")))
-    taskId: int = Field(sa_column=Column(
+    taskId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("tasks.id")))
 
     def __str__(self):
-        return f"UserPoints: {self.points}, {self.data}, {self.userId}, {self.taskId}"
+        return f"UserPoints(id={self.id}, points={self.points}, data={self.data}, userId={self.userId}, taskId={self.taskId}, created_at={self.created_at}, updated_at={self.updated_at})"
 
     def __repr__(self):
-        return f"UserPoints: {self.points}, {self.data}, {self.userId}, {self.taskId}"
+        return f"UserPoints(id={self.id}, points={self.points}, data={self.data}, userId={self.userId}, taskId={self.taskId}, created_at={self.created_at}, updated_at={self.updated_at})"
 
     def __eq__(self, other):
         return (
@@ -39,13 +39,8 @@ class UserPoints(BaseModel, table=True):
         return self.taskId < other.taskId
 
     def __le__(self, other):
+
         return self.taskId <= other.taskId
 
     def __gt__(self, other):
         return self.taskId > other.taskId
-
-    def __ge__(self, other):
-        return self.taskId >= other.taskId
-
-    def __bool__(self):
-        return self.taskId is not None

@@ -74,7 +74,9 @@ class Container(containers.DeclarativeContainer):
         TaskService,
         task_repository=task_repository,
         game_repository=game_repository,
-        strategy_repository=strategy_repository
+        strategy_repository=strategy_repository,
+        user_repository=user_repository,
+        user_points_repository=user_points_repository
     )
 
     user_points_service = providers.Factory(

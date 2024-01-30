@@ -1,12 +1,17 @@
 from uuid import UUID
 from app.repository.task_repository import TaskRepository
 from app.repository.game_repository import GameRepository
+from app.repository.user_repository import UserRepository
+from app.repository.user_points_repository import UserPointsRepository
 from app.repository.strategy_repository import StrategyRepository
 from app.services.base_service import BaseService
 from app.schema.task_schema import (
     FindTask,
     CreateTask,
     CreateTaskPostSuccesfullyCreated
+)
+from app.schema.task_schema import (
+    TaskPointsResponse
 )
 
 from app.core.exceptions import ConflictError, NotFoundError
@@ -17,11 +22,15 @@ class TaskService(BaseService):
             self,
             task_repository: TaskRepository,
             game_repository: GameRepository,
-            strategy_repository: StrategyRepository
+            strategy_repository: StrategyRepository,
+            user_repository: UserRepository,
+            user_points_repository: UserPointsRepository,
     ):
         self.task_repository = task_repository
         self.game_repository = game_repository
         self.strategy_repository = strategy_repository
+        self.user_repository = user_repository
+        self.user_points_repository = user_points_repository
         super().__init__(task_repository)
 
     def get_tasks_list_by_externalGameId(self, find_query):
@@ -100,3 +109,15 @@ class TaskService(BaseService):
             "task": task,
             "strategy": strategy
         }
+
+    def get_points_by_task_id(self, schema):
+        taskId = schema.taskId
+        task = self.task_repository.read_by_id(
+            taskId, not_found_message="Task not found by id : {taskId}")
+        all_points = self.user_points_repository.get_points_and_users_by_taskId(
+            taskId)
+        response = TaskPointsResponse(
+            externalTaskId=task.externalTaskId,
+            points=all_points
+        )
+        return response

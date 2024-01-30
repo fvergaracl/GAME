@@ -53,6 +53,18 @@ class FoundTaskById(BaseModel):
 
 
 class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
+    id: UUID
     externalTaskId: str
     gameId: str
     strategy: Optional[BaseStrategy]
+
+
+class TaskPoints(BaseModel):
+    userId: UUID  # userId
+    externalUserId: str
+    points: int
+
+
+class TaskPointsResponse(BaseModel):
+    externalTaskId: str
+    points: Optional[List[TaskPoints]]

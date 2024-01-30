@@ -7,7 +7,7 @@ from app.schema.user_schema import (
     PostCreateUser,
     CreatedUser,
     PostAssignPointsToUser,
-    PointsAssignedToUser,
+    UserPointsAssigned,
 )
 from app.services.user_service import UserService
 
@@ -37,7 +37,7 @@ description_assign_points_to_user = """
 
 @router.post(
     "/{userId}/points",
-    response_model=PointsAssignedToUser,
+    response_model=UserPointsAssigned,
     summary=summary_assign_points_to_user,
     description=description_assign_points_to_user,
 

@@ -3,17 +3,22 @@ from typing import List, Optional
 from pydantic import BaseModel
 from app.schema.base_schema import ModelBaseInfo, SearchOptions, FindBase
 from app.util.schema import AllOptional
-from uuid import UUID
 
 
 class PostAssignPointsToUser(BaseModel):
-    taskId: UUID
+    taskId: str
     points:  Optional[int]
     data: Optional[dict]
 
 
-class BaseUserPointsBaseModel(BaseModel):
-    userId: UUID
+class BaseUserPointsBaseModel(PostAssignPointsToUser):
+    userId: str
+
+
+class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
+    userId: str
+    taskId: str
+    message: Optional[str] = "Successfully assigned"
 
 
 class UserPoints(ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional):
