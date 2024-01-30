@@ -3,14 +3,17 @@ from typing import List, Optional
 from pydantic import BaseModel
 from app.schema.base_schema import ModelBaseInfo, SearchOptions, FindBase
 from app.util.schema import AllOptional
+from uuid import UUID
+
+
+class PostAssignPointsToUser(BaseModel):
+    taskId: UUID
+    points:  Optional[int]
+    data: Optional[dict]
 
 
 class BaseUserPointsBaseModel(BaseModel):
-    points: int
-    description: Optional[str]
-    timestamp: str
-    userId: int
-    taskId: int
+    userId: UUID
 
 
 class UserPoints(ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional):
@@ -39,17 +42,9 @@ class FindAllUserPointsResult(BaseModel):
     search_options: Optional[SearchOptions]
 
 
-class PostAssignPointsToUser(BaseModel):
-    taskId: str
-    userId: str
-    points:  Optional[int]
-    description: Optional[str]
-
-
 class ResponseAssignPointsToUser(BaseModel):
     points: int
-    description: Optional[str]
-    timestamp: str
+    data: Optional[dict]
     externalTaskId: str
     externalUserId: str
     isNewUser: Optional[bool]

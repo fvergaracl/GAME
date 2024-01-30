@@ -49,19 +49,22 @@ class TaskService(BaseService):
         strategy_id = create_query.strategyId
         # strategy_id = UUID(strategy_id)
         strategy_id = str(strategy_id)
+        if strategy_id == "None":
+            strategy_id = None
         strategy_data = self.strategy_repository.read_by_id(
             strategy_id,
             not_found_raise_exception=False
         )
         # Check if the strategy exists, if a strategyId is provided
-        if not strategy_data:
+        if strategy_id and not strategy_data:
             raise NotFoundError(
                 f"Strategy not found with strategyId: {strategy_id}")
 
         # Create the new task
         new_task_dict = create_query.dict()
         new_task_dict['gameId'] = str(game_id)
-        new_task_dict['strategyId'] = str(strategy_id)
+        if (strategy_id):
+            new_task_dict['strategyId'] = str(strategy_id)
         new_task = CreateTask(**new_task_dict)
 
         # Check if the task with the same externalTaskId already exists

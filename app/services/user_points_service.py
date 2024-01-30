@@ -158,8 +158,7 @@ class UserPointsService(BaseService):
 
         data_user_points = BaseUserPointsBaseModel(
             points=schema.points,
-            description=schema.description,
-            timestamp=str(datetime.now()),
+            data=schema.description,
             userId=user.id,
             taskId=task.id
         )
@@ -168,8 +167,7 @@ class UserPointsService(BaseService):
         )
         response = ResponseAssignPointsToUser(
             points=user_points.points,
-            description=user_points.description,
-            timestamp=str(user_points.timestamp),
+            data=user_points.description,
             externalTaskId=schema.externalTaskId,
             externalUserId=schema.externalUserId,
             isNewUser=is_new_user

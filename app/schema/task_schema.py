@@ -18,7 +18,7 @@ class BaseTask(BaseModel):
 
 class CreateTaskPost(BaseModel):
     externalTaskId: str
-    strategyId: Optional[str]
+    strategyId: Optional[UUID]
 
 
 class CreateTask(CreateTaskPost, metaclass=AllOptional):

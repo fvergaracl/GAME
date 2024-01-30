@@ -9,12 +9,8 @@ class StrategyService(BaseService):
         self.strategy_repository = strategy_repository
         super().__init__(strategy_repository)
 
-    def get_strategy_by_strategyName(self, strategyName):
-        return self.strategy_repository.read_by_column(
-            column="strategyName",
-            value=strategyName,
-            not_found_message=f"Strategy not found with strategyName : {strategyName} "
-        )
+    def get_strategy_by_id(self, id):
+        return self.strategy_repository.read_by_id(id)
 
     def create_strategy(self, schema):
         strategyName = schema.strategyName

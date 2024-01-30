@@ -31,13 +31,13 @@ def get_strategy_list(
     return service.get_list(schema)
 
 
-@router.get("/{strategyName}", response_model=FindStrategyResult)
+@router.get("/{id}", response_model=FindStrategyResult)
 @inject
-def get_strategy_by_strategyName(
-    strategyName: str,
+def get_strategy_by_id(
+    id: str,
     service: StrategyService = Depends(Provide[Container.strategy_service]),
 ):
-    return service.get_strategy_by_strategyName(strategyName)
+    return service.get_strategy_by_id(id)
 
 
 @router.post("/", response_model=CreateStrategyResult)
