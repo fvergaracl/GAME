@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 from app.schema.base_schema import ModelBaseInfo, SearchOptions, FindBase
+from app.schema.wallet_schema import WalletWithoutUserId
 from app.util.schema import AllOptional
 
 
@@ -18,6 +19,7 @@ class BaseUserPointsBaseModel(PostAssignPointsToUser):
 class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
     userId: str
     taskId: str
+    wallet: Optional[WalletWithoutUserId]
     message: Optional[str] = "Successfully assigned"
 
 

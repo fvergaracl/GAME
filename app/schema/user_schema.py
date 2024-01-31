@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from app.schema.base_schema import ModelBaseInfo
 from app.schema.user_points_schema import BaseUserPointsBaseModel
+from app.schema.wallet_schema import Wallet
 from uuid import UUID
 from typing import Optional
 
@@ -17,7 +18,6 @@ class CreatedUser(ModelBaseInfo, BaseUser):
     ...
 
 
-
 class PostAssignPointsToUser(BaseModel):
     taskId: UUID
     points: int
@@ -25,7 +25,5 @@ class PostAssignPointsToUser(BaseModel):
     data: Optional[dict]
 
 
-class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
-    userId: str
-    taskId: str
-    message: Optional[str] = "Successfully assigned"
+class CreateWallet(Wallet):
+    ...

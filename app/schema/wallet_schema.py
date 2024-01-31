@@ -3,12 +3,20 @@ from typing import Optional
 from app.schema.base_schema import ModelBaseInfo
 
 
+class WalletWithoutUserId(BaseModel):
+    coinsBalance: Optional[float]
+    pointsBalance: Optional[float]
+    conversionRate: Optional[float]
+
+class Wallet(WalletWithoutUserId):
+    userId: Optional[str]
+
+
 class BaseWallet(ModelBaseInfo):
     coinsBalance: Optional[float]
     pointsBalance: Optional[float]
     conversionRate: Optional[float]
     userId: Optional[int]
-    externalUserId: Optional[str]
 
 
 class BaseWalletOnlyUserId(BaseModel):

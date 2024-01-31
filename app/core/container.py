@@ -91,7 +91,9 @@ class Container(containers.DeclarativeContainer):
     user_service = providers.Factory(
         UserService,
         user_repository=user_repository,
-        user_points_repository=user_points_repository
+        user_points_repository=user_points_repository,
+        wallet_repository=wallet_repository,
+        wallet_transaction_repository=wallet_transaction_repository
     )
 
     wallet_service = providers.Factory(

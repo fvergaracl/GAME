@@ -7,6 +7,8 @@ from app.schema.user_schema import (
     PostCreateUser,
     CreatedUser,
     PostAssignPointsToUser,
+)
+from app.schema.user_points_schema import (
     UserPointsAssigned,
 )
 from app.services.user_service import UserService
@@ -50,3 +52,24 @@ def assign_points_to_user(
         Provide[Container.user_service]),
 ):
     return service.assign_points_to_user(userId, schema)
+
+
+summary_get_wallet_by_user_id = "Get wallet by user id"
+description_get_wallet_by_user_id = """
+## Get wallet by user id
+### Get wallet by user id
+"""
+
+
+@router.get(
+    "/{userId}/wallet",
+    summary=summary_get_wallet_by_user_id,
+    description=description_get_wallet_by_user_id,
+)
+@inject
+def get_wallet_by_user_id(
+    userId: UUID,
+    service: UserService = Depends(
+        Provide[Container.user_service]),
+):
+    return service.get_wallet_by_user_id(userId)

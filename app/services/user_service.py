@@ -1,17 +1,25 @@
 from app.repository.user_repository import UserRepository
 from app.repository.user_points_repository import UserPointsRepository
+from app.repository.wallet_repository import WalletRepository
+from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.services.base_service import BaseService
+from app.schema.user_schema import CreateWallet
 from app.schema.user_points_schema import BaseUserPointsBaseModel, UserPointsAssigned
+from app.core.config import configs
 
 
 class UserService(BaseService):
     def __init__(
             self,
             user_repository: UserRepository,
-            user_points_repository: UserPointsRepository
+            user_points_repository: UserPointsRepository,
+            wallet_repository: WalletRepository,
+            wallet_transaction_repository: WalletTransactionRepository
     ):
         self.user_repository = user_repository
         self.user_points_repository = user_points_repository
+        self.wallet_repository = wallet_repository
+        self.wallet_transaction_repository = wallet_transaction_repository
         super().__init__(user_repository)
 
     def create_user(self, schema):
@@ -40,6 +48,32 @@ class UserService(BaseService):
 
         user_points = self.user_points_repository.create(user_points_schema)
 
+        wallet = self.wallet_repository.read_by_column(
+            "userId",
+            str(user.id),
+            not_found_raise_exception=False
+        )
+        if not wallet:
+            new_wallet = CreateWallet(
+                coinsBalance=0,
+                pointsBalance=points,
+                conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
+                userId=str(user.id)
+            )
+
+            wallet = self.wallet_repository.create(new_wallet)
+        else:
+            wallet.pointsBalance += points
+            self.wallet_repository.update(wallet.id, wallet)
+        print(' ')
+        print(' ')
+        print(' ')
+        print(' ')
+        print(wallet)
+        print(' ')
+        print(' ')
+        print(' ')
+        print(' ')
         response = UserPointsAssigned(
             id=str(user_points.id),
             created_at=user_points.created_at,
@@ -48,6 +82,10 @@ class UserService(BaseService):
             taskId=str(user_points.taskId),
             points=user_points.points,
             data=user_points.data,
+            wallet=wallet
 
         )
+        print('--------------------------------')
+        print(response)
+
         return response
