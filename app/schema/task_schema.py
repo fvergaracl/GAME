@@ -68,3 +68,10 @@ class TaskPoints(BaseModel):
 class TaskPointsResponse(BaseModel):
     externalTaskId: str
     points: Optional[List[TaskPoints]]
+
+
+class TaskPointsResponseByUser(BaseTask):
+    taskId: str
+    externalTaskId: str
+    gameId: str
+    points: Optional[int]

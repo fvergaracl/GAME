@@ -92,6 +92,7 @@ class Container(containers.DeclarativeContainer):
         UserService,
         user_repository=user_repository,
         user_points_repository=user_points_repository,
+        task_repository=task_repository,
         wallet_repository=wallet_repository,
         wallet_transaction_repository=wallet_transaction_repository
     )

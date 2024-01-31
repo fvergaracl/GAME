@@ -1,9 +1,11 @@
 from app.repository.user_repository import UserRepository
 from app.repository.user_points_repository import UserPointsRepository
+from app.repository.task_repository import TaskRepository
 from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.services.base_service import BaseService
-from app.schema.user_schema import CreateWallet, UserWallet
+from app.schema.user_schema import CreateWallet, UserWallet, UserPointsTasks
+from app.schema.task_schema import TaskPointsResponseByUser
 from app.schema.user_points_schema import BaseUserPointsBaseModel, UserPointsAssigned
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.core.config import configs
@@ -14,11 +16,13 @@ class UserService(BaseService):
             self,
             user_repository: UserRepository,
             user_points_repository: UserPointsRepository,
+            task_repository: TaskRepository,
             wallet_repository: WalletRepository,
             wallet_transaction_repository: WalletTransactionRepository
     ):
         self.user_repository = user_repository
         self.user_points_repository = user_points_repository
+        self.task_repository = task_repository
         self.wallet_repository = wallet_repository
         self.wallet_transaction_repository = wallet_transaction_repository
         super().__init__(user_repository)
@@ -123,4 +127,51 @@ class UserService(BaseService):
             walletTransactions=wallet_transactions
         )
 
+        return response
+
+    def get_points_by_user_id(self, userId):
+        user = self.user_repository.read_by_id(
+            userId,
+            not_found_message=f"User not found with userId: {userId}"
+        )
+        tasks = self.user_points_repository.read_by_column(
+            "userId",
+            str(user.id),
+            only_one=False,
+            not_found_raise_exception=False
+        )
+        tasks = list({v.taskId: v for v in tasks}.values())
+        if (not tasks):
+            response = UserPointsTasks(
+                id=str(user.id),
+                tasks=[]
+            )
+            return response
+
+        cleaned_tasks = []
+        for task in tasks:
+            taskId = str(task.taskId)
+            task.userId = str(task.userId)
+            task = self.task_repository.read_by_id(
+                taskId,
+                not_found_message="Task not found by id : {taskId}"
+            )
+            all_points = self.user_points_repository.get_points_and_users_by_taskId(
+                taskId)
+            points = 0
+            if (all_points):
+                for point in all_points:
+                    if (point.userId == userId):
+                        points = point.points
+
+            cleaned_tasks.append(TaskPointsResponseByUser(
+                taskId=str(task.id),
+                externalTaskId=task.externalTaskId,
+                gameId=str(task.gameId),
+                points=points
+            ))
+        response = UserPointsTasks(
+            id=str(user.id),
+            tasks=cleaned_tasks
+        )
         return response

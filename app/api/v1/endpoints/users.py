@@ -7,7 +7,8 @@ from app.schema.user_schema import (
     PostCreateUser,
     CreatedUser,
     PostAssignPointsToUser,
-    UserWallet
+    UserWallet,
+    UserPointsTasks
 )
 from app.schema.user_points_schema import (
     UserPointsAssigned,
@@ -60,6 +61,27 @@ description_get_wallet_by_user_id = """
 ## Get wallet by user id
 ### Get wallet by user id
 """
+
+summary_get_points = "Get points by user id"
+description_get_points = """
+## Get points by user id
+### Get points by user id
+"""
+
+
+@router.get(
+    "/{userId}/points",
+    response_model=UserPointsTasks,
+    summary=summary_get_points,
+    description=description_get_points,
+)
+@inject
+def get_points_by_user_id(
+    userId: UUID,
+    service: UserService = Depends(
+        Provide[Container.user_service]),
+):
+    return service.get_points_by_user_id(userId)
 
 
 @router.get(
