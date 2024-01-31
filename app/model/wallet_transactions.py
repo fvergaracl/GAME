@@ -22,12 +22,14 @@ transactions Types:
 
 from app.model.base_model import BaseModel
 from sqlmodel import Column, Field, ForeignKey, Integer, Float, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 
 
 class WalletTransactions(BaseModel, table=True):
     transactionType: str = Field(sa_column=Column(String))
     points: int = Field(sa_column=Column(Integer))
+    coins: int = Field(sa_column=Column(Integer))
+    data: dict = Field(sa_column=Column(JSONB), nullable=True)
     appliedConversionRate: float = Field(sa_column=Column(Float))
     walletId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("wallet.id")))

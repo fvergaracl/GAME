@@ -65,15 +65,9 @@ class UserService(BaseService):
         else:
             wallet.pointsBalance += points
             self.wallet_repository.update(wallet.id, wallet)
-        print(' ')
-        print(' ')
-        print(' ')
-        print(' ')
-        print(wallet)
-        print(' ')
-        print(' ')
-        print(' ')
-        print(' ')
+
+        
+
         response = UserPointsAssigned(
             id=str(user_points.id),
             created_at=user_points.created_at,
@@ -85,7 +79,5 @@ class UserService(BaseService):
             wallet=wallet
 
         )
-        print('--------------------------------')
-        print(response)
 
         return response
