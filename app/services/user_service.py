@@ -5,6 +5,7 @@ from app.repository.wallet_transaction_repository import WalletTransactionReposi
 from app.services.base_service import BaseService
 from app.schema.user_schema import CreateWallet
 from app.schema.user_points_schema import BaseUserPointsBaseModel, UserPointsAssigned
+from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.core.config import configs
 
 
@@ -66,7 +67,14 @@ class UserService(BaseService):
             wallet.pointsBalance += points
             self.wallet_repository.update(wallet.id, wallet)
 
-        
+        wallet_transaction = BaseWalletTransaction(
+            transactionType="AssignPoints",
+            points=points,
+            coins=0,
+            appliedConversionRate=wallet.conversionRate,
+            walletId=str(wallet.id)
+        )
+        self.wallet_transaction_repository.create(wallet_transaction)
 
         response = UserPointsAssigned(
             id=str(user_points.id),

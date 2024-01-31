@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Optional
 """
     transactionType: str = Field(sa_column=Column(String))
     points: int = Field(sa_column=Column(Integer))
@@ -9,9 +9,11 @@ from pydantic import BaseModel
 
 """
 
+
 class BaseWalletTransaction(BaseModel):
     transactionType: str
     points: int
     coins: int
+    data: Optional[dict]
     appliedConversionRate: float
     walletId: str
