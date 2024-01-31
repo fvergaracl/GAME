@@ -17,8 +17,8 @@ from app.services.strategy_service import StrategyService
 from app.services.rules_service import RulesService
 
 router = APIRouter(
-    prefix="/strategy",
-    tags=["strategy"],
+    prefix="/strategies",
+    tags=["Strategies"],
 )
 
 
