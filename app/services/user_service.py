@@ -3,7 +3,7 @@ from app.repository.user_points_repository import UserPointsRepository
 from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.services.base_service import BaseService
-from app.schema.user_schema import CreateWallet
+from app.schema.user_schema import CreateWallet, UserWallet
 from app.schema.user_points_schema import BaseUserPointsBaseModel, UserPointsAssigned
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.core.config import configs
@@ -86,6 +86,41 @@ class UserService(BaseService):
             data=user_points.data,
             wallet=wallet
 
+        )
+
+        return response
+
+    def get_wallet_by_user_id(self, userId):
+        user = self.user_repository.read_by_id(
+            userId,
+            not_found_message=f"User not found with userId: {userId}"
+        )
+        wallet = self.wallet_repository.read_by_column(
+            "userId",
+            str(user.id),
+            not_found_raise_exception=False
+        )
+        if not wallet:
+            new_wallet = CreateWallet(
+                coinsBalance=0,
+                pointsBalance=0,
+                conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
+                userId=str(user.id)
+            )
+
+            wallet = self.wallet_repository.create(new_wallet)
+
+        wallet_transactions = self.wallet_transaction_repository.read_by_column(
+            "walletId",
+            str(wallet.id),
+            only_one=False,
+            not_found_raise_exception=False
+        )
+
+        response = UserWallet(
+            userId=str(user.id),
+            wallet=wallet,
+            walletTransactions=wallet_transactions
         )
 
         return response

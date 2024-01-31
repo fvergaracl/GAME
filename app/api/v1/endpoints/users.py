@@ -7,6 +7,7 @@ from app.schema.user_schema import (
     PostCreateUser,
     CreatedUser,
     PostAssignPointsToUser,
+    UserWallet
 )
 from app.schema.user_points_schema import (
     UserPointsAssigned,
@@ -63,6 +64,7 @@ description_get_wallet_by_user_id = """
 
 @router.get(
     "/{userId}/wallet",
+    response_model=UserWallet,
     summary=summary_get_wallet_by_user_id,
     description=description_get_wallet_by_user_id,
 )

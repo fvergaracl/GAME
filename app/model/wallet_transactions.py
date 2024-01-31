@@ -35,19 +35,35 @@ class WalletTransactions(BaseModel, table=True):
         UUID(as_uuid=True), ForeignKey("wallet.id")))
 
     def __str__(self):
-        return f"WalletTransactions: {self.transactionType}, {self.points}, {self.appliedConversionRate}, {self.walletId}"
+        return f"WalletTransactions: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, transactionType={self.transactionType}, points={self.points}, coins={self.coins}, data={self.data}, appliedConversionRate={self.appliedConversionRate}, walletId={self.walletId})"
 
     def __repr__(self):
-        return f"WalletTransactions: {self.transactionType}, {self.points}, {self.appliedConversionRate}, {self.walletId}"
+        return f"WalletTransactions: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, transactionType={self.transactionType}, points={self.points}, coins={self.coins}, data={self.data}, appliedConversionRate={self.appliedConversionRate}, walletId={self.walletId})"
 
     def __eq__(self, other):
-        return self.transactionType == other.transactionType and self.points == other.points and self.appliedConversionRate == other.appliedConversionRate and self.walletId == other.walletId
-
-    def __hash__(self):
-        return hash((self.transactionType, self.points, self.appliedConversionRate, self.walletId))
+        if not isinstance(other, WalletTransactions):
+            return NotImplemented
+        return self.transactionType == other.transactionType and self.points == other.points and self.coins == other.coins and self.data == other.data and self.appliedConversionRate == other.appliedConversionRate and self.walletId == other.walletId
 
     def __ne__(self, other):
-        return not (self == other)
+        if not isinstance(other, WalletTransactions):
+            return NotImplemented
+        return self.transactionType != other.transactionType or self.points != other.points or self.coins != other.coins or self.data != other.data or self.appliedConversionRate != other.appliedConversionRate or self.walletId != other.walletId
+
+    def __hash__(self):
+        return hash((self.transactionType, self.points, self.coins, self.data, self.appliedConversionRate, self.walletId))
 
     def __lt__(self, other):
-        return self.walletId < other.walletId
+        if not isinstance(other, WalletTransactions):
+            return NotImplemented
+        return self.transactionType < other.transactionType and self.points < other.points and self.coins < other.coins and self.data < other.data and self.appliedConversionRate < other.appliedConversionRate and self.walletId < other.walletId
+
+    def __le__(self, other):
+        if not isinstance(other, WalletTransactions):
+            return NotImplemented
+        return self.transactionType <= other.transactionType and self.points <= other.points and self.coins <= other.coins and self.data <= other.data and self.appliedConversionRate <= other.appliedConversionRate and self.walletId <= other.walletId
+
+    def __gt__(self, other):
+        if not isinstance(other, WalletTransactions):
+            return NotImplemented
+        return self.transactionType > other.transactionType and self.points > other.points and self.coins > other.coins and self.data > other.data and self.appliedConversionRate > other.appliedConversionRate and self.walletId > other.walletId

@@ -8,6 +8,7 @@ class WalletWithoutUserId(BaseModel):
     pointsBalance: Optional[float]
     conversionRate: Optional[float]
 
+
 class Wallet(WalletWithoutUserId):
     userId: Optional[str]
 

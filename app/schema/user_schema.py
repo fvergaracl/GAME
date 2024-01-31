@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from app.schema.base_schema import ModelBaseInfo
-from app.schema.user_points_schema import BaseUserPointsBaseModel
-from app.schema.wallet_schema import Wallet
+from app.schema.wallet_schema import WalletWithoutUserId, Wallet
+from app.schema.wallet_transaction_schema import BaseWalletTransactionInfo
 from uuid import UUID
 from typing import Optional
 
@@ -27,3 +27,9 @@ class PostAssignPointsToUser(BaseModel):
 
 class CreateWallet(Wallet):
     ...
+
+
+class UserWallet(BaseModel):
+    userId: str
+    wallet: Optional[WalletWithoutUserId]
+    walletTransactions: Optional[list[BaseWalletTransactionInfo]]
