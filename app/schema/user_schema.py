@@ -41,10 +41,14 @@ class UserPointsTasks(BaseModel):
     tasks: list[TaskPointsResponseByUser]
 
 
-class ConversionPreviewResponse(BaseModel):
+class ResponseConversionPreview(BaseModel):
     points: int
     conversionRate: float
     conversionRateDate: str
     convertedAmount: float
     convertedCurrency: str
     haveEnoughPoints: bool
+
+
+class PostPointsConversionRequest(BaseModel):
+    points: int

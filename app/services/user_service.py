@@ -2,11 +2,20 @@ from app.repository.user_repository import UserRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.wallet_repository import WalletRepository
-from app.repository.wallet_transaction_repository import WalletTransactionRepository
+from app.repository.wallet_transaction_repository import (
+    WalletTransactionRepository
+)
 from app.services.base_service import BaseService
-from app.schema.user_schema import CreateWallet, UserWallet, UserPointsTasks
+from app.schema.user_schema import (
+    CreateWallet,
+    UserWallet,
+    UserPointsTasks,
+    PostPointsConversionRequest
+)
 from app.schema.task_schema import TaskPointsResponseByUser
-from app.schema.user_points_schema import BaseUserPointsBaseModel, UserPointsAssigned
+from app.schema.user_points_schema import (
+    BaseUserPointsBaseModel, UserPointsAssigned
+)
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.core.config import configs
 
@@ -208,6 +217,77 @@ class UserService(BaseService):
         haveEnoughPoints = True
         if (wallet.pointsBalance < points):
             haveEnoughPoints = False
+
+        response = {
+            "points": points,
+            "conversionRate": wallet.conversionRate,
+            "conversionRateDate": str(wallet.updated_at),
+            "convertedAmount": coins,
+            "convertedCurrency": "coins",
+            "haveEnoughPoints": haveEnoughPoints
+        }
+        return response
+
+    def convert_points_to_coins(self, userId, schema: PostPointsConversionRequest):
+        points = schema.points
+        if not points:
+            raise ValueError("Points must be provided")
+
+        if (points <= 0):
+            raise ValueError("Points must be greater than 0")
+
+        user = self.user_repository.read_by_id(
+            userId,
+            not_found_message=f"User not found with userId: {userId}"
+        )
+        wallet = self.wallet_repository.read_by_column(
+            "userId",
+            str(user.id),
+            not_found_raise_exception=False
+        )
+        if not wallet:
+            new_wallet = CreateWallet(
+                coinsBalance=0,
+                pointsBalance=0,
+                conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
+                userId=str(user.id)
+            )
+
+            wallet = self.wallet_repository.create(new_wallet)
+
+        wallet_before = wallet
+
+        # check if have enough points
+        coins = points / wallet.conversionRate
+        haveEnoughPoints = True
+        if (wallet.pointsBalance < points):
+            haveEnoughPoints = False
+
+        if (not haveEnoughPoints):
+            raise ValueError("Not enough points")
+
+        wallet.pointsBalance -= points
+        wallet.coinsBalance += coins
+        self.wallet_repository.update(wallet.id, wallet)
+
+        wallet_transaction = BaseWalletTransaction(
+            transactionType="ConvertPointsToCoins",
+            points=points,
+            coins=coins,
+            appliedConversionRate=wallet.conversionRate,
+            walletId=str(wallet.id),
+            data={
+                "wallet_before": wallet_before,
+                "wallet_after": wallet
+            }
+        )
+        print(' ')
+        print('------------------------------')
+        print(wallet_transaction)
+        print('------------------------------')
+        print(' ')
+
+        self.wallet_transaction_repository.create(wallet_transaction)
 
         response = {
             "points": points,

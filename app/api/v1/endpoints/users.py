@@ -9,7 +9,8 @@ from app.schema.user_schema import (
     PostAssignPointsToUser,
     UserWallet,
     UserPointsTasks,
-    ConversionPreviewResponse
+    ResponseConversionPreview,
+    PostPointsConversionRequest
 )
 from app.schema.user_points_schema import (
     UserPointsAssigned,
@@ -107,7 +108,7 @@ description_preview_points = """## Preview Points to Coins Conversion
 
 @router.get(
     "/{userId}/convert/preview",
-    response_model=ConversionPreviewResponse,
+    response_model=ResponseConversionPreview,
     summary=summary_preview_points,
     description=description_preview_points,
 )
@@ -126,6 +127,7 @@ description_convert_points = """## Convert Points to Coins
 ### Performs the actual conversion of points to coins for the specified user.
 """
 
+
 @router.post(
     "/{userId}/convert",
     response_model=UserWallet,
@@ -135,7 +137,7 @@ description_convert_points = """## Convert Points to Coins
 @inject
 def convert_points_to_coins(
     userId: UUID,
-    schema: PointsConversionRequest,
+    schema: PostPointsConversionRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     # Logic to perform conversion should be implemented in UserService or a dedicated service.
