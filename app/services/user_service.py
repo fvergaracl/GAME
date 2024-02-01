@@ -21,6 +21,7 @@ from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.core.config import configs
 from app.util.serialize_wallet import serialize_wallet
 from uuid import UUID
+import copy
 
 
 class UserService(BaseService):
@@ -258,7 +259,7 @@ class UserService(BaseService):
 
             wallet = self.wallet_repository.create(new_wallet)
 
-        wallet_before = wallet
+        wallet_before = copy.deepcopy(wallet)
 
         # check if have enough points
         coins = points / wallet.conversionRate
