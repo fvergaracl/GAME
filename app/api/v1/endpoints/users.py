@@ -1,5 +1,5 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from uuid import UUID
 from app.core.container import Container
 
@@ -8,7 +8,8 @@ from app.schema.user_schema import (
     CreatedUser,
     PostAssignPointsToUser,
     UserWallet,
-    UserPointsTasks
+    UserPointsTasks,
+    ConversionPreviewResponse
 )
 from app.schema.user_points_schema import (
     UserPointsAssigned,
@@ -97,3 +98,45 @@ def get_wallet_by_user_id(
         Provide[Container.user_service]),
 ):
     return service.get_wallet_by_user_id(userId)
+
+
+summary_preview_points = "Preview Points to Coins Conversion"
+description_preview_points = """## Preview Points to Coins Conversion
+### Provides a preview of the points to coins conversion for a specific user. """
+
+
+@router.get(
+    "/{userId}/convert/preview",
+    response_model=ConversionPreviewResponse,
+    summary=summary_preview_points,
+    description=description_preview_points,
+)
+@inject
+def preview_points_to_coins_conversion(
+    userId: UUID,
+    points: int = Query(...,
+                        description="The number of points to convert to coins"),
+    service: UserService = Depends(Provide[Container.user_service]),
+):
+    return service.preview_points_to_coins_conversion(userId, points)
+
+
+summary_convert_points = "Convert Points to Coins"
+description_convert_points = """## Convert Points to Coins
+### Performs the actual conversion of points to coins for the specified user.
+"""
+
+@router.post(
+    "/{userId}/convert",
+    response_model=UserWallet,
+    summary=summary_convert_points,
+    description=description_convert_points,
+)
+@inject
+def convert_points_to_coins(
+    userId: UUID,
+    schema: PointsConversionRequest,
+    service: UserService = Depends(Provide[Container.user_service]),
+):
+    # Logic to perform conversion should be implemented in UserService or a dedicated service.
+    return service.convert_points_to_coins(userId, schema)

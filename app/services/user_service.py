@@ -175,3 +175,46 @@ class UserService(BaseService):
             tasks=cleaned_tasks
         )
         return response
+
+    def preview_points_to_coins_conversion(self, userId, points):
+
+        if not points:
+            raise ValueError("Points must be provided")
+
+        if (points <= 0):
+            raise ValueError("Points must be greater than 0")
+
+        user = self.user_repository.read_by_id(
+            userId,
+            not_found_message=f"User not found with userId: {userId}"
+        )
+        wallet = self.wallet_repository.read_by_column(
+            "userId",
+            str(user.id),
+            not_found_raise_exception=False
+        )
+        if not wallet:
+            new_wallet = CreateWallet(
+                coinsBalance=0,
+                pointsBalance=0,
+                conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
+                userId=str(user.id)
+            )
+
+            wallet = self.wallet_repository.create(new_wallet)
+
+        # check if have enough points
+        coins = points / wallet.conversionRate
+        haveEnoughPoints = True
+        if (wallet.pointsBalance < points):
+            haveEnoughPoints = False
+
+        response = {
+            "points": points,
+            "conversionRate": wallet.conversionRate,
+            "conversionRateDate": str(wallet.updated_at),
+            "convertedAmount": coins,
+            "convertedCurrency": "coins",
+            "haveEnoughPoints": haveEnoughPoints
+        }
+        return response

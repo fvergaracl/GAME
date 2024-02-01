@@ -39,3 +39,12 @@ class UserWallet(BaseModel):
 class UserPointsTasks(BaseModel):
     id: UUID
     tasks: list[TaskPointsResponseByUser]
+
+
+class ConversionPreviewResponse(BaseModel):
+    points: int
+    conversionRate: float
+    conversionRateDate: str
+    convertedAmount: float
+    convertedCurrency: str
+    haveEnoughPoints: bool

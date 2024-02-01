@@ -28,7 +28,7 @@ from sqlalchemy.dialects.postgresql import UUID, JSONB
 class WalletTransactions(BaseModel, table=True):
     transactionType: str = Field(sa_column=Column(String))
     points: int = Field(sa_column=Column(Integer))
-    coins: int = Field(sa_column=Column(Integer))
+    coins: float = Field(sa_column=Column(Float))
     data: dict = Field(sa_column=Column(JSONB), nullable=True)
     appliedConversionRate: float = Field(sa_column=Column(Float))
     walletId: str = Field(sa_column=Column(

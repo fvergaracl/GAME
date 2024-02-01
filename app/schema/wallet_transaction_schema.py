@@ -6,7 +6,7 @@ from uuid import UUID
 class BaseWalletTransactionWithoutWalletId(BaseModel):
     transactionType: str
     points: int
-    coins: int
+    coins: float
     data: Optional[dict]
 
 
