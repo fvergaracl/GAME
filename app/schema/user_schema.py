@@ -52,3 +52,13 @@ class ResponseConversionPreview(BaseModel):
 
 class PostPointsConversionRequest(BaseModel):
     points: int
+
+
+class ResponsePointsConversion(BaseModel):
+    transactionId: str
+    points: int
+    conversionRate: float
+    conversionRateDate: str
+    convertedAmount: float
+    convertedCurrency: str
+    haveEnoughPoints: bool

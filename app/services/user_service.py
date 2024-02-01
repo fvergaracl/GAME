@@ -10,7 +10,8 @@ from app.schema.user_schema import (
     CreateWallet,
     UserWallet,
     UserPointsTasks,
-    PostPointsConversionRequest
+    PostPointsConversionRequest,
+    ResponsePointsConversion
 )
 from app.schema.task_schema import TaskPointsResponseByUser
 from app.schema.user_points_schema import (
@@ -18,6 +19,8 @@ from app.schema.user_points_schema import (
 )
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.core.config import configs
+from app.util.serialize_wallet import serialize_wallet
+from uuid import UUID
 
 
 class UserService(BaseService):
@@ -260,6 +263,7 @@ class UserService(BaseService):
         # check if have enough points
         coins = points / wallet.conversionRate
         haveEnoughPoints = True
+
         if (wallet.pointsBalance < points):
             haveEnoughPoints = False
 
@@ -270,6 +274,9 @@ class UserService(BaseService):
         wallet.coinsBalance += coins
         self.wallet_repository.update(wallet.id, wallet)
 
+        wallet_before_serializable = serialize_wallet(wallet_before)
+        wallet_serializable = serialize_wallet(wallet)
+
         wallet_transaction = BaseWalletTransaction(
             transactionType="ConvertPointsToCoins",
             points=points,
@@ -277,19 +284,17 @@ class UserService(BaseService):
             appliedConversionRate=wallet.conversionRate,
             walletId=str(wallet.id),
             data={
-                "wallet_before": wallet_before,
-                "wallet_after": wallet
+                "walletBefore": wallet_before_serializable,
+                "walletAfter": wallet_serializable
             }
-        )
-        print(' ')
-        print('------------------------------')
-        print(wallet_transaction)
-        print('------------------------------')
-        print(' ')
 
-        self.wallet_transaction_repository.create(wallet_transaction)
+        )
+
+        transaction = self.wallet_transaction_repository.create(
+            wallet_transaction)
 
         response = {
+            "transactionId": str(transaction.id),
             "points": points,
             "conversionRate": wallet.conversionRate,
             "conversionRateDate": str(wallet.updated_at),
@@ -297,4 +302,5 @@ class UserService(BaseService):
             "convertedCurrency": "coins",
             "haveEnoughPoints": haveEnoughPoints
         }
+        response = ResponsePointsConversion(**response)
         return response

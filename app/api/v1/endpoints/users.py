@@ -10,7 +10,8 @@ from app.schema.user_schema import (
     UserWallet,
     UserPointsTasks,
     ResponseConversionPreview,
-    PostPointsConversionRequest
+    PostPointsConversionRequest,
+    ResponsePointsConversion
 )
 from app.schema.user_points_schema import (
     UserPointsAssigned,
@@ -130,7 +131,7 @@ description_convert_points = """## Convert Points to Coins
 
 @router.post(
     "/{userId}/convert",
-    response_model=UserWallet,
+    response_model=ResponsePointsConversion,
     summary=summary_convert_points,
     description=description_convert_points,
 )
