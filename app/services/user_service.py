@@ -20,7 +20,6 @@ from app.schema.user_points_schema import (
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.core.config import configs
 from app.util.serialize_wallet import serialize_wallet
-from uuid import UUID
 import copy
 
 

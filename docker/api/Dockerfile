@@ -1,9 +1,9 @@
-FROM tiangolo/uvicorn-gunicorn:python3.11
+FROM tiangolo/uvicorn-gunicorn:python3.10
 
 COPY . /home
 WORKDIR /home
 ENV ENV=dev
-RUN pip install "poetry==1.5.1"
+RUN pip install "poetry==1.7.1"
 RUN poetry config virtualenvs.create false \
     && poetry install --no-dev
 ENV DOCKERIZE_VERSION v0.6.1
