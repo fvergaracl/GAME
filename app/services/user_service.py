@@ -194,9 +194,6 @@ class UserService(BaseService):
                     points = self.individual_adjustment_points()
                     schema.data["label_function_choose"] = "individual_adjustment_points"
 
-        # add label_function_choose into schema.data (dict)
-        
-
         user_points_schema = BaseUserPointsBaseModel(
             userId=str(user.id),
             taskId=str(schema.taskId),
