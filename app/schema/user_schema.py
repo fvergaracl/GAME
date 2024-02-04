@@ -21,7 +21,7 @@ class CreatedUser(ModelBaseInfo, BaseUser):
 
 class PostAssignPointsToUser(BaseModel):
     taskId: UUID
-    points: int
+    points: Optional[int]
     # allow json into description
     data: Optional[dict]
 

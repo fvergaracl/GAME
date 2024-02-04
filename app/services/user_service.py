@@ -39,6 +39,104 @@ class UserService(BaseService):
         self.wallet_transaction_repository = wallet_transaction_repository
         super().__init__(user_repository)
 
+    # Move to a helper class
+    def basic_engagement_points(self):
+        """
+        Provides a fixed number of points as a basic engagement reward for a user's initial actions within the gamification system.
+
+        Returns:
+        - int: The fixed number of basic engagement points.
+        """
+        basic_points = 1
+
+        return basic_points
+
+    def performance_penalty_points(self):
+        """
+        Calculates the number of points to deduct as a penalty for performance below a certain threshold.
+
+        Returns:
+        - int: The number of points to deduct.
+        """
+        penalty_points = -5
+
+        return penalty_points
+
+    def performance_bonus_points(self):
+        """
+        Calculates the number of additional points to award for performance above a certain threshold.
+
+        Returns:
+        - int: The number of bonus points to award.
+        """
+        bonus_points = 10
+
+        return bonus_points
+
+    def individual_over_global_points(self):
+        """
+        Awards additional points for users who have improved their individual performance
+        compared to their own history, even if below the global average.
+
+        Returns:
+        - int: The number of additional points to award.
+        """
+        improvement_points = 5
+
+        return improvement_points
+
+    def need_for_motivation_points(self):
+        """
+        Provides a small point incentive for users who are underperforming both individually
+        and globally, to motivate improvement.
+
+        Returns:
+        - int: The number of points to award as motivation.
+        """
+        motivation_points = 2
+
+        return motivation_points
+
+    def peak_performer_bonus_points(self):
+        """
+        Rewards users who have exceeded both their individual performance and the global average,
+        standing out as peak performers in the system.
+
+        Returns:
+        - int: The number of bonus points for peak performers.
+        """
+        peak_points = 15
+
+        return peak_points
+
+    def global_advantage_adjustment_points(self):
+        """
+        Awards additional points to users whose performance is above the global average but
+        have shown a decrease in their individual performance. It's designed to encourage
+        users to strive for above-average performance, recognizing their effort amidst challenges.
+
+        Returns:
+        - int: The number of adjustment points for maintaining a global advantage.
+        """
+        adjustment_points = 7
+
+        return adjustment_points
+
+    def individual_adjustment_points(self):
+        """
+        Rewards users who have improved their individual performance, regardless of their
+        standing against the global average. It aims to acknowledge and encourage personal
+        improvement, motivating users to keep advancing.
+
+        Returns:
+        - int: The number of points to award for individual performance improvement.
+        """
+        improvement_points = 8
+
+        return improvement_points
+
+    # End of helper class
+
     def create_user(self, schema):
         return self.user_repository.create(schema)
 
@@ -52,9 +150,52 @@ class UserService(BaseService):
             not_found_message=f"User not found with userId: {userId}"
         )
         points = schema.points
-        if not points:
-            # ACA se debe llamar a la funcion que calcula los puntos WIP
-            raise ValueError("Points must be provided")
+        measurement_count = self.user_points_repository.get_user_measurement_count(
+            userId)
+        start_time_last_task = self.user_points_repository.get_start_time_for_last_task(
+            userId)
+        end_time_last_task = self.user_points_repository.get_time_taken_for_last_task(
+            userId)
+
+        duration_last_task = (end_time_last_task -
+                              start_time_last_task).total_seconds() / 60
+
+        individual_calculation = self.user_points_repository.get_individual_calculation(
+            userId)
+
+        global_calculation = self.user_points_repository.get_global_calculation()
+        schema.data["label_function_choose"] = "-"
+        if not points:  # If points are not pre-defined, calculate based on the decision tree logic
+            if measurement_count <= 2:
+                points = self.basic_engagement_points()
+                schema.data["label_function_choose"] = "basic_engagement_points"
+            elif measurement_count == 2:
+                if duration_last_task > global_calculation:
+                    points = self.performance_penalty_points()
+                    schema.data["label_function_choose"] = "performance_penalty_points"
+                else:
+                    points = self.performance_bonus_points()
+                    schema.data["label_function_choose"] = "performance_bonus_points"
+            else:  # It's a subsequent measurement
+                if duration_last_task >= individual_calculation:
+                    if duration_last_task < individual_calculation and duration_last_task > global_calculation:
+                        points = self.individual_over_global_points()
+                        schema.data["label_function_choose"] = "individual_over_global_points"
+                    elif duration_last_task > individual_calculation and duration_last_task > global_calculation:
+                        points = self.need_for_motivation_points()
+                        schema.data["label_function_choose"] = "need_for_motivation_points"
+                    elif duration_last_task < individual_calculation and duration_last_task < global_calculation:
+                        points = self.peak_performer_bonus_points()
+                        schema.data["label_function_choose"] = "peak_performer_bonus_points"
+                    else:  # duration_last_task > individual_calculation but < global_calculation
+                        points = self.global_advantage_adjustment_points()
+                        schema.data["label_function_choose"] = "global_advantage_adjustment_points"
+                else:  # duration_last_task < individual_calculation
+                    points = self.individual_adjustment_points()
+                    schema.data["label_function_choose"] = "individual_adjustment_points"
+
+        # add label_function_choose into schema.data (dict)
+        
 
         user_points_schema = BaseUserPointsBaseModel(
             userId=str(user.id),

@@ -98,3 +98,97 @@ class UserPointsRepository(BaseRepository):
             ).all()
 
             return query
+
+    def get_user_measurement_count(self, userId):
+        """
+        Retrieves the total number of measurements (or tasks completed) by a specific user.
+
+        Parameters:
+        - userId (str): The unique identifier of the user.
+
+        Returns:
+        - int: The total number of measurements completed by the user.
+        """
+
+        with self.session_factory() as session:
+            query = session.query(
+                func.count(UserPoints.id).label("measurement_count")
+            ).filter(
+                UserPoints.userId == userId
+            ).one()
+
+            return query.measurement_count
+
+    def get_time_taken_for_last_task(self, userId):
+        """
+        Retrieves the time taken by a specific user to complete the last task.
+
+        Parameters:
+        - userId (str): The unique identifier of the user.
+
+        Returns:
+        - float: The time taken to complete the last task, in minutes or other relevant unit.
+        """
+
+        with self.session_factory() as session:
+            query = session.query(
+                func.max(UserPoints.created_at).label("last_task_time")
+            ).filter(
+                UserPoints.userId == userId
+            ).one()
+
+            return query.last_task_time
+
+    def get_individual_calculation(self, userId):
+        """
+        Calculates and retrieves a specific performance metric for an individual user,
+        such as average time taken to complete tasks.
+
+        Parameters:
+        - userId (str): The unique identifier of the user.
+
+        Returns:
+        - float: The calculated individual performance metric for the user.
+        """
+        with self.session_factory() as session:
+            query = session.query(
+                func.avg(UserPoints.points).label("average_points")
+            ).filter(
+                UserPoints.userId == userId
+            ).one()
+
+            return query.average_points
+
+    def get_global_calculation(self):
+        """
+        Calculates and retrieves a specific global performance metric,
+        such as the average time taken to complete tasks across all users.
+
+        Returns:
+        - float: The calculated global performance metric.
+        """
+        with self.session_factory() as session:
+            query = session.query(
+                func.avg(UserPoints.points).label("average_points")
+            ).one()
+
+            return query.average_points
+        
+    def get_start_time_for_last_task(self, userId):
+        """
+        Retrieves the start time of the last task completed by a specific user.
+
+        Parameters:
+        - userId (str): The unique identifier of the user.
+
+        Returns:
+        - datetime: The start time of the last task completed by the user.
+        """
+        with self.session_factory() as session:
+            query = session.query(
+                func.min(UserPoints.created_at).label("start_time")
+            ).filter(
+                UserPoints.userId == userId
+            ).one()
+
+            return query.start_time
