@@ -1,89 +1,89 @@
-# fastapi-clean-architecture
+# GAME (Goals And Motivation Engine) README 🎮
 
-https://github.com/jujumilk3/fastapi-clean-architecture
+## Description 📝
 
-## description
+GAME (Goals And Motivation Engine) is a system designed to foster motivation and achievement of goals through gamification. This open-source project utilizes a PostgreSQL database and is developed with FastAPI in Python, managed via Poetry for environment handling.
 
-Base FastAPI project for applying general RestAPI Application cases.
-![openapi-docs](./doc/images/openapi-docs-v2.png)
+## Requirements 🛠️
 
-## concept
+- Python 3.8+
+- PostgreSQL
+- Docker and Docker Compose (optional, for local database deployment)
+- Poetry
 
-1. Minimal functionality.
-2. Convincing architecture.
-3. Easy to read.
-4. Compatibility.
-5. Versatility.
+## Environment Setup 🌐
 
-## base models
+### Environment Variables
 
-1. user
-2. post [user (1 : n) post]
-3. tag [post (n : n) tag]
+Before starting the project, it's necessary to configure the environment variables. Copy the environment variables defined in `.env.sample` to `.env`. Below is an example and explanation of each variable:
 
-## integrated with
-
-1. Python3.9+
-2. Fastapi 0.78.0
-3. Database
-   1. MySQL5.7+
-   2. Migration with alembic
-   3. pytest with real DB
-   4. Load with two ways (eager, lazy)
-   5. Modeling with schema (1:1, 1:n, n:n)
-4. dependency-injector
-   1. service-repository pattern
-5. JWT authentication
-   1. role separation each endpoint
-6. Deployment
-   1. container environment(k8s, docker)
-   2. raw WAS(Web Application Server)
-
-## commands
-
-1. db(alembic)
-   1. `alembic upgrade head`: apply every migrations
-   2. `alembic downgrade base`: rollback every migrations
-   3. `alembic revision --autogenerate -m "revision_name"`: create new migration
-   4. `alembic history`: get alembic revision history
-2. How to migration
-   1. Create or modify models from `app/model/*.py`
-   2. `alembic -x ENV=[dev|stage|prod] revision --autogenerate -m "revision_name"`
-   3. Check auto generated migration file from `app/migrations/versions/*.py`
-   4. `alembic -x ENV=[dev|stage|prod] upgrade head`  
-      If ENV does not exist, it will be applied to the test.
-3. server
-   1. `uvicorn app.main:app --reload`: base
-   2. options
-      1. host: `--host 0.0.0.0`
-      2. port: `--port 8000`
-4. test
-   1. `pytest`: base
-   2. `pytest --cov=app --cov-report=term-missing`: coverage with stdout
-   3. `pytest --cov=app --cov-report=html`: coverage with html
-
-## sample env
-
-```dotenv
-# mysql case
-ENV=dev
-DB=mysql
-DB_USER=root
-DB_PASSWORD=qwer1234
-DB_HOST=localhost
-DB_PORT=3306
-
-# postgres case
-ENV=dev
-DB=postgresql
-DB_USER=gyu
-DB_PASSWORD=
-DB_HOST=localhost
-DB_PORT=5432
+```
+VERSION_APP="1.0.0" # Version of GAME API
+ENV=dev # Indicates whether the environment is development or production (dev|production)
+DB_ENGINE=postgresql # Database engine
+DB_NAME=game_dev_db # Database name
+DB_USER=root # Database user
+DB_PASSWORD=example # Database password
+DB_HOST=localhost # Database host
+DB_PORT=5432 # Database port
+DEFAULT_CONVERSION_RATE_POINTS_TO_COIN=100 # Default conversion rate of points to coins
+DATABASE_URL=postgresql://root:example@localhost:5432/game_dev_db # Database connection URL
 ```
 
-## references
+### Activating the Poetry Environment
 
-1. [FastAPI official docs](https://fastapi.tiangolo.com/)
-2. [alembic official tutorial](https://alembic.sqlalchemy.org/en/latest/tutorial.html)
-3. [Dependency Injector](https://python-dependency-injector.ets-labs.org/)
+To activate the Poetry environment, run:
+
+```
+poetry shell
+```
+
+If it's your first time running the project, install all dependencies with:
+
+```
+poetry install
+```
+
+### Database Deployment with Docker Compose
+
+To bring up the database locally, run:
+
+```
+docker-compose -f docker-compose.yml up --build
+```
+
+If it's the first time deploying the database, you should initialize it with Alembic:
+
+```
+alembic upgrade head
+```
+
+### Deploying the REST API
+
+To deploy the REST API, run:
+
+```
+uvicorn app.main:app --reload
+```
+
+## Other Useful Commands 🚀
+
+### Alembic (Database Migrations)
+
+- `alembic upgrade head`: Applies all migrations.
+- `alembic downgrade base`: Reverts all migrations.
+- `alembic revision --autogenerate -m "revision_name"`: Creates a new migration.
+- `alembic history`: Shows Alembic revision history.
+
+### Server
+
+- `uvicorn app.main:app --reload`: Runs the development server.
+  - Options:
+    - `--host 0.0.0.0`: Specifies the host.
+    - `--port 8000`: Specifies the port.
+
+### Testing
+
+- `pytest`: Runs basic tests.
+- `pytest --cov=app --cov-report=term-missing`: Runs tests with coverage and displays the report in the terminal.
+- `pytest --cov=app --cov-report=html`: Generates a coverage report in HTML.
