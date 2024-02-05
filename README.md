@@ -1,4 +1,4 @@
-# GAME (Goals And Motivation Engine) README 🎮
+# GAME (Goals And Motivation Engine) 🎮
 
 ## Description 📝
 
@@ -10,6 +10,41 @@ GAME (Goals And Motivation Engine) is a system designed to foster motivation and
 - PostgreSQL
 - Docker and Docker Compose (optional, for local database deployment)
 - Poetry
+
+## Project Structure 📂
+
+The GAME project is structured to facilitate easy navigation and understanding for developers looking to contribute or integrate new features. Below is an overview of the project's directory structure and a brief explanation of each component:
+
+```
+.
+├── alembic.ini                   # Configuration for Alembic migrations
+├── app                           # Main application directory
+│   ├── api                       # API route definitions
+│   │   └── v1                    # Version 1 of the API
+│   │       ├── endpoints         # API endpoints
+│   │       └── routes.py         # API route registrations
+│   ├── core                      # Core application components (config, security)
+│   ├── model                     # Database models
+│   ├── repository                # Data access layer
+│   ├── schema                    # Pydantic schemas for request and response objects
+│   ├── services                  # Business logic layer
+│   └── util                      # Utility functions and classes
+├── classes.png                   # Class diagram (if applicable)
+├── default_strategy.json         # Default strategy configuration
+├── deployFiles                   # Deployment related files (if applicable)
+├── doc                           # Documentation files and images
+├── docker                        # Dockerfiles for containerization
+├── docker-compose-dev.yml        # Docker Compose for development
+├── docker-compose.yml            # Docker Compose for production
+├── migrations                    # Alembic migrations
+├── packages.png                  # Package diagram (if applicable)
+├── poetry.lock                   # Poetry lock file (dependencies)
+├── pyproject.toml                # Poetry configuration and project metadata
+├── README.md                     # Project README
+├── requirements.txt              # Python requirements (for non-Poetry environments)
+├── strategies.md                 # Documentation on strategy patterns used
+└── tests                         # Test suite (unit and integration tests)
+```
 
 ## Environment Setup 🌐
 
