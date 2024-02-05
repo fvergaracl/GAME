@@ -13,6 +13,9 @@ from app.schema.user_schema import (
     PostPointsConversionRequest,
     ResponsePointsConversion
 )
+from app.schema.base_schema import (
+    FindBase
+)
 from app.schema.user_points_schema import (
     UserPointsAssigned,
 )
@@ -24,7 +27,16 @@ router = APIRouter(
 )
 
 
-# create user
+@router.get("/")
+@inject
+def list_users(
+    schema: FindBase = Depends(),
+    service: UserService = Depends(
+        Provide[Container.user_service]),
+):
+    return service.get_list(schema)
+
+
 @router.post("/", response_model=CreatedUser)
 @inject
 def create_user(
