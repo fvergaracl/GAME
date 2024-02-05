@@ -1,7 +1,7 @@
 
 
 from app.model.base_model import BaseModel
-from sqlmodel import Column, Field, ForeignKey, Integer
+from sqlmodel import Column, Field, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -10,6 +10,7 @@ class UserPoints(BaseModel, table=True):
     points: int = Field(sa_column=Column(Integer))
     # data: is a json object
     data: dict = Field(sa_column=Column(JSONB), nullable=True)
+    description: str = Field(sa_column=Column(String), nullable=True)
     userId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("users.id")))
     taskId: str = Field(sa_column=Column(

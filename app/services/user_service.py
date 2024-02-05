@@ -157,8 +157,11 @@ class UserService(BaseService):
         end_time_last_task = self.user_points_repository.get_time_taken_for_last_task(
             userId)
 
-        duration_last_task = (end_time_last_task -
-                              start_time_last_task).total_seconds() / 60
+        if (end_time_last_task and start_time_last_task):
+            duration_last_task = (end_time_last_task -
+                                  start_time_last_task).total_seconds() / 60
+        else:
+            duration_last_task = 0
 
         individual_calculation = self.user_points_repository.get_individual_calculation(
             userId)
