@@ -9,6 +9,7 @@ from app.util.schema import AllOptional
 class PostAssignPointsToUser(BaseModel):
     taskId: str
     points:  Optional[int]
+    description: Optional[str]
     data: Optional[dict]
 
 
@@ -20,6 +21,7 @@ class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
     userId: str
     taskId: str
     wallet: Optional[WalletWithoutUserId]
+    description: Optional[str]
     message: Optional[str] = "Successfully assigned"
 
 

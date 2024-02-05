@@ -17,10 +17,10 @@ class UserPoints(BaseModel, table=True):
         UUID(as_uuid=True), ForeignKey("tasks.id")))
 
     def __str__(self):
-        return f"UserPoints(id={self.id}, points={self.points}, data={self.data}, userId={self.userId}, taskId={self.taskId}, created_at={self.created_at}, updated_at={self.updated_at})"
+        return f"UserPoints(id={self.id}, points={self.points}, data={self.data}, userId={self.userId}, taskId={self.taskId}, created_at={self.created_at}, updated_at={self.updated_at}, description={self.description})"
 
     def __repr__(self):
-        return f"UserPoints(id={self.id}, points={self.points}, data={self.data}, userId={self.userId}, taskId={self.taskId}, created_at={self.created_at}, updated_at={self.updated_at})"
+        return f"UserPoints(id={self.id}, points={self.points}, data={self.data}, userId={self.userId}, taskId={self.taskId}, created_at={self.created_at}, updated_at={self.updated_at}, description={self.description})"
 
     def __eq__(self, other):
         return (

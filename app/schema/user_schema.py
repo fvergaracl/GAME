@@ -22,7 +22,7 @@ class CreatedUser(ModelBaseInfo, BaseUser):
 class PostAssignPointsToUser(BaseModel):
     taskId: UUID
     points: Optional[int]
-    # allow json into description
+    description: Optional[str]
     data: Optional[dict]
 
 

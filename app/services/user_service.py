@@ -201,7 +201,8 @@ class UserService(BaseService):
             userId=str(user.id),
             taskId=str(schema.taskId),
             points=points,
-            data=schema.data
+            data=schema.data,
+            description=schema.description
         )
 
         user_points = self.user_points_repository.create(user_points_schema)
@@ -237,11 +238,13 @@ class UserService(BaseService):
             id=str(user_points.id),
             created_at=user_points.created_at,
             updated_at=user_points.updated_at,
+            description=user_points.description,
             userId=str(user_points.userId),
             taskId=str(user_points.taskId),
             points=user_points.points,
             data=user_points.data,
-            wallet=wallet
+            wallet=wallet,
+
 
         )
 
