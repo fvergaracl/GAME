@@ -1,12 +1,12 @@
 class BaseStrategy:
     def __init__(
-            self,
-            strategy_name=None,
-            strategy_description=None,
-            strategy_name_slug=None,
-            strategy_version="0.0.1",
-            variable_basic_points=1,
-            variable_bonus_points=1
+        self,
+        strategy_name=None,
+        strategy_description=None,
+        strategy_name_slug=None,
+        strategy_version="0.0.1",
+        variable_basic_points=1,
+        variable_bonus_points=1,
     ):
         self.strategy_name = strategy_name
         self.strategy_description = strategy_description
@@ -42,8 +42,9 @@ class BaseStrategy:
         return variables_changed
 
     def get_variables(self):
-        # get all attributes of the class starting with variable_
-        return {k: v for k, v in self.__dict__.items() if k.startswith('variable_')}
+        return {
+            k: v for k, v in self.__dict__.items() if k.startswith("variable_")
+        }
 
     def get_variable(self, variable_name):
         if hasattr(self, variable_name):
@@ -58,11 +59,11 @@ class BaseStrategy:
 
     def get_strategy(self):
         return {
-            'name': self.get_strategy_name(),
-            'description': self.get_strategy_description(),
-            'name_slug': self.get_strategy_name_slug(),
-            'version': self.get_strategy_version(),
-            'variables': self.get_variables()
+            "name": self.get_strategy_name(),
+            "description": self.get_strategy_description(),
+            "name_slug": self.get_strategy_name_slug(),
+            "version": self.get_strategy_version(),
+            "variables": self.get_variables(),
         }
 
     def calculate_points(self):

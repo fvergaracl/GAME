@@ -8,8 +8,8 @@ modules = glob.glob(os.path.dirname(__file__) + "/*.py")
 
 # import all .py files
 __all__ = [os.path.basename(
-    f)[:-3] for f in modules if os.path.basename(f) != '__init__.py' and 
-    os.path.basename(f) != '__pycache__' and 
+    f)[:-3] for f in modules if os.path.basename(f) != '__init__.py' and
+    os.path.basename(f) != '__pycache__' and
     os.path.basename(f) != 'base_strategy.py']
 
 
