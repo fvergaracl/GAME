@@ -14,7 +14,6 @@ class Configs(BaseSettings):
     ENV: str = os.getenv("ENV", "dev")
     API: str = "/api"
     API_V1_STR: str = "/api/v1"
-    API_V2_STR: str = "/api/v2"
     PROJECT_NAME: str = "GAME-api"
     VERSION: str = os.getenv("VERSION_APP", "No_version")
     ENV_DATABASE_MAPPER: dict = {
@@ -26,12 +25,8 @@ class Configs(BaseSettings):
     DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
         "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100)
 
-    PROJECT_ROOT: str = os.path.dirname(os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__))))
-
     # date
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
-    DATE_FORMAT: str = "%Y-%m-%d"
 
     # auth
     SECRET_KEY: str = os.getenv("SECRET_KEY", "")
@@ -42,14 +37,11 @@ class Configs(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
     # database
-    DB: str = os.getenv("DB", "postgresql")
     DB_USER: str = os.getenv("DB_USER")
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")
     DB_HOST: str = os.getenv("DB_HOST")
     DB_PORT: str = os.getenv("DB_PORT", "3306")
     DB_ENGINE: str = os.getenv("DB_ENGINE", "postgresql")
-
-    DATABASE_URI_FORMAT: str = "{db_engine}://{user}:{password}@{host}:{port}/{database}"
 
     DATABASE_URI = "{db_engine}://{user}:{password}@{host}:{port}/{database}".format(
         db_engine=DB_ENGINE,
@@ -66,7 +58,7 @@ class Configs(BaseSettings):
     ORDERING = "-id"
 
     class Config:
-        case_sensitive = True
+        ...
 
 
 class TestConfigs(Configs):
@@ -80,4 +72,4 @@ if ENV == "prod":
 elif ENV == "stage":
     pass
 elif ENV == "test":
-    setting = TestConfigs()
+    configs = TestConfigs()
