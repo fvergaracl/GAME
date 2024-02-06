@@ -1,12 +1,3 @@
-"""
-CREATE TABLE Strategy (
-  id SERIAL PRIMARY KEY,
-  strategyName VARCHAR(255) UNIQUE
-  data JSONB NOT NULL,
-  FOREIGN KEY (taskId) REFERENCES Tasks(id)
-);
-"""
-
 from app.model.base_model import BaseModel
 from sqlmodel import Column, Field, String
 from sqlalchemy.dialects.postgresql import JSONB
@@ -17,10 +8,16 @@ class Strategy(BaseModel, table=True):
     data: dict = Field(sa_column=Column(JSONB), nullable=False)
 
     def __str__(self):
-        return f"Strategy(id={self.id}, strategyName={self.strategyName}, data={self.data})"
+        return (
+            f"Strategy(id={self.id}, strategyName={self.strategyName}, "
+            f"data={self.data})"
+        )
 
     def __repr__(self):
-        return f"Strategy(id={self.id}, strategyName={self.strategyName}, data={self.data})"
+        return (
+            f"Strategy(id={self.id}, strategyName={self.strategyName}, "
+            f"data={self.data})"
+        )
 
     def __eq__(self, other):
         return (
