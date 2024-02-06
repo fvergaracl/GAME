@@ -45,7 +45,7 @@ def get_games_list(
 summary_get_game_by_id = "Get Game by Id"
 description_get_game_by_id = """
 ## Get Game by Id
-### Get game by id 
+### Get game by id
 """
 
 

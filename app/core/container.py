@@ -3,8 +3,27 @@ from dependency_injector import containers, providers
 from app.core.config import configs
 from app.core.database import Database
 # pylint: disable=unused-wildcard-import
-from app.repository import *
-from app.services import *
+from app.repository import (
+    GameRepository,
+    GameParamsRepository,
+    StrategyRepository,
+    TaskRepository,
+    UserPointsRepository,
+    UserRepository,
+    WalletRepository,
+    WalletTransactionRepository
+)
+from app.services import (
+    GameService,
+    GameParamsService,
+    RulesService,
+    StrategyService,
+    TaskService,
+    UserPointsService,
+    UserService,
+    WalletService,
+    WalletTransactionService
+)
 
 
 class Container(containers.DeclarativeContainer):
