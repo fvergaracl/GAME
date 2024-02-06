@@ -45,8 +45,8 @@ class AppCreator:
                 "projectName": project_name,
                 "version": version,
                 "message": "Welcome to GAME API",
-                "docs": f"/docs",
-                "redocs": f"/redocs",
+                "docs": "/docs",
+                "redocs": "/redocs",
             }
         # set routers API_V1_STR
 

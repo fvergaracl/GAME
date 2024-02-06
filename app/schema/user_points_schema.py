@@ -25,7 +25,11 @@ class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
     message: Optional[str] = "Successfully assigned"
 
 
-class UserPoints(ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional):
+class UserPoints(
+    ModelBaseInfo,
+    BaseUserPointsBaseModel,
+    metaclass=AllOptional
+):
     ...
 
 

@@ -1,6 +1,5 @@
 from typing import List, Optional
 from pydantic import BaseModel
-from app.schema.base_schema import SearchOptions
 
 
 class BaseRuleSubVariable(BaseModel):

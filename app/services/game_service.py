@@ -47,7 +47,9 @@ class GameService(BaseService):
         )
         if externalGameId_exist:
             raise ConflictError(
-                detail=f"Game already exist with externalGameId : {externalGameId}")
+                detail=(
+                    f"Game already exist with externalGameId: {externalGameId}"
+                ))
         created_params = []
         game = self.game_repository.create(schema)
 

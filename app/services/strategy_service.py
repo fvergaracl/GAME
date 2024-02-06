@@ -21,5 +21,7 @@ class StrategyService(BaseService):
         )
         if strategyName_exist:
             raise ConflictError(
-                detail=f"Strategy already exist with strategyName : {strategyName}")
+                detail=(
+                    f"Strategy already exist with strategyName: {strategyName}"
+                ))
         return self.strategy_repository.create(schema)

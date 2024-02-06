@@ -1,8 +1,10 @@
 from app.repository.wallet_repository import WalletRepository
 from app.repository.user_repository import UserRepository
 from app.schema.wallet_schema import (
-    BaseWallet
+    BaseWallet,
+    ResponsePreviewConvertPoints
 )
+
 from app.services.base_service import BaseService
 
 
@@ -20,7 +22,9 @@ class WalletService(BaseService):
         user = self.user_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
-            not_found_message=f"User with externalUserId {externalUserId} not found",
+            not_found_message=(
+                f"User with externalUserId {externalUserId} not found"
+            ),
         )
 
         wallet = self.wallet_repository.read_by_column(
@@ -42,12 +46,13 @@ class WalletService(BaseService):
 
         return wallet
 
-
     def preview_convert(self, schema):
         user = self.user_repository.read_by_column(
             column="externalUserId",
             value=schema.externalUserId,
-            not_found_message=f"User with externalUserId {schema.externalUserId} not found",
+            not_found_message=(
+                f"User with externalUserId {schema.externalUserId} not found"
+            ),
         )
 
         wallet = self.wallet_repository.read_by_column(

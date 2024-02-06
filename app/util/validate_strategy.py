@@ -1,14 +1,13 @@
-import json
 
 def validate_strategy(json_data):
-    # Lista de nombres de variables válidos de los archivos de servicio de variables
     valid_variable_names = [
-        "@AVG_POINTS_GAME_BY_USER", "@AVG_POINTS_TASK_BY_USER", 
+        "@AVG_POINTS_GAME_BY_USER", "@AVG_POINTS_TASK_BY_USER",
         "@LAST_PERSONAL_POINTS_GAME", "@LAST_PERSONAL_POINTS_TASK"
     ]
 
     # Verificar las claves principales
-    required_keys = ["label", "description", "tags", "static_variables", "rules"]
+    required_keys = ["label", "description",
+                     "tags", "static_variables", "rules"]
     for key in required_keys:
         if key not in json_data:
             raise ValueError(f"Key missing in JSON: {key}")
@@ -25,13 +24,14 @@ def validate_strategy(json_data):
                 if variable in condition:
                     break
             else:
-                raise ValueError(f"Invalid variable reference in condition: {condition}")
+                raise ValueError(
+                    f"Invalid variable reference in condition: {condition}")
 
         for variable in valid_variable_names:
             if variable in rule["reward"]:
                 break
         else:
-            raise ValueError(f"Invalid variable reference in reward: {rule['reward']}")
+            raise ValueError(
+                f"Invalid variable reference in reward: {rule['reward']}")
 
-    return True 
-
+    return True

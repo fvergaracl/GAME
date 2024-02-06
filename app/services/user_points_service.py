@@ -3,19 +3,13 @@ from app.repository.task_repository import TaskRepository
 from app.repository.user_repository import UserRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.wallet_repository import WalletRepository
-from app.schema.user_schema import (
-    BaseUser
-)
+
 from app.schema.user_points_schema import (
-    BaseUserPointsBaseModel,
-    ResponseAssignPointsToUser,
     ResponsePointsByExternalUserId,
     ResponseGetPointsByTask,
     ResponseGetPointsByGame
 )
-from app.schema.wallet_schema import (
-    BaseWalletOnlyUserId
-)
+
 from app.services.base_service import BaseService
 from app.core.exceptions import NotFoundError
 
@@ -40,7 +34,9 @@ class UserPointsService(BaseService):
         game = self.game_repository.read_by_column(
             column="externalGameId",
             value=externalGameId,
-            not_found_message=f"Game with externalGameId {externalGameId} not found",
+            not_found_message=(
+                f"Game with externalGameId {externalGameId} not found"
+            ),
         )
 
         tasks = self.task_repository.read_by_column(
@@ -84,7 +80,9 @@ class UserPointsService(BaseService):
         task = self.task_repository.read_by_column(
             column="externalTaskId",
             value=externalTaskId,
-            not_found_message=f"Task with externalTaskId {externalTaskId} not found",
+            not_found_message=(
+                f"Task with externalTaskId {externalTaskId} not found"
+            ),
         )
 
         points_by_task = self.user_points_repository.get_points_and_users_by_taskId(
@@ -100,16 +98,24 @@ class UserPointsService(BaseService):
                 )
         return cleaned_points_by_task
 
-    def get_users_points_by_externalTaskId_and_externalUserId(self, externalTaskId, externalUserId):
+    def get_users_points_by_externalTaskId_and_externalUserId(
+        self,
+            externalTaskId,
+            externalUserId
+    ):
         task = self.task_repository.read_by_column(
             column="externalTaskId",
             value=externalTaskId,
-            not_found_message=f"Task with externalTaskId {externalTaskId} not found",
+            not_found_message=(
+                f"Task with externalTaskId {externalTaskId} not found"
+            ),
         )
         user = self.users_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
-            not_found_message=f"User with externalUserId {externalUserId} not found",
+            not_found_message=(
+                f"User with externalUserId {externalUserId} not found"
+            ),
         )
 
         points = self.user_points_repository.read_by_columns(
@@ -117,67 +123,13 @@ class UserPointsService(BaseService):
 
         return points
 
-    # def assign_points_to_user(self, schema):
-
-    #     task = self.task_repository.read_by_column(
-    #         column="externalTaskId",
-    #         value=schema.externalTaskId,
-    #         not_found_message=f"Task with externalTaskId {schema.externalTaskId} not found",
-    #     )
-    #     user = self.users_repository.read_by_column(
-    #         column="externalUserId",
-    #         value=schema.externalUserId,
-    #         not_found_raise_exception=False,
-    #         not_found_message=f"User with externalUserId {schema.externalUserId} not found",
-    #     )
-    #     is_new_user = False
-    #     if not user:
-    #         user_data = BaseUser(externalUserId=schema.externalUserId)
-    #         user = self.users_repository.create(
-    #             user_data
-    #         )
-    #         is_new_user = True
-    #     points_to_assign = schema.points
-
-    #     if (points_to_assign == None):
-    #         points_to_assign = 1  # here apply strategy WIP
-    #         if (schema.description == None):
-    #             schema.description = "Points assigned by strategy"
-    #         else:
-    #             schema.description = schema.description + "| Points assigned by strategy"
-
-    #     if is_new_user:
-    #         wallet_data = BaseWalletOnlyUserId(
-    #             userId=user.id,
-    #             pointsBalance=points_to_assign
-    #         )
-    #         self.wallet_repository.create(
-    #             wallet_data
-    #         )
-
-    #     data_user_points = BaseUserPointsBaseModel(
-    #         points=schema.points,
-    #         data=schema.description,
-    #         userId=user.id,
-    #         taskId=task.id
-    #     )
-    #     user_points = self.user_points_repository.create(
-    #         data_user_points
-    #     )
-    #     response = ResponseAssignPointsToUser(
-    #         points=user_points.points,
-    #         data=user_points.description,
-    #         externalTaskId=schema.externalTaskId,
-    #         externalUserId=schema.externalUserId,
-    #         isNewUser=is_new_user
-    #     )
-    #     return response
-
     def get_points_of_user(self, externalUserId):
         user = self.users_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
-            not_found_message=f"User with externalUserId {externalUserId} not found",
+            not_found_message=(
+                f"User with externalUserId {externalUserId} not found"
+            ),
         )
 
         points = self.user_points_repository.get_task_and_sum_points_by_userId(

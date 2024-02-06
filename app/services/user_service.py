@@ -42,7 +42,8 @@ class UserService(BaseService):
     # Move to a helper class
     def basic_engagement_points(self):
         """
-        Provides a fixed number of points as a basic engagement reward for a user's initial actions within the gamification system.
+        Provides a fixed number of points as a basic engagement reward for a
+          user's initial actions within the gamification system.
 
         Returns:
         - int: The fixed number of basic engagement points.
@@ -53,7 +54,8 @@ class UserService(BaseService):
 
     def performance_penalty_points(self):
         """
-        Calculates the number of points to deduct as a penalty for performance below a certain threshold.
+        Calculates the number of points to deduct as a penalty for performance
+          below a certain threshold.
 
         Returns:
         - int: The number of points to deduct.
@@ -64,7 +66,8 @@ class UserService(BaseService):
 
     def performance_bonus_points(self):
         """
-        Calculates the number of additional points to award for performance above a certain threshold.
+        Calculates the number of additional points to award for performance
+          above a certain threshold.
 
         Returns:
         - int: The number of bonus points to award.
@@ -75,7 +78,8 @@ class UserService(BaseService):
 
     def individual_over_global_points(self):
         """
-        Awards additional points for users who have improved their individual performance
+        Awards additional points for users who have improved their individual
+          performance
         compared to their own history, even if below the global average.
 
         Returns:
@@ -87,7 +91,8 @@ class UserService(BaseService):
 
     def need_for_motivation_points(self):
         """
-        Provides a small point incentive for users who are underperforming both individually
+        Provides a small point incentive for users who are underperforming
+          both individually
         and globally, to motivate improvement.
 
         Returns:
@@ -99,7 +104,8 @@ class UserService(BaseService):
 
     def peak_performer_bonus_points(self):
         """
-        Rewards users who have exceeded both their individual performance and the global average,
+        Rewards users who have exceeded both their individual performance and
+          the global average,
         standing out as peak performers in the system.
 
         Returns:
@@ -111,12 +117,14 @@ class UserService(BaseService):
 
     def global_advantage_adjustment_points(self):
         """
-        Awards additional points to users whose performance is above the global average but
-        have shown a decrease in their individual performance. It's designed to encourage
-        users to strive for above-average performance, recognizing their effort amidst challenges.
+        Awards additional points to users whose performance is above the
+        global average but have shown a decrease in their individual
+        performance. It's designed to encourage users to strive for
+        above-average performance, recognizing their effort amidst challenges.
 
         Returns:
-        - int: The number of adjustment points for maintaining a global advantage.
+        - int: The number of adjustment points for maintaining a global
+        advantage.
         """
         adjustment_points = 7
 
@@ -124,12 +132,14 @@ class UserService(BaseService):
 
     def individual_adjustment_points(self):
         """
-        Rewards users who have improved their individual performance, regardless of their
-        standing against the global average. It aims to acknowledge and encourage personal
-        improvement, motivating users to keep advancing.
+        Rewards users who have improved their individual performance,
+        regardless of theirstanding against the global average. It aims to
+        acknowledge and encourage personal improvement, motivating users to
+        keep advancing.
 
         Returns:
-        - int: The number of points to award for individual performance improvement.
+        - int: The number of points to award for individual performance
+        improvement.
         """
         improvement_points = 8
 
@@ -168,7 +178,7 @@ class UserService(BaseService):
 
         global_calculation = self.user_points_repository.get_global_calculation()
         schema.data["label_function_choose"] = "-"
-        if not points:  # If points are not pre-defined, calculate based on the decision tree logic
+        if not points:
             if measurement_count <= 2:
                 points = self.basic_engagement_points()
                 schema.data["label_function_choose"] = "basic_engagement_points"
@@ -179,7 +189,7 @@ class UserService(BaseService):
                 else:
                     points = self.performance_bonus_points()
                     schema.data["label_function_choose"] = "performance_bonus_points"
-            else:  # It's a subsequent measurement
+            else:
                 if duration_last_task >= individual_calculation:
                     if duration_last_task < individual_calculation and duration_last_task > global_calculation:
                         points = self.individual_over_global_points()
@@ -190,10 +200,10 @@ class UserService(BaseService):
                     elif duration_last_task < individual_calculation and duration_last_task < global_calculation:
                         points = self.peak_performer_bonus_points()
                         schema.data["label_function_choose"] = "peak_performer_bonus_points"
-                    else:  # duration_last_task > individual_calculation but < global_calculation
+                    else:
                         points = self.global_advantage_adjustment_points()
                         schema.data["label_function_choose"] = "global_advantage_adjustment_points"
-                else:  # duration_last_task < individual_calculation
+                else:
                     points = self.individual_adjustment_points()
                     schema.data["label_function_choose"] = "individual_adjustment_points"
 
@@ -375,7 +385,11 @@ class UserService(BaseService):
         }
         return response
 
-    def convert_points_to_coins(self, userId, schema: PostPointsConversionRequest):
+    def convert_points_to_coins(
+            self,
+            userId,
+            schema: PostPointsConversionRequest
+    ):
         points = schema.points
         if not points:
             raise ValueError("Points must be provided")
