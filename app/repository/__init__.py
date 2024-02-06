@@ -6,4 +6,18 @@ from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
-from app.repository.wallet_transaction_repository import WalletTransactionRepository
+from app.repository.wallet_transaction_repository import (
+    WalletTransactionRepository
+)
+
+__all__ = [
+    "BaseRepository",
+    "GameRepository",
+    "TaskRepository",
+    "StrategyRepository",
+    "UserRepository",
+    "UserPointsRepository",
+    "WalletRepository",
+    "WalletTransactionRepository",
+    "GameParamsRepository"
+]

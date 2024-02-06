@@ -9,7 +9,10 @@ from app.util.query_builder import dict_to_sqlalchemy_filter_options
 
 
 class BaseRepository:
-    def __init__(self, session_factory: Callable[..., AbstractContextManager[Session]], model) -> None:
+    def __init__(
+            self,
+            session_factory: Callable[..., AbstractContextManager[Session]],
+            model) -> None:
         self.session_factory = session_factory
         self.model = model
 
@@ -49,7 +52,13 @@ class BaseRepository:
                 },
             }
 
-    def read_by_id(self, id: int, eager=False, not_found_raise_exception=True, not_found_message="Not found id : {id}"):
+    def read_by_id(
+        self,
+            id: int,
+            eager=False,
+            not_found_raise_exception=True,
+            not_found_message="Not found id : {id}"
+    ):
         with self.session_factory() as session:
             query = session.query(self.model)
             if eager:

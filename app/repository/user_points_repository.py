@@ -54,7 +54,11 @@ class UserPointsRepository(BaseRepository):
             ).all()
             return query
 
-    def get_users_points_by_externalTaskId_and_externalUserId(self, externalTaskId, externalUserId):
+    def get_users_points_by_externalTaskId_and_externalUserId(
+            self,
+            externalTaskId,
+            externalUserId
+    ):
         with self.session_factory() as session:
             query = session.query(
                 Tasks.id.label("task_id"),
@@ -101,7 +105,8 @@ class UserPointsRepository(BaseRepository):
 
     def get_user_measurement_count(self, userId):
         """
-        Retrieves the total number of measurements (or tasks completed) by a specific user.
+        Retrieves the total number of measurements (or tasks completed) by a
+        specific user.
 
         Parameters:
         - userId (str): The unique identifier of the user.
@@ -127,7 +132,8 @@ class UserPointsRepository(BaseRepository):
         - userId (str): The unique identifier of the user.
 
         Returns:
-        - float: The time taken to complete the last task, in minutes or other relevant unit.
+        - float: The time taken to complete the last task, in minutes or other
+          relevant unit.
         """
 
         with self.session_factory() as session:
@@ -141,7 +147,8 @@ class UserPointsRepository(BaseRepository):
 
     def get_individual_calculation(self, userId):
         """
-        Calculates and retrieves a specific performance metric for an individual user,
+        Calculates and retrieves a specific performance metric for an
+          individual user,
         such as average time taken to complete tasks.
 
         Parameters:
@@ -173,7 +180,7 @@ class UserPointsRepository(BaseRepository):
             ).one()
 
             return query.average_points
-        
+
     def get_start_time_for_last_task(self, userId):
         """
         Retrieves the start time of the last task completed by a specific user.

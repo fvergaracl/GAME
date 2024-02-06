@@ -66,7 +66,8 @@ class TaskRepository(BaseRepository):
         with self.session_factory() as session:
             query = session.query(self.model)
             query = query.filter(
-                self.model.gameId == gameId, self.model.externalTaskId == externalTaskId).first()
+                self.model.gameId == gameId,
+                self.model.externalTaskId == externalTaskId).first()
             return query
 
     def get_task_and_strategy_by_id(self, id):

@@ -14,4 +14,3 @@ class StrategyRepository(BaseRepository):
             AbstractContextManager[Session]],
             model=Strategy) -> None:
         super().__init__(session_factory, model)
-

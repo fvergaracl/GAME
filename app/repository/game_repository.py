@@ -1,16 +1,14 @@
 from contextlib import AbstractContextManager
 from typing import Callable
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError
 from app.model.games import Games
 from app.model.game_params import GamesParams
 from app.repository.base_repository import BaseRepository
 from app.schema.games_schema import (
-    UpsertGameWithGameParams,
     FindGameResult,
     BaseGameResult
 )
-from sqlalchemy.orm import Session, joinedload
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
 from app.core.config import configs
 from app.core.exceptions import NotFoundError, DuplicatedError
@@ -135,11 +133,18 @@ class GameRepository(BaseRepository):
 
     def patch_game_by_id(self, id: str, schema):
         with self.session_factory() as session:
-            schema_as_dict = schema.dict(exclude_none=True)
-            for key, value in schema_as_dict.items():
-                try:
-                    self.update_attr(id, key, value)
-                except IntegrityError as e:
-                    raise DuplicatedError(detail=str(e.orig))
+            game = session.query(self.model).filter(
+                self.model.id == id).first()
+            if not game:
+                raise NotFoundError(detail=f"Not found id : {id}")
+
+            for key, value in schema.dict(exclude_none=True).items():
+                setattr(game, key, value)
+
+            try:
+                session.commit()
+                session.refresh(game)
+            except IntegrityError as e:
+                raise DuplicatedError(detail=str(e.orig))
 
             return self.get_game_by_id(id)
