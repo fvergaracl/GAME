@@ -116,7 +116,8 @@ def get_wallet_by_user_id(
 
 summary_preview_points = "Preview Points to Coins Conversion"
 description_preview_points = """## Preview Points to Coins Conversion
-### Provides a preview of the points to coins conversion for a specific user. """
+### Provides a preview of the points to coins conversion for a specific user.
+"""
 
 
 @router.get(
@@ -128,8 +129,9 @@ description_preview_points = """## Preview Points to Coins Conversion
 @inject
 def preview_points_to_coins_conversion(
     userId: UUID,
-    points: int = Query(...,
-                        description="The number of points to convert to coins"),
+    points: int = Query(
+        ...,
+        description="The number of points to convert to coins"),
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     return service.preview_points_to_coins_conversion(userId, points)
@@ -153,5 +155,6 @@ def convert_points_to_coins(
     schema: PostPointsConversionRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    # Logic to perform conversion should be implemented in UserService or a dedicated service.
+    # Logic to perform conversion should be implemented in UserService or a
+    # dedicated service.
     return service.convert_points_to_coins(userId, schema)

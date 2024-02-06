@@ -6,7 +6,6 @@ from app.core.container import Container
 from app.schema.task_schema import (
     GetTaskById,
     TaskPointsResponse,
-    FindTaskByExternalGameID,
     FoundTaskById,
     CreateTaskPost,
     CreateTaskPostSuccesfullyCreated
@@ -24,7 +23,7 @@ game_task_router = APIRouter(
 )
 
 
-summary_get_tasks_list = "Get Tasks List, strategies and userPoints by task ID "
+summary_get_tasks_list = "Get Tasks List, strategies and userPoints by task ID"
 description_get_tasks_list = """
 ## Find Task
 ### Find all tasks and params by id
@@ -69,7 +68,10 @@ def get_points_by_task_id(
     return service.get_points_by_task_id(schema)
 
 
-@game_task_router.post("/{id}/tasks", response_model=CreateTaskPostSuccesfullyCreated)
+@game_task_router.post(
+    "/{id}/tasks",
+    response_model=CreateTaskPostSuccesfullyCreated
+)
 @inject
 def create_task(
     id: UUID,
