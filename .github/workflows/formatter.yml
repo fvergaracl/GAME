@@ -9,7 +9,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
         with:
           ref: ${{ github.head_ref }}
       - name: black and isort
@@ -25,8 +25,8 @@ jobs:
       - name: Push changes
         if: env.modified == 'true'
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'noreply@github.com'
+          git config --global user.name '${{ secrets.MY_GITHUB_USER }}'
+          git config --global user.email '${{ secrets.MY_GITHUB_EMAIL }}'
           git remote set-url origin https://x-access-token:${{ secrets.MY_GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git commit -am "Automated fixes"
           git push
