@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster as builder
+FROM python:3.10.13-slim as builder
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 RUN apt-get update
@@ -15,11 +15,12 @@ ENV PYTHONPATH=/app
 FROM builder as dev
 RUN poetry install --no-root
 # FOR DATABASE DIAGRAM GENERATION
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends graphviz \
-  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 CMD ["bash", "./start-dev.sh"]
 
 FROM builder as prod
-RUN poetry install --no-root --no-dev
+RUN poetry install --no-root --no-dev --no-cache
 CMD ["bash", "./start-prod.sh"]
