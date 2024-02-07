@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: ${GAMIFICATIONENGINE_CERT_ISSUER}
+  name: ${GAMIFICATIONENGINE_INGRESS_NAME}
+  namespace: ${GAMIFICATIONENGINE_NAMESPACE}
+spec:
+  rules:
+    - host: ${GAMIFICATIONENGINE_INGRESS_HOST}
+      http:
+        paths:
+          - backend:
+              serviceName: ${GAMIFICATIONENGINE_BACKEND_SERVICE_NAME}
+              servicePort: ${GAMIFICATIONENGINE_BACKEND_SERVICE_PORT}
+  tls:
+    - hosts:
+        - ${GAMIFICATIONENGINE_INGRESS_HOST}
+      secretName: ${GAMIFICATIONENGINE_TLS_SECRET_NAME}

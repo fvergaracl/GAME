@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.32.0 (765fde254)
+  labels:
+    io.kompose.service: ${GAMIFICATIONENGINE_SERVICE_NAME_POSTGRES}
+  name: ${GAMIFICATIONENGINE_SERVICE_NAME_POSTGRES}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ${GAMIFICATIONENGINE_SERVICE_NAME_POSTGRES}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.32.0 (765fde254)
+      labels:
+        io.kompose.network/game-backend: "true"
+        io.kompose.service: ${GAMIFICATIONENGINE_SERVICE_NAME_POSTGRES}
+    spec:
+      containers:
+        - resources:
+            limits:
+              memory: 2Gi
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_URL
+                  name: env-prod
+            - name: DB_ENGINE
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_ENGINE
+                  name: env-prod
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_HOST
+                  name: env-prod
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_NAME
+                  name: env-prod
+            - name: DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_PASSWORD
+                  name: env-prod
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_PORT
+                  name: env-prod
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_USER
+                  name: env-prod
+            - name: DEFAULT_CONVERTION_RATE_POINTS_TO_COIN
+              valueFrom:
+                configMapKeyRef:
+                  key: DEFAULT_CONVERTION_RATE_POINTS_TO_COIN
+                  name: env-prod
+            - name: ENV
+              valueFrom:
+                configMapKeyRef:
+                  key: ENV
+                  name: env-prod
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_NAME
+                  name: env-prod
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_PASSWORD
+                  name: env-prod
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_USER
+                  name: env-prod
+            - name: VERSION_APP
+              valueFrom:
+                configMapKeyRef:
+                  key: VERSION_APP
+                  name: env-prod
+          image: postgres
+          name: postgres
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-data
+      hostname: db
+      restartPolicy: Always
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-data

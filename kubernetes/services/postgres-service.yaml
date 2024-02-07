@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.32.0 (765fde254)
+  labels:
+    io.kompose.service: ${GAMIFICATIONENGINE_SERVICE_NAME_POSTGRES}
+  name: ${GAMIFICATIONENGINE_SERVICE_NAME_POSTGRES}
+spec:
+  ports:
+    - name: "${GAMIFICATIONENGINE_DB_PORT}"
+      port: ${GAMIFICATIONENGINE_DB_PORT}
+      targetPort: ${GAMIFICATIONENGINE_DB_PORT}
+  selector:
+    io.kompose.service: ${GAMIFICATIONENGINE_SERVICE_NAME_POSTGRES}

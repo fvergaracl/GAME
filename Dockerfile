@@ -23,4 +23,5 @@ CMD ["bash", "./start-dev.sh"]
 
 FROM builder as prod
 RUN poetry install --no-root --no-dev --no-cache
+RUN pip install gunicorn
 CMD ["bash", "./start-prod.sh"]

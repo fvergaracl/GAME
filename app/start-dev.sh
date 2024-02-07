@@ -5,11 +5,7 @@ HOST=${HOST:-0.0.0.0}
 PORT=${PORT}
 LOG_LEVEL=${LOG_LEVEL:-info}
 
-# Let the DB start
-python /app/app/pre_start.py
 
-# Execute only-dev stuff
-python /app/app/development.py
 
 # Changes in database are managed by alembic. CHECK MAKEFILE make migrations message="message"
 
