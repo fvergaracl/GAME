@@ -1,4 +1,4 @@
-name: Format Python code
+name: Apply Black & Isort
 
 on:
   push:
@@ -8,37 +8,26 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@master
         with:
-          python-version: "3.10.9"
-      - name: Install black and isort
+          ref: ${{ github.head_ref }}
+
+      - name: black and isort
         run: |
           pip install black isort
-
-      - name: Run black
-        run: |
-          black . -l 120
-
-      - name: Run isort
-        run: |
-          isort . -l 120 --profile black
+          black .
+          isort .
 
       - name: Check for modified files
         id: git-check
-        run: |
-          echo "modified=$(if git diff-index --quiet HEAD --; then echo 'false'; else echo 'true'; fi)" >> $GITHUB_ENV
+        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
 
-      - name: Commit changes
-        if: env.modified == 'true'
+      - name: Push changes
+        if: steps.git-check.outputs.modified == 'true'
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'noreply@github.com'
-          git add .
-          git commit -m "Apply black and isort formatting"
+          git remote set-url origin https://x-access-token:${{ secrets.MY_GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git commit -am "Automated fixes"
           git push
