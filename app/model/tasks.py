@@ -1,29 +1,16 @@
-from app.model.base_model import BaseModel
-from sqlmodel import Field, Column, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlmodel import Column, Field, ForeignKey, String
+
+from app.model.base_model import BaseModel
 
 
 class Tasks(BaseModel, table=True):
-    externalTaskId: str = Field(
-        sa_column=Column(
-            String,
-            unique=False
-        )
-    )
+    externalTaskId: str = Field(sa_column=Column(String, unique=False))
 
-    gameId: str = Field(
-        sa_column=Column(
-            UUID(as_uuid=True),
-            ForeignKey("games.id")
-        )
-    )
+    gameId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id")))
 
     strategyId: str = Field(
-        sa_column=Column(
-            UUID(as_uuid=True),
-            ForeignKey("strategy.id")
-        ),
-        nullable=True
+        sa_column=Column(UUID(as_uuid=True), ForeignKey("strategy.id")), nullable=True
     )
 
     def __str__(self):
@@ -47,8 +34,7 @@ class Tasks(BaseModel, table=True):
         )
 
     def __hash__(self):
-        return hash((
-            self.id, self.externalTaskId, self.gameId, self.strategyId))
+        return hash((self.id, self.externalTaskId, self.gameId, self.strategyId))
 
     def __ne__(self, other):
         return not self.__eq__(other)

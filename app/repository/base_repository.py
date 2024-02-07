@@ -3,6 +3,7 @@ from typing import Callable
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
+
 from app.core.config import configs
 from app.core.exceptions import DuplicatedError, NotFoundError
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
@@ -10,9 +11,8 @@ from app.util.query_builder import dict_to_sqlalchemy_filter_options
 
 class BaseRepository:
     def __init__(
-            self,
-            session_factory: Callable[..., AbstractContextManager[Session]],
-            model) -> None:
+        self, session_factory: Callable[..., AbstractContextManager[Session]], model
+    ) -> None:
         self.session_factory = session_factory
         self.model = model
 
@@ -28,19 +28,18 @@ class BaseRepository:
             page = schema_as_dict.get("page", configs.PAGE)
             page_size = schema_as_dict.get("page_size", configs.PAGE_SIZE)
             filter_options = dict_to_sqlalchemy_filter_options(
-                self.model, schema.dict(exclude_none=True))
+                self.model, schema.dict(exclude_none=True)
+            )
             query = session.query(self.model)
             if eager:
                 for eager in getattr(self.model, "eagers", []):
-                    query = query.options(
-                        joinedload(getattr(self.model, eager)))
+                    query = query.options(joinedload(getattr(self.model, eager)))
             filtered_query = query.filter(filter_options)
             query = filtered_query.order_by(order_query)
             if page_size == "all":
                 query = query.all()
             else:
-                query = query.limit(page_size).offset(
-                    (page - 1) * page_size).all()
+                query = query.limit(page_size).offset((page - 1) * page_size).all()
             total_count = filtered_query.count()
             return {
                 "items": query,
@@ -54,45 +53,43 @@ class BaseRepository:
 
     def read_by_id(
         self,
-            id: int,
-            eager=False,
-            not_found_raise_exception=True,
-            not_found_message="Not found id : {id}"
+        id: int,
+        eager=False,
+        not_found_raise_exception=True,
+        not_found_message="Not found id : {id}",
     ):
         with self.session_factory() as session:
             query = session.query(self.model)
             if eager:
                 for eager in getattr(self.model, "eagers", []):
-                    query = query.options(
-                        joinedload(getattr(self.model, eager)))
+                    query = query.options(joinedload(getattr(self.model, eager)))
             query = query.filter(self.model.id == id).first()
             if not query and not_found_raise_exception:
                 raise NotFoundError(detail=not_found_message.format(id=id))
-            if (not not_found_raise_exception and not query):
+            if not not_found_raise_exception and not query:
                 return None
             return query
 
     def read_by_column(
-            self,
-            column: str,
-            value: str,
-            eager=False,
-            only_one=True,
-            not_found_raise_exception=True,
-            not_found_message="Not found {column} : {value}"
+        self,
+        column: str,
+        value: str,
+        eager=False,
+        only_one=True,
+        not_found_raise_exception=True,
+        not_found_message="Not found {column} : {value}",
     ):
         with self.session_factory() as session:
             query = session.query(self.model)
             if eager:
                 for eager in getattr(self.model, "eagers", []):
-                    query = query.options(
-                        joinedload(getattr(self.model, eager)))
+                    query = query.options(joinedload(getattr(self.model, eager)))
             if only_one:
-                query = query.filter(
-                    getattr(self.model, column) == value).first()
+                query = query.filter(getattr(self.model, column) == value).first()
                 if not query and not_found_raise_exception:
-                    raise NotFoundError(detail=not_found_message.format(
-                        column=column, value=value))
+                    raise NotFoundError(
+                        detail=not_found_message.format(column=column, value=value)
+                    )
                 return query
             query = query.filter(getattr(self.model, column) == value).all()
             return query
@@ -111,28 +108,28 @@ class BaseRepository:
     def update(self, id: int, schema):
         with self.session_factory() as session:
             session.query(self.model).filter(self.model.id == id).update(
-                schema.dict(exclude_none=True))
+                schema.dict(exclude_none=True)
+            )
             session.commit()
             return self.read_by_id(id)
 
     def update_attr(self, id: int, column: str, value):
         with self.session_factory() as session:
-            session.query(self.model).filter(
-                self.model.id == id).update({column: value})
+            session.query(self.model).filter(self.model.id == id).update(
+                {column: value}
+            )
             session.commit()
             return self.read_by_id(id)
 
     def whole_update(self, id: int, schema):
         with self.session_factory() as session:
-            session.query(self.model).filter(
-                self.model.id == id).update(schema.dict())
+            session.query(self.model).filter(self.model.id == id).update(schema.dict())
             session.commit()
             return self.read_by_id(id)
 
     def delete_by_id(self, id: int):
         with self.session_factory() as session:
-            query = session.query(self.model).filter(
-                self.model.id == id).first()
+            query = session.query(self.model).filter(self.model.id == id).first()
             if not query:
                 raise NotFoundError(detail=f"not found id : {id}")
             session.delete(query)

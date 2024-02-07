@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from uuid import UUID
+
+from pydantic import BaseModel
 
 
 class BaseGameParams(BaseModel):
@@ -10,16 +11,14 @@ class BaseGameParams(BaseModel):
         orm_mode = True
 
 
-class BaseCreateGameParams(BaseGameParams):
-    ...
+class BaseCreateGameParams(BaseGameParams): ...
 
 
 class InsertGameParams(BaseGameParams):
     gameId: str
 
 
-class CreateGameParams(BaseCreateGameParams):
-    ...
+class CreateGameParams(BaseCreateGameParams): ...
 
 
 class BaseFindGameParams(BaseGameParams):

@@ -2,19 +2,14 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
 from app.core.container import Container
-from app.schema.strategy_schema import (
-    FindAllStrategyResult,
-    FindStrategyResult,
-    CreateStrategyPost,
-    CreateStrategyResult
-)
-
-from app.schema.rules_schema import (
-    ResponseFindAllRuleVariables
-)
 from app.schema.base_schema import FindBase
-from app.services.strategy_service import StrategyService
+from app.schema.rules_schema import ResponseFindAllRuleVariables
+from app.schema.strategy_schema import (CreateStrategyPost,
+                                        CreateStrategyResult,
+                                        FindAllStrategyResult,
+                                        FindStrategyResult)
 from app.services.rules_service import RulesService
+from app.services.strategy_service import StrategyService
 
 router = APIRouter(
     prefix="/strategies",
@@ -46,7 +41,6 @@ def create_strategy(
     schema: CreateStrategyPost,
     service: StrategyService = Depends(Provide[Container.strategy_service]),
     service_rules: RulesService = Depends(Provide[Container.rules_service]),
-
 ):
     all_variables = service_rules.get_all_variables()
     all_variables = [variable.get_data() for variable in all_variables]
@@ -60,7 +54,5 @@ def get_variables_available_to_strategy(
 ):
     all_variables = service.get_all_variables()
     all_variables = [variable.get_data() for variable in all_variables]
-    response = {
-        "items": all_variables
-    }
+    response = {"items": all_variables}
     return response

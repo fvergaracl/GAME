@@ -42,9 +42,7 @@ class BaseStrategy:
         return variables_changed
 
     def get_variables(self):
-        return {
-            k: v for k, v in self.__dict__.items() if k.startswith("variable_")
-        }
+        return {k: v for k, v in self.__dict__.items() if k.startswith("variable_")}
 
     def get_variable(self, variable_name):
         if hasattr(self, variable_name):

@@ -23,7 +23,8 @@ class Configs(BaseSettings):
         "test": "test_game_dev_db",
     }
     DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
-        "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100)
+        "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100
+    )
 
     # date
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
@@ -43,16 +44,13 @@ class Configs(BaseSettings):
     DB_PORT: str = os.getenv("DB_PORT", "3306")
     DB_ENGINE: str = os.getenv("DB_ENGINE", "postgresql")
 
-    DATABASE_URI = (
-        "{db_engine}://{user}:{password}@{host}:{port}/{database}"
-        .format(
-            db_engine=DB_ENGINE,
-            user=DB_USER,
-            password=DB_PASSWORD,
-            host=DB_HOST,
-            port=DB_PORT,
-            database=ENV_DATABASE_MAPPER[ENV],
-        )
+    DATABASE_URI = "{db_engine}://{user}:{password}@{host}:{port}/{database}".format(
+        db_engine=DB_ENGINE,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=DB_PORT,
+        database=ENV_DATABASE_MAPPER[ENV],
     )
 
     # find query
@@ -60,8 +58,7 @@ class Configs(BaseSettings):
     PAGE_SIZE = 10
     ORDERING = "-id"
 
-    class Config:
-        ...
+    class Config: ...
 
 
 class TestConfigs(Configs):

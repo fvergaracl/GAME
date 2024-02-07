@@ -1,24 +1,21 @@
-from app.repository.game_repository import GameRepository
-from app.repository.game_params_repository import GameParamsRepository
-from app.repository.task_repository import TaskRepository
-from app.schema.games_schema import (
-    PostCreateGame,
-    GameCreated,
-    PatchGame,
-    ResponsePatchGame
-)
-from app.schema.games_params_schema import InsertGameParams
-from app.services.base_service import BaseService
-from app.core.exceptions import ConflictError, NotFoundError
 from uuid import UUID
+
+from app.core.exceptions import ConflictError, NotFoundError
+from app.repository.game_params_repository import GameParamsRepository
+from app.repository.game_repository import GameRepository
+from app.repository.task_repository import TaskRepository
+from app.schema.games_params_schema import InsertGameParams
+from app.schema.games_schema import (GameCreated, PatchGame, PostCreateGame,
+                                     ResponsePatchGame)
+from app.services.base_service import BaseService
 
 
 class GameService(BaseService):
     def __init__(
-            self,
-            game_repository: GameRepository,
-            game_params_repository: GameParamsRepository,
-            task_repository: TaskRepository
+        self,
+        game_repository: GameRepository,
+        game_params_repository: GameParamsRepository,
+        task_repository: TaskRepository,
     ):
         self.game_repository = game_repository
         self.game_params_repository = game_params_repository
@@ -33,23 +30,19 @@ class GameService(BaseService):
         return self.game_repository.get_all_games(schema)
 
     def get_by_externalId(self, externalGameId: str):
-        return self.game_repository.read_by_column(
-            "externalGameId", externalGameId
-        )
+        return self.game_repository.read_by_column("externalGameId", externalGameId)
 
     def create(self, schema: PostCreateGame):
         params = schema.params
         externalGameId = schema.externalGameId
 
         externalGameId_exist = self.game_repository.read_by_column(
-            "externalGameId", externalGameId,
-            not_found_raise_exception=False
+            "externalGameId", externalGameId, not_found_raise_exception=False
         )
         if externalGameId_exist:
             raise ConflictError(
-                detail=(
-                    f"Game already exist with externalGameId: {externalGameId}"
-                ))
+                detail=(f"Game already exist with externalGameId: {externalGameId}")
+            )
         created_params = []
         game = self.game_repository.create(schema)
 
@@ -59,18 +52,15 @@ class GameService(BaseService):
             for param in params:
                 # BaseGameParams
                 params_dict = param.dict()
-                params_dict['gameId'] = str(game.id)
+                params_dict["gameId"] = str(game.id)
 
                 params_to_insert = InsertGameParams(**params_dict)
-                created_param = self.game_params_repository.create(
-                    params_to_insert)
+                created_param = self.game_params_repository.create(params_to_insert)
 
                 created_params.append(created_param)
 
         response = GameCreated(
-            **game.dict(),
-            params=created_params,
-            message="Successfully created"
+            **game.dict(), params=created_params, message="Successfully created"
         )
         return response
 
@@ -82,17 +72,14 @@ class GameService(BaseService):
         updated_params = []
         if params:
             for param in params:
-                self.game_params_repository.patch_game_params_by_id(
-                    param.id, param)
+                self.game_params_repository.patch_game_params_by_id(param.id, param)
                 updated_params.append(param)
 
         updated_game_dict = updated_game.dict()
-        updated_game_dict.pop('params', None)
+        updated_game_dict.pop("params", None)
 
         response = ResponsePatchGame(
-            **updated_game_dict,
-            params=updated_params,
-            message="Successfully updated"
+            **updated_game_dict, params=updated_params, message="Successfully updated"
         )
         return response
 
@@ -102,17 +89,13 @@ class GameService(BaseService):
             raise NotFoundError(detail=f"Game not found by id : {gameId}")
 
         tasks = self.task_repository.read_by_column(
-            "gameId",
-            gameId,
-            not_found_raise_exception=False,
-            only_one=False
-
+            "gameId", gameId, not_found_raise_exception=False, only_one=False
         )
         tasks_list = []
         if tasks:
             for task in tasks:
                 tasks_list.append(task.dict())
         game_dict = game.dict()
-        game_dict['tasks'] = tasks_list
+        game_dict["tasks"] = tasks_list
 
         return game_dict

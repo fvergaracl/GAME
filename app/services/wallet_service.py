@@ -1,18 +1,12 @@
-from app.repository.wallet_repository import WalletRepository
 from app.repository.user_repository import UserRepository
-from app.schema.wallet_schema import (
-    BaseWallet,
-    ResponsePreviewConvertPoints
-)
-
+from app.repository.wallet_repository import WalletRepository
+from app.schema.wallet_schema import BaseWallet, ResponsePreviewConvertPoints
 from app.services.base_service import BaseService
 
 
 class WalletService(BaseService):
     def __init__(
-        self,
-        wallet_repository: WalletRepository,
-        user_repository: UserRepository
+        self, wallet_repository: WalletRepository, user_repository: UserRepository
     ):
         self.wallet_repository = wallet_repository
         self.user_repository = user_repository
@@ -22,9 +16,7 @@ class WalletService(BaseService):
         user = self.user_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
-            not_found_message=(
-                f"User with externalUserId {externalUserId} not found"
-            ),
+            not_found_message=(f"User with externalUserId {externalUserId} not found"),
         )
 
         wallet = self.wallet_repository.read_by_column(
@@ -41,7 +33,7 @@ class WalletService(BaseService):
             conversionRate=wallet.conversionRate,
             externalUserId=user.externalUserId,
             created_at=wallet.created_at,
-            updated_at=wallet.updated_at
+            updated_at=wallet.updated_at,
         )
 
         return wallet
@@ -68,7 +60,7 @@ class WalletService(BaseService):
             points_converted=schema.points,
             conversionRate=wallet.conversionRate,
             afterConversionPoints=wallet.pointsBalance - schema.points,
-            afterConversionCoins=wallet.coinsBalance + points_converted
+            afterConversionCoins=wallet.coinsBalance + points_converted,
         )
 
         return response

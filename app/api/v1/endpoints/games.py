@@ -1,18 +1,13 @@
-from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends
 from uuid import UUID
 
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends
+
 from app.core.container import Container
-from app.schema.games_schema import (
-    PostFindGame,
-    FindGameResult,
-    PostCreateGame,
-    GameCreated,
-    PatchGame,
-    ResponsePatchGame,
-    FindGameById,
-    FindTaskGameById
-)
+from app.schema.games_schema import (FindGameById, FindGameResult,
+                                     FindTaskGameById, GameCreated, PatchGame,
+                                     PostCreateGame, PostFindGame,
+                                     ResponsePatchGame)
 from app.services.game_service import GameService
 
 router = APIRouter(
@@ -53,7 +48,7 @@ description_get_game_by_id = """
     "/{id}",
     response_model=FindGameById,
     description=description_get_game_by_id,
-    summary=summary_get_game_by_id
+    summary=summary_get_game_by_id,
 )
 @inject
 def get_game_by_id(
@@ -75,7 +70,7 @@ description_create_game = """
     "/",
     response_model=GameCreated,
     summary=summary_create_game,
-    description=description_create_game
+    description=description_create_game,
 )
 @inject
 def create_game(
@@ -112,7 +107,7 @@ description_get_task_by_id_game = """
     "/{id}/tasks",
     response_model=FindTaskGameById,
     description=description_get_task_by_id_game,
-    summary=summary_get_task_by_id_game
+    summary=summary_get_task_by_id_game,
 )
 @inject
 def get_task_by_id_game(

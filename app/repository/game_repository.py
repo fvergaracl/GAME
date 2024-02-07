@@ -1,26 +1,24 @@
 from contextlib import AbstractContextManager
 from typing import Callable
-from sqlalchemy.orm import Session, joinedload
+
 from sqlalchemy.exc import IntegrityError
-from app.model.games import Games
-from app.model.game_params import GamesParams
-from app.repository.base_repository import BaseRepository
-from app.schema.games_schema import (
-    FindGameResult,
-    BaseGameResult
-)
-from app.util.query_builder import dict_to_sqlalchemy_filter_options
+from sqlalchemy.orm import Session, joinedload
+
 from app.core.config import configs
-from app.core.exceptions import NotFoundError, DuplicatedError
+from app.core.exceptions import DuplicatedError, NotFoundError
+from app.model.game_params import GamesParams
+from app.model.games import Games
+from app.repository.base_repository import BaseRepository
+from app.schema.games_schema import BaseGameResult, FindGameResult
+from app.util.query_builder import dict_to_sqlalchemy_filter_options
 
 
 class GameRepository(BaseRepository):
     def __init__(
-            self,
-            session_factory: Callable[..., AbstractContextManager[Session]],
-            model=Games,
-            model_game_params=GamesParams
-
+        self,
+        session_factory: Callable[..., AbstractContextManager[Session]],
+        model=Games,
+        model_game_params=GamesParams,
     ) -> None:
         self.model_game_params = model_game_params
         super().__init__(session_factory, model)
@@ -37,7 +35,8 @@ class GameRepository(BaseRepository):
             page = schema_as_dict.get("page", configs.PAGE)
             page_size = schema_as_dict.get("page_size", configs.PAGE_SIZE)
             filter_options = dict_to_sqlalchemy_filter_options(
-                self.model, schema_as_dict)
+                self.model, schema_as_dict
+            )
 
             query = session.query(
                 Games.id.label("id"),
@@ -55,23 +54,20 @@ class GameRepository(BaseRepository):
             filtered_query = query.filter(filter_options)
             query = filtered_query.order_by(order_query)
 
-            query = query.join(
-                GamesParams, Games.id == GamesParams.gameId
-            )
+            query = query.join(GamesParams, Games.id == GamesParams.gameId)
             query = query.group_by(
                 Games.id,
                 Games.created_at,
                 Games.platform,
                 Games.endDateTime,
                 Games.externalGameId,
-                GamesParams
+                GamesParams,
             )
 
             if page_size == "all":
                 games = query.all()
             else:
-                games = query.limit(page_size).offset(
-                    (page - 1) * page_size).all()
+                games = query.limit(page_size).offset((page - 1) * page_size).all()
 
             total_count = filtered_query.count()
 
@@ -85,14 +81,15 @@ class GameRepository(BaseRepository):
                         externalGameId=game.externalGameId,
                         platform=game.platform,
                         endDateTime=game.endDateTime,
-                        params=[]
+                        params=[],
                     )
-                game_results[game_id].params.append({
-                    "id": game.GamesParams.id,
-                    "paramKey": game.GamesParams.paramKey,
-                    "value": game.GamesParams.value,
-
-                })
+                game_results[game_id].params.append(
+                    {
+                        "id": game.GamesParams.id,
+                        "paramKey": game.GamesParams.paramKey,
+                        "value": game.GamesParams.value,
+                    }
+                )
 
             return FindGameResult(
                 items=list(game_results.values()),
@@ -101,25 +98,29 @@ class GameRepository(BaseRepository):
                     "page_size": page_size,
                     "ordering": ordering,
                     "total_count": total_count,
-                }
+                },
             )
 
     def get_game_by_id(self, id: str):
         with self.session_factory() as session:
-            game = session.query(self.model).filter(
-                self.model.id == id).first()
+            game = session.query(self.model).filter(self.model.id == id).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {id}")
             # buscando los parametros del juego
-            params = session.query(self.model_game_params).filter(
-                self.model_game_params.gameId == id).all()
+            params = (
+                session.query(self.model_game_params)
+                .filter(self.model_game_params.gameId == id)
+                .all()
+            )
             game_params = []
             for param in params:
-                game_params.append({
-                    "id": param.id,
-                    "paramKey": param.paramKey,
-                    "value": param.value,
-                })
+                game_params.append(
+                    {
+                        "id": param.id,
+                        "paramKey": param.paramKey,
+                        "value": param.value,
+                    }
+                )
 
             return BaseGameResult(
                 id=game.id,
@@ -128,13 +129,12 @@ class GameRepository(BaseRepository):
                 externalGameId=game.externalGameId,
                 platform=game.platform,
                 endDateTime=game.endDateTime,
-                params=game_params
+                params=game_params,
             )
 
     def patch_game_by_id(self, id: str, schema):
         with self.session_factory() as session:
-            game = session.query(self.model).filter(
-                self.model.id == id).first()
+            game = session.query(self.model).filter(self.model.id == id).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {id}")
 

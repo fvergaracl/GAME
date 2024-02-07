@@ -1,12 +1,10 @@
 from typing import List, Optional
 from uuid import UUID
+
 from pydantic import BaseModel
-from app.schema.base_schema import (
-    FindBase,
-    ModelBaseInfo,
-    SearchOptions,
-    SuccesfullyCreated
-)
+
+from app.schema.base_schema import (FindBase, ModelBaseInfo, SearchOptions,
+                                    SuccesfullyCreated)
 from app.schema.strategy_schema import BaseStrategy
 from app.util.schema import AllOptional
 
@@ -25,8 +23,7 @@ class CreateTask(CreateTaskPost, metaclass=AllOptional):
     gameId: str
 
 
-class Task(ModelBaseInfo, BaseTask, metaclass=AllOptional):
-    ...
+class Task(ModelBaseInfo, BaseTask, metaclass=AllOptional): ...
 
 
 class FindTaskResult(BaseModel):

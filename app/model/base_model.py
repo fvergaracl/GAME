@@ -1,7 +1,8 @@
 from datetime import datetime
 from uuid import uuid4
-from sqlmodel import Column, DateTime, Field, SQLModel, func
+
 from sqlalchemy.dialects.postgresql import UUID
+from sqlmodel import Column, DateTime, Field, SQLModel, func
 
 
 class BaseModel(SQLModel):
@@ -9,12 +10,16 @@ class BaseModel(SQLModel):
         default_factory=uuid4,
         primary_key=True,
         index=True,
-        sa_column=Column(UUID(as_uuid=True), primary_key=True, index=True)
+        sa_column=Column(UUID(as_uuid=True), primary_key=True, index=True),
     )
-    created_at: datetime = Field(sa_column=Column(
-        DateTime(timezone=True), default=func.now()))
-    updated_at: datetime = Field(sa_column=Column(
-        DateTime(timezone=True), default=func.now(), onupdate=func.now()))
+    created_at: datetime = Field(
+        sa_column=Column(DateTime(timezone=True), default=func.now())
+    )
+    updated_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True), default=func.now(), onupdate=func.now()
+        )
+    )
 
     class Config:
         orm_mode = True
@@ -29,9 +34,9 @@ class BaseModel(SQLModel):
         if not isinstance(other, BaseModel):
             return False
         return (
-            self.id == other.id and
-            self.created_at == other.created_at and
-            self.updated_at == other.updated_at
+            self.id == other.id
+            and self.created_at == other.created_at
+            and self.updated_at == other.updated_at
         )
 
     def __hash__(self):

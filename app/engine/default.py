@@ -81,11 +81,11 @@ class EnhancedGamificationStrategy(BaseStrategy):
         super().__init__(
             strategy_name="EnhancedGamificationStrategy",
             strategy_description="A more advanced gamification strategy with"
-                                 "additional points and penalties.",
+            "additional points and penalties.",
             strategy_name_slug="enhanced_gamification",
             strategy_version="0.0.2",
             variable_basic_points=1,
-            variable_bonus_points=1
+            variable_bonus_points=1,
         )
 
         self.basic_engagement_points = 1

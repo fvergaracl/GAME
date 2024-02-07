@@ -17,7 +17,6 @@ class AppCreator:
             version="0.0.1",
             redoc_url="/redocs",
             docs_url="/docs",
-
         )
 
         # set db and container
@@ -29,8 +28,7 @@ class AppCreator:
         if configs.BACKEND_CORS_ORIGINS:
             self.app.add_middleware(
                 CORSMiddleware,
-                allow_origins=[str(origin)
-                               for origin in configs.BACKEND_CORS_ORIGINS],
+                allow_origins=[str(origin) for origin in configs.BACKEND_CORS_ORIGINS],
                 allow_credentials=True,
                 allow_methods=["*"],
                 allow_headers=["*"],
@@ -48,6 +46,7 @@ class AppCreator:
                 "docs": "/docs",
                 "redocs": "/redocs",
             }
+
         # set routers API_V1_STR
 
         # self.app.include_router(v1_routers)

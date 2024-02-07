@@ -1,4 +1,5 @@
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel
 
 from app.schema.base_schema import ModelBaseInfo, SearchOptions
@@ -39,8 +40,7 @@ class FindAllStrategyResult(BaseModel):
     search_options: Optional[SearchOptions]
 
 
-class FindStrategyResult(Strategy):
-    ...
+class FindStrategyResult(Strategy): ...
 
 
 class CreateStrategyPost(BaseModel):
@@ -48,5 +48,4 @@ class CreateStrategyPost(BaseModel):
     data: DataStrategy
 
 
-class CreateStrategyResult(Strategy):
-    ...
+class CreateStrategyResult(Strategy): ...

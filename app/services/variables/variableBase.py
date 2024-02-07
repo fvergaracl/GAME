@@ -1,6 +1,4 @@
-
-
-class VariableBase():
+class VariableBase:
 
     def __init__(self, variable_name, variable_description, sub_variables):
         self.variable_name = variable_name
@@ -11,5 +9,5 @@ class VariableBase():
         return {
             "name": self.variable_name,
             "description": self.variable_description,
-            "sub_variables": self.sub_variables
+            "sub_variables": self.sub_variables,
         }

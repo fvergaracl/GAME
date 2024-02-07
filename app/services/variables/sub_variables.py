@@ -1,21 +1,7 @@
-
-
 sub_variables = [
-    {
-        "name": "#EXTERNAL_USER_ID",
-        "type": "string",
-        "description": "External user id"
-    },
-    {
-        "name": "#EXTERNAL_TASK_ID",
-        "type": "string",
-        "description": "External task id"
-    },
-    {
-        "name": "#EXTERNAL_GAME_ID",
-        "type": "string",
-        "description": "External game id"
-    }
+    {"name": "#EXTERNAL_USER_ID", "type": "string", "description": "External user id"},
+    {"name": "#EXTERNAL_TASK_ID", "type": "string", "description": "External task id"},
+    {"name": "#EXTERNAL_GAME_ID", "type": "string", "description": "External game id"},
 ]
 
 

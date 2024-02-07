@@ -1,7 +1,7 @@
 # Convert the Wallet instance to a dictionary for serialization,
 # Ensuring all UUID values are also converted to strings.
-from uuid import UUID
 from datetime import datetime
+from uuid import UUID
 
 
 def serialize_wallet(wallet):
@@ -15,6 +15,6 @@ def serialize_wallet(wallet):
     cleaned_dict = {
         key: value
         for key, value in wallet_dict.items()
-        if not key.startswith('_')  # Skip internal attributes
+        if not key.startswith("_")  # Skip internal attributes
     }
     return cleaned_dict

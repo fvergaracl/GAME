@@ -1,24 +1,17 @@
+from uuid import UUID
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query
-from uuid import UUID
-from app.core.container import Container
 
-from app.schema.user_schema import (
-    PostCreateUser,
-    CreatedUser,
-    PostAssignPointsToUser,
-    UserWallet,
-    UserPointsTasks,
-    ResponseConversionPreview,
-    PostPointsConversionRequest,
-    ResponsePointsConversion
-)
-from app.schema.base_schema import (
-    FindBase
-)
-from app.schema.user_points_schema import (
-    UserPointsAssigned,
-)
+from app.core.container import Container
+from app.schema.base_schema import FindBase
+from app.schema.user_points_schema import UserPointsAssigned
+from app.schema.user_schema import (CreatedUser, PostAssignPointsToUser,
+                                    PostCreateUser,
+                                    PostPointsConversionRequest,
+                                    ResponseConversionPreview,
+                                    ResponsePointsConversion, UserPointsTasks,
+                                    UserWallet)
 from app.services.user_service import UserService
 
 router = APIRouter(
@@ -31,8 +24,7 @@ router = APIRouter(
 @inject
 def list_users(
     schema: FindBase = Depends(),
-    service: UserService = Depends(
-        Provide[Container.user_service]),
+    service: UserService = Depends(Provide[Container.user_service]),
 ):
     return service.get_list(schema)
 
@@ -41,8 +33,7 @@ def list_users(
 @inject
 def create_user(
     schema: PostCreateUser,
-    service: UserService = Depends(
-        Provide[Container.user_service]),
+    service: UserService = Depends(Provide[Container.user_service]),
 ):
     return service.create_user(schema)
 
@@ -59,14 +50,12 @@ description_assign_points_to_user = """
     response_model=UserPointsAssigned,
     summary=summary_assign_points_to_user,
     description=description_assign_points_to_user,
-
 )
 @inject
 def assign_points_to_user(
     userId: UUID,
     schema: PostAssignPointsToUser,
-    service: UserService = Depends(
-        Provide[Container.user_service]),
+    service: UserService = Depends(Provide[Container.user_service]),
 ):
     return service.assign_points_to_user(userId, schema)
 
@@ -93,8 +82,7 @@ description_get_points = """
 @inject
 def get_points_by_user_id(
     userId: UUID,
-    service: UserService = Depends(
-        Provide[Container.user_service]),
+    service: UserService = Depends(Provide[Container.user_service]),
 ):
     return service.get_points_by_user_id(userId)
 
@@ -108,8 +96,7 @@ def get_points_by_user_id(
 @inject
 def get_wallet_by_user_id(
     userId: UUID,
-    service: UserService = Depends(
-        Provide[Container.user_service]),
+    service: UserService = Depends(Provide[Container.user_service]),
 ):
     return service.get_wallet_by_user_id(userId)
 
@@ -129,9 +116,7 @@ description_preview_points = """## Preview Points to Coins Conversion
 @inject
 def preview_points_to_coins_conversion(
     userId: UUID,
-    points: int = Query(
-        ...,
-        description="The number of points to convert to coins"),
+    points: int = Query(..., description="The number of points to convert to coins"),
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     return service.preview_points_to_coins_conversion(userId, points)

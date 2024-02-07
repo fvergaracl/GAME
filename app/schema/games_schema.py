@@ -1,21 +1,13 @@
-from typing import List, Optional
 from datetime import datetime
-from pydantic import BaseModel
+from typing import List, Optional
 from uuid import UUID
 
-from app.schema.games_params_schema import (
-    BaseFindGameParams,
-    CreateGameParams,
-    UpdateGameParams
-)
-from app.schema.base_schema import (
-    FindBase,
-    ModelBaseInfo,
-    SearchOptions
-)
+from pydantic import BaseModel
 
+from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
+from app.schema.games_params_schema import (BaseFindGameParams,
+                                            CreateGameParams, UpdateGameParams)
 from app.schema.task_schema import Task
-
 from app.util.schema import AllOptional
 
 
@@ -87,20 +79,17 @@ class FindTaskGameById(ModelBaseInfo):
     tasks: Optional[List[Task]]
 
 
-class Game(ModelBaseInfo, BaseGame, metaclass=AllOptional):
-    ...
+class Game(ModelBaseInfo, BaseGame, metaclass=AllOptional): ...
 
 
-class PostFindGame(FindBase, BaseGame, metaclass=AllOptional):
-    ...
+class PostFindGame(FindBase, BaseGame, metaclass=AllOptional): ...
 
 
 class FindGameByExternalId(FindBase, BaseGame, metaclass=AllOptional):
     externalGameId: str
 
 
-class UpsertGame(BaseGame, metaclass=AllOptional):
-    ...
+class UpsertGame(BaseGame, metaclass=AllOptional): ...
 
 
 class UpsertGameWithGameParams(BaseGame, metaclass=AllOptional):

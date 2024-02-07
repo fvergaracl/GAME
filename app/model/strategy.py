@@ -1,6 +1,7 @@
-from app.model.base_model import BaseModel
-from sqlmodel import Column, Field, String
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlmodel import Column, Field, String
+
+from app.model.base_model import BaseModel
 
 
 class Strategy(BaseModel, table=True):

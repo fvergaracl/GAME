@@ -1,14 +1,15 @@
 from typing import List, Optional
 
 from pydantic import BaseModel
-from app.schema.base_schema import ModelBaseInfo, SearchOptions, FindBase
+
+from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
 from app.schema.wallet_schema import WalletWithoutUserId
 from app.util.schema import AllOptional
 
 
 class PostAssignPointsToUser(BaseModel):
     taskId: str
-    points:  Optional[int]
+    points: Optional[int]
     description: Optional[str]
     data: Optional[dict]
 
@@ -25,12 +26,7 @@ class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
     message: Optional[str] = "Successfully assigned"
 
 
-class UserPoints(
-    ModelBaseInfo,
-    BaseUserPointsBaseModel,
-    metaclass=AllOptional
-):
-    ...
+class UserPoints(ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional): ...
 
 
 class FindQueryByExternalGameId(FindBase, metaclass=AllOptional):

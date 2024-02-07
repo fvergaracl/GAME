@@ -1,15 +1,13 @@
-from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends
 from uuid import UUID
 
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends
+
 from app.core.container import Container
-from app.schema.task_schema import (
-    GetTaskById,
-    TaskPointsResponse,
-    FoundTaskById,
-    CreateTaskPost,
-    CreateTaskPostSuccesfullyCreated
-)
+from app.schema.task_schema import (CreateTaskPost,
+                                    CreateTaskPostSuccesfullyCreated,
+                                    FoundTaskById, GetTaskById,
+                                    TaskPointsResponse)
 from app.services.task_service import TaskService
 
 router = APIRouter(
@@ -39,8 +37,7 @@ description_get_tasks_list = """
 @inject
 def get_task_detail_by_id(
     schema: GetTaskById = Depends(),
-    service: TaskService = Depends(
-        Provide[Container.task_service]),
+    service: TaskService = Depends(Provide[Container.task_service]),
 ):
     return service.get_task_detail_by_id(schema)
 
@@ -62,16 +59,12 @@ description_get_points_by_task_id = """
 @inject
 def get_points_by_task_id(
     schema: GetTaskById = Depends(),
-    service: TaskService = Depends(
-        Provide[Container.task_service]),
+    service: TaskService = Depends(Provide[Container.task_service]),
 ):
     return service.get_points_by_task_id(schema)
 
 
-@game_task_router.post(
-    "/{id}/tasks",
-    response_model=CreateTaskPostSuccesfullyCreated
-)
+@game_task_router.post("/{id}/tasks", response_model=CreateTaskPostSuccesfullyCreated)
 @inject
 def create_task(
     id: UUID,
