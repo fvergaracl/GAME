@@ -8,11 +8,10 @@ done
 
 echo "PostgreSQL is up - executing Alembic migrations"
 # Navigate to your project directory (where pyproject.toml is located)
-cd /app/app
+cd /app
 # Use poetry to run Alembic migrations
 poetry run alembic upgrade head
 
-cd /app
 
 HOST=${HOST:-0.0.0.0}
 PORT=${PORT}
