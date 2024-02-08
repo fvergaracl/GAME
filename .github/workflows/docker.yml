@@ -1,20 +1,17 @@
-name: Publish Docker ALPHA Image
+name: Publish Docker Image
 
 on:
-  workflow_dispatch:
   push:
-    tags:
-      - "*"
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
 
 jobs:
   docker:
     runs-on: ubuntu-latest
+    if: github.ref_name != 'main'
     steps:
+      - name: Get current date
+          id: date
+          run: echo "::set-output name=date::$(date +'%Y%m%d')"
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -34,6 +31,7 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            fvergaracl/game:alpha
-            fvergaracl/game:alpha-${{ github.run_number }}
+            fvergaracl/game:latest
+            fvergaracl/game:${{ github.ref_name }}
+            fvergaracl/game:${{ github.ref_name }}.${{ steps.date.outputs.date }}
           target: prod
