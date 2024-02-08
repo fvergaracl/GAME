@@ -35,5 +35,6 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            fvergaracl/game:alpha-${{ github.ref_name }}
-            fvergaracl/game:alpha-${{ github.ref_name }}-${{ github.run_number }}
+            fvergaracl/game:latest
+            fvergaracl/game:${{ github.ref_name }}
+            fvergaracl/game:${{ github.ref_name }}-${{ github.run_number }}
