@@ -34,6 +34,6 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            fvergaracl/game:alpha-${{ github.ref_name }}
-            fvergaracl/game:alpha-${{ github.ref_name }}-${{ github.run_number }}
+            fvergaracl/game:alpha
+            fvergaracl/game:alpha-${{ github.run_number }}
           target: prod
