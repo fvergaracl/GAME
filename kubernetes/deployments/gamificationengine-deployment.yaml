@@ -76,6 +76,6 @@ spec:
                 configMapKeyRef:
                   key: VERSION_APP
                   name: env-prod
-          image: fvergaracl/game:latest
+          image: fvergaracl/game:v0.0.002
           name: game-api
       restartPolicy: Always
