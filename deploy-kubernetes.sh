@@ -21,6 +21,23 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# Function to display help message
+show_help() {
+    echo "Usage: $0 [OPTION]"
+    echo "Apply Kubernetes YAML files for specific components."
+    echo ""
+    echo "Options:"
+    echo "  --postgres  Apply only the PostgreSQL deployment and its dependencies."
+    echo "  --api       Apply only the API deployment and its dependencies."
+    echo "  --verbose   Display verbose output."
+    echo "  --help      Display this help message."
+    echo ""
+    echo "Examples:"
+    echo "  $0 --postgres        # Apply only the PostgreSQL deployment."
+    echo "  $0 --api             # Apply only the API deployment."
+    echo "  $0 --api --verbose   # Apply only the API deployment with verbose output."
+}
+
 # Function to apply a YAML file and display colored messages
 apply_yaml() {
     FILE=$1
@@ -45,20 +62,41 @@ apply_yaml() {
     rm $TEMP_FILE
 }
 
-# List of YAML files to apply
-FILES=(
-    "kubernetes/configmaps/env-prod-configmap.yaml"
+# Check if help is requested
+for arg in "$@"; do
+    if [ "$arg" = "--help" ]; then
+        show_help
+        exit 0
+    fi
+done
+
+# List of YAML files for each deployment
+POSTGRES_FILES=(
     "kubernetes/volumen/postgres-data-persistentvolumeclaim.yaml"
-    "kubernetes/services/gamificationengine-service.yaml"
     "kubernetes/services/postgres-service.yaml"
-    "kubernetes/deployments/gamificationengine-deployment.yaml"
     "kubernetes/deployments/postgres-deployment.yaml"
+)
+
+API_FILES=(
+    "kubernetes/configmaps/env-prod-configmap.yaml"
+    "kubernetes/services/gamificationengine-service.yaml"
+    "kubernetes/deployments/gamificationengine-deployment.yaml"
     "kubernetes/ingresses/ingress.yaml"
 )
 
+# Determine which deployment to apply based on command-line argument
+if [ "$1" = "--postgres" ]; then
+    FILES=("${POSTGRES_FILES[@]}")
+elif [ "$1" = "--api" ]; then
+    FILES=("${API_FILES[@]}")
+else
+    echo "Invalid option or no option provided. Use --help for usage information."
+    exit 1
+fi
+
 # Apply each YAML file
 for FILE in "${FILES[@]}"; do
-    apply_yaml $FILE $1
+    apply_yaml $FILE $2 # $2 can be --verbose
 done
 
 echo -e "${BLUE}[*] Info: Process completed.${NC}"
