@@ -10,8 +10,8 @@ jobs:
     if: github.ref_name != 'main'
     steps:
       - name: Get current date
-          id: date
-          run: echo "::set-output name=date::$(date +'%Y%m%d')"
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y%m%d')"
       - name: Checkout
         uses: actions/checkout@v3
 
