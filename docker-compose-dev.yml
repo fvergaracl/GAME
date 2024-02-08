@@ -2,9 +2,9 @@ version: "3.7"
 
 services:
   postgres:
-    container_name: "db"
+    container_name: "postgres"
     image: postgres
-    hostname: db
+    hostname: postgres
     ports:
       - "5432:5432"
     env_file:
