@@ -10,6 +10,7 @@ WORKDIR /app/
 # Copy poetry.lock* in case it doesn't exist in the repo
 COPY ./pyproject.toml ./poetry.lock* ./alembic.ini /app/
 COPY ./app /app/app
+COPY ./migrations /app/migrations
 RUN chmod +x /app/app/start-dev.sh
 RUN chmod +x /app/app/start-prod.sh
 ENV PYTHONPATH=/app/app
