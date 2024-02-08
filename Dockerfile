@@ -8,7 +8,7 @@ RUN pip3 install poetry==1.7.1
 RUN poetry config virtualenvs.create false
 WORKDIR /app/
 # Copy poetry.lock* in case it doesn't exist in the repo
-COPY ./pyproject.toml ./poetry.lock* /app/
+COPY ./pyproject.toml ./poetry.lock* ./alembic.ini /app/
 COPY ./app /app/app
 RUN chmod +x /app/app/start-dev.sh
 RUN chmod +x /app/app/start-prod.sh
