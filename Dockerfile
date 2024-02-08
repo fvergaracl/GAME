@@ -25,5 +25,4 @@ FROM builder as prod
 RUN poetry install --no-root --no-dev --no-cache
 RUN pip install gunicorn
 
-
 CMD ["bash", "./app/start-prod.sh"]
