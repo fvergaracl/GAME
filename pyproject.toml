@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "game"
+name = "GAME"
 version = "0.0.1"
 description = "GAME (Goals And Motivation Engine)"
 authors = ["fvergaracl <fvergaracl@gmail.com>"]

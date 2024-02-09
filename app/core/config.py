@@ -15,7 +15,8 @@ class Configs(BaseSettings):
     API: str = "/api"
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "GAME-api"
-    VERSION: str = os.getenv("VERSION_APP", "No_version")
+    GAMIFICATIONENGINE_VERSION_APP: str = os.getenv(
+        "GAMIFICATIONENGINE_VERSION_APP", "No_version")
     ENV_DATABASE_MAPPER: dict = {
         "prod": "game_dev_db",
         "stage": "game_dev_db",
@@ -58,7 +59,8 @@ class Configs(BaseSettings):
     PAGE_SIZE = 10
     ORDERING = "-id"
 
-    class Config: ...
+    class Config:
+        ...
 
 
 class TestConfigs(Configs):

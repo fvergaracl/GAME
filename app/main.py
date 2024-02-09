@@ -37,7 +37,7 @@ class AppCreator:
         # set routes
         @self.app.get("/")
         def root():
-            version = configs.VERSION
+            version = configs.GAMIFICATIONENGINE_VERSION_APP
             project_name = configs.PROJECT_NAME
             return {
                 "projectName": project_name,

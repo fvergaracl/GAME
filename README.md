@@ -101,6 +101,70 @@ To deploy the REST API, run:
 uvicorn app.main:app --reload
 ```
 
+## Kubernetes ☸️
+
+### Prerequisites
+
+- Kubernetes cluster: You can set up a cluster on cloud platforms like Google Kubernetes Engine (GKE), Amazon Elastic Kubernetes Service (EKS), Azure Kubernetes Service (AKS), or on-premises using Minikube or kubeadm.
+- kubectl: The Kubernetes command-line tool, `kubectl`, allows you to run commands against Kubernetes clusters.
+
+### Configuration Files Overview
+
+You've uploaded several configuration files, which are crucial for deploying applications on Kubernetes. Here's a brief overview of each:
+
+1. **`deploy-kubernetes.sh`**: Likely a shell script to automate the deployment process.
+2. **`env-prod-configmap.yaml`**: Defines environment variables for your applications in a ConfigMap, making it easier to configure different environments.
+3. **`postgres-data-persistentvolumeclaim.yaml`**: Creates a PersistentVolumeClaim (PVC) for PostgreSQL, ensuring data persists across pod restarts.
+4. **`ingress.yaml`**: Defines rules for routing external HTTP(S) traffic to your services.
+5. **`gamificationengine-service.yaml`**: Configures a service for the gamification engine, making it accessible within the cluster.
+6. **`postgres-service.yaml`**: Creates a service for PostgreSQL, allowing other components to communicate with the database.
+7. **`postgres-deployment.yaml`**: Defines the deployment for a PostgreSQL database, including its container image, environment variables, and storage.
+8. **`gamificationengine-deployment.yaml`**: Describes the deployment for your gamification engine application.
+9. **`.env`**: Contains environment variables for your setup, not directly used by Kubernetes but could be used by your scripts or applications.
+
+### Steps to Deploy
+
+#### 1. Set up your Kubernetes cluster
+
+Ensure your Kubernetes cluster is up and running.
+
+#### 2. Configure kubectl
+
+Configure `kubectl` to connect to your Kubernetes cluster. This step varies depending on your cloud provider or local setup.
+
+#### 3. Apply Configuration Files
+
+Navigate to the directory containing your Kubernetes configuration files and apply them using `kubectl`. For example:
+
+```bash
+kubectl apply -f env-prod-configmap.yaml
+kubectl apply -f postgres-data-persistentvolumeclaim.yaml
+kubectl apply -f ingress.yaml
+kubectl apply -f gamificationengine-service.yaml
+kubectl apply -f postgres-service.yaml
+kubectl apply -f postgres-deployment.yaml
+kubectl apply -f gamificationengine-deployment.yaml
+```
+
+#### 4. Monitor Deployment Status
+
+You can monitor the status of your deployments using:
+
+```bash
+kubectl get pods
+kubectl get services
+kubectl describe deployment <deployment-name>
+```
+
+#### 5. Access Your Application
+
+- **Ingress**: If you're using an ingress, you'll need to configure DNS for your domain to point to your ingress IP.
+- **Port-Forwarding**: For quick access or testing, you can use `kubectl port-forward`.
+
+```bash
+kubectl port-forward service/gamificationengine-service 8080:80
+```
+
 ## Other Useful Commands 🚀
 
 ### Alembic (Database Migrations)
