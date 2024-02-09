@@ -5,47 +5,53 @@ from app.model.base_model import BaseModel
 
 
 class UserPoints(BaseModel, table=True):
+    """
+    Represents the points and associated data for a user.
+
+    Attributes:
+        points (int): The number of points.
+        data (dict): A JSON object containing additional data.
+        description (str): A description of the user points.
+        userId (str): The ID of the user associated with the points.
+        taskId (str): The ID of the task associated with the points.
+    """
+
     points: int = Field(sa_column=Column(Integer))
-    # data: is a json object
     data: dict = Field(sa_column=Column(JSONB), nullable=True)
     description: str = Field(sa_column=Column(String), nullable=True)
-    userId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("users.id")))
-    taskId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("tasks.id")))
+    userId: str = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("users.id")))
+    taskId: str = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("tasks.id")))
+
+    class Config:
+        orm_mode = True
 
     def __str__(self):
-        return f"UserPoints(id={self.id}, points={self.points}, "
-
-    "data={self.data}, userId={self.userId}, taskId={self.taskId}, "
-    "created_at={self.created_at}, updated_at={self.updated_at}, "
-    "description={self.description})"
+        return f"UserPoints (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, points={self.points}, data={self.data}, description={self.description}, userId={self.userId}, taskId={self.taskId})"
 
     def __repr__(self):
-        return f"UserPoints(id={self.id}, points={self.points}, "
-
-    "data={self.data}, userId={self.userId}, taskId={self.taskId}, "
-    "created_at={self.created_at}, updated_at={self.updated_at}, "
-    "description={self.description})"
+        return f"UserPoints (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, points={self.points}, data={self.data}, description={self.description}, userId={self.userId}, taskId={self.taskId})"
 
     def __eq__(self, other):
         return (
-            self.points == other.points
+            isinstance(other, UserPoints)
+            and self.id == other.id
+            and self.points == other.points
             and self.data == other.data
+            and self.description == other.description
             and self.userId == other.userId
             and self.taskId == other.taskId
         )
 
+    def make_hashable(self, obj):
+        if isinstance(obj, (tuple, list)):
+            return tuple(self.make_hashable(e) for e in obj)
+        elif isinstance(obj, dict):
+            return tuple(sorted((k, self.make_hashable(v)) for k, v in obj.items()))
+        else:
+            return obj
+
     def __hash__(self):
-        return hash((self.points, self.data, self.userId, self.taskId))
-
-    def __ne__(self, other):
-        return not (self == other)
-
-    def __lt__(self, other):
-        return self.taskId < other.taskId
-
-    def __le__(self, other):
-
-        return self.taskId <= other.taskId
-
-    def __gt__(self, other):
-        return self.taskId > other.taskId
+        data_as_hashable = self.make_hashable(self.data)
+        return hash((self.points, data_as_hashable, self.description, self.userId, self.taskId))

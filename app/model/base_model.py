@@ -6,6 +6,10 @@ from sqlmodel import Column, DateTime, Field, SQLModel, func
 
 
 class BaseModel(SQLModel):
+    """
+    Base model class that provides common functionality for all models.
+    """
+
     id: str = Field(
         default_factory=uuid4,
         primary_key=True,
@@ -25,10 +29,10 @@ class BaseModel(SQLModel):
         orm_mode = True
 
     def __str__(self):
-        return f"BaseModel: {self.id}, {self.created_at}, {self.updated_at}"
+        return f"BaseModel: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at})"
 
     def __repr__(self):
-        return f"BaseModel: {self.id}, {self.created_at}, {self.updated_at}"
+        return f"BaseModel: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at})"
 
     def __eq__(self, other):
         if not isinstance(other, BaseModel):
@@ -41,16 +45,3 @@ class BaseModel(SQLModel):
 
     def __hash__(self):
         return hash((self.id, self.created_at, self.updated_at))
-
-    def __ne__(self, other):
-        return not (self == other)
-
-    def __lt__(self, other):
-        return self.id < other.id
-
-    def __le__(self, other):
-
-        return self.id <= other.id
-
-    def __gt__(self, other):
-        return self.id > other.id

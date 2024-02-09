@@ -24,7 +24,7 @@ description_get_games_list = """
 
 
 @router.get(
-    "/",
+    "",
     response_model=FindGameResult,
     description=description_get_games_list,
     summary=summary_get_games_list,
@@ -67,7 +67,7 @@ description_create_game = """
 
 
 @router.post(
-    "/",
+    "",
     response_model=GameCreated,
     summary=summary_create_game,
     description=description_create_game,

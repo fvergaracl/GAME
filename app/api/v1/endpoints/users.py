@@ -20,7 +20,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("")
 @inject
 def list_users(
     schema: FindBase = Depends(),
@@ -29,7 +29,7 @@ def list_users(
     return service.get_list(schema)
 
 
-@router.post("/", response_model=CreatedUser)
+@router.post("", response_model=CreatedUser)
 @inject
 def create_user(
     schema: PostCreateUser,
@@ -116,7 +116,8 @@ description_preview_points = """## Preview Points to Coins Conversion
 @inject
 def preview_points_to_coins_conversion(
     userId: UUID,
-    points: int = Query(..., description="The number of points to convert to coins"),
+    points: int = Query(...,
+                        description="The number of points to convert to coins"),
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     return service.preview_points_to_coins_conversion(userId, points)

@@ -60,7 +60,8 @@ class Configs(BaseSettings):
     PAGE_SIZE = 10
     ORDERING = "-id"
 
-    class Config: ...
+    class Config:
+        ...
 
 
 class TestConfigs(Configs):

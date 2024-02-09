@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=FindAllStrategyResult)
+@router.get("", response_model=FindAllStrategyResult)
 @inject
 def get_strategy_list(
     schema: FindBase = Depends(),
@@ -35,7 +35,7 @@ def get_strategy_by_id(
     return service.get_strategy_by_id(id)
 
 
-@router.post("/", response_model=CreateStrategyResult)
+@router.post("", response_model=CreateStrategyResult)
 @inject
 def create_strategy(
     schema: CreateStrategyPost,

@@ -28,14 +28,15 @@ class AppCreator:
         if configs.BACKEND_CORS_ORIGINS:
             self.app.add_middleware(
                 CORSMiddleware,
-                allow_origins=[str(origin) for origin in configs.BACKEND_CORS_ORIGINS],
+                allow_origins=[str(origin)
+                               for origin in configs.BACKEND_CORS_ORIGINS],
                 allow_credentials=True,
                 allow_methods=["*"],
                 allow_headers=["*"],
             )
 
         # set routes
-        @self.app.get("/")
+        @self.app.get("")
         def root():
             version = configs.GAMIFICATIONENGINE_VERSION_APP
             project_name = configs.PROJECT_NAME
