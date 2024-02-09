@@ -1,5 +1,7 @@
 # GAME (Goals And Motivation Engine) 🎮
 
+Coverage: [0-9]\*%
+
 ## Description 📝
 
 GAME (Goals And Motivation Engine) is a system designed to foster motivation and achievement of goals through gamification. This open-source project utilizes a PostgreSQL database and is developed with FastAPI in Python, managed via Poetry for environment handling.

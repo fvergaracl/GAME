@@ -1,0 +1,25 @@
+name: Update Coverage in README
+
+on: [push]
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-cov
+      - name: Run pytest and update README
+        run: |
+          coverage=$(pytest --cov=app --cov-report=term tests/ | tail -n 1 | awk '{print $4}')
+          sed -i "s/coverage: [0-9]*%/coverage: $coverage/" README.md
+      - name: Commit and push if changed
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          git commit -am "Update coverage in README" && git push || echo "No changes to commit"

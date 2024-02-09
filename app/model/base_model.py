@@ -35,10 +35,9 @@ class BaseModel(SQLModel):
         return f"BaseModel: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at})"
 
     def __eq__(self, other):
-        if not isinstance(other, BaseModel):
-            return False
         return (
-            self.id == other.id
+            isinstance(other, BaseModel)
+            and self.id == other.id
             and self.created_at == other.created_at
             and self.updated_at == other.updated_at
         )
