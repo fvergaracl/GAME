@@ -20,6 +20,6 @@ jobs:
           sed -i "s/coverage: [0-9]*%/coverage: $coverage/" README.md
       - name: Commit and push if changed
         run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
+          git config --global user.email "fvergaracl+coverage@gmail.com"
+          git config --global user.name "Coverage Bot"
           git commit -am "Update coverage in README" && git push || echo "No changes to commit"
