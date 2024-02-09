@@ -124,6 +124,22 @@ You've uploaded several configuration files, which are crucial for deploying app
 
 ### Steps to Deploy
 
+The `deploy-kubernetes.sh` script is designed to automate the deployment of Kubernetes resources with the following options:
+
+- **`--postgres`**: Apply only the PostgreSQL deployment and its dependencies. This option is useful for setting up or updating the database component of your application without affecting other parts.
+
+- **`--api`**: Apply only the API deployment and its dependencies. This allows for deploying or updating the API layer separately, which can be particularly handy for rolling updates or when testing new API features.
+
+- **`--verbose`**: Display verbose output. When this flag is used, the script provides more detailed information about the commands being executed, which is helpful for debugging or for more detailed logging purposes.
+
+- **`--help`**: Display the help message. This option shows usage information, including a description of each flag and examples of how to use the script.
+
+```bash
+bash deploy-kubernetes.sh
+```
+
+### Steps to Deploy (Manually)
+
 #### 1. Set up your Kubernetes cluster
 
 Ensure your Kubernetes cluster is up and running.
