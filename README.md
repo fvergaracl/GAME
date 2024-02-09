@@ -101,6 +101,69 @@ To deploy the REST API, run:
 uvicorn app.main:app --reload
 ```
 
+## Docker 🐳
+
+### Overview
+
+Docker provides a way to run applications securely isolated in a container, packaged with all its dependencies and libraries. For the GAME project, Docker and Docker Compose are used to simplify the deployment of the PostgreSQL database and the FastAPI application, ensuring consistent environments from development to production.
+
+### Requirements
+
+- Docker
+- Docker Compose
+
+### Setting up Docker
+
+Ensure Docker and Docker Compose are installed on your machine. Docker Compose will use the `docker-compose.yml` for production deployments and `docker-compose-dev.yml` for development environments.
+
+### Configuration Files
+
+- `Dockerfile`: Contains the instructions for building the application's Docker image.
+- `docker-compose.yml`: Defines the production services, networks, and volumes.
+- `docker-compose-dev.yml`: Used for setting up the development environment with Docker Compose.
+
+### Using Docker Compose
+
+#### Development Environment
+
+To set up the development environment, run:
+
+```bash
+docker-compose -f docker-compose-dev.yml up --build
+```
+
+This command builds the application image from the Dockerfile, sets up the PostgreSQL database, and runs the application in development mode.
+
+#### Production Environment
+
+For production deployment, use:
+
+```bash
+docker-compose up --build
+```
+
+This will pull the necessary images, set up the database, and run the application in production mode.
+
+### Building and Running Docker Containers
+
+- To build the Docker image for the application, navigate to the directory containing the Dockerfile and run:
+
+  ```bash
+  docker build -t gamification-engine .
+  ```
+
+- To run the application using Docker directly, you can use:
+
+  ```bash
+  docker run -p 80:80 gamification-engine
+  ```
+
+### Best Practices
+
+- **Image Optimization**: Keep your Docker images as small as possible by using multi-stage builds and minimal base images.
+- **Security**: Use secrets to manage sensitive data and follow the principle of least privilege for container processes.
+- **Volumes**: Use Docker volumes for persistent data storage to ensure data is preserved across container restarts.
+
 ## Kubernetes ☸️
 
 ### Prerequisites
