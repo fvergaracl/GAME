@@ -158,12 +158,6 @@ This will pull the necessary images, set up the database, and run the applicatio
   docker run -p 80:80 gamification-engine
   ```
 
-### Best Practices
-
-- **Image Optimization**: Keep your Docker images as small as possible by using multi-stage builds and minimal base images.
-- **Security**: Use secrets to manage sensitive data and follow the principle of least privilege for container processes.
-- **Volumes**: Use Docker volumes for persistent data storage to ensure data is preserved across container restarts.
-
 ## Kubernetes ☸️
 
 ### Prerequisites
