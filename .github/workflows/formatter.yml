@@ -2,12 +2,12 @@ name: Apply Black & Isort
 
 on:
   push:
-    branches:
-      - main
+  pull_request:
 
 jobs:
   format:
     runs-on: ubuntu-latest
+    if: github.ref_name != 'main'
     steps:
       - uses: actions/checkout@master
         with:
