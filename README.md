@@ -48,6 +48,28 @@ The GAME project is structured to facilitate easy navigation and understanding f
 └── tests                         # Test suite (unit and integration tests)
 ```
 
+### Details
+
+This table uses emojis to denote the type of content (📁 for directories, 📄 for files) and provides a brief description to help in understanding their purpose:
+
+| Type | Path                         | Description                                                                                        |
+| ---- | ---------------------------- | -------------------------------------------------------------------------------------------------- |
+| 📁   | `/app`                       | Root directory for application code. Contains all the service logic, models, and API endpoints.    |
+| 📁   | `/app/api/v1`                | Contains version 1 of the API endpoints. This is where you define all the route handlers.          |
+| 📄   | `/app/api/v1/endpoints/*.py` | API endpoint files like `games.py`, `strategy.py`, etc., defining the logic for each endpoint.     |
+| 📁   | `/app/core`                  | Core configurations and utilities for the app, including database connection and configurations.   |
+| 📁   | `/app/model`                 | Definitions of database models, mapping the database schema to Python code.                        |
+| 📁   | `/app/repository`            | Data access layer, containing files that interact with the database models.                        |
+| 📁   | `/app/schema`                | Schemas for request and response validation and serialization.                                     |
+| 📁   | `/app/services`              | Business logic layer, where the main application operations are defined.                           |
+| 📄   | `/app/main.py`               | The entry point for the Flask application. Contains app initialization and route definitions.      |
+| 📄   | `/docker-compose.yml`        | Docker Compose configuration file for local development, defining how your containers are built.   |
+| 📁   | `/docker`                    | Contains Dockerfiles for different services, useful for containerizing your application.           |
+| 📁   | `/kubernetes`                | Kubernetes configurations for deployment, including deployments, services, and persistent volumes. |
+| 📁   | `/migrations`                | Alembic migrations for database schema management. Contains scripts for database versioning.       |
+| 📁   | `/tests`                     | Contains all the test code, including unit and integration tests, organized by test type.          |
+| 📄   | `/README.md`                 | The main documentation file for the project, explaining how to set up and run the project.         |
+
 ## Environment Setup 🌐
 
 ### Environment Variables
