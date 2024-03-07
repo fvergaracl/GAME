@@ -1,10 +1,56 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-
+import subprocess
+import toml
 from app.api.v1.routes import routers as v1_routers
 from app.core.config import configs
 from app.core.container import Container
 from app.util.class_object import singleton
+from fastapi.openapi.utils import get_openapi
+from app.schema.base_schema import RootEndpoint
+
+
+def get_project_data():
+    # Asegúrate de que la ruta sea accesible desde tu script
+    pyproject_path = "pyproject.toml"
+    with open(pyproject_path, "r") as pyproject_file:
+        pyproject_content = toml.load(pyproject_file)
+    return pyproject_content['tool']['poetry']
+
+
+project_data = get_project_data()
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title=project_data['name'],
+        version=project_data['version'],
+        description=project_data['description'],
+        routes=app.routes,
+        servers=[{"url": "/api/v1", "description": "Local"}]
+    )
+    # Eliminar el prefijo /api/v1 de las rutas en la documentación de Swagger
+    for path in list(openapi_schema["paths"].keys()):
+        if path.startswith("/api/v1"):
+            openapi_schema["paths"][path[7:]
+                                    ] = openapi_schema["paths"].pop(path)
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+def get_git_commit_hash() -> str:
+    """
+    Returns the current git commit hash, or "unknown" if not available. 
+    """
+    try:
+
+        commit_hash = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"]).decode("ascii").strip()
+    except Exception:
+        commit_hash = "unknown"
+    return commit_hash
 
 
 @singleton
@@ -12,12 +58,11 @@ class AppCreator:
     def __init__(self):
         # set app default
         self.app = FastAPI(
-            title=configs.PROJECT_NAME,
-            openapi_url=f"{configs.API}/openapi.json",
-            version="0.0.1",
             redoc_url="/redocs",
             docs_url="/docs",
+            servers=[{"url": configs.API_V1_STR, "description": "Local"}]
         )
+        self.app.openapi = custom_openapi
 
         # set db and container
         self.container = Container()
@@ -36,7 +81,13 @@ class AppCreator:
             )
 
         # set routes
-        @self.app.get("")
+        @self.app.get(
+            "/api/v1",
+            tags=["root"],
+            response_model=RootEndpoint,
+            summary="Root API v1 endpoint",
+            description="General information about the API"
+        )
         def root():
             version = configs.GAMIFICATIONENGINE_VERSION_APP
             project_name = configs.PROJECT_NAME
@@ -46,6 +97,7 @@ class AppCreator:
                 "message": "Welcome to GAME API",
                 "docs": "/docs",
                 "redocs": "/redocs",
+                "commitVersion": get_git_commit_hash()
             }
 
         # set routers API_V1_STR
