@@ -67,7 +67,8 @@ class GameRepository(BaseRepository):
             if page_size == "all":
                 games = query.all()
             else:
-                games = query.limit(page_size).offset((page - 1) * page_size).all()
+                games = query.limit(page_size).offset(
+                    (page - 1) * page_size).all()
 
             total_count = filtered_query.count()
 
@@ -86,7 +87,7 @@ class GameRepository(BaseRepository):
                 game_results[game_id].params.append(
                     {
                         "id": game.GamesParams.id,
-                        "paramKey": game.GamesParams.paramKey,
+                        "key": game.GamesParams.paramKey,
                         "value": game.GamesParams.value,
                     }
                 )
@@ -103,7 +104,8 @@ class GameRepository(BaseRepository):
 
     def get_game_by_id(self, id: str):
         with self.session_factory() as session:
-            game = session.query(self.model).filter(self.model.id == id).first()
+            game = session.query(self.model).filter(
+                self.model.id == id).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {id}")
             # buscando los parametros del juego
@@ -134,7 +136,8 @@ class GameRepository(BaseRepository):
 
     def patch_game_by_id(self, id: str, schema):
         with self.session_factory() as session:
-            game = session.query(self.model).filter(self.model.id == id).first()
+            game = session.query(self.model).filter(
+                self.model.id == id).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {id}")
 

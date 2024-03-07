@@ -8,6 +8,7 @@ from app.core.container import Container
 from app.util.class_object import singleton
 from fastapi.openapi.utils import get_openapi
 from app.schema.base_schema import RootEndpoint
+from fastapi.responses import RedirectResponse
 
 
 def get_project_data():
@@ -33,6 +34,7 @@ def custom_openapi():
     )
     # Eliminar el prefijo /api/v1 de las rutas en la documentación de Swagger
     for path in list(openapi_schema["paths"].keys()):
+        print(path)
         if path.startswith("/api/v1"):
             openapi_schema["paths"][path[7:]
                                     ] = openapi_schema["paths"].pop(path)
@@ -80,7 +82,18 @@ class AppCreator:
                 allow_headers=["*"],
             )
 
+        @self.app.get("/", include_in_schema=False)
+        def read_root():
+            """
+            Redirect to /docs
+
+            return:
+                RedirectResponse: Redirect to /docs
+            """
+            return RedirectResponse(url='/docs')
+
         # set routes
+
         @self.app.get(
             "/api/v1",
             tags=["root"],
@@ -89,6 +102,12 @@ class AppCreator:
             description="General information about the API"
         )
         def root():
+            """
+            Root API v1 endpoint
+
+            return:
+                RootEndpoint: General information about the API
+            """
             version = configs.GAMIFICATIONENGINE_VERSION_APP
             project_name = configs.PROJECT_NAME
             return {

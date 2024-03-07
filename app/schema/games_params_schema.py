@@ -4,21 +4,23 @@ from pydantic import BaseModel
 
 
 class BaseGameParams(BaseModel):
-    paramKey: str
+    key: str
     value: str | int | float | bool
 
     class Config:
         orm_mode = True
 
 
-class BaseCreateGameParams(BaseGameParams): ...
+class BaseCreateGameParams(BaseGameParams):
+    ...
 
 
 class InsertGameParams(BaseGameParams):
     gameId: str
 
 
-class CreateGameParams(BaseCreateGameParams): ...
+class CreateGameParams(BaseCreateGameParams):
+    ...
 
 
 class BaseFindGameParams(BaseGameParams):
