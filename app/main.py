@@ -44,7 +44,11 @@ def custom_openapi():
 
 def get_git_commit_hash() -> str:
     """
-    Returns the current git commit hash, or "unknown" if not available. 
+    Returns the current git commit hash, or "unknown" if not available.
+
+    Returns:
+        str: The current git commit hash, or "unknown" if not available.    
+
     """
     try:
 
