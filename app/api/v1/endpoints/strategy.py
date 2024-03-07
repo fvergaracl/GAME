@@ -13,7 +13,7 @@ from app.services.strategy_service import StrategyService
 
 router = APIRouter(
     prefix="/strategies",
-    tags=["Strategies"],
+    tags=["strategies"],
 )
 
 
@@ -26,7 +26,7 @@ def get_strategy_list(
     return service.get_list(schema)
 
 
-@router.get("/{id}", response_model=FindStrategyResult)
+@router.get("{id}", response_model=FindStrategyResult)
 @inject
 def get_strategy_by_id(
     id: str,
@@ -47,7 +47,7 @@ def create_strategy(
     return service.create_strategy(schema)
 
 
-@router.get("/rules/variable", response_model=ResponseFindAllRuleVariables)
+@router.get("rules/variable", response_model=ResponseFindAllRuleVariables)
 @inject
 def get_variables_available_to_strategy(
     service: RulesService = Depends(Provide[Container.rules_service]),

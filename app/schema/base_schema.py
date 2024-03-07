@@ -5,6 +5,15 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
+class RootEndpoint(BaseModel):
+    projectName: str
+    version: str
+    message: str
+    docs: str
+    redocs: str
+    commitVersion: str
+
+
 class ModelBaseInfo(BaseModel):
     id: UUID
     created_at: datetime
