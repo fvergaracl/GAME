@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "GAME"
-version = "0.0.1"
+version = "1.0.6"
 description = "GAME (Goals And Motivation Engine)"
 authors = ["fvergaracl <fvergaracl@gmail.com>"]
 license = "MIT"

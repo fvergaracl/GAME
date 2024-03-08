@@ -6,6 +6,27 @@ from pydantic import BaseModel
 
 
 class RootEndpoint(BaseModel):
+    """
+    Root API v1 endpoint
+
+    Attributes:
+        projectName (str): Name of the project
+        version (str): Version of the project
+        message (str): Welcome message
+        docs (str): URL to the documentation
+        redocs (str): URL to the redoc documentation
+        commitVersion (str): Commit version
+
+    Example:
+        {
+            "projectName": "Game API",
+            "version": "0.1.0",
+            "message": "Welcome to GAME API",
+            "docs": "/docs",
+            "redocs": "/redocs",
+            "commitVersion": "c3f1e2a"
+        }
+    """
     projectName: str
     version: str
     message: str
