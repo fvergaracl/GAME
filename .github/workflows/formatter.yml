@@ -9,11 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref_name != 'main'
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
 
-      - name: black and isort
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Install and run black and isort
         run: |
           pip install black isort
           black .
@@ -21,15 +26,13 @@ jobs:
 
       - name: Check for modified files
         id: git-check
-        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+        run: echo "modified=$(if git diff --quiet; then echo 'false'; else echo 'true'; fi)" >> $GITHUB_ENV
 
-       - name: Push changes
-        if: steps.git-check.outputs.modified == 'true'
+      - name: Push changes
+        if: env.modified == 'true'
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'noreply@github.com'
-          git fetch origin ${{ github.head_ref }}:${{ github.head_ref }} 
-          git checkout ${{ github.head_ref }} 
-          git add . 
+          git add .
           git commit -m "Automated Black & Isort formatting"
-          git push origin ${{ github.head_ref }} 
+          git push origin HEAD:${{ github.head_ref }}
