@@ -2,6 +2,7 @@ from app.core.exceptions import ConflictError
 from app.repository.strategy_repository import StrategyRepository
 from app.services.base_service import BaseService
 from app.engine.all_engine_strategies import all_engine_strategies
+import inspect
 
 
 class StrategyService(BaseService):
@@ -14,8 +15,10 @@ class StrategyService(BaseService):
         response = []
         for strategy in all_unclean_strategies:
             # id = filename
+            archivo_clase = inspect.getfile(strategy)
             response.append({
-                "id": strategy.get_strategy_id(),
+
+                "id": archivo_clase,
                 "name": strategy.get_strategy_name(),
                 "description": strategy.get_strategy_description(),
                 "nameSlug": strategy.get_strategy_name_slug(),

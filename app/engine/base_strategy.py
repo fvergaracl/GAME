@@ -15,6 +15,10 @@ class BaseStrategy:
         self.variable_basic_points = variable_basic_points
         self.variable_bonus_points = variable_bonus_points
 
+    def get_strategy_id(self):
+        # get filename of this file
+        return self.__class__.__name__
+
     def get_strategy_name(self):
         return self.strategy_name
 
@@ -42,7 +46,8 @@ class BaseStrategy:
         return variables_changed
 
     def get_variables(self):
-        return {k: v for k, v in self.__dict__.items() if k.startswith("variable_")}
+        return {k: v for k, v in self.__dict__.items() if
+                k.startswith("variable_")}
 
     def get_variable(self, variable_name):
         if hasattr(self, variable_name):

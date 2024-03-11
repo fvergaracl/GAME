@@ -1,6 +1,8 @@
 import os
 import importlib
-from app.engine.check_base_strategy_class import check_class_methods_and_variables
+from app.engine.check_base_strategy_class import (
+    check_class_methods_and_variables
+)
 
 
 def all_engine_strategies():
@@ -13,9 +15,6 @@ def all_engine_strategies():
                 file != "all_engine_strategies.py"):
             strategy = file[:-3]
             strategies.append(strategy)
-
-    # import all strategies and check if they are valid with check_base_strategy_class
-    # if not, remove them from the list
 
     all_strategies_classes = []
     for strategy in strategies:
