@@ -48,7 +48,7 @@ class GameService(BaseService):
             )
         created_params = []
         game = self.game_repository.create(schema)
-
+        print('**********', game)
         if params:
             del schema.params
 
