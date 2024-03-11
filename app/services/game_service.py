@@ -9,7 +9,7 @@ from app.schema.games_schema import (GameCreated, PatchGame, PostCreateGame,
                                      ResponsePatchGame)
 from app.services.base_service import BaseService
 from app.engine.all_engine_strategies import all_engine_strategies
-
+from app.util.is_valid_slug import is_valid_slug
 class GameService(BaseService):
     def __init__(
         self,
@@ -40,6 +40,16 @@ class GameService(BaseService):
         externalGameId_exist = self.game_repository.read_by_column(
             "externalGameId", externalGameId, not_found_raise_exception=False
         )
+
+        is_valid_externalGameId = is_valid_slug(externalGameId)
+        if not is_valid_externalGameId:
+            raise ConflictError(
+                detail=(
+                    f"Invalid externalGameId: {externalGameId}. externalGameId should be a valid slug (Should have only alphanumeric characters and Underscore . Length should be between 3 and 60)"  
+                )
+            )
+
+        # externalGameId
         if externalGameId_exist:
             raise ConflictError(
                 detail=(

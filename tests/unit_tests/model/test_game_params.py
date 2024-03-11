@@ -5,13 +5,13 @@ from app.model.game_params import GamesParams
 
 def test_games_params_creation_and_representation():
     # Prepare data for creating a GamesParams instance
-    param_key = "difficulty"
+    key = "difficulty"
     value = "hard"
     game_id = str(uuid4())  # Assuming UUID is used for game IDs
 
     # Create a GamesParams instance
     game_params = GamesParams(
-        paramKey=param_key,
+        key=key,
         value=value,
         gameId=game_id
     )
@@ -19,7 +19,7 @@ def test_games_params_creation_and_representation():
     # Test the string representation
     expected_str = (
         f"GameParams: (id={game_params.id}, created_at={game_params.created_at}, updated_at={game_params.updated_at}, "
-        f"paramKey={param_key}, value={value}, gameId={game_id})"
+        f"key={key}, value={value}, gameId={game_id})"
     )
     assert str(game_params) == expected_str
     assert repr(game_params) == expected_str
@@ -28,17 +28,17 @@ def test_games_params_creation_and_representation():
 def test_games_params_equality():
     game_id = uuid4()
     game_params1 = GamesParams(
-        paramKey="difficulty",
+        key="difficulty",
         value="hard",
         gameId=game_id
     )
     game_params2 = GamesParams(
-        paramKey="difficulty",
+        key="difficulty",
         value="hard",
         gameId=game_id
     )
     game_params3 = GamesParams(
-        paramKey="level",
+        key="level",
         value="10",
         gameId=game_id
     )
@@ -51,17 +51,17 @@ def test_games_params_equality():
 def test_games_params_hash():
     game_id = uuid4()
     game_params1 = GamesParams(
-        paramKey="difficulty",
+        key="difficulty",
         value="hard",
         gameId=game_id
     )
     game_params2 = GamesParams(
-        paramKey="difficulty",
+        key="difficulty",
         value="hard",
         gameId=game_id
     )
     game_params3 = GamesParams(
-        paramKey="level",
+        key="level",
         value="10",
         gameId=game_id
     )
