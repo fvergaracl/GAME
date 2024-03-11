@@ -15,6 +15,7 @@ def check_class_methods_and_variables(Class_to_check):
     instance = Class_to_check()
 
     methods = [
+        "get_strategy_id",
         "get_strategy_name", "get_strategy_description",
         "get_strategy_name_slug", "get_strategy_version",
         "get_variable_basic_points", "get_variable_bonus_points",
