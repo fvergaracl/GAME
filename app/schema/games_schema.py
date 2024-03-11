@@ -98,7 +98,7 @@ class UpsertGame(BaseGame, metaclass=AllOptional):
 
 
 class UpsertGameWithGameParams(BaseGame, metaclass=AllOptional):
-    paramKey: str
+    key: str
     value: str
 
 

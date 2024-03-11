@@ -43,6 +43,8 @@ class GameRepository(BaseRepository):
 
             query = session.query(
                 Games.id.label("id"),
+                Games.updated_at.label("updated_at"),
+                Games.strategyId.label("strategyId"),
                 Games.created_at.label("created_at"),
                 Games.platform.label("platform"),
                 Games.endDateTime.label("endDateTime"),
@@ -73,7 +75,7 @@ class GameRepository(BaseRepository):
                 games = query.limit(page_size).offset(
                     (page - 1) * page_size).all()
 
-            total_count = filtered_query.count()
+           
 
             game_results = {}
             for game in games:
@@ -81,6 +83,8 @@ class GameRepository(BaseRepository):
                 if game_id not in game_results:
                     game_results[game_id] = BaseGameResult(
                         id=game.id,
+                        updated_at=game.updated_at,
+                        strategyId=game.strategyId,
                         created_at=game.created_at,
                         externalGameId=game.externalGameId,
                         platform=game.platform,
@@ -90,10 +94,12 @@ class GameRepository(BaseRepository):
                 game_results[game_id].params.append(
                     {
                         "id": game.GamesParams.id,
-                        "key": game.GamesParams.paramKey,
+                        "key": game.GamesParams.key,
                         "value": game.GamesParams.value,
                     }
                 )
+
+            total_count = list(game_results.values()).__len__()
 
             return FindGameResult(
                 items=list(game_results.values()),
@@ -122,7 +128,7 @@ class GameRepository(BaseRepository):
                 game_params.append(
                     {
                         "id": param.id,
-                        "paramKey": param.paramKey,
+                        "key": param.key,
                         "value": param.value,
                     }
                 )
