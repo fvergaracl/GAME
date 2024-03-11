@@ -20,10 +20,14 @@ router = APIRouter(
 @router.get("", response_model=FindAllStrategyResult)
 @inject
 def get_strategy_list(
-    schema: FindBase = Depends(),
     service: StrategyService = Depends(Provide[Container.strategy_service]),
 ):
-    return service.get_list(schema)
+    response = service.list_all_strategies()
+    print(" ")
+    print(" ")
+    print(" ")
+    print("---------------------------------------")
+    return response
 
 
 # @router.get("{id}", response_model=FindStrategyResult)
