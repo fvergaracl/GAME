@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.core.config import configs
 from app.core.exceptions import DuplicatedError, NotFoundError
 from app.model.game_params import GamesParams
+from app.model.tasks import Tasks
 from app.model.games import Games
 from app.repository.base_repository import BaseRepository
 from app.schema.games_schema import BaseGameResult, FindGameResult
@@ -18,8 +19,10 @@ class GameRepository(BaseRepository):
         self,
         session_factory: Callable[..., AbstractContextManager[Session]],
         model=Games,
+        model_tasks=Tasks,
         model_game_params=GamesParams,
     ) -> None:
+        self.model_tasks = model_tasks
         self.model_game_params = model_game_params
         super().__init__(session_factory, model)
 
@@ -133,6 +136,15 @@ class GameRepository(BaseRepository):
                 endDateTime=game.endDateTime,
                 params=game_params,
             )
+
+    def get_tasks_list_by_game_id(self, id: str):
+        with self.session_factory() as session:
+            tasks = (
+                session.query(self.model_tasks)
+                .filter(self.model_tasks.gameId == id)
+                .all()
+            )
+            return tasks
 
     def patch_game_by_id(self, id: str, schema):
         with self.session_factory() as session:
