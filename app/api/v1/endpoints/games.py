@@ -52,11 +52,11 @@ Get Game by externalId
 )
 @inject
 def get_game_by_id(
-    id: UUID,
+    externalId: str,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
 
-    response = service.get_by_id(id)
+    response = service.get_by_id(externalId)
     return response
 
 
