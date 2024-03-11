@@ -8,7 +8,7 @@ from app.schema.games_params_schema import InsertGameParams
 from app.schema.games_schema import (GameCreated, PatchGame, PostCreateGame,
                                      ResponsePatchGame)
 from app.services.base_service import BaseService
-
+from app.engine.all_engine_strategies import all_engine_strategies
 
 class GameService(BaseService):
     def __init__(
@@ -47,8 +47,22 @@ class GameService(BaseService):
                     f"{externalGameId}")
             )
         created_params = []
+        default_strategyId = schema.strategyId
+        
+        if (default_strategyId is None):
+            default_strategyId = "default"
+
+        strategies = all_engine_strategies()
+        strategy = next(
+            (strategy for strategy in strategies if strategy.id == default_strategyId),
+            None
+        )
+        if not strategy:
+            raise NotFoundError(
+                detail=f"Strategy with id: {default_strategyId} not found"
+            )
+        
         game = self.game_repository.create(schema)
-        print('**********', game)
         if params:
             del schema.params
 
@@ -62,7 +76,22 @@ class GameService(BaseService):
                     params_to_insert)
 
                 created_params.append(created_param)
-
+                
+        print(' - ')
+        print(' - ')
+        print(' - ')
+        print(' - ')
+        print(' - ')
+        print(game)
+        print(created_params)
+        print(f"Game with externalGameId: {externalGameId} created")
+        print(' * ')
+        print(' * ')
+        print(' * ')
+        print(' * ')
+        json = game.dict()
+        print(json)
+        
         response = GameCreated(
             **game.dict(), params=created_params,
             message=f"Game with externalGameId: {externalGameId} created"

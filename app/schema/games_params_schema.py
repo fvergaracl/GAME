@@ -30,5 +30,5 @@ class BaseFindGameParams(BaseGameParams):
 
 class UpdateGameParams(CreateGameParams):
     id: UUID
-    paramKey: str
+    key: str
     value: str | int | float | bool
