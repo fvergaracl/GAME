@@ -29,7 +29,8 @@ class UserPointsRepository(BaseRepository):
 
     def get_all_UserPoints_by_taskId(self, taskId):
         with self.session_factory() as session:
-            query = session.query(self.model).filter(self.model.taskId == taskId).all()
+            query = session.query(self.model).filter(
+                self.model.taskId == taskId).all()
             return query
 
     def get_points_and_users_by_taskId(self, taskId):
@@ -71,6 +72,16 @@ class UserPointsRepository(BaseRepository):
             )
             return query
 
+    def get_taks_by_userId(self, userId):
+        with self.session_factory() as session:
+            query = (
+                session.query(Tasks)
+                .join(UserPoints, Tasks.id == UserPoints.taskId)
+                .filter(UserPoints.userId == userId)
+                .all()
+            )
+            return query
+
     def get_task_and_sum_points_by_userId(self, userId):
         with self.session_factory() as session:
             """
@@ -105,7 +116,8 @@ class UserPointsRepository(BaseRepository):
 
         with self.session_factory() as session:
             query = (
-                session.query(func.count(UserPoints.id).label("measurement_count"))
+                session.query(func.count(
+                    UserPoints.id).label("measurement_count"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -126,7 +138,8 @@ class UserPointsRepository(BaseRepository):
 
         with self.session_factory() as session:
             query = (
-                session.query(func.max(UserPoints.created_at).label("last_task_time"))
+                session.query(
+                    func.max(UserPoints.created_at).label("last_task_time"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -147,7 +160,8 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.avg(UserPoints.points).label("average_points"))
+                session.query(
+                    func.avg(UserPoints.points).label("average_points"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -181,7 +195,8 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.min(UserPoints.created_at).label("start_time"))
+                session.query(
+                    func.min(UserPoints.created_at).label("start_time"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )

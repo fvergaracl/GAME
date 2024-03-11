@@ -19,22 +19,22 @@ router = APIRouter(
 # array of Strategy <- response model is an array of Strategy
 
 
-@router.get("", response_model=List[Strategy])
-@inject
-def get_strategy_list(
-    service: StrategyService = Depends(Provide[Container.strategy_service]),
-):
-    response = service.list_all_strategies()
-    return response
+# @router.get("", response_model=List[Strategy])
+# @inject
+# def get_strategy_list(
+#     service: StrategyService = Depends(Provide[Container.strategy_service]),
+# ):
+#     response = service.list_all_strategies()
+#     return response
 
 
-@router.get("/{id}", response_model=Strategy)
-@inject
-def get_strategy_by_id(
-    id: str,
-    service: StrategyService = Depends(Provide[Container.strategy_service]),
-):
-    return service.get_strategy_by_id(id)
+# @router.get("/{id}", response_model=Strategy)
+# @inject
+# def get_strategy_by_id(
+#     id: str,
+#     service: StrategyService = Depends(Provide[Container.strategy_service]),
+# ):
+#     return service.get_strategy_by_id(id)
 
 
 # @router.get("rules/variable", response_model=ResponseFindAllRuleVariables)
