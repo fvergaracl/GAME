@@ -26,33 +26,33 @@ def get_strategy_list(
     return service.get_list(schema)
 
 
-@router.get("{id}", response_model=FindStrategyResult)
-@inject
-def get_strategy_by_id(
-    id: str,
-    service: StrategyService = Depends(Provide[Container.strategy_service]),
-):
-    return service.get_strategy_by_id(id)
+# @router.get("{id}", response_model=FindStrategyResult)
+# @inject
+# def get_strategy_by_id(
+#     id: str,
+#     service: StrategyService = Depends(Provide[Container.strategy_service]),
+# ):
+#     return service.get_strategy_by_id(id)
 
 
-@router.post("", response_model=CreateStrategyResult)
-@inject
-def create_strategy(
-    schema: CreateStrategyPost,
-    service: StrategyService = Depends(Provide[Container.strategy_service]),
-    service_rules: RulesService = Depends(Provide[Container.rules_service]),
-):
-    all_variables = service_rules.get_all_variables()
-    all_variables = [variable.get_data() for variable in all_variables]
-    return service.create_strategy(schema)
+# @router.post("", response_model=CreateStrategyResult)
+# @inject
+# def create_strategy(
+#     schema: CreateStrategyPost,
+#     service: StrategyService = Depends(Provide[Container.strategy_service]),
+#     service_rules: RulesService = Depends(Provide[Container.rules_service]),
+# ):
+#     all_variables = service_rules.get_all_variables()
+#     all_variables = [variable.get_data() for variable in all_variables]
+#     return service.create_strategy(schema)
 
 
-@router.get("rules/variable", response_model=ResponseFindAllRuleVariables)
-@inject
-def get_variables_available_to_strategy(
-    service: RulesService = Depends(Provide[Container.rules_service]),
-):
-    all_variables = service.get_all_variables()
-    all_variables = [variable.get_data() for variable in all_variables]
-    response = {"items": all_variables}
-    return response
+# @router.get("rules/variable", response_model=ResponseFindAllRuleVariables)
+# @inject
+# def get_variables_available_to_strategy(
+#     service: RulesService = Depends(Provide[Container.rules_service]),
+# ):
+#     all_variables = service.get_all_variables()
+#     all_variables = [variable.get_data() for variable in all_variables]
+#     response = {"items": all_variables}
+#     return response
