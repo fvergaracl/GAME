@@ -22,6 +22,7 @@ class BaseGameResult(BaseModel):
     id: Optional[UUID] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    strategyId: Optional[str] = None
     externalGameId: Optional[str] = None
     platform: Optional[str] = None
     endDateTime: Optional[datetime] = None
@@ -34,6 +35,7 @@ class BaseGameResult(BaseModel):
 class PostCreateGame(BaseModel):
     externalGameId: str
     platform: str
+    strategyId: Optional[str] = "default"
     endDateTime: Optional[datetime]
     params: Optional[List[CreateGameParams]]
 
@@ -79,17 +81,20 @@ class FindTaskGameById(ModelBaseInfo):
     tasks: Optional[List[Task]]
 
 
-class Game(ModelBaseInfo, BaseGame, metaclass=AllOptional): ...
+class Game(ModelBaseInfo, BaseGame, metaclass=AllOptional):
+    ...
 
 
-class PostFindGame(FindBase, BaseGame, metaclass=AllOptional): ...
+class PostFindGame(FindBase, BaseGame, metaclass=AllOptional):
+    ...
 
 
 class FindGameByExternalId(FindBase, BaseGame, metaclass=AllOptional):
     externalGameId: str
 
 
-class UpsertGame(BaseGame, metaclass=AllOptional): ...
+class UpsertGame(BaseGame, metaclass=AllOptional):
+    ...
 
 
 class UpsertGameWithGameParams(BaseGame, metaclass=AllOptional):

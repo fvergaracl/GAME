@@ -30,7 +30,8 @@ class GameService(BaseService):
         return self.game_repository.get_all_games(schema)
 
     def get_by_externalId(self, externalGameId: str):
-        return self.game_repository.read_by_column("externalGameId", externalGameId)
+        return self.game_repository.read_by_column(
+            "externalGameId", externalGameId)
 
     def create(self, schema: PostCreateGame):
         params = schema.params
@@ -41,7 +42,9 @@ class GameService(BaseService):
         )
         if externalGameId_exist:
             raise ConflictError(
-                detail=(f"Game already exist with externalGameId: {externalGameId}")
+                detail=(
+                    f"Game already exist with externalGameId: "
+                    f"{externalGameId}")
             )
         created_params = []
         game = self.game_repository.create(schema)
@@ -55,12 +58,15 @@ class GameService(BaseService):
                 params_dict["gameId"] = str(game.id)
 
                 params_to_insert = InsertGameParams(**params_dict)
-                created_param = self.game_params_repository.create(params_to_insert)
+                created_param = self.game_params_repository.create(
+                    params_to_insert)
 
                 created_params.append(created_param)
 
         response = GameCreated(
-            **game.dict(), params=created_params, message="Successfully created"
+            **game.dict(), params=created_params,
+            message=f"Game with externalGameId: {externalGameId} created"
+            f" successfully"
         )
         return response
 
@@ -72,14 +78,16 @@ class GameService(BaseService):
         updated_params = []
         if params:
             for param in params:
-                self.game_params_repository.patch_game_params_by_id(param.id, param)
+                self.game_params_repository.patch_game_params_by_id(
+                    param.id, param)
                 updated_params.append(param)
 
         updated_game_dict = updated_game.dict()
         updated_game_dict.pop("params", None)
 
         response = ResponsePatchGame(
-            **updated_game_dict, params=updated_params, message="Successfully updated"
+            **updated_game_dict, params=updated_params,
+            message="Successfully updated"
         )
         return response
 
