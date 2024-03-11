@@ -20,7 +20,6 @@ def all_engine_strategies():
     for strategy in strategies:
 
         module = importlib.import_module(f"app.engine.{strategy}")
-        # get classes Name and check if it is a valid strategy
         classes = [getattr(module, name)
                    for name in dir(module) if name[0].isupper()]
         for Class in classes:
@@ -29,8 +28,14 @@ def all_engine_strategies():
                 break
             if Class not in all_strategies_classes:
                 class_instance = Class()
-                # append filename as id
+
                 class_instance.id = strategy
                 all_strategies_classes.append(class_instance)
+
+    # delete all duplicated strategies
+    all_strategies_classes = list(
+        {strat.get_strategy_id(): strat for strat in
+         all_strategies_classes}.values()
+    )
 
     return all_strategies_classes

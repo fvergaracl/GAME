@@ -3,6 +3,7 @@ from app.repository.strategy_repository import StrategyRepository
 from app.services.base_service import BaseService
 from app.engine.all_engine_strategies import all_engine_strategies
 import inspect
+import os
 
 
 class StrategyService(BaseService):
@@ -14,29 +15,17 @@ class StrategyService(BaseService):
         all_unclean_strategies = all_engine_strategies()
         response = []
         for strategy in all_unclean_strategies:
-            # id = filename
-            archivo_clase = inspect.getfile(strategy)
+            file_class = inspect.getfile(strategy.__class__)
+            filename_id = os.path.basename(file_class)
+            filename_id = filename_id.replace(".py", "")
             response.append({
-
-                "id": archivo_clase,
+                "id": filename_id,
                 "name": strategy.get_strategy_name(),
                 "description": strategy.get_strategy_description(),
                 "nameSlug": strategy.get_strategy_name_slug(),
                 "version": strategy.get_strategy_version(),
                 "variables": strategy.get_variables(),
             })
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(response)
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-
         return response
 
     def get_strategy_by_id(self, id):
@@ -45,11 +34,13 @@ class StrategyService(BaseService):
     def create_strategy(self, schema):
         strategyName = schema.strategyName
         strategyName_exist = self.strategy_repository.read_by_column(
-            column="strategyName", value=strategyName, not_found_raise_exception=False
+            column="strategyName", value=strategyName,
+            not_found_raise_exception=False
         )
         if strategyName_exist:
             raise ConflictError(
                 detail=(
-                    f"Strategy already exist with strategyName: {strategyName}")
+                    f"Strategy already exist with strategyName: {strategyName}"
+                )
             )
         return self.strategy_repository.create(schema)
