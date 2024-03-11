@@ -76,21 +76,6 @@ class GameService(BaseService):
                     params_to_insert)
 
                 created_params.append(created_param)
-                
-        print(' - ')
-        print(' - ')
-        print(' - ')
-        print(' - ')
-        print(' - ')
-        print(game)
-        print(created_params)
-        print(f"Game with externalGameId: {externalGameId} created")
-        print(' * ')
-        print(' * ')
-        print(' * ')
-        print(' * ')
-        json = game.dict()
-        print(json)
         
         response = GameCreated(
             **game.dict(), params=created_params,
