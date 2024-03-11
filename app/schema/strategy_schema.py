@@ -1,9 +1,18 @@
-from typing import Any, Dict, List, Optional
-
-from pydantic import BaseModel
-
+from typing import Dict, List, Optional
+from pydantic import BaseModel, Field
 from app.schema.base_schema import ModelBaseInfo, SearchOptions
 
+
+class Strategy(BaseModel):
+    id: str
+    name: Optional[str] = None
+    description: Optional[str] = None
+    nameSlug: Optional[str] = Field(None, alias='nameSlug')
+    version: str
+    variables: Dict[str, int]
+
+
+#############################################################################
 
 class RuleBase(BaseModel):
     name: str
@@ -31,16 +40,13 @@ class BaseStrategy(ModelBaseInfo):
     data: DataStrategy
 
 
-class Strategy(ModelBaseInfo):
-    data: Dict[str, Any]
-
-
 class FindAllStrategyResult(BaseModel):
     items: Optional[List[BaseStrategy]]
     search_options: Optional[SearchOptions]
 
 
-class FindStrategyResult(Strategy): ...
+class FindStrategyResult(Strategy):
+    ...
 
 
 class CreateStrategyPost(BaseModel):
@@ -48,4 +54,5 @@ class CreateStrategyPost(BaseModel):
     data: DataStrategy
 
 
-class CreateStrategyResult(Strategy): ...
+class CreateStrategyResult(Strategy):
+    ...

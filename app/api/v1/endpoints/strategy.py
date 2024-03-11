@@ -1,12 +1,13 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
+from typing import List
 from app.core.container import Container
 from app.schema.base_schema import FindBase
 from app.schema.rules_schema import ResponseFindAllRuleVariables
 from app.schema.strategy_schema import (CreateStrategyPost,
                                         CreateStrategyResult,
-                                        FindAllStrategyResult,
+                                        Strategy,
                                         FindStrategyResult)
 from app.services.rules_service import RulesService
 from app.services.strategy_service import StrategyService
@@ -16,17 +17,15 @@ router = APIRouter(
     tags=["strategies"],
 )
 
+# array of Strategy <- response model is an array of Strategy
 
-@router.get("", response_model=FindAllStrategyResult)
+
+@router.get("", response_model=List[Strategy])
 @inject
 def get_strategy_list(
     service: StrategyService = Depends(Provide[Container.strategy_service]),
 ):
     response = service.list_all_strategies()
-    print(" ")
-    print(" ")
-    print(" ")
-    print("---------------------------------------")
     return response
 
 
