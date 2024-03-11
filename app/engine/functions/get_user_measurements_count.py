@@ -1,21 +1,21 @@
 from app.repository.user_points_repository import UserPointsRepository
+from app.repository.task_repository import TaskRepository
+from app.repository.game_repository import GameRepository
 
-
-def get_user_measurements_count(
+def get_user_measurements_count_game(
         user_id: int,
-        user_points_repository: UserPointsRepository) -> int:
+        user_points_repository: UserPointsRepository,
+
+        ) -> int:
     """
-    Get the number of measurements a user has completed in a campaign.
+    Get the number of measurements of a user in the game.
 
     Args:
-        user_id (int): The user's unique identifier.
-        user_points_repository (UserPointsRepository): The repository to access user points data.
-
+    user_id: int
+        The user id.
+    user_points_repository: UserPointsRepository
+        The user points repository.
     Returns:
-        int: The number of measurements completed by the user.
+    int: The number of measurements of the user in the game.
     """
-    # Asumiendo que UserPointsRepository tiene un método para contar mediciones por user_id
-    measurements_count = user_points_repository.count_measurements_by_user_id(
-        user_id)
 
-    return measurements_count

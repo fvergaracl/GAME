@@ -1,4 +1,4 @@
-from app.core.exceptions import ConflictError
+from app.core.exceptions import ConflictError, NotFoundError
 from app.repository.strategy_repository import StrategyRepository
 from app.services.base_service import BaseService
 from app.engine.all_engine_strategies import all_engine_strategies
@@ -29,7 +29,13 @@ class StrategyService(BaseService):
         return response
 
     def get_strategy_by_id(self, id):
-        return self.strategy_repository.read_by_id(id)
+        all_strategies = self.list_all_strategies()
+        for strategy in all_strategies:
+            if strategy["id"] == id:
+                return strategy
+        raise NotFoundError(
+            detail=f"Strategy not found with id: {id}"
+        )
 
     def create_strategy(self, schema):
         strategyName = schema.strategyName
