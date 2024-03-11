@@ -17,7 +17,9 @@ def all_engine_strategies():
     # import all strategies and check if they are valid with check_base_strategy_class
     # if not, remove them from the list
 
+    all_strategies_classes = []
     for strategy in strategies:
+
         module = importlib.import_module(f"app.engine.{strategy}")
         # get classes Name and check if it is a valid strategy
         classes = [getattr(module, name)
@@ -26,5 +28,10 @@ def all_engine_strategies():
             if not check_class_methods_and_variables(Class):
                 strategies.remove(strategy)
                 break
+            if Class not in all_strategies_classes:
+                class_instance = Class()
+                # append filename as id
+                class_instance.id = strategy
+                all_strategies_classes.append(class_instance)
 
-    return strategies
+    return all_strategies_classes

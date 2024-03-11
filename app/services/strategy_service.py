@@ -10,9 +10,31 @@ class StrategyService(BaseService):
         super().__init__(strategy_repository)
 
     def list_all_strategies(self):
-        all_strategies = all_engine_strategies()
-        print(all_strategies)
-        pass
+        all_unclean_strategies = all_engine_strategies()
+        response = []
+        for strategy in all_unclean_strategies:
+            # id = filename
+            response.append({
+                "id": strategy.get_strategy_id(),
+                "name": strategy.get_strategy_name(),
+                "description": strategy.get_strategy_description(),
+                "nameSlug": strategy.get_strategy_name_slug(),
+                "version": strategy.get_strategy_version(),
+                "variables": strategy.get_variables(),
+            })
+        print(" ")
+        print(" ")
+        print(" ")
+        print(" ")
+        print(" ")
+        print(response)
+        print(" ")
+        print(" ")
+        print(" ")
+        print(" ")
+        print(" ")
+
+        return response
 
     def get_strategy_by_id(self, id):
         return self.strategy_repository.read_by_id(id)
