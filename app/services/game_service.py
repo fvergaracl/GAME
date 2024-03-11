@@ -6,7 +6,7 @@ from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.schema.games_params_schema import InsertGameParams
 from app.schema.games_schema import (GameCreated, PatchGame, PostCreateGame,
-                                     ResponsePatchGame)
+                                     ResponsePatchGame, BaseGameResult)
 from app.services.base_service import BaseService
 from app.engine.all_engine_strategies import all_engine_strategies
 from app.util.is_valid_slug import is_valid_slug
@@ -22,8 +22,19 @@ class GameService(BaseService):
         self.task_repository = task_repository
         super().__init__(game_repository)
 
-    def get_by_id(self, id: UUID):
-        response = self._repository.get_game_by_id(id)
+    def get_by_id(self, externalId: str):
+        response = self.game_repository.read_by_column(
+            "externalGameId", externalId, not_found_raise_exception=True, only_one=True, not_found_message=f"Game not found by externalId: {externalId} "
+        )
+
+        params = self.game_params_repository.read_by_column(
+            "gameId", response.id, not_found_raise_exception=False, only_one=False
+        )
+        response_dict = response.dict()
+        response_dict["params"] = params
+
+        response = BaseGameResult(**response_dict)
+
         return response
 
     def get_all_games(self, schema):
