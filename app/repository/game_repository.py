@@ -75,8 +75,6 @@ class GameRepository(BaseRepository):
                 games = query.limit(page_size).offset(
                     (page - 1) * page_size).all()
 
-           
-
             game_results = {}
             for game in games:
                 game_id = game.id

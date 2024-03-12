@@ -2,7 +2,8 @@ from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
-
+from app.schema.tasks_params_schema import CreateTaskParams
+from app.schema.games_params_schema import CreateGameParams
 from app.schema.base_schema import (FindBase, ModelBaseInfo, SearchOptions,
                                     SuccesfullyCreated)
 from app.schema.strategy_schema import Strategy
@@ -17,6 +18,19 @@ class BaseTask(BaseModel):
 class CreateTaskPost(BaseModel):
     externalTaskId: str
     strategyId: Optional[str]
+    params: Optional[List[CreateTaskParams]]
+
+    def example():
+        return {
+            "externalTaskId": "string",
+            "strategyId": "default",
+            "params": [
+                {
+                    "key": "variable_bonus_points",
+                    "value": 20
+                }
+            ]
+        }
 
 
 class CreateTask(CreateTaskPost, metaclass=AllOptional):
@@ -53,6 +67,8 @@ class FoundTaskById(BaseModel):
 class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
     externalTaskId: str
     externalGameId: str
+    gameParams: Optional[List[CreateGameParams]]
+    taskParams: Optional[List[CreateTaskParams]]
     strategy: Optional[Strategy]
 
 

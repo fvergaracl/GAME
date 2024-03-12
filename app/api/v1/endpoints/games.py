@@ -5,11 +5,15 @@ from fastapi import APIRouter, Depends, Body
 
 from app.core.container import Container
 from app.schema.games_schema import (FindGameById, FindGameResult,
-                                     FindTaskGameById, GameCreated, PatchGame,
+                                     GameCreated, PatchGame,
                                      PostCreateGame, PostFindGame,
                                      ResponsePatchGame)
 from app.schema.strategy_schema import Strategy
 from app.services.game_service import GameService
+
+from app.schema.task_schema import (CreateTaskPost,
+                                    CreateTaskPostSuccesfullyCreated)
+from app.services.task_service import TaskService
 
 router = APIRouter(
     prefix="/games",
@@ -116,6 +120,27 @@ def get_strategy_by_externalGameId(
     service: GameService = Depends(Provide[Container.game_service]),
 ):
     return service.get_strategy_by_externalGameId(externalGameId)
+
+
+summary_create_task = "Create Task"
+description_create_task = """
+Create Task in a game using externalGameId
+
+"""
+
+
+@router.post(
+    "/{externalGameId}/tasks",
+    response_model=CreateTaskPostSuccesfullyCreated
+)
+@inject
+def create_task(
+    externalGameId: str,
+    create_query: CreateTaskPost = Body(..., example=CreateTaskPost.example()),
+    service: TaskService = Depends(Provide[Container.task_service]),
+):
+    return service.create_task_by_externalGameId(externalGameId, create_query)
+
 
 # summary_get_task_by_id_game = "Get Task by Id Game"
 # description_get_task_by_id_game = """
