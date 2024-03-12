@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 3a9e7b35f70d
+Revision ID: 43656cfc185d
 Revises: 
-Create Date: 2024-03-12 10:22:55.603388
+Create Date: 2024-03-12 11:42:31.842819
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '3a9e7b35f70d'
+revision = '43656cfc185d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,16 +30,6 @@ def upgrade():
     sa.UniqueConstraint('externalGameId')
     )
     op.create_index(op.f('ix_games_id'), 'games', ['id'], unique=False)
-    op.create_table('strategy',
-    sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('strategyName', sa.String(), nullable=True),
-    sa.Column('data', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('strategyName')
-    )
-    op.create_index(op.f('ix_strategy_id'), 'strategy', ['id'], unique=False)
     op.create_table('users',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
@@ -66,9 +56,8 @@ def upgrade():
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('externalTaskId', sa.String(), nullable=True),
     sa.Column('gameId', postgresql.UUID(as_uuid=True), nullable=True),
-    sa.Column('strategyId', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.Column('strategyId', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['gameId'], ['games.id'], ),
-    sa.ForeignKeyConstraint(['strategyId'], ['strategy.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_tasks_id'), 'tasks', ['id'], unique=False)
@@ -143,8 +132,6 @@ def downgrade():
     op.drop_table('gamesparams')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_table('users')
-    op.drop_index(op.f('ix_strategy_id'), table_name='strategy')
-    op.drop_table('strategy')
     op.drop_index(op.f('ix_games_id'), table_name='games')
     op.drop_table('games')
     # ### end Alembic commands ###
