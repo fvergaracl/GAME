@@ -1,7 +1,6 @@
 from app.repository.base_repository import BaseRepository
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
-from app.repository.strategy_repository import StrategyRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
@@ -13,7 +12,6 @@ __all__ = [
     "BaseRepository",
     "GameRepository",
     "TaskRepository",
-    "StrategyRepository",
     "UserRepository",
     "UserPointsRepository",
     "WalletRepository",

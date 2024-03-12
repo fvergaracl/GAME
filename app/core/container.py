@@ -4,7 +4,7 @@ from app.core.config import configs
 from app.core.database import Database
 # pylint: disable=unused-wildcard-import
 from app.repository import (GameParamsRepository, GameRepository,
-                            StrategyRepository, TaskRepository,
+                            TaskRepository,
                             UserPointsRepository, UserRepository,
                             WalletRepository, WalletTransactionRepository)
 from app.services import (GameParamsService, GameService, RulesService,
@@ -35,10 +35,6 @@ class Container(containers.DeclarativeContainer):
         GameParamsRepository, session_factory=db.provided.session
     )
 
-    strategy_repository = providers.Factory(
-        StrategyRepository, session_factory=db.provided.session
-    )
-
     task_repository = providers.Factory(
         TaskRepository, session_factory=db.provided.session
     )
@@ -65,13 +61,8 @@ class Container(containers.DeclarativeContainer):
         GameParamsService, game_params_repository=game_params_repository
     )
 
-    strategy_service = providers.Factory(
-        StrategyService, strategy_repository=strategy_repository
-    )
-
     game_service = providers.Factory(
         GameService,
-        strategy_service=strategy_service,
         game_repository=game_repository,
         game_params_repository=game_params_repository,
         task_repository=task_repository,
@@ -83,7 +74,6 @@ class Container(containers.DeclarativeContainer):
         TaskService,
         task_repository=task_repository,
         game_repository=game_repository,
-        strategy_repository=strategy_repository,
         user_repository=user_repository,
         user_points_repository=user_points_repository,
     )

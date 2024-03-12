@@ -19,9 +19,8 @@ class Tasks(BaseModel, table=True):
     gameId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("games.id")))
 
-    strategyId: str = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey("strategy.id")), nullable=True
-    )
+    strategyId: str = Field(sa_column=Column(
+        String, nullable=False, default="default"))
 
     class Config:
         orm_mode = True
