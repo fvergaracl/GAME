@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body
 
 from app.core.container import Container
 from app.schema.task_schema import (CreateTaskPost,
@@ -64,21 +64,3 @@ game_task_router = APIRouter(
 #     return service.get_points_by_task_id(schema)
 
 
-summary_create_task = "Create Task"
-description_create_task = """
-Create Task in a game using externalGameId
-
-"""
-
-
-@game_task_router.post(
-    "/{externalGameId}/tasks",
-    response_model=CreateTaskPostSuccesfullyCreated
-)
-@inject
-def create_task(
-    externalGameId: str,
-    create_query: CreateTaskPost,
-    service: TaskService = Depends(Provide[Container.task_service]),
-):
-    return service.create_task_by_externalGameId(externalGameId, create_query)

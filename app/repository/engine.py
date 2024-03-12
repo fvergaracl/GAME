@@ -10,7 +10,9 @@ from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
-from app.repository.wallet_transaction_repository import WalletTransactionRepository
+from app.repository.wallet_transaction_repository import (
+    WalletTransactionRepository
+)
 
 
 class EngineRepository(BaseRepository):
@@ -32,7 +34,7 @@ class EngineRepository(BaseRepository):
         self.model_user_points_repository = model_user_points_repository
         self.model_user_repository = model_user_repository
         self.model_wallet_repository = model_wallet_repository
-        self.model_wallet_transaction_repository = model_wallet_transaction_repository
+        self.model_wallet_transaction_repository = model_wallet_transaction_repository  # noqa
         super().__init__(
             session_factory,
             model_game_params_repository,

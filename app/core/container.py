@@ -6,7 +6,8 @@ from app.core.database import Database
 from app.repository import (GameParamsRepository, GameRepository,
                             TaskRepository,
                             UserPointsRepository, UserRepository,
-                            WalletRepository, WalletTransactionRepository)
+                            WalletRepository, WalletTransactionRepository,
+                            TaskParamsRepository)
 from app.services import (GameParamsService, GameService, RulesService,
                           TaskService, UserPointsService,
                           UserService, WalletService, WalletTransactionService,
@@ -35,7 +36,9 @@ class Container(containers.DeclarativeContainer):
     game_params_repository = providers.Factory(
         GameParamsRepository, session_factory=db.provided.session
     )
-
+    task_params_repository = providers.Factory(
+        TaskParamsRepository, session_factory=db.provided.session
+    )
     task_repository = providers.Factory(
         TaskRepository, session_factory=db.provided.session
     )
@@ -78,6 +81,8 @@ class Container(containers.DeclarativeContainer):
         game_repository=game_repository,
         user_repository=user_repository,
         user_points_repository=user_points_repository,
+        game_params_repository=game_params_repository,
+        task_params_repository=task_params_repository,
     )
 
     user_points_service = providers.Factory(
