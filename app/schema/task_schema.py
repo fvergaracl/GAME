@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from app.schema.base_schema import (FindBase, ModelBaseInfo, SearchOptions,
                                     SuccesfullyCreated)
-from app.schema.strategy_schema import BaseStrategy
+from app.schema.strategy_schema import Strategy
 from app.util.schema import AllOptional
 
 
@@ -16,14 +16,15 @@ class BaseTask(BaseModel):
 
 class CreateTaskPost(BaseModel):
     externalTaskId: str
-    strategyId: Optional[UUID]
+    strategyId: Optional[str]
 
 
 class CreateTask(CreateTaskPost, metaclass=AllOptional):
     gameId: str
 
 
-class Task(ModelBaseInfo, BaseTask, metaclass=AllOptional): ...
+class Task(ModelBaseInfo, BaseTask, metaclass=AllOptional):
+    ...
 
 
 class FindTaskResult(BaseModel):
@@ -46,14 +47,13 @@ class GetTaskById(BaseModel):
 
 class FoundTaskById(BaseModel):
     task: Task
-    strategy: Optional[BaseStrategy]
+    strategy: Optional[Strategy]
 
 
 class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
-    id: UUID
     externalTaskId: str
-    gameId: str
-    strategy: Optional[BaseStrategy]
+    externalGameId: str
+    strategy: Optional[Strategy]
 
 
 class TaskPoints(BaseModel):

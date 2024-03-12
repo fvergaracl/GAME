@@ -1,5 +1,4 @@
 from app.core.exceptions import ConflictError, NotFoundError
-from app.repository.strategy_repository import StrategyRepository
 from app.services.base_service import BaseService
 from app.engine.all_engine_strategies import all_engine_strategies
 import inspect
@@ -7,7 +6,7 @@ import os
 
 
 class StrategyService(BaseService):
-    def __init__(self, strategy_repository: StrategyRepository):
+    def __init__(self):
         self.strategy_repository = strategy_repository
         super().__init__(strategy_repository)
 

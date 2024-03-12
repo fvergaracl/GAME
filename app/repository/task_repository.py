@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.core.config import configs
 from app.core.exceptions import NotFoundError
-from app.model.strategy import Strategy
 from app.model.tasks import Tasks
 from app.repository.base_repository import BaseRepository
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
@@ -17,9 +16,7 @@ class TaskRepository(BaseRepository):
         self,
         session_factory: Callable[..., AbstractContextManager[Session]],
         model=Tasks,
-        model_strategy=Strategy,
     ) -> None:
-        self.model_strategy = model_strategy
         super().__init__(session_factory, model)
 
     def read_by_gameId(self, schema, eager=False):

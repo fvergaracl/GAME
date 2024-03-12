@@ -8,7 +8,6 @@ from sqlmodel import SQLModel
 from app.core.config import configs
 from app.model.game_params import GamesParams
 from app.model.games import Games
-from app.model.strategy import Strategy
 from app.model.task_params import TasksParams
 from app.model.tasks import Tasks
 from app.model.user_points import UserPoints

@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
-from app.repository.strategy_repository import StrategyRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
@@ -21,7 +20,6 @@ class EngineRepository(BaseRepository):
         session_factory: Callable[..., AbstractContextManager[Session]],
         model_game_params_repository=GameParamsRepository,
         model_game_repository=GameRepository,
-        model_strategy_repository=StrategyRepository,
         model_task_repository=TaskRepository,
         model_user_points_repository=UserPointsRepository,
         model_user_repository=UserRepository,
@@ -30,7 +28,6 @@ class EngineRepository(BaseRepository):
     ) -> None:
         self.model_game_params_repository = model_game_params_repository
         self.model_game_repository = model_game_repository
-        self.model_strategy_repository = model_strategy_repository
         self.model_task_repository = model_task_repository
         self.model_user_points_repository = model_user_points_repository
         self.model_user_repository = model_user_repository
@@ -40,7 +37,6 @@ class EngineRepository(BaseRepository):
             session_factory,
             model_game_params_repository,
             model_game_repository,
-            model_strategy_repository,
             model_task_repository,
             model_user_points_repository,
             model_user_repository,
