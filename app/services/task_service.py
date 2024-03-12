@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from app.core.exceptions import ConflictError, NotFoundError
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
@@ -120,7 +118,8 @@ class TaskService(BaseService):
         all_tasks["items"] = cleaned_tasks
         return all_tasks
 
-    def get_task_by_externalGameId_externalTaskId(self, externalGameId, externalTaskId):
+    def get_task_by_externalGameId_externalTaskId(
+            self, externalGameId, externalTaskId):
         game = self.game_repository.read_by_column(
             "externalGameId",
             externalGameId,
