@@ -61,19 +61,20 @@ class Container(containers.DeclarativeContainer):
 
     # Services (Add in here)
 
-    game_service = providers.Factory(
-        GameService,
-        game_repository=game_repository,
-        game_params_repository=game_params_repository,
-        task_repository=task_repository,
-    )
-
     game_params_service = providers.Factory(
         GameParamsService, game_params_repository=game_params_repository
     )
 
     strategy_service = providers.Factory(
         StrategyService, strategy_repository=strategy_repository
+    )
+
+    game_service = providers.Factory(
+        GameService,
+        strategy_service=strategy_service,
+        game_repository=game_repository,
+        game_params_repository=game_params_repository,
+        task_repository=task_repository,
     )
 
     rules_service = providers.Factory(RulesService, db=db.provided.session)
