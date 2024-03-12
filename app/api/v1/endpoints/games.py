@@ -164,23 +164,23 @@ def get_task_list(
     return service.get_tasks_list_by_externalGameId(externalGameId, find_query)
 
 
-# summary_get_task_by_id_game = "Get Task by Id Game"
-# description_get_task_by_id_game = """
-# Get Task by Id Game
-# """
+summary_get_task_by_externalGameId_taskId = "Get Task by externalGameId and externalTaskId"  # noqa
+description_get_task_by_externalGameId_taskId = """
+Get Task by externalGameId and externalTaskId
+"""
 
 
-# @router.get(
-# "/{id}/tasks",
-# response_model=FindTaskGameById,
-# description=description_get_task_by_id_game,
-# summary=summary_get_task_by_id_game,
-# )
-# @inject
-# def get_task_by_id_game(
-# id: UUID,
-# service: GameService = Depends(Provide[Container.game_service]),
-# ):
-
-# response = service.get_tasks_by_gameId(id)
-# return response
+@router.get(
+    "/{externalGameId}/tasks/{taskId}",
+    response_model=CreateTaskPostSuccesfullyCreated,
+    summary=summary_get_task_by_externalGameId_taskId,
+    description=description_get_task_by_externalGameId_taskId,
+)
+@inject
+def get_task_by_externalGameId_taskId(
+    externalGameId: str,
+    externalTaskId: str,
+    service: TaskService = Depends(Provide[Container.task_service]),
+):
+    return service.get_task_by_externalGameId_externalTaskId(
+        externalGameId, externalTaskId)
