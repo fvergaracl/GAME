@@ -19,7 +19,6 @@ class BaseGame(BaseModel):
 
 
 class BaseGameResult(BaseModel):
-    id: Optional[UUID] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     strategyId: Optional[str] = None
@@ -41,7 +40,7 @@ class PostCreateGame(BaseModel):
 
 
 class PatchGame(BaseModel):
-    externalGameId: Optional[str]
+    strategyId: Optional[str]
     platform: Optional[str]
     endDateTime: Optional[datetime]
     params: Optional[List[UpdateGameParams]]

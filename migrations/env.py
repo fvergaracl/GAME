@@ -9,11 +9,13 @@ from app.core.config import configs
 from app.model.game_params import GamesParams
 from app.model.games import Games
 from app.model.strategy import Strategy
+from app.model.task_params import TasksParams
 from app.model.tasks import Tasks
 from app.model.user_points import UserPoints
 from app.model.users import Users
 from app.model.wallet import Wallet
 from app.model.wallet_transactions import WalletTransactions
+
 
 cmd_kwargs = context.get_x_argument(as_dictionary=True)
 if "ENV" in cmd_kwargs:
