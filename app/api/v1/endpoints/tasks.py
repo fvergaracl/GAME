@@ -71,7 +71,10 @@ Create Task in a game using externalGameId
 """
 
 
-@game_task_router.post("/{externalGameId}/tasks", response_model=CreateTaskPostSuccesfullyCreated)
+@game_task_router.post(
+    "/{externalGameId}/tasks",
+    response_model=CreateTaskPostSuccesfullyCreated
+)
 @inject
 def create_task(
     externalGameId: str,

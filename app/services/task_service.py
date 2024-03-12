@@ -9,16 +9,21 @@ from app.schema.task_schema import (CreateTask,
                                     CreateTaskPostSuccesfullyCreated, FindTask,
                                     TaskPointsResponse)
 from app.services.base_service import BaseService
+from app.services.strategy_service import StrategyService
+from app.engine.all_engine_strategies import all_engine_strategies
+from app.util.is_valid_slug import is_valid_slug
 
 
 class TaskService(BaseService):
     def __init__(
         self,
+        strategy_service: StrategyService,
         task_repository: TaskRepository,
         game_repository: GameRepository,
         user_repository: UserRepository,
         user_points_repository: UserPointsRepository,
     ):
+        self.strategy_service = strategy_service()
         self.task_repository = task_repository
         self.game_repository = game_repository
         self.user_repository = user_repository
@@ -46,17 +51,56 @@ class TaskService(BaseService):
             externalGameId,
             not_found_message=(
                 f"Game not found with externalGameId: {externalGameId}"),
+            only_one=True,
         )
-        return self.create_task_by_game_id(game.id, create_query)
 
-    def create_task_by_game_id(self, game_id, create_query):
+        externalTaskId = create_query.externalTaskId
+        is_valid_externalTaskId = is_valid_slug(externalTaskId)
+        if not is_valid_externalTaskId:
+            raise ConflictError(
+                f"Invalid externalTaskId: {externalTaskId}. It should be a valid slug (Should have only alphanumeric characters and Underscore . Length should be between 3 and 60)"  # noqa
+            )
+
+        exist_task = self.task_repository.read_by_gameId_and_externalTaskId(
+            game.id, externalTaskId
+        )
+        if exist_task:
+            raise ConflictError(
+                f"Task already exists with externalTaskId: {externalTaskId} for externalGameId: {externalGameId}"  # noqa
+            )
+
+        return self.create_task_by_game_id(
+            game.id,
+            game.externalGameId,
+            create_query)
+
+    def create_task_by_game_id(
+            self,
+            game_id,
+            externalGameId,
+            create_query):
         # Check if the game exists
 
         if not self.game_repository.read_by_id(
             game_id, not_found_raise_exception=False
         ):
             raise NotFoundError(f"Game not found with gameId: {game_id}")
+
         strategy_id = create_query.strategyId
+
+        # Check if the strategy exists
+        strategy_data = None
+        if strategy_id:
+            strategy_data = self.strategy_service.get_strategy_by_id(
+                strategy_id)
+            if not strategy_data:
+                raise NotFoundError(
+                    f"Strategy not found with strategyId: {strategy_id}")
+
+        if not strategy_id:
+            strategy_id = "default"
+        strategy_data = self.strategy_service.get_strategy_by_id(strategy_id)
+
         strategy_id = str(strategy_id)
         if strategy_id == "None":
             strategy_id = None
@@ -64,31 +108,19 @@ class TaskService(BaseService):
         #     strategy_id, not_found_raise_exception=False
         # )
 
-        if strategy_id and not strategy_data:
-            raise NotFoundError(
-                f"Strategy not found with strategyId: {strategy_id}")
-
         new_task_dict = create_query.dict()
         new_task_dict["gameId"] = str(game_id)
         if strategy_id:
             new_task_dict["strategyId"] = str(strategy_id)
         new_task = CreateTask(**new_task_dict)
 
-        if self.task_repository.read_by_gameId_and_externalTaskId(
-            game_id, new_task.externalTaskId
-        ):
-            raise ConflictError(
-                "Task already exists with externalTaskId:" f" {new_task.externalTaskId}"
-            )
         created_task = self.task_repository.create(new_task)
-        task_created, strategy_task_created = (
-            self.task_repository.get_task_and_strategy_by_id(created_task.id)
-        )
 
-        task_created_dict = task_created.dict()
-        task_created_dict["gameId"] = str(task_created_dict["gameId"])
+        print('**********************************************')
         response = CreateTaskPostSuccesfullyCreated(
-            **task_created_dict, strategy=strategy_task_created
+            externalTaskId=created_task.externalTaskId,
+            externalGameId=externalGameId,
+            strategy=strategy_data,
         )
 
         return response
