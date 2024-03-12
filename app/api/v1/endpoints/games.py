@@ -8,6 +8,7 @@ from app.schema.games_schema import (FindGameById, FindGameResult,
                                      FindTaskGameById, GameCreated, PatchGame,
                                      PostCreateGame, PostFindGame,
                                      ResponsePatchGame)
+from app.schema.strategy_schema import Strategy
 from app.services.game_service import GameService
 
 router = APIRouter(
@@ -37,9 +38,9 @@ def get_games_list(
     return service.get_all_games(schema)
 
 
-summary_get_game_by_id = "Get Game by externalId"
+summary_get_game_by_id = "Get Game by externalGameId"
 description_get_game_by_id = """
-Get Game by externalId
+Get Game by externalGameId
 
 """
 
@@ -52,11 +53,11 @@ Get Game by externalId
 )
 @inject
 def get_game_by_id(
-    externalId: str,
+    externalGameId: str,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
 
-    response = service.get_by_id(externalId)
+    response = service.get_by_id(externalGameId)
     return response
 
 
@@ -64,6 +65,7 @@ summary_create_game = "Create Game"
 description_create_game = """
 Create Game
 """
+
 
 @router.post(
     "",
@@ -79,23 +81,41 @@ def create_game(
     return service.create(schema)
 
 
+summary_patch_game = "Update Game"
+description_patch_game = """
+Update Game
+can update even the GameParams
+"""
 
-# summary_patch_game = "Update Game"
-# description_patch_game = """
-# Update Game
-# can update even the GameParams
-# """
+
+@router.patch("/{externalGameId}", response_model=ResponsePatchGame)
+@inject
+def patch_game(
+    externalGameId: str,
+    schema: PatchGame,
+    service: GameService = Depends(Provide[Container.game_service]),
+):
+    return service.pacth_game_by_externalGameId(externalGameId, schema)
 
 
-# @router.patch("/{id}", response_model=ResponsePatchGame)
-# @inject
-# def patch_game(
-# id: str,
-# schema: PatchGame,
-# service: GameService = Depends(Provide[Container.game_service]),
-# ):
-# return service.patch_game_by_id(id, schema)
+summary_get_strategy_by_externalGameId = "Get Strategy by externalGameId"
+description_get_strategy_by_externalGameId = """
+Get Strategy by externalGameId
+"""
 
+
+@router.get(
+    "/{externalGameId}/strategy",
+    response_model=Strategy,
+    summary=summary_get_strategy_by_externalGameId,
+    description=description_get_strategy_by_externalGameId,
+)
+@inject
+def get_strategy_by_externalGameId(
+    externalGameId: str,
+    service: GameService = Depends(Provide[Container.game_service]),
+):
+    return service.get_strategy_by_externalGameId(externalGameId)
 
 # summary_get_task_by_id_game = "Get Task by Id Game"
 # description_get_task_by_id_game = """
