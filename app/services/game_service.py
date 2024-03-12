@@ -8,6 +8,7 @@ from app.schema.games_params_schema import InsertGameParams
 from app.schema.games_schema import (GameCreated, PatchGame, PostCreateGame,
                                      ResponsePatchGame, BaseGameResult)
 from app.services.base_service import BaseService
+from app.services.strategy_service import StrategyService
 from app.engine.all_engine_strategies import all_engine_strategies
 from app.util.is_valid_slug import is_valid_slug
 from app.util.are_variables_matching import are_variables_matching
@@ -19,10 +20,12 @@ class GameService(BaseService):
         game_repository: GameRepository,
         game_params_repository: GameParamsRepository,
         task_repository: TaskRepository,
+        strategy_service: StrategyService,
     ):
         self.game_repository = game_repository
         self.game_params_repository = game_params_repository
         self.task_repository = task_repository
+        self.strategy_service = strategy_service
         super().__init__(game_repository)
 
     def get_by_id(self, externalId: str):
@@ -164,6 +167,47 @@ class GameService(BaseService):
             message=f"Game with externalGameId: {updated_game.externalGameId} updated successfully"  # noqa
         )
         return response
+
+    def get_strategy_by_externalGameId(self, externalGameId: str):
+        game = self.game_repository.read_by_column(
+            "externalGameId", externalGameId, not_found_raise_exception=True
+        )
+
+        if not game:
+            raise NotFoundError(
+                detail=f"Game not found by externalGameId: {externalGameId}"
+            )
+
+        if not game.strategyId:
+            raise ConflictError(
+                detail=f"Game with externalGameId: {externalGameId} does not have a strategyId"  # noqa
+            )
+
+        strategy = self.strategy_service.get_strategy_by_id(game.strategyId)
+
+        game_params = self.game_params_repository.read_by_column(
+            "gameId", game.id, not_found_raise_exception=False, only_one=False
+        )
+
+        if game_params:
+            for param in game_params:
+                if param.key in strategy["variables"]:
+                    try:
+                        param.value = int(param.value)
+                    except ValueError:
+                        try:
+                            param.value = float(param.value)
+                        except ValueError:
+                            pass
+                    type_param = type(param.value)
+                    type_strategy_variable = type(
+                        strategy["variables"][param.key])
+                    if type_param == type_strategy_variable:
+                        strategy["variables"][param.key] = param.value
+
+        strategy["game_params"] = game_params
+
+        return strategy
 
     def get_tasks_by_gameId(self, gameId: UUID):
         game = self.game_repository.read_by_id(gameId)
