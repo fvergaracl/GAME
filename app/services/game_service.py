@@ -180,7 +180,7 @@ class GameService(BaseService):
             )
 
         strategy = self.strategy_service.get_strategy_by_id(game.strategyId)
-
+        # logic to define strategy
         game_params = self.game_params_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
         )

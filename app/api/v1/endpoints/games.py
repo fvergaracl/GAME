@@ -12,7 +12,8 @@ from app.schema.strategy_schema import Strategy
 from app.services.game_service import GameService
 
 from app.schema.task_schema import (CreateTaskPost,
-                                    CreateTaskPostSuccesfullyCreated)
+                                    CreateTaskPostSuccesfullyCreated,
+                                    FoundTasks, PostFindTask)
 from app.services.task_service import TaskService
 
 router = APIRouter(
@@ -140,6 +141,27 @@ def create_task(
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
     return service.create_task_by_externalGameId(externalGameId, create_query)
+
+
+summary_get_task_list = "Get Task List"
+description_get_task_list = """
+Get Task List
+"""
+
+
+@router.get(
+    "/{externalGameId}/tasks",
+    response_model=FoundTasks,
+    summary=summary_get_task_list,
+    description=description_get_task_list,
+)
+@inject
+def get_task_list(
+    externalGameId: str,
+    find_query: PostFindTask = Depends(),
+    service: TaskService = Depends(Provide[Container.task_service]),
+):
+    return service.get_tasks_list_by_externalGameId(externalGameId, find_query)
 
 
 # summary_get_task_by_id_game = "Get Task by Id Game"

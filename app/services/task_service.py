@@ -36,9 +36,7 @@ class TaskService(BaseService):
         self.task_params_repository = task_params_repository
         super().__init__(task_repository)
 
-    def get_tasks_list_by_externalGameId(self, find_query):
-        externalGameId = find_query.externalGameId
-
+    def get_tasks_list_by_externalGameId(self, externalGameId, find_query):
         game = self.game_repository.read_by_column(
             "externalGameId",
             externalGameId,
@@ -46,10 +44,81 @@ class TaskService(BaseService):
                 f"Game not found with externalGameId: {externalGameId}"),
         )
 
-        del find_query.externalGameId
         find_task_query = FindTask(
             gameId=game.id, **find_query.dict(exclude_none=True))
-        return self.task_repository.read_by_gameId(find_task_query)
+        all_tasks = self.task_repository.read_by_gameId(find_task_query)
+
+        strategy_data = self.strategy_service.get_strategy_by_id(
+            game.strategyId)
+
+        game_params = self.game_params_repository.read_by_column(
+            "gameId", game.id, not_found_raise_exception=False, only_one=False
+        )
+        if game_params:
+            for param in game_params:
+                if param.key in strategy_data["variables"]:
+                    try:
+                        param.value = int(param.value)
+                    except ValueError:
+                        try:
+                            param.value = float(param.value)
+                        except ValueError:
+                            pass
+                    type_param = type(param.value)
+                    type_strategy_variable = type(
+                        strategy_data["variables"][param.key])
+                    if type_param == type_strategy_variable:
+                        strategy_data["variables"][param.key] = param.value
+        cleaned_tasks = []
+        for task in all_tasks["items"]:
+
+            strategy_data = self.strategy_service.get_strategy_by_id(
+                task.strategyId)
+            task_params = self.task_params_repository.read_by_column(
+                "taskId", task.id, not_found_raise_exception=False,
+                only_one=False
+            )
+            if game_params:
+                for param in game_params:
+                    if param.key in strategy_data["variables"]:
+                        try:
+                            param.value = int(param.value)
+                        except ValueError:
+                            try:
+                                param.value = float(param.value)
+                            except ValueError:
+                                pass
+                        type_param = type(param.value)
+                        type_strategy_variable = type(
+                            strategy_data["variables"][param.key])
+                        if type_param == type_strategy_variable:
+                            strategy_data["variables"][param.key] = param.value
+
+            if task_params:
+                for param in task_params:
+                    if param.key in strategy_data["variables"]:
+                        try:
+                            param.value = int(param.value)
+                        except ValueError:
+                            try:
+                                param.value = float(param.value)
+                            except ValueError:
+                                pass
+                        type_param = type(param.value)
+                        type_strategy_variable = type(
+                            strategy_data["variables"][param.key])
+                        if type_param == type_strategy_variable:
+                            strategy_data["variables"][param.key] = param.value
+            task_params = task_params if task_params else []
+            task_cleaned = task.dict()
+            task_cleaned["strategy"] = strategy_data
+            task_cleaned["gameParams"] = game_params
+            task_cleaned["taskParams"] = task_params
+            cleaned_tasks.append(
+                task_cleaned
+            )
+        all_tasks["items"] = cleaned_tasks
+        return all_tasks
 
     def create_task_by_externalGameId(self, externalGameId, create_query):
         game = self.game_repository.read_by_column(

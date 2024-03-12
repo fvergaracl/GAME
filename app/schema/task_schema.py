@@ -2,6 +2,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
+
 from app.schema.tasks_params_schema import CreateTaskParams
 from app.schema.games_params_schema import CreateGameParams
 from app.schema.base_schema import (FindBase, ModelBaseInfo, SearchOptions,
@@ -31,6 +32,22 @@ class CreateTaskPost(BaseModel):
                 }
             ]
         }
+
+
+class PostFindTask(FindBase, metaclass=AllOptional):
+    ...
+
+
+class FoundTask(ModelBaseInfo):
+    externalTaskId: str
+    gameParams: Optional[List[CreateGameParams]]
+    taskParams: Optional[List[CreateTaskParams]]
+    strategy: Optional[Strategy]
+
+
+class FoundTasks(BaseModel):
+    items: Optional[List[FoundTask]]
+    search_options: Optional[SearchOptions]
 
 
 class CreateTask(CreateTaskPost, metaclass=AllOptional):
