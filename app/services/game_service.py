@@ -8,8 +8,6 @@ from app.schema.games_params_schema import InsertGameParams
 from app.schema.games_schema import (GameCreated, PatchGame, PostCreateGame,
                                      ResponsePatchGame, BaseGameResult)
 from app.services.base_service import BaseService
-from app.services.strategy_service import StrategyService
-from app.engine.all_engine_strategies import all_engine_strategies
 from app.util.is_valid_slug import is_valid_slug
 from app.util.are_variables_matching import are_variables_matching
 
@@ -20,12 +18,10 @@ class GameService(BaseService):
         game_repository: GameRepository,
         game_params_repository: GameParamsRepository,
         task_repository: TaskRepository,
-        strategy_service: StrategyService,
     ):
         self.game_repository = game_repository
         self.game_params_repository = game_params_repository
         self.task_repository = task_repository
-        self.strategy_service = strategy_service
         super().__init__(game_repository)
 
     def get_by_id(self, externalId: str):

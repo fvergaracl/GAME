@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body
 
 from app.core.container import Container
 from app.schema.games_schema import (FindGameById, FindGameResult,
@@ -75,7 +75,7 @@ Create Game
 )
 @inject
 def create_game(
-    schema: PostCreateGame,
+    schema: PostCreateGame = Body(..., example=PostCreateGame.example()),
     service: GameService = Depends(Provide[Container.game_service]),
 ):
     return service.create(schema)

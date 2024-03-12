@@ -38,6 +38,20 @@ class PostCreateGame(BaseModel):
     endDateTime: Optional[datetime]
     params: Optional[List[CreateGameParams]]
 
+    def example():
+        return {
+            "externalGameId": "string",
+            "platform": "string",
+            "strategyId": "default",
+            "endDateTime": "2024-03-12T11:04:55.425Z",
+            "params": [
+                {
+                    "key": "variable_basic_points",
+                    "value": 10
+                }
+            ]
+        }
+
 
 class PatchGame(BaseModel):
     strategyId: Optional[str]

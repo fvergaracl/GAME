@@ -7,8 +7,7 @@ import os
 
 class StrategyService(BaseService):
     def __init__(self):
-        self.strategy_repository = strategy_repository
-        super().__init__(strategy_repository)
+        super().__init__(None)
 
     def list_all_strategies(self):
         all_unclean_strategies = all_engine_strategies()

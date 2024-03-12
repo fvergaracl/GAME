@@ -67,18 +67,7 @@ class TaskRepository(BaseRepository):
             ).first()
             return query
 
-    def get_task_and_strategy_by_id(self, id):
-        with self.session_factory() as session:
-            query = session.query(self.model)
-            query = query.filter(self.model.id == id).first()
-            if not query:
-                raise NotFoundError(detail=f"Task not found by id : {id}")
-            strategy = (
-                session.query(self.model_strategy)
-                .filter(self.model_strategy.id == query.strategyId)
-                .first()
-            )
-            return query, strategy
+    
 
     def get_points_and_users_by_taskId(self, taskId):
         with self.session_factory() as session:

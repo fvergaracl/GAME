@@ -8,8 +8,9 @@ from app.repository import (GameParamsRepository, GameRepository,
                             UserPointsRepository, UserRepository,
                             WalletRepository, WalletTransactionRepository)
 from app.services import (GameParamsService, GameService, RulesService,
-                          StrategyService, TaskService, UserPointsService,
-                          UserService, WalletService, WalletTransactionService)
+                          TaskService, UserPointsService,
+                          UserService, WalletService, WalletTransactionService,
+                          StrategyService)
 
 
 class Container(containers.DeclarativeContainer):
@@ -72,6 +73,7 @@ class Container(containers.DeclarativeContainer):
 
     task_service = providers.Factory(
         TaskService,
+        strategy_service=StrategyService,
         task_repository=task_repository,
         game_repository=game_repository,
         user_repository=user_repository,

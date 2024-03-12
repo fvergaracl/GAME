@@ -9,7 +9,6 @@ from app.schema.strategy_schema import (
     Strategy,
     FindStrategyResult)
 from app.services.rules_service import RulesService
-from app.services.strategy_service import StrategyService
 
 router = APIRouter(
     prefix="/strategies",
