@@ -1,32 +1,32 @@
 """
 # noqa
-### Gamification Scenarios, Points Allocation Table with Tags, Required Variables, and Condition Checks 
+### Enhanced Gamification Scenarios, Points Allocation Table with Tags, Required Variables, and Condition Checks 
 
 #### Basic Engagement Scenario
 
 | Case/Subcase | Conditions                                                              | Points Awarded                                        | Tag               | Required Variables            | Condition Check |
 | ------------ | ----------------------------------------------------------------------- | ----------------------------------------------------- | ----------------- | ----------------------------- | --------------- |
-| Case 1       | First/second measurement without any prior users having 2 measurements. | variable_basic_points | `BasicEngagement` | `defaut_points_task_campaign` | None Required   |
+| Case 1       | First/second measurement without any prior users having 2 measurements. | variable_basic_points | `BasicEngagement` | `default_points_task_campaign` | None Required   |
 
 #### Comparative Performance Scenarios
 
 | Case/Subcase | Conditions                                               | Points Awarded          | Tag                | Required Variables                                                            | Condition Check                               |
 | ------------ | -------------------------------------------------------- | ----------------------- | ------------------ | ----------------------------------------------------------------------------- | --------------------------------------------- |
-| Case 2     | Second measurement with time taken < global calculation. | variable_basic_points + variable_bonus_points.    | `PerformanceBonus` | `defaut_points_task_campaign`, `tiempo_tardado_ultima_task`, `Calculo_global` | `tiempo_tardado_ultima_task < Calculo_global` |
+| Case 2       | Second measurement with time taken < global calculation. | variable_basic_points + variable_bonus_points.    | `PerformanceBonus` | `default_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_global` | `tiempo_tardado_ultima_task < calculo_global` |
 
 #### Individual Improvement Scenario
 
 | Case/Subcase | Conditions                                                  | Points Awarded        | Tag                    | Required Variables                                                                | Condition Check                                    |
 | ------------ | ----------------------------------------------------------- | --------------------- | ---------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------- |
-| Case 3       | Comparison with individual calculation (greater or lesser). | variable_individual_adjustment_points         | `IndividualAdjustment` | `defaut_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual` | `tiempo_tardado_ultima_task <> calculo_individual` |
+| Case 3       | Comparison with individual calculation (greater or lesser). | variable_individual_adjustment_points         | `IndividualAdjustment` | `default_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual` | `tiempo_tardado_ultima_task <> calculo_individual` |
 
 #### Advanced Gamification Strategies
 
 | Case/Subcase | Conditions                                           | Points Awarded                                                                    | Tag                         | Required Variables                                                                                  | Condition Check                                                                                  |
 | ------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Case 4.1     | Individual improvement but below the global average. | variable_individual_below_global_points | `IndividualOverGlobal`      | `defaut_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual`, `Calculo_global` | `tiempo_tardado_ultima_task < calculo_individual && tiempo_tardado_ultima_task > Calculo_global` |
-| Case 4.2     | Individual improvement and above the global average. | variable_individual_over_global_points                                               | `PeakPerformerBonus`        | `defaut_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual`, `Calculo_global` | `tiempo_tardado_ultima_task < calculo_individual && tiempo_tardado_ultima_task < Calculo_global` |
-| Case 4.3     | Individual worsening, but above the global average.  | variable_individual_worse_over_global_points                                  | `GlobalAdvantageAdjustment` | `defaut_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual`, `Calculo_global` | `tiempo_tardado_ultima_task > calculo_individual && tiempo_tardado_ultima_task < Calculo_global` |
+| Case 4.1     | Individual improvement but below the global average. | variable_individual_over_global_points | `IndividualOverGlobal`      | `default_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual`, `calculo_global` | `tiempo_tardado_ultima_task < calculo_individual && tiempo_tardado_ultima_task > calculo_global` |
+| Case 4.2     | Individual improvement and above the global average. | variable_peak_performer_bonus_points                                               | `PeakPerformerBonus`        | `default_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual`, `calculo_global` | `tiempo_tardado_ultima_task < calculo_individual && tiempo_tardado_ultima_task < calculo_global` |
+| Case 4.3     | Individual worsening, but above the global average.  | variable_global_advantage_adjustment_points                                  | `GlobalAdvantageAdjustment` | `default_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual`, `calculo_global` | `tiempo_tardado_ultima_task > calculo_individual && tiempo_tardado_ultima_task < calculo_global` |
 
 Gamification System Decision Tree
 .
@@ -44,11 +44,11 @@ Gamification System Decision Tree
 │ ├── Greater or equal
 │ │ └── Evaluate against both, individual and global calculations
 │ │ ├── If time is less than the individual calculation AND greater than the global calculation
-│ │ │ └── Use Case 4.1: `IndividualOverGlobal`
+│ │ │ └── Use Case 4.1: `IndividualOverGlobal` | points = variable_individual_over_global_points
 │ │ ├── If time is less than both, individual and global calculations
-│ │ │ └── Use Case 4.2: `PeakPerformerBonus`
+│ │ │ └── Use Case 4.2: `PeakPerformerBonus` | points = variable_peak_performer_bonus_points
 │ │ └── If time is greater than the individual calculation but less than the global calculation
-│ │ └── Use Case 4.3: `GlobalAdvantageAdjustment`
+│ │ └── Use Case 4.3: `GlobalAdvantageAdjustment` | points = variable_global_advantage_adjustment_points
 │ └── Less
 │ └── Use Case 3: `IndividualAdjustment` | points = variable_individual_adjustment_points
 
@@ -57,10 +57,8 @@ Gamification System Decision Tree
 | Function Name                        | Description                                                                                     | Points Awarded |
 | ------------------------------------ | ----------------------------------------------------------------------------------------------- | -------------- |
 | `basic_engagement_points`            | Fixed number of points for a user's initial actions within the gamification system.             | 1              |
-| `performance
-
-_bonus_points`           | Additional points awarded for performance above a certain threshold.                            | 10             |
-| `individual_over_global_points`      | Additional points for users who have improved their performance compared to their own history.  | 5              |
+| `performance_bonus_points`           | Additional points awarded for performance above a certain threshold.                            | 10             |
+| `individual_over_global_points`      | Additional points for users who have improved their performance compared to their own history.  | 3              |
 | `peak_performer_bonus_points`        | Bonus points for users exceeding both their individual performance and the global average.      | 15             |
 | `global_advantage_adjustment_points` | Additional points for users above the global average but with decreased individual performance. | 7              |
 | `individual_adjustment_points`       | Points awarded for users who have improved their individual performance.                        | 8              |
@@ -92,54 +90,83 @@ class EnhancedGamificationStrategy(BaseStrategy):
         self.variable_individual_adjustment_points = 8
 
     def calculate_points(self, externalTaskId, externalUserId):
-        task_measurements_count = self.user_points_service.count_measurements_by_external_task_id(externalTaskId)  # noqa
+        print("->1")
+        task_measurements_count = (
+            self.user_points_service.count_measurements_by_external_task_id(
+                externalTaskId
+            )
+        )
+        print("->2")
         if (task_measurements_count < 2):
+            print("->3")
             return (
                 self.variable_basic_points, "BasicEngagement"
             )
-        user_task_measurements_count = self.user_points_service.get_user_task_measurements_count(  # noqa
-            externalTaskId, externalUserId
+        user_task_measurements_count = (
+            self.user_points_service.get_user_task_measurements_count(
+                externalTaskId, externalUserId
+            )
         )
+        print(user_task_measurements_count)
+        print("->4")
         if (user_task_measurements_count < 2):
+            print("->5")
             user_avg_time_taken = self.user_points_service.get_time_avg_time_taken_for_a_task_by_externalUserId(  # noqa
                 externalTaskId, externalUserId
             )
-            all_avg_time_taken = self.user_points_service.get_time_avg_time_taken_for_a_task(  # noqa
-                externalTaskId
+            all_avg_time_taken = (
+                self.user_points_service.get_time_avg_time_taken_for_a_task(
+                    externalTaskId
+                )
             )
+            print("->6")
             if (user_avg_time_taken < all_avg_time_taken):
+                print("->7")
                 return (
-                    self.variable_basic_points + self.variable_bonus_points,
+                    (self.variable_basic_points + self.variable_bonus_points),
                     "PerformanceBonus",
                 )
-            user_last_window_time_diff = self.user_points_service.get_last_window_time_diff(  # noqa
-                externalTaskId, externalUserId
+            user_last_window_time_diff = (
+                self.user_points_service.get_last_window_time_diff(
+                    externalTaskId, externalUserId
+                )
             )
+            print("->8")
 
-            user_new_last_window_time_diff = self.user_points_service.get_new_last_window_time_diff(  # noqa
-                externalTaskId, externalUserId
+            user_new_last_window_time_diff = (
+                self.user_points_service.get_new_last_window_time_diff(
+                    externalTaskId, externalUserId
+                )
             )
             user_diff_time = (
                 user_new_last_window_time_diff - user_last_window_time_diff
             )
+            print("->9")
             if (user_diff_time > 0):
+                print("->10")
                 if (user_diff_time < all_avg_time_taken):
+                    print("->11")
                     return (
                         self.variable_individual_over_global_points,
-                        "IndividualOverGlobal",
+                        "IndividualOverGlobal"
                     )
                 if (user_diff_time < user_avg_time_taken):
+                    print("->12")
                     return (
                         self.variable_peak_performer_bonus_points,
-                        "PeakPerformerBonus",
+                        "PeakPerformerBonus"
                     )
                 if (user_diff_time > user_avg_time_taken):
+                    print("->13")
                     return (
                         self.variable_global_advantage_adjustment_points,
-                        "GlobalAdvantageAdjustment",
+                        "GlobalAdvantageAdjustment"
                     )
             if (user_diff_time < 0):
+                print("->14")
                 return (
                     self.variable_individual_adjustment_points,
-                    "IndividualAdjustment",
+                    "IndividualAdjustment"
                 )
+        # ACA
+        return (self.variable_basic_points, "BasicEngagement")

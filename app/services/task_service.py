@@ -6,8 +6,7 @@ from app.repository.user_repository import UserRepository
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.task_params_repository import TaskParamsRepository
 from app.schema.task_schema import (CreateTask,
-                                    CreateTaskPostSuccesfullyCreated, FindTask,
-                                    TaskPointsResponse)
+                                    CreateTaskPostSuccesfullyCreated, FindTask)
 from app.schema.tasks_params_schema import InsertTaskParams
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService

@@ -1,7 +1,7 @@
 import re
 
 
-def is_valid_slug(slug):
+def is_valid_slug(slug, min_length=3, max_length=60):
     """
     Validates a slug.
     :param slug: The slug to validate.
@@ -11,4 +11,6 @@ def is_valid_slug(slug):
 
 
     """
-    return re.match(r"^[a-zA-Z0-9_]{3,60}$", slug) is not None
+    return re.match(
+        r"^[a-zA-Z0-9_]{" + str(min_length) + "," + str(max_length) + "}$",
+        slug) is not None

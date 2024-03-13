@@ -39,3 +39,7 @@ class ResponsePreviewConvertPoints(BaseModel):
     afterConversionPoints: float
     afterConversionCoins: float
     externalUserId: str
+
+
+class CreateWallet(Wallet):
+    ...

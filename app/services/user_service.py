@@ -431,7 +431,8 @@ class UserService(BaseService):
             },
         )
 
-        transaction = self.wallet_transaction_repository.create(wallet_transaction)
+        transaction = self.wallet_transaction_repository.create(
+            wallet_transaction)
 
         response = {
             "transactionId": str(transaction.id),

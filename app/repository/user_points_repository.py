@@ -27,6 +27,21 @@ class UserPointsRepository(BaseRepository):
 
         super().__init__(session_factory, model)
 
+    def create_user_points(
+            self, userId, taskId, points, caseName, data, description):
+        with self.session_factory() as session:
+            user_points = UserPoints(
+                userId=userId,
+                taskId=taskId,
+                points=points,
+                caseName=caseName,
+                data=data,
+                description=description,
+            )
+            session.add(user_points)
+            session.commit()
+            return user_points
+
     def get_all_UserPoints_by_taskId(self, taskId):
         with self.session_factory() as session:
             query = session.query(self.model).filter(

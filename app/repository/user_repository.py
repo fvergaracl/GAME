@@ -15,3 +15,10 @@ class UserRepository(BaseRepository):
         model=Users,
     ) -> None:
         super().__init__(session_factory, model)
+
+    def create_user_by_externalUserId(self, externalUserId: str):
+        with self.session_factory() as session:
+            user = Users(externalUserId=externalUserId)
+            session.add(user)
+            session.commit()
+            return user

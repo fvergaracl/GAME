@@ -9,6 +9,7 @@ from app.util.schema import AllOptional
 
 class PostAssignPointsToUser(BaseModel):
     taskId: str
+    caseName: Optional[str]
     points: Optional[int]
     description: Optional[str]
     data: Optional[dict]
@@ -16,6 +17,10 @@ class PostAssignPointsToUser(BaseModel):
 
 class BaseUserPointsBaseModel(PostAssignPointsToUser):
     userId: str
+
+
+class UserPointsAssign(BaseUserPointsBaseModel):
+    ...
 
 
 class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
@@ -26,7 +31,8 @@ class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
     message: Optional[str] = "Successfully assigned"
 
 
-class UserPoints(ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional): ...
+class UserPoints(ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional):
+    ...
 
 
 class FindQueryByExternalGameId(FindBase, metaclass=AllOptional):

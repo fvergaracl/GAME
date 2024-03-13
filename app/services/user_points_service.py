@@ -1,14 +1,26 @@
-from app.core.exceptions import NotFoundError
+from app.core.exceptions import (
+    NotFoundError, PreconditionFailedError, InternalServerError
+)
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
+from app.repository.wallet_transaction_repository import (
+    WalletTransactionRepository,
+)
 from app.schema.user_points_schema import (ResponseGetPointsByGame,
                                            ResponseGetPointsByTask,
-                                           ResponsePointsByExternalUserId)
+                                           ResponsePointsByExternalUserId,
+                                           UserPointsAssign)
+from app.schema.task_schema import AssignedPointsToExternalUserId
+from app.schema.wallet_schema import CreateWallet
+from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
+from app.util.is_valid_slug import is_valid_slug
+# import conversionRate
+from app.core.config import configs
 
 
 class UserPointsService(BaseService):
@@ -19,17 +31,20 @@ class UserPointsService(BaseService):
         game_repository: GameRepository,
         task_repository: TaskRepository,
         wallet_repository: WalletRepository,
+        wallet_transaction_repository: WalletTransactionRepository,
     ):
         self.user_points_repository = user_points_repository
         self.users_repository = users_repository
         self.game_repository = game_repository
         self.task_repository = task_repository
         self.wallet_repository = wallet_repository
+        self.wallet_transaction_repository = wallet_transaction_repository
         self.strategy_service = StrategyService()
         super().__init__(user_points_repository)
 
     def assign_points_to_user(self, externalTaskId, schema):
-
+        externalUserId = schema.externalUserId
+        is_a_created_user = False
         task = self.task_repository.read_by_column(
             column="externalTaskId",
             value=externalTaskId,
@@ -47,15 +62,104 @@ class UserPointsService(BaseService):
                 f"Strategy not found with id: {strategyId} for task with externalTaskId: {externalTaskId}"  # noqa
             )
 
-        # import class from app.engine.{strategy["id"]}
+        user = self.users_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=False
+        )
+        if (
+            not user
+        ):
+            is_valid_externalUserId = is_valid_slug(externalUserId)
+            if not is_valid_externalUserId:
+                raise PreconditionFailedError(
+                    detail=(
+                        f"Invalid externalUserId: {externalUserId}. externalUserId should be a valid (Should have only alphanumeric characters and Underscore . Length should be between 3 and 50)"  # noqa
+                    )
+                )
+            user = self.users_repository.create_user_by_externalUserId(
+                externalUserId=externalUserId
+            )
+            is_a_created_user = True
+
         strategy_instance = self.strategy_service.get_Class_by_id(strategyId)
 
-        points, case_name = strategy_instance.calculate_points(
-            externalTaskId=externalTaskId
+        try:
+            points, case_name = strategy_instance.calculate_points(
+                externalTaskId=externalTaskId,
+                externalUserId=externalUserId,
+            )
+        except Exception as e:
+            print(externalTaskId)
+            print(externalUserId)
+            print("----------------- ERROR -----------------")
+            print(e)
+            print("----------------- ERROR -----------------")
+            raise InternalServerError(
+                detail=(
+                    f"Error in calculate points for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Please try again later or contact support"  # noqa
+                )
+            )
+
+        if (not points or not case_name):
+            raise InternalServerError(
+                detail=(
+                    f"Points not calculated for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Beacuse the strategy don't have condition to calculate it or the strategy don't have a case name"  # noqa
+                )
+            )
+        user_points_schema = UserPointsAssign(
+            userId=str(user.id),
+            taskId=str(task.id),
+            points=points,
+            caseName=case_name,
+            data=schema.data,
+            description="Points assigned by GAME",
         )
-        print("points:", points)
-        print("case_name:", case_name)
-        return True
+        user_points = self.user_points_repository.create(
+            user_points_schema
+        )
+        wallet = self.wallet_repository.read_by_column(
+            "userId", user.id, not_found_raise_exception=False
+        )
+        print(wallet)
+        if (wallet):
+            wallet.pointsBalance += points
+            self.wallet_repository.update(wallet.id, wallet)
+
+        if not wallet:
+            new_wallet = CreateWallet(
+                userId=str(user.id),
+                points=points,
+                coinsBalance=0,
+                pointsBalance=points,
+                conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
+            )
+            wallet = self.wallet_repository.create(
+                new_wallet
+            )
+        wallet_transaction = BaseWalletTransaction(
+            transactionType="AssignPoints",
+            points=points,
+            coins=0,
+            data=schema.data,
+            appliedConversionRate=0,
+            walletId=str(wallet.id),
+        )
+        wallet_transaction_repository = self.wallet_transaction_repository.create(
+            wallet_transaction
+        )
+        if (not wallet_transaction_repository):
+            raise InternalServerError(
+                detail=(
+                    f"Wallet transaction not created for user with externalUserId: {externalUserId} and task with externalTaskId: {externalTaskId}. Please try again later or contact support"  # noqa
+                )
+            )
+
+        response = AssignedPointsToExternalUserId(
+            points=points,
+            externalUserId=externalUserId,
+            isACreatedUser=is_a_created_user,
+            caseName=case_name,
+        )
+        return response
 
     def get_users_points_by_externalGameId(self, externalGameId):
         game = self.game_repository.read_by_column(
