@@ -18,7 +18,6 @@ class BaseTask(BaseModel):
 
 class AsignPointsToExternalUserId(BaseModel):
     externalUserId: str
-    points: Optional[int]
     data: Optional[dict]
 
 
@@ -101,9 +100,10 @@ class TaskPoints(BaseModel):
     points: int
 
 
-class TaskPointsResponse(BaseModel):
-    externalTaskId: str
-    points: Optional[List[TaskPoints]]
+class AssignedPointsToExternalUserId(BaseModel):
+    points: int
+    caseName: str
+    isACreatedUser: bool
 
 
 class TaskPointsResponseByUser(BaseTask):

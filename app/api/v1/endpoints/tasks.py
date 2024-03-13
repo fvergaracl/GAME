@@ -7,7 +7,7 @@ from app.core.container import Container
 from app.schema.task_schema import (AsignPointsToExternalUserId,
                                     CreateTaskPostSuccesfullyCreated,
                                     FoundTaskById, GetTaskById,
-                                    TaskPointsResponse)
+                                    AssignedPointsToExternalUserId)
 from app.services.task_service import TaskService
 from app.services.user_points_service import UserPointsService
 
@@ -31,7 +31,7 @@ description_assing_points_to_user = """
 
 @router.post(
     "/{externalTaskId}/points",
-    response_model=TaskPointsResponse,
+    response_model=AssignedPointsToExternalUserId,
     summary=summary_assing_points_to_user,
     description=description_assing_points_to_user,
 )

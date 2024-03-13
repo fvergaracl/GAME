@@ -76,3 +76,24 @@ class ValidationError(HTTPException):
         headers: Optional[Dict[str, Any]] = None
     ) -> None:
         super().__init__(status.HTTP_422_UNPROCESSABLE_ENTITY, detail, headers)
+
+# 412 Precondition Failed
+
+
+class PreconditionFailedError(HTTPException):
+    def __init__(
+        self,
+        detail: Any = None,
+        headers: Optional[Dict[str, Any]] = None
+    ) -> None:
+        super().__init__(status.HTTP_412_PRECONDITION_FAILED, detail, headers)
+
+
+class InternalServerError(HTTPException):
+    def __init__(
+        self,
+        detail: Any = None,
+        headers: Optional[Dict[str, Any]] = None
+    ) -> None:
+        super().__init__(
+            status.HTTP_500_INTERNAL_SERVER_ERROR, detail, headers)
