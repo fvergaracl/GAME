@@ -16,6 +16,12 @@ class BaseTask(BaseModel):
     gameId: UUID
 
 
+class AsignPointsToExternalUserId(BaseModel):
+    externalUserId: str
+    points: Optional[int]
+    data: Optional[dict]
+
+
 class CreateTaskPost(BaseModel):
     externalTaskId: str
     strategyId: Optional[str]

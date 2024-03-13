@@ -35,6 +35,18 @@ class StrategyService(BaseService):
             detail=f"Strategy not found with id: {id}"
         )
 
+    def get_Class_by_id(self, id):
+        all_strategies = all_engine_strategies()
+        for strategy in all_strategies:
+            file_class = inspect.getfile(strategy.__class__)
+            filename_id = os.path.basename(file_class)
+            filename_id = filename_id.replace(".py", "")
+            if filename_id == id:
+                return strategy
+        raise NotFoundError(
+            detail=f"Strategy not found with id: {id}"
+        )
+
     def create_strategy(self, schema):
         strategyName = schema.strategyName
         strategyName_exist = self.strategy_repository.read_by_column(

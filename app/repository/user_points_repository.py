@@ -202,3 +202,201 @@ class UserPointsRepository(BaseRepository):
             )
 
             return query.start_time
+
+    def count_measurements_by_external_task_id(self, external_task_id):
+        """
+        Retrieves the total number of measurements (or tasks completed) by
+         specific external task ID.
+
+        Parameters:
+        - external_task_id (str): The unique identifier of the external task.
+
+        Returns:
+        - int: The total number of measurements completed for the task.
+
+        """
+
+        with self.session_factory() as session:
+            query = (
+                session.query(func.count(
+                    UserPoints.taskId).label("measurement_count"))
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .filter(Tasks.externalTaskId == external_task_id)
+                .one()
+            )
+
+            return query.measurement_count
+
+    def get_user_task_measurements_count(self, externalTaskId, externalUserId):
+        """
+        Retrieves the total number of measurements (or tasks completed) by a
+        specific user for a specific task.
+
+        Parameters:
+        - externalTaskId (str): The unique identifier of the external task.
+        - externalUserId (str): The unique identifier of the user.
+
+        Returns:
+        - int: The total number of measurements completed by the user for the
+         task.
+        """
+
+        with self.session_factory() as session:
+            query = (
+                session.query(func.count(
+                    UserPoints.taskId).label("measurement_count"))
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .filter(Users.externalUserId == externalUserId)
+                .one()
+            )
+
+            return query.measurement_count
+
+    def get_time_avg_time_taken_for_a_task_by_externalUserId(
+            self,
+            externalTaskId,
+            externalUserId
+    ):
+        """
+        Retrieves the average time taken by a specific user to complete a
+        specific task.
+
+        Parameters:
+        - externalTaskId (str): The unique identifier of the external task.
+        - externalUserId (str): The unique identifier of the user.
+
+        Returns:
+        - float: The average time taken to complete the task by the user.
+
+        """
+
+        with self.session_factory() as session:
+            query = (
+                session.query(func.avg(UserPoints.created_at).label(
+                    "average_time_taken"))
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .filter(Users.externalUserId == externalUserId)
+                .group_by(UserPoints.userId)
+                .having(func.count(UserPoints.userId) > 1)
+                .one()
+            )
+
+            return query.average_time_taken
+
+    def get_time_avg_time_taken_for_a_task_all_users(self, externalTaskId):
+        """
+        Retrieves the average time taken by all users to complete a specific task.
+
+        Parameters:
+        - externalTaskId (str): The unique identifier of the external task.
+
+        Returns:
+        - float: The average time taken to complete the task by all users.
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(func.avg(UserPoints.created_at).label(
+                    "average_time_taken"))
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .group_by(UserPoints.userId)
+                .having(func.count(UserPoints.userId) > 1)
+                .one()
+            )
+
+            return query.average_time_taken
+
+    def is_task_time_taken_less_than_global_calculation(self, externalTaskId):
+        """
+        Determines if the time taken for the last task is less than the global
+        calculation.
+
+        Parameters:
+        - externalTaskId (str): The unique identifier of the external task.
+
+        Returns:
+        - bool: True if the time taken for the last task is less than the global
+          calculation, False otherwise.
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(UserPoints)
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .order_by(UserPoints.created_at.desc())
+                .limit(1)
+                .one()
+            )
+
+            user_time_taken = query.created_at
+
+            global_time_taken = self.get_global_calculation()
+
+            return user_time_taken < global_time_taken
+
+    def get_last_window_time_diff(self, externalTaskId, externalUserId):
+        """
+        Retrieves the time difference between the last two measurements by a
+        specific user for a specific task.
+
+        Parameters:
+        - externalTaskId (str): The unique identifier of the external task.
+        - externalUserId (str): The unique identifier of the user.
+
+        Returns:
+        - float: The time difference between the last two measurements by the
+          user for the task.
+        """
+
+        with self.session_factory() as session:
+            query = (
+                session.query(UserPoints)
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .filter(Users.externalUserId == externalUserId)
+                .order_by(UserPoints.created_at.desc())
+                .limit(2)
+                .all()
+            )
+
+            if len(query) < 2:
+                return 0
+
+            return query[0].created_at - query[1].created_at
+
+    def get_new_last_window_time_diff(self, externalTaskId, externalUserId):
+        """
+        Retrieves the last measurement time difference by a specific user for a specific task and diff with current time. 
+
+        Parameters:
+        - externalTaskId (str): The unique identifier of the external task.
+        - externalUserId (str): The unique identifier of the user.
+
+        Returns:
+        - float: The time difference between the last two measurements by the
+          user for the task.
+        """
+
+        with self.session_factory() as session:
+            query = (
+                session.query(UserPoints)
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .filter(Users.externalUserId == externalUserId)
+                .order_by(UserPoints.created_at.desc())
+                .limit(1)
+                .all()
+
+            )
+            if len(query) < 1:
+                return 0
+
+            current_time = func.now()
+
+            return current_time - query[0].created_at
