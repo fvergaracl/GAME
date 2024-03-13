@@ -1,47 +1,57 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
-
 from typing import List
 from app.core.container import Container
+from app.core.exceptions import NotFoundError
 from app.schema.base_schema import FindBase
 from app.schema.rules_schema import ResponseFindAllRuleVariables
 from app.schema.strategy_schema import (
     Strategy,
     FindStrategyResult)
-from app.services.rules_service import RulesService
+from app.services.strategy_service import StrategyService
 
 router = APIRouter(
     prefix="/strategies",
     tags=["strategies"],
 )
 
-# array of Strategy <- response model is an array of Strategy
+summary_get_strategies_list = "Get Strategies List"
+description_get_strategies_list = """
+## Find Strategy
+### Find all strategies
+"""
 
 
-# @router.get("", response_model=List[Strategy])
-# @inject
-# def get_strategy_list(
-#     service: StrategyService = Depends(Provide[Container.strategy_service]),
-# ):
-#     response = service.list_all_strategies()
-#     return response
+@router.get(
+    "",
+    response_model=List[Strategy],
+    summary=summary_get_strategies_list,
+    description=description_get_strategies_list,
+)
+@inject
+def get_strategy_list(
+    service: StrategyService = Depends(Provide[Container.strategy_service]),
+):
+    response = service.list_all_strategies()
+    return response
 
 
-# @router.get("/{id}", response_model=Strategy)
-# @inject
-# def get_strategy_by_id(
-#     id: str,
-#     service: StrategyService = Depends(Provide[Container.strategy_service]),
-# ):
-#     return service.get_strategy_by_id(id)
+summary_get_strategy_by_id = "Get Strategy by id"
+description_get_strategy_by_id = """
+Get Strategy by id
+"""
 
 
-# @router.get("rules/variable", response_model=ResponseFindAllRuleVariables)
-# @inject
-# def get_variables_available_to_strategy(
-#     service: RulesService = Depends(Provide[Container.rules_service]),
-# ):
-#     all_variables = service.get_all_variables()
-#     all_variables = [variable.get_data() for variable in all_variables]
-#     response = {"items": all_variables}
-#     return response
+@router.get("/{id}", response_model=Strategy)
+@inject
+def get_strategy_by_id(
+    id: str,
+    service: StrategyService = Depends(Provide[Container.strategy_service]),
+):
+    all_strategies = service.list_all_strategies()
+    for strategy in all_strategies:
+        if strategy["id"] == id:
+            return strategy
+    raise NotFoundError(
+        detail=f"Strategy not found with id: {id}"
+    )

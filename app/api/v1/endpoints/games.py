@@ -171,7 +171,7 @@ Get Task by externalGameId and externalTaskId
 
 
 @router.get(
-    "/{externalGameId}/tasks/{taskId}",
+    "/{externalGameId}/tasks/{externalTaskId}",
     response_model=CreateTaskPostSuccesfullyCreated,
     summary=summary_get_task_by_externalGameId_taskId,
     description=description_get_task_by_externalGameId_taskId,
