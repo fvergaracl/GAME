@@ -79,21 +79,25 @@ class UserPointsService(BaseService):
 
         response = []
         for task in tasks:
-            points = self.user_points_repository.get_points_and_users_by_taskId(
-                task)
+            points = (
+                self.user_points_repository.get_points_and_users_by_taskId(
+                    task)
+            )
             response_by_task = []
             if points:
                 for point in points:
                     response_by_task.append(
                         ResponseGetPointsByTask(
-                            externalUserId=point.externalUserId, points=point.points
+                            externalUserId=point.externalUserId,
+                            points=point.points
                         )
                     )
 
             if response_by_task:
                 response.append(
                     ResponseGetPointsByGame(
-                        externalTaskId=point.externalTaskId, points=response_by_task
+                        externalTaskId=point.externalTaskId,
+                        points=response_by_task
                     )
                 )
 
@@ -107,15 +111,18 @@ class UserPointsService(BaseService):
                 f"Task with externalTaskId {externalTaskId} not found"),
         )
 
-        points_by_task = self.user_points_repository.get_points_and_users_by_taskId(
-            task.id
+        points_by_task = (
+            self.user_points_repository.get_points_and_users_by_taskId(
+                task.id
+            )
         )
         cleaned_points_by_task = []
         if points_by_task:
             for point in points_by_task:
                 cleaned_points_by_task.append(
                     ResponseGetPointsByTask(
-                        externalUserId=point.externalUserId, points=point.points
+                        externalUserId=point.externalUserId,
+                        points=point.points
                     )
                 )
         return cleaned_points_by_task
@@ -174,11 +181,11 @@ class UserPointsService(BaseService):
     def get_time_avg_time_taken_for_a_task_by_externalUserId(
         self, externalTaskId, externalUserId
     ):
-        return self.user_points_repository.get_time_avg_time_taken_for_a_task_by_externalUserId(
+        return self.user_points_repository.get_time_avg_time_taken_for_a_task_by_externalUserId(  # noqa
             externalTaskId, externalUserId)
 
     def get_time_avg_time_taken_for_a_task_all_users(self, externalTaskId):
-        return self.user_points_repository.get_time_avg_time_taken_for_a_task_all_users(
+        return self.user_points_repository.get_time_avg_time_taken_for_a_task_all_users(  # noqa
             externalTaskId)
 
     def get_last_window_time_diff(self, externalTaskId, externalUserId):

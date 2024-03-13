@@ -289,7 +289,8 @@ class UserPointsRepository(BaseRepository):
 
     def get_time_avg_time_taken_for_a_task_all_users(self, externalTaskId):
         """
-        Retrieves the average time taken by all users to complete a specific task.
+        Retrieves the average time taken by all users to complete a specific
+          task.
 
         Parameters:
         - externalTaskId (str): The unique identifier of the external task.
@@ -319,8 +320,8 @@ class UserPointsRepository(BaseRepository):
         - externalTaskId (str): The unique identifier of the external task.
 
         Returns:
-        - bool: True if the time taken for the last task is less than the global
-          calculation, False otherwise.
+        - bool: True if the time taken for the last task is less than the
+          global calculation, False otherwise.
         """
         with self.session_factory() as session:
             query = (
@@ -371,7 +372,8 @@ class UserPointsRepository(BaseRepository):
 
     def get_new_last_window_time_diff(self, externalTaskId, externalUserId):
         """
-        Retrieves the last measurement time difference by a specific user for a specific task and diff with current time. 
+        Retrieves the last measurement time difference by a specific user for a
+          specific task and diff with current time.
 
         Parameters:
         - externalTaskId (str): The unique identifier of the external task.

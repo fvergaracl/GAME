@@ -1,4 +1,4 @@
-from app.core.exceptions import ConflictError, NotFoundError
+from app.core.exceptions import NotFoundError
 from app.services.base_service import BaseService
 from app.engine.all_engine_strategies import all_engine_strategies
 import inspect
@@ -23,6 +23,7 @@ class StrategyService(BaseService):
                 "nameSlug": strategy.get_strategy_name_slug(),
                 "version": strategy.get_strategy_version(),
                 "variables": strategy.get_variables(),
+                "calculate_points_hash": strategy.hash_version
             })
         return response
 
@@ -46,17 +47,3 @@ class StrategyService(BaseService):
         raise NotFoundError(
             detail=f"Strategy not found with id: {id}"
         )
-
-    def create_strategy(self, schema):
-        strategyName = schema.strategyName
-        strategyName_exist = self.strategy_repository.read_by_column(
-            column="strategyName", value=strategyName,
-            not_found_raise_exception=False
-        )
-        if strategyName_exist:
-            raise ConflictError(
-                detail=(
-                    f"Strategy already exist with strategyName: {strategyName}"
-                )
-            )
-        return self.strategy_repository.create(schema)
