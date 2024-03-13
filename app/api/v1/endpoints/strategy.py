@@ -3,11 +3,8 @@ from fastapi import APIRouter, Depends
 from typing import List
 from app.core.container import Container
 from app.core.exceptions import NotFoundError
-from app.schema.base_schema import FindBase
-from app.schema.rules_schema import ResponseFindAllRuleVariables
 from app.schema.strategy_schema import (
-    Strategy,
-    FindStrategyResult)
+    Strategy)
 from app.services.strategy_service import StrategyService
 
 router = APIRouter(
