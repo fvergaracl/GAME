@@ -1,3 +1,7 @@
+import hashlib
+import inspect
+
+
 class BaseStrategy:
     def __init__(
         self,
@@ -14,6 +18,12 @@ class BaseStrategy:
         self.strategy_version = strategy_version
         self.variable_basic_points = variable_basic_points
         self.variable_bonus_points = variable_bonus_points
+        self.hash_version = self._generate_hash_of_calculate_points()
+
+    def _generate_hash_of_calculate_points(self):
+        source_code = inspect.getsource(self.calculate_points)
+        hash_object = hashlib.sha256(source_code.encode())
+        return hash_object.hexdigest()
 
     def get_strategy_id(self):
         # get filename of this file
@@ -67,6 +77,7 @@ class BaseStrategy:
             "name_slug": self.get_strategy_name_slug(),
             "version": self.get_strategy_version(),
             "variables": self.get_variables(),
+            "calculate_points_hash": self.hash_version,
         }
 
     def calculate_points(self):

@@ -10,6 +10,7 @@ class Strategy(BaseModel):
     nameSlug: Optional[str] = Field(None, alias='nameSlug')
     version: str
     variables: Dict[str, int]
+    calculate_points_hash: str
 
 
 #############################################################################

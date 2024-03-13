@@ -91,13 +91,8 @@ class EnhancedGamificationStrategy(BaseStrategy):
         self.variable_global_advantage_adjustment_points = 7
         self.variable_individual_adjustment_points = 8
 
-    def calculate_points(self, externalTaskId, externalUserId, case=None):
-        # get count of measurements by externalTaskId
-        print('[+] INICIANDO')
-        print(" ")
-        print(externalTaskId)
+    def calculate_points(self, externalTaskId, externalUserId):
         task_measurements_count = self.user_points_service.count_measurements_by_external_task_id(externalTaskId)  # noqa
-        condition_name = None
         if (task_measurements_count < 2):
             return (
                 self.variable_basic_points, "BasicEngagement"
