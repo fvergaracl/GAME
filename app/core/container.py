@@ -36,6 +36,7 @@ class Container(containers.DeclarativeContainer):
     game_params_repository = providers.Factory(
         GameParamsRepository, session_factory=db.provided.session
     )
+
     task_params_repository = providers.Factory(
         TaskParamsRepository, session_factory=db.provided.session
     )
@@ -73,6 +74,10 @@ class Container(containers.DeclarativeContainer):
     )
 
     rules_service = providers.Factory(RulesService, db=db.provided.session)
+
+    strategy_service = providers.Factory(
+        StrategyService
+    )
 
     task_service = providers.Factory(
         TaskService,
