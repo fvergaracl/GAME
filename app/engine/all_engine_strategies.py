@@ -22,6 +22,7 @@ def all_engine_strategies():
         module = importlib.import_module(f"app.engine.{strategy}")
         classes = [getattr(module, name)
                    for name in dir(module) if name[0].isupper()]
+        classes = list(filter(lambda x: 'app.engine' in str(x), classes))
         for Class in classes:
             if not check_class_methods_and_variables(Class):
                 strategies.remove(strategy)

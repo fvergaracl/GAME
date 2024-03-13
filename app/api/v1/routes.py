@@ -10,10 +10,11 @@ from app.api.v1.endpoints.wallet import router as wallet_router
 
 routers = APIRouter()
 router_list = [
+    strategy_router,
     game_router,
     game_task_router,
     task_router,
-    strategy_router,
+
     user_points_router,
     user_router,
     wallet_router,

@@ -4,11 +4,12 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Body
 
 from app.core.container import Container
-from app.schema.task_schema import (CreateTaskPost,
+from app.schema.task_schema import (AsignPointsToExternalUserId,
                                     CreateTaskPostSuccesfullyCreated,
                                     FoundTaskById, GetTaskById,
                                     TaskPointsResponse)
 from app.services.task_service import TaskService
+from app.services.user_points_service import UserPointsService
 
 router = APIRouter(
     prefix="/tasks",
@@ -21,25 +22,27 @@ game_task_router = APIRouter(
 )
 
 
-# summary_get_tasks_list = "Get Tasks List, strategies and userPoints by task ID"
-# description_get_tasks_list = """
-# ## Find Task
-# ### Find all tasks and params by id
-# """
+summary_assing_points_to_user = "Assign points to user"
+description_assing_points_to_user = """
+## Assign points to user
+### Assign points to user
+"""
 
 
-# @router.get(
-#     "/{taskId}",
-#     response_model=FoundTaskById,
-#     summary=summary_get_tasks_list,
-#     description=description_get_tasks_list,
-# )
-# @inject
-# def get_task_detail_by_id(
-#     schema: GetTaskById = Depends(),
-#     service: TaskService = Depends(Provide[Container.task_service]),
-# ):
-#     return service.get_task_detail_by_id(schema)
+@router.post(
+    "/{externalTaskId}/points",
+    response_model=TaskPointsResponse,
+    summary=summary_assing_points_to_user,
+    description=description_assing_points_to_user,
+)
+@inject
+def assign_points_to_user(
+    externalTaskId: str,
+    schema: AsignPointsToExternalUserId = Body(...),
+    service: UserPointsService = Depends(
+        Provide[Container.user_points_service]),
+):
+    return service.assign_points_to_user(externalTaskId, schema)
 
 
 # # get points by task id
@@ -62,5 +65,3 @@ game_task_router = APIRouter(
 #     service: TaskService = Depends(Provide[Container.task_service]),
 # ):
 #     return service.get_points_by_task_id(schema)
-
-
