@@ -31,6 +31,43 @@ class UserPointsRepository(BaseRepository):
 
         super().__init__(session_factory, model)
 
+    def get_all_UserPoints_by_gameId(self, gameId):
+        """
+        [
+            {
+                "externalTaskId": "string",
+                "points": [
+                    {
+                    "externalUserId": "string",
+                    "points": 0,
+                    "timesAwarded": 0
+                    }
+                ]
+            }
+        ]
+        # WIP
+                # WIP
+                        # WIP
+                                # WIP
+                                        # WIP
+                                                # WIP
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(
+                    Tasks.externalTaskId.label("externalTaskId"),
+                    Users.externalUserId.label("externalUserId"),
+                    func.sum(UserPoints.points).label("points"),
+                    func.count(UserPoints.id).label("timesAwarded"),
+                )
+                .join(UserPoints, Tasks.id == UserPoints.taskId)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Tasks.gameId == gameId)
+                .group_by(Tasks.externalTaskId, Users.externalUserId)
+                .all()
+            )
+            return query
+
     def create_user_points(
             self, userId, taskId, points, caseName, data, description):
         with self.session_factory() as session:
