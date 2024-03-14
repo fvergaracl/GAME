@@ -12,6 +12,7 @@ class BaseStrategy:
         variable_basic_points=1,
         variable_bonus_points=1,
     ):
+        self.debug = False
         self.strategy_name = strategy_name
         self.strategy_description = strategy_description
         self.strategy_name_slug = strategy_name_slug
@@ -24,6 +25,10 @@ class BaseStrategy:
         source_code = inspect.getsource(self.calculate_points)
         hash_object = hashlib.sha256(source_code.encode())
         return hash_object.hexdigest()
+
+    def debug_print(self, *args):
+        if self.debug:
+            print("\033[95m", *args, "\033[0m")
 
     def get_strategy_id(self):
         # get filename of this file

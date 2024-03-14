@@ -19,7 +19,6 @@ from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
 from app.util.is_valid_slug import is_valid_slug
-# import conversionRate
 from app.core.config import configs
 
 
@@ -42,19 +41,23 @@ class UserPointsService(BaseService):
         self.strategy_service = StrategyService()
         super().__init__(user_points_repository)
 
-    def assign_points_to_user(self, externalTaskId, schema):
+    def assign_points_to_user(self, externalGameId, externalTaskId, schema):
         externalUserId = schema.externalUserId
         is_a_created_user = False
-        task = self.task_repository.read_by_column(
-            column="externalTaskId",
-            value=externalTaskId,
+
+        game = self.game_repository.read_by_column(
+            column="externalGameId",
+            value=externalGameId,
             not_found_message=(
-                f"Task with externalTaskId {externalTaskId} not found"),
+                f"Game with externalGameId {externalGameId} not found"),
             only_one=True,
         )
 
+        task = self.task_repository.read_by_gameId_and_externalTaskId(
+            game.id, externalTaskId
+        )
+
         strategyId = task.strategyId
-        print(strategyId)
         strategy = self.strategy_service.get_strategy_by_id(strategyId)
 
         if not strategy:
@@ -84,12 +87,11 @@ class UserPointsService(BaseService):
 
         try:
             points, case_name = strategy_instance.calculate_points(
+                externalGameId=externalGameId,
                 externalTaskId=externalTaskId,
                 externalUserId=externalUserId,
             )
         except Exception as e:
-            print(externalTaskId)
-            print(externalUserId)
             print("----------------- ERROR -----------------")
             print(e)
             print("----------------- ERROR -----------------")
@@ -98,7 +100,7 @@ class UserPointsService(BaseService):
                     f"Error in calculate points for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Please try again later or contact support"  # noqa
                 )
             )
-
+        print(f"points: {points} | case_name: {case_name}")
         if (not points or not case_name):
             raise InternalServerError(
                 detail=(
@@ -119,7 +121,6 @@ class UserPointsService(BaseService):
         wallet = self.wallet_repository.read_by_column(
             "userId", user.id, not_found_raise_exception=False
         )
-        print(wallet)
         if (wallet):
             wallet.pointsBalance += points
             self.wallet_repository.update(wallet.id, wallet)
@@ -282,22 +283,24 @@ class UserPointsService(BaseService):
             externalUserId
         )
 
-    def get_time_avg_time_taken_for_a_task_by_externalUserId(
-        self, externalTaskId, externalUserId
+    def get_avg_time_between_tasks_by_user_and_game_task(
+        self, externalGameId, externalTaskId, externalUserId
     ):
-        return self.user_points_repository.get_time_avg_time_taken_for_a_task_by_externalUserId(  # noqa
-            externalTaskId, externalUserId)
+        return self.user_points_repository.get_avg_time_between_tasks_by_user_and_game_task(  # noqa
+            externalGameId, externalTaskId, externalUserId)
 
-    def get_time_avg_time_taken_for_a_task_all_users(self, externalTaskId):
-        return self.user_points_repository.get_time_avg_time_taken_for_a_task_all_users(  # noqa
-            externalTaskId)
+    def get_avg_time_between_tasks_for_all_users(
+            self, externalGameId, externalTaskId):
+        return self.user_points_repository.get_avg_time_between_tasks_for_all_users(  # noqa
+            externalGameId, externalTaskId)
 
     def get_last_window_time_diff(self, externalTaskId, externalUserId):
         return self.user_points_repository.get_last_window_time_diff(
             externalTaskId, externalUserId
         )
 
-    def get_new_last_window_time_diff(self, externalTaskId, externalUserId):
+    def get_new_last_window_time_diff(
+            self, externalTaskId, externalUserId, externalGameId):
         return self.user_points_repository.get_new_last_window_time_diff(
-            externalTaskId, externalUserId
+            externalTaskId, externalUserId, externalGameId
         )
