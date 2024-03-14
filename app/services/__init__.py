@@ -1,7 +1,6 @@
 from app.services.base_service import BaseService
 from app.services.game_params_service import GameParamsService
 from app.services.game_service import GameService
-from app.services.rules_service import RulesService
 from app.services.task_service import TaskService
 from app.services.user_points_service import UserPointsService
 from app.services.user_service import UserService

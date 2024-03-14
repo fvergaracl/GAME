@@ -8,7 +8,7 @@ from app.repository import (GameParamsRepository, GameRepository,
                             UserPointsRepository, UserRepository,
                             WalletRepository, WalletTransactionRepository,
                             TaskParamsRepository)
-from app.services import (GameParamsService, GameService, RulesService,
+from app.services import (GameParamsService, GameService,
                           TaskService, UserPointsService,
                           UserService, WalletService, WalletTransactionService,
                           StrategyService)
@@ -73,7 +73,6 @@ class Container(containers.DeclarativeContainer):
         task_repository=task_repository,
     )
 
-    rules_service = providers.Factory(RulesService, db=db.provided.session)
 
     strategy_service = providers.Factory(
         StrategyService
