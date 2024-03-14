@@ -1,13 +1,16 @@
 from contextlib import AbstractContextManager
 from typing import Callable
 
-from sqlalchemy import func
+from sqlalchemy import func, extract
 from sqlalchemy.orm import Session
-
+from datetime import timezone
 from app.model.tasks import Tasks
 from app.model.user_points import UserPoints
 from app.model.users import Users
+from app.model.games import Games
 from app.repository.base_repository import BaseRepository
+
+epoch = func.to_timestamp('1970-01-01', 'YYYY-MM-DD')
 
 
 class UserPointsRepository(BaseRepository):
@@ -54,7 +57,6 @@ class UserPointsRepository(BaseRepository):
                 session.query(
                     Users.id.label("userId"),
                     Users.externalUserId,
-                    # sum userPoints.points
                     func.sum(UserPoints.points).label("points"),
                 )
                 .join(UserPoints, Users.id == UserPoints.userId)
@@ -150,7 +152,6 @@ class UserPointsRepository(BaseRepository):
         - float: The time taken to complete the last task, in minutes or other
           relevant unit.
         """
-
         with self.session_factory() as session:
             query = (
                 session.query(
@@ -269,62 +270,85 @@ class UserPointsRepository(BaseRepository):
 
             return query.measurement_count
 
-    def get_time_avg_time_taken_for_a_task_by_externalUserId(
+    def get_avg_time_between_tasks_by_user_and_game_task(
             self,
+            externalGameId,
             externalTaskId,
             externalUserId
     ):
         """
-        Retrieves the average time taken by a specific user to complete a
-        specific task.
+        Retrieves the average time difference between consecutive tasks completed by
+        a specific user for a specific task within a specific game.
 
         Parameters:
+        - externalGameId (str): The unique identifier of the external game.
         - externalTaskId (str): The unique identifier of the external task.
         - externalUserId (str): The unique identifier of the user.
 
         Returns:
-        - float: The average time taken to complete the task by the user.
-
+        - float: The average time in seconds between consecutive tasks completed by the user.
+                Returns -1 if there are fewer than two tasks completed, thus an average cannot be calculated.
         """
 
         with self.session_factory() as session:
-            query = (
-                session.query(func.avg(UserPoints.created_at).label(
-                    "average_time_taken"))
+            timestamps = (
+                session.query(UserPoints.created_at)
                 .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Games, Tasks.gameId == Games.id)
                 .join(Users, UserPoints.userId == Users.id)
+                .filter(Games.externalGameId == externalGameId)
                 .filter(Tasks.externalTaskId == externalTaskId)
                 .filter(Users.externalUserId == externalUserId)
-                .group_by(UserPoints.userId)
-                .having(func.count(UserPoints.userId) > 1)
-                .one()
+                .order_by(UserPoints.created_at)
+                .all()
             )
 
-            return query.average_time_taken
+            if len(timestamps) < 2:
+                return -1
 
-    def get_time_avg_time_taken_for_a_task_all_users(self, externalTaskId):
+            time_diffs = [(timestamps[i + 1][0] - timestamps[i][0]
+                           ).total_seconds() for i in range(len(timestamps) - 1)]
+
+            avg_time_diff = sum(time_diffs) / len(time_diffs)
+
+            return avg_time_diff
+
+    def get_avg_time_between_tasks_for_all_users(self, externalGameId, externalTaskId):
         """
-        Retrieves the average time taken by all users to complete a specific
-          task.
+        Retrieves the average time difference between consecutive tasks completed by
+        all users for a specific task within a specific game.
 
         Parameters:
+        - externalGameId (str): The unique identifier of the external game.
         - externalTaskId (str): The unique identifier of the external task.
 
         Returns:
-        - float: The average time taken to complete the task by all users.
+        - float: The average time in seconds between consecutive tasks completed by all users
+                for the specific task within the specified game. Returns -1 if the average
+                cannot be calculated.
         """
+
         with self.session_factory() as session:
-            query = (
-                session.query(func.avg(UserPoints.created_at).label(
-                    "average_time_taken"))
+            timestamps = (
+                session.query(UserPoints.created_at)
                 .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Games, Tasks.gameId == Games.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
-                .group_by(UserPoints.userId)
-                .having(func.count(UserPoints.userId) > 1)
-                .one()
+                .filter(Games.externalGameId == externalGameId)
+                .order_by(UserPoints.created_at)
+                .all()
             )
 
-            return query.average_time_taken
+            if len(timestamps) < 2:
+                return -1
+
+            time_diffs = [(
+                timestamps[i + 1][0] - timestamps[i][0]).total_seconds()
+                for i in range(len(timestamps) - 1)]
+
+            avg_time_diff = sum(time_diffs) / len(time_diffs)
+
+            return avg_time_diff
 
     def is_task_time_taken_less_than_global_calculation(self, externalTaskId):
         """
@@ -364,12 +388,13 @@ class UserPointsRepository(BaseRepository):
         - externalUserId (str): The unique identifier of the user.
 
         Returns:
-        - float: The time difference between the last two measurements by the
-          user for the task.
+        - float: The time difference in seconds between the last two
+         measurements by the user for the task. If there are fewer than two
+         measurements, returns 0.
         """
 
         with self.session_factory() as session:
-            query = (
+            last_two_points = (
                 session.query(UserPoints)
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Users, UserPoints.userId == Users.id)
@@ -380,40 +405,57 @@ class UserPointsRepository(BaseRepository):
                 .all()
             )
 
-            if len(query) < 2:
+            if len(last_two_points) < 2:
                 return 0
 
-            return query[0].created_at - query[1].created_at
+            time_diff = last_two_points[0].created_at - \
+                last_two_points[1].created_at
 
-    def get_new_last_window_time_diff(self, externalTaskId, externalUserId):
+            return time_diff.total_seconds()
+
+    def get_new_last_window_time_diff(self, externalTaskId, externalUserId, externalGameId):
         """
         Retrieves the last measurement time difference by a specific user for a
-          specific task and diff with current time.
+        specific task in a specific game and diff with current time.
 
         Parameters:
         - externalTaskId (str): The unique identifier of the external task.
         - externalUserId (str): The unique identifier of the user.
+        - externalGameId (str): The unique identifier of the external game.
 
         Returns:
-        - float: The time difference between the last two measurements by the
-          user for the task.
+        - float: The time difference in seconds between now and the last time the 
+        user completed the task for the specific game. If the user has not 
+        completed the task before, returns 0.
         """
 
         with self.session_factory() as session:
-            query = (
+            last_point = (
                 session.query(UserPoints)
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Users, UserPoints.userId == Users.id)
+                .join(Games, Tasks.gameId == Games.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
                 .filter(Users.externalUserId == externalUserId)
+                .filter(Games.externalGameId == externalGameId)
                 .order_by(UserPoints.created_at.desc())
-                .limit(1)
-                .all()
-
+                .first()
             )
-            if len(query) < 1:
+
+            if last_point is None:
                 return 0
 
-            current_time = func.now()
+            current_time = session.query(func.now()).scalar()
 
-            return current_time - query[0].created_at
+            if current_time.tzinfo is None:
+                current_time = current_time.replace(tzinfo=timezone.utc)
+
+            if last_point.created_at.tzinfo is None:
+                last_created_at = last_point.created_at.replace(
+                    tzinfo=timezone.utc)
+            else:
+                last_created_at = last_point.created_at
+
+            time_diff = current_time - last_created_at
+
+            return time_diff.total_seconds()

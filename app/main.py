@@ -12,7 +12,6 @@ from fastapi.responses import RedirectResponse
 
 
 def get_project_data():
-    # Asegúrate de que la ruta sea accesible desde tu script
     pyproject_path = "pyproject.toml"
     with open(pyproject_path, "r") as pyproject_file:
         pyproject_content = toml.load(pyproject_file)
@@ -32,9 +31,8 @@ def custom_openapi():
         routes=app.routes,
         servers=[{"url": "/api/v1", "description": "Local"}]
     )
-    # Eliminar el prefijo /api/v1 de las rutas en la documentación de Swagger
     for path in list(openapi_schema["paths"].keys()):
-        print(path)
+
         if path.startswith("/api/v1"):
             openapi_schema["paths"][path[7:]
                                     ] = openapi_schema["paths"].pop(path)
@@ -62,7 +60,6 @@ def get_git_commit_hash() -> str:
 @singleton
 class AppCreator:
     def __init__(self):
-        # set app default
         self.app = FastAPI(
             redoc_url="/redocs",
             docs_url="/docs",
@@ -70,12 +67,8 @@ class AppCreator:
         )
         self.app.openapi = custom_openapi
 
-        # set db and container
         self.container = Container()
         self.db = self.container.db()
-        # self.db.create_database()
-
-        # set cors
         if configs.BACKEND_CORS_ORIGINS:
             self.app.add_middleware(
                 CORSMiddleware,
@@ -95,8 +88,6 @@ class AppCreator:
                 RedirectResponse: Redirect to /docs
             """
             return RedirectResponse(url='/docs')
-
-        # set routes
 
         @self.app.get(
             "/api/v1",
@@ -123,9 +114,6 @@ class AppCreator:
                 "commitVersion": get_git_commit_hash()
             }
 
-        # set routers API_V1_STR
-
-        # self.app.include_router(v1_routers)
         self.app.include_router(v1_routers, prefix=configs.API_V1_STR)
 
 

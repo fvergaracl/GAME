@@ -1,4 +1,3 @@
-from uuid import UUID
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Body
@@ -9,12 +8,16 @@ from app.schema.games_schema import (FindGameById, FindGameResult,
                                      PostCreateGame, PostFindGame,
                                      ResponsePatchGame)
 from app.schema.strategy_schema import Strategy
-from app.services.game_service import GameService
+
 
 from app.schema.task_schema import (CreateTaskPost,
                                     CreateTaskPostSuccesfullyCreated,
-                                    FoundTasks, PostFindTask)
+                                    FoundTasks, PostFindTask,
+                                    AsignPointsToExternalUserId,
+                                    AssignedPointsToExternalUserId)
+from app.services.game_service import GameService
 from app.services.task_service import TaskService
+from app.services.user_points_service import UserPointsService
 
 router = APIRouter(
     prefix="/games",
@@ -184,3 +187,28 @@ def get_task_by_externalGameId_taskId(
 ):
     return service.get_task_by_externalGameId_externalTaskId(
         externalGameId, externalTaskId)
+
+
+summary_assing_points_to_user = "Assign points to user"
+description_assing_points_to_user = """
+## Assign points to user
+### Assign points to user
+"""
+
+
+@router.post(
+    "/{externalGameId}/tasks/{externalTaskId}/points",
+    response_model=AssignedPointsToExternalUserId,
+    summary=summary_assing_points_to_user,
+    description=description_assing_points_to_user,
+)
+@inject
+def assign_points_to_user(
+    externalGameId: str,
+    externalTaskId: str,
+    schema: AsignPointsToExternalUserId = Body(...),
+    service: UserPointsService = Depends(
+        Provide[Container.user_points_service]),
+):
+    return service.assign_points_to_user(
+        externalGameId, externalTaskId, schema)

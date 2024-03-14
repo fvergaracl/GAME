@@ -27,6 +27,11 @@
 | Case 4.1     | Individual improvement but below the global average. | variable_individual_over_global_points | `IndividualOverGlobal`      | `default_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual`, `calculo_global` | `tiempo_tardado_ultima_task < calculo_individual && tiempo_tardado_ultima_task > calculo_global` |
 | Case 4.2     | Individual improvement and above the global average. | variable_peak_performer_bonus_points                                               | `PeakPerformerBonus`        | `default_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual`, `calculo_global` | `tiempo_tardado_ultima_task < calculo_individual && tiempo_tardado_ultima_task < calculo_global` |
 | Case 4.3     | Individual worsening, but above the global average.  | variable_global_advantage_adjustment_points                                  | `GlobalAdvantageAdjustment` | `default_points_task_campaign`, `tiempo_tardado_ultima_task`, `calculo_individual`, `calculo_global` | `tiempo_tardado_ultima_task > calculo_individual && tiempo_tardado_ultima_task < calculo_global` |
+#### Consistent Performance Bonus
+
+| Case/Subcase | Conditions                                                             | Points Awarded                  | Tag                  | Required Variables                                                                                        | Condition Check                                                                 |
+| ------------ | ---------------------------------------------------------------------- | ------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Case 5       | User maintains or improves their performance for 3 consecutive tasks. | variable_consistent_performance_bonus_points | `ConsistentPerformance` | `default_points_task_campaign`, `tiempo_tardado_ultimas_tres_tasks`, `promedio_tiempo_tardado_tres_tasks_anteriores`, `promedio_tiempo_tardado_todos_usuarios_tres_tasks_anteriores` | `tiempo_tardado_ultimas_tres_tasks <= promedio_tiempo_tardado_tres_tasks_anteriores && tiempo_tardado_ultimas_tres_tasks < promedio_tiempo_tardado_todos_usuarios_tres_tasks_anteriores` |
 
 Gamification System Decision Tree
 .
@@ -82,6 +87,9 @@ class EnhancedGamificationStrategy(BaseStrategy):
         self.task_service = Container.task_service()
         self.user_points_service = Container.user_points_service()
 
+        self.debug = True
+
+        self.default_points_task_campaign = 1
         self.variable_basic_points = 1
         self.variable_bonus_points = 10
         self.variable_individual_over_global_points = 3
@@ -89,16 +97,14 @@ class EnhancedGamificationStrategy(BaseStrategy):
         self.variable_global_advantage_adjustment_points = 7
         self.variable_individual_adjustment_points = 8
 
-    def calculate_points(self, externalTaskId, externalUserId):
-        print("->1")
+    def calculate_points(self, externalGameId, externalTaskId, externalUserId):
         task_measurements_count = (
             self.user_points_service.count_measurements_by_external_task_id(
                 externalTaskId
             )
         )
-        print("->2")
+        self.debug_print(f"task_measurements_count: {task_measurements_count}")
         if (task_measurements_count < 2):
-            print("->3")
             return (
                 self.variable_basic_points, "BasicEngagement"
             )
@@ -107,23 +113,26 @@ class EnhancedGamificationStrategy(BaseStrategy):
                 externalTaskId, externalUserId
             )
         )
-        print(user_task_measurements_count)
-        print("->4")
-        if (user_task_measurements_count < 2):
-            print("->5")
-            user_avg_time_taken = self.user_points_service.get_time_avg_time_taken_for_a_task_by_externalUserId(  # noqa
-                externalTaskId, externalUserId
+        self.debug_print(
+            f"user_task_measurements_count: {user_task_measurements_count}")
+
+        if (user_task_measurements_count > 2):
+            user_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_by_user_and_game_task(  # noqa
+                externalGameId, externalTaskId, externalUserId
             )
-            all_avg_time_taken = (
-                self.user_points_service.get_time_avg_time_taken_for_a_task(
-                    externalTaskId
-                )
+            self.debug_print(f"user_avg_time_taken: {user_avg_time_taken}")
+
+            all_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_for_all_users(
+                externalGameId,
+                externalTaskId
             )
-            print("->6")
+            self.debug_print(f"all_avg_time_taken: {all_avg_time_taken}")
+
             if (user_avg_time_taken < all_avg_time_taken):
-                print("->7")
+
+                points = self.variable_basic_points + self.variable_bonus_points
                 return (
-                    (self.variable_basic_points + self.variable_bonus_points),
+                    points,
                     "PerformanceBonus",
                 )
             user_last_window_time_diff = (
@@ -131,42 +140,48 @@ class EnhancedGamificationStrategy(BaseStrategy):
                     externalTaskId, externalUserId
                 )
             )
-            print("->8")
+            self.debug_print(
+                f"user_last_window_time_diff: {user_last_window_time_diff}")
 
             user_new_last_window_time_diff = (
                 self.user_points_service.get_new_last_window_time_diff(
-                    externalTaskId, externalUserId
+                    externalTaskId, externalUserId, externalGameId
                 )
             )
+            self.debug_print(
+                f"user_new_last_window_time_diff: {user_new_last_window_time_diff}"
+            )
+
             user_diff_time = (
                 user_new_last_window_time_diff - user_last_window_time_diff
             )
-            print("->9")
+            self.debug_print(f"user_diff_time: {user_diff_time}")
             if (user_diff_time > 0):
-                print("->10")
                 if (user_diff_time < all_avg_time_taken):
-                    print("->11")
                     return (
                         self.variable_individual_over_global_points,
                         "IndividualOverGlobal"
                     )
                 if (user_diff_time < user_avg_time_taken):
-                    print("->12")
                     return (
                         self.variable_peak_performer_bonus_points,
                         "PeakPerformerBonus"
                     )
                 if (user_diff_time > user_avg_time_taken):
-                    print("->13")
                     return (
                         self.variable_global_advantage_adjustment_points,
                         "GlobalAdvantageAdjustment"
                     )
             if (user_diff_time < 0):
-                print("->14")
                 return (
                     self.variable_individual_adjustment_points,
                     "IndividualAdjustment"
                 )
-        # ACA
-        return (self.variable_basic_points, "BasicEngagement")
+            return (
+                self.default_points_task_campaign,
+                "default"
+            )
+        return (
+            self.default_points_task_campaign,
+            "default"
+        )

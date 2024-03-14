@@ -36,13 +36,15 @@ class TaskRepository(BaseRepository):
             query = session.query(self.model)
             if eager:
                 for eager in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(getattr(self.model, eager)))
+                    query = query.options(
+                        joinedload(getattr(self.model, eager)))
             filtered_query = query.filter(filter_options)
             query = filtered_query.order_by(order_query)
             if page_size == "all":
                 query = query.all()
             else:
-                query = query.limit(page_size).offset((page - 1) * page_size).all()
+                query = query.limit(page_size).offset(
+                    (page - 1) * page_size).all()
             total_count = filtered_query.count()
             return {
                 "items": query,
@@ -63,11 +65,11 @@ class TaskRepository(BaseRepository):
         with self.session_factory() as session:
             query = session.query(self.model)
             query = query.filter(
-                self.model.gameId == gameId, self.model.externalTaskId == externalTaskId
+                self.model.gameId == gameId, (
+                    self.model.externalTaskId == externalTaskId
+                )
             ).first()
             return query
-
-    
 
     def get_points_and_users_by_taskId(self, taskId):
         with self.session_factory() as session:

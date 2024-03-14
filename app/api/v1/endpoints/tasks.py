@@ -22,28 +22,6 @@ game_task_router = APIRouter(
 )
 
 
-summary_assing_points_to_user = "Assign points to user"
-description_assing_points_to_user = """
-## Assign points to user
-### Assign points to user
-"""
-
-
-@router.post(
-    "/{externalTaskId}/points",
-    response_model=AssignedPointsToExternalUserId,
-    summary=summary_assing_points_to_user,
-    description=description_assing_points_to_user,
-)
-@inject
-def assign_points_to_user(
-    externalTaskId: str,
-    schema: AsignPointsToExternalUserId = Body(...),
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
-):
-    return service.assign_points_to_user(externalTaskId, schema)
-
 
 # # get points by task id
 # summary_get_points_by_task_id = "Get points by task id"
