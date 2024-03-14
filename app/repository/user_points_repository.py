@@ -72,6 +72,54 @@ class UserPointsRepository(BaseRepository):
             )
             return query
 
+    def get_all_UserPoints_by_taskId_with_details(self, taskId):
+        # same as get_all_UserPoints_by_taskId but have an array of pointsData
+        """
+
+Response body
+Download
+
+[
+  {
+    "externalUserId": "strin43g2",
+    "points": 32,
+    "timesAwarded": 12,
+    "pointsData":[
+        {
+            "points": 32,
+            "caseName": "string",
+            "data": {
+            "key": "value"
+            },
+            "description": "string"
+        }
+    ]
+  }
+  ]
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(
+                    Users.externalUserId,
+                    func.sum(UserPoints.points).label("points"),
+                    func.count(UserPoints.id).label("timesAwarded"),
+                    func.array_agg(
+                        func.json_build_object(
+                            "points", UserPoints.points,
+                            "caseName", UserPoints.caseName,
+                            "data", UserPoints.data,
+                            "description", UserPoints.description,
+                            "created_at", UserPoints.created_at
+                        )
+                    ).label("pointsData")
+                )
+                .join(UserPoints, Users.id == UserPoints.userId)
+                .filter(UserPoints.taskId == taskId)
+                .group_by(Users.externalUserId)
+                .all()
+            )
+            return query
+
     def get_points_and_users_by_taskId(self, taskId):
         with self.session_factory() as session:
             query = (

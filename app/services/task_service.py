@@ -349,3 +349,28 @@ class TaskService(BaseService):
             task_id)
 
         return user_points
+
+    def get_points_by_task_id_with_details(
+            self, externalGameId, externalTaskId):
+        game = self.game_repository.read_by_column(
+            "externalGameId",
+            externalGameId,
+            not_found_message=(
+                f"Game not found with externalGameId: {externalGameId}"),
+            only_one=True,
+        )
+
+        task = self.task_repository.read_by_gameId_and_externalTaskId(
+            game.id, externalTaskId
+        )
+        if not task:
+            raise NotFoundError(
+                f"Task not found with externalTaskId: {externalTaskId} for externalGameId: {externalGameId}"  # noqa
+            )
+
+        task_id = task.id
+
+        user_points = self.user_points_repository.get_all_UserPoints_by_taskId_with_details(
+            task_id)
+
+        return user_points
