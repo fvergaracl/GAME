@@ -21,6 +21,22 @@ class PointsAssignedToUser(BaseModel):
     timesAwarded: int
 
 
+class PointsAssignedToUserWithDetails(PointsAssignedToUser):
+    """
+    "pointsData":[
+        {
+            "points": 32,
+            "caseName": "string",
+            "data": {
+            "key": "value"
+            },
+            "description": "string"
+        }
+    ]
+    """
+    pointsData: List[dict]
+
+
 class BaseUserPointsBaseModel(PostAssignPointsToUser):
     userId: str
 

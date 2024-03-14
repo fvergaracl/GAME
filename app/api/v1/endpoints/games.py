@@ -3,19 +3,19 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Body
 from typing import List
 from app.core.container import Container
-from app.schema.games_schema import (FindGameById, FindGameResult,
-                                     GameCreated, PatchGame,
-                                     PostCreateGame, PostFindGame,
-                                     ResponsePatchGame)
+from app.schema.games_schema import (
+    FindGameById, FindGameResult, GameCreated, PatchGame, PostCreateGame,
+    PostFindGame, ResponsePatchGame
+)
 from app.schema.strategy_schema import Strategy
 
-
-from app.schema.task_schema import (CreateTaskPost,
-                                    CreateTaskPostSuccesfullyCreated,
-                                    FoundTasks, PostFindTask,
-                                    AsignPointsToExternalUserId,
-                                    AssignedPointsToExternalUserId)
-from app.schema.user_points_schema import PointsAssignedToUser
+from app.schema.task_schema import (
+    CreateTaskPost, CreateTaskPostSuccesfullyCreated, FoundTasks, PostFindTask,
+    AsignPointsToExternalUserId, AssignedPointsToExternalUserId
+)
+from app.schema.user_points_schema import (
+    PointsAssignedToUser, PointsAssignedToUserWithDetails
+)
 from app.services.game_service import GameService
 from app.services.task_service import TaskService
 from app.services.user_points_service import UserPointsService
@@ -235,3 +235,26 @@ def get_points_by_task_id(
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
     return service.get_points_by_task_id(externalGameId, externalTaskId)
+
+
+summary_get_points_by_task_id_with_details = "Get points by task id with details"
+description_get_points_by_task_id_with_details = """
+## Get points by task id with details
+### Get points by task id with details
+"""
+
+
+@router.get(
+    "/{externalGameId}/tasks/{externalTaskId}/points/details",
+    response_model=List[PointsAssignedToUserWithDetails],
+    summary=summary_get_points_by_task_id_with_details,
+    description=description_get_points_by_task_id_with_details,
+)
+@inject
+def get_points_by_task_id_with_details(
+    externalGameId: str,
+    externalTaskId: str,
+    service: TaskService = Depends(Provide[Container.task_service]),
+):
+    return service.get_points_by_task_id_with_details(
+        externalGameId, externalTaskId)
