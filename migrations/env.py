@@ -47,13 +47,6 @@ target_metadata = SQLModel.metadata
 # ... etc.
 
 
-# exclude system table
-def include_name(name, type_, parent_names):
-    if type_ == "schema":
-        return name in [list_of_schemas_to_be_scanned]
-    else:
-        return True
-
 
 # code doesn't reach here
 # def run_migrations_offline():
@@ -75,7 +68,6 @@ def include_name(name, type_, parent_names):
 #     literal_binds=True,
 #     include_schemas=True,
 #     dialect_opts={"paramstyle": "named"},
-#     include_name=include_name,
 # )
 #
 # with context.begin_transaction():

@@ -18,5 +18,6 @@
   "python.pythonPath": "/home/jim/anaconda3/envs/dipoleDisplay",
 
   "terminal.integrated.rendererType": "dom",
-  "python.linting.pylintUseMinimalCheckers": false
+  "python.linting.pylintUseMinimalCheckers": false,
+  "findUnusedExports.detectCircularImports": true
 }

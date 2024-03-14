@@ -16,12 +16,6 @@ router = APIRouter(
     tags=["tasks"],
 )
 
-game_task_router = APIRouter(
-    prefix="/game",
-    tags=["tasks"],
-)
-
-
 
 # # get points by task id
 # summary_get_points_by_task_id = "Get points by task id"
