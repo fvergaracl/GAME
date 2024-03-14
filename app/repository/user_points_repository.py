@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from datetime import timezone
 from app.model.tasks import Tasks
 from app.model.user_points import UserPoints
+
 from app.model.users import Users
 from app.model.games import Games
 from app.repository.base_repository import BaseRepository
@@ -46,9 +47,29 @@ class UserPointsRepository(BaseRepository):
             return user_points
 
     def get_all_UserPoints_by_taskId(self, taskId):
+        """
+        Retrieves all UserPoints for a specific task, sum of points and count
+          of times awarded.
+
+        Parameters:
+        - taskId (str): The unique identifier of the task.
+
+        Returns:
+        - list: A list of tuples containing the externalUserId, sum of points,
+          and count of times awarded.
+        """
         with self.session_factory() as session:
-            query = session.query(self.model).filter(
-                self.model.taskId == taskId).all()
+            query = (
+                session.query(
+                    Users.externalUserId,
+                    func.sum(UserPoints.points).label("points"),
+                    func.count(UserPoints.id).label("timesAwarded"),
+                )
+                .join(UserPoints, Users.id == UserPoints.userId)
+                .filter(UserPoints.taskId == taskId)
+                .group_by(Users.externalUserId)
+                .all()
+            )
             return query
 
     def get_points_and_users_by_taskId(self, taskId):
