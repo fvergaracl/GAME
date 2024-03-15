@@ -22,19 +22,19 @@ class PointsAssignedToUser(BaseModel):
 
 
 class PointsAssignedToUserWithDetails(PointsAssignedToUser):
-    """
-    "pointsData":[
-        {
-            "points": 32,
-            "caseName": "string",
-            "data": {
-            "key": "value"
-            },
-            "description": "string"
-        }
-    ]
-    """
     pointsData: List[dict]
+
+
+
+class TaskPointsByGame(BaseModel):
+    externalTaskId: str
+    points: List[PointsAssignedToUser]
+
+
+class AllPointsByGame(BaseModel):
+    externalGameId: str
+    created_at: str
+    task: List[TaskPointsByGame]
 
 
 class BaseUserPointsBaseModel(PostAssignPointsToUser):

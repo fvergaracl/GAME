@@ -110,30 +110,6 @@ class UserPointsRepository(BaseRepository):
             return query
 
     def get_all_UserPoints_by_taskId_with_details(self, taskId):
-        # same as get_all_UserPoints_by_taskId but have an array of pointsData
-        """
-
-Response body
-Download
-
-[
-  {
-    "externalUserId": "strin43g2",
-    "points": 32,
-    "timesAwarded": 12,
-    "pointsData":[
-        {
-            "points": 32,
-            "caseName": "string",
-            "data": {
-            "key": "value"
-            },
-            "description": "string"
-        }
-    ]
-  }
-  ]
-        """
         with self.session_factory() as session:
             query = (
                 session.query(
@@ -161,9 +137,9 @@ Download
         with self.session_factory() as session:
             query = (
                 session.query(
-                    Users.id.label("userId"),
-                    Users.externalUserId,
+                    Users.externalUserId.label("externalUserId"),
                     func.sum(UserPoints.points).label("points"),
+                    func.count(UserPoints.id).label("timesAwarded"),
                 )
                 .join(UserPoints, Users.id == UserPoints.userId)
                 .filter(UserPoints.taskId == taskId)
