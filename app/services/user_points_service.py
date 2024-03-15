@@ -12,7 +12,7 @@ from app.repository.wallet_transaction_repository import (
 from app.schema.user_points_schema import (ResponseGetPointsByGame,
                                            ResponseGetPointsByTask,
                                            ResponsePointsByExternalUserId,
-                                           UserPointsAssign)
+                                           UserPointsAssign, AllPointsByGame)
 from app.schema.task_schema import AssignedPointsToExternalUserId
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
@@ -40,6 +40,31 @@ class UserPointsService(BaseService):
         self.wallet_transaction_repository = wallet_transaction_repository
         self.strategy_service = StrategyService()
         super().__init__(user_points_repository)
+
+    def get_points_by_game_id(self, externalGameId: str):
+        game = self.game_repository.read_by_column(
+            "externalGameId", externalGameId, not_found_raise_exception=True
+        )
+        tasks = self.task_repository.read_by_column(
+            "gameId", game.id, not_found_raise_exception=False, only_one=False
+        )
+
+        if not tasks:
+            raise NotFoundError(
+                detail=f"Tasks not found by gameId: {game.id}"
+            )
+
+        for task in tasks:
+            points = self.user_points_repository.get_points_and_users_by_taskId(
+                task.id
+            )
+            if points:
+                task.points = points
+
+        response = AllPointsByGame(
+            externalGameId=externalGameId, created_at=game.created_at, task=tasks
+        )
+        return response
 
     def assign_points_to_user(self, externalGameId, externalTaskId, schema):
         externalUserId = schema.externalUserId

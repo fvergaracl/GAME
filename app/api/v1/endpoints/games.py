@@ -205,8 +205,10 @@ Get points by externalGameId
 @inject
 def get_points_by_game_id(
     externalGameId: str,
-    service: TaskService = Depends(Provide[Container.task_service]),
+    service: UserPointsService = Depends(
+        Provide[Container.user_points_service]),
 ):
+    # WIP
     return service.get_points_by_game_id(externalGameId)
 
 
