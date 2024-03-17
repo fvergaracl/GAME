@@ -81,13 +81,9 @@ class UserPointsService(BaseService):
                 task_points
             )
 
-        print('-------------')
-        print(response_task)
-        print('************************************')
         response = AllPointsByGame(
             externalGameId=externalGameId, created_at=str(game.created_at), task=game_points
         )
-        print(response)
         return response
 
     def assign_points_to_user(self, externalGameId, externalTaskId, schema):
