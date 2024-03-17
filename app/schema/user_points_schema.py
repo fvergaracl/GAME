@@ -22,7 +22,7 @@ class PointsAssignedToUser(BaseModel):
 
 
 class PointsAssignedToUserWithDetails(PointsAssignedToUser):
-    pointsData: List[dict]
+    pointsData: List[PointsAssignedToUser]
 
 
 
