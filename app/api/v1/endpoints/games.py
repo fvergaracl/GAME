@@ -14,7 +14,7 @@ from app.schema.task_schema import (
     AsignPointsToExternalUserId, AssignedPointsToExternalUserId
 )
 from app.schema.user_points_schema import (
-    PointsAssignedToUser, PointsAssignedToUserWithDetails
+    PointsAssignedToUser, PointsAssignedToUserWithDetails, AllPointsByGame
 )
 from app.services.game_service import GameService
 from app.services.task_service import TaskService
@@ -198,7 +198,7 @@ Get points by externalGameId
 
 @router.get(
     "/{externalGameId}/points",
-    response_model=List[PointsAssignedToUser],
+    response_model=AllPointsByGame,
     summary=summary_get_points_by_game_id,
     description=description_get_points_by_game_id,
 )

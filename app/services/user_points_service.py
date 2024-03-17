@@ -12,7 +12,8 @@ from app.repository.wallet_transaction_repository import (
 from app.schema.user_points_schema import (ResponseGetPointsByGame,
                                            ResponseGetPointsByTask,
                                            ResponsePointsByExternalUserId,
-                                           UserPointsAssign, AllPointsByGame)
+                                           UserPointsAssign, AllPointsByGame , 
+                                           TaskPointsByGame, PointsAssignedToUser)
 from app.schema.task_schema import AssignedPointsToExternalUserId
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
@@ -42,6 +43,7 @@ class UserPointsService(BaseService):
         super().__init__(user_points_repository)
 
     def get_points_by_game_id(self, externalGameId: str):
+        response_task = []
         game = self.game_repository.read_by_column(
             "externalGameId", externalGameId, not_found_raise_exception=True
         )
@@ -53,17 +55,39 @@ class UserPointsService(BaseService):
             raise NotFoundError(
                 detail=f"Tasks not found by gameId: {game.id}"
             )
-
+        game_points = []
         for task in tasks:
+            user_points = []
             points = self.user_points_repository.get_points_and_users_by_taskId(
                 task.id
             )
             if points:
-                task.points = points
+                
+                for point in points:
+                    points_of_user = PointsAssignedToUser(
+                            externalUserId=point.externalUserId,
+                            points=point.points,
+                            timesAwarded=point.timesAwarded
+                        )
+                    user_points.append(
+                        points_of_user
+                    )
+                
+            task_points = TaskPointsByGame(
+                externalTaskId=task.externalTaskId,
+                points=user_points
+            )
+            game_points.append(
+                task_points
+            )
 
+        print('-------------')
+        print(response_task)
+        print('************************************')
         response = AllPointsByGame(
-            externalGameId=externalGameId, created_at=game.created_at, task=tasks
+            externalGameId=externalGameId, created_at=str(game.created_at), task=game_points
         )
+        print(response)
         return response
 
     def assign_points_to_user(self, externalGameId, externalTaskId, schema):
