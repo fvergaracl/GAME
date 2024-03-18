@@ -5,7 +5,7 @@ from typing import List
 from app.core.container import Container
 from app.schema.games_schema import (
     FindGameById, FindGameResult, GameCreated, PatchGame, PostCreateGame,
-    PostFindGame, ResponsePatchGame
+    PostFindGame, ResponsePatchGame, ListTasksWithUsers
 )
 from app.schema.strategy_schema import Strategy
 
@@ -17,7 +17,6 @@ from app.schema.user_points_schema import (
     PointsAssignedToUser, PointsAssignedToUserWithDetails, AllPointsByGame
 )
 
-from app.schema.user_schema import UserBasicInfo
 from app.services.game_service import GameService
 from app.services.task_service import TaskService
 from app.services.user_points_service import UserPointsService
@@ -214,6 +213,28 @@ def get_points_by_game_id(
     return service.get_points_by_game_id(externalGameId)
 
 
+summary_get_points_of_user_in_game = "Get points of user in game"
+description_get_points_of_user_in_game = """
+Get points of user in game
+"""
+
+
+@router.get(
+    "/{externalGameId}/users/{externalUserId}/points",
+    response_model=List[PointsAssignedToUser],
+    summary=summary_get_points_of_user_in_game,
+    description=description_get_points_of_user_in_game,
+)
+@inject
+def get_points_of_user_in_game(
+    externalGameId: str,
+    externalUserId: str,
+    service: UserPointsService = Depends(
+        Provide[Container.user_points_service]),
+):
+    return service.get_points_of_user_in_game(externalGameId, externalUserId)
+
+
 summary_assing_points_to_user = "Assign points to user"
 description_assing_points_to_user = """
 ## Assign points to user
@@ -261,6 +282,30 @@ def get_points_by_task_id(
     return service.get_points_by_task_id(externalGameId, externalTaskId)
 
 
+summary_get_points_of_user_by_task_id = "Get points of user by task id"
+description_get_points_of_user_by_task_id = """
+## Get points of user by task id
+### Get points of user by task id
+"""
+
+
+@router.get(
+    "/{externalGameId}/tasks/{externalTaskId}/users/{externalUserId}/points",
+    response_model=PointsAssignedToUser,
+    summary=summary_get_points_of_user_by_task_id,
+    description=description_get_points_of_user_by_task_id,
+)
+@inject
+def get_points_of_user_by_task_id(
+    externalGameId: str,
+    externalTaskId: str,
+    externalUserId: str,
+    service: TaskService = Depends(Provide[Container.task_service])
+):
+    return service.get_points_of_user_by_task_id(
+        externalGameId, externalTaskId, externalUserId)
+
+
 summary_get_points_by_task_id_with_details = "Get points by task id with details"
 description_get_points_by_task_id_with_details = """
 ## Get points by task id with details
@@ -293,7 +338,7 @@ description_get_users_by_externalGameId = """
 
 @router.get(
     "/{externalGameId}/users",
-    response_model=List[UserBasicInfo],
+    response_model=ListTasksWithUsers,
     summary=summary_get_users_by_externalGameId,
     description=description_get_users_by_externalGameId,
 )

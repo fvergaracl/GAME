@@ -5,6 +5,7 @@ from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
 from app.schema.games_params_schema import (
     BaseFindGameParams, CreateGameParams, UpdateGameParams
 )
+from app.schema.task_schema import TasksWithUsers
 from app.util.schema import AllOptional
 
 
@@ -79,3 +80,8 @@ class PostFindGame(FindBase, BaseGame, metaclass=AllOptional):  # noqa
 class FindGameResult(BaseModel):
     items: Optional[List[BaseGameResult]]
     search_options: Optional[SearchOptions]
+
+
+class ListTasksWithUsers(BaseModel):
+    externalGameId: str
+    tasks: List[TasksWithUsers]

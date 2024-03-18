@@ -83,3 +83,13 @@ class TaskPointsResponseByUser(BaseTask):
     externalTaskId: str
     gameId: str
     points: Optional[int]
+
+
+class BaseUser(BaseModel):
+    externalUserId: str
+    created_at: Optional[str]
+
+
+class TasksWithUsers(BaseModel):
+    externalTaskId: str
+    users: List[BaseUser]

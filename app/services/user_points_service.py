@@ -12,8 +12,12 @@ from app.repository.wallet_transaction_repository import (
 from app.schema.user_points_schema import (
     ResponseGetPointsByGame, ResponseGetPointsByTask,
     ResponsePointsByExternalUserId, UserPointsAssign, AllPointsByGame,
-    TaskPointsByGame,  PointsAssignedToUser)
-from app.schema.task_schema import AssignedPointsToExternalUserId
+    TaskPointsByGame,  PointsAssignedToUser
+)
+from app.schema.games_schema import ListTasksWithUsers
+from app.schema.task_schema import (
+    BaseUser, AssignedPointsToExternalUserId, TasksWithUsers
+)
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
@@ -59,36 +63,36 @@ class UserPointsService(BaseService):
             points = self.user_points_repository.get_points_and_users_by_taskId(
                 task.id
             )
-            print('[                           ]')
-            print('[                           ]')
-            print('[                           ]')
-            print(points)
-            print('[                           ]')
-            print('[                           ]')
-            print('[                           ]')
-            print('[                           ]')
-            print('[                           ]')
 
             externalTaskId = task.externalTaskId
-            response_by_task = []
             if points:
                 for point in points:
+
                     externalUserId = point.externalUserId
-                    all_externalUserId.append(externalUserId)
+                    user = self.users_repository.read_by_column(
+                        "externalUserId", externalUserId, not_found_raise_exception=True
+                    )
+                    if (not user):
+                        raise NotFoundError(
+                            detail=f"User not found by userId: {point.userId}. Please try again later or contact support"  # noqa
+                        )
+
+                    all_externalUserId.append(
+                        BaseUser(
+                            externalUserId=user.externalUserId,
+                            created_at=str(user.created_at)
+                        ))
             all_tasks = {
                 "externalTaskId": externalTaskId,
-                "externalUserIds": all_externalUserId
+                "users": all_externalUserId
             }
-            response.append(all_tasks)
-
-        print(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ")
-        print(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ")
-        print(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ")
-        print(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ")
-        print(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ")
-        print(" >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ")
-        print(response)
-        return response
+            response.append(TasksWithUsers(**all_tasks))
+        print(ListTasksWithUsers(
+            externalGameId=externalGameId, tasks=response
+        ))
+        return ListTasksWithUsers(
+            externalGameId=externalGameId, tasks=response
+        )
 
     def get_points_by_externalUserId(self, externalUserId):
         user = self.users_repository.read_by_column(
@@ -104,7 +108,6 @@ class UserPointsService(BaseService):
         )
 
         response = []
-       # use get_points_by_game_id
         for task in tasks_of_users:
             game = self.game_repository.read_by_column(
                 "id", task.gameId, not_found_raise_exception=True
@@ -152,13 +155,41 @@ class UserPointsService(BaseService):
             )
 
         response = AllPointsByGame(
-            externalGameId=externalGameId, created_at=str(game.created_at), task=game_points
+            externalGameId=externalGameId,
+            created_at=str(game.created_at),
+            task=game_points
         )
+        return response
 
-        print(' ')
-        print(' ')
-        print(' ')
-        print(response)
+    def get_points_of_user_in_game(self, externalGameId, externalUserId):
+        game = self.game_repository.read_by_column(
+            "externalGameId", externalGameId, not_found_raise_exception=True
+        )
+        user = self.users_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=True
+        )
+        tasks = self.task_repository.read_by_column(
+            "gameId", game.id, not_found_raise_exception=False, only_one=False
+        )
+        if not tasks:
+            raise NotFoundError(
+                detail=f"Tasks not found by gameId: {game.id}"
+            )
+        response = []
+        for task in tasks:
+            points = self.user_points_repository.get_points_and_users_by_taskId(
+                task.id
+            )
+            if points:
+                for point in points:
+                    if point.externalUserId == externalUserId:
+                        response.append(
+                            PointsAssignedToUser(
+                                externalUserId=point.externalUserId,
+                                points=point.points,
+                                timesAwarded=point.timesAwarded
+                            )
+                        )
         return response
 
     def assign_points_to_user(self, externalGameId, externalTaskId, schema):
