@@ -141,15 +141,6 @@ class GameRepository(BaseRepository):
                 params=game_params,
             )
 
-    def get_tasks_list_by_game_id(self, id: str):
-        with self.session_factory() as session:
-            tasks = (
-                session.query(self.model_tasks)
-                .filter(self.model_tasks.gameId == id)
-                .all()
-            )
-            return tasks
-
     def patch_game_by_id(self, id: str, schema):
         with self.session_factory() as session:
             game = session.query(self.model).filter(

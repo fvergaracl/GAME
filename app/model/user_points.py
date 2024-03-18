@@ -26,8 +26,8 @@ class UserPoints(BaseModel, table=True):
     taskId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("tasks.id")))
 
-    class Config:
-        orm_mode = True
+    class Config:  # noqa
+        orm_mode = True  # noqa
 
     def __str__(self):
         return f"UserPoints (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, points={self.points}, caseName={self.caseName}, data={self.data}, description={self.description}, userId={self.userId}, taskId={self.taskId})"

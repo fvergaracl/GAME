@@ -13,8 +13,8 @@ class Users(BaseModel, table=True):
 
     externalUserId: str = Field(sa_column=Column(String, unique=True))
 
-    class Config:
-        orm_mode = True
+    class Config:  # noqa
+        orm_mode = True  # noqa
 
     def __str__(self):
         return f"User: (id:{self.id}, created_at:{self.created_at}, updated_at:{self.updated_at}, externalUserId:{self.externalUserId})"

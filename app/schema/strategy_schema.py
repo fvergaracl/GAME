@@ -39,12 +39,3 @@ class DataStrategy(BaseModel):
 class BaseStrategy(ModelBaseInfo):
     strategyName: str
     data: DataStrategy
-
-
-class FindAllStrategyResult(BaseModel):
-    items: Optional[List[BaseStrategy]]
-    search_options: Optional[SearchOptions]
-
-
-class FindStrategyResult(Strategy):
-    ...

@@ -5,8 +5,9 @@ from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.schema.games_params_schema import InsertGameParams
-from app.schema.games_schema import (GameCreated, PatchGame, PostCreateGame,
-                                     ResponsePatchGame, BaseGameResult)
+from app.schema.games_schema import (
+    GameCreated, PatchGame, PostCreateGame, ResponsePatchGame, BaseGameResult
+)
 from app.services.base_service import BaseService
 from app.util.is_valid_slug import is_valid_slug
 from app.util.are_variables_matching import are_variables_matching
