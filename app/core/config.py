@@ -26,12 +26,6 @@ class Configs(BaseSettings):
     DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
         "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100
     )
-
-    # auth
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
-    # 60 minutes * 24 hours * 30 days = 30 days
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30
-
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
@@ -55,9 +49,6 @@ class Configs(BaseSettings):
     PAGE = 1
     PAGE_SIZE = 10
     ORDERING = "-id"
-
-    class Config:
-        ...
 
 
 class TestConfigs(Configs):

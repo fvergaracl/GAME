@@ -12,7 +12,7 @@ class BaseModel:
     __name__: str
 
     # Generate __tablename__ automatically
-    @declared_attr
+    @declared_attr  # noqa
     def __tablename__(cls) -> str:
         return cls.__name__.lower()
 
@@ -28,7 +28,7 @@ class Database:
             ),
         )
 
-    def create_database(self) -> None:
+    def create_database(self) -> None:  # noqa
         BaseModel.metadata.create_all(self._engine)
 
     @contextmanager

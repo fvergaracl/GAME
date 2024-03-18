@@ -13,15 +13,7 @@ class BaseUser(BaseModel):
     externalUserId: str
 
 
-class PostCreateUser(BaseUser):
-    ...
-
-
-class UserBasicInfo(ModelBaseInfo, BaseUser):
-    ...
-
-
-class CreatedUser(ModelBaseInfo, BaseUser):
+class UserBasicInfo(ModelBaseInfo, BaseUser):  # noqa
     ...
 
 
@@ -47,7 +39,7 @@ class UserPointsTasks(BaseModel):
     tasks: list[TaskPointsResponseByUser]
 
 
-class ResponseConversionPreview(BaseModel):
+class ResponseConversionPreview(BaseModel):  # noqa
     points: int
     conversionRate: float
     conversionRateDate: str

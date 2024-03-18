@@ -73,7 +73,7 @@ from app.engine.base_strategy import BaseStrategy
 from app.core.container import Container
 
 
-class EnhancedGamificationStrategy(BaseStrategy):
+class EnhancedGamificationStrategy(BaseStrategy):  # noqa
     def __init__(self):
         super().__init__(
             strategy_name="EnhancedGamificationStrategy",

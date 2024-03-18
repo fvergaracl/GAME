@@ -49,10 +49,10 @@ class BaseStrategy:
     def get_variable_basic_points(self):
         return self.variable_basic_points
 
-    def get_variable_bonus_points(self):
+    def get_variable_bonus_points(self):  # noqa
         return self.variable_bonus_points
 
-    def set_variables(self, new_variables):
+    def set_variables(self, new_variables):  # noqa
         variables_changed = []
         for new_variable, new_value in new_variables.items():
             if hasattr(self, new_variable):
@@ -64,18 +64,18 @@ class BaseStrategy:
         return {k: v for k, v in self.__dict__.items() if
                 k.startswith("variable_")}
 
-    def get_variable(self, variable_name):
+    def get_variable(self, variable_name):  # noqa
         if hasattr(self, variable_name):
             return getattr(self, variable_name)
         return None
 
-    def set_variable(self, variable_name, variable_value):
+    def set_variable(self, variable_name, variable_value):  # noqa
         if hasattr(self, variable_name):
             setattr(self, variable_name, variable_value)
             return True
         return False
 
-    def get_strategy(self):
+    def get_strategy(self):  # noqa
         return {
             "name": self.get_strategy_name(),
             "description": self.get_strategy_description(),

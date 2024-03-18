@@ -19,14 +19,14 @@ class GamesParams(BaseModel, table=True):
     gameId: str = Field(
         sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id")))
 
-    class Config:
-        orm_mode = True
+    class Config:   # noqa
+        orm_mode = True  # noqa
 
     def __str__(self):
         return f"GameParams: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, key={self.key}, value={self.value}, gameId={self.gameId})"
 
     def __repr__(self):
-        return f"GameParams: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, key={self.key}, value={self.value}, gameId={self.gameId})" 
+        return f"GameParams: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, key={self.key}, value={self.value}, gameId={self.gameId})"
 
     def __eq__(self, other):
         return (

@@ -22,8 +22,8 @@ class Tasks(BaseModel, table=True):
     strategyId: str = Field(sa_column=Column(
         String, nullable=False, default="default"))
 
-    class Config:
-        orm_mode = True
+    class Config:  # noqa
+        orm_mode = True  # noqa
 
     def __str__(self):
         return (
