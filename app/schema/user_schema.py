@@ -13,10 +13,16 @@ class BaseUser(BaseModel):
     externalUserId: str
 
 
-class PostCreateUser(BaseUser): ...
+class PostCreateUser(BaseUser):
+    ...
 
 
-class CreatedUser(ModelBaseInfo, BaseUser): ...
+class UserBasicInfo(ModelBaseInfo, BaseUser):
+    ...
+
+
+class CreatedUser(ModelBaseInfo, BaseUser):
+    ...
 
 
 class PostAssignPointsToUser(BaseModel):
@@ -26,7 +32,8 @@ class PostAssignPointsToUser(BaseModel):
     data: Optional[dict]
 
 
-class CreateWallet(Wallet): ...
+class CreateWallet(Wallet):
+    ...
 
 
 class UserWallet(BaseModel):

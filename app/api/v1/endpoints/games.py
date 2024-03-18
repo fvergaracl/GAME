@@ -16,6 +16,8 @@ from app.schema.task_schema import (
 from app.schema.user_points_schema import (
     PointsAssignedToUser, PointsAssignedToUserWithDetails, AllPointsByGame
 )
+
+from app.schema.user_schema import UserBasicInfo
 from app.services.game_service import GameService
 from app.services.task_service import TaskService
 from app.services.user_points_service import UserPointsService
@@ -280,3 +282,25 @@ def get_points_by_task_id_with_details(
 ):
     return service.get_points_by_task_id_with_details(
         externalGameId, externalTaskId)
+
+
+summary_get_users_by_externalGameId = "Get users by externalGameId"
+description_get_users_by_externalGameId = """
+## Get users by externalGameId
+### Get users by externalGameId
+"""
+
+
+@router.get(
+    "/{externalGameId}/users",
+    response_model=List[UserBasicInfo],
+    summary=summary_get_users_by_externalGameId,
+    description=description_get_users_by_externalGameId,
+)
+@inject
+def get_users_by_externalGameId(
+    externalGameId: str,
+    service: UserPointsService = Depends(
+        Provide[Container.user_points_service]),
+):
+    return service.get_users_by_externalGameId(externalGameId)

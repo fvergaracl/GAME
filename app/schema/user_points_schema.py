@@ -14,16 +14,18 @@ class PostAssignPointsToUser(BaseModel):
     description: Optional[str]
     data: Optional[dict]
 
+
 class PointsAssigned(BaseModel):
     points: int
     timesAwarded: int
 
+
 class PointsAssignedToUser(PointsAssigned):
     externalUserId: str
 
+
 class PointsAssignedToUserWithDetails(PointsAssignedToUser):
     pointsData: List[PointsAssignedToUser]
-
 
 
 class TaskPointsByGame(BaseModel):
@@ -110,3 +112,4 @@ class ResponsePointsByExternalUserId(BaseModel):
     externalUserId: str
     points: int
     points_by_task: List[PointsByUserInTask]
+

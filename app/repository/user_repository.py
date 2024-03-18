@@ -21,4 +21,5 @@ class UserRepository(BaseRepository):
             user = Users(externalUserId=externalUserId)
             session.add(user)
             session.commit()
+            session.refresh(user)
             return user

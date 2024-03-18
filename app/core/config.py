@@ -12,7 +12,6 @@ ENV: str = ""
 class Configs(BaseSettings):
     # base
     ENV: str = os.getenv("ENV", "dev")
-    API: str = "/api"
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "GAME-api"
     GAMIFICATIONENGINE_VERSION_APP: str = os.getenv(
@@ -27,9 +26,6 @@ class Configs(BaseSettings):
     DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
         "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100
     )
-
-    # date
-    DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
 
     # auth
     SECRET_KEY: str = os.getenv("SECRET_KEY", "")
