@@ -15,6 +15,16 @@ from app.services import (GameParamsService, GameService,
 
 
 class Container(containers.DeclarativeContainer):
+    wiring_config = containers.WiringConfiguration(  # noqa
+        modules=[
+            "app.api.v1.endpoints.games",
+            "app.api.v1.endpoints.tasks",
+            "app.api.v1.endpoints.strategy",
+            "app.api.v1.endpoints.userPoints",
+            "app.api.v1.endpoints.users",
+            "app.api.v1.endpoints.wallet",
+        ]
+    )
 
     db = providers.Singleton(Database, db_url=configs.DATABASE_URI)
 
