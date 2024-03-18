@@ -13,7 +13,8 @@ from app.schema.user_points_schema import (ResponseGetPointsByGame,
                                            ResponseGetPointsByTask,
                                            ResponsePointsByExternalUserId,
                                            UserPointsAssign, AllPointsByGame , 
-                                           TaskPointsByGame, PointsAssignedToUser)
+                                           TaskPointsByGame, PointsAssignedToUser,
+                                           PointsAssigned)
 from app.schema.task_schema import AssignedPointsToExternalUserId
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
@@ -41,6 +42,43 @@ class UserPointsService(BaseService):
         self.wallet_transaction_repository = wallet_transaction_repository
         self.strategy_service = StrategyService()
         super().__init__(user_points_repository)
+
+    def get_points_by_user_externalUserId(self, externalUserId):
+        user = self.users_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=True
+        )
+
+        tasks_of_users = self.user_points_repository.get_task_by_externalUserId(
+           externalUserId
+        )
+      # [Tasks(id=251612b0-b682-43bb-8a6d-2012165b7321, created_at=2024-03-17 23:15:39.425428+00:00, updated_at=2024-03-17 23:15:39.425428+00:00, externalTaskId=string, gameId=e8cc3a9f-c327-43a2-9b8f-f53184f8aea5, strategyId=default)]
+        # group by game
+        response = []
+        uncleaned_games = []
+        for task in tasks_of_users:
+            # append all games into uncleaned_games, no repeated games
+            if task.gameId not in uncleaned_games:
+                uncleaned_games.append(task.gameId)
+        
+    def get_points_by_externalUserId(self, externalUserId):
+        user = self.users_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=True
+        )
+
+        tasks_of_users = self.user_points_repository.get_task_by_externalUserId(
+            externalUserId
+        )
+
+        response = []
+       # use get_points_by_game_id
+        for task in tasks_of_users:
+            game = self.game_repository.read_by_column(
+                "id", task.gameId, not_found_raise_exception=True
+            )
+            response.append(self.get_points_by_game_id(game.externalGameId))
+        return response
+    
+    
 
     def get_points_by_game_id(self, externalGameId: str):
         response_task = []
@@ -84,6 +122,11 @@ class UserPointsService(BaseService):
         response = AllPointsByGame(
             externalGameId=externalGameId, created_at=str(game.created_at), task=game_points
         )
+
+        print(' ')
+        print(' ')
+        print(' ')
+        print(response)
         return response
 
     def assign_points_to_user(self, externalGameId, externalTaskId, schema):

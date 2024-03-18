@@ -270,6 +270,7 @@ class UserService(BaseService):
 
         return response
 
+
     def get_wallet_by_user_id(self, userId):
         user = self.user_repository.read_by_id(
             userId, not_found_message=f"User not found with userId: {userId}"
@@ -295,6 +296,13 @@ class UserService(BaseService):
             userId=str(user.id), wallet=wallet, walletTransactions=wallet_transactions
         )
 
+        return response
+    
+    def get_wallet_by_externalUserId(self, externalUserId):
+        user = self.user_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=True
+        )
+        response = self.get_wallet_by_user_id(str(user.id))
         return response
 
     def get_points_by_user_id(self, userId):
@@ -375,6 +383,14 @@ class UserService(BaseService):
             "haveEnoughPoints": haveEnoughPoints,
         }
         return response
+    
+    def preview_points_to_coins_conversion_externalUserId(self, externalUserId, points):
+        user = self.user_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=True
+        )
+        response = self.preview_points_to_coins_conversion(str(user.id), points)
+        return response
+
 
     def convert_points_to_coins(self, userId, schema: PostPointsConversionRequest):
         points = schema.points
@@ -444,4 +460,11 @@ class UserService(BaseService):
             "haveEnoughPoints": haveEnoughPoints,
         }
         response = ResponsePointsConversion(**response)
+        return response
+
+    def convert_points_to_coins_externalUserId(self, externalUserId, schema: PostPointsConversionRequest):
+        user = self.user_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=True
+        )
+        response = self.convert_points_to_coins(str(user.id), schema)
         return response

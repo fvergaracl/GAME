@@ -14,12 +14,12 @@ class PostAssignPointsToUser(BaseModel):
     description: Optional[str]
     data: Optional[dict]
 
-
-class PointsAssignedToUser(BaseModel):
-    externalUserId: str
+class PointsAssigned(BaseModel):
     points: int
     timesAwarded: int
 
+class PointsAssignedToUser(PointsAssigned):
+    externalUserId: str
 
 class PointsAssignedToUserWithDetails(PointsAssignedToUser):
     pointsData: List[PointsAssignedToUser]

@@ -180,6 +180,17 @@ class UserPointsRepository(BaseRepository):
                 .all()
             )
             return query
+        
+    def get_task_by_externalUserId(self, externalUserId):
+        with self.session_factory() as session:
+            query = (
+                session.query(Tasks)
+                .join(UserPoints, Tasks.id == UserPoints.taskId)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Users.externalUserId == externalUserId)
+                .all()
+            )
+            return query
 
     def get_task_and_sum_points_by_userId(self, userId):
         with self.session_factory() as session:
