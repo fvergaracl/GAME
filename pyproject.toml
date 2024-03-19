@@ -78,6 +78,7 @@ websockets = "12.0"
 zipp = "3.17.0"
 vulture = "^2.11"
 toml = "^0.10.2"
+eralchemy = "^1.2.10"
 
 
 [build-system]
