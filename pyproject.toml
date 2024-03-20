@@ -81,6 +81,11 @@ toml = "^0.10.2"
 eralchemy = "^1.2.10"
 
 
+[tool.poetry.group.dev.dependencies]
+sphinx = "^7.2.6"
+sphinx-rtd-theme = "^2.0.0"
+sphinx-autobuild = "^2024.2.4"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
