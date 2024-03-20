@@ -7,11 +7,11 @@ Welcome to GAME's documentation!
 ================================
 
 .. toctree::
-   app/app.rst
+  
    :maxdepth: 2
    :caption: Contents:
 
-
+   app/app.rst
 
 Indices and tables
 ==================

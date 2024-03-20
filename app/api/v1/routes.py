@@ -20,6 +20,8 @@ router_list = [
 ]
 
 
+
+
 for router in router_list:
     # router.tags = routers.tags.append("v1")
     routers.include_router(router)
