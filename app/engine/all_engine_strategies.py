@@ -5,7 +5,17 @@ from app.engine.check_base_strategy_class import (
 )
 
 
-def all_engine_strategies():
+def all_engine_strategies() -> list:
+    """
+    Return a list of random ingredients as strings.
+
+    :param kind: Optional "kind" of ingredients.
+    :type kind: list[str] or None
+    :raise lumache.InvalidKindError: If the kind is invalid.
+    :return: The ingredients list.
+    :rtype: list[str]
+
+    """
     strategies = []
     for file in os.listdir("app/engine"):
         if (
