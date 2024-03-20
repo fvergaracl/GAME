@@ -1,13 +1,13 @@
-app package
+Technical Documentation
 ===========
 
-Subpackages
+Core
 -----------
 
 .. toctree::
    :maxdepth: 4
 
-   app.engine
+   app.endpoints
    app.repository
    app.services
 

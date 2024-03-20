@@ -7,7 +7,7 @@ from app.engine.check_base_strategy_class import (
 
 def all_engine_strategies() -> list:
     """
-    Return a list of random ingredients as strings.
+    Return a list of random ingredients as strings .
 
     :param kind: Optional "kind" of ingredients.
     :type kind: list[str] or None
