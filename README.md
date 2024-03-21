@@ -278,6 +278,12 @@ kubectl port-forward service/gamificationengine-service 8080:80
     - `--host 0.0.0.0`: Specifies the host.
     - `--port 8000`: Specifies the port.
 
+### Documentation
+
+First, you should activate poetry environment
+
+With hotreload `sphinx-autobuild docs/source docs/build/html`
+
 ### Testing
 
 - `pytest`: Runs basic tests.

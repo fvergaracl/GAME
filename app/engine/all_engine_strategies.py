@@ -21,6 +21,7 @@ def all_engine_strategies() -> list:
         if (
                 file.endswith(".py") and
                 file != "__init__.py" and
+                file != "base_strategy.py" and
                 file != "check_base_strategy_class.py" and
                 file != "all_engine_strategies.py"):
             strategy = file[:-3]
