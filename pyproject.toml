@@ -79,6 +79,7 @@ zipp = "3.17.0"
 vulture = "^2.11"
 toml = "^0.10.2"
 eralchemy = "^1.2.10"
+sphinx-material = {git = "https://github.com/bashtage/sphinx-material.git"}
 
 
 [tool.poetry.group.dev.dependencies]
