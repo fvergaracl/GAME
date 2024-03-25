@@ -1,4 +1,4 @@
-def check_class_methods_and_variables(Class_to_check):
+def check_class_methods_and_variables(Class_to_check, debug=False):
     """
     Check if the class has all the methods and variables expected for a
       base strategy.
@@ -37,9 +37,10 @@ def check_class_methods_and_variables(Class_to_check):
 
     missing_variables = [
         variable for variable in variables if not hasattr(instance, variable)]
-    if missing_variables:
-        print(f"Missing variables: {missing_variables}")
-    else:
-        print("[+] All variables are present.")
+    if (debug):
+        if missing_variables:
+            print(f"Missing variables: {missing_variables}")
+        else:
+            print("[+] All variables are present.")
 
     return not missing_methods and not missing_variables

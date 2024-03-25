@@ -82,7 +82,6 @@ class BaseStrategy:
             "name_slug": self.get_strategy_name_slug(),
             "version": self.get_strategy_version(),
             "variables": self.get_variables(),
-            "calculate_points_hash": self.hash_version,
         }
 
     def calculate_points(self):

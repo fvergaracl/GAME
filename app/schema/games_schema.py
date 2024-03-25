@@ -7,6 +7,7 @@ from app.schema.games_params_schema import (
 )
 from app.schema.task_schema import TasksWithUsers
 from app.util.schema import AllOptional
+from uuid import UUID
 
 
 class BaseGame(BaseModel):
@@ -17,10 +18,11 @@ class BaseGame(BaseModel):
 
 
 class BaseGameResult(BaseModel):
+    gameId: UUID
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    strategyId: Optional[str] = None
     externalGameId: Optional[str] = None
+    strategyId: Optional[str] = None
     platform: Optional[str] = None
     params: Optional[List[BaseFindGameParams]] = None
 
@@ -49,6 +51,7 @@ class PostCreateGame(BaseModel):
 
 
 class PatchGame(BaseModel):
+    externalGameId: Optional[str]
     strategyId: Optional[str]
     platform: Optional[str]
     params: Optional[List[UpdateGameParams]]
@@ -58,7 +61,7 @@ class GameCreated(BaseGameResult):
     message: Optional[str] = "Successfully created"
 
 
-class ResponsePatchGame(BaseGameResult):
+class ResponsePatchGame(PatchGame):
     message: Optional[str] = "Successfully updated"
 
 
