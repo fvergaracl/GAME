@@ -5,8 +5,9 @@ from pydantic import BaseModel
 
 from app.schema.tasks_params_schema import CreateTaskParams
 from app.schema.games_params_schema import CreateGameParams
-from app.schema.base_schema import (FindBase, ModelBaseInfo, SearchOptions,
-                                    SuccesfullyCreated)
+from app.schema.base_schema import (
+    FindBase, ModelBaseInfo, SearchOptions, SuccesfullyCreated
+)
 from app.schema.strategy_schema import Strategy
 from app.util.schema import AllOptional
 
@@ -16,7 +17,7 @@ class BaseTask(BaseModel):
     gameId: UUID
 
 
-class AsignPointsToExternalUserId(BaseModel):
+class AsignPointsToExternalUserId(BaseModel):  # noqa
     externalUserId: str
     data: Optional[dict]
 
@@ -39,7 +40,7 @@ class CreateTaskPost(BaseModel):
         }
 
 
-class PostFindTask(FindBase, metaclass=AllOptional):
+class PostFindTask(FindBase, metaclass=AllOptional):  # noqa
     ...
 
 
@@ -50,7 +51,7 @@ class FoundTask(ModelBaseInfo):
     strategy: Optional[Strategy]
 
 
-class FoundTasks(BaseModel):
+class FoundTasks(BaseModel):  # noqa
     items: Optional[List[FoundTask]]
     search_options: Optional[SearchOptions]
 
@@ -59,31 +60,8 @@ class CreateTask(CreateTaskPost, metaclass=AllOptional):
     gameId: str
 
 
-class Task(ModelBaseInfo, BaseTask, metaclass=AllOptional):
-    ...
-
-
-class FindTaskResult(BaseModel):
-    items: Optional[List[Task]]
-    search_options: Optional[SearchOptions]
-
-
 class FindTask(FindBase, metaclass=AllOptional):
     gameId: UUID
-
-
-class FindTaskByExternalGameID(FindBase, metaclass=AllOptional):
-    ...
-    # using gameId
-
-
-class GetTaskById(BaseModel):
-    taskId: UUID
-
-
-class FoundTaskById(BaseModel):
-    task: Task
-    strategy: Optional[Strategy]
 
 
 class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
@@ -92,12 +70,6 @@ class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
     gameParams: Optional[List[CreateGameParams]]
     taskParams: Optional[List[CreateTaskParams]]
     strategy: Optional[Strategy]
-
-
-class TaskPoints(BaseModel):
-    userId: UUID  # userId
-    externalUserId: str
-    points: int
 
 
 class AssignedPointsToExternalUserId(BaseModel):
@@ -111,3 +83,13 @@ class TaskPointsResponseByUser(BaseTask):
     externalTaskId: str
     gameId: str
     points: Optional[int]
+
+
+class BaseUser(BaseModel):
+    externalUserId: str
+    created_at: Optional[str]
+
+
+class TasksWithUsers(BaseModel):
+    externalTaskId: str
+    users: List[BaseUser]

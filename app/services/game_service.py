@@ -5,9 +5,11 @@ from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.schema.games_params_schema import InsertGameParams
-from app.schema.games_schema import (GameCreated, PatchGame, PostCreateGame,
-                                     ResponsePatchGame, BaseGameResult)
+from app.schema.games_schema import (
+    GameCreated, PatchGame, PostCreateGame, ResponsePatchGame, BaseGameResult
+)
 from app.services.base_service import BaseService
+from app.services.strategy_service import StrategyService
 from app.util.is_valid_slug import is_valid_slug
 from app.util.are_variables_matching import are_variables_matching
 from app.engine.all_engine_strategies import all_engine_strategies
@@ -19,13 +21,15 @@ class GameService(BaseService):
         game_repository: GameRepository,
         game_params_repository: GameParamsRepository,
         task_repository: TaskRepository,
+        strategy_service: StrategyService
     ):
         self.game_repository = game_repository
         self.game_params_repository = game_params_repository
         self.task_repository = task_repository
+        self.strategy_service = strategy_service
         super().__init__(game_repository)
 
-    def get_by_id(self, externalId: str):
+    def get_by_id(self, externalId: UUID):
         response = self.game_repository.read_by_column(
             "externalGameId", externalId, not_found_raise_exception=True, only_one=True, not_found_message=f"Game not found by externalId: {externalId} "  # noqa
         )
@@ -94,7 +98,6 @@ class GameService(BaseService):
                 # BaseGameParams
                 params_dict = param.dict()
                 params_dict["gameId"] = str(game.id)
-
                 params_to_insert = InsertGameParams(**params_dict)
                 created_param = self.game_params_repository.create(
                     params_to_insert)
@@ -102,8 +105,8 @@ class GameService(BaseService):
                 created_params.append(created_param)
 
         response = GameCreated(
-            **game.dict(), params=created_params,
-            message=f"Game with externalGameId: {externalGameId} created"
+            **game.dict(), params=created_params, gameId=game.id,
+            message=f"Game with gameId: {game.id} created"
             f" successfully"
         )
         return response
@@ -112,20 +115,39 @@ class GameService(BaseService):
             self, externalGameId: str, schema: PatchGame
     ):
         game = self.game_repository.read_by_column(
-            "externalGameId", externalGameId, not_found_raise_exception=True
+            "externalGameId", externalGameId, not_found_raise_exception=False
         )
+        if not game:
+            raise NotFoundError(
+                detail=f"Game not found by externalGameId: {externalGameId}"
+            )
+        return self.patch_game_by_id(game.id, schema)
+
+    def patch_game_by_id(self, gameId: UUID, schema: PatchGame):
+        game = self.game_repository.read_by_id(
+            gameId, not_found_raise_exception=False
+        )
+        if not game:
+            raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
         is_matching = are_variables_matching(schema.dict(), game.dict())
-        if is_matching:
+        params_schema = schema.dict().get('params', None)
+        params_game = game.dict().get('params', None)
+        params_is_matching = False
+        if params_schema and params_game:
+            params_is_matching = are_variables_matching(
+                params_schema, params_game)
+
+        if is_matching and params_is_matching:
             raise ConflictError(
                 detail="It is not possible to update the game with the same data"  # noqa
             )
-
         if schema.dict() == game.dict():
             raise ConflictError(
                 detail="No difference between schema and game"
             )
 
         strategyId = schema.strategyId
+        print('111111111111111111111111111111111111111111111111')
         if strategyId:
             strategies = all_engine_strategies()
             strategy = next(
@@ -138,30 +160,39 @@ class GameService(BaseService):
                 raise NotFoundError(
                     detail=f"Strategy with id: {strategyId} not found"
                 )
+        print('22222222222222222222222222222222222222222222222')
         if not strategyId:
             strategyId = game.strategyId
         if not strategyId:
             strategyId = "default"
-        return self.patch_game_by_id(game.id, schema)
 
-    def patch_game_by_id(self, id: UUID, schema: PatchGame):
+        schema.strategyId = strategyId
         params = schema.params
         del schema.params
-
-        updated_game = self.game_repository.patch_game_by_id(id, schema)
+        print('0000000000000000000000000000000000000000000000')
         updated_params = []
         if params:
             for param in params:
+                print('****************************')
                 self.game_params_repository.patch_game_params_by_id(
                     param.id, param)
                 updated_params.append(param)
 
-        updated_game_dict = updated_game.dict()
-        updated_game_dict.pop("params", None)
-
+        game = self.game_repository.patch_game_by_id(gameId, schema)
+        print('----------------------------------------------------- |||||')
+        print(game.dict())
+        game_dict = game.dict()
+        print(" ")
+        print(updated_params)
+        print(" ")
+        print(gameId)
         response = ResponsePatchGame(
-            **updated_game_dict, params=updated_params,
-            message=f"Game with externalGameId: {updated_game.externalGameId} updated successfully"  # noqa
+            externalGameId=game_dict["externalGameId"],
+            strategyId=strategyId,
+            platform=game_dict["platform"],
+            params=updated_params,
+            gameId=gameId,
+            message=f"Game with gameId: {gameId} updated successfully"
         )
         return response
 
@@ -175,9 +206,18 @@ class GameService(BaseService):
                 detail=f"Game not found by externalGameId: {externalGameId}"
             )
 
+        return self.get_strategy_by_gameId(game.id)
+
+    def get_strategy_by_gameId(self, gameId: UUID):
+        game = self.game_repository.read_by_id(
+            gameId, not_found_raise_exception=False
+        )
+        if not game:
+            raise NotFoundError(detail=f"Game not found by gameId : {gameId}")
+
         if not game.strategyId:
             raise ConflictError(
-                detail=f"Game with externalGameId: {externalGameId} does not have a strategyId"  # noqa
+                detail=f"Game with gameId: {gameId} does not have a strategyId"
             )
 
         strategy = self.strategy_service.get_strategy_by_id(game.strategyId)

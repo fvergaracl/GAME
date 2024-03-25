@@ -6,8 +6,7 @@ from typing import List
 from app.core.container import Container
 from app.schema.base_schema import FindBase
 from app.schema.user_points_schema import AllPointsByGame
-from app.schema.user_schema import (CreatedUser, PostAssignPointsToUser,
-                                    PostCreateUser,
+from app.schema.user_schema import (
                                     PostPointsConversionRequest,
                                     ResponseConversionPreview,
                                     ResponsePointsConversion, UserPointsTasks,

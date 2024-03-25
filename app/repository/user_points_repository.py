@@ -1,17 +1,13 @@
 from contextlib import AbstractContextManager
 from typing import Callable
-
-from sqlalchemy import func, extract
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from datetime import timezone
 from app.model.tasks import Tasks
 from app.model.user_points import UserPoints
-
 from app.model.users import Users
 from app.model.games import Games
 from app.repository.base_repository import BaseRepository
-
-epoch = func.to_timestamp('1970-01-01', 'YYYY-MM-DD')
 
 
 class UserPointsRepository(BaseRepository):
@@ -67,21 +63,6 @@ class UserPointsRepository(BaseRepository):
                 .all()
             )
             return query
-
-    def create_user_points(
-            self, userId, taskId, points, caseName, data, description):
-        with self.session_factory() as session:
-            user_points = UserPoints(
-                userId=userId,
-                taskId=taskId,
-                points=points,
-                caseName=caseName,
-                data=data,
-                description=description,
-            )
-            session.add(user_points)
-            session.commit()
-            return user_points
 
     def get_all_UserPoints_by_taskId(self, taskId):
         """
@@ -148,39 +129,6 @@ class UserPointsRepository(BaseRepository):
             )
             return query
 
-    def get_users_points_by_externalTaskId_and_externalUserId(
-        self, externalTaskId, externalUserId
-    ):
-        with self.session_factory() as session:
-            query = (
-                session.query(
-                    Tasks.id.label("task_id"),
-                    Users.id.label("user_id"),
-                    Users.externalUserId.label("externalUserId"),
-                    func.sum(UserPoints.points).label("total_points"),
-                )
-                .join(UserPoints, Tasks.id == UserPoints.taskId)
-                .join(Users, UserPoints.userId == Users.id)
-                .filter(
-                    Tasks.externalTaskId == externalTaskId,
-                    Users.externalUserId == externalUserId,
-                )
-                .group_by(Tasks.id, Users.id)
-                .order_by(Users.id, Tasks.id)
-                .all()
-            )
-            return query
-
-    def get_taks_by_userId(self, userId):
-        with self.session_factory() as session:
-            query = (
-                session.query(Tasks)
-                .join(UserPoints, Tasks.id == UserPoints.taskId)
-                .filter(UserPoints.userId == userId)
-                .all()
-            )
-            return query
-        
     def get_task_by_externalUserId(self, externalUserId):
         with self.session_factory() as session:
             query = (
@@ -442,34 +390,6 @@ class UserPointsRepository(BaseRepository):
             avg_time_diff = sum(time_diffs) / len(time_diffs)
 
             return avg_time_diff
-
-    def is_task_time_taken_less_than_global_calculation(self, externalTaskId):
-        """
-        Determines if the time taken for the last task is less than the global
-        calculation.
-
-        Parameters:
-        - externalTaskId (str): The unique identifier of the external task.
-
-        Returns:
-        - bool: True if the time taken for the last task is less than the
-          global calculation, False otherwise.
-        """
-        with self.session_factory() as session:
-            query = (
-                session.query(UserPoints)
-                .join(Tasks, UserPoints.taskId == Tasks.id)
-                .filter(Tasks.externalTaskId == externalTaskId)
-                .order_by(UserPoints.created_at.desc())
-                .limit(1)
-                .one()
-            )
-
-            user_time_taken = query.created_at
-
-            global_time_taken = self.get_global_calculation()
-
-            return user_time_taken < global_time_taken
 
     def get_last_window_time_diff(self, externalTaskId, externalUserId):
         """

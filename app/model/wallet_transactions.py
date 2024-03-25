@@ -48,8 +48,8 @@ class WalletTransactions(BaseModel, table=True):
     walletId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("wallet.id")))
 
-    class Config:
-        orm_mode = True
+    class Config:  # noqa
+        orm_mode = True  # noqa
 
     def __str__(self):
         return f"WalletTransactions: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, transactionType={self.transactionType}, points={self.points}, coins={self.coins}, data={self.data}, appliedConversionRate={self.appliedConversionRate}, walletId={self.walletId})"

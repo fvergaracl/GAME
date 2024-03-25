@@ -10,7 +10,6 @@ from app.schema.task_schema import (CreateTask,
 from app.schema.tasks_params_schema import InsertTaskParams
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
-from app.util.is_valid_slug import is_valid_slug
 
 
 class TaskService(BaseService):
@@ -46,7 +45,7 @@ class TaskService(BaseService):
 
         user_points = self.user_points_repository.get_all_UserPoints_by_gameId(
             game.id)
-        
+
     def get_points_by_user_externalUserId(self, externalUserId):
         user = self.user_repository.read_by_column(
             "externalUserId",
@@ -55,9 +54,8 @@ class TaskService(BaseService):
                 f"User not found with externalUserId: {externalUserId}"),
             only_one=True,
         )
-      
+
         user_points = self.user_points_repository.get_all_UserPoints_by_userId
-            
 
     def get_tasks_list_by_externalGameId(self, externalGameId, find_query):
         game = self.game_repository.read_by_column(
@@ -66,6 +64,20 @@ class TaskService(BaseService):
             not_found_message=(
                 f"Game not found with externalGameId: {externalGameId}"),
         )
+
+        if not game:
+            raise NotFoundError(
+                f"Game not found with externalGameId: {externalGameId}")
+
+        return self.get_tasks_list_by_gameId(game.id, find_query)
+
+    def get_tasks_list_by_gameId(self, gameId, find_query):
+        game = self.game_repository.read_by_id(
+            gameId, not_found_raise_exception=False
+        )
+
+        if not game:
+            raise NotFoundError(f"Game not found with gameId: {gameId}")
 
         find_task_query = FindTask(
             gameId=game.id, **find_query.dict(exclude_none=True))
@@ -143,22 +155,19 @@ class TaskService(BaseService):
         all_tasks["items"] = cleaned_tasks
         return all_tasks
 
-    def get_task_by_externalGameId_externalTaskId(
-            self, externalGameId, externalTaskId):
-        game = self.game_repository.read_by_column(
-            "externalGameId",
-            externalGameId,
-            not_found_message=(
-                f"Game not found with externalGameId: {externalGameId}"),
-            only_one=True,
+    def get_task_by_gameId_externalTaskId(self, gameId, externalTaskId):
+        game = self.game_repository.read_by_id(
+            gameId, not_found_raise_exception=False
         )
+        if not game:
+            raise NotFoundError(f"Game not found with gameId: {gameId}")
 
         task = self.task_repository.read_by_gameId_and_externalTaskId(
             game.id, externalTaskId
         )
         if not task:
             raise NotFoundError(
-                f"Task not found with externalTaskId: {externalTaskId} for externalGameId: {externalGameId}"  # noqa
+                f"Task not found with externalTaskId: {externalTaskId} for gameId: {gameId}"  # noqa
             )
 
         strategy_data = self.strategy_service.get_strategy_by_id(
@@ -204,14 +213,27 @@ class TaskService(BaseService):
 
         response = CreateTaskPostSuccesfullyCreated(
             externalTaskId=task.externalTaskId,
-            externalGameId=externalGameId,
+            externalGameId=game.externalGameId,
             gameParams=game_params,
             taskParams=task_params,
             strategy=strategy_data,
-            message=f"Task found successfully with externalTaskId: {task.externalTaskId} for externalGameId: {externalGameId} "  # noqa
+            message=f"Task found successfully with externalTaskId: {task.externalTaskId} for gameId: {gameId} "  # noqa
         )
 
         return response
+
+    def get_task_by_externalGameId_externalTaskId(
+            self, externalGameId, externalTaskId):
+        game = self.game_repository.read_by_column(
+            "externalGameId",
+            externalGameId,
+            not_found_message=(
+                f"Game not found with externalGameId: {externalGameId}"),
+            only_one=True,
+        )
+
+        return self.get_task_by_gameId_externalTaskId(
+            game.id, externalTaskId)
 
     def create_task_by_externalGameId(self, externalGameId, create_query):
         game = self.game_repository.read_by_column(
@@ -222,37 +244,29 @@ class TaskService(BaseService):
             only_one=True,
         )
 
-        externalTaskId = create_query.externalTaskId
-        is_valid_externalTaskId = is_valid_slug(externalTaskId)
-        if not is_valid_externalTaskId:
-            raise ConflictError(
-                f"Invalid externalTaskId: {externalTaskId}. It should be a valid slug (Should have only alphanumeric characters and Underscore . Length should be between 3 and 60)"  # noqa
-            )
-
-        exist_task = self.task_repository.read_by_gameId_and_externalTaskId(
-            game.id, externalTaskId
-        )
-        if exist_task:
-            raise ConflictError(
-                f"Task already exists with externalTaskId: {externalTaskId} for externalGameId: {externalGameId}"  # noqa
-            )
-
         return self.create_task_by_game_id(
             game.id,
-            game.externalGameId,
+            externalGameId,
             create_query)
 
     def create_task_by_game_id(
             self,
-            game_id,
-            externalGameId,
+            gameId,
             create_query):
         # Check if the game exists
+        game_data = self.game_repository.read_by_id(
+            gameId, not_found_raise_exception=False
+        )
+        if not game_data:
+            raise NotFoundError(f"Game not found with gameId: {gameId}")
 
-        if not self.game_repository.read_by_id(
-            game_id, not_found_raise_exception=False
-        ):
-            raise NotFoundError(f"Game not found with gameId: {game_id}")
+        task = self.task_repository.read_by_gameId_and_externalTaskId(
+            gameId, create_query.externalTaskId
+        )
+        if task:
+            raise ConflictError(
+                f"Task already exists with externalTaskId: {create_query.externalTaskId} for gameId: {gameId}"  # noqa
+            )
 
         strategy_id = create_query.strategyId
 
@@ -272,7 +286,7 @@ class TaskService(BaseService):
         strategy_id = str(strategy_id)
 
         new_task_dict = create_query.dict()
-        new_task_dict["gameId"] = str(game_id)
+        new_task_dict["gameId"] = str(gameId)
         if strategy_id:
             new_task_dict["strategyId"] = str(strategy_id)
         new_task = CreateTask(**new_task_dict)
@@ -293,7 +307,7 @@ class TaskService(BaseService):
                 created_params.append(created_param)
 
         game_params = self.game_params_repository.read_by_column(
-            "gameId", game_id, not_found_raise_exception=False, only_one=False
+            "gameId", gameId, not_found_raise_exception=False, only_one=False
         )
 
         if game_params:
@@ -327,14 +341,14 @@ class TaskService(BaseService):
                         strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
-
+        externalGameId = game_data.externalGameId
         response = CreateTaskPostSuccesfullyCreated(
             externalTaskId=created_task.externalTaskId,
             externalGameId=externalGameId,
             gameParams=game_params,
             taskParams=created_params,
             strategy=strategy_data,
-            message=f"Task created successfully with externalTaskId: {created_task.externalTaskId} for externalGameId: {externalGameId} "  # noqa
+            message=f"Task created successfully with externalTaskId: {created_task.externalTaskId} for gameId: {gameId} "  # noqa
         )
 
         return response
@@ -352,12 +366,12 @@ class TaskService(BaseService):
             )
         return {"task": task, "strategy": strategy}
 
-    def get_points_by_task_id(self, externalGameId, externalTaskId):
+    def get_points_by_task_id(self, gameId, externalTaskId):
         game = self.game_repository.read_by_column(
-            "externalGameId",
-            externalGameId,
+            "id",
+            gameId,
             not_found_message=(
-                f"Game not found with externalGameId: {externalGameId}"),
+                f"Game not found with gameId: {gameId}"),
             only_one=True,
         )
 
@@ -366,7 +380,7 @@ class TaskService(BaseService):
         )
         if not task:
             raise NotFoundError(
-                f"Task not found with externalTaskId: {externalTaskId} for externalGameId: {externalGameId}"  # noqa
+                f"Task not found with externalTaskId: {externalTaskId} for gameId: {gameId}"  # noqa
             )
 
         task_id = task.id
@@ -376,27 +390,35 @@ class TaskService(BaseService):
 
         return user_points
 
-    def get_points_by_task_id_with_details(
-            self, externalGameId, externalTaskId):
-        game = self.game_repository.read_by_column(
-            "externalGameId",
-            externalGameId,
-            not_found_message=(
-                f"Game not found with externalGameId: {externalGameId}"),
-            only_one=True,
-        )
+    def get_points_of_user_by_task_id(
+            self, gameId, externalTaskId, externalUserId
+    ):
+        points_task = self.get_points_by_task_id(
+            gameId, externalTaskId)
+        user_points = list(
+            filter(lambda x: x.externalUserId == externalUserId, points_task))
 
+        if not user_points:
+            raise NotFoundError(
+                f"User not found with externalUserId: {externalUserId} for externalTaskId: {externalTaskId} for gameId: {gameId}"  # noqa
+            )
+
+        return user_points[0]
+
+    def get_points_by_task_id_with_details(
+            self, gameId, externalTaskId):
         task = self.task_repository.read_by_gameId_and_externalTaskId(
-            game.id, externalTaskId
+            gameId, externalTaskId
         )
         if not task:
             raise NotFoundError(
-                f"Task not found with externalTaskId: {externalTaskId} for externalGameId: {externalGameId}"  # noqa
+                f"Task not found with externalTaskId: {externalTaskId} for gameId: {gameId}"  # noqa
             )
 
         task_id = task.id
 
         user_points = self.user_points_repository.get_all_UserPoints_by_taskId_with_details(
             task_id)
-
+        print('************************************121312312')
+        print(user_points[0])
         return user_points

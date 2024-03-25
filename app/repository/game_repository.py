@@ -47,7 +47,6 @@ class GameRepository(BaseRepository):
                 Games.strategyId.label("strategyId"),
                 Games.created_at.label("created_at"),
                 Games.platform.label("platform"),
-                Games.endDateTime.label("endDateTime"),
                 Games.externalGameId.label("externalGameId"),
                 GamesParams,
             )
@@ -64,7 +63,6 @@ class GameRepository(BaseRepository):
                 Games.id,
                 Games.created_at,
                 Games.platform,
-                Games.endDateTime,
                 Games.externalGameId,
                 GamesParams,
             )
@@ -80,13 +78,12 @@ class GameRepository(BaseRepository):
                 game_id = game.id
                 if game_id not in game_results:
                     game_results[game_id] = BaseGameResult(
-                        id=game.id,
+                        gameId=game.id,
                         updated_at=game.updated_at,
                         strategyId=game.strategyId,
                         created_at=game.created_at,
                         externalGameId=game.externalGameId,
                         platform=game.platform,
-                        endDateTime=game.endDateTime,
                         params=[],
                     )
                 game_results[game_id].params.append(
@@ -132,30 +129,20 @@ class GameRepository(BaseRepository):
                 )
 
             return BaseGameResult(
-                id=game.id,
+                gameId=game.id,
                 created_at=game.created_at,
                 updated_at=game.updated_at,
                 externalGameId=game.externalGameId,
                 platform=game.platform,
-                endDateTime=game.endDateTime,
                 params=game_params,
             )
 
-    def get_tasks_list_by_game_id(self, id: str):
-        with self.session_factory() as session:
-            tasks = (
-                session.query(self.model_tasks)
-                .filter(self.model_tasks.gameId == id)
-                .all()
-            )
-            return tasks
-
-    def patch_game_by_id(self, id: str, schema):
+    def patch_game_by_id(self, gameId: str, schema):
         with self.session_factory() as session:
             game = session.query(self.model).filter(
-                self.model.id == id).first()
+                self.model.id == gameId).first()
             if not game:
-                raise NotFoundError(detail=f"Not found id : {id}")
+                raise NotFoundError(detail=f"Not found id : {gameId}")
 
             for key, value in schema.dict(exclude_none=True).items():
                 setattr(game, key, value)
@@ -166,4 +153,4 @@ class GameRepository(BaseRepository):
             except IntegrityError as e:
                 raise DuplicatedError(detail=str(e.orig))
 
-            return self.get_game_by_id(id)
+            return self.get_game_by_id(gameId)

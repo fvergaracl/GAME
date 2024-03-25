@@ -51,12 +51,12 @@ class SearchOptions(FindBase):
     total_count: Optional[int]
 
 
-class FindResult(BaseModel):
+class FindResult(BaseModel):  # noqa
     items: Optional[List]
     search_options: Optional[SearchOptions]
 
 
-class FindDateRange(BaseModel):
+class FindDateRange(BaseModel):  # noqa
     created_at__lt: str
     created_at__lte: str
     created_at__gt: str
@@ -67,5 +67,5 @@ class SuccesfullyCreated(BaseModel):
     message: Optional[str] = "Successfully created"
 
 
-class Blank(BaseModel):
+class Blank(BaseModel):  # noqa
     pass

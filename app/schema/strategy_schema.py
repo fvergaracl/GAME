@@ -7,10 +7,8 @@ class Strategy(BaseModel):
     id: str
     name: Optional[str] = None
     description: Optional[str] = None
-    nameSlug: Optional[str] = Field(None, alias='nameSlug')
     version: str
     variables: Dict[str, int]
-    calculate_points_hash: str
 
 
 #############################################################################
@@ -39,12 +37,3 @@ class DataStrategy(BaseModel):
 class BaseStrategy(ModelBaseInfo):
     strategyName: str
     data: DataStrategy
-
-
-class FindAllStrategyResult(BaseModel):
-    items: Optional[List[BaseStrategy]]
-    search_options: Optional[SearchOptions]
-
-
-class FindStrategyResult(Strategy):
-    ...

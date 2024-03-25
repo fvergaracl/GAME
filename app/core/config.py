@@ -12,7 +12,6 @@ ENV: str = ""
 class Configs(BaseSettings):
     # base
     ENV: str = os.getenv("ENV", "dev")
-    API: str = "/api"
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "GAME-api"
     GAMIFICATIONENGINE_VERSION_APP: str = os.getenv(
@@ -27,15 +26,6 @@ class Configs(BaseSettings):
     DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
         "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100
     )
-
-    # date
-    DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
-
-    # auth
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
-    # 60 minutes * 24 hours * 30 days = 30 days
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30
-
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
@@ -59,9 +49,6 @@ class Configs(BaseSettings):
     PAGE = 1
     PAGE_SIZE = 10
     ORDERING = "-id"
-
-    class Config:
-        ...
 
 
 class TestConfigs(Configs):
