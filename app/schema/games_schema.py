@@ -22,7 +22,6 @@ class BaseGameResult(BaseModel):
     strategyId: Optional[str] = None
     externalGameId: Optional[str] = None
     platform: Optional[str] = None
-    endDateTime: Optional[datetime] = None
     params: Optional[List[BaseFindGameParams]] = None
 
     class Config:  # noqa
@@ -33,7 +32,6 @@ class PostCreateGame(BaseModel):
     externalGameId: str
     platform: str
     strategyId: Optional[str] = "default"
-    endDateTime: Optional[datetime]
     params: Optional[List[CreateGameParams]]
 
     def example():
@@ -41,7 +39,6 @@ class PostCreateGame(BaseModel):
             "externalGameId": "string",
             "platform": "string",
             "strategyId": "default",
-            "endDateTime": "2024-03-12T11:04:55.425Z",
             "params": [
                 {
                     "key": "variable_basic_points",
@@ -54,7 +51,6 @@ class PostCreateGame(BaseModel):
 class PatchGame(BaseModel):
     strategyId: Optional[str]
     platform: Optional[str]
-    endDateTime: Optional[datetime]
     params: Optional[List[UpdateGameParams]]
 
 
@@ -69,7 +65,6 @@ class ResponsePatchGame(BaseGameResult):
 class FindGameById(ModelBaseInfo):  # noqa
     externalGameId: Optional[str]
     platform: Optional[str]
-    endDateTime: Optional[datetime]
     params: Optional[List[UpdateGameParams]]
 
 

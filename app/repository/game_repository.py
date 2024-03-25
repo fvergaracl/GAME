@@ -47,7 +47,6 @@ class GameRepository(BaseRepository):
                 Games.strategyId.label("strategyId"),
                 Games.created_at.label("created_at"),
                 Games.platform.label("platform"),
-                Games.endDateTime.label("endDateTime"),
                 Games.externalGameId.label("externalGameId"),
                 GamesParams,
             )
@@ -64,7 +63,6 @@ class GameRepository(BaseRepository):
                 Games.id,
                 Games.created_at,
                 Games.platform,
-                Games.endDateTime,
                 Games.externalGameId,
                 GamesParams,
             )
@@ -86,7 +84,6 @@ class GameRepository(BaseRepository):
                         created_at=game.created_at,
                         externalGameId=game.externalGameId,
                         platform=game.platform,
-                        endDateTime=game.endDateTime,
                         params=[],
                     )
                 game_results[game_id].params.append(
@@ -137,7 +134,6 @@ class GameRepository(BaseRepository):
                 updated_at=game.updated_at,
                 externalGameId=game.externalGameId,
                 platform=game.platform,
-                endDateTime=game.endDateTime,
                 params=game_params,
             )
 
