@@ -81,5 +81,5 @@ class FindGameResult(BaseModel):
 
 
 class ListTasksWithUsers(BaseModel):
-    externalGameId: str
+    gameId: UUID
     tasks: List[TasksWithUsers]

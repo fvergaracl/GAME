@@ -46,10 +46,14 @@ class UserPointsService(BaseService):
         self.strategy_service = StrategyService()
         super().__init__(user_points_repository)
 
-    def get_users_by_externalGameId(self, externalGameId):
+    def get_users_by_gameId(self, gameId):
         game = self.game_repository.read_by_column(
-            "externalGameId", externalGameId, not_found_raise_exception=True
+            "id", gameId, not_found_raise_exception=False
         )
+        if not game:
+            raise NotFoundError(
+                detail=f"Game not found by gameId: {game}"
+            )
         tasks = self.task_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
         )
@@ -88,11 +92,8 @@ class UserPointsService(BaseService):
                 "users": all_externalUserId
             }
             response.append(TasksWithUsers(**all_tasks))
-        print(ListTasksWithUsers(
-            externalGameId=externalGameId, tasks=response
-        ))
         return ListTasksWithUsers(
-            externalGameId=externalGameId, tasks=response
+            gameId=gameId, tasks=response
         )
 
     def get_points_by_externalUserId(self, externalUserId):
