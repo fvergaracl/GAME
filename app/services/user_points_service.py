@@ -24,6 +24,7 @@ from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
 from app.util.is_valid_slug import is_valid_slug
 from app.core.config import configs
+from uuid import UUID
 
 
 class UserPointsService(BaseService):
@@ -112,13 +113,13 @@ class UserPointsService(BaseService):
             game = self.game_repository.read_by_column(
                 "id", task.gameId, not_found_raise_exception=True
             )
-            response.append(self.get_points_by_game_id(game.externalGameId))
+            response.append(self.get_points_by_gameId(game.externalGameId))
         return response
 
-    def get_points_by_game_id(self, externalGameId: str):
-        response_task = []
+    def get_points_by_gameId(self, gameId: UUID):
         game = self.game_repository.read_by_column(
-            "externalGameId", externalGameId, not_found_raise_exception=True
+            "id", gameId,
+            not_found_message=f"Game with gameId: {gameId} not found"
         )
         tasks = self.task_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
@@ -131,8 +132,10 @@ class UserPointsService(BaseService):
         game_points = []
         for task in tasks:
             user_points = []
-            points = self.user_points_repository.get_points_and_users_by_taskId(
-                task.id
+            points = (
+                self.user_points_repository.get_points_and_users_by_taskId(
+                    task.id
+                )
             )
             if points:
 
@@ -155,7 +158,7 @@ class UserPointsService(BaseService):
             )
 
         response = AllPointsByGame(
-            externalGameId=externalGameId,
+            externalGameId=game.externalGameId,
             created_at=str(game.created_at),
             task=game_points
         )

@@ -197,26 +197,26 @@ def get_task_by_externalGameId_taskId(
         gameId, externalTaskId)
 
 
-summary_get_points_by_game_id = "Get points by externalGameId"
-description_get_points_by_game_id = """
-Get points by externalGameId
+summary_get_points_by_gameId = "Get points by gameId"
+description_get_points_by_gameId = """
+Get points by gameId
 """
 
 
 @router.get(
-    "/{externalGameId}/points",
+    "/{gameId}/points",
     response_model=AllPointsByGame,
-    summary=summary_get_points_by_game_id,
-    description=description_get_points_by_game_id,
+    summary=summary_get_points_by_gameId,
+    description=description_get_points_by_gameId,
 )
 @inject
-def get_points_by_game_id(
-    externalGameId: str,
+def get_points_by_gameId(
+    gameId: UUID,
     service: UserPointsService = Depends(
         Provide[Container.user_points_service]),
 ):
     # WIP
-    return service.get_points_by_game_id(externalGameId)
+    return service.get_points_by_gameId(gameId)
 
 
 summary_get_points_of_user_in_game = "Get points of user in game"
