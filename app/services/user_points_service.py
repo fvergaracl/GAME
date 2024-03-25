@@ -114,7 +114,7 @@ class UserPointsService(BaseService):
             game = self.game_repository.read_by_column(
                 "id", task.gameId, not_found_raise_exception=True
             )
-            response.append(self.get_points_by_gameId(game.externalGameId))
+            response.append(self.get_points_by_gameId(game.id))
         return response
 
     def get_points_by_gameId(self, gameId: UUID):
@@ -144,7 +144,8 @@ class UserPointsService(BaseService):
                     points_of_user = PointsAssignedToUser(
                         externalUserId=point.externalUserId,
                         points=point.points,
-                        timesAwarded=point.timesAwarded
+                        timesAwarded=point.timesAwarded,
+                        pointsData=point.pointsData,
                     )
                     user_points.append(
                         points_of_user
@@ -326,7 +327,10 @@ class UserPointsService(BaseService):
             points=points,
             externalUserId=externalUserId,
             isACreatedUser=is_a_created_user,
+            gameId=gameId,
+            externalTaskId=externalTaskId,
             caseName=case_name,
+            created_at=str(user_points.created_at),
         )
         return response
 

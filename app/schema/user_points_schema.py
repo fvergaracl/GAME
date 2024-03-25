@@ -20,8 +20,15 @@ class PointsAssigned(BaseModel):
     timesAwarded: int
 
 
+class PointsData(BaseModel):
+    points: int
+    caseName: str
+    created_at: str
+
+
 class PointsAssignedToUser(PointsAssigned):
     externalUserId: str
+    pointsData: Optional[List[PointsData]]
 
 
 class PointsAssignedToUserWithDetails(PointsAssignedToUser):  # noqa

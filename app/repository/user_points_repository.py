@@ -121,6 +121,13 @@ class UserPointsRepository(BaseRepository):
                     Users.externalUserId.label("externalUserId"),
                     func.sum(UserPoints.points).label("points"),
                     func.count(UserPoints.id).label("timesAwarded"),
+                    func.array_agg(
+                        func.json_build_object(
+                            "points", UserPoints.points,
+                            "caseName", UserPoints.caseName,
+                            "created_at", UserPoints.created_at
+                        )
+                    ).label("pointsData")
                 )
                 .join(UserPoints, Users.id == UserPoints.userId)
                 .filter(UserPoints.taskId == taskId)

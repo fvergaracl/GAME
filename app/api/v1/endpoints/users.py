@@ -4,16 +4,13 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query
 from typing import List
 from app.core.container import Container
-from app.schema.base_schema import FindBase
 from app.schema.user_points_schema import AllPointsByGame
 from app.schema.user_schema import (
-                                    PostPointsConversionRequest,
-                                    ResponseConversionPreview,
-                                    ResponsePointsConversion, UserPointsTasks,
-                                    UserWallet)
+    PostPointsConversionRequest, ResponseConversionPreview, 
+    ResponsePointsConversion, UserWallet
+    )
 from app.services.user_service import UserService
 from app.services.user_points_service import UserPointsService
-from app.services.task_service import TaskService
 
 router = APIRouter(
     prefix="/users",
@@ -46,6 +43,7 @@ description_get_user_wallet = """
 ## Get user wallet
 ### Get user wallet
 """
+
 
 @router.get(
     "/{externalUserId}/wallet",
