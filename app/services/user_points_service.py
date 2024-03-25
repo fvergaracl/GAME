@@ -164,9 +164,9 @@ class UserPointsService(BaseService):
         )
         return response
 
-    def get_points_of_user_in_game(self, externalGameId, externalUserId):
+    def get_points_of_user_in_game(self, gameId, externalUserId):
         game = self.game_repository.read_by_column(
-            "externalGameId", externalGameId, not_found_raise_exception=True
+            "id", gameId, not_found_raise_exception=True
         )
         user = self.users_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
@@ -195,18 +195,18 @@ class UserPointsService(BaseService):
                         )
         return response
 
-    def assign_points_to_user(self, externalGameId, externalTaskId, schema):
+    def assign_points_to_user(self, gameId, externalTaskId, schema):
         externalUserId = schema.externalUserId
         is_a_created_user = False
 
         game = self.game_repository.read_by_column(
-            column="externalGameId",
-            value=externalGameId,
+            column="id",
+            value=gameId,
             not_found_message=(
-                f"Game with externalGameId {externalGameId} not found"),
+                f"Game with gameId {gameId} not found"),
             only_one=True,
         )
-
+        externalGameId = game.externalGameId
         task = self.task_repository.read_by_gameId_and_externalTaskId(
             game.id, externalTaskId
         )
