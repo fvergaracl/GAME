@@ -28,8 +28,8 @@ class Wallet(BaseModel, table=True):
         )
     )
 
-    class Config:
-        orm_mode = True
+    class Config:  # noqa
+        orm_mode = True  # noqa
 
     def __str__(self):
         return f"Wallet: (id={self.id}, created_at={self.created_at}, " \

@@ -15,7 +15,7 @@ from app.services import (GameParamsService, GameService,
 
 
 class Container(containers.DeclarativeContainer):
-    wiring_config = containers.WiringConfiguration(
+    wiring_config = containers.WiringConfiguration(  # noqa
         modules=[
             "app.api.v1.endpoints.games",
             "app.api.v1.endpoints.tasks",
@@ -62,23 +62,23 @@ class Container(containers.DeclarativeContainer):
 
     # Services (Add in here)
 
-    game_params_service = providers.Factory(
+    game_params_service = providers.Factory(  # noqa
         GameParamsService, game_params_repository=game_params_repository
     )
 
-    game_service = providers.Factory(
+    strategy_service = providers.Factory(  # noqa
+        StrategyService
+    )
+
+    game_service = providers.Factory(  # noqa
         GameService,
         game_repository=game_repository,
         game_params_repository=game_params_repository,
         task_repository=task_repository,
+        strategy_service=strategy_service,
     )
 
-
-    strategy_service = providers.Factory(
-        StrategyService
-    )
-
-    task_service = providers.Factory(
+    task_service = providers.Factory(  # noqa
         TaskService,
         strategy_service=StrategyService,
         task_repository=task_repository,
@@ -89,7 +89,7 @@ class Container(containers.DeclarativeContainer):
         task_params_repository=task_params_repository,
     )
 
-    user_points_service = providers.Factory(
+    user_points_service = providers.Factory(  # noqa
         UserPointsService,
         user_points_repository=user_points_repository,
         users_repository=user_repository,
@@ -99,7 +99,7 @@ class Container(containers.DeclarativeContainer):
         wallet_transaction_repository=wallet_transaction_repository,
     )
 
-    user_service = providers.Factory(
+    user_service = providers.Factory(  # noqa
         UserService,
         user_repository=user_repository,
         user_points_repository=user_points_repository,
@@ -108,13 +108,13 @@ class Container(containers.DeclarativeContainer):
         wallet_transaction_repository=wallet_transaction_repository,
     )
 
-    wallet_service = providers.Factory(
+    wallet_service = providers.Factory(  # noqa
         WalletService,
         wallet_repository=wallet_repository,
         user_repository=user_repository,
     )
 
-    wallet_transaction_service = providers.Factory(
+    wallet_transaction_service = providers.Factory(  # noqa
         WalletTransactionService,
         wallet_transaction_repository=wallet_transaction_repository,
     )

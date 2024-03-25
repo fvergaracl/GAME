@@ -18,8 +18,8 @@ class TasksParams(BaseModel, table=True):
     taskId: str = Field(
         sa_column=Column(UUID(as_uuid=True), ForeignKey("tasks.id")))
 
-    class Config:
-        orm_mode = True
+    class Config:  # noqa
+        orm_mode = True  # noqa
 
     def __str__(self):
         return f"TasksParams: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, key={self.key}, value={self.value}, taskId={self.taskId})"

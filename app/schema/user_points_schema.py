@@ -14,16 +14,18 @@ class PostAssignPointsToUser(BaseModel):
     description: Optional[str]
     data: Optional[dict]
 
+
 class PointsAssigned(BaseModel):
     points: int
     timesAwarded: int
 
+
 class PointsAssignedToUser(PointsAssigned):
     externalUserId: str
 
-class PointsAssignedToUserWithDetails(PointsAssignedToUser):
-    pointsData: List[PointsAssignedToUser]
 
+class PointsAssignedToUserWithDetails(PointsAssignedToUser):  # noqa
+    pointsData: List[PointsAssignedToUser]
 
 
 class TaskPointsByGame(BaseModel):
@@ -53,38 +55,10 @@ class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
     message: Optional[str] = "Successfully assigned"
 
 
-class UserPoints(ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional):
+class UserPoints(
+        ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional
+):
     ...
-
-
-class FindQueryByExternalGameId(FindBase, metaclass=AllOptional):
-    externalGameId: str
-
-
-class FindQueryByExternalTaskId(FindBase, metaclass=AllOptional):
-    externalTaskId: str
-
-
-class FindQueryByExternalUserId(FindBase, metaclass=AllOptional):
-    externalUserId: str
-
-
-class FindQueryByExternalTaskIdExternalUserId(FindBase, metaclass=AllOptional):
-    externalTaskId: str
-    externalUserId: str
-
-
-class FindAllUserPointsResult(BaseModel):
-    items: Optional[List[UserPoints]]
-    search_options: Optional[SearchOptions]
-
-
-class ResponseAssignPointsToUser(BaseModel):
-    points: int
-    data: Optional[dict]
-    externalTaskId: str
-    externalUserId: str
-    isNewUser: Optional[bool]
 
 
 class ResponseGetPointsByTask(BaseModel):
@@ -95,10 +69,6 @@ class ResponseGetPointsByTask(BaseModel):
 class ResponseGetPointsByGame(BaseModel):
     externalTaskId: str
     points: List[ResponseGetPointsByTask]
-
-
-class ResponseGetPointsByTasks(BaseModel, metaclass=AllOptional):
-    items: Optional[List[ResponseGetPointsByTask]]
 
 
 class PointsByUserInTask(BaseModel):

@@ -8,10 +8,10 @@ from app.engine.base_strategy import BaseStrategy
 from app.core.container import Container
 
 
-class EnhancedGamificationStrategy(BaseStrategy):  # noqa
+class SocioBeeStrategy(BaseStrategy):  # noqa
     def __init__(self):
         super().__init__(
-            strategy_name="EnhancedGamificationStrategy",
+            strategy_name="SOCIO_BEE",
             strategy_description="A more advanced gamification strategy with "
             "additional points and penalties.",
             strategy_name_slug="enhanced_gamification",

@@ -65,7 +65,7 @@ class AppCreator:
             docs_url="/docs",
             servers=[{"url": configs.API_V1_STR, "description": "Local"}]
         )
-        self.app.openapi = custom_openapi
+        self.app.openapi = custom_openapi  # noqa
 
         self.container = Container()
         self.db = self.container.db()
@@ -79,7 +79,7 @@ class AppCreator:
                 allow_headers=["*"],
             )
 
-        @self.app.get("/", include_in_schema=False)
+        @self.app.get("/", include_in_schema=False)  # noqa
         def read_root():
             """
             Redirect to /docs
@@ -89,7 +89,7 @@ class AppCreator:
             """
             return RedirectResponse(url='/docs')
 
-        @self.app.get(
+        @self.app.get(  # noqa
             "/api/v1",
             tags=["root"],
             response_model=RootEndpoint,

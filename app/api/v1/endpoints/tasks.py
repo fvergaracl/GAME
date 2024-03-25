@@ -1,16 +1,4 @@
-from uuid import UUID
-
-from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Body
-
-from app.core.container import Container
-from app.schema.task_schema import (AsignPointsToExternalUserId,
-                                    CreateTaskPostSuccesfullyCreated,
-                                    FoundTaskById, GetTaskById,
-                                    AssignedPointsToExternalUserId)
-from app.services.task_service import TaskService
-from app.services.user_points_service import UserPointsService
-
+from fastapi import APIRouter
 router = APIRouter(
     prefix="/tasks",
     tags=["tasks"],

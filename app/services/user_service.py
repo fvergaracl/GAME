@@ -5,14 +5,17 @@ from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
-from app.repository.wallet_transaction_repository import \
+from app.repository.wallet_transaction_repository import (
     WalletTransactionRepository
+)
 from app.schema.task_schema import TaskPointsResponseByUser
-from app.schema.user_points_schema import (BaseUserPointsBaseModel,
-                                           UserPointsAssigned)
-from app.schema.user_schema import (CreateWallet, PostPointsConversionRequest,
-                                    ResponsePointsConversion, UserPointsTasks,
-                                    UserWallet)
+from app.schema.user_points_schema import (
+    BaseUserPointsBaseModel, UserPointsAssigned
+)
+from app.schema.user_schema import (
+    CreateWallet, PostPointsConversionRequest, ResponsePointsConversion,
+    UserPointsTasks, UserWallet
+)
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
 from app.util.serialize_wallet import serialize_wallet
@@ -270,7 +273,6 @@ class UserService(BaseService):
 
         return response
 
-
     def get_wallet_by_user_id(self, userId):
         user = self.user_repository.read_by_id(
             userId, not_found_message=f"User not found with userId: {userId}"
@@ -297,7 +299,7 @@ class UserService(BaseService):
         )
 
         return response
-    
+
     def get_wallet_by_externalUserId(self, externalUserId):
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
@@ -383,14 +385,14 @@ class UserService(BaseService):
             "haveEnoughPoints": haveEnoughPoints,
         }
         return response
-    
+
     def preview_points_to_coins_conversion_externalUserId(self, externalUserId, points):
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
-        response = self.preview_points_to_coins_conversion(str(user.id), points)
+        response = self.preview_points_to_coins_conversion(
+            str(user.id), points)
         return response
-
 
     def convert_points_to_coins(self, userId, schema: PostPointsConversionRequest):
         points = schema.points

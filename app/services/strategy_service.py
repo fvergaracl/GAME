@@ -20,10 +20,8 @@ class StrategyService(BaseService):
                 "id": filename_id,
                 "name": strategy.get_strategy_name(),
                 "description": strategy.get_strategy_description(),
-                "nameSlug": strategy.get_strategy_name_slug(),
                 "version": strategy.get_strategy_version(),
-                "variables": strategy.get_variables(),
-                "calculate_points_hash": strategy.hash_version
+                "variables": strategy.get_variables()
             })
         return response
 

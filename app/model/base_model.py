@@ -25,8 +25,8 @@ class BaseModel(SQLModel):
         )
     )
 
-    class Config:
-        orm_mode = True
+    class Config:  # noqa
+        orm_mode = True  # noqa
 
     def __str__(self):
         return f"BaseModel: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at})"

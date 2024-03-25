@@ -7,8 +7,8 @@ class BaseGameParams(BaseModel):
     key: str
     value: str | int | float | bool
 
-    class Config:
-        orm_mode = True
+    class Config:  # noqa
+        orm_mode = True  # noqa
 
 
 class BaseCreateGameParams(BaseGameParams):
