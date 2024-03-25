@@ -81,7 +81,11 @@ API_FILES=(
     "kubernetes/configmaps/env-prod-configmap.yaml"
     "kubernetes/services/gamificationengine-service.yaml"
     "kubernetes/deployments/gamificationengine-deployment.yaml"
+)
+
+INGRESS=(
     "kubernetes/ingresses/ingress.yaml"
+
 )
 
 # Determine which deployment to apply based on command-line argument
@@ -89,6 +93,8 @@ if [ "$1" = "--postgres" ]; then
     FILES=("${POSTGRES_FILES[@]}")
 elif [ "$1" = "--api" ]; then
     FILES=("${API_FILES[@]}")
+elif [ "$1" = "--ingress" ]; then
+    FILES=("${INGRESS[@]}")
 else
     echo "Invalid option or no option provided. Use --help for usage information."
     exit 1
