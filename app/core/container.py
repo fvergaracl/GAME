@@ -66,15 +66,16 @@ class Container(containers.DeclarativeContainer):
         GameParamsService, game_params_repository=game_params_repository
     )
 
+    strategy_service = providers.Factory(  # noqa
+        StrategyService
+    )
+
     game_service = providers.Factory(  # noqa
         GameService,
         game_repository=game_repository,
         game_params_repository=game_params_repository,
         task_repository=task_repository,
-    )
-
-    strategy_service = providers.Factory(  # noqa
-        StrategyService
+        strategy_service=strategy_service,
     )
 
     task_service = providers.Factory(  # noqa

@@ -78,7 +78,7 @@ class GameRepository(BaseRepository):
                 game_id = game.id
                 if game_id not in game_results:
                     game_results[game_id] = BaseGameResult(
-                        id=game.id,
+                        gameId=game.id,
                         updated_at=game.updated_at,
                         strategyId=game.strategyId,
                         created_at=game.created_at,
@@ -129,7 +129,7 @@ class GameRepository(BaseRepository):
                 )
 
             return BaseGameResult(
-                id=game.id,
+                gameId=game.id,
                 created_at=game.created_at,
                 updated_at=game.updated_at,
                 externalGameId=game.externalGameId,
@@ -137,12 +137,12 @@ class GameRepository(BaseRepository):
                 params=game_params,
             )
 
-    def patch_game_by_id(self, id: str, schema):
+    def patch_game_by_id(self, gameId: str, schema):
         with self.session_factory() as session:
             game = session.query(self.model).filter(
-                self.model.id == id).first()
+                self.model.id == gameId).first()
             if not game:
-                raise NotFoundError(detail=f"Not found id : {id}")
+                raise NotFoundError(detail=f"Not found id : {gameId}")
 
             for key, value in schema.dict(exclude_none=True).items():
                 setattr(game, key, value)
@@ -153,4 +153,4 @@ class GameRepository(BaseRepository):
             except IntegrityError as e:
                 raise DuplicatedError(detail=str(e.orig))
 
-            return self.get_game_by_id(id)
+            return self.get_game_by_id(gameId)
