@@ -68,7 +68,7 @@ def get_game_by_id(
     service: GameService = Depends(Provide[Container.game_service]),
 ):
 
-    response = service.get_by_id(gameId)
+    response = service.get_by_gameId(gameId)
     return response
 
 

@@ -29,18 +29,18 @@ class GameService(BaseService):
         self.strategy_service = strategy_service
         super().__init__(game_repository)
 
-    def get_by_id(self, externalId: UUID):
+    def get_by_gameId(self, gameId: UUID):
         response = self.game_repository.read_by_column(
-            "externalGameId", externalId, not_found_raise_exception=True, only_one=True, not_found_message=f"Game not found by externalId: {externalId} "  # noqa
+            "id", gameId, not_found_raise_exception=True, only_one=True,
+            not_found_message=f"Game not found by gameId: {gameId} "  # noqa
         )
-
         params = self.game_params_repository.read_by_column(
             "gameId", response.id, not_found_raise_exception=False, only_one=False  # noqa
         )
         response_dict = response.dict()
         response_dict["params"] = params
 
-        response = BaseGameResult(**response_dict)
+        response = BaseGameResult(**response_dict , gameId=gameId)
 
         return response
 

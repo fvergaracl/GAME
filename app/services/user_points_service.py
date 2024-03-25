@@ -166,11 +166,19 @@ class UserPointsService(BaseService):
 
     def get_points_of_user_in_game(self, gameId, externalUserId):
         game = self.game_repository.read_by_column(
-            "id", gameId, not_found_raise_exception=True
+            "id", gameId, not_found_raise_exception=False
         )
+        if not game:
+            raise NotFoundError(
+                detail=f"Game not found by gameId: {gameId}"
+            )   
         user = self.users_repository.read_by_column(
-            "externalUserId", externalUserId, not_found_raise_exception=True
+            "externalUserId", externalUserId, not_found_raise_exception=False
         )
+        if not user:
+            raise NotFoundError(
+                detail=f"User not found by externalUserId: {externalUserId}"
+            )
         tasks = self.task_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
         )
