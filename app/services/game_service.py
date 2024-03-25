@@ -147,7 +147,6 @@ class GameService(BaseService):
             )
 
         strategyId = schema.strategyId
-        print('111111111111111111111111111111111111111111111111')
         if strategyId:
             strategies = all_engine_strategies()
             strategy = next(
@@ -160,7 +159,6 @@ class GameService(BaseService):
                 raise NotFoundError(
                     detail=f"Strategy with id: {strategyId} not found"
                 )
-        print('22222222222222222222222222222222222222222222222')
         if not strategyId:
             strategyId = game.strategyId
         if not strategyId:
@@ -169,23 +167,15 @@ class GameService(BaseService):
         schema.strategyId = strategyId
         params = schema.params
         del schema.params
-        print('0000000000000000000000000000000000000000000000')
         updated_params = []
         if params:
             for param in params:
-                print('****************************')
                 self.game_params_repository.patch_game_params_by_id(
                     param.id, param)
                 updated_params.append(param)
 
         game = self.game_repository.patch_game_by_id(gameId, schema)
-        print('----------------------------------------------------- |||||')
-        print(game.dict())
         game_dict = game.dict()
-        print(" ")
-        print(updated_params)
-        print(" ")
-        print(gameId)
         response = ResponsePatchGame(
             externalGameId=game_dict["externalGameId"],
             strategyId=strategyId,

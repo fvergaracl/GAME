@@ -419,6 +419,4 @@ class TaskService(BaseService):
 
         user_points = self.user_points_repository.get_all_UserPoints_by_taskId_with_details(
             task_id)
-        print('************************************121312312')
-        print(user_points[0])
         return user_points

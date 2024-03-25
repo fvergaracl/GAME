@@ -293,8 +293,6 @@ class UserService(BaseService):
         wallet_transactions = self.wallet_transaction_repository.read_by_column(
             "walletId", str(wallet.id), only_one=False, not_found_raise_exception=False
         )
-        print('-------------------------')
-        print(wallet_transactions)
         for transaction in wallet_transactions:
             # created_at = transaction.created_at to string
             transaction.created_at = str(transaction.created_at)
