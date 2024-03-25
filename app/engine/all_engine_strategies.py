@@ -29,7 +29,6 @@ def all_engine_strategies() -> list:
 
     all_strategies_classes = []
     for strategy in strategies:
-
         module = importlib.import_module(f"app.engine.{strategy}")
         classes = [getattr(module, name)
                    for name in dir(module) if name[0].isupper()]
@@ -44,10 +43,9 @@ def all_engine_strategies() -> list:
                 class_instance.id = strategy
                 all_strategies_classes.append(class_instance)
 
-    # delete all duplicated strategies
+    # delete BaseStrategy from the list of strategies
     all_strategies_classes = list(
-        {strat.get_strategy_id(): strat for strat in
-         all_strategies_classes}.values()
+        filter(lambda x: x.get_strategy_id() != 'BaseStrategy',
+               all_strategies_classes)
     )
-
     return all_strategies_classes
