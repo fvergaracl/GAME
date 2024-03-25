@@ -18,3 +18,4 @@ class BaseWalletTransaction(BaseWalletTransactionWithoutWalletId):
 
 class BaseWalletTransactionInfo(BaseWalletTransactionWithoutWalletId):
     id: UUID
+    created_at: str

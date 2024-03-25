@@ -76,6 +76,9 @@ class AssignedPointsToExternalUserId(BaseModel):
     points: int
     caseName: str
     isACreatedUser: bool
+    gameId: UUID
+    externalTaskId: str
+    created_at: str
 
 
 class TaskPointsResponseByUser(BaseTask):
