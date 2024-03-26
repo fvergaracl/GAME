@@ -34,7 +34,6 @@ class PointsAssignedToUser(PointsAssigned):
 class PointsAssignedToUserWithDetails(PointsAssignedToUser):  # noqa
     pointsData: List[PointsAssignedToUser]
 
-
 class TaskPointsByGame(BaseModel):
     externalTaskId: str
     points: List[PointsAssignedToUser]

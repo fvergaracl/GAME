@@ -321,7 +321,7 @@ description_get_points_by_task_id_with_details = """
 
 @router.get(
     "/{gameId}/tasks/{externalTaskId}/points/details",
-    response_model=List[PointsAssignedToUserWithDetails],
+    response_model=List[dict], # WIP ACA FIX
     summary=summary_get_points_by_task_id_with_details,
     description=description_get_points_by_task_id_with_details,
 )

@@ -93,6 +93,11 @@ class BaseUser(BaseModel):
     created_at: Optional[str]
 
 
+class BaseUserFirstAction(BaseUser):
+    # first action
+    firstAction: Optional[str]
+
+
 class TasksWithUsers(BaseModel):
     externalTaskId: str
-    users: List[BaseUser]
+    users: List[BaseUserFirstAction]
