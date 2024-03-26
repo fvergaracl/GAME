@@ -393,7 +393,7 @@ class TaskService(BaseService):
     def get_points_of_user_by_task_id(
             self, gameId, externalTaskId, externalUserId
     ):
-        points_task = self.get_points_by_task_id(
+        points_task = self.get_points_by_task_id_with_details(
             gameId, externalTaskId)
         user_points = list(
             filter(lambda x: x.externalUserId == externalUserId, points_task))
@@ -402,7 +402,8 @@ class TaskService(BaseService):
             raise NotFoundError(
                 f"User not found with externalUserId: {externalUserId} for externalTaskId: {externalTaskId} for gameId: {gameId}"  # noqa
             )
-
+        print('--------------------------------------')
+        print(user_points[0])
         return user_points[0]
 
     def get_points_by_task_id_with_details(
@@ -419,4 +420,9 @@ class TaskService(BaseService):
 
         user_points = self.user_points_repository.get_all_UserPoints_by_taskId_with_details(
             task_id)
+        print('*****************************************')
+        print('*****************************************')
+        print('*****************************************')
+        print('*****************************************')
+        print(user_points)
         return user_points

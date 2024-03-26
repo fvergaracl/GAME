@@ -27,6 +27,21 @@ class UserPointsRepository(BaseRepository):
 
         super().__init__(session_factory, model)
 
+    def get_first_user_points_in_external_task_id_by_user_id(
+            self, externalTaskId, externalUserId
+            ):
+        with self.session_factory() as session:
+            query = (
+                session.query(UserPoints)
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .filter(Users.externalUserId == externalUserId)
+                .order_by(UserPoints.created_at)
+                .first()
+            )
+            return query
+
     def get_all_UserPoints_by_gameId(self, gameId):
         """
         [

@@ -16,7 +16,7 @@ from app.schema.user_points_schema import (
 )
 from app.schema.games_schema import ListTasksWithUsers
 from app.schema.task_schema import (
-    BaseUser, AssignedPointsToExternalUserId, TasksWithUsers
+    BaseUser, AssignedPointsToExternalUserId, TasksWithUsers, BaseUserFirstAction
 )
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
@@ -81,12 +81,15 @@ class UserPointsService(BaseService):
                         raise NotFoundError(
                             detail=f"User not found by userId: {point.userId}. Please try again later or contact support"  # noqa
                         )
-
+                    first_user_point = self.user_points_repository.get_first_user_points_in_external_task_id_by_user_id(
+                        externalTaskId, externalUserId
+                    )
                     all_externalUserId.append(
-                        BaseUser(
-                            externalUserId=user.externalUserId,
-                            created_at=str(user.created_at)
-                        ))
+                            BaseUserFirstAction(
+                                externalUserId=user.externalUserId,
+                                created_at=str(user.created_at),
+                                firstAction=str(first_user_point.created_at)
+                            ))
             all_tasks = {
                 "externalTaskId": externalTaskId,
                 "users": all_externalUserId
