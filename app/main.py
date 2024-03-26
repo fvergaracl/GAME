@@ -89,31 +89,6 @@ class AppCreator:
             """
             return RedirectResponse(url='/docs')
 
-        @self.app.get(  # noqa
-            "/api/v1",
-            tags=["root"],
-            response_model=RootEndpoint,
-            summary="Root API v1 endpoint",
-            description="General information about the API"
-        )
-        def root():
-            """
-            Root API v1 endpoint
-
-            return:
-                RootEndpoint: General information about the API
-            """
-            version = configs.GAMIFICATIONENGINE_VERSION_APP
-            project_name = configs.PROJECT_NAME
-            return {
-                "projectName": project_name,
-                "version": version,
-                "message": "Welcome to GAME API",
-                "docs": "/docs",
-                "redocs": "/redocs",
-                "commitVersion": get_git_commit_hash()
-            }
-
         self.app.include_router(v1_routers, prefix=configs.API_V1_STR)
 
 

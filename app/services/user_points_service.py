@@ -115,7 +115,28 @@ class UserPointsService(BaseService):
                 "id", task.gameId, not_found_raise_exception=True
             )
             response.append(self.get_points_by_gameId(game.id))
-        return response
+
+        new_response = []
+        for game in response:
+            for task in game.task:
+                for point in task.points:
+                    if point.externalUserId == externalUserId:
+                        new_response.append(
+                            AllPointsByGame(
+                                externalGameId=game.externalGameId,
+                                created_at=game.created_at,
+                                task=[TaskPointsByGame(
+                                    externalTaskId=task.externalTaskId,
+                                    points=[PointsAssignedToUser(
+                                        externalUserId=point.externalUserId,
+                                        points=point.points,
+                                        timesAwarded=point.timesAwarded,
+                                        pointsData=point.pointsData
+                                    )]
+                                )]
+                            )
+                        )
+        return new_response
 
     def get_points_by_gameId(self, gameId: UUID):
         game = self.game_repository.read_by_column(

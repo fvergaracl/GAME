@@ -335,10 +335,10 @@ def get_points_by_task_id_with_details(
         gameId, externalTaskId)
 
 
-summary_get_users_by_gameId = "Get users by externalGameId"
+summary_get_users_by_gameId = "Get users by gameId"
 description_get_users_by_gameId = """
-## Get users by externalGameId
-### Get users by externalGameId
+## Get users by gameId
+### Get users by gameId
 """
 
 
@@ -349,7 +349,7 @@ description_get_users_by_gameId = """
     description=description_get_users_by_gameId,
 )
 @inject
-def get_users_by_externalGameId(
+def get_users_by_gameId(
     gameId: UUID,
     service: UserPointsService = Depends(
         Provide[Container.user_points_service]),
