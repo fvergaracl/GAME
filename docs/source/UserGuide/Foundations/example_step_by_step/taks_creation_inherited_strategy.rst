@@ -1,4 +1,4 @@
-Create a Task with Inherited Game Strategy
+Create task with game strategy 
 ------------------------------------------
 
 After creating a game, the next step is to add tasks to it. Tasks represent specific activities or actions that users are expected to complete within the game. A task can either inherit the game's overall strategy or be configured with its specific parameters, even if it follows the inherited strategy.

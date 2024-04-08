@@ -1,4 +1,4 @@
-Game Creation Example (Complete)
+Game Example (Use Case)
 ================================
 
 This document provides a step-by-step guide to create a new game and several tasks within that game, utilizing different gamification strategies through our API.
@@ -22,3 +22,9 @@ This document provides a step-by-step guide to create a new game and several tas
 ------------------------------------------------------------------------------------------------------------------------
 
 .. include:: example_step_by_step/taks_creation_custom_strategy.rst
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+.. include:: example_step_by_step/assign_points_to_user.rst

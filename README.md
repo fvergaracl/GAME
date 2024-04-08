@@ -282,7 +282,7 @@ kubectl port-forward service/gamificationengine-service 8080:80
 
 First, you should activate poetry environment
 
-With hotreload `sphinx-autobuild docs/source docs/build/html`
+With hotreload `poetry run sphinx-autobuild docs/source docs/build/html --port 9000`. The documentation will be available at `http://localhost:9000`.
 
 ### Testing
 
