@@ -37,7 +37,7 @@ html_static_path = ['_static']
 google_analytics_account = os.getenv('GOOGLE_ANALYTICS_ACCOUNT', None)
 
 html_theme_options = {
-    'nav_title': 'GAME',
+    'nav_title': 'GAME (Goals And Motivation Engine)',
     'color_primary': 'blue',
     'color_accent': 'light-blue',
     'repo_url': 'https://github.com/fvergaracl/GAME',
