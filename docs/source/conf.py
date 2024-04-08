@@ -34,11 +34,14 @@ intersphinx_mapping = {
 html_theme = 'sphinx_material'
 html_static_path = ['_static']
 
+google_analytics_account = os.getenv('GOOGLE_ANALYTICS_ACCOUNT', None)
+
 html_theme_options = {
     'nav_title': 'GAME',
     'color_primary': 'blue',
     'color_accent': 'light-blue',
     'repo_url': 'https://github.com/fvergaracl/GAME',
+    'google_analytics_account': google_analytics_account,
     'repo_name': 'GAME',
     'repo_type': 'github',
     'globaltoc_depth': 3,
