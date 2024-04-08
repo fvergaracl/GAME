@@ -35,8 +35,24 @@ html_theme = 'sphinx_material'
 html_static_path = ['_static']
 
 html_theme_options = {
+    'nav_title': 'GAME',
     'color_primary': 'blue',
     'color_accent': 'light-blue',
     'repo_url': 'https://github.com/fvergaracl/GAME',
     'repo_name': 'GAME',
+    'repo_type': 'github',
+    'globaltoc_depth': 3,
+    # If False, expand all TOC entries
+    'globaltoc_collapse': True,
+    # If True, show hidden TOC entries
+    'globaltoc_includehidden': True,
+}
+
+
+html_sidebars = {
+    '**': [
+        'globaltoc.html',
+        'localtoc.html',
+        'searchbox.html',
+    ]
 }
