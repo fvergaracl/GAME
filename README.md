@@ -289,3 +289,5 @@ With hotreload `sphinx-autobuild docs/source docs/build/html`
 - `pytest`: Runs basic tests.
 - `pytest --cov=app --cov-report=term-missing`: Runs tests with coverage and displays the report in the terminal.
 - `pytest --cov=app --cov-report=html`: Generates a coverage report in HTML.
+
+### Official Documentation: [https://fvergaracl.github.io/GAME](https://fvergaracl.github.io/GAME)
