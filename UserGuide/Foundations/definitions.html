@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>GAME Definitions &#8212; GAME v1.1.003 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css?v=79c92029" />
+    <script src="../../_static/documentation_options.js?v=299c46e2"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Game Creation Example (Complete)" href="example.html" />
+    <link rel="prev" title="Foundations" href="../index.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#UserGuide/Foundations/definitions" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="GAME v1.1.003 documentation"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME</span>
+          <span class="md-header-nav__topic"> GAME Definitions </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+  
+  <script src="../../_static/javascripts/version_dropdown.js"></script>
+  <script>
+    var json_loc = "../../"versions.json"",
+        target_loc = "../../../",
+        text = "Versions";
+    $( document ).ready( add_version_dropdown(json_loc, target_loc, text));
+  </script>
+  
+
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../../index.html" class="md-tabs__link">GAME v1.1.003 documentation</a></li>
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">Foundations</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="GAME v1.1.003 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="GAME v1.1.003 documentation">GAME</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+    
+      <a href="../index.html" class="md-nav__link">Foundations</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> GAME Definitions </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">GAME Definitions</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#userguide-foundations-definitions--page-root" class="md-nav__link">GAME Definitions</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#platform" class="md-nav__link">Platform</a>
+        </li>
+        <li class="md-nav__item"><a href="#game" class="md-nav__link">Game</a>
+        </li>
+        <li class="md-nav__item"><a href="#task" class="md-nav__link">Task</a>
+        </li>
+        <li class="md-nav__item"><a href="#points" class="md-nav__link">Points</a>
+        </li>
+        <li class="md-nav__item"><a href="#coins" class="md-nav__link">Coins</a>
+        </li>
+        <li class="md-nav__item"><a href="#wallet" class="md-nav__link">Wallet</a>
+        </li>
+        <li class="md-nav__item"><a href="#additional-definitions" class="md-nav__link">Additional Definitions</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#gamification-strategy" class="md-nav__link">Gamification Strategy</a>
+        </li>
+        <li class="md-nav__item"><a href="#user" class="md-nav__link">User</a>
+        </li>
+        <li class="md-nav__item"><a href="#conversion-rate" class="md-nav__link">Conversion Rate</a>
+        </li>
+        <li class="md-nav__item"><a href="#transaction" class="md-nav__link">Transaction</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/UserGuide/Foundations/definitions.rst.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#platform" class="md-nav__link">Platform</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#game" class="md-nav__link">Game</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#task" class="md-nav__link">Task</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#points" class="md-nav__link">Points</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#coins" class="md-nav__link">Coins</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#wallet" class="md-nav__link">Wallet</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#additional-definitions" class="md-nav__link">Additional Definitions</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="example.html" class="md-nav__link">Game Creation Example (Complete)</a>
+      
+    
+    </li></ul>
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#userguide-foundations-definitions--page-root" class="md-nav__link">GAME Definitions</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#platform" class="md-nav__link">Platform</a>
+        </li>
+        <li class="md-nav__item"><a href="#game" class="md-nav__link">Game</a>
+        </li>
+        <li class="md-nav__item"><a href="#task" class="md-nav__link">Task</a>
+        </li>
+        <li class="md-nav__item"><a href="#points" class="md-nav__link">Points</a>
+        </li>
+        <li class="md-nav__item"><a href="#coins" class="md-nav__link">Coins</a>
+        </li>
+        <li class="md-nav__item"><a href="#wallet" class="md-nav__link">Wallet</a>
+        </li>
+        <li class="md-nav__item"><a href="#additional-definitions" class="md-nav__link">Additional Definitions</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#gamification-strategy" class="md-nav__link">Gamification Strategy</a>
+        </li>
+        <li class="md-nav__item"><a href="#user" class="md-nav__link">User</a>
+        </li>
+        <li class="md-nav__item"><a href="#conversion-rate" class="md-nav__link">Conversion Rate</a>
+        </li>
+        <li class="md-nav__item"><a href="#transaction" class="md-nav__link">Transaction</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/UserGuide/Foundations/definitions.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="game-definitions">
+<h1 id="userguide-foundations-definitions--page-root">GAME Definitions<a class="headerlink" href="#userguide-foundations-definitions--page-root" title="Link to this heading">¶</a></h1>
+<p>This section provides a detailed description of the key components within the gamification system, including platforms, games, tasks, points, coins, and wallets.</p>
+<section id="platform">
+<h2 id="platform">Platform<a class="headerlink" href="#platform" title="Link to this heading">¶</a></h2>
+<p>A <strong>Platform</strong> is the digital environment or service that hosts multiple <strong>Games</strong>. Each Platform is characterized by its unique name and serves as a container for organizing and managing related Games.</p>
+<img alt="Platform Figure" src="../../_images/platform.png"/>
+</section>
+<section id="game">
+<h2 id="game">Game<a class="headerlink" href="#game" title="Link to this heading">¶</a></h2>
+<p>A <strong>Game</strong> acts as an individual campaign or project within a Platform. Each Game is autonomous and may include one or more <strong>Tasks</strong> targeted at users. Games can implement specific strategies for the gamification of user actions. If a strategy is not specified for a Game, a default strategy named “default” is applied.</p>
+<img alt="Game Figure" src="../../_images/game.png"/>
+</section>
+<section id="task">
+<h2 id="task">Task<a class="headerlink" href="#task" title="Link to this heading">¶</a></h2>
+<p>A <strong>Task</strong> is a specific activity or action assigned to users for completion within a Game. Each Task is evaluated according to a gamification strategy, inheriting the strategy of the Game to which it belongs unless specified otherwise. Tasks are designed to be independent of each other.</p>
+<img alt="Task Figure" src="../../_images/task.png"/>
+</section>
+<section id="points">
+<h2 id="points">Points<a class="headerlink" href="#points" title="Link to this heading">¶</a></h2>
+<p><strong>Points</strong> represent the rewards awarded to users for completing Tasks within a Game. The amount of Points awarded is determined by the gamification strategy applied to the Task or Game.</p>
+<img alt="Points Figure" src="../../_images/points.png"/>
+</section>
+<section id="coins">
+<h2 id="coins">Coins<a class="headerlink" href="#coins" title="Link to this heading">¶</a></h2>
+<p><strong>Coins</strong> are a form of digital currency that users can obtain in exchange for their Points. This exchange is governed by a specific conversion rate, allowing users to redeem accumulated Points for Coins within the system.</p>
+<img alt="Coins Figure" src="../../_images/coins.png"/>
+</section>
+<section id="wallet">
+<h2 id="wallet">Wallet<a class="headerlink" href="#wallet" title="Link to this heading">¶</a></h2>
+<p>A <strong>Wallet</strong> is a digital component associated with each user that records and manages the user’s Points and Coins balance. Wallets allow users to view their balance and perform operations like exchanging Points for Coins.</p>
+<img alt="Wallet Figure" src="../../_images/wallet.png"/>
+</section>
+<section id="additional-definitions">
+<h2 id="additional-definitions">Additional Definitions<a class="headerlink" href="#additional-definitions" title="Link to this heading">¶</a></h2>
+<section id="gamification-strategy">
+<h3 id="gamification-strategy">Gamification Strategy<a class="headerlink" href="#gamification-strategy" title="Link to this heading">¶</a></h3>
+<p>Defines the set of rules and mechanisms that determine how Points and rewards are awarded to users for performing Tasks within a Game. Strategies can vary between Games and can be customized to achieve different engagement objectives.</p>
+<img alt="Strategy Figure" src="../../_images/strategy.png"/>
+</section>
+<section id="user">
+<h3 id="user">User<a class="headerlink" href="#user" title="Link to this heading">¶</a></h3>
+<p>Represents a person who interacts with the Games on the Platform, completing Tasks to earn Points and, potentially, exchange them for Coins. Each user has an associated Wallet that tracks their Points and Coins.</p>
+<img alt="User Figure" src="../../_images/user.png"/>
+</section>
+<section id="conversion-rate">
+<h3 id="conversion-rate">Conversion Rate<a class="headerlink" href="#conversion-rate" title="Link to this heading">¶</a></h3>
+<p>The ratio that defines how many Points are needed to obtain a Coin. This rate can be fixed or vary based on different factors, such as promotions or the user’s level of activity.</p>
+</section>
+<section id="transaction">
+<h3 id="transaction">Transaction<a class="headerlink" href="#transaction" title="Link to this heading">¶</a></h3>
+<img alt="Transaction Figure" src="../../_images/transaction.png"/>
+<p>A record of any operation performed within the system, such as the allocation of Points for completing a Task, the exchange of Points for Coins, or any other activity that affects a user’s Wallet balance.</p>
+</section>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="../index.html" title="Foundations"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Foundations </span>
+              </div>
+            </a>
+          
+          
+            <a href="example.html" title="Game Creation Example (Complete)"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Game Creation Example (Complete) </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

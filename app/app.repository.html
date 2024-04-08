@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>app.repository package &#8212; GAME v1.1.003 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
+    <script src="../_static/documentation_options.js?v=299c46e2"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#app/app.repository" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="GAME v1.1.003 documentation"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME</span>
+          <span class="md-header-nav__topic"> app.repository package </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+  
+  <script src="../_static/javascripts/version_dropdown.js"></script>
+  <script>
+    var json_loc = "../"versions.json"",
+        target_loc = "../../",
+        text = "Versions";
+    $( document ).ready( add_version_dropdown(json_loc, target_loc, text));
+  </script>
+  
+
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">GAME v1.1.003 documentation</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="GAME v1.1.003 documentation" class="md-nav__button md-logo">
+      
+        <img src="../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="GAME v1.1.003 documentation">GAME</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+    
+      <a href="../UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#app-app-repository--page-root" class="md-nav__link">app.repository package</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#submodules" class="md-nav__link">Submodules</a>
+        </li>
+        <li class="md-nav__item"><a href="#module-app.repository.base_repository" class="md-nav__link">app.repository.base_repository module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.create" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.create()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.delete_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.delete_by_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.read_by_column" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.read_by_column()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.read_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.read_by_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.read_by_options" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.read_by_options()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.update" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.update()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.update_attr" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.update_attr()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.whole_update" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.whole_update()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-app.repository.game_params_repository" class="md-nav__link">app.repository.game_params_repository module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.game_params_repository.GameParamsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameParamsRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.game_params_repository.GameParamsRepository.patch_game_params_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameParamsRepository.patch_game_params_by_id()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-app.repository.game_repository" class="md-nav__link">app.repository.game_repository module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.game_repository.GameRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.game_repository.GameRepository.get_all_games" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.get_all_games()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.game_repository.GameRepository.get_game_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.get_game_by_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.game_repository.GameRepository.patch_game_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.patch_game_by_id()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-app.repository.task_params_repository" class="md-nav__link">app.repository.task_params_repository module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.task_params_repository.TaskParamsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskParamsRepository</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-app.repository.task_repository" class="md-nav__link">app.repository.task_repository module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.get_points_and_users_by_taskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.get_points_and_users_by_taskId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.read_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.read_by_gameId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.read_by_gameId_and_externalTaskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.read_by_gameId_and_externalTaskId()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-app.repository.user_points_repository" class="md-nav__link">app.repository.user_points_repository module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.count_measurements_by_external_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.count_measurements_by_external_task_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_all_UserPoints_by_gameId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_taskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_all_UserPoints_by_taskId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_taskId_with_details" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_all_UserPoints_by_taskId_with_details()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_avg_time_between_tasks_for_all_users" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_avg_time_between_tasks_for_all_users()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_global_calculation" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_global_calculation()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_individual_calculation" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_individual_calculation()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_last_window_time_diff()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_new_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_new_last_window_time_diff()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_points_and_users_by_taskId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_start_time_for_last_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_start_time_for_last_task()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_task_and_sum_points_by_userId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_task_and_sum_points_by_userId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_task_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_task_by_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_time_taken_for_last_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_time_taken_for_last_task()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_user_measurement_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_measurement_count()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-app.repository.user_repository" class="md-nav__link">app.repository.user_repository module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.user_repository.UserRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.user_repository.UserRepository.create_user_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserRepository.create_user_by_externalUserId()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-app.repository.wallet_repository" class="md-nav__link">app.repository.wallet_repository module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.wallet_repository.WalletRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletRepository</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-app.repository.wallet_transaction_repository" class="md-nav__link">app.repository.wallet_transaction_repository module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.wallet_transaction_repository.WalletTransactionRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletTransactionRepository</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-app.repository" class="md-nav__link">Module contents</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.BaseRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.BaseRepository.create" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.create()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.BaseRepository.delete_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.delete_by_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.BaseRepository.read_by_column" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.read_by_column()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.BaseRepository.read_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.read_by_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.BaseRepository.read_by_options" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.read_by_options()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.BaseRepository.update" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.update()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.BaseRepository.update_attr" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.update_attr()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.BaseRepository.whole_update" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.whole_update()</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.GameParamsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameParamsRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.GameParamsRepository.patch_game_params_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameParamsRepository.patch_game_params_by_id()</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.GameRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.GameRepository.get_all_games" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.get_all_games()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.GameRepository.get_game_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.get_game_by_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.GameRepository.patch_game_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.patch_game_by_id()</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.TaskParamsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskParamsRepository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.TaskRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.TaskRepository.get_points_and_users_by_taskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.get_points_and_users_by_taskId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.TaskRepository.read_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.read_by_gameId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.TaskRepository.read_by_gameId_and_externalTaskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.read_by_gameId_and_externalTaskId()</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.count_measurements_by_external_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.count_measurements_by_external_task_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_all_UserPoints_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_all_UserPoints_by_gameId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_all_UserPoints_by_taskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_all_UserPoints_by_taskId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_all_UserPoints_by_taskId_with_details" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_all_UserPoints_by_taskId_with_details()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_avg_time_between_tasks_for_all_users" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_avg_time_between_tasks_for_all_users()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_global_calculation" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_global_calculation()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_individual_calculation" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_individual_calculation()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_last_window_time_diff()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_new_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_new_last_window_time_diff()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_points_and_users_by_taskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_points_and_users_by_taskId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_start_time_for_last_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_start_time_for_last_task()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_task_and_sum_points_by_userId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_task_and_sum_points_by_userId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_task_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_task_by_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_time_taken_for_last_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_time_taken_for_last_task()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_user_measurement_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_measurement_count()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_user_task_measurements_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count()</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.UserRepository.create_user_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserRepository.create_user_by_externalUserId()</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.WalletRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletRepository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.WalletTransactionRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletTransactionRepository</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/app/app.repository.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="app-repository-package">
+<h1 id="app-app-repository--page-root">app.repository package<a class="headerlink" href="#app-app-repository--page-root" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2 id="submodules">Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-app.repository.base_repository">
+<span id="app-repository-base-repository-module"></span><h2 id="module-app.repository.base_repository">app.repository.base_repository module<a class="headerlink" href="#module-app.repository.base_repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.base_repository.</span></span><span class="sig-name descname"><span class="pre">BaseRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_factory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractContextManager" title="(in Python v3.12)"><span class="pre">AbstractContextManager</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Session</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.create" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.delete_by_id">
+<span class="sig-name descname"><span class="pre">delete_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.delete_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.delete_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.read_by_column">
+<span class="sig-name descname"><span class="pre">read_by_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_one</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_raise_exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Not</span> <span class="pre">found</span> <span class="pre">{column}</span> <span class="pre">:</span> <span class="pre">{value}'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.read_by_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.read_by_column" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.read_by_id">
+<span class="sig-name descname"><span class="pre">read_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_raise_exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Not</span> <span class="pre">found</span> <span class="pre">id</span> <span class="pre">:</span> <span class="pre">{id}'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.read_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.read_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.read_by_options">
+<span class="sig-name descname"><span class="pre">read_by_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.read_by_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.read_by_options" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.update" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.update_attr">
+<span class="sig-name descname"><span class="pre">update_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.update_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.update_attr" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.whole_update">
+<span class="sig-name descname"><span class="pre">whole_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.whole_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.whole_update" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+</section>
+<section id="module-app.repository.game_params_repository">
+<span id="app-repository-game-params-repository-module"></span><h2 id="module-app.repository.game_params_repository">app.repository.game_params_repository module<a class="headerlink" href="#module-app.repository.game_params_repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.game_params_repository.GameParamsRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.game_params_repository.</span></span><span class="sig-name descname"><span class="pre">GameParamsRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.game_params.GamesParams'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_params_repository.html#GameParamsRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_params_repository.GameParamsRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.game_params_repository.GameParamsRepository.patch_game_params_by_id">
+<span class="sig-name descname"><span class="pre">patch_game_params_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_params_repository.html#GameParamsRepository.patch_game_params_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_params_repository.GameParamsRepository.patch_game_params_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+</section>
+<section id="module-app.repository.game_repository">
+<span id="app-repository-game-repository-module"></span><h2 id="module-app.repository.game_repository">app.repository.game_repository module<a class="headerlink" href="#module-app.repository.game_repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.game_repository.GameRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.game_repository.</span></span><span class="sig-name descname"><span class="pre">GameRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.games.Games'&gt;,</span> <span class="pre">model_tasks=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;,</span> <span class="pre">model_game_params=&lt;class</span> <span class="pre">'app.model.game_params.GamesParams'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_repository.GameRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.game_repository.GameRepository.get_all_games">
+<span class="sig-name descname"><span class="pre">get_all_games</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository.get_all_games"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_repository.GameRepository.get_all_games" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.game_repository.GameRepository.get_game_by_id">
+<span class="sig-name descname"><span class="pre">get_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository.get_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_repository.GameRepository.get_game_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.game_repository.GameRepository.patch_game_by_id">
+<span class="sig-name descname"><span class="pre">patch_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository.patch_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_repository.GameRepository.patch_game_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+</section>
+<section id="module-app.repository.task_params_repository">
+<span id="app-repository-task-params-repository-module"></span><h2 id="module-app.repository.task_params_repository">app.repository.task_params_repository module<a class="headerlink" href="#module-app.repository.task_params_repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.task_params_repository.TaskParamsRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.task_params_repository.</span></span><span class="sig-name descname"><span class="pre">TaskParamsRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.task_params.TasksParams'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_params_repository.html#TaskParamsRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_params_repository.TaskParamsRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+</dd></dl>
+</section>
+<section id="module-app.repository.task_repository">
+<span id="app-repository-task-repository-module"></span><h2 id="module-app.repository.task_repository">app.repository.task_repository module<a class="headerlink" href="#module-app.repository.task_repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.task_repository.</span></span><span class="sig-name descname"><span class="pre">TaskRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository.get_points_and_users_by_taskId">
+<span class="sig-name descname"><span class="pre">get_points_and_users_by_taskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.get_points_and_users_by_taskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository.get_points_and_users_by_taskId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository.read_by_gameId">
+<span class="sig-name descname"><span class="pre">read_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.read_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository.read_by_gameId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository.read_by_gameId_and_externalTaskId">
+<span class="sig-name descname"><span class="pre">read_by_gameId_and_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.read_by_gameId_and_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository.read_by_gameId_and_externalTaskId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+</section>
+<section id="module-app.repository.user_points_repository">
+<span id="app-repository-user-points-repository-module"></span><h2 id="module-app.repository.user_points_repository">app.repository.user_points_repository module<a class="headerlink" href="#module-app.repository.user_points_repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.user_points_repository.</span></span><span class="sig-name descname"><span class="pre">UserPointsRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.user_points.UserPoints'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.count_measurements_by_external_task_id">
+<span class="sig-name descname"><span class="pre">count_measurements_by_external_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.count_measurements_by_external_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.count_measurements_by_external_task_id" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Retrieves the total number of measurements (or tasks completed) by</dt><dd><p>specific external task ID.</p>
+</dd>
+</dl>
+<p>Parameters:
+- external_task_id (str): The unique identifier of the external task.</p>
+<p>Returns:
+- int: The total number of measurements completed for the task.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_gameId">
+<span class="sig-name descname"><span class="pre">get_all_UserPoints_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_all_UserPoints_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_gameId" title="Link to this definition">¶</a></dt>
+<dd><dl>
+<dt>[</dt><dd><dl>
+<dt>{</dt><dd><p>“externalTaskId”: “string”,
+“points”: [</p>
+<blockquote>
+<div><p>{
+“externalUserId”: “string”,
+“points”: 0,
+“timesAwarded”: 0
+}</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>]
+# WIP</p>
+<blockquote>
+<div><dl class="simple">
+<dt># WIP</dt><dd><dl class="simple">
+<dt># WIP</dt><dd><dl class="simple">
+<dt># WIP</dt><dd><dl class="simple">
+<dt># WIP</dt><dd><p># WIP</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_taskId">
+<span class="sig-name descname"><span class="pre">get_all_UserPoints_by_taskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_all_UserPoints_by_taskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_taskId" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Retrieves all UserPoints for a specific task, sum of points and count</dt><dd><p>of times awarded.</p>
+</dd>
+</dl>
+<p>Parameters:
+- taskId (str): The unique identifier of the task.</p>
+<p>Returns:
+- list: A list of tuples containing the externalUserId, sum of points,</p>
+<blockquote>
+<div><p>and count of times awarded.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_taskId_with_details">
+<span class="sig-name descname"><span class="pre">get_all_UserPoints_by_taskId_with_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_all_UserPoints_by_taskId_with_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_taskId_with_details" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task">
+<span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_by_user_and_game_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the average time difference between consecutive tasks completed by
+a specific user for a specific task within a specific game.</p>
+<p>Parameters:
+- externalGameId (str): The unique identifier of the external game.
+- externalTaskId (str): The unique identifier of the external task.
+- externalUserId (str): The unique identifier of the user.</p>
+<p>Returns:
+- float: The average time in seconds between consecutive tasks completed by the user.</p>
+<blockquote>
+<div><p>Returns -1 if there are fewer than two tasks completed, thus an average cannot be calculated.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_avg_time_between_tasks_for_all_users">
+<span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_for_all_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_avg_time_between_tasks_for_all_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_avg_time_between_tasks_for_all_users" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the average time difference between consecutive tasks completed by
+all users for a specific task within a specific game.</p>
+<p>Parameters:
+- externalGameId (str): The unique identifier of the external game.
+- externalTaskId (str): The unique identifier of the external task.</p>
+<p>Returns:
+- float: The average time in seconds between consecutive tasks completed by all users</p>
+<blockquote>
+<div><p>for the specific task within the specified game. Returns -1 if the average
+cannot be calculated.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id">
+<span class="sig-name descname"><span class="pre">get_first_user_points_in_external_task_id_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_global_calculation">
+<span class="sig-name descname"><span class="pre">get_global_calculation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_global_calculation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_global_calculation" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates and retrieves a specific global performance metric,
+such as the average time taken to complete tasks across all users.</p>
+<p>Returns:
+- float: The calculated global performance metric.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_individual_calculation">
+<span class="sig-name descname"><span class="pre">get_individual_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_individual_calculation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_individual_calculation" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Calculates and retrieves a specific performance metric for an</dt><dd><p>individual user,</p>
+</dd>
+</dl>
+<p>such as average time taken to complete tasks.</p>
+<p>Parameters:
+- userId (str): The unique identifier of the user.</p>
+<p>Returns:
+- float: The calculated individual performance metric for the user.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_last_window_time_diff">
+<span class="sig-name descname"><span class="pre">get_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_last_window_time_diff" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the time difference between the last two measurements by a
+specific user for a specific task.</p>
+<p>Parameters:
+- externalTaskId (str): The unique identifier of the external task.
+- externalUserId (str): The unique identifier of the user.</p>
+<p>Returns:
+- float: The time difference in seconds between the last two</p>
+<blockquote>
+<div><p>measurements by the user for the task. If there are fewer than two
+measurements, returns 0.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_new_last_window_time_diff">
+<span class="sig-name descname"><span class="pre">get_new_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_new_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_new_last_window_time_diff" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the last measurement time difference by a specific user for a
+specific task in a specific game and diff with current time.</p>
+<p>Parameters:
+- externalTaskId (str): The unique identifier of the external task.
+- externalUserId (str): The unique identifier of the user.
+- externalGameId (str): The unique identifier of the external game.</p>
+<p>Returns:
+- float: The time difference in seconds between now and the last time the
+user completed the task for the specific game. If the user has not
+completed the task before, returns 0.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskId">
+<span class="sig-name descname"><span class="pre">get_points_and_users_by_taskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_points_and_users_by_taskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_start_time_for_last_task">
+<span class="sig-name descname"><span class="pre">get_start_time_for_last_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_start_time_for_last_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_start_time_for_last_task" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the start time of the last task completed by a specific user.</p>
+<p>Parameters:
+- userId (str): The unique identifier of the user.</p>
+<p>Returns:
+- datetime: The start time of the last task completed by the user.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_task_and_sum_points_by_userId">
+<span class="sig-name descname"><span class="pre">get_task_and_sum_points_by_userId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_task_and_sum_points_by_userId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_task_and_sum_points_by_userId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_task_by_externalUserId">
+<span class="sig-name descname"><span class="pre">get_task_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_task_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_task_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_time_taken_for_last_task">
+<span class="sig-name descname"><span class="pre">get_time_taken_for_last_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_time_taken_for_last_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_time_taken_for_last_task" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the time taken by a specific user to complete the last task.</p>
+<p>Parameters:
+- userId (str): The unique identifier of the user.</p>
+<p>Returns:
+- float: The time taken to complete the last task, in minutes or other</p>
+<blockquote>
+<div><p>relevant unit.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_user_measurement_count">
+<span class="sig-name descname"><span class="pre">get_user_measurement_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_user_measurement_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_user_measurement_count" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the total number of measurements (or tasks completed) by a
+specific user.</p>
+<p>Parameters:
+- userId (str): The unique identifier of the user.</p>
+<p>Returns:
+- int: The total number of measurements completed by the user.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count">
+<span class="sig-name descname"><span class="pre">get_user_task_measurements_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_user_task_measurements_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the total number of measurements (or tasks completed) by a
+specific user for a specific task.</p>
+<p>Parameters:
+- externalTaskId (str): The unique identifier of the external task.
+- externalUserId (str): The unique identifier of the user.</p>
+<p>Returns:
+- int: The total number of measurements completed by the user for the</p>
+<blockquote>
+<div><p>task.</p>
+</div></blockquote>
+</dd></dl>
+</dd></dl>
+</section>
+<section id="module-app.repository.user_repository">
+<span id="app-repository-user-repository-module"></span><h2 id="module-app.repository.user_repository">app.repository.user_repository module<a class="headerlink" href="#module-app.repository.user_repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.user_repository.UserRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.user_repository.</span></span><span class="sig-name descname"><span class="pre">UserRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.users.Users'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_repository.html#UserRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_repository.UserRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_repository.UserRepository.create_user_by_externalUserId">
+<span class="sig-name descname"><span class="pre">create_user_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_repository.html#UserRepository.create_user_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_repository.UserRepository.create_user_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+</section>
+<section id="module-app.repository.wallet_repository">
+<span id="app-repository-wallet-repository-module"></span><h2 id="module-app.repository.wallet_repository">app.repository.wallet_repository module<a class="headerlink" href="#module-app.repository.wallet_repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.wallet_repository.WalletRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.wallet_repository.</span></span><span class="sig-name descname"><span class="pre">WalletRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.wallet.Wallet'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/wallet_repository.html#WalletRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.wallet_repository.WalletRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+</dd></dl>
+</section>
+<section id="module-app.repository.wallet_transaction_repository">
+<span id="app-repository-wallet-transaction-repository-module"></span><h2 id="module-app.repository.wallet_transaction_repository">app.repository.wallet_transaction_repository module<a class="headerlink" href="#module-app.repository.wallet_transaction_repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.wallet_transaction_repository.WalletTransactionRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.wallet_transaction_repository.</span></span><span class="sig-name descname"><span class="pre">WalletTransactionRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.wallet_transactions.WalletTransactions'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/wallet_transaction_repository.html#WalletTransactionRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+</dd></dl>
+</section>
+<section id="module-app.repository">
+<span id="module-contents"></span><h2 id="module-app.repository">Module contents<a class="headerlink" href="#module-app.repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.BaseRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">BaseRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_factory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractContextManager" title="(in Python v3.12)"><span class="pre">AbstractContextManager</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Session</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.BaseRepository.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository.create" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.BaseRepository.delete_by_id">
+<span class="sig-name descname"><span class="pre">delete_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.delete_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository.delete_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.BaseRepository.read_by_column">
+<span class="sig-name descname"><span class="pre">read_by_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_one</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_raise_exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Not</span> <span class="pre">found</span> <span class="pre">{column}</span> <span class="pre">:</span> <span class="pre">{value}'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.read_by_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository.read_by_column" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.BaseRepository.read_by_id">
+<span class="sig-name descname"><span class="pre">read_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_raise_exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Not</span> <span class="pre">found</span> <span class="pre">id</span> <span class="pre">:</span> <span class="pre">{id}'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.read_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository.read_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.BaseRepository.read_by_options">
+<span class="sig-name descname"><span class="pre">read_by_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.read_by_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository.read_by_options" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.BaseRepository.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository.update" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.BaseRepository.update_attr">
+<span class="sig-name descname"><span class="pre">update_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.update_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository.update_attr" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.BaseRepository.whole_update">
+<span class="sig-name descname"><span class="pre">whole_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.whole_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository.whole_update" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.GameParamsRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">GameParamsRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.game_params.GamesParams'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_params_repository.html#GameParamsRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.GameParamsRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.GameParamsRepository.patch_game_params_by_id">
+<span class="sig-name descname"><span class="pre">patch_game_params_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_params_repository.html#GameParamsRepository.patch_game_params_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.GameParamsRepository.patch_game_params_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.GameRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">GameRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.games.Games'&gt;,</span> <span class="pre">model_tasks=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;,</span> <span class="pre">model_game_params=&lt;class</span> <span class="pre">'app.model.game_params.GamesParams'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.GameRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.GameRepository.get_all_games">
+<span class="sig-name descname"><span class="pre">get_all_games</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository.get_all_games"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.GameRepository.get_all_games" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.GameRepository.get_game_by_id">
+<span class="sig-name descname"><span class="pre">get_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository.get_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.GameRepository.get_game_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.GameRepository.patch_game_by_id">
+<span class="sig-name descname"><span class="pre">patch_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository.patch_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.GameRepository.patch_game_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.TaskParamsRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">TaskParamsRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.task_params.TasksParams'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_params_repository.html#TaskParamsRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.TaskParamsRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.TaskRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">TaskRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.TaskRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.TaskRepository.get_points_and_users_by_taskId">
+<span class="sig-name descname"><span class="pre">get_points_and_users_by_taskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.get_points_and_users_by_taskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.TaskRepository.get_points_and_users_by_taskId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.TaskRepository.read_by_gameId">
+<span class="sig-name descname"><span class="pre">read_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.read_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.TaskRepository.read_by_gameId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.TaskRepository.read_by_gameId_and_externalTaskId">
+<span class="sig-name descname"><span class="pre">read_by_gameId_and_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.read_by_gameId_and_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.TaskRepository.read_by_gameId_and_externalTaskId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">UserPointsRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.user_points.UserPoints'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.count_measurements_by_external_task_id">
+<span class="sig-name descname"><span class="pre">count_measurements_by_external_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.count_measurements_by_external_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.count_measurements_by_external_task_id" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Retrieves the total number of measurements (or tasks completed) by</dt><dd><p>specific external task ID.</p>
+</dd>
+</dl>
+<p>Parameters:
+- external_task_id (str): The unique identifier of the external task.</p>
+<p>Returns:
+- int: The total number of measurements completed for the task.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_all_UserPoints_by_gameId">
+<span class="sig-name descname"><span class="pre">get_all_UserPoints_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_all_UserPoints_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_all_UserPoints_by_gameId" title="Link to this definition">¶</a></dt>
+<dd><dl>
+<dt>[</dt><dd><dl>
+<dt>{</dt><dd><p>“externalTaskId”: “string”,
+“points”: [</p>
+<blockquote>
+<div><p>{
+“externalUserId”: “string”,
+“points”: 0,
+“timesAwarded”: 0
+}</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>]
+# WIP</p>
+<blockquote>
+<div><dl class="simple">
+<dt># WIP</dt><dd><dl class="simple">
+<dt># WIP</dt><dd><dl class="simple">
+<dt># WIP</dt><dd><dl class="simple">
+<dt># WIP</dt><dd><p># WIP</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_all_UserPoints_by_taskId">
+<span class="sig-name descname"><span class="pre">get_all_UserPoints_by_taskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_all_UserPoints_by_taskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_all_UserPoints_by_taskId" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Retrieves all UserPoints for a specific task, sum of points and count</dt><dd><p>of times awarded.</p>
+</dd>
+</dl>
+<p>Parameters:
+- taskId (str): The unique identifier of the task.</p>
+<p>Returns:
+- list: A list of tuples containing the externalUserId, sum of points,</p>
+<blockquote>
+<div><p>and count of times awarded.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_all_UserPoints_by_taskId_with_details">
+<span class="sig-name descname"><span class="pre">get_all_UserPoints_by_taskId_with_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_all_UserPoints_by_taskId_with_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_all_UserPoints_by_taskId_with_details" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task">
+<span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_by_user_and_game_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the average time difference between consecutive tasks completed by
+a specific user for a specific task within a specific game.</p>
+<p>Parameters:
+- externalGameId (str): The unique identifier of the external game.
+- externalTaskId (str): The unique identifier of the external task.
+- externalUserId (str): The unique identifier of the user.</p>
+<p>Returns:
+- float: The average time in seconds between consecutive tasks completed by the user.</p>
+<blockquote>
+<div><p>Returns -1 if there are fewer than two tasks completed, thus an average cannot be calculated.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_avg_time_between_tasks_for_all_users">
+<span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_for_all_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_avg_time_between_tasks_for_all_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_avg_time_between_tasks_for_all_users" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the average time difference between consecutive tasks completed by
+all users for a specific task within a specific game.</p>
+<p>Parameters:
+- externalGameId (str): The unique identifier of the external game.
+- externalTaskId (str): The unique identifier of the external task.</p>
+<p>Returns:
+- float: The average time in seconds between consecutive tasks completed by all users</p>
+<blockquote>
+<div><p>for the specific task within the specified game. Returns -1 if the average
+cannot be calculated.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id">
+<span class="sig-name descname"><span class="pre">get_first_user_points_in_external_task_id_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_global_calculation">
+<span class="sig-name descname"><span class="pre">get_global_calculation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_global_calculation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_global_calculation" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates and retrieves a specific global performance metric,
+such as the average time taken to complete tasks across all users.</p>
+<p>Returns:
+- float: The calculated global performance metric.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_individual_calculation">
+<span class="sig-name descname"><span class="pre">get_individual_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_individual_calculation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_individual_calculation" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Calculates and retrieves a specific performance metric for an</dt><dd><p>individual user,</p>
+</dd>
+</dl>
+<p>such as average time taken to complete tasks.</p>
+<p>Parameters:
+- userId (str): The unique identifier of the user.</p>
+<p>Returns:
+- float: The calculated individual performance metric for the user.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_last_window_time_diff">
+<span class="sig-name descname"><span class="pre">get_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_last_window_time_diff" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the time difference between the last two measurements by a
+specific user for a specific task.</p>
+<p>Parameters:
+- externalTaskId (str): The unique identifier of the external task.
+- externalUserId (str): The unique identifier of the user.</p>
+<p>Returns:
+- float: The time difference in seconds between the last two</p>
+<blockquote>
+<div><p>measurements by the user for the task. If there are fewer than two
+measurements, returns 0.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_new_last_window_time_diff">
+<span class="sig-name descname"><span class="pre">get_new_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_new_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_new_last_window_time_diff" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the last measurement time difference by a specific user for a
+specific task in a specific game and diff with current time.</p>
+<p>Parameters:
+- externalTaskId (str): The unique identifier of the external task.
+- externalUserId (str): The unique identifier of the user.
+- externalGameId (str): The unique identifier of the external game.</p>
+<p>Returns:
+- float: The time difference in seconds between now and the last time the
+user completed the task for the specific game. If the user has not
+completed the task before, returns 0.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_points_and_users_by_taskId">
+<span class="sig-name descname"><span class="pre">get_points_and_users_by_taskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_points_and_users_by_taskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_points_and_users_by_taskId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_start_time_for_last_task">
+<span class="sig-name descname"><span class="pre">get_start_time_for_last_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_start_time_for_last_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_start_time_for_last_task" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the start time of the last task completed by a specific user.</p>
+<p>Parameters:
+- userId (str): The unique identifier of the user.</p>
+<p>Returns:
+- datetime: The start time of the last task completed by the user.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_task_and_sum_points_by_userId">
+<span class="sig-name descname"><span class="pre">get_task_and_sum_points_by_userId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_task_and_sum_points_by_userId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_task_and_sum_points_by_userId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_task_by_externalUserId">
+<span class="sig-name descname"><span class="pre">get_task_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_task_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_task_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_time_taken_for_last_task">
+<span class="sig-name descname"><span class="pre">get_time_taken_for_last_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_time_taken_for_last_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_time_taken_for_last_task" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the time taken by a specific user to complete the last task.</p>
+<p>Parameters:
+- userId (str): The unique identifier of the user.</p>
+<p>Returns:
+- float: The time taken to complete the last task, in minutes or other</p>
+<blockquote>
+<div><p>relevant unit.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_user_measurement_count">
+<span class="sig-name descname"><span class="pre">get_user_measurement_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_user_measurement_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_user_measurement_count" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the total number of measurements (or tasks completed) by a
+specific user.</p>
+<p>Parameters:
+- userId (str): The unique identifier of the user.</p>
+<p>Returns:
+- int: The total number of measurements completed by the user.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_user_task_measurements_count">
+<span class="sig-name descname"><span class="pre">get_user_task_measurements_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_user_task_measurements_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_user_task_measurements_count" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the total number of measurements (or tasks completed) by a
+specific user for a specific task.</p>
+<p>Parameters:
+- externalTaskId (str): The unique identifier of the external task.
+- externalUserId (str): The unique identifier of the user.</p>
+<p>Returns:
+- int: The total number of measurements completed by the user for the</p>
+<blockquote>
+<div><p>task.</p>
+</div></blockquote>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.UserRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">UserRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.users.Users'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_repository.html#UserRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserRepository.create_user_by_externalUserId">
+<span class="sig-name descname"><span class="pre">create_user_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_repository.html#UserRepository.create_user_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserRepository.create_user_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.WalletRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">WalletRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.wallet.Wallet'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/wallet_repository.html#WalletRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.WalletRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.WalletTransactionRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">WalletTransactionRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.wallet_transactions.WalletTransactions'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/wallet_transaction_repository.html#WalletTransactionRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.WalletTransactionRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+</dd></dl>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>
