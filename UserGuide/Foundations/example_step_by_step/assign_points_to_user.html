@@ -46,7 +46,7 @@
   
   
   
-    <title>Create task with game strategy &#8212; GAME v1.1.003 documentation</title>
+    <title>Assign Points to a User in a Game &#8212; GAME v1.1.003 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
@@ -72,7 +72,7 @@
   <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
   <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
   <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
-  <a href="#UserGuide/Foundations/example_step_by_step/taks_creation_inherited_strategy" tabindex="1" class="md-skip"> Skip to content </a>
+  <a href="#UserGuide/Foundations/example_step_by_step/assign_points_to_user" tabindex="1" class="md-skip"> Skip to content </a>
   <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
@@ -90,7 +90,7 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           <span class="md-header-nav__topic">GAME</span>
-          <span class="md-header-nav__topic"> Create task with game strategy </span>
+          <span class="md-header-nav__topic"> Assign Points to a User in a Game </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -223,7 +223,7 @@
 <nav class="md-nav md-nav--secondary">
   <ul class="md-nav__list" data-md-scrollfix="">
     
-<li class="md-nav__item"><a class="md-nav__extra_link" href="../../../_sources/UserGuide/Foundations/example_step_by_step/taks_creation_inherited_strategy.rst.txt">Show Source</a> </li>
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../../_sources/UserGuide/Foundations/example_step_by_step/assign_points_to_user.rst.txt">Show Source</a> </li>
 
 <li id="searchbox" class="md-nav__item"></li>
 
@@ -236,68 +236,36 @@
         <div class="md-content">
           <article class="md-content__inner md-typeset" role="main">
             
-  <section id="create-task-with-game-strategy">
-<h1 id="userguide-foundations-example-step-by-step-taks-creation-inherited-strategy--page-root">Create task with game strategy<a class="headerlink" href="#userguide-foundations-example-step-by-step-taks-creation-inherited-strategy--page-root" title="Link to this heading">¶</a></h1>
-<p>After creating a game, the next step is to add tasks to it. Tasks represent specific activities or actions that users are expected to complete within the game. A task can either inherit the game’s overall strategy or be configured with its specific parameters, even if it follows the inherited strategy.</p>
-<p><strong>Endpoint</strong>: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/v1/games/{gameId}/tasks</span></code></p>
-<p>Replace <code class="docutils literal notranslate"><span class="pre">{gameId}</span></code> with the actual ID of the game to which you want to add the task.</p>
+  <section id="assign-points-to-a-user-in-a-game">
+<h1 id="userguide-foundations-example-step-by-step-assign-points-to-user--page-root">Assign Points to a User in a Game<a class="headerlink" href="#userguide-foundations-example-step-by-step-assign-points-to-user--page-root" title="Link to this heading">¶</a></h1>
+<p>After creating tasks within your game, assigning points to users based on their task completion is a crucial next step. Our system offers the flexibility to assign points to users even if they have not been previously registered in the system. If a user does not exist at the time points are assigned, the system will automatically create a profile for them. This ensures that users can have a presence in one or more games without needing explicit prior creation.</p>
+<p><strong>Endpoint</strong>: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/v1/games/{gameId}/tasks/{taskId}/points/assign</span></code></p>
+<p>To assign points to user “user_1” for completing the task “example_task” in the game with <code class="docutils literal notranslate"><span class="pre">gameId</span></code> “9b22b0f1-ecbf-442f-9574-222ad9b9e262”, follow the steps below. Remember to replace <code class="docutils literal notranslate"><span class="pre">{gameId}</span></code> and <code class="docutils literal notranslate"><span class="pre">{taskId}</span></code> with their actual values.</p>
 <p><strong>Request Body</strong>:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">"externalTaskId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"example_task"</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"variable_basic_points"</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"externalUserId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user_1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><strong>Example of response</strong>:</p>
+<p><strong>Example of Response</strong>:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Task created successfully with externalTaskId: example_task for gameId: 9b22b0f1-ecbf-442f-9574-222ad9b9e262 "</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"externalTaskId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"example_task"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"externalGameId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"example_game"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"gameParams"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"variable_basic_points"</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5"</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">"taskParams"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"variable_basic_points"</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"10"</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">"strategy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"default"</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EnhancedGamificationStrategy"</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A more advanced gamification strategy with additional points and penalties."</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0.2"</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"variables"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">"variable_basic_points"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"variable_bonus_points"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"variable_individual_over_global_points"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"variable_peak_performer_bonus_points"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"variable_global_advantage_adjustment_points"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">"variable_individual_adjustment_points"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"points"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"caseName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BasicEngagement"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"isACreatedUser"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"gameId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"9b22b0f1-ecbf-442f-9574-222ad9b9e262"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"externalTaskId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"example_task"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-04-08 12:05:37.161918+00:00"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>externalTaskId</strong>: A unique identifier for the task, external to the GAME system. This ID is used to identify the task in the future if necessary.</p></li>
+<li><p><strong>externalUserId</strong>: The identifier for the user receiving points. If “user_1” does not exist, the system will automatically create a new profile for them.</p></li>
+<li><p><strong>caseName</strong>: Represents the name of the condition within the strategy that was met to assign points. This field helps identify which conditions were fulfilled to award points under the game’s strategy.</p></li>
+<li><p><strong>isACreatedUser</strong>: This boolean indicates whether the user was created as part of this point assignment process (true if the user was not previously registered and was thus created, false otherwise).</p></li>
 </ul>
-<p>This request demonstrates how to set a specific value for “variable_basic_points” for a particular task. By doing so, this task is configured to award 10 basic points to users upon completion. It’s important to note:</p>
-<ul class="simple">
-<li><p><strong>Inheriting the Game Strategy</strong>: By not specifying a “strategyId” in the request, the task inherits the strategy of its parent game. If the game’s strategy includes a default value for “variable_basic_points”, this specific task overrides that default with its own value of 10.</p></li>
-<li><p><strong>Task-Specific Parameters</strong>: The “params” section allows for setting task-specific parameters. In this case, “variable_basic_points” is set to 10, demonstrating that tasks can have unique configurations independent of the game’s overall settings or other tasks.</p></li>
-</ul>
-<p>This flexibility in task creation ensures that while tasks can align with the broad gamification strategy of their parent game, they can also be individually tailored to meet specific goals or requirements. This approach allows for a rich and varied user experience within the same game framework.</p>
-<p><strong>Graphical representation</strong>:</p>
-<img alt="Task with Inherited Game Strategy" class="align-center" src="static/images/creation_game_example/task_with_Inherited_strategy.png"/>
+<p>This response confirms that points were successfully assigned, providing details about the transaction. It includes whether a new user profile was created, aligning with the system’s ability to dynamically integrate users into the game environment. This feature ensures a seamless and inclusive gamification strategy, accommodating dynamic user engagement across multiple games and tasks without the need for prior user setup or registration.</p>
+<img alt="Assign Points to a User in a Game" class="align-center" src="static/images/creation_game_example/assign_points_user_1.png"/>
 </section>
 
 

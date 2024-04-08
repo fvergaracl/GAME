@@ -46,7 +46,7 @@
   
   
   
-    <title>Game Creation Example (Complete) &#8212; GAME v1.1.003 documentation</title>
+    <title>Game Example (Use Case) &#8212; GAME v1.1.003 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=83e35b93" />
     <link rel="stylesheet" type="text/css" href="../../_static/material.css?v=79c92029" />
     <script src="../../_static/documentation_options.js?v=299c46e2"></script>
@@ -91,7 +91,7 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           <span class="md-header-nav__topic">GAME</span>
-          <span class="md-header-nav__topic"> Game Creation Example (Complete) </span>
+          <span class="md-header-nav__topic"> Game Example (Use Case) </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -220,23 +220,25 @@
     
     
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    <label class="md-nav__link md-nav__link--active" for="__toc"> Game Creation Example (Complete) </label>
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Game Example (Use Case) </label>
     
-      <a href="#" class="md-nav__link md-nav__link--active">Game Creation Example (Complete)</a>
+      <a href="#" class="md-nav__link md-nav__link--active">Game Example (Use Case)</a>
       
         
 <nav class="md-nav md-nav--secondary">
     <label class="md-nav__title" for="__toc">"Contents"</label>
   <ul class="md-nav__list" data-md-scrollfix="">
-        <li class="md-nav__item"><a href="#userguide-foundations-example--page-root" class="md-nav__link">Game Creation Example (Complete)</a><nav class="md-nav">
+        <li class="md-nav__item"><a href="#userguide-foundations-example--page-root" class="md-nav__link">Game Example (Use Case)</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#retrieve-all-strategies" class="md-nav__link">Retrieve All Strategies</a>
         </li>
         <li class="md-nav__item"><a href="#create-a-game" class="md-nav__link">Create a Game</a>
         </li>
-        <li class="md-nav__item"><a href="#create-a-task-with-inherited-game-strategy" class="md-nav__link">Create a Task with Inherited Game Strategy</a>
+        <li class="md-nav__item"><a href="#create-task-with-game-strategy" class="md-nav__link">Create task with game strategy</a>
         </li>
-        <li class="md-nav__item"><a href="#create-a-task-with-a-custom-strategy-independent-of-the-game" class="md-nav__link">Create a Task with a Custom Strategy Independent of the Game</a>
+        <li class="md-nav__item"><a href="#create-task-with-custom-strategy" class="md-nav__link">Create task with custom strategy</a>
+        </li>
+        <li class="md-nav__item"><a href="#assign-points-to-a-user-in-a-game" class="md-nav__link">Assign Points to a User in a Game</a>
         </li></ul>
             </nav>
         </li>
@@ -263,14 +265,21 @@
     <li class="md-nav__item">
     
     
-      <a href="#create-a-task-with-inherited-game-strategy" class="md-nav__link">Create a Task with Inherited Game Strategy</a>
+      <a href="#create-task-with-game-strategy" class="md-nav__link">Create task with game strategy</a>
       
     
     </li>
     <li class="md-nav__item">
     
     
-      <a href="#create-a-task-with-a-custom-strategy-independent-of-the-game" class="md-nav__link">Create a Task with a Custom Strategy Independent of the Game</a>
+      <a href="#create-task-with-custom-strategy" class="md-nav__link">Create task with custom strategy</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#assign-points-to-a-user-in-a-game" class="md-nav__link">Assign Points to a User in a Game</a>
       
     
     </li></ul>
@@ -292,15 +301,17 @@
 <nav class="md-nav md-nav--secondary">
     <label class="md-nav__title" for="__toc">"Contents"</label>
   <ul class="md-nav__list" data-md-scrollfix="">
-        <li class="md-nav__item"><a href="#userguide-foundations-example--page-root" class="md-nav__link">Game Creation Example (Complete)</a><nav class="md-nav">
+        <li class="md-nav__item"><a href="#userguide-foundations-example--page-root" class="md-nav__link">Game Example (Use Case)</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#retrieve-all-strategies" class="md-nav__link">Retrieve All Strategies</a>
         </li>
         <li class="md-nav__item"><a href="#create-a-game" class="md-nav__link">Create a Game</a>
         </li>
-        <li class="md-nav__item"><a href="#create-a-task-with-inherited-game-strategy" class="md-nav__link">Create a Task with Inherited Game Strategy</a>
+        <li class="md-nav__item"><a href="#create-task-with-game-strategy" class="md-nav__link">Create task with game strategy</a>
         </li>
-        <li class="md-nav__item"><a href="#create-a-task-with-a-custom-strategy-independent-of-the-game" class="md-nav__link">Create a Task with a Custom Strategy Independent of the Game</a>
+        <li class="md-nav__item"><a href="#create-task-with-custom-strategy" class="md-nav__link">Create task with custom strategy</a>
+        </li>
+        <li class="md-nav__item"><a href="#assign-points-to-a-user-in-a-game" class="md-nav__link">Assign Points to a User in a Game</a>
         </li></ul>
             </nav>
         </li>
@@ -318,8 +329,8 @@
         <div class="md-content">
           <article class="md-content__inner md-typeset" role="main">
             
-  <section id="game-creation-example-complete">
-<h1 id="userguide-foundations-example--page-root">Game Creation Example (Complete)<a class="headerlink" href="#userguide-foundations-example--page-root" title="Link to this heading">¶</a></h1>
+  <section id="game-example-use-case">
+<h1 id="userguide-foundations-example--page-root">Game Example (Use Case)<a class="headerlink" href="#userguide-foundations-example--page-root" title="Link to this heading">¶</a></h1>
 <p>This document provides a step-by-step guide to create a new game and several tasks within that game, utilizing different gamification strategies through our API.</p>
 <section id="retrieve-all-strategies">
 <h2 id="retrieve-all-strategies">Retrieve All Strategies<a class="headerlink" href="#retrieve-all-strategies" title="Link to this heading">¶</a></h2>
@@ -409,8 +420,8 @@
 <img alt="New Game Figure" class="align-center" src="../../_images/new_game.png"/>
 </section>
 <hr class="docutils"/>
-<section id="create-a-task-with-inherited-game-strategy">
-<h2 id="create-a-task-with-inherited-game-strategy">Create a Task with Inherited Game Strategy<a class="headerlink" href="#create-a-task-with-inherited-game-strategy" title="Link to this heading">¶</a></h2>
+<section id="create-task-with-game-strategy">
+<h2 id="create-task-with-game-strategy">Create task with game strategy<a class="headerlink" href="#create-task-with-game-strategy" title="Link to this heading">¶</a></h2>
 <p>After creating a game, the next step is to add tasks to it. Tasks represent specific activities or actions that users are expected to complete within the game. A task can either inherit the game’s overall strategy or be configured with its specific parameters, even if it follows the inherited strategy.</p>
 <p><strong>Endpoint</strong>: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/v1/games/{gameId}/tasks</span></code></p>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">{gameId}</span></code> with the actual ID of the game to which you want to add the task.</p>
@@ -473,8 +484,8 @@
 <img alt="Task with Inherited Game Strategy" class="align-center" src="../../_images/task_with_Inherited_strategy.png"/>
 </section>
 <hr class="docutils"/>
-<section id="create-a-task-with-a-custom-strategy-independent-of-the-game">
-<h2 id="create-a-task-with-a-custom-strategy-independent-of-the-game">Create a Task with a Custom Strategy Independent of the Game<a class="headerlink" href="#create-a-task-with-a-custom-strategy-independent-of-the-game" title="Link to this heading">¶</a></h2>
+<section id="create-task-with-custom-strategy">
+<h2 id="create-task-with-custom-strategy">Create task with custom strategy<a class="headerlink" href="#create-task-with-custom-strategy" title="Link to this heading">¶</a></h2>
 <p>After setting up your game, you might want to add tasks that, while inheriting the game’s general strategy, use a specific, independent strategy for more tailored gamification approaches. This method allows for custom task-level strategies that may vary from the game’s default strategy but still adhere to the overarching gamification framework.</p>
 <p><strong>Endpoint</strong>: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/v1/games/{gameId}/tasks</span></code></p>
 <p>Ensure to replace <code class="docutils literal notranslate"><span class="pre">{gameId}</span></code> with the actual ID of the game to which you’re adding the task.</p>
@@ -536,6 +547,38 @@
 <p>This method of task creation enhances the flexibility and depth of the gamification system, allowing for both broad strategy alignment and specific task-level customizations.</p>
 <p><strong>Graphical representation</strong>:</p>
 <img alt="Task with Custom Strategy" class="align-center" src="../../_images/task_with_custom_strategy.png"/>
+</section>
+<hr class="docutils"/>
+<section id="assign-points-to-a-user-in-a-game">
+<h2 id="assign-points-to-a-user-in-a-game">Assign Points to a User in a Game<a class="headerlink" href="#assign-points-to-a-user-in-a-game" title="Link to this heading">¶</a></h2>
+<p>After creating tasks within your game, assigning points to users based on their task completion is a crucial next step. Our system offers the flexibility to assign points to users even if they have not been previously registered in the system. If a user does not exist at the time points are assigned, the system will automatically create a profile for them. This ensures that users can have a presence in one or more games without needing explicit prior creation.</p>
+<p><strong>Endpoint</strong>: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/v1/games/{gameId}/tasks/{taskId}/points/assign</span></code></p>
+<p>To assign points to user “user_1” for completing the task “example_task” in the game with <code class="docutils literal notranslate"><span class="pre">gameId</span></code> “9b22b0f1-ecbf-442f-9574-222ad9b9e262”, follow the steps below. Remember to replace <code class="docutils literal notranslate"><span class="pre">{gameId}</span></code> and <code class="docutils literal notranslate"><span class="pre">{taskId}</span></code> with their actual values.</p>
+<p><strong>Request Body</strong>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"externalUserId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user_1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Example of Response</strong>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"points"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"caseName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BasicEngagement"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"isACreatedUser"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"gameId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"9b22b0f1-ecbf-442f-9574-222ad9b9e262"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"externalTaskId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"example_task"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-04-08 12:05:37.161918+00:00"</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>externalUserId</strong>: The identifier for the user receiving points. If “user_1” does not exist, the system will automatically create a new profile for them.</p></li>
+<li><p><strong>caseName</strong>: Represents the name of the condition within the strategy that was met to assign points. This field helps identify which conditions were fulfilled to award points under the game’s strategy.</p></li>
+<li><p><strong>isACreatedUser</strong>: This boolean indicates whether the user was created as part of this point assignment process (true if the user was not previously registered and was thus created, false otherwise).</p></li>
+</ul>
+<p>This response confirms that points were successfully assigned, providing details about the transaction. It includes whether a new user profile was created, aligning with the system’s ability to dynamically integrate users into the game environment. This feature ensures a seamless and inclusive gamification strategy, accommodating dynamic user engagement across multiple games and tasks without the need for prior user setup or registration.</p>
+<img alt="Assign Points to a User in a Game" class="align-center" src="../../_images/assign_points_user_1.png"/>
 </section>
 </section>
 

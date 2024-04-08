@@ -1,4 +1,4 @@
-Create a Task with a Custom Strategy Independent of the Game
+Create task with custom strategy
 ------------------------------------------------------------
 
 After setting up your game, you might want to add tasks that, while inheriting the game's general strategy, use a specific, independent strategy for more tailored gamification approaches. This method allows for custom task-level strategies that may vary from the game's default strategy but still adhere to the overarching gamification framework.
