@@ -36,6 +36,22 @@ class RootEndpoint(BaseModel):
 
 
 class ModelBaseInfo(BaseModel):
+    """
+    Base model for all models
+
+    Attributes:
+        id (UUID): Unique identifier
+        created_at (datetime): Created date
+        updated_at (datetime): Updated date
+
+    Example:
+        {
+            "id": "123e4567-e89b-12d3-a456-426614174000",
+            "created_at": "2024-01-01T00:00:00",
+            "updated_at": "2024-01-01T00:00:00"
+        }
+
+    """
     id: UUID
     created_at: datetime
     updated_at: datetime

@@ -7,7 +7,27 @@ from sqlmodel import Column, DateTime, Field, SQLModel, func
 
 class BaseModel(SQLModel):
     """
-    Base model class that provides common functionality for all models.
+    Base model class that provides ID, creation, and update timestamps.
+
+    Attributes:
+        id (str): Unique identifier for each instance, automatically generated
+         using UUID.
+        created_at (datetime): Timestamp recording when an instance is created,
+          set to the current time by default.
+        updated_at (datetime): Timestamp recording the last update of an
+          instance, set to the current time on creation and updates.
+
+    Methods:
+        __str__(self): Returns a string representation of the model instance.
+        __repr__(self): Returns an official string representation of the model.
+        __eq__(self, other): Determines equality based on ID, creation,
+          and update timestamps.
+        __hash__(self): Provides a hash based on the ID, created_at, and
+          updated_at attributes.
+
+    Configurations:
+        orm_mode (bool): Allows the model to be used with ORM, set to True to
+          enable.
     """
 
     id: str = Field(
@@ -29,10 +49,16 @@ class BaseModel(SQLModel):
         orm_mode = True  # noqa
 
     def __str__(self):
-        return f"BaseModel: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at})"
+        return (
+            f"BaseModel: (id={self.id}, created_at={self.created_at}, "
+            f"updated_at={self.updated_at})"
+        )
 
     def __repr__(self):
-        return f"BaseModel: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at})"
+        return (
+            f"BaseModel: (id={self.id}, created_at={self.created_at}, "
+            f"updated_at={self.updated_at})"
+        )
 
     def __eq__(self, other):
         return (
