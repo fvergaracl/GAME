@@ -674,8 +674,6 @@
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"User not found with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> for externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># noqa</span>
             <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">'--------------------------------------'</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">user_points</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">user_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
@@ -695,11 +693,6 @@
 
         <span class="n">user_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_all_UserPoints_by_taskId_with_details</span><span class="p">(</span>
             <span class="n">task_id</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">'*****************************************'</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">'*****************************************'</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">'*****************************************'</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">'*****************************************'</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">user_points</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">user_points</span></div>
 </div>
 
