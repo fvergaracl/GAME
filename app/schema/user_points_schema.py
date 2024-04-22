@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
+from app.schema.base_schema import ModelBaseInfo
 from app.schema.wallet_schema import WalletWithoutUserId
 from app.util.schema import AllOptional
 
@@ -33,6 +33,7 @@ class PointsAssignedToUser(PointsAssigned):
 
 class PointsAssignedToUserWithDetails(PointsAssignedToUser):  # noqa
     pointsData: List[PointsAssignedToUser]
+
 
 class TaskPointsByGame(BaseModel):
     externalTaskId: str
@@ -70,6 +71,31 @@ class UserPoints(
 class ResponseGetPointsByTask(BaseModel):
     externalUserId: str
     points: int
+
+
+class PointsDetail(BaseModel):
+    points: int
+    caseName: str
+    created_at: str
+
+
+class TaskDetail(BaseModel):
+    externalTaskId: str
+    pointsData: List[PointsDetail]
+
+
+class GameDetail(BaseModel):
+    externalGameId: str
+    points: int
+    timesAwarded: int
+    tasks: List[TaskDetail]
+
+
+class UserGamePoints(BaseModel):
+    externalUserId: str
+    points: int
+    timesAwarded: int
+    games: List[GameDetail]
 
 
 class ResponseGetPointsByGame(BaseModel):
