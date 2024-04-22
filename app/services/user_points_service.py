@@ -12,11 +12,13 @@ from app.repository.wallet_transaction_repository import (
 from app.schema.user_points_schema import (
     ResponseGetPointsByGame, ResponseGetPointsByTask,
     ResponsePointsByExternalUserId, UserPointsAssign, AllPointsByGame,
-    TaskPointsByGame,  PointsAssignedToUser
+    TaskPointsByGame,  PointsAssignedToUser, UserGamePoints, GameDetail,
+    TaskDetail
 )
 from app.schema.games_schema import ListTasksWithUsers
 from app.schema.task_schema import (
-    BaseUser, AssignedPointsToExternalUserId, TasksWithUsers, BaseUserFirstAction
+    AssignedPointsToExternalUserId, TasksWithUsers,
+    BaseUserFirstAction
 )
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
@@ -45,6 +47,9 @@ class UserPointsService(BaseService):
         self.wallet_transaction_repository = wallet_transaction_repository
         self.strategy_service = StrategyService()
         super().__init__(user_points_repository)
+
+    def query_user_points(self, schema):
+        return self.user_points_repository.read_by_options(schema)
 
     def get_users_by_gameId(self, gameId):
         game = self.game_repository.read_by_column(
@@ -85,11 +90,11 @@ class UserPointsService(BaseService):
                         externalTaskId, externalUserId
                     )
                     all_externalUserId.append(
-                            BaseUserFirstAction(
-                                externalUserId=user.externalUserId,
-                                created_at=str(user.created_at),
-                                firstAction=str(first_user_point.created_at)
-                            ))
+                        BaseUserFirstAction(
+                            externalUserId=user.externalUserId,
+                            created_at=str(user.created_at),
+                            firstAction=str(first_user_point.created_at)
+                        ))
             all_tasks = {
                 "externalTaskId": externalTaskId,
                 "users": all_externalUserId
@@ -98,6 +103,153 @@ class UserPointsService(BaseService):
         return ListTasksWithUsers(
             gameId=gameId, tasks=response
         )
+
+    def get_points_by_user_list(self, users_list):
+        """
+        example response:
+        [
+        {
+                "externalUserId": "string",
+                "points": 19,
+                "timesAwarded": 5,
+                "games": [
+                        {
+                                "externalGameId": "externalGameId",
+                                "points": 10,
+                                "timesAwarded": 4,
+                                "tasks": [
+                                        {
+                                                "externalTaskId": "externalTaskId",
+                                                "pointsData": [
+                                                        {
+                                                                "points": 2,
+                                                                "caseName": "BasicEngagement",
+                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"
+                                                        },
+                                                        {
+                                                                "points": 6,
+                                                                "caseName": "BasicEngagement",
+                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"
+                                                        }
+
+                                                ]
+                                        },
+                                        {
+                                                "externalTaskId": "externalTaskId2",
+                                                "pointsData": [
+                                                        {
+                                                                "points": 1,
+                                                                "caseName": "BasicEngagement",
+                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"
+                                                        },
+                                                        {
+                                                                "points": 1,
+                                                                "caseName": "BasicEngagement",
+                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"
+                                                        }
+                                                ]
+                                        }
+                                ]
+                        },
+                        {
+                                "externalGameId": "externalGameId2",
+                                "points": 9,
+                                "timesAwarded": 1,
+                                "tasks": [
+                                        {
+                                                "externalTaskId": "externalTaskId",
+                                                "pointsData": [
+                                                        {
+                                                                "points": 9,
+                                                                "caseName": "BasicEngagement",
+                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"
+                                                        }
+                                                ]
+                                        }
+                                ]
+                        }
+                ]
+        },
+        {
+                "externalUserId": "string2",
+                "points": 19,
+                "timesAwarded": 5,
+                "games": [
+                        {
+                                "externalGameId": "externalGameId",
+                                "points": 10,
+                                "timesAwarded": 4,
+                                "tasks": [
+                                        {
+                                                "externalTaskId": "externalTaskId",
+                                                "pointsData": [
+                                                        {
+                                                                "points": 2,
+                                                                "caseName": "BasicEngagement",
+                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"
+                                                        },
+                                                        {
+                                                                "points": 6,
+                                                                "caseName": "BasicEngagement",
+                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"
+                                                        }
+
+                                                ]
+                                        },
+                                        {
+                                                "externalTaskId": "externalTaskId2",
+                                                "pointsData": [
+                                                        {
+                                                                "points": 1,
+                                                                "caseName": "BasicEngagement",
+                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"
+                                                        },
+                                                        {
+                                                                "points": 1,
+                                                                "caseName": "BasicEngagement",
+                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"
+                                                        }
+                                                ]
+                                        }
+                                ]
+                        },
+                        {
+                                "externalGameId": "externalGameId2",
+                                "points": 9,
+                                "timesAwarded": 1,
+                                "tasks": [
+                                        {
+                                                "externalTaskId": "externalTaskId",
+                                                "pointsData": [
+                                                        {
+                                                                "points": 9,
+                                                                "caseName": "BasicEngagement",
+                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"
+                                                        }
+                                                ]
+                                        }
+                                ]
+                        }
+                ]
+        }
+]
+        """
+        response = []
+        print(' ')
+        print(' ')
+        print(' ')
+        print(' ')
+        print(' ')
+        print(' ')
+        print(' ')
+        print(' ')
+        for user in users_list:
+            user_points = self.get_all_points_by_externalUserId(user)
+            response.append(user_points)
+        return response
+
+        # pass}
+        return True
 
     def get_points_by_externalUserId(self, externalUserId):
         user = self.users_repository.read_by_column(
@@ -197,7 +349,7 @@ class UserPointsService(BaseService):
         if not game:
             raise NotFoundError(
                 detail=f"Game not found by gameId: {gameId}"
-            )   
+            )
         user = self.users_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=False
         )
@@ -449,6 +601,67 @@ class UserPointsService(BaseService):
         )
 
         return points
+
+    def get_all_points_by_externalUserId(self, externalUserId):
+        self.users_repository.read_by_column(
+            column="externalUserId",
+            value=externalUserId,
+            not_found_message=(
+                f"User with externalUserId {externalUserId} not found"),
+            not_found_raise_exception=True
+        )
+
+        tasks = self.user_points_repository.get_task_by_externalUserId(
+            externalUserId
+        )
+
+        response = []
+        for task in tasks:
+            game = self.game_repository.read_by_column(
+                "id", task.gameId, not_found_raise_exception=True
+            )
+            response.append(self.get_points_by_gameId(game.id))
+
+        for game in response:
+            # UserGamePoints
+            points = 0
+            times_awarded = 0
+            games = []
+            for task in game.task:
+                # GameDetail
+                task_points = 0
+                task_times_awarded = 0
+                tasks = []
+                for point in task.points:
+                    if point.externalUserId == externalUserId:
+                        task_points += point.points
+                        task_times_awarded += point.timesAwarded
+                        if point.points > 0:
+                            tasks.append(
+                                TaskDetail(
+                                    externalTaskId=task.externalTaskId,
+                                    pointsData=point.pointsData
+                                )
+                            )
+                points += task_points
+                times_awarded += task_times_awarded
+                if points > 0 and len(tasks) > 0:
+                    games.append(
+                        GameDetail(
+                            externalGameId=game.externalGameId,
+                            points=task_points,
+                            timesAwarded=task_times_awarded,
+                            tasks=tasks
+                        )
+                    )
+            return UserGamePoints(
+                externalUserId=externalUserId,
+                points=points,
+                timesAwarded=times_awarded,
+                games=games
+            )
+
+        return None
 
     def get_points_of_user(self, externalUserId):
         user = self.users_repository.read_by_column(
