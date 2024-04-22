@@ -250,11 +250,13 @@
 <span class="kn">from</span> <span class="nn">app.schema.user_points_schema</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ResponseGetPointsByGame</span><span class="p">,</span> <span class="n">ResponseGetPointsByTask</span><span class="p">,</span>
     <span class="n">ResponsePointsByExternalUserId</span><span class="p">,</span> <span class="n">UserPointsAssign</span><span class="p">,</span> <span class="n">AllPointsByGame</span><span class="p">,</span>
-    <span class="n">TaskPointsByGame</span><span class="p">,</span>  <span class="n">PointsAssignedToUser</span>
+    <span class="n">TaskPointsByGame</span><span class="p">,</span>  <span class="n">PointsAssignedToUser</span><span class="p">,</span> <span class="n">UserGamePoints</span><span class="p">,</span> <span class="n">GameDetail</span><span class="p">,</span>
+    <span class="n">TaskDetail</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">app.schema.games_schema</span> <span class="kn">import</span> <span class="n">ListTasksWithUsers</span>
 <span class="kn">from</span> <span class="nn">app.schema.task_schema</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">BaseUser</span><span class="p">,</span> <span class="n">AssignedPointsToExternalUserId</span><span class="p">,</span> <span class="n">TasksWithUsers</span><span class="p">,</span> <span class="n">BaseUserFirstAction</span>
+    <span class="n">AssignedPointsToExternalUserId</span><span class="p">,</span> <span class="n">TasksWithUsers</span><span class="p">,</span>
+    <span class="n">BaseUserFirstAction</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">app.schema.wallet_schema</span> <span class="kn">import</span> <span class="n">CreateWallet</span>
 <span class="kn">from</span> <span class="nn">app.schema.wallet_transaction_schema</span> <span class="kn">import</span> <span class="n">BaseWalletTransaction</span>
@@ -285,6 +287,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span> <span class="o">=</span> <span class="n">wallet_transaction_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span> <span class="o">=</span> <span class="n">StrategyService</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">user_points_repository</span><span class="p">)</span>
+
+<div class="viewcode-block" id="UserPointsService.query_user_points">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.query_user_points">[docs]</a>
+    <span class="k">def</span> <span class="nf">query_user_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">read_by_options</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="UserPointsService.get_users_by_gameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_users_by_gameId">[docs]</a>
@@ -327,11 +335,11 @@
                         <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
                     <span class="p">)</span>
                     <span class="n">all_externalUserId</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="n">BaseUserFirstAction</span><span class="p">(</span>
-                                <span class="n">externalUserId</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">externalUserId</span><span class="p">,</span>
-                                <span class="n">created_at</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">created_at</span><span class="p">),</span>
-                                <span class="n">firstAction</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">first_user_point</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span>
-                            <span class="p">))</span>
+                        <span class="n">BaseUserFirstAction</span><span class="p">(</span>
+                            <span class="n">externalUserId</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">externalUserId</span><span class="p">,</span>
+                            <span class="n">created_at</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">created_at</span><span class="p">),</span>
+                            <span class="n">firstAction</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">first_user_point</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span>
+                        <span class="p">))</span>
             <span class="n">all_tasks</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">"externalTaskId"</span><span class="p">:</span> <span class="n">externalTaskId</span><span class="p">,</span>
                 <span class="s2">"users"</span><span class="p">:</span> <span class="n">all_externalUserId</span>
@@ -340,6 +348,156 @@
         <span class="k">return</span> <span class="n">ListTasksWithUsers</span><span class="p">(</span>
             <span class="n">gameId</span><span class="o">=</span><span class="n">gameId</span><span class="p">,</span> <span class="n">tasks</span><span class="o">=</span><span class="n">response</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserPointsService.get_points_by_user_list">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_by_user_list">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_points_by_user_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users_list</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        example response:</span>
+<span class="sd">        [</span>
+<span class="sd">        {</span>
+<span class="sd">                "externalUserId": "string",</span>
+<span class="sd">                "points": 19,</span>
+<span class="sd">                "timesAwarded": 5,</span>
+<span class="sd">                "games": [</span>
+<span class="sd">                        {</span>
+<span class="sd">                                "externalGameId": "externalGameId",</span>
+<span class="sd">                                "points": 10,</span>
+<span class="sd">                                "timesAwarded": 4,</span>
+<span class="sd">                                "tasks": [</span>
+<span class="sd">                                        {</span>
+<span class="sd">                                                "externalTaskId": "externalTaskId",</span>
+<span class="sd">                                                "pointsData": [</span>
+<span class="sd">                                                        {</span>
+<span class="sd">                                                                "points": 2,</span>
+<span class="sd">                                                                "caseName": "BasicEngagement",</span>
+<span class="sd">                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"</span>
+<span class="sd">                                                        },</span>
+<span class="sd">                                                        {</span>
+<span class="sd">                                                                "points": 6,</span>
+<span class="sd">                                                                "caseName": "BasicEngagement",</span>
+<span class="sd">                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"</span>
+<span class="sd">                                                        }</span>
+
+<span class="sd">                                                ]</span>
+<span class="sd">                                        },</span>
+<span class="sd">                                        {</span>
+<span class="sd">                                                "externalTaskId": "externalTaskId2",</span>
+<span class="sd">                                                "pointsData": [</span>
+<span class="sd">                                                        {</span>
+<span class="sd">                                                                "points": 1,</span>
+<span class="sd">                                                                "caseName": "BasicEngagement",</span>
+<span class="sd">                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"</span>
+<span class="sd">                                                        },</span>
+<span class="sd">                                                        {</span>
+<span class="sd">                                                                "points": 1,</span>
+<span class="sd">                                                                "caseName": "BasicEngagement",</span>
+<span class="sd">                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"</span>
+<span class="sd">                                                        }</span>
+<span class="sd">                                                ]</span>
+<span class="sd">                                        }</span>
+<span class="sd">                                ]</span>
+<span class="sd">                        },</span>
+<span class="sd">                        {</span>
+<span class="sd">                                "externalGameId": "externalGameId2",</span>
+<span class="sd">                                "points": 9,</span>
+<span class="sd">                                "timesAwarded": 1,</span>
+<span class="sd">                                "tasks": [</span>
+<span class="sd">                                        {</span>
+<span class="sd">                                                "externalTaskId": "externalTaskId",</span>
+<span class="sd">                                                "pointsData": [</span>
+<span class="sd">                                                        {</span>
+<span class="sd">                                                                "points": 9,</span>
+<span class="sd">                                                                "caseName": "BasicEngagement",</span>
+<span class="sd">                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"</span>
+<span class="sd">                                                        }</span>
+<span class="sd">                                                ]</span>
+<span class="sd">                                        }</span>
+<span class="sd">                                ]</span>
+<span class="sd">                        }</span>
+<span class="sd">                ]</span>
+<span class="sd">        },</span>
+<span class="sd">        {</span>
+<span class="sd">                "externalUserId": "string2",</span>
+<span class="sd">                "points": 19,</span>
+<span class="sd">                "timesAwarded": 5,</span>
+<span class="sd">                "games": [</span>
+<span class="sd">                        {</span>
+<span class="sd">                                "externalGameId": "externalGameId",</span>
+<span class="sd">                                "points": 10,</span>
+<span class="sd">                                "timesAwarded": 4,</span>
+<span class="sd">                                "tasks": [</span>
+<span class="sd">                                        {</span>
+<span class="sd">                                                "externalTaskId": "externalTaskId",</span>
+<span class="sd">                                                "pointsData": [</span>
+<span class="sd">                                                        {</span>
+<span class="sd">                                                                "points": 2,</span>
+<span class="sd">                                                                "caseName": "BasicEngagement",</span>
+<span class="sd">                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"</span>
+<span class="sd">                                                        },</span>
+<span class="sd">                                                        {</span>
+<span class="sd">                                                                "points": 6,</span>
+<span class="sd">                                                                "caseName": "BasicEngagement",</span>
+<span class="sd">                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"</span>
+<span class="sd">                                                        }</span>
+
+<span class="sd">                                                ]</span>
+<span class="sd">                                        },</span>
+<span class="sd">                                        {</span>
+<span class="sd">                                                "externalTaskId": "externalTaskId2",</span>
+<span class="sd">                                                "pointsData": [</span>
+<span class="sd">                                                        {</span>
+<span class="sd">                                                                "points": 1,</span>
+<span class="sd">                                                                "caseName": "BasicEngagement",</span>
+<span class="sd">                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"</span>
+<span class="sd">                                                        },</span>
+<span class="sd">                                                        {</span>
+<span class="sd">                                                                "points": 1,</span>
+<span class="sd">                                                                "caseName": "BasicEngagement",</span>
+<span class="sd">                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"</span>
+<span class="sd">                                                        }</span>
+<span class="sd">                                                ]</span>
+<span class="sd">                                        }</span>
+<span class="sd">                                ]</span>
+<span class="sd">                        },</span>
+<span class="sd">                        {</span>
+<span class="sd">                                "externalGameId": "externalGameId2",</span>
+<span class="sd">                                "points": 9,</span>
+<span class="sd">                                "timesAwarded": 1,</span>
+<span class="sd">                                "tasks": [</span>
+<span class="sd">                                        {</span>
+<span class="sd">                                                "externalTaskId": "externalTaskId",</span>
+<span class="sd">                                                "pointsData": [</span>
+<span class="sd">                                                        {</span>
+<span class="sd">                                                                "points": 9,</span>
+<span class="sd">                                                                "caseName": "BasicEngagement",</span>
+<span class="sd">                                                                "created_at": "2024-03-25T16:09:40.529736+00:00"</span>
+<span class="sd">                                                        }</span>
+<span class="sd">                                                ]</span>
+<span class="sd">                                        }</span>
+<span class="sd">                                ]</span>
+<span class="sd">                        }</span>
+<span class="sd">                ]</span>
+<span class="sd">        }</span>
+<span class="sd">]</span>
+<span class="sd">        """</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users_list</span><span class="p">:</span>
+            <span class="n">user_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_points_by_externalUserId</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user_points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+        <span class="c1"># pass}</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="UserPointsService.get_points_by_externalUserId">
@@ -448,7 +606,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found by gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>
-            <span class="p">)</span>   
+            <span class="p">)</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"externalUserId"</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -712,6 +870,70 @@
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">points</span></div>
+
+
+<div class="viewcode-block" id="UserPointsService.get_all_points_by_externalUserId">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_all_points_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
+            <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"User with externalUserId </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
+            <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_task_by_externalUserId</span><span class="p">(</span>
+            <span class="n">externalUserId</span>
+        <span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
+                <span class="s2">"id"</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_points_by_gameId</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">game</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="c1"># UserGamePoints</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">times_awarded</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">games</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">task</span><span class="p">:</span>
+                <span class="c1"># GameDetail</span>
+                <span class="n">task_points</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">task_times_awarded</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">:</span>
+                        <span class="n">task_points</span> <span class="o">+=</span> <span class="n">point</span><span class="o">.</span><span class="n">points</span>
+                        <span class="n">task_times_awarded</span> <span class="o">+=</span> <span class="n">point</span><span class="o">.</span><span class="n">timesAwarded</span>
+                        <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">points</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">TaskDetail</span><span class="p">(</span>
+                                    <span class="n">externalTaskId</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">externalTaskId</span><span class="p">,</span>
+                                    <span class="n">pointsData</span><span class="o">=</span><span class="n">point</span><span class="o">.</span><span class="n">pointsData</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                <span class="n">points</span> <span class="o">+=</span> <span class="n">task_points</span>
+                <span class="n">times_awarded</span> <span class="o">+=</span> <span class="n">task_times_awarded</span>
+                <span class="k">if</span> <span class="n">points</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">games</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">GameDetail</span><span class="p">(</span>
+                            <span class="n">externalGameId</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">externalGameId</span><span class="p">,</span>
+                            <span class="n">points</span><span class="o">=</span><span class="n">task_points</span><span class="p">,</span>
+                            <span class="n">timesAwarded</span><span class="o">=</span><span class="n">task_times_awarded</span><span class="p">,</span>
+                            <span class="n">tasks</span><span class="o">=</span><span class="n">tasks</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="k">return</span> <span class="n">UserGamePoints</span><span class="p">(</span>
+                <span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
+                <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+                <span class="n">timesAwarded</span><span class="o">=</span><span class="n">times_awarded</span><span class="p">,</span>
+                <span class="n">games</span><span class="o">=</span><span class="n">games</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="UserPointsService.get_points_of_user">

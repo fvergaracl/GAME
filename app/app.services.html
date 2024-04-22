@@ -335,6 +335,8 @@
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.count_measurements_by_external_task_id()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_all_points_by_externalUserId()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_avg_time_between_tasks_by_user_and_game_task()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_avg_time_between_tasks_for_all_users()</span></code></a>
@@ -346,6 +348,8 @@
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_by_externalUserId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_by_gameId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_by_user_list" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_by_user_list()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_of_user" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_of_user()</span></code></a>
         </li>
@@ -360,6 +364,8 @@
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_points_by_externalTaskId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_points_by_externalTaskId_and_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.query_user_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.query_user_points()</span></code></a>
         </li></ul>
             </nav>
         </li></ul>
@@ -627,6 +633,10 @@
 <span class="sig-name descname"><span class="pre">count_measurements_by_external_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.count_measurements_by_external_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId">
+<span class="sig-name descname"><span class="pre">get_all_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_all_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task">
 <span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_by_user_and_game_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_avg_time_between_tasks_by_user_and_game_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -650,6 +660,205 @@
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_gameId">
 <span class="sig-name descname"><span class="pre">get_points_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_gameId" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_user_list">
+<span class="sig-name descname"><span class="pre">get_points_by_user_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_user_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_user_list" title="Link to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>example response:
+[
+{</p>
+<blockquote>
+<div><p>“externalUserId”: “string”,
+“points”: 19,
+“timesAwarded”: 5,
+“games”: [</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><p>“externalGameId”: “externalGameId”,
+“points”: 10,
+“timesAwarded”: 4,
+“tasks”: [</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><p>“externalTaskId”: “externalTaskId”,
+“pointsData”: [</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“points”: 2,
+“caseName”: “BasicEngagement”,
+“created_at”: “2024-03-25T16:09:40.529736+00:00”</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“points”: 6,
+“caseName”: “BasicEngagement”,
+“created_at”: “2024-03-25T16:09:40.529736+00:00”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“externalTaskId”: “externalTaskId2”,
+“pointsData”: [</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“points”: 1,
+“caseName”: “BasicEngagement”,
+“created_at”: “2024-03-25T16:09:40.529736+00:00”</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“points”: 1,
+“caseName”: “BasicEngagement”,
+“created_at”: “2024-03-25T16:09:40.529736+00:00”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“externalGameId”: “externalGameId2”,
+“points”: 9,
+“timesAwarded”: 1,
+“tasks”: [</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><p>“externalTaskId”: “externalTaskId”,
+“pointsData”: [</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“points”: 9,
+“caseName”: “BasicEngagement”,
+“created_at”: “2024-03-25T16:09:40.529736+00:00”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>},
+{</p>
+<blockquote>
+<div><p>“externalUserId”: “string2”,
+“points”: 19,
+“timesAwarded”: 5,
+“games”: [</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><p>“externalGameId”: “externalGameId”,
+“points”: 10,
+“timesAwarded”: 4,
+“tasks”: [</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><p>“externalTaskId”: “externalTaskId”,
+“pointsData”: [</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“points”: 2,
+“caseName”: “BasicEngagement”,
+“created_at”: “2024-03-25T16:09:40.529736+00:00”</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“points”: 6,
+“caseName”: “BasicEngagement”,
+“created_at”: “2024-03-25T16:09:40.529736+00:00”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“externalTaskId”: “externalTaskId2”,
+“pointsData”: [</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“points”: 1,
+“caseName”: “BasicEngagement”,
+“created_at”: “2024-03-25T16:09:40.529736+00:00”</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“points”: 1,
+“caseName”: “BasicEngagement”,
+“created_at”: “2024-03-25T16:09:40.529736+00:00”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>},
+{</p>
+<blockquote>
+<div><p>“externalGameId”: “externalGameId2”,
+“points”: 9,
+“timesAwarded”: 1,
+“tasks”: [</p>
+<blockquote>
+<div><dl>
+<dt>{</dt><dd><p>“externalTaskId”: “externalTaskId”,
+“pointsData”: [</p>
+<blockquote>
+<div><dl class="simple">
+<dt>{</dt><dd><p>“points”: 9,
+“caseName”: “BasicEngagement”,
+“created_at”: “2024-03-25T16:09:40.529736+00:00”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>]</p>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_of_user">
 <span class="sig-name descname"><span class="pre">get_points_of_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_user" title="Link to this definition">¶</a></dt>
@@ -677,6 +886,10 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId">
 <span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId_and_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalTaskId_and_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.query_user_points">
+<span class="sig-name descname"><span class="pre">query_user_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.query_user_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.query_user_points" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 </dd></dl>
 </section>
