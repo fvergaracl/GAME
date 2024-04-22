@@ -35,8 +35,8 @@ class GamesParams(BaseModel, table=True):
         sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id"))
     )
 
-    class Config:  # SQLAlchemy configuration
-        orm_mode = True  # Enables ORM mode for SQLModel
+    class Config:
+        orm_mode = True
 
     def __str__(self):
         return (
