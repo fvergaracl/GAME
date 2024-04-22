@@ -96,6 +96,7 @@ class UserGamePoints(BaseModel):
     points: int
     timesAwarded: int
     games: List[GameDetail]
+    userExists: Optional[bool] = True
 
 
 class ResponseGetPointsByGame(BaseModel):
