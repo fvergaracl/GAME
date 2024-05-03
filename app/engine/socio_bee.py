@@ -96,11 +96,10 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
                     self.variable_peak_performer_bonus_points,
                     "PeakPerformerBonus"
                 )
-            if (user_diff_time > user_avg_time_taken):
-                return (
-                    self.variable_global_advantage_adjustment_points,
-                    "GlobalAdvantageAdjustment"
-                )
+            return (
+                self.variable_global_advantage_adjustment_points,
+                "GlobalAdvantageAdjustment"
+            )
         return (
             self.variable_individual_adjustment_points,
             "IndividualAdjustment"
