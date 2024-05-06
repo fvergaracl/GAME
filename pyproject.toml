@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "GAME"
-version = "1.1.005"
+version = "1.1.006"
 description = "GAME (Goals And Motivation Engine)"
 authors = ["fvergaracl <fvergaracl@gmail.com>"]
 license = "MIT"
@@ -86,6 +86,7 @@ sphinx-material = {git = "https://github.com/bashtage/sphinx-material.git"}
 sphinx = "^7.2.6"
 sphinx-rtd-theme = "^2.0.0"
 sphinx-autobuild = "^2024.2.4"
+commitizen = "^3.25.0"
 
 [build-system]
 requires = ["poetry-core"]

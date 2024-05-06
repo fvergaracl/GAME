@@ -1,17 +1,13 @@
 #!/bin/bash
 
-# Assuming this script is located in the "kubernetes" directory
-# and the YAML files are also within this directory or its subdirectories.
 
-# Change directory to the location of the script
 cd "$(dirname "$0")"
 
-# Source the .env file to load environment variables
+
 if [ -f ".env" ]; then
     export $(cat .env | sed 's/#.*//g' | xargs)
 fi
 
-# Define the namespace where resources will be deployed
 NAMESPACE=${GAMIFICATIONENGINE_NAMESPACE}
 
 # Colors
@@ -21,7 +17,6 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Function to display help message
 show_help() {
     echo "Usage: $0 [OPTION]"
     echo "Apply Kubernetes YAML files for specific components."
@@ -38,13 +33,11 @@ show_help() {
     echo "  $0 --api --verbose   # Apply only the API deployment with verbose output."
 }
 
-# Function to apply a YAML file and display colored messages
 apply_yaml() {
     FILE=$1
     VERBOSE=$2
     TEMP_FILE="temp-$(basename $FILE)"
 
-    # Use envsubst to substitute environment variable values in the YAML file
     envsubst < $FILE > $TEMP_FILE
 
     if [ "$VERBOSE" = "--verbose" ]; then
@@ -58,11 +51,9 @@ apply_yaml() {
         echo -e "${RED}[-] Error: Failed to apply the resource $TEMP_FILE to the namespace $NAMESPACE.${NC}"
     fi
 
-    # Remove the temporary file after applying
     rm $TEMP_FILE
 }
 
-# Check if help is requested
 for arg in "$@"; do
     if [ "$arg" = "--help" ]; then
         show_help
@@ -70,7 +61,6 @@ for arg in "$@"; do
     fi
 done
 
-# List of YAML files for each deployment
 POSTGRES_FILES=(
     "kubernetes/volumen/postgres-data-persistentvolumeclaim.yaml"
     "kubernetes/services/postgres-service.yaml"
@@ -88,7 +78,6 @@ INGRESS=(
 
 )
 
-# Determine which deployment to apply based on command-line argument
 if [ "$1" = "--postgres" ]; then
     FILES=("${POSTGRES_FILES[@]}")
 elif [ "$1" = "--api" ]; then
@@ -100,7 +89,6 @@ else
     exit 1
 fi
 
-# Apply each YAML file
 for FILE in "${FILES[@]}"; do
     apply_yaml $FILE $2 # $2 can be --verbose
 done
