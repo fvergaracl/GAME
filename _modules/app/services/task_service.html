@@ -243,8 +243,9 @@
 <span class="kn">from</span> <span class="nn">app.repository.user_repository</span> <span class="kn">import</span> <span class="n">UserRepository</span>
 <span class="kn">from</span> <span class="nn">app.repository.game_params_repository</span> <span class="kn">import</span> <span class="n">GameParamsRepository</span>
 <span class="kn">from</span> <span class="nn">app.repository.task_params_repository</span> <span class="kn">import</span> <span class="n">TaskParamsRepository</span>
-<span class="kn">from</span> <span class="nn">app.schema.task_schema</span> <span class="kn">import</span> <span class="p">(</span><span class="n">CreateTask</span><span class="p">,</span>
-                                    <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">,</span> <span class="n">FindTask</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">app.schema.task_schema</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CreateTask</span><span class="p">,</span> <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">,</span> <span class="n">FindTask</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">app.schema.tasks_params_schema</span> <span class="kn">import</span> <span class="n">InsertTaskParams</span>
 <span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
 <span class="kn">from</span> <span class="nn">app.services.strategy_service</span> <span class="kn">import</span> <span class="n">StrategyService</span>
@@ -253,16 +254,47 @@
 <div class="viewcode-block" id="TaskService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService">[docs]</a>
 <span class="k">class</span> <span class="nc">TaskService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">strategy_service</span><span class="p">:</span> <span class="n">StrategyService</span><span class="p">,</span>
-        <span class="n">task_repository</span><span class="p">:</span> <span class="n">TaskRepository</span><span class="p">,</span>
-        <span class="n">game_repository</span><span class="p">:</span> <span class="n">GameRepository</span><span class="p">,</span>
-        <span class="n">user_repository</span><span class="p">:</span> <span class="n">UserRepository</span><span class="p">,</span>
-        <span class="n">user_points_repository</span><span class="p">:</span> <span class="n">UserPointsRepository</span><span class="p">,</span>
-        <span class="n">game_params_repository</span><span class="p">:</span> <span class="n">GameParamsRepository</span><span class="p">,</span>
-        <span class="n">task_params_repository</span><span class="p">:</span> <span class="n">TaskParamsRepository</span><span class="p">,</span>
-    <span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Service class for managing tasks.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        strategy_service (StrategyService): Service instance for strategies.</span>
+<span class="sd">        task_repository (TaskRepository): Repository instance for tasks.</span>
+<span class="sd">        game_repository (GameRepository): Repository instance for games.</span>
+<span class="sd">        user_repository (UserRepository): Repository instance for users.</span>
+<span class="sd">        user_points_repository (UserPointsRepository): Repository instance for</span>
+<span class="sd">          user points.</span>
+<span class="sd">        game_params_repository (GameParamsRepository): Repository instance for</span>
+<span class="sd">          game parameters.</span>
+<span class="sd">        task_params_repository (TaskParamsRepository): Repository instance for</span>
+<span class="sd">          task parameters.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">strategy_service</span><span class="p">:</span> <span class="n">StrategyService</span><span class="p">,</span>
+                 <span class="n">task_repository</span><span class="p">:</span> <span class="n">TaskRepository</span><span class="p">,</span>
+                 <span class="n">game_repository</span><span class="p">:</span> <span class="n">GameRepository</span><span class="p">,</span>
+                 <span class="n">user_repository</span><span class="p">:</span> <span class="n">UserRepository</span><span class="p">,</span>
+                 <span class="n">user_points_repository</span><span class="p">:</span> <span class="n">UserPointsRepository</span><span class="p">,</span>
+                 <span class="n">game_params_repository</span><span class="p">:</span> <span class="n">GameParamsRepository</span><span class="p">,</span>
+                 <span class="n">task_params_repository</span><span class="p">:</span> <span class="n">TaskParamsRepository</span>
+                 <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the TaskService with the provided repositories and</span>
+<span class="sd">          services.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            strategy_service (StrategyService): The strategy service instance.</span>
+<span class="sd">            task_repository (TaskRepository): The task repository instance.</span>
+<span class="sd">            game_repository (GameRepository): The game repository instance.</span>
+<span class="sd">            user_repository (UserRepository): The user repository instance.</span>
+<span class="sd">            user_points_repository (UserPointsRepository): The user points</span>
+<span class="sd">              repository instance.</span>
+<span class="sd">            game_params_repository (GameParamsRepository): The game parameters</span>
+<span class="sd">              repository instance.</span>
+<span class="sd">            task_params_repository (TaskParamsRepository): The task parameters</span>
+<span class="sd">              repository instance.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span> <span class="o">=</span> <span class="n">strategy_service</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span> <span class="o">=</span> <span class="n">task_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span> <span class="o">=</span> <span class="n">game_repository</span>
@@ -272,45 +304,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span> <span class="o">=</span> <span class="n">task_params_repository</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">task_repository</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TaskService.get_points_by_externalGameId">
-<a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_points_by_externalGameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">):</span>
-        <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
-            <span class="s2">"externalGameId"</span><span class="p">,</span>
-            <span class="n">externalGameId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Game not found with externalGameId: </span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
-            <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">all_tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_gameId</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-
-        <span class="n">user_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_all_UserPoints_by_gameId</span><span class="p">(</span>
-            <span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="TaskService.get_points_by_user_externalUserId">
-<a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_points_by_user_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_by_user_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
-            <span class="s2">"externalUserId"</span><span class="p">,</span>
-            <span class="n">externalUserId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"User not found with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
-            <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">user_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_all_UserPoints_by_userId</span></div>
-
-
 <div class="viewcode-block" id="TaskService.get_tasks_list_by_externalGameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_tasks_list_by_externalGameId">[docs]</a>
     <span class="k">def</span> <span class="nf">get_tasks_list_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">find_query</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves a list of tasks associated with a game by its external game</span>
+<span class="sd">          ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId (str): The external game ID.</span>
+<span class="sd">            find_query: The query for finding tasks.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of tasks associated with the game.</span>
+<span class="sd">        """</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"externalGameId"</span><span class="p">,</span>
             <span class="n">externalGameId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Game not found with externalGameId: </span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found with externalGameId: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
@@ -323,6 +335,16 @@
 <div class="viewcode-block" id="TaskService.get_tasks_list_by_gameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_tasks_list_by_gameId">[docs]</a>
     <span class="k">def</span> <span class="nf">get_tasks_list_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">find_query</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves a list of tasks associated with a game by its game ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (UUID): The game ID.</span>
+<span class="sd">            find_query: The query for finding tasks.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of tasks associated with the game.</span>
+<span class="sd">        """</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
             <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -357,7 +379,6 @@
                         <span class="n">strategy_data</span><span class="p">[</span><span class="s2">"variables"</span><span class="p">][</span><span class="n">param</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">value</span>
         <span class="n">cleaned_tasks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">all_tasks</span><span class="p">[</span><span class="s2">"items"</span><span class="p">]:</span>
-
             <span class="n">strategy_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span><span class="o">.</span><span class="n">get_strategy_by_id</span><span class="p">(</span>
                 <span class="n">task</span><span class="o">.</span><span class="n">strategyId</span><span class="p">)</span>
             <span class="n">task_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
@@ -410,6 +431,16 @@
 <div class="viewcode-block" id="TaskService.get_task_by_gameId_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_by_gameId_externalTaskId">[docs]</a>
     <span class="k">def</span> <span class="nf">get_task_by_gameId_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves a task by its game ID and external task ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (UUID): The game ID.</span>
+<span class="sd">            externalTaskId (str): The external task ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CreateTaskPostSuccesfullyCreated: The task details.</span>
+<span class="sd">        """</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
             <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -421,7 +452,8 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># noqa</span>
+                <span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for "</span>
+                <span class="sa">f</span><span class="s2">"gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="n">strategy_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span><span class="o">.</span><span class="n">get_strategy_by_id</span><span class="p">(</span>
@@ -471,7 +503,8 @@
             <span class="n">gameParams</span><span class="o">=</span><span class="n">game_params</span><span class="p">,</span>
             <span class="n">taskParams</span><span class="o">=</span><span class="n">task_params</span><span class="p">,</span>
             <span class="n">strategy</span><span class="o">=</span><span class="n">strategy_data</span><span class="p">,</span>
-            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Task found successfully with externalTaskId: </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2"> "</span>  <span class="c1"># noqa</span>
+            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Task found successfully with externalTaskId: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">response</span></div>
@@ -480,12 +513,23 @@
 <div class="viewcode-block" id="TaskService.get_task_by_externalGameId_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId">[docs]</a>
     <span class="k">def</span> <span class="nf">get_task_by_externalGameId_externalTaskId</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves a task by its external game ID and external task ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId (str): The external game ID.</span>
+<span class="sd">            externalTaskId (str): The external task ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CreateTaskPostSuccesfullyCreated: The task details.</span>
+<span class="sd">        """</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"externalGameId"</span><span class="p">,</span>
             <span class="n">externalGameId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Game not found with externalGameId: </span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found with externalGameId: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
             <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -496,11 +540,21 @@
 <div class="viewcode-block" id="TaskService.create_task_by_externalGameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.create_task_by_externalGameId">[docs]</a>
     <span class="k">def</span> <span class="nf">create_task_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">create_query</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Creates a task for a game by its external game ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId (str): The external game ID.</span>
+<span class="sd">            create_query: The query for creating the task.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CreateTaskPostSuccesfullyCreated: The created task details.</span>
+<span class="sd">        """</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"externalGameId"</span><span class="p">,</span>
             <span class="n">externalGameId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Game not found with externalGameId: </span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found with externalGameId: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
             <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -512,11 +566,17 @@
 
 <div class="viewcode-block" id="TaskService.create_task_by_game_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.create_task_by_game_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_task_by_game_id</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">gameId</span><span class="p">,</span>
-            <span class="n">create_query</span><span class="p">):</span>
-        <span class="c1"># Check if the game exists</span>
+    <span class="k">def</span> <span class="nf">create_task_by_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">create_query</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Creates a task for a game by its game ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (UUID): The game ID.</span>
+<span class="sd">            create_query: The query for creating the task.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CreateTaskPostSuccesfullyCreated: The created task details.</span>
+<span class="sd">        """</span>
         <span class="n">game_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
             <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -528,12 +588,12 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">task</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ConflictError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Task already exists with externalTaskId: </span><span class="si">{</span><span class="n">create_query</span><span class="o">.</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># noqa</span>
+                <span class="sa">f</span><span class="s2">"Task already exists with externalTaskId: "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">create_query</span><span class="o">.</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="n">strategy_id</span> <span class="o">=</span> <span class="n">create_query</span><span class="o">.</span><span class="n">strategyId</span>
 
-        <span class="c1"># Check if the strategy exists</span>
         <span class="n">strategy_data</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">strategy_id</span><span class="p">:</span>
             <span class="n">strategy_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span><span class="o">.</span><span class="n">get_strategy_by_id</span><span class="p">(</span>
@@ -611,7 +671,8 @@
             <span class="n">gameParams</span><span class="o">=</span><span class="n">game_params</span><span class="p">,</span>
             <span class="n">taskParams</span><span class="o">=</span><span class="n">created_params</span><span class="p">,</span>
             <span class="n">strategy</span><span class="o">=</span><span class="n">strategy_data</span><span class="p">,</span>
-            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Task created successfully with externalTaskId: </span><span class="si">{</span><span class="n">created_task</span><span class="o">.</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2"> "</span>  <span class="c1"># noqa</span>
+            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Task created successfully with externalTaskId: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">created_task</span><span class="o">.</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">response</span></div>
@@ -620,15 +681,25 @@
 <div class="viewcode-block" id="TaskService.get_task_detail_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_detail_by_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_task_detail_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves task details by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema: The schema containing the task ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The task and strategy details.</span>
+<span class="sd">        """</span>
         <span class="n">taskId</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">taskId</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
-            <span class="n">taskId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="s2">"Task not found by id : </span><span class="si">{taskId}</span><span class="s2">"</span>
+            <span class="n">taskId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="s2">"Task not found by id: </span><span class="si">{taskId}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="n">strategyId</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">strategyId</span>
         <span class="n">strategy</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">strategyId</span><span class="p">:</span>
             <span class="n">strategy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
-                <span class="n">strategyId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="s2">"Strategy not found by id : </span><span class="si">{strategyId}</span><span class="s2">"</span>  <span class="c1"># noqa</span>
+                <span class="n">strategyId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="s2">"Strategy not found by id: "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">strategyId</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">"task"</span><span class="p">:</span> <span class="n">task</span><span class="p">,</span> <span class="s2">"strategy"</span><span class="p">:</span> <span class="n">strategy</span><span class="p">}</span></div>
 
@@ -636,11 +707,20 @@
 <div class="viewcode-block" id="TaskService.get_points_by_task_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_points_by_task_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_points_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves points by task ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (UUID): The game ID.</span>
+<span class="sd">            externalTaskId (str): The external task ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of points associated with the task.</span>
+<span class="sd">        """</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"id"</span><span class="p">,</span>
             <span class="n">gameId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Game not found with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
             <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -649,7 +729,8 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># noqa</span>
+                <span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for "</span>
+                <span class="sa">f</span><span class="s2">"gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="n">task_id</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span>
@@ -665,6 +746,17 @@
     <span class="k">def</span> <span class="nf">get_points_of_user_by_task_id</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves points of a user by task ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (UUID): The game ID.</span>
+<span class="sd">            externalTaskId (str): The external task ID.</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The user's points details.</span>
+<span class="sd">        """</span>
         <span class="n">points_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_points_by_task_id_with_details</span><span class="p">(</span>
             <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">)</span>
         <span class="n">user_points</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
@@ -672,26 +764,37 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">user_points</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"User not found with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> for externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># noqa</span>
+                <span class="sa">f</span><span class="s2">"User not found with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> for "</span>
+                <span class="sa">f</span><span class="s2">"externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">user_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="TaskService.get_points_by_task_id_with_details">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_points_by_task_id_with_details">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_by_task_id_with_details</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_points_by_task_id_with_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves points by task ID with details.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (UUID): The game ID.</span>
+<span class="sd">            externalTaskId (str): The external task ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of points associated with the task.</span>
+<span class="sd">        """</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_gameId_and_externalTaskId</span><span class="p">(</span>
             <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># noqa</span>
+                <span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> for "</span>
+                <span class="sa">f</span><span class="s2">"gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="n">task_id</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span>
 
-        <span class="n">user_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_all_UserPoints_by_taskId_with_details</span><span class="p">(</span>
+        <span class="n">user_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_all_UserPoints_by_taskId_with_details</span><span class="p">(</span>  <span class="c1"># noqa: E501</span>
             <span class="n">task_id</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">user_points</span></div>
 </div>

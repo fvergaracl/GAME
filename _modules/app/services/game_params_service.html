@@ -243,7 +243,22 @@
 <div class="viewcode-block" id="GameParamsService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_params_service.GameParamsService">[docs]</a>
 <span class="k">class</span> <span class="nc">GameParamsService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Service class for game parameters.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        game_params_repository (GameParamsRepository): Repository instance for</span>
+<span class="sd">         game parameters.</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_params_repository</span><span class="p">:</span> <span class="n">GameParamsRepository</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the GameParamsService with the provided repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            game_params_repository (GameParamsRepository): The repository</span>
+<span class="sd">              instance.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">game_params_repository</span> <span class="o">=</span> <span class="n">game_params_repository</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">game_params_repository</span><span class="p">)</span></div>
 

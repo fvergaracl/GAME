@@ -245,9 +245,27 @@
 <div class="viewcode-block" id="WalletService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.wallet_service.WalletService">[docs]</a>
 <span class="k">class</span> <span class="nc">WalletService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Service class for managing wallets.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        wallet_repository (WalletRepository): Repository instance for wallets.</span>
+<span class="sd">        user_repository (UserRepository): Repository instance for users.</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">wallet_repository</span><span class="p">:</span> <span class="n">WalletRepository</span><span class="p">,</span> <span class="n">user_repository</span><span class="p">:</span> <span class="n">UserRepository</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">wallet_repository</span><span class="p">:</span> <span class="n">WalletRepository</span><span class="p">,</span>
+            <span class="n">user_repository</span><span class="p">:</span> <span class="n">UserRepository</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the WalletService with the provided repositories.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            wallet_repository (WalletRepository): The wallet repository</span>
+<span class="sd">              instance.</span>
+<span class="sd">            user_repository (UserRepository): The user repository instance.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span> <span class="o">=</span> <span class="n">wallet_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span> <span class="o">=</span> <span class="n">user_repository</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">wallet_repository</span><span class="p">)</span>
@@ -255,10 +273,20 @@
 <div class="viewcode-block" id="WalletService.get_wallet_by_user_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.wallet_service.WalletService.get_wallet_by_user_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_wallet_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves the wallet associated with the given user ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseWallet: The wallet details.</span>
+<span class="sd">        """</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"User with externalUserId </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"User with externalUserId "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">wallet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
@@ -267,7 +295,6 @@
             <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Wallet with userId </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># wallet add externalUserId</span>
         <span class="n">wallet</span> <span class="o">=</span> <span class="n">BaseWallet</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">coinsBalance</span><span class="o">=</span><span class="n">wallet</span><span class="o">.</span><span class="n">coinsBalance</span><span class="p">,</span>
@@ -284,12 +311,20 @@
 <div class="viewcode-block" id="WalletService.preview_convert">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.wallet_service.WalletService.preview_convert">[docs]</a>
     <span class="k">def</span> <span class="nf">preview_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Previews the conversion of points to coins for a user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema: The schema containing conversion details.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ResponsePreviewConvertPoints: The conversion preview details.</span>
+<span class="sd">        """</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">externalUserId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"User with externalUserId </span><span class="si">{</span><span class="n">schema</span><span class="o">.</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span>
-            <span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"User with externalUserId "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">schema</span><span class="o">.</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">wallet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>

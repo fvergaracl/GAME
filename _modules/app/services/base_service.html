@@ -242,48 +242,128 @@
 <div class="viewcode-block" id="BaseService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService">[docs]</a>
 <span class="k">class</span> <span class="nc">BaseService</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Base service class providing common CRUD operations.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        repository: The repository instance used for database operations.</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the BaseService with the provided repository.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            repository: The repository instance.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span> <span class="o">=</span> <span class="n">repository</span>
 
 <div class="viewcode-block" id="BaseService.get_list">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.get_list">[docs]</a>
     <span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves a list of items based on the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema: The schema for filtering the items.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of items matching the schema.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">read_by_options</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseService.get_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.get_by_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves an item by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (UUID): The unique identifier of the item.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The item with the given ID.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseService.add">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.add">[docs]</a>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Adds a new item using the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema: The schema representing the item to be added.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The added item.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseService.patch">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.patch">[docs]</a>
     <span class="k">def</span> <span class="nf">patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Updates an item partially by its ID using the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (UUID): The unique identifier of the item.</span>
+<span class="sd">            schema: The schema representing the updated data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The updated item.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseService.patch_attr">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.patch_attr">[docs]</a>
     <span class="k">def</span> <span class="nf">patch_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Updates a specific attribute of an item by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (UUID): The unique identifier of the item.</span>
+<span class="sd">            attr (str): The attribute to be updated.</span>
+<span class="sd">            value: The new value of the attribute.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The updated item.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">update_attr</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseService.put_update">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.put_update">[docs]</a>
     <span class="k">def</span> <span class="nf">put_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Replaces an item entirely by its ID using the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (UUID): The unique identifier of the item.</span>
+<span class="sd">            schema: The schema representing the new data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The updated item.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">whole_update</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseService.remove_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.remove_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">remove_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">remove_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Removes an item by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (UUID): The unique identifier of the item.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">delete_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span></div>
 </div>
 

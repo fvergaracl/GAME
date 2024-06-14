@@ -231,6 +231,8 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.base_service.BaseService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.base_service.BaseService.repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.repository</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.base_service.BaseService.add" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.add()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.base_service.BaseService.get_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.get_by_id()</span></code></a>
@@ -251,7 +253,11 @@
         </li>
         <li class="md-nav__item"><a href="#module-app.services.game_params_service" class="md-nav__link">app.services.game_params_service module</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.game_params_service.GameParamsService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameParamsService</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.game_params_service.GameParamsService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameParamsService</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.game_params_service.GameParamsService.game_params_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameParamsService.game_params_repository</span></code></a>
+        </li></ul>
+            </nav>
         </li></ul>
             </nav>
         </li>
@@ -259,6 +265,14 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.game_service.GameService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.game_service.GameService.game_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService.game_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.game_service.GameService.game_params_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService.game_params_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.game_service.GameService.task_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService.task_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.game_service.GameService.strategy_service" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService.strategy_service</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.game_service.GameService.create" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService.create()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.game_service.GameService.get_all_games" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService.get_all_games()</span></code></a>
@@ -273,7 +287,7 @@
         </li>
         <li class="md-nav__item"><a href="#app.services.game_service.GameService.get_tasks_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService.get_tasks_by_gameId()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.game_service.GameService.pacth_game_by_externalGameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService.pacth_game_by_externalGameId()</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.game_service.GameService.patch_game_by_externalGameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService.patch_game_by_externalGameId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.game_service.GameService.patch_game_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameService.patch_game_by_id()</span></code></a>
         </li></ul>
@@ -285,6 +299,8 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.strategy_service.StrategyService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.strategy_service.StrategyService.None" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyService.None</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.strategy_service.StrategyService.get_Class_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyService.get_Class_by_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.strategy_service.StrategyService.get_strategy_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyService.get_strategy_by_id()</span></code></a>
@@ -299,17 +315,27 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.task_service.TaskService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.strategy_service" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.strategy_service</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.task_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.task_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.game_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.game_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.user_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.user_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.user_points_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.user_points_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.game_params_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.game_params_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.task_params_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.task_params_repository</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.task_service.TaskService.create_task_by_externalGameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.create_task_by_externalGameId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.task_service.TaskService.create_task_by_game_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.create_task_by_game_id()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_points_by_externalGameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_points_by_externalGameId()</span></code></a>
-        </li>
         <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_points_by_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_points_by_task_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_points_by_task_id_with_details" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_points_by_task_id_with_details()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_points_by_user_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_points_by_user_externalUserId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_points_of_user_by_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_points_of_user_by_task_id()</span></code></a>
         </li>
@@ -331,19 +357,19 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.assign_points_to_user" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.assign_points_to_user()</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.user_points_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.user_points_repository</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.count_measurements_by_external_task_id()</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.users_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.users_repository</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_all_points_by_externalUserId()</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.game_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.game_repository</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_avg_time_between_tasks_by_user_and_game_task()</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.task_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.task_repository</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_avg_time_between_tasks_for_all_users()</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.wallet_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.wallet_repository</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_last_window_time_diff()</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.wallet_transaction_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.wallet_transaction_repository</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_new_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_new_last_window_time_diff()</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.strategy_service" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.strategy_service</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_by_externalUserId()</span></code></a>
         </li>
@@ -351,19 +377,7 @@
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_by_user_list" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_by_user_list()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_of_user" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_of_user()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_of_user_in_game" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_of_user_in_game()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_user_task_measurements_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_user_task_measurements_count()</span></code></a>
-        </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_by_gameId()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_points_by_externalGameId()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_points_by_externalTaskId()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_points_by_externalTaskId_and_externalUserId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.query_user_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.query_user_points()</span></code></a>
         </li></ul>
@@ -375,6 +389,16 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.user_service.UserService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.user_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.user_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.user_points_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.user_points_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.task_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.task_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.wallet_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.wallet_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.wallet_transaction_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.wallet_transaction_repository</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.user_service.UserService.assign_points_to_user" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.assign_points_to_user()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_service.UserService.basic_engagement_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.basic_engagement_points()</span></code></a>
@@ -417,6 +441,10 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService.wallet_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService.wallet_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService.user_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService.user_repository</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService.get_wallet_by_user_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService.get_wallet_by_user_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService.preview_convert" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService.preview_convert()</span></code></a>
@@ -427,7 +455,11 @@
         </li>
         <li class="md-nav__item"><a href="#module-app.services.wallet_transaction_service" class="md-nav__link">app.services.wallet_transaction_service module</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.wallet_transaction_service.WalletTransactionService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletTransactionService</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.wallet_transaction_service.WalletTransactionService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletTransactionService</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.wallet_transaction_service.WalletTransactionService.wallet_transaction_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletTransactionService.wallet_transaction_repository</span></code></a>
+        </li></ul>
+            </nav>
         </li></ul>
             </nav>
         </li>
@@ -460,34 +492,131 @@
 <dt class="sig sig-object py" id="app.services.base_service.BaseService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.base_service.</span></span><span class="sig-name descname"><span class="pre">BaseService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base service class providing common CRUD operations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.base_service.BaseService.repository">
+<span class="sig-name descname"><span class="pre">repository</span></span><a class="headerlink" href="#app.services.base_service.BaseService.repository" title="Link to this definition">¶</a></dt>
+<dd><p>The repository instance used for database operations.</p>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.add">
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.add" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Adds a new item using the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – The schema representing the item to be added.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The added item.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.get_by_id">
 <span class="sig-name descname"><span class="pre">get_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.get_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.get_by_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves an item by its ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>UUID</em>) – The unique identifier of the item.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The item with the given ID.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.get_list">
 <span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.get_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.get_list" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves a list of items based on the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – The schema for filtering the items.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of items matching the schema.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.patch">
 <span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.patch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.patch" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Updates an item partially by its ID using the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>UUID</em>) – The unique identifier of the item.</p></li>
+<li><p><strong>schema</strong> – The schema representing the updated data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated item.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.patch_attr">
 <span class="sig-name descname"><span class="pre">patch_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.patch_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.patch_attr" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Updates a specific attribute of an item by its ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>UUID</em>) – The unique identifier of the item.</p></li>
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The attribute to be updated.</p></li>
+<li><p><strong>value</strong> – The new value of the attribute.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated item.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.put_update">
 <span class="sig-name descname"><span class="pre">put_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.put_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.put_update" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Replaces an item entirely by its ID using the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>UUID</em>) – The unique identifier of the item.</p></li>
+<li><p><strong>schema</strong> – The schema representing the new data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated item.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.remove_by_id">
-<span class="sig-name descname"><span class="pre">remove_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.remove_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.remove_by_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">remove_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.remove_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.remove_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Removes an item by its ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>UUID</em>) – The unique identifier of the item.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.game_params_service">
@@ -496,6 +625,18 @@
 <dt class="sig sig-object py" id="app.services.game_params_service.GameParamsService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.game_params_service.</span></span><span class="sig-name descname"><span class="pre">GameParamsService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_params_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.game_params_repository.GameParamsRepository" title="app.repository.game_params_repository.GameParamsRepository"><span class="pre">GameParamsRepository</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_params_service.html#GameParamsService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_params_service.GameParamsService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
+<p>Service class for game parameters.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.game_params_service.GameParamsService.game_params_repository">
+<span class="sig-name descname"><span class="pre">game_params_repository</span></span><a class="headerlink" href="#app.services.game_params_service.GameParamsService.game_params_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for
+game parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.game_params_repository.GameParamsRepository" title="app.repository.game_params_repository.GameParamsRepository">GameParamsRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.game_service">
@@ -504,42 +645,199 @@
 <dt class="sig sig-object py" id="app.services.game_service.GameService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.game_service.</span></span><span class="sig-name descname"><span class="pre">GameService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.game_repository.GameRepository" title="app.repository.game_repository.GameRepository"><span class="pre">GameRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_params_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.game_params_repository.GameParamsRepository" title="app.repository.game_params_repository.GameParamsRepository"><span class="pre">GameParamsRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository"><span class="pre">TaskRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#app.services.strategy_service.StrategyService" title="app.services.strategy_service.StrategyService"><span class="pre">StrategyService</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
+<p>Service class for managing games.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.game_service.GameService.game_repository">
+<span class="sig-name descname"><span class="pre">game_repository</span></span><a class="headerlink" href="#app.services.game_service.GameService.game_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for games.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.game_repository.GameRepository" title="app.repository.game_repository.GameRepository">GameRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.game_service.GameService.game_params_repository">
+<span class="sig-name descname"><span class="pre">game_params_repository</span></span><a class="headerlink" href="#app.services.game_service.GameService.game_params_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for
+game parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.game_params_repository.GameParamsRepository" title="app.repository.game_params_repository.GameParamsRepository">GameParamsRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.game_service.GameService.task_repository">
+<span class="sig-name descname"><span class="pre">task_repository</span></span><a class="headerlink" href="#app.services.game_service.GameService.task_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository">TaskRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.game_service.GameService.strategy_service">
+<span class="sig-name descname"><span class="pre">strategy_service</span></span><a class="headerlink" href="#app.services.game_service.GameService.strategy_service" title="Link to this definition">¶</a></dt>
+<dd><p>Service instance for strategies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#app.services.strategy_service.StrategyService" title="app.services.strategy_service.StrategyService">StrategyService</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.create">
 <span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PostCreateGame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.create" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Creates a new game using the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> (<em>PostCreateGame</em>) – The schema representing the game to be
+created.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created game details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GameCreated</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_all_games">
 <span class="sig-name descname"><span class="pre">get_all_games</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_all_games"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_all_games" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves all games based on the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – The schema for filtering the games.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of all games matching the schema.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_by_externalId">
 <span class="sig-name descname"><span class="pre">get_by_externalId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_by_externalId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_by_externalId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves a game by its external game ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>externalGameId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external game ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The game details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_by_gameId">
 <span class="sig-name descname"><span class="pre">get_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_by_gameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves a game by its game ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The game details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BaseGameResult</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_strategy_by_externalGameId">
 <span class="sig-name descname"><span class="pre">get_strategy_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_strategy_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_strategy_by_externalGameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves the strategy associated with a game by its external game ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>externalGameId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external game ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The strategy details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_strategy_by_gameId">
 <span class="sig-name descname"><span class="pre">get_strategy_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_strategy_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_strategy_by_gameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves the strategy associated with a game by its game ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The strategy details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_tasks_by_gameId">
 <span class="sig-name descname"><span class="pre">get_tasks_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_tasks_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_tasks_by_gameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves the tasks associated with a game by its game ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The game details including tasks.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="app.services.game_service.GameService.pacth_game_by_externalGameId">
-<span class="sig-name descname"><span class="pre">pacth_game_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PatchGame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.pacth_game_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.pacth_game_by_externalGameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="app.services.game_service.GameService.patch_game_by_externalGameId">
+<span class="sig-name descname"><span class="pre">patch_game_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PatchGame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.patch_game_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.patch_game_by_externalGameId" title="Link to this definition">¶</a></dt>
+<dd><p>Updates a game by its external game ID using the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalGameId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external game ID.</p></li>
+<li><p><strong>schema</strong> (<em>PatchGame</em>) – The schema representing the updated data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated game details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ResponsePatchGame</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.patch_game_by_id">
 <span class="sig-name descname"><span class="pre">patch_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PatchGame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.patch_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.patch_game_by_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Updates a game by its game ID using the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
+<li><p><strong>schema</strong> (<em>PatchGame</em>) – The schema representing the updated data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated game details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ResponsePatchGame</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.strategy_service">
@@ -548,18 +846,62 @@
 <dt class="sig sig-object py" id="app.services.strategy_service.StrategyService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.strategy_service.</span></span><span class="sig-name descname"><span class="pre">StrategyService</span></span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
+<p>Service class for managing strategies.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.strategy_service.StrategyService.None">
+<span class="sig-name descname"><span class="pre">None</span></span><a class="headerlink" href="#app.services.strategy_service.StrategyService.None" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.strategy_service.StrategyService.get_Class_by_id">
 <span class="sig-name descname"><span class="pre">get_Class_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService.get_Class_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService.get_Class_by_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves the class of a strategy by its ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The ID of the strategy.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The strategy class.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotFoundError</strong> – If the strategy class is not found.</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.strategy_service.StrategyService.get_strategy_by_id">
 <span class="sig-name descname"><span class="pre">get_strategy_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService.get_strategy_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService.get_strategy_by_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves a strategy by its ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The ID of the strategy.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The strategy details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotFoundError</strong> – If the strategy is not found.</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.strategy_service.StrategyService.list_all_strategies">
 <span class="sig-name descname"><span class="pre">list_all_strategies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService.list_all_strategies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService.list_all_strategies" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Lists all available strategies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of all strategies.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.task_service">
@@ -568,54 +910,271 @@
 <dt class="sig sig-object py" id="app.services.task_service.TaskService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.task_service.</span></span><span class="sig-name descname"><span class="pre">TaskService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#app.services.strategy_service.StrategyService" title="app.services.strategy_service.StrategyService"><span class="pre">StrategyService</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository"><span class="pre">TaskRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.game_repository.GameRepository" title="app.repository.game_repository.GameRepository"><span class="pre">GameRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository"><span class="pre">UserRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_points_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository"><span class="pre">UserPointsRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_params_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.game_params_repository.GameParamsRepository" title="app.repository.game_params_repository.GameParamsRepository"><span class="pre">GameParamsRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_params_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.task_params_repository.TaskParamsRepository" title="app.repository.task_params_repository.TaskParamsRepository"><span class="pre">TaskParamsRepository</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
+<p>Service class for managing tasks.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.task_service.TaskService.strategy_service">
+<span class="sig-name descname"><span class="pre">strategy_service</span></span><a class="headerlink" href="#app.services.task_service.TaskService.strategy_service" title="Link to this definition">¶</a></dt>
+<dd><p>Service instance for strategies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#app.services.strategy_service.StrategyService" title="app.services.strategy_service.StrategyService">StrategyService</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.task_service.TaskService.task_repository">
+<span class="sig-name descname"><span class="pre">task_repository</span></span><a class="headerlink" href="#app.services.task_service.TaskService.task_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository">TaskRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.task_service.TaskService.game_repository">
+<span class="sig-name descname"><span class="pre">game_repository</span></span><a class="headerlink" href="#app.services.task_service.TaskService.game_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for games.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.game_repository.GameRepository" title="app.repository.game_repository.GameRepository">GameRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.task_service.TaskService.user_repository">
+<span class="sig-name descname"><span class="pre">user_repository</span></span><a class="headerlink" href="#app.services.task_service.TaskService.user_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository">UserRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.task_service.TaskService.user_points_repository">
+<span class="sig-name descname"><span class="pre">user_points_repository</span></span><a class="headerlink" href="#app.services.task_service.TaskService.user_points_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for
+user points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository">UserPointsRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.task_service.TaskService.game_params_repository">
+<span class="sig-name descname"><span class="pre">game_params_repository</span></span><a class="headerlink" href="#app.services.task_service.TaskService.game_params_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for
+game parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.game_params_repository.GameParamsRepository" title="app.repository.game_params_repository.GameParamsRepository">GameParamsRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.task_service.TaskService.task_params_repository">
+<span class="sig-name descname"><span class="pre">task_params_repository</span></span><a class="headerlink" href="#app.services.task_service.TaskService.task_params_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for
+task parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.task_params_repository.TaskParamsRepository" title="app.repository.task_params_repository.TaskParamsRepository">TaskParamsRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.create_task_by_externalGameId">
 <span class="sig-name descname"><span class="pre">create_task_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.create_task_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.create_task_by_externalGameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Creates a task for a game by its external game ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalGameId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external game ID.</p></li>
+<li><p><strong>create_query</strong> – The query for creating the task.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created task details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>CreateTaskPostSuccesfullyCreated</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.create_task_by_game_id">
 <span class="sig-name descname"><span class="pre">create_task_by_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.create_task_by_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.create_task_by_game_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_by_externalGameId">
-<span class="sig-name descname"><span class="pre">get_points_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_by_externalGameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Creates a task for a game by its game ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
+<li><p><strong>create_query</strong> – The query for creating the task.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created task details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>CreateTaskPostSuccesfullyCreated</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_by_task_id">
 <span class="sig-name descname"><span class="pre">get_points_by_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_by_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_by_task_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves points by task ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
+<li><p><strong>externalTaskId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external task ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of points associated with the task.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_by_task_id_with_details">
 <span class="sig-name descname"><span class="pre">get_points_by_task_id_with_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_by_task_id_with_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_by_task_id_with_details" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_by_user_externalUserId">
-<span class="sig-name descname"><span class="pre">get_points_by_user_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_by_user_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_by_user_externalUserId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves points by task ID with details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
+<li><p><strong>externalTaskId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external task ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of points associated with the task.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_of_user_by_task_id">
 <span class="sig-name descname"><span class="pre">get_points_of_user_by_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_of_user_by_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_of_user_by_task_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves points of a user by task ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
+<li><p><strong>externalTaskId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external task ID.</p></li>
+<li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The user’s points details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId">
 <span class="sig-name descname"><span class="pre">get_task_by_externalGameId_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_by_externalGameId_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves a task by its external game ID and external task ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalGameId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external game ID.</p></li>
+<li><p><strong>externalTaskId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external task ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The task details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>CreateTaskPostSuccesfullyCreated</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_by_gameId_externalTaskId">
 <span class="sig-name descname"><span class="pre">get_task_by_gameId_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_by_gameId_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_by_gameId_externalTaskId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves a task by its game ID and external task ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
+<li><p><strong>externalTaskId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external task ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The task details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>CreateTaskPostSuccesfullyCreated</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_detail_by_id">
 <span class="sig-name descname"><span class="pre">get_task_detail_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_detail_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_detail_by_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves task details by its ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – The schema containing the task ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The task and strategy details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_tasks_list_by_externalGameId">
 <span class="sig-name descname"><span class="pre">get_tasks_list_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_tasks_list_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_tasks_list_by_externalGameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="simple">
+<dt>Retrieves a list of tasks associated with a game by its external game</dt><dd><p>ID.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalGameId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external game ID.</p></li>
+<li><p><strong>find_query</strong> – The query for finding tasks.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of tasks associated with the game.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_tasks_list_by_gameId">
 <span class="sig-name descname"><span class="pre">get_tasks_list_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_tasks_list_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_tasks_list_by_gameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves a list of tasks associated with a game by its game ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
+<li><p><strong>find_query</strong> – The query for finding tasks.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of tasks associated with the game.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.user_points_service">
@@ -624,78 +1183,158 @@
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.user_points_service.</span></span><span class="sig-name descname"><span class="pre">UserPointsService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_points_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository"><span class="pre">UserPointsRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository"><span class="pre">UserRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.game_repository.GameRepository" title="app.repository.game_repository.GameRepository"><span class="pre">GameRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository"><span class="pre">TaskRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository"><span class="pre">WalletRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet_transaction_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository"><span class="pre">WalletTransactionRepository</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.assign_points_to_user">
-<span class="sig-name descname"><span class="pre">assign_points_to_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.assign_points_to_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.assign_points_to_user" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id">
-<span class="sig-name descname"><span class="pre">count_measurements_by_external_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.count_measurements_by_external_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId">
-<span class="sig-name descname"><span class="pre">get_all_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_all_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task">
-<span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_by_user_and_game_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_avg_time_between_tasks_by_user_and_game_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users">
-<span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_for_all_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_avg_time_between_tasks_for_all_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_last_window_time_diff">
-<span class="sig-name descname"><span class="pre">get_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_last_window_time_diff" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_new_last_window_time_diff">
-<span class="sig-name descname"><span class="pre">get_new_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_new_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_new_last_window_time_diff" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<p>Service class for managing user points.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.user_points_repository">
+<span class="sig-name descname"><span class="pre">user_points_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.user_points_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for
+user points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository">UserPointsRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.users_repository">
+<span class="sig-name descname"><span class="pre">users_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.users_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository">UserRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.game_repository">
+<span class="sig-name descname"><span class="pre">game_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.game_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for games.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.game_repository.GameRepository" title="app.repository.game_repository.GameRepository">GameRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.task_repository">
+<span class="sig-name descname"><span class="pre">task_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.task_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository">TaskRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.wallet_repository">
+<span class="sig-name descname"><span class="pre">wallet_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.wallet_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for wallets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository">WalletRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.wallet_transaction_repository">
+<span class="sig-name descname"><span class="pre">wallet_transaction_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.wallet_transaction_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for wallet transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository">WalletTransactionRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.strategy_service">
+<span class="sig-name descname"><span class="pre">strategy_service</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.strategy_service" title="Link to this definition">¶</a></dt>
+<dd><p>Service instance for strategies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#app.services.strategy_service.StrategyService" title="app.services.strategy_service.StrategyService">StrategyService</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_externalUserId">
 <span class="sig-name descname"><span class="pre">get_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_externalUserId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves points associated with a user by their external user ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of points details for the user.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_gameId">
 <span class="sig-name descname"><span class="pre">get_points_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_gameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves points associated with a game by its game ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The points details for the game.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ResponseGetPointsByGame</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_user_list">
 <span class="sig-name descname"><span class="pre">get_points_by_user_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_user_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_user_list" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_of_user">
-<span class="sig-name descname"><span class="pre">get_points_of_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_user" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_of_user_in_game">
-<span class="sig-name descname"><span class="pre">get_points_of_user_in_game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_user_in_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_user_in_game" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_user_task_measurements_count">
-<span class="sig-name descname"><span class="pre">get_user_task_measurements_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_user_task_measurements_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_user_task_measurements_count" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves points associated with a list of users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>users_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – A list of user IDs.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of user points details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_by_gameId">
 <span class="sig-name descname"><span class="pre">get_users_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_by_gameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId">
-<span class="sig-name descname"><span class="pre">get_users_points_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId">
-<span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId">
-<span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId_and_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalTaskId_and_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves users associated with a game by its game ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of tasks with associated users.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ListTasksWithUsers</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.query_user_points">
 <span class="sig-name descname"><span class="pre">query_user_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.query_user_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.query_user_points" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Queries user points based on the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – The schema for querying user points.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of user points matching the schema.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.user_service">
@@ -704,10 +1343,78 @@
 <dt class="sig sig-object py" id="app.services.user_service.UserService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.user_service.</span></span><span class="sig-name descname"><span class="pre">UserService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository"><span class="pre">UserRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_points_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository"><span class="pre">UserPointsRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository"><span class="pre">TaskRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository"><span class="pre">WalletRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet_transaction_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository"><span class="pre">WalletTransactionRepository</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
+<p>Service class for managing users.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.user_repository">
+<span class="sig-name descname"><span class="pre">user_repository</span></span><a class="headerlink" href="#app.services.user_service.UserService.user_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository">UserRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.user_points_repository">
+<span class="sig-name descname"><span class="pre">user_points_repository</span></span><a class="headerlink" href="#app.services.user_service.UserService.user_points_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for
+user points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository">UserPointsRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.task_repository">
+<span class="sig-name descname"><span class="pre">task_repository</span></span><a class="headerlink" href="#app.services.user_service.UserService.task_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository">TaskRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.wallet_repository">
+<span class="sig-name descname"><span class="pre">wallet_repository</span></span><a class="headerlink" href="#app.services.user_service.UserService.wallet_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for wallets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository">WalletRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.wallet_transaction_repository">
+<span class="sig-name descname"><span class="pre">wallet_transaction_repository</span></span><a class="headerlink" href="#app.services.user_service.UserService.wallet_transaction_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for wallet transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository">WalletTransactionRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.assign_points_to_user">
 <span class="sig-name descname"><span class="pre">assign_points_to_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseUserPointsBaseModel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.assign_points_to_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.assign_points_to_user" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Assigns points to a user based on the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>userId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The user ID.</p></li>
+<li><p><strong>schema</strong> (<em>BaseUserPointsBaseModel</em>) – The schema containing point
+assignment details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The assigned points details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>UserPointsAssigned</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.basic_engagement_points">
 <span class="sig-name descname"><span class="pre">basic_engagement_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.basic_engagement_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.basic_engagement_points" title="Link to this definition">¶</a></dt>
@@ -715,87 +1422,227 @@
 <dt>Provides a fixed number of points as a basic engagement reward for a</dt><dd><p>user’s initial actions within the gamification system.</p>
 </dd>
 </dl>
-<p>Returns:
-- int: The fixed number of basic engagement points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The fixed number of basic engagement points.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.convert_points_to_coins">
 <span class="sig-name descname"><span class="pre">convert_points_to_coins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PostPointsConversionRequest</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.convert_points_to_coins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.convert_points_to_coins" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Converts points to coins for a user based on the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>userId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The user ID.</p></li>
+<li><p><strong>schema</strong> (<em>PostPointsConversionRequest</em>) – The schema containing
+conversion details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The conversion details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ResponsePointsConversion</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.convert_points_to_coins_externalUserId">
 <span class="sig-name descname"><span class="pre">convert_points_to_coins_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PostPointsConversionRequest</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.convert_points_to_coins_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.convert_points_to_coins_externalUserId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="simple">
+<dt>Converts points to coins for a user by their external user ID based on</dt><dd><p>the provided schema.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p></li>
+<li><p><strong>schema</strong> (<em>PostPointsConversionRequest</em>) – The schema containing
+conversion details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The conversion details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ResponsePointsConversion</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.create_user">
 <span class="sig-name descname"><span class="pre">create_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.create_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.create_user" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Creates a new user using the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – The schema representing the user to be created.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created user.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.get_points_by_user_id">
 <span class="sig-name descname"><span class="pre">get_points_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_points_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_points_by_user_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves points associated with a user by their user ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>userId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The user ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The user’s points and associated tasks.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>UserPointsTasks</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.get_wallet_by_externalUserId">
 <span class="sig-name descname"><span class="pre">get_wallet_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_wallet_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_wallet_by_externalUserId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves the wallet associated with a user by their external user ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wallet details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>UserWallet</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.get_wallet_by_user_id">
 <span class="sig-name descname"><span class="pre">get_wallet_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_wallet_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_wallet_by_user_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves the wallet associated with a user by their user ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>userId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The user ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wallet details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>UserWallet</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.global_advantage_adjustment_points">
 <span class="sig-name descname"><span class="pre">global_advantage_adjustment_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.global_advantage_adjustment_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.global_advantage_adjustment_points" title="Link to this definition">¶</a></dt>
-<dd><p>Awards additional points to users whose performance is above the
-global average but have shown a decrease in their individual
-performance. It’s designed to encourage users to strive for
-above-average performance, recognizing their effort amidst challenges.</p>
-<p>Returns:
-- int: The number of adjustment points for maintaining a global
-advantage.</p>
+<dd><dl class="simple">
+<dt>Awards additional points to users whose performance is above the</dt><dd><dl class="simple">
+<dt>global average but have shown a decrease in their individual</dt><dd><dl class="simple">
+<dt>performance. It’s designed to encourage users to strive for</dt><dd><dl class="simple">
+<dt>above-average performance, recognizing their effort amidst</dt><dd><p>challenges.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>The number of adjustment points for maintaining a global</dt><dd><p>advantage.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.individual_adjustment_points">
 <span class="sig-name descname"><span class="pre">individual_adjustment_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.individual_adjustment_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.individual_adjustment_points" title="Link to this definition">¶</a></dt>
-<dd><p>Rewards users who have improved their individual performance,
-regardless of theirstanding against the global average. It aims to
-acknowledge and encourage personal improvement, motivating users to
-keep advancing.</p>
-<p>Returns:
-- int: The number of points to award for individual performance
-improvement.</p>
+<dd><dl class="simple">
+<dt>Rewards users who have improved their individual performance,</dt><dd><dl class="simple">
+<dt>regardless of their standing against the global average. It aims to</dt><dd><dl class="simple">
+<dt>acknowledge and encourage personal improvement, motivating users</dt><dd><p>to keep advancing.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>The number of points to award for individual performance</dt><dd><p>improvement.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.individual_over_global_points">
 <span class="sig-name descname"><span class="pre">individual_over_global_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.individual_over_global_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.individual_over_global_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
-<dt>Awards additional points for users who have improved their individual</dt><dd><p>performance</p>
+<dt>Awards additional points for users who have improved their individual</dt><dd><dl class="simple">
+<dt>performance compared to their own history, even if below the global</dt><dd><p>average.</p>
 </dd>
 </dl>
-<p>compared to their own history, even if below the global average.</p>
-<p>Returns:
-- int: The number of additional points to award.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of additional points to award.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.need_for_motivation_points">
 <span class="sig-name descname"><span class="pre">need_for_motivation_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.need_for_motivation_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.need_for_motivation_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
-<dt>Provides a small point incentive for users who are underperforming</dt><dd><p>both individually</p>
+<dt>Provides a small point incentive for users who are underperforming</dt><dd><p>both individually and globally, to motivate improvement.</p>
 </dd>
 </dl>
-<p>and globally, to motivate improvement.</p>
-<p>Returns:
-- int: The number of points to award as motivation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of points to award as motivation.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.peak_performer_bonus_points">
 <span class="sig-name descname"><span class="pre">peak_performer_bonus_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.peak_performer_bonus_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.peak_performer_bonus_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
-<dt>Rewards users who have exceeded both their individual performance and</dt><dd><p>the global average,</p>
+<dt>Rewards users who have exceeded both their individual performance and</dt><dd><p>the global average, standing out as peak performers in the system.</p>
 </dd>
 </dl>
-<p>standing out as peak performers in the system.</p>
-<p>Returns:
-- int: The number of bonus points for peak performers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of bonus points for peak performers.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.performance_bonus_points">
@@ -804,8 +1651,14 @@ improvement.</p>
 <dt>Calculates the number of additional points to award for performance</dt><dd><p>above a certain threshold.</p>
 </dd>
 </dl>
-<p>Returns:
-- int: The number of bonus points to award.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of bonus points to award.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.performance_penalty_points">
@@ -814,17 +1667,56 @@ improvement.</p>
 <dt>Calculates the number of points to deduct as a penalty for performance</dt><dd><p>below a certain threshold.</p>
 </dd>
 </dl>
-<p>Returns:
-- int: The number of points to deduct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of points to deduct.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.preview_points_to_coins_conversion">
 <span class="sig-name descname"><span class="pre">preview_points_to_coins_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.preview_points_to_coins_conversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.preview_points_to_coins_conversion" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Previews the conversion of points to coins for a user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>userId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The user ID.</p></li>
+<li><p><strong>points</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of points to convert.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The conversion preview details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.preview_points_to_coins_conversion_externalUserId">
 <span class="sig-name descname"><span class="pre">preview_points_to_coins_conversion_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.preview_points_to_coins_conversion_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.preview_points_to_coins_conversion_externalUserId" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="simple">
+<dt>Previews the conversion of points to coins for a user by their</dt><dd><p>external user ID.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p></li>
+<li><p><strong>points</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of points to convert.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The conversion preview details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.wallet_service">
@@ -833,14 +1725,59 @@ improvement.</p>
 <dt class="sig sig-object py" id="app.services.wallet_service.WalletService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.wallet_service.</span></span><span class="sig-name descname"><span class="pre">WalletService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wallet_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository"><span class="pre">WalletRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository"><span class="pre">UserRepository</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_service.html#WalletService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_service.WalletService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
+<p>Service class for managing wallets.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.wallet_service.WalletService.wallet_repository">
+<span class="sig-name descname"><span class="pre">wallet_repository</span></span><a class="headerlink" href="#app.services.wallet_service.WalletService.wallet_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for wallets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository">WalletRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.wallet_service.WalletService.user_repository">
+<span class="sig-name descname"><span class="pre">user_repository</span></span><a class="headerlink" href="#app.services.wallet_service.WalletService.user_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository">UserRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.wallet_service.WalletService.get_wallet_by_user_id">
 <span class="sig-name descname"><span class="pre">get_wallet_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_service.html#WalletService.get_wallet_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_service.WalletService.get_wallet_by_user_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves the wallet associated with the given user ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wallet details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BaseWallet</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.wallet_service.WalletService.preview_convert">
 <span class="sig-name descname"><span class="pre">preview_convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_service.html#WalletService.preview_convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_service.WalletService.preview_convert" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Previews the conversion of points to coins for a user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – The schema containing conversion details.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The conversion preview details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ResponsePreviewConvertPoints</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.wallet_transaction_service">
@@ -849,6 +1786,17 @@ improvement.</p>
 <dt class="sig sig-object py" id="app.services.wallet_transaction_service.WalletTransactionService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.wallet_transaction_service.</span></span><span class="sig-name descname"><span class="pre">WalletTransactionService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wallet_transaction_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository"><span class="pre">WalletTransactionRepository</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_transaction_service.html#WalletTransactionService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_transaction_service.WalletTransactionService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
+<p>Service class for wallet transactions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.wallet_transaction_service.WalletTransactionService.wallet_transaction_repository">
+<span class="sig-name descname"><span class="pre">wallet_transaction_repository</span></span><a class="headerlink" href="#app.services.wallet_transaction_service.WalletTransactionService.wallet_transaction_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for wallet transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository">WalletTransactionRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services">

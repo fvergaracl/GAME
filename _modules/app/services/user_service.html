@@ -251,8 +251,11 @@
     <span class="n">BaseUserPointsBaseModel</span><span class="p">,</span> <span class="n">UserPointsAssigned</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">app.schema.user_schema</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">CreateWallet</span><span class="p">,</span> <span class="n">PostPointsConversionRequest</span><span class="p">,</span> <span class="n">ResponsePointsConversion</span><span class="p">,</span>
-    <span class="n">UserPointsTasks</span><span class="p">,</span> <span class="n">UserWallet</span>
+    <span class="n">CreateWallet</span><span class="p">,</span>
+    <span class="n">PostPointsConversionRequest</span><span class="p">,</span>
+    <span class="n">ResponsePointsConversion</span><span class="p">,</span>
+    <span class="n">UserPointsTasks</span><span class="p">,</span>
+    <span class="n">UserWallet</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">app.schema.wallet_transaction_schema</span> <span class="kn">import</span> <span class="n">BaseWalletTransaction</span>
 <span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
@@ -262,14 +265,40 @@
 <div class="viewcode-block" id="UserService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService">[docs]</a>
 <span class="k">class</span> <span class="nc">UserService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Service class for managing users.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        user_repository (UserRepository): Repository instance for users.</span>
+<span class="sd">        user_points_repository (UserPointsRepository): Repository instance for</span>
+<span class="sd">          user points.</span>
+<span class="sd">        task_repository (TaskRepository): Repository instance for tasks.</span>
+<span class="sd">        wallet_repository (WalletRepository): Repository instance for wallets.</span>
+<span class="sd">        wallet_transaction_repository (WalletTransactionRepository):</span>
+<span class="sd">          Repository instance for wallet transactions.</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">user_repository</span><span class="p">:</span> <span class="n">UserRepository</span><span class="p">,</span>
-        <span class="n">user_points_repository</span><span class="p">:</span> <span class="n">UserPointsRepository</span><span class="p">,</span>
-        <span class="n">task_repository</span><span class="p">:</span> <span class="n">TaskRepository</span><span class="p">,</span>
-        <span class="n">wallet_repository</span><span class="p">:</span> <span class="n">WalletRepository</span><span class="p">,</span>
-        <span class="n">wallet_transaction_repository</span><span class="p">:</span> <span class="n">WalletTransactionRepository</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">user_repository</span><span class="p">:</span> <span class="n">UserRepository</span><span class="p">,</span>
+            <span class="n">user_points_repository</span><span class="p">:</span> <span class="n">UserPointsRepository</span><span class="p">,</span>
+            <span class="n">task_repository</span><span class="p">:</span> <span class="n">TaskRepository</span><span class="p">,</span>
+            <span class="n">wallet_repository</span><span class="p">:</span> <span class="n">WalletRepository</span><span class="p">,</span>
+            <span class="n">wallet_transaction_repository</span><span class="p">:</span> <span class="n">WalletTransactionRepository</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the UserService with the provided repositories.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            user_repository (UserRepository): The user repository instance.</span>
+<span class="sd">            user_points_repository (UserPointsRepository): The user points</span>
+<span class="sd">              repository instance.</span>
+<span class="sd">            task_repository (TaskRepository): The task repository instance.</span>
+<span class="sd">            wallet_repository (WalletRepository): The wallet repository</span>
+<span class="sd">              instance.</span>
+<span class="sd">            wallet_transaction_repository (WalletTransactionRepository): The</span>
+<span class="sd">              wallet transaction repository instance.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span> <span class="o">=</span> <span class="n">user_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span> <span class="o">=</span> <span class="n">user_points_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span> <span class="o">=</span> <span class="n">task_repository</span>
@@ -277,7 +306,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span> <span class="o">=</span> <span class="n">wallet_transaction_repository</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">user_repository</span><span class="p">)</span>
 
-    <span class="c1"># Move to a helper class</span>
 <div class="viewcode-block" id="UserService.basic_engagement_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.basic_engagement_points">[docs]</a>
     <span class="k">def</span> <span class="nf">basic_engagement_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -286,7 +314,7 @@
 <span class="sd">          user's initial actions within the gamification system.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        - int: The fixed number of basic engagement points.</span>
+<span class="sd">            int: The fixed number of basic engagement points.</span>
 <span class="sd">        """</span>
         <span class="n">basic_points</span> <span class="o">=</span> <span class="mi">1</span>
 
@@ -301,7 +329,7 @@
 <span class="sd">          below a certain threshold.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        - int: The number of points to deduct.</span>
+<span class="sd">            int: The number of points to deduct.</span>
 <span class="sd">        """</span>
         <span class="n">penalty_points</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span>
 
@@ -316,7 +344,7 @@
 <span class="sd">          above a certain threshold.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        - int: The number of bonus points to award.</span>
+<span class="sd">            int: The number of bonus points to award.</span>
 <span class="sd">        """</span>
         <span class="n">bonus_points</span> <span class="o">=</span> <span class="mi">10</span>
 
@@ -328,11 +356,11 @@
     <span class="k">def</span> <span class="nf">individual_over_global_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Awards additional points for users who have improved their individual</span>
-<span class="sd">          performance</span>
-<span class="sd">        compared to their own history, even if below the global average.</span>
+<span class="sd">          performance compared to their own history, even if below the global</span>
+<span class="sd">            average.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        - int: The number of additional points to award.</span>
+<span class="sd">            int: The number of additional points to award.</span>
 <span class="sd">        """</span>
         <span class="n">improvement_points</span> <span class="o">=</span> <span class="mi">5</span>
 
@@ -344,11 +372,10 @@
     <span class="k">def</span> <span class="nf">need_for_motivation_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Provides a small point incentive for users who are underperforming</span>
-<span class="sd">          both individually</span>
-<span class="sd">        and globally, to motivate improvement.</span>
+<span class="sd">          both individually and globally, to motivate improvement.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        - int: The number of points to award as motivation.</span>
+<span class="sd">            int: The number of points to award as motivation.</span>
 <span class="sd">        """</span>
         <span class="n">motivation_points</span> <span class="o">=</span> <span class="mi">2</span>
 
@@ -360,11 +387,10 @@
     <span class="k">def</span> <span class="nf">peak_performer_bonus_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Rewards users who have exceeded both their individual performance and</span>
-<span class="sd">          the global average,</span>
-<span class="sd">        standing out as peak performers in the system.</span>
+<span class="sd">          the global average, standing out as peak performers in the system.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        - int: The number of bonus points for peak performers.</span>
+<span class="sd">            int: The number of bonus points for peak performers.</span>
 <span class="sd">        """</span>
         <span class="n">peak_points</span> <span class="o">=</span> <span class="mi">15</span>
 
@@ -376,13 +402,14 @@
     <span class="k">def</span> <span class="nf">global_advantage_adjustment_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Awards additional points to users whose performance is above the</span>
-<span class="sd">        global average but have shown a decrease in their individual</span>
-<span class="sd">        performance. It's designed to encourage users to strive for</span>
-<span class="sd">        above-average performance, recognizing their effort amidst challenges.</span>
+<span class="sd">          global average but have shown a decrease in their individual</span>
+<span class="sd">            performance. It's designed to encourage users to strive for</span>
+<span class="sd">              above-average performance, recognizing their effort amidst</span>
+<span class="sd">                challenges.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        - int: The number of adjustment points for maintaining a global</span>
-<span class="sd">        advantage.</span>
+<span class="sd">            int: The number of adjustment points for maintaining a global</span>
+<span class="sd">              advantage.</span>
 <span class="sd">        """</span>
         <span class="n">adjustment_points</span> <span class="o">=</span> <span class="mi">7</span>
 
@@ -394,41 +421,59 @@
     <span class="k">def</span> <span class="nf">individual_adjustment_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Rewards users who have improved their individual performance,</span>
-<span class="sd">        regardless of theirstanding against the global average. It aims to</span>
-<span class="sd">        acknowledge and encourage personal improvement, motivating users to</span>
-<span class="sd">        keep advancing.</span>
+<span class="sd">          regardless of their standing against the global average. It aims to</span>
+<span class="sd">            acknowledge and encourage personal improvement, motivating users</span>
+<span class="sd">              to keep advancing.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        - int: The number of points to award for individual performance</span>
-<span class="sd">        improvement.</span>
+<span class="sd">            int: The number of points to award for individual performance</span>
+<span class="sd">              improvement.</span>
 <span class="sd">        """</span>
         <span class="n">improvement_points</span> <span class="o">=</span> <span class="mi">8</span>
 
         <span class="k">return</span> <span class="n">improvement_points</span></div>
 
 
-    <span class="c1"># End of helper class</span>
-
 <div class="viewcode-block" id="UserService.create_user">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.create_user">[docs]</a>
     <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Creates a new user using the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema: The schema representing the user to be created.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The created user.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UserService.assign_points_to_user">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.assign_points_to_user">[docs]</a>
     <span class="k">def</span> <span class="nf">assign_points_to_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">BaseUserPointsBaseModel</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Assigns points to a user based on the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userId (str): The user ID.</span>
+<span class="sd">            schema (BaseUserPointsBaseModel): The schema containing point</span>
+<span class="sd">              assignment details.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            UserPointsAssigned: The assigned points details.</span>
+<span class="sd">        """</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
             <span class="n">userId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"User not found with userId: </span><span class="si">{</span><span class="n">userId</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="n">points</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">points</span>
-        <span class="n">measurement_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_user_measurement_count</span><span class="p">(</span>
+        <span class="n">measurement_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_user_measurement_count</span><span class="p">(</span>  <span class="c1"># noqa: E501</span>
             <span class="n">userId</span>
         <span class="p">)</span>
-        <span class="n">start_time_last_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_start_time_for_last_task</span><span class="p">(</span>
+        <span class="n">start_time_last_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_start_time_for_last_task</span><span class="p">(</span>  <span class="c1"># noqa: E501</span>
             <span class="n">userId</span>
         <span class="p">)</span>
-        <span class="n">end_time_last_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_time_taken_for_last_task</span><span class="p">(</span>
+        <span class="n">end_time_last_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_time_taken_for_last_task</span><span class="p">(</span>  <span class="c1"># noqa: E501</span>
             <span class="n">userId</span>
         <span class="p">)</span>
 
@@ -439,23 +484,23 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">duration_last_task</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="n">individual_calculation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_individual_calculation</span><span class="p">(</span>
+        <span class="n">individual_calculation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_individual_calculation</span><span class="p">(</span>  <span class="c1"># noqa: E501</span>
             <span class="n">userId</span>
         <span class="p">)</span>
 
-        <span class="n">global_calculation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_global_calculation</span><span class="p">()</span>
+        <span class="n">global_calculation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_global_calculation</span><span class="p">()</span>  <span class="c1"># noqa: E501</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"label_function_choose"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"-"</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">points</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">measurement_count</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basic_engagement_points</span><span class="p">()</span>
-                <span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"label_function_choose"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"basic_engagement_points"</span>
+                <span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"label_function_choose"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"basic_engagement_points"</span>  <span class="c1"># noqa: E501</span>
             <span class="k">elif</span> <span class="n">measurement_count</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">duration_last_task</span> <span class="o">&gt;</span> <span class="n">global_calculation</span><span class="p">:</span>
                     <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">performance_penalty_points</span><span class="p">()</span>
-                    <span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"label_function_choose"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"performance_penalty_points"</span>
+                    <span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"label_function_choose"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"performance_penalty_points"</span>  <span class="c1"># noqa: E501</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">performance_bonus_points</span><span class="p">()</span>
-                    <span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"label_function_choose"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"performance_bonus_points"</span>
+                    <span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"label_function_choose"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"performance_bonus_points"</span>  <span class="c1"># noqa: E501</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">duration_last_task</span> <span class="o">&gt;=</span> <span class="n">individual_calculation</span><span class="p">:</span>
                     <span class="k">if</span> <span class="p">(</span>
@@ -546,6 +591,15 @@
 <div class="viewcode-block" id="UserService.get_wallet_by_user_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.get_wallet_by_user_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_wallet_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves the wallet associated with a user by their user ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userId (str): The user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            UserWallet: The wallet details.</span>
+<span class="sd">        """</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
             <span class="n">userId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"User not found with userId: </span><span class="si">{</span><span class="n">userId</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
@@ -562,14 +616,18 @@
 
             <span class="n">wallet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">new_wallet</span><span class="p">)</span>
 
-        <span class="n">wallet_transactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
-            <span class="s2">"walletId"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">only_one</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">wallet_transactions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>  <span class="c1"># noqa: E501</span>
+            <span class="s2">"walletId"</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="n">only_one</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="n">wallet_transactions</span><span class="p">:</span>
-            <span class="c1"># created_at = transaction.created_at to string</span>
             <span class="n">transaction</span><span class="o">.</span><span class="n">created_at</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">transaction</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">UserWallet</span><span class="p">(</span>
-            <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">wallet</span><span class="o">=</span><span class="n">wallet</span><span class="p">,</span> <span class="n">walletTransactions</span><span class="o">=</span><span class="n">wallet_transactions</span>
+            <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="n">wallet</span><span class="o">=</span><span class="n">wallet</span><span class="p">,</span>
+            <span class="n">walletTransactions</span><span class="o">=</span><span class="n">wallet_transactions</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">response</span></div>
@@ -578,6 +636,15 @@
 <div class="viewcode-block" id="UserService.get_wallet_by_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.get_wallet_by_externalUserId">[docs]</a>
     <span class="k">def</span> <span class="nf">get_wallet_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves the wallet associated with a user by their external user ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            UserWallet: The wallet details.</span>
+<span class="sd">        """</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"externalUserId"</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
@@ -588,11 +655,23 @@
 <div class="viewcode-block" id="UserService.get_points_by_user_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.get_points_by_user_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_points_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves points associated with a user by their user ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userId (str): The user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            UserPointsTasks: The user's points and associated tasks.</span>
+<span class="sd">        """</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
             <span class="n">userId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"User not found with userId: </span><span class="si">{</span><span class="n">userId</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
-            <span class="s2">"userId"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">only_one</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
+            <span class="s2">"userId"</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="n">only_one</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
         <span class="n">tasks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">v</span><span class="o">.</span><span class="n">taskId</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">}</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">tasks</span><span class="p">:</span>
@@ -604,9 +683,9 @@
             <span class="n">taskId</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span>
             <span class="n">task</span><span class="o">.</span><span class="n">userId</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">userId</span><span class="p">)</span>
             <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
-                <span class="n">taskId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="s2">"Task not found by id : </span><span class="si">{taskId}</span><span class="s2">"</span>
+                <span class="n">taskId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="s2">"Task not found by id: </span><span class="si">{taskId}</span><span class="s2">"</span>
             <span class="p">)</span>
-            <span class="n">all_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
+            <span class="n">all_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>  <span class="c1"># noqa: E501</span>
                 <span class="n">taskId</span>
             <span class="p">)</span>
             <span class="n">points</span> <span class="o">=</span> <span class="mi">0</span>
@@ -630,7 +709,16 @@
 <div class="viewcode-block" id="UserService.preview_points_to_coins_conversion">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.preview_points_to_coins_conversion">[docs]</a>
     <span class="k">def</span> <span class="nf">preview_points_to_coins_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Previews the conversion of points to coins for a user.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            userId (str): The user ID.</span>
+<span class="sd">            points (int): The number of points to convert.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The conversion preview details.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">points</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Points must be provided"</span><span class="p">)</span>
 
@@ -653,7 +741,6 @@
 
             <span class="n">wallet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">new_wallet</span><span class="p">)</span>
 
-        <span class="c1"># check if have enough points</span>
         <span class="n">coins</span> <span class="o">=</span> <span class="n">points</span> <span class="o">/</span> <span class="n">wallet</span><span class="o">.</span><span class="n">conversionRate</span>
         <span class="n">haveEnoughPoints</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">wallet</span><span class="o">.</span><span class="n">pointsBalance</span> <span class="o">&lt;</span> <span class="n">points</span><span class="p">:</span>
@@ -672,7 +759,20 @@
 
 <div class="viewcode-block" id="UserService.preview_points_to_coins_conversion_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.preview_points_to_coins_conversion_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">preview_points_to_coins_conversion_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">preview_points_to_coins_conversion_externalUserId</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">points</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Previews the conversion of points to coins for a user by their</span>
+<span class="sd">          external user ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+<span class="sd">            points (int): The number of points to convert.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The conversion preview details.</span>
+<span class="sd">        """</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"externalUserId"</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
@@ -683,7 +783,20 @@
 
 <div class="viewcode-block" id="UserService.convert_points_to_coins">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.convert_points_to_coins">[docs]</a>
-    <span class="k">def</span> <span class="nf">convert_points_to_coins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostPointsConversionRequest</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">convert_points_to_coins</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostPointsConversionRequest</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Converts points to coins for a user based on the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userId (str): The user ID.</span>
+<span class="sd">            schema (PostPointsConversionRequest): The schema containing</span>
+<span class="sd">              conversion details.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ResponsePointsConversion: The conversion details.</span>
+<span class="sd">        """</span>
         <span class="n">points</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">points</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">points</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Points must be provided"</span><span class="p">)</span>
@@ -709,7 +822,6 @@
 
         <span class="n">wallet_before</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">wallet</span><span class="p">)</span>
 
-        <span class="c1"># check if have enough points</span>
         <span class="n">coins</span> <span class="o">=</span> <span class="n">points</span> <span class="o">/</span> <span class="n">wallet</span><span class="o">.</span><span class="n">conversionRate</span>
         <span class="n">haveEnoughPoints</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -756,7 +868,20 @@
 
 <div class="viewcode-block" id="UserService.convert_points_to_coins_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.convert_points_to_coins_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">convert_points_to_coins_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostPointsConversionRequest</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">convert_points_to_coins_externalUserId</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostPointsConversionRequest</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Converts points to coins for a user by their external user ID based on</span>
+<span class="sd">          the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+<span class="sd">            schema (PostPointsConversionRequest): The schema containing</span>
+<span class="sd">              conversion details.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ResponsePointsConversion: The conversion details.</span>
+<span class="sd">        """</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"externalUserId"</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>

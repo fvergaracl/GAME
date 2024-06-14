@@ -246,12 +246,28 @@
 <div class="viewcode-block" id="StrategyService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService">[docs]</a>
 <span class="k">class</span> <span class="nc">StrategyService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Service class for managing strategies.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        None</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the StrategyService.</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
 <div class="viewcode-block" id="StrategyService.list_all_strategies">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.list_all_strategies">[docs]</a>
     <span class="k">def</span> <span class="nf">list_all_strategies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Lists all available strategies.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of all strategies.</span>
+<span class="sd">        """</span>
         <span class="n">all_unclean_strategies</span> <span class="o">=</span> <span class="n">all_engine_strategies</span><span class="p">()</span>
         <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_unclean_strategies</span><span class="p">:</span>
@@ -271,6 +287,18 @@
 <div class="viewcode-block" id="StrategyService.get_strategy_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.get_strategy_by_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_strategy_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves a strategy by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): The ID of the strategy.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The strategy details.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the strategy is not found.</span>
+<span class="sd">        """</span>
         <span class="n">all_strategies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_all_strategies</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_strategies</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">strategy</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">:</span>
@@ -283,6 +311,18 @@
 <div class="viewcode-block" id="StrategyService.get_Class_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.get_Class_by_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_Class_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves the class of a strategy by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): The ID of the strategy.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            class: The strategy class.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the strategy class is not found.</span>
+<span class="sd">        """</span>
         <span class="n">all_strategies</span> <span class="o">=</span> <span class="n">all_engine_strategies</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_strategies</span><span class="p">:</span>
             <span class="n">file_class</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
