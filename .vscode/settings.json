@@ -9,15 +9,6 @@
   "[python]": {
     "editor.formatOnSave": true
   },
-  "migrations/env.py": {
-    "editor.formatOnSave": false
-  },
-  "autoDocstring.docstringFormat": "numpy",
   "editor.minimap.enabled": false,
   "editor.selectionClipboard": false,
-  "python.pythonPath": "/home/jim/anaconda3/envs/dipoleDisplay",
-
-  "terminal.integrated.rendererType": "dom",
-  "python.linting.pylintUseMinimalCheckers": false,
-  "findUnusedExports.detectCircularImports": true
 }
