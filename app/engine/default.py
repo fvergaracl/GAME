@@ -57,7 +57,7 @@ class EnhancedGamificationStrategy(BaseStrategy):  # noqa
             )
             self.debug_print(f"user_avg_time_taken: {user_avg_time_taken}")
 
-            all_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_for_all_users(
+            all_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_for_all_users(  # noqa
                 externalGameId,
                 externalTaskId
             )
@@ -65,7 +65,9 @@ class EnhancedGamificationStrategy(BaseStrategy):  # noqa
 
             if (user_avg_time_taken < all_avg_time_taken):
 
-                points = self.variable_basic_points + self.variable_bonus_points
+                points = (
+                    self.variable_basic_points + self.variable_bonus_points
+                )
                 return (
                     points,
                     "PerformanceBonus",
@@ -84,7 +86,8 @@ class EnhancedGamificationStrategy(BaseStrategy):  # noqa
                 )
             )
             self.debug_print(
-                f"user_new_last_window_time_diff: {user_new_last_window_time_diff}"
+                f"user_new_last_window_time_diff: "
+                f"{user_new_last_window_time_diff}"
             )
 
             user_diff_time = (

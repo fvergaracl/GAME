@@ -15,7 +15,43 @@ from app.services import (GameParamsService, GameService,
 
 
 class Container(containers.DeclarativeContainer):
-    wiring_config = containers.WiringConfiguration(  # noqa
+    """
+    Dependency injection container for managing application dependencies.
+
+    Attributes:
+        wiring_config (containers.WiringConfiguration): Configuration for
+          wiring dependencies to modules.
+        db (providers.Singleton): Singleton provider for the Database.
+        game_repository (providers.Factory): Factory provider for
+          GameRepository.
+        game_params_repository (providers.Factory): Factory provider for
+          GameParamsRepository.
+        task_params_repository (providers.Factory): Factory provider for
+          TaskParamsRepository.
+        task_repository (providers.Factory): Factory provider for
+          TaskRepository.
+        user_points_repository (providers.Factory): Factory provider for
+          UserPointsRepository.
+        user_repository (providers.Factory): Factory provider for
+          UserRepository.
+        wallet_repository (providers.Factory): Factory provider for
+          WalletRepository.
+        wallet_transaction_repository (providers.Factory): Factory provider
+          for WalletTransactionRepository.
+        game_params_service (providers.Factory): Factory provider for
+          GameParamsService.
+        strategy_service (providers.Factory): Factory provider for
+          StrategyService.
+        game_service (providers.Factory): Factory provider for GameService.
+        task_service (providers.Factory): Factory provider for TaskService.
+        user_points_service (providers.Factory): Factory provider for
+          UserPointsService.
+        user_service (providers.Factory): Factory provider for UserService.
+        wallet_service (providers.Factory): Factory provider for WalletService.
+        wallet_transaction_service (providers.Factory): Factory provider for
+          WalletTransactionService.
+    """
+    wiring_config = containers.WiringConfiguration(
         modules=[
             "app.api.v1.endpoints.games",
             "app.api.v1.endpoints.tasks",
