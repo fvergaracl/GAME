@@ -247,20 +247,22 @@
 <a class="viewcode-back" href="../../../app/app.endpoints.html#app.engine.all_engine_strategies.all_engine_strategies">[docs]</a>
 <span class="k">def</span> <span class="nf">all_engine_strategies</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Scans the 'app/engine' directory for Python modules that define strategy classes,</span>
-<span class="sd">    excluding base and utility modules. Each strategy class is instantiated, checked for</span>
-<span class="sd">    required methods and variables, and if valid, added to a list with its 'id' attribute set</span>
-<span class="sd">    to the module name.</span>
+<span class="sd">    Scans the 'app/engine' directory for Python modules that define strategy</span>
+<span class="sd">      classes, excluding base and utility modules. Each strategy class is</span>
+<span class="sd">        instantiated, checked for required methods and variables, and if</span>
+<span class="sd">          valid, added to a list with its 'id' attribute set to the module</span>
+<span class="sd">            name. This process dynamically discovers and validates strategy</span>
+<span class="sd">              implementations at runtime, facilitating a plug-and-play</span>
+<span class="sd">                architecture for strategies without hardcoding their</span>
+<span class="sd">                  references.</span>
 
-<span class="sd">    This process dynamically discovers and validates strategy implementations at runtime,</span>
-<span class="sd">    facilitating a plug-and-play architecture for strategies without hardcoding their references.</span>
+<span class="sd">    **Note**: Strategies must extend a base strategy class and implement all</span>
+<span class="sd">      required methods and variables as per :func:</span>
+<span class="sd">      `check_class_methods_and_variables` criteria to be considered valid.</span>
 
-<span class="sd">    **Note**: Strategies must extend a base strategy class and implement all required methods and</span>
-<span class="sd">    variables as per :func:`check_class_methods_and_variables` criteria to be considered valid.</span>
-
-<span class="sd">    :return: A list of instantiated and validated strategy class objects, each with an 'id'</span>
-<span class="sd">             attribute corresponding to their module name. The 'BaseStrategy' class, if found,</span>
-<span class="sd">             is excluded from the returned list.</span>
+<span class="sd">    :return: A list of instantiated and validated strategy class objects,</span>
+<span class="sd">      each with an 'id' attribute corresponding to their module name. The</span>
+<span class="sd">        'BaseStrategy' class, if found, is excluded from the returned list.</span>
 <span class="sd">    :rtype: list</span>
 <span class="sd">    """</span>
     <span class="n">strategies</span> <span class="o">=</span> <span class="p">[]</span>

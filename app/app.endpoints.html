@@ -259,19 +259,39 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="app.engine.all_engine_strategies.all_engine_strategies">
 <span class="sig-prename descclassname"><span class="pre">app.engine.all_engine_strategies.</span></span><span class="sig-name descname"><span class="pre">all_engine_strategies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a></span></span><a class="reference internal" href="../_modules/app/engine/all_engine_strategies.html#all_engine_strategies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.all_engine_strategies.all_engine_strategies" title="Link to this definition">¶</a></dt>
-<dd><p>Scans the ‘app/engine’ directory for Python modules that define strategy classes,
-excluding base and utility modules. Each strategy class is instantiated, checked for
-required methods and variables, and if valid, added to a list with its ‘id’ attribute set
-to the module name.</p>
-<p>This process dynamically discovers and validates strategy implementations at runtime,
-facilitating a plug-and-play architecture for strategies without hardcoding their references.</p>
-<p><strong>Note</strong>: Strategies must extend a base strategy class and implement all required methods and
-variables as per <code class="xref py py-func docutils literal notranslate"><span class="pre">check_class_methods_and_variables()</span></code> criteria to be considered valid.</p>
+<dd><dl class="simple">
+<dt>Scans the ‘app/engine’ directory for Python modules that define strategy</dt><dd><dl class="simple">
+<dt>classes, excluding base and utility modules. Each strategy class is</dt><dd><dl class="simple">
+<dt>instantiated, checked for required methods and variables, and if</dt><dd><dl class="simple">
+<dt>valid, added to a list with its ‘id’ attribute set to the module</dt><dd><dl class="simple">
+<dt>name. This process dynamically discovers and validates strategy</dt><dd><dl class="simple">
+<dt>implementations at runtime, facilitating a plug-and-play</dt><dd><dl class="simple">
+<dt>architecture for strategies without hardcoding their</dt><dd><p>references.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt><strong>Note</strong>: Strategies must extend a base strategy class and implement all</dt><dd><p>required methods and variables as per :func:
+<cite>check_class_methods_and_variables</cite> criteria to be considered valid.</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of instantiated and validated strategy class objects, each with an ‘id’
-attribute corresponding to their module name. The ‘BaseStrategy’ class, if found,
-is excluded from the returned list.</p>
+<dd class="field-odd"><p><p>A list of instantiated and validated strategy class objects,
+each with an ‘id’ attribute corresponding to their module name. The</p>
+<blockquote>
+<div><p>’BaseStrategy’ class, if found, is excluded from the returned list.</p>
+</div></blockquote>
+</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
