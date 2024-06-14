@@ -15,18 +15,49 @@ from app.util.query_builder import dict_to_sqlalchemy_filter_options
 
 
 class GameRepository(BaseRepository):
+    """
+    Repository class for games.
+
+    Attributes:
+        session_factory (Callable[..., AbstractContextManager[Session]]):
+          Factory for creating SQLAlchemy sessions.
+        model: SQLAlchemy model class for games.
+        model_tasks: SQLAlchemy model class for tasks.
+        model_game_params: SQLAlchemy model class for game parameters.
+    """
+
     def __init__(
-        self,
-        session_factory: Callable[..., AbstractContextManager[Session]],
-        model=Games,
-        model_tasks=Tasks,
-        model_game_params=GamesParams,
-    ) -> None:
+            self,
+            session_factory: Callable[..., AbstractContextManager[Session]],
+            model=Games,
+            model_tasks=Tasks,
+            model_game_params=GamesParams) -> None:
+        """
+        Initializes the GameRepository with the provided session factory and
+          models.
+
+        Args:
+            session_factory (Callable[..., AbstractContextManager[Session]]):
+              The session factory.
+            model: The SQLAlchemy model class for games.
+            model_tasks: The SQLAlchemy model class for tasks.
+            model_game_params: The SQLAlchemy model class for game parameters.
+        """
         self.model_tasks = model_tasks
         self.model_game_params = model_game_params
         super().__init__(session_factory, model)
 
     def get_all_games(self, schema):
+        """
+        Retrieves all games based on the provided schema.
+
+        Args:
+            schema: The schema for filtering the games.
+
+        Returns:
+            FindGameResult: A result set containing the games and search
+              options.
+        """
         with self.session_factory() as session:
             schema_as_dict = schema.dict(exclude_none=True)
             ordering = schema_as_dict.get("ordering", configs.ORDERING)
@@ -38,8 +69,7 @@ class GameRepository(BaseRepository):
             page = schema_as_dict.get("page", configs.PAGE)
             page_size = schema_as_dict.get("page_size", configs.PAGE_SIZE)
             filter_options = dict_to_sqlalchemy_filter_options(
-                self.model, schema_as_dict
-            )
+                self.model, schema_as_dict)
 
             query = session.query(
                 Games.id.label("id"),
@@ -64,7 +94,7 @@ class GameRepository(BaseRepository):
                 Games.created_at,
                 Games.platform,
                 Games.externalGameId,
-                GamesParams,
+                GamesParams
             )
 
             if page_size == "all":
@@ -107,26 +137,24 @@ class GameRepository(BaseRepository):
             )
 
     def get_game_by_id(self, id: str):
+        """
+        Retrieves a game by its ID.
+
+        Args:
+            id (str): The game ID.
+
+        Returns:
+            BaseGameResult: The game details.
+        """
         with self.session_factory() as session:
             game = session.query(self.model).filter(
                 self.model.id == id).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {id}")
-            # buscando los parametros del juego
-            params = (
-                session.query(self.model_game_params)
-                .filter(self.model_game_params.gameId == id)
-                .all()
-            )
-            game_params = []
-            for param in params:
-                game_params.append(
-                    {
-                        "id": param.id,
-                        "key": param.key,
-                        "value": param.value,
-                    }
-                )
+            params = session.query(self.model_game_params).filter(
+                self.model_game_params.gameId == id).all()
+            game_params = [{"id": param.id, "key": param.key,
+                            "value": param.value} for param in params]
 
             return BaseGameResult(
                 gameId=game.id,
@@ -138,6 +166,20 @@ class GameRepository(BaseRepository):
             )
 
     def patch_game_by_id(self, gameId: str, schema):
+        """
+        Updates a game by its ID using the provided schema.
+
+        Args:
+            gameId (str): The game ID.
+            schema: The schema representing the updated data.
+
+        Returns:
+            BaseGameResult: The updated game details.
+
+        Raises:
+            NotFoundError: If the game is not found.
+            DuplicatedError: If a duplicated error occurs during update.
+        """
         with self.session_factory() as session:
             game = session.query(self.model).filter(
                 self.model.id == gameId).first()
