@@ -7,11 +7,16 @@ from app.core.config import configs
 from app.core.container import Container
 from app.util.class_object import singleton
 from fastapi.openapi.utils import get_openapi
-from app.schema.base_schema import RootEndpoint
 from fastapi.responses import RedirectResponse
 
 
 def get_project_data():
+    """
+    Retrieves project data from the pyproject.toml file.
+
+    Returns:
+        dict: Project data from the toml file.
+    """
     pyproject_path = "pyproject.toml"
     with open(pyproject_path, "r") as pyproject_file:
         pyproject_content = toml.load(pyproject_file)
@@ -22,6 +27,12 @@ project_data = get_project_data()
 
 
 def custom_openapi():
+    """
+    Customizes the OpenAPI schema for the FastAPI application.
+
+    Returns:
+        dict: The customized OpenAPI schema.
+    """
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
@@ -45,8 +56,7 @@ def get_git_commit_hash() -> str:
     Returns the current git commit hash, or "unknown" if not available.
 
     Returns:
-        str: The current git commit hash, or "unknown" if not available.    
-
+        str: The current git commit hash, or "unknown" if not available.
     """
     try:
 
@@ -59,6 +69,10 @@ def get_git_commit_hash() -> str:
 
 @singleton
 class AppCreator:
+    """
+    Singleton class to create and configure the FastAPI application.
+    """
+
     def __init__(self):
         self.app = FastAPI(
             redoc_url="/redocs",
