@@ -1,7 +1,5 @@
 from typing import List, Optional
-
 from pydantic import BaseModel
-
 from app.schema.base_schema import ModelBaseInfo
 from app.schema.wallet_schema import WalletWithoutUserId
 from app.util.schema import AllOptional
@@ -63,13 +61,8 @@ class PointsAssignedToUser(PointsAssigned):
     pointsData: Optional[List[PointsData]]
 
 
-class PointsAssignedToUserWithDetails(PointsAssignedToUser):
-    """Model for points assigned to a user with details.
-
-    Attributes:
-        externalUserId (str): External user ID
-        pointsData (List[PointsData]): Points data
-    """
+class PointsAssignedToUserWithDetails(PointsAssignedToUser):  # noqa
+    """Model for points assigned to a user with details."""
     pointsData: List[PointsAssignedToUser]
 
 

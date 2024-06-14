@@ -1,4 +1,3 @@
-
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Body
 from typing import List
@@ -14,7 +13,7 @@ from app.schema.task_schema import (
     AsignPointsToExternalUserId, AssignedPointsToExternalUserId
 )
 from app.schema.user_points_schema import (
-    PointsAssignedToUser, PointsAssignedToUserWithDetails, AllPointsByGame
+    PointsAssignedToUser, AllPointsByGame
 )
 
 from app.services.game_service import GameService
@@ -26,7 +25,6 @@ router = APIRouter(
     prefix="/games",
     tags=["games"],
 )
-
 
 summary_get_games_list = "Get Games List"
 description_get_games_list = """
@@ -46,13 +44,22 @@ def get_games_list(
     schema: PostFindGame = Depends(),
     service: GameService = Depends(Provide[Container.game_service]),
 ):
+    """
+    Retrieve a list of all games with their parameters.
+
+    Args:
+        schema (PostFindGame): Query parameters for finding games.
+        service (GameService): Injected GameService dependency.
+
+    Returns:
+        FindGameResult: A result set containing the games and search options.
+    """
     return service.get_all_games(schema)
 
 
 summary_get_game_by_id = "Get Game by gameId"
 description_get_game_by_id = """
 Get Game by gameId
-
 """
 
 
@@ -67,7 +74,16 @@ def get_game_by_id(
     gameId: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
+    """
+    Retrieve a game by its ID.
 
+    Args:
+        gameId (UUID): The ID of the game.
+        service (GameService): Injected GameService dependency.
+
+    Returns:
+        BaseGameResult: The details of the specified game.
+    """
     response = service.get_by_gameId(gameId)
     return response
 
@@ -89,6 +105,16 @@ def create_game(
     schema: PostCreateGame = Body(..., example=PostCreateGame.example()),
     service: GameService = Depends(Provide[Container.game_service]),
 ):
+    """
+    Create a new game.
+
+    Args:
+        schema (PostCreateGame): The schema for creating a new game.
+        service (GameService): Injected GameService dependency.
+
+    Returns:
+        GameCreated: The details of the created game.
+    """
     return service.create(schema)
 
 
@@ -111,6 +137,17 @@ def patch_game(
     schema: PatchGame,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
+    """
+    Update a game by its ID.
+
+    Args:
+        gameId (UUID): The ID of the game to update.
+        schema (PatchGame): The schema for updating the game.
+        service (GameService): Injected GameService dependency.
+
+    Returns:
+        ResponsePatchGame: The updated game details.
+    """
     return service.patch_game_by_id(gameId, schema)
 
 
@@ -131,13 +168,22 @@ def get_strategy_by_gameId(
     gameId: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
 ):
+    """
+    Retrieve the strategy associated with a game by its ID.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        service (GameService): Injected GameService dependency.
+
+    Returns:
+        Strategy: The strategy associated with the specified game.
+    """
     return service.get_strategy_by_gameId(gameId)
 
 
 summary_create_task = "Create Task"
 description_create_task = """
 Create Task in a game using gameId
-
 """
 
 
@@ -151,6 +197,17 @@ def create_task(
     create_query: CreateTaskPost = Body(..., example=CreateTaskPost.example()),
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
+    """
+    Create a task for a specific game.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        create_query (CreateTaskPost): The schema for creating a task.
+        service (TaskService): Injected TaskService dependency.
+
+    Returns:
+        CreateTaskPostSuccesfullyCreated: The details of the created task.
+    """
     return service.create_task_by_game_id(gameId, create_query)
 
 
@@ -172,10 +229,23 @@ def get_task_list(
     find_query: PostFindTask = Depends(),
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
+    """
+    Retrieve a list of tasks for a specific game.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        find_query (PostFindTask): Query parameters for finding tasks.
+        service (TaskService): Injected TaskService dependency.
+
+    Returns:
+        FoundTasks: A result set containing the tasks.
+    """
     return service.get_tasks_list_by_gameId(gameId, find_query)
 
 
-summary_get_task_by_gameId_taskId = "Get Task by externalGameId and externalTaskId"  # noqa
+summary_get_task_by_gameId_taskId = (
+    "Get Task by externalGameId and externalTaskId"
+)
 description_get_task_by_gameId_taskId = """
 Get Task by externalGameId and externalTaskId
 """
@@ -193,6 +263,17 @@ def get_task_by_externalGameId_taskId(
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
+    """
+    Retrieve a task by its external game ID and external task ID.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        externalTaskId (str): The external task ID.
+        service (TaskService): Injected TaskService dependency.
+
+    Returns:
+        CreateTaskPostSuccesfullyCreated: The details of the specified task.
+    """
     return service.get_task_by_externalGameId_externalTaskId(
         gameId, externalTaskId)
 
@@ -215,7 +296,16 @@ def get_points_by_gameId(
     service: UserPointsService = Depends(
         Provide[Container.user_points_service]),
 ):
-    # WIP
+    """
+    Retrieve points associated with a specific game by its ID.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        service (UserPointsService): Injected UserPointsService dependency.
+
+    Returns:
+        AllPointsByGame: The points details for the specified game.
+    """
     return service.get_points_by_gameId(gameId)
 
 
@@ -238,6 +328,18 @@ def get_points_of_user_in_game(
     service: UserPointsService = Depends(
         Provide[Container.user_points_service]),
 ):
+    """
+    Retrieve points of a user in a specific game.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        externalUserId (str): The external user ID.
+        service (UserPointsService): Injected UserPointsService dependency.
+
+    Returns:
+        List[PointsAssignedToUser]: The points details of the user in the
+          specified game.
+    """
     return service.get_points_of_user_in_game(gameId, externalUserId)
 
 
@@ -262,8 +364,19 @@ def assign_points_to_user(
     service: UserPointsService = Depends(
         Provide[Container.user_points_service]),
 ):
-    return service.assign_points_to_user(
-        gameId, externalTaskId, schema)
+    """
+    Assign points to a user for a specific task in a game.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        externalTaskId (str): The external task ID.
+        schema (AsignPointsToExternalUserId): The schema for assigning points.
+        service (UserPointsService): Injected UserPointsService dependency.
+
+    Returns:
+        AssignedPointsToExternalUserId: The details of the points assigned.
+    """
+    return service.assign_points_to_user(gameId, externalTaskId, schema)
 
 
 summary_get_points_by_task_id = "Get points by task id"
@@ -285,6 +398,17 @@ def get_points_by_task_id(
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
+    """
+    Retrieve points by task ID.
+
+    Args:
+        gameId (str): The ID of the game.
+        externalTaskId (str): The external task ID.
+        service (TaskService): Injected TaskService dependency.
+
+    Returns:
+        List[PointsAssignedToUser]: The points details for the specified task.
+    """
     return service.get_points_by_task_id(gameId, externalTaskId)
 
 
@@ -308,11 +432,29 @@ def get_points_of_user_by_task_id(
     externalUserId: str,
     service: TaskService = Depends(Provide[Container.task_service])
 ):
+    """
+    Retrieve points of a user by task ID.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        externalTaskId (str): The external task ID.
+        externalUserId (str): The external user ID.
+        service (TaskService): Injected TaskService dependency.
+
+    Returns:
+        PointsAssignedToUser: The points details of the user for the specified
+          task.
+    """
     return service.get_points_of_user_by_task_id(
-        gameId, externalTaskId, externalUserId)
+        gameId,
+        externalTaskId,
+        externalUserId
+    )
 
 
-summary_get_points_by_task_id_with_details = "Get points by task id with details"
+summary_get_points_by_task_id_with_details = (
+    "Get points by task id with details"
+)
 description_get_points_by_task_id_with_details = """
 ## Get points by task id with details
 ### Get points by task id with details
@@ -321,7 +463,7 @@ description_get_points_by_task_id_with_details = """
 
 @router.get(
     "/{gameId}/tasks/{externalTaskId}/points/details",
-    response_model=List[dict], # WIP ACA FIX
+    response_model=List[dict],  # WIP ACA FIX
     summary=summary_get_points_by_task_id_with_details,
     description=description_get_points_by_task_id_with_details,
 )
@@ -331,8 +473,18 @@ def get_points_by_task_id_with_details(
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
-    return service.get_points_by_task_id_with_details(
-        gameId, externalTaskId)
+    """
+    Retrieve detailed points by task ID.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        externalTaskId (str): The external task ID.
+        service (TaskService): Injected TaskService dependency.
+
+    Returns:
+        List[dict]: Detailed points information for the specified task.
+    """
+    return service.get_points_by_task_id_with_details(gameId, externalTaskId)
 
 
 summary_get_users_by_gameId = "Get users by gameId"
@@ -354,4 +506,15 @@ def get_users_by_gameId(
     service: UserPointsService = Depends(
         Provide[Container.user_points_service]),
 ):
+    """
+    Retrieve users associated with a game by its ID.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        service (UserPointsService): Injected UserPointsService dependency.
+
+    Returns:
+        ListTasksWithUsers: The list of users associated with the specified
+          game.
+    """
     return service.get_users_by_gameId(gameId)

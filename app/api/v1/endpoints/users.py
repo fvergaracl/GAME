@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query
 from typing import List
@@ -10,7 +8,8 @@ from app.schema.user_schema import (
     ResponsePointsConversion, UserWallet
 )
 from app.services.user_service import UserService
-from app.services.user_points_service import UserPointsService, UserGamePoints
+from app.services.user_points_service import UserPointsService
+from app.schema.user_points_schema import UserGamePoints
 
 router = APIRouter(
     prefix="/users",
@@ -25,7 +24,8 @@ router = APIRouter(
     summary: Query User Points
     description: |
       ## Query User Points
-      This endpoint retrieves the point totals for a list of users based on their external user IDs. This operation does not modify any user data.
+      This endpoint retrieves the point totals for a list of users based on
+        their external user IDs. This operation does not modify any user data.
     operationId: query_user_points
     requestBody:
       required: true
@@ -69,7 +69,8 @@ router = APIRouter(
 summary_query_user_points = "Query User Points"
 description_query_user_points = """
 ## Query User Points
-This endpoint retrieves the point totals for a list of users based on their external user IDs. This operation does not modify any user data.
+This endpoint retrieves the point totals for a list of users based on their
+ external user IDs. This operation does not modify any user data.
 """
 
 
@@ -85,6 +86,16 @@ def query_user_points(
     service: UserPointsService = Depends(
         Provide[Container.user_points_service])
 ):
+    """
+    Retrieve point totals for a list of users based on their external user IDs.
+
+    Args:
+        schema (List[str]): A list of external user IDs.
+        service (UserPointsService): Injected UserPointsService dependency.
+
+    Returns:
+        List[UserGamePoints]: The point details for each user.
+    """
     response = service.get_points_by_user_list(schema)
     return response
 
@@ -108,6 +119,16 @@ def get_points_by_user_id(
     service: UserPointsService = Depends(
         Provide[Container.user_points_service]),
 ):
+    """
+    Retrieve points associated with a user by their external user ID.
+
+    Args:
+        externalUserId (str): The external user ID.
+        service (UserPointsService): Injected UserPointsService dependency.
+
+    Returns:
+        List[AllPointsByGame]: The points details for the specified user.
+    """
     return service.get_points_by_externalUserId(externalUserId)
 
 
@@ -129,6 +150,17 @@ def get_wallet_by_user_id(
     externalUserId: str,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
+    """
+    Retrieve the wallet details associated with a user by their external user
+      ID.
+
+    Args:
+        externalUserId (str): The external user ID.
+        service (UserService): Injected UserService dependency.
+
+    Returns:
+        UserWallet: The wallet details for the specified user.
+    """
     return service.get_wallet_by_externalUserId(externalUserId)
 
 
@@ -208,10 +240,22 @@ description_preview_points = """## Preview Points to Coins Conversion
 @ inject
 def preview_points_to_coins_conversion(
     externalUserId: str,
-    points: int = Query(...,
-                        description="The number of points to convert to coins"),
+    points: int = Query(
+        ...,
+        description="The number of points to convert to coins"),
     service: UserService = Depends(Provide[Container.user_service]),
 ):
+    """
+    Preview the conversion of points to coins for a specific user.
+
+    Args:
+        externalUserId (str): The external user ID.
+        points (int): The number of points to convert.
+        service (UserService): Injected UserService dependency.
+
+    Returns:
+        ResponseConversionPreview: The conversion preview details.
+    """
     return service.preview_points_to_coins_conversion_externalUserId(
         externalUserId, points
     )
@@ -235,4 +279,17 @@ def convert_points_to_coins(
     schema: PostPointsConversionRequest,
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    return service.convert_points_to_coins_externalUserId(externalUserId, schema)
+    """
+    Convert points to coins for a specific user.
+
+    Args:
+        externalUserId (str): The external user ID.
+        schema (PostPointsConversionRequest): The schema containing conversion
+          details.
+        service (UserService): Injected UserService dependency.
+
+    Returns:
+        ResponsePointsConversion: The conversion details.
+    """
+    return service.convert_points_to_coins_externalUserId(
+        externalUserId, schema)
