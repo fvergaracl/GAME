@@ -245,13 +245,18 @@
 <span class="kn">from</span> <span class="nn">app.core.container</span> <span class="kn">import</span> <span class="n">Container</span>
 <span class="kn">from</span> <span class="nn">app.util.class_object</span> <span class="kn">import</span> <span class="n">singleton</span>
 <span class="kn">from</span> <span class="nn">fastapi.openapi.utils</span> <span class="kn">import</span> <span class="n">get_openapi</span>
-<span class="kn">from</span> <span class="nn">app.schema.base_schema</span> <span class="kn">import</span> <span class="n">RootEndpoint</span>
 <span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">RedirectResponse</span>
 
 
 <div class="viewcode-block" id="get_project_data">
 <a class="viewcode-back" href="../../app/app.html#app.main.get_project_data">[docs]</a>
 <span class="k">def</span> <span class="nf">get_project_data</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Retrieves project data from the pyproject.toml file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Project data from the toml file.</span>
+<span class="sd">    """</span>
     <span class="n">pyproject_path</span> <span class="o">=</span> <span class="s2">"pyproject.toml"</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pyproject_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">pyproject_file</span><span class="p">:</span>
         <span class="n">pyproject_content</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pyproject_file</span><span class="p">)</span>
@@ -265,6 +270,12 @@
 <div class="viewcode-block" id="custom_openapi">
 <a class="viewcode-back" href="../../app/app.html#app.main.custom_openapi">[docs]</a>
 <span class="k">def</span> <span class="nf">custom_openapi</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Customizes the OpenAPI schema for the FastAPI application.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The customized OpenAPI schema.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">app</span><span class="o">.</span><span class="n">openapi_schema</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="n">openapi_schema</span>
     <span class="n">openapi_schema</span> <span class="o">=</span> <span class="n">get_openapi</span><span class="p">(</span>
@@ -291,8 +302,7 @@
 <span class="sd">    Returns the current git commit hash, or "unknown" if not available.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        str: The current git commit hash, or "unknown" if not available.    </span>
-
+<span class="sd">        str: The current git commit hash, or "unknown" if not available.</span>
 <span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
 
@@ -306,6 +316,10 @@
 
 <span class="nd">@singleton</span>
 <span class="k">class</span> <span class="nc">AppCreator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Singleton class to create and configure the FastAPI application.</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
             <span class="n">redoc_url</span><span class="o">=</span><span class="s2">"/redocs"</span><span class="p">,</span>
