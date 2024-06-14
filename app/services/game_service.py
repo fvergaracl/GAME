@@ -16,13 +16,35 @@ from app.engine.all_engine_strategies import all_engine_strategies
 
 
 class GameService(BaseService):
+    """
+    Service class for managing games.
+
+    Attributes:
+        game_repository (GameRepository): Repository instance for games.
+        game_params_repository (GameParamsRepository): Repository instance for
+          game parameters.
+        task_repository (TaskRepository): Repository instance for tasks.
+        strategy_service (StrategyService): Service instance for strategies.
+    """
+
     def __init__(
-        self,
-        game_repository: GameRepository,
-        game_params_repository: GameParamsRepository,
-        task_repository: TaskRepository,
-        strategy_service: StrategyService
+            self,
+            game_repository: GameRepository,
+            game_params_repository: GameParamsRepository,
+            task_repository: TaskRepository,
+            strategy_service: StrategyService
     ):
+        """
+        Initializes the GameService with the provided repositories and
+          services.
+
+        Args:
+            game_repository (GameRepository): The game repository instance.
+            game_params_repository (GameParamsRepository): The game parameters
+              repository instance.
+            task_repository (TaskRepository): The task repository instance.
+            strategy_service (StrategyService): The strategy service instance.
+        """
         self.game_repository = game_repository
         self.game_params_repository = game_params_repository
         self.task_repository = task_repository
@@ -30,28 +52,66 @@ class GameService(BaseService):
         super().__init__(game_repository)
 
     def get_by_gameId(self, gameId: UUID):
+        """
+        Retrieves a game by its game ID.
+
+        Args:
+            gameId (UUID): The game ID.
+
+        Returns:
+            BaseGameResult: The game details.
+        """
         response = self.game_repository.read_by_column(
             "id", gameId, not_found_raise_exception=True, only_one=True,
-            not_found_message=f"Game not found by gameId: {gameId} "  # noqa
+            not_found_message=f"Game not found by gameId: {gameId}"
         )
         params = self.game_params_repository.read_by_column(
-            "gameId", response.id, not_found_raise_exception=False, only_one=False  # noqa
+            "gameId", response.id, not_found_raise_exception=False,
+            only_one=False
         )
         response_dict = response.dict()
         response_dict["params"] = params
 
-        response = BaseGameResult(**response_dict , gameId=gameId)
+        response = BaseGameResult(**response_dict, gameId=gameId)
 
         return response
 
     def get_all_games(self, schema):
+        """
+        Retrieves all games based on the provided schema.
+
+        Args:
+            schema: The schema for filtering the games.
+
+        Returns:
+            list: A list of all games matching the schema.
+        """
         return self.game_repository.get_all_games(schema)
 
     def get_by_externalId(self, externalGameId: str):
+        """
+        Retrieves a game by its external game ID.
+
+        Args:
+            externalGameId (str): The external game ID.
+
+        Returns:
+            object: The game details.
+        """
         return self.game_repository.read_by_column(
             "externalGameId", externalGameId)
 
     def create(self, schema: PostCreateGame):
+        """
+        Creates a new game using the provided schema.
+
+        Args:
+            schema (PostCreateGame): The schema representing the game to be
+              created.
+
+        Returns:
+            GameCreated: The created game details.
+        """
         params = schema.params
         externalGameId = schema.externalGameId
 
@@ -63,26 +123,28 @@ class GameService(BaseService):
         if not is_valid_externalGameId:
             raise ConflictError(
                 detail=(
-                    f"Invalid externalGameId: {externalGameId}. externalGameId should be a valid slug (Should have only alphanumeric characters and Underscore . Length should be between 3 and 60)"  # noqa
+                    f"Invalid externalGameId: {externalGameId}. externalGameId"
+                    f" should be a valid slug (Should have only alphanumeric"
+                    f" characters and Underscore. Length should be between 3"
+                    f" and 60)"
                 )
             )
 
-        # externalGameId
         if externalGameId_exist:
             raise ConflictError(
-                detail=(
-                    f"Game already exist with externalGameId: "
-                    f"{externalGameId}")
+                detail=f"Game already exists with externalGameId: "
+                f"{externalGameId}"
             )
         created_params = []
         default_strategyId = schema.strategyId
 
-        if (default_strategyId is None):
+        if default_strategyId is None:
             default_strategyId = "default"
 
         strategies = all_engine_strategies()
         strategy = next(
-            (strategy for strategy in strategies if strategy.id == default_strategyId),  # noqa
+            (strategy for strategy in strategies if
+             strategy.id == default_strategyId),
             None
         )
         if not strategy:
@@ -95,7 +157,6 @@ class GameService(BaseService):
             del schema.params
 
             for param in params:
-                # BaseGameParams
                 params_dict = param.dict()
                 params_dict["gameId"] = str(game.id)
                 params_to_insert = InsertGameParams(**params_dict)
@@ -106,14 +167,22 @@ class GameService(BaseService):
 
         response = GameCreated(
             **game.dict(), params=created_params, gameId=game.id,
-            message=f"Game with gameId: {game.id} created"
-            f" successfully"
+            message=f"Game with gameId: {game.id} created successfully"
         )
         return response
 
-    def pacth_game_by_externalGameId(
-            self, externalGameId: str, schema: PatchGame
-    ):
+    def patch_game_by_externalGameId(
+            self, externalGameId: str, schema: PatchGame):
+        """
+        Updates a game by its external game ID using the provided schema.
+
+        Args:
+            externalGameId (str): The external game ID.
+            schema (PatchGame): The schema representing the updated data.
+
+        Returns:
+            ResponsePatchGame: The updated game details.
+        """
         game = self.game_repository.read_by_column(
             "externalGameId", externalGameId, not_found_raise_exception=False
         )
@@ -124,6 +193,16 @@ class GameService(BaseService):
         return self.patch_game_by_id(game.id, schema)
 
     def patch_game_by_id(self, gameId: UUID, schema: PatchGame):
+        """
+        Updates a game by its game ID using the provided schema.
+
+        Args:
+            gameId (UUID): The game ID.
+            schema (PatchGame): The schema representing the updated data.
+
+        Returns:
+            ResponsePatchGame: The updated game details.
+        """
         game = self.game_repository.read_by_id(
             gameId, not_found_raise_exception=False
         )
@@ -139,7 +218,9 @@ class GameService(BaseService):
 
         if is_matching and params_is_matching:
             raise ConflictError(
-                detail="It is not possible to update the game with the same data"  # noqa
+                detail=(
+                    "It is not possible to update the game with the same data"
+                )
             )
         if schema.dict() == game.dict():
             raise ConflictError(
@@ -150,9 +231,8 @@ class GameService(BaseService):
         if strategyId:
             strategies = all_engine_strategies()
             strategy = next(
-                (strategy for strategy in strategies if (
-                    strategy.id == strategyId
-                )),
+                (strategy for strategy in strategies if
+                 strategy.id == strategyId),
                 None
             )
             if not strategy:
@@ -187,6 +267,15 @@ class GameService(BaseService):
         return response
 
     def get_strategy_by_externalGameId(self, externalGameId: str):
+        """
+        Retrieves the strategy associated with a game by its external game ID.
+
+        Args:
+            externalGameId (str): The external game ID.
+
+        Returns:
+            dict: The strategy details.
+        """
         game = self.game_repository.read_by_column(
             "externalGameId", externalGameId, not_found_raise_exception=True
         )
@@ -199,11 +288,20 @@ class GameService(BaseService):
         return self.get_strategy_by_gameId(game.id)
 
     def get_strategy_by_gameId(self, gameId: UUID):
+        """
+        Retrieves the strategy associated with a game by its game ID.
+
+        Args:
+            gameId (UUID): The game ID.
+
+        Returns:
+            dict: The strategy details.
+        """
         game = self.game_repository.read_by_id(
             gameId, not_found_raise_exception=False
         )
         if not game:
-            raise NotFoundError(detail=f"Game not found by gameId : {gameId}")
+            raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
 
         if not game.strategyId:
             raise ConflictError(
@@ -211,7 +309,6 @@ class GameService(BaseService):
             )
 
         strategy = self.strategy_service.get_strategy_by_id(game.strategyId)
-        # logic to define strategy
         game_params = self.game_params_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
         )
@@ -237,9 +334,18 @@ class GameService(BaseService):
         return strategy
 
     def get_tasks_by_gameId(self, gameId: UUID):
+        """
+        Retrieves the tasks associated with a game by its game ID.
+
+        Args:
+            gameId (UUID): The game ID.
+
+        Returns:
+            dict: The game details including tasks.
+        """
         game = self.game_repository.read_by_id(gameId)
         if not game:
-            raise NotFoundError(detail=f"Game not found by id : {gameId}")
+            raise NotFoundError(detail=f"Game not found by id: {gameId}")
 
         tasks = self.task_repository.read_by_column(
             "gameId", gameId, not_found_raise_exception=False, only_one=False
