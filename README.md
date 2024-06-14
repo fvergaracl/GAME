@@ -122,7 +122,7 @@ alembic upgrade head
 To deploy the REST API, run:
 
 ```
-uvicorn app.main:app --reload
+poetry run uvicorn app.main:app --host 0.0.0.0 --reload
 ```
 
 ## Docker 🐳
