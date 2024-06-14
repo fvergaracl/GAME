@@ -255,13 +255,34 @@
 <div class="viewcode-block" id="GameRepository">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.game_repository.GameRepository">[docs]</a>
 <span class="k">class</span> <span class="nc">GameRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Repository class for games.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        session_factory (Callable[..., AbstractContextManager[Session]]):</span>
+<span class="sd">          Factory for creating SQLAlchemy sessions.</span>
+<span class="sd">        model: SQLAlchemy model class for games.</span>
+<span class="sd">        model_tasks: SQLAlchemy model class for tasks.</span>
+<span class="sd">        model_game_params: SQLAlchemy model class for game parameters.</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
-        <span class="n">model</span><span class="o">=</span><span class="n">Games</span><span class="p">,</span>
-        <span class="n">model_tasks</span><span class="o">=</span><span class="n">Tasks</span><span class="p">,</span>
-        <span class="n">model_game_params</span><span class="o">=</span><span class="n">GamesParams</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">Games</span><span class="p">,</span>
+            <span class="n">model_tasks</span><span class="o">=</span><span class="n">Tasks</span><span class="p">,</span>
+            <span class="n">model_game_params</span><span class="o">=</span><span class="n">GamesParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the GameRepository with the provided session factory and</span>
+<span class="sd">          models.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session_factory (Callable[..., AbstractContextManager[Session]]):</span>
+<span class="sd">              The session factory.</span>
+<span class="sd">            model: The SQLAlchemy model class for games.</span>
+<span class="sd">            model_tasks: The SQLAlchemy model class for tasks.</span>
+<span class="sd">            model_game_params: The SQLAlchemy model class for game parameters.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_tasks</span> <span class="o">=</span> <span class="n">model_tasks</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_game_params</span> <span class="o">=</span> <span class="n">model_game_params</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
@@ -269,6 +290,16 @@
 <div class="viewcode-block" id="GameRepository.get_all_games">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.game_repository.GameRepository.get_all_games">[docs]</a>
     <span class="k">def</span> <span class="nf">get_all_games</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves all games based on the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema: The schema for filtering the games.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            FindGameResult: A result set containing the games and search</span>
+<span class="sd">              options.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">schema_as_dict</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">ordering</span> <span class="o">=</span> <span class="n">schema_as_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ordering"</span><span class="p">,</span> <span class="n">configs</span><span class="o">.</span><span class="n">ORDERING</span><span class="p">)</span>
@@ -280,8 +311,7 @@
             <span class="n">page</span> <span class="o">=</span> <span class="n">schema_as_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"page"</span><span class="p">,</span> <span class="n">configs</span><span class="o">.</span><span class="n">PAGE</span><span class="p">)</span>
             <span class="n">page_size</span> <span class="o">=</span> <span class="n">schema_as_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"page_size"</span><span class="p">,</span> <span class="n">configs</span><span class="o">.</span><span class="n">PAGE_SIZE</span><span class="p">)</span>
             <span class="n">filter_options</span> <span class="o">=</span> <span class="n">dict_to_sqlalchemy_filter_options</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">schema_as_dict</span>
-            <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">schema_as_dict</span><span class="p">)</span>
 
             <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
                 <span class="n">Games</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"id"</span><span class="p">),</span>
@@ -306,7 +336,7 @@
                 <span class="n">Games</span><span class="o">.</span><span class="n">created_at</span><span class="p">,</span>
                 <span class="n">Games</span><span class="o">.</span><span class="n">platform</span><span class="p">,</span>
                 <span class="n">Games</span><span class="o">.</span><span class="n">externalGameId</span><span class="p">,</span>
-                <span class="n">GamesParams</span><span class="p">,</span>
+                <span class="n">GamesParams</span>
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">page_size</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
@@ -352,26 +382,24 @@
 <div class="viewcode-block" id="GameRepository.get_game_by_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.game_repository.GameRepository.get_game_by_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves a game by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): The game ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseGameResult: The game details.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Not found id : </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="c1"># buscando los parametros del juego</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_game_params</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_game_params</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">all</span><span class="p">()</span>
-            <span class="p">)</span>
-            <span class="n">game_params</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-                <span class="n">game_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="s2">"id"</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                        <span class="s2">"key"</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                        <span class="s2">"value"</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                    <span class="p">}</span>
-                <span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_game_params</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model_game_params</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">game_params</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">"id"</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">"key"</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                            <span class="s2">"value"</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">}</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
 
             <span class="k">return</span> <span class="n">BaseGameResult</span><span class="p">(</span>
                 <span class="n">gameId</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
@@ -386,6 +414,20 @@
 <div class="viewcode-block" id="GameRepository.patch_game_by_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.game_repository.GameRepository.patch_game_by_id">[docs]</a>
     <span class="k">def</span> <span class="nf">patch_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Updates a game by its ID using the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (str): The game ID.</span>
+<span class="sd">            schema: The schema representing the updated data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseGameResult: The updated game details.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the game is not found.</span>
+<span class="sd">            DuplicatedError: If a duplicated error occurs during update.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">gameId</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>

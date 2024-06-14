@@ -250,15 +250,44 @@
 <div class="viewcode-block" id="BaseRepository">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.base_repository.BaseRepository">[docs]</a>
 <span class="k">class</span> <span class="nc">BaseRepository</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Base repository providing common CRUD operations.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        session_factory (Callable[..., AbstractContextManager[Session]]):</span>
+<span class="sd">          Factory for creating SQLAlchemy sessions.</span>
+<span class="sd">        model: SQLAlchemy model class.</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span> <span class="n">model</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
+            <span class="n">model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the BaseRepository with the provided session factory and</span>
+<span class="sd">          model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session_factory (Callable[..., AbstractContextManager[Session]]):</span>
+<span class="sd">              The session factory.</span>
+<span class="sd">            model: The SQLAlchemy model class.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span> <span class="o">=</span> <span class="n">session_factory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
 
 <div class="viewcode-block" id="BaseRepository.read_by_options">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.base_repository.BaseRepository.read_by_options">[docs]</a>
     <span class="k">def</span> <span class="nf">read_by_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">eager</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Reads records by specified options.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema: The schema containing query options.</span>
+<span class="sd">            eager (bool): Whether to use eager loading.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Query results and search options.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">schema_as_dict</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">ordering</span> <span class="o">=</span> <span class="n">schema_as_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ordering"</span><span class="p">,</span> <span class="n">configs</span><span class="o">.</span><span class="n">ORDERING</span><span class="p">)</span>
@@ -275,13 +304,15 @@
             <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">eager</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">eager</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">"eagers"</span><span class="p">,</span> <span class="p">[]):</span>
-                    <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">joinedload</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">eager</span><span class="p">)))</span>
+                    <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">options</span><span class="p">(</span>
+                        <span class="n">joinedload</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">eager</span><span class="p">)))</span>
             <span class="n">filtered_query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_options</span><span class="p">)</span>
             <span class="n">query</span> <span class="o">=</span> <span class="n">filtered_query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">order_query</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">page_size</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
                 <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">((</span><span class="n">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="n">total_count</span> <span class="o">=</span> <span class="n">filtered_query</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s2">"items"</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
@@ -297,17 +328,31 @@
 <div class="viewcode-block" id="BaseRepository.read_by_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.base_repository.BaseRepository.read_by_id">[docs]</a>
     <span class="k">def</span> <span class="nf">read_by_id</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">eager</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">not_found_message</span><span class="o">=</span><span class="s2">"Not found id : </span><span class="si">{id}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">eager</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="s2">"Not found id : </span><span class="si">{id}</span><span class="s2">"</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Reads a record by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (int): The record ID.</span>
+<span class="sd">            eager (bool): Whether to use eager loading.</span>
+<span class="sd">            not_found_raise_exception (bool): Whether to raise an exception if</span>
+<span class="sd">              the record is not found.</span>
+<span class="sd">            not_found_message (str): The message for the not found exception.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The record if found, otherwise None or raises an exception.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">eager</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">eager</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">"eagers"</span><span class="p">,</span> <span class="p">[]):</span>
-                    <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">joinedload</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">eager</span><span class="p">)))</span>
+                    <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">options</span><span class="p">(</span>
+                        <span class="n">joinedload</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">eager</span><span class="p">)))</span>
             <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span> <span class="ow">and</span> <span class="n">not_found_raise_exception</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="n">not_found_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">))</span>
@@ -319,25 +364,41 @@
 <div class="viewcode-block" id="BaseRepository.read_by_column">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.base_repository.BaseRepository.read_by_column">[docs]</a>
     <span class="k">def</span> <span class="nf">read_by_column</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">eager</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">not_found_message</span><span class="o">=</span><span class="s2">"Not found </span><span class="si">{column}</span><span class="s2"> : </span><span class="si">{value}</span><span class="s2">"</span><span class="p">,</span>
-    <span class="p">):</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">eager</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="s2">"Not found </span><span class="si">{column}</span><span class="s2"> : </span><span class="si">{value}</span><span class="s2">"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Reads records by a specified column and value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            column (str): The column name.</span>
+<span class="sd">            value (str): The value to filter by.</span>
+<span class="sd">            eager (bool): Whether to use eager loading.</span>
+<span class="sd">            only_one (bool): Whether to return only one record.</span>
+<span class="sd">            not_found_raise_exception (bool): Whether to raise an exception if</span>
+<span class="sd">              the record is not found.</span>
+<span class="sd">            not_found_message (str): The message for the not found exception.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object or list: The record(s) if found, otherwise None or raises</span>
+<span class="sd">              an exception.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">eager</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">eager</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">"eagers"</span><span class="p">,</span> <span class="p">[]):</span>
-                    <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">joinedload</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">eager</span><span class="p">)))</span>
+                    <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">options</span><span class="p">(</span>
+                        <span class="n">joinedload</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">eager</span><span class="p">)))</span>
             <span class="k">if</span> <span class="n">only_one</span><span class="p">:</span>
-                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span> <span class="o">==</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span> <span class="o">==</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span> <span class="ow">and</span> <span class="n">not_found_raise_exception</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
-                        <span class="n">detail</span><span class="o">=</span><span class="n">not_found_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="n">column</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
-                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="n">not_found_message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">column</span><span class="o">=</span><span class="n">column</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">))</span>
                 <span class="k">return</span> <span class="n">query</span>
             <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span> <span class="o">==</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">query</span></div>
@@ -346,6 +407,15 @@
 <div class="viewcode-block" id="BaseRepository.create">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.base_repository.BaseRepository.create">[docs]</a>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Creates a new record.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema: The schema containing the record data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The created record.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
             <span class="k">try</span><span class="p">:</span>
@@ -360,10 +430,19 @@
 <div class="viewcode-block" id="BaseRepository.update">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.base_repository.BaseRepository.update">[docs]</a>
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Updates a record by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (int): The record ID.</span>
+<span class="sd">            schema: The schema containing the updated data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The updated record.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="p">)</span>
+                <span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
             <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span></div>
 
@@ -371,10 +450,20 @@
 <div class="viewcode-block" id="BaseRepository.update_attr">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.base_repository.BaseRepository.update_attr">[docs]</a>
     <span class="k">def</span> <span class="nf">update_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Updates a specific attribute of a record by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (int): The record ID.</span>
+<span class="sd">            column (str): The column name.</span>
+<span class="sd">            value: The new value of the attribute.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The updated record.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="p">{</span><span class="n">column</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
-            <span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">column</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
             <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span></div>
 
@@ -382,8 +471,19 @@
 <div class="viewcode-block" id="BaseRepository.whole_update">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.base_repository.BaseRepository.whole_update">[docs]</a>
     <span class="k">def</span> <span class="nf">whole_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Replaces a record entirely by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (int): The record ID.</span>
+<span class="sd">            schema: The schema containing the new data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The updated record.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
             <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span></div>
 
@@ -391,10 +491,20 @@
 <div class="viewcode-block" id="BaseRepository.delete_by_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.base_repository.BaseRepository.delete_by_id">[docs]</a>
     <span class="k">def</span> <span class="nf">delete_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Deletes a record by its ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (int): The record ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"not found id : </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Not found id : </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
             <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
 </div>

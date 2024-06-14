@@ -238,9 +238,7 @@
   <h1 id="modules-app-repository-user-repository--page-root">Source code for app.repository.user_repository</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AbstractContextManager</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
-
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
-
 <span class="kn">from</span> <span class="nn">app.model.users</span> <span class="kn">import</span> <span class="n">Users</span>
 <span class="kn">from</span> <span class="nn">app.repository.base_repository</span> <span class="kn">import</span> <span class="n">BaseRepository</span>
 
@@ -248,17 +246,42 @@
 <div class="viewcode-block" id="UserRepository">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_repository.UserRepository">[docs]</a>
 <span class="k">class</span> <span class="nc">UserRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Repository class for users.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        session_factory (Callable[..., AbstractContextManager[Session]]):</span>
+<span class="sd">          Factory for creating SQLAlchemy sessions.</span>
+<span class="sd">        model: SQLAlchemy model class for users.</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
-        <span class="n">model</span><span class="o">=</span><span class="n">Users</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">Users</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the UserRepository with the provided session factory and</span>
+<span class="sd">          model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session_factory (Callable[..., AbstractContextManager[Session]]):</span>
+<span class="sd">              The session factory.</span>
+<span class="sd">            model: The SQLAlchemy model class for users.</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
 <div class="viewcode-block" id="UserRepository.create_user_by_externalUserId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_repository.UserRepository.create_user_by_externalUserId">[docs]</a>
     <span class="k">def</span> <span class="nf">create_user_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Creates a new user with the provided external user ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Users: The created user.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">user</span> <span class="o">=</span> <span class="n">Users</span><span class="p">(</span><span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">)</span>
             <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>

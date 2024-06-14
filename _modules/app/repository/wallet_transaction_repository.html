@@ -238,9 +238,7 @@
   <h1 id="modules-app-repository-wallet-transaction-repository--page-root">Source code for app.repository.wallet_transaction_repository</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AbstractContextManager</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
-
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
-
 <span class="kn">from</span> <span class="nn">app.model.wallet_transactions</span> <span class="kn">import</span> <span class="n">WalletTransactions</span>
 <span class="kn">from</span> <span class="nn">app.repository.base_repository</span> <span class="kn">import</span> <span class="n">BaseRepository</span>
 
@@ -248,12 +246,28 @@
 <div class="viewcode-block" id="WalletTransactionRepository">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository">[docs]</a>
 <span class="k">class</span> <span class="nc">WalletTransactionRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Repository class for wallet transactions.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        session_factory (Callable[..., AbstractContextManager[Session]]):</span>
+<span class="sd">          Factory for creating SQLAlchemy sessions.</span>
+<span class="sd">        model: SQLAlchemy model class for wallet transactions.</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
-        <span class="n">model</span><span class="o">=</span><span class="n">WalletTransactions</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">WalletTransactions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the WalletTransactionRepository with the provided session</span>
+<span class="sd">          factory and model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session_factory (Callable[..., AbstractContextManager[Session]]):</span>
+<span class="sd">              The session factory.</span>
+<span class="sd">            model: The SQLAlchemy model class for wallet transactions.</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span></div>
 
 </pre></div>

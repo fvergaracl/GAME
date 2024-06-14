@@ -251,17 +251,43 @@
 <div class="viewcode-block" id="TaskRepository">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.task_repository.TaskRepository">[docs]</a>
 <span class="k">class</span> <span class="nc">TaskRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Repository class for tasks.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        session_factory (Callable[..., AbstractContextManager[Session]]):</span>
+<span class="sd">          Factory for creating SQLAlchemy sessions.</span>
+<span class="sd">        model: SQLAlchemy model class for tasks.</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
-        <span class="n">model</span><span class="o">=</span><span class="n">Tasks</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">Tasks</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the TaskRepository with the provided session factory and</span>
+<span class="sd">          model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session_factory (Callable[..., AbstractContextManager[Session]]):</span>
+<span class="sd">              The session factory.</span>
+<span class="sd">            model: The SQLAlchemy model class for tasks.</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TaskRepository.read_by_gameId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.task_repository.TaskRepository.read_by_gameId">[docs]</a>
     <span class="k">def</span> <span class="nf">read_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">eager</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Reads tasks by game ID based on the provided schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema: The schema containing query options.</span>
+<span class="sd">            eager (bool): Whether to use eager loading.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Query results and search options.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">schema_as_dict</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">ordering</span> <span class="o">=</span> <span class="n">schema_as_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ordering"</span><span class="p">,</span> <span class="n">configs</span><span class="o">.</span><span class="n">ORDERING</span><span class="p">)</span>
@@ -299,20 +325,27 @@
             <span class="p">}</span></div>
 
 
-    <span class="c1"># gameId and externalTaskId</span>
 <div class="viewcode-block" id="TaskRepository.read_by_gameId_and_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.task_repository.TaskRepository.read_by_gameId_and_externalTaskId">[docs]</a>
     <span class="k">def</span> <span class="nf">read_by_gameId_and_externalTaskId</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gameId</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">externalTaskId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">gameId</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">externalTaskId</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Reads a task by game ID and external task ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (int): The game ID.</span>
+<span class="sd">            externalTaskId (str): The external task ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The task if found, otherwise None.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">gameId</span><span class="p">,</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span>
-                <span class="p">)</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">gameId</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span>
             <span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">query</span></div>
 
@@ -320,9 +353,18 @@
 <div class="viewcode-block" id="TaskRepository.get_points_and_users_by_taskId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.task_repository.TaskRepository.get_points_and_users_by_taskId">[docs]</a>
     <span class="k">def</span> <span class="nf">get_points_and_users_by_taskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves points and users associated with a task ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskId (int): The task ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The task if found, otherwise raises NotFoundError.</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Task not found by id : </span><span class="si">{</span><span class="n">taskId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">query</span></div>
