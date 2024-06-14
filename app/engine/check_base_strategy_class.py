@@ -16,16 +16,27 @@ def check_class_methods_and_variables(Class_to_check, debug=False):
 
     methods = [
         "get_strategy_id",
-        "get_strategy_name", "get_strategy_description",
-        "get_strategy_name_slug", "get_strategy_version",
-        "get_variable_basic_points", "get_variable_bonus_points",
-        "set_variables", "get_variables", "get_variable", "set_variable",
-        "get_strategy", "calculate_points"
+        "get_strategy_name",
+        "get_strategy_description",
+        "get_strategy_name_slug",
+        "get_strategy_version",
+        "get_variable_basic_points",
+        "get_variable_bonus_points",
+        "set_variables",
+        "get_variables",
+        "get_variable",
+        "set_variable",
+        "get_strategy",
+        "calculate_points"
     ]
 
     variables = [
-        "strategy_name", "strategy_description", "strategy_name_slug",
-        "strategy_version", "variable_basic_points", "variable_bonus_points"
+        "strategy_name",
+        "strategy_description",
+        "strategy_name_slug",
+        "strategy_version",
+        "variable_basic_points",
+        "variable_bonus_points"
     ]
 
     missing_methods = [
