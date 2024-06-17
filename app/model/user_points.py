@@ -30,10 +30,22 @@ class UserPoints(BaseModel, table=True):
         orm_mode = True  # noqa
 
     def __str__(self):
-        return f"UserPoints (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, points={self.points}, caseName={self.caseName}, data={self.data}, description={self.description}, userId={self.userId}, taskId={self.taskId})"
+        return (
+            f"UserPoints (id={self.id}, created_at={self.created_at},"
+            f" updated_at={self.updated_at}, points={self.points}, "
+            f"caseName={self.caseName}, data={self.data}, "
+            f"description={self.description}, userId={self.userId}, "
+            f"taskId={self.taskId})"
+        )
 
     def __repr__(self):
-        return f"UserPoints (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, points={self.points}, caseName={self.caseName}, data={self.data}, description={self.description}, userId={self.userId}, taskId={self.taskId})"
+        return (
+            f"UserPoints (id={self.id}, created_at={self.created_at}, "
+            f"updated_at={self.updated_at}, points={self.points}, "
+            f"caseName={self.caseName}, data={self.data}, "
+            f"description={self.description}, userId={self.userId}, "
+            f"taskId={self.taskId})"
+        )
 
     def __eq__(self, other):
         return (

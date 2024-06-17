@@ -69,5 +69,4 @@ class Tasks(BaseModel, table=True):
 
     def __hash__(self):
         return hash(
-            self.id, self.externalTaskId, self.gameId, self.strategyId
-        )
+            (self.id, self.externalTaskId, self.gameId, self.strategyId))
