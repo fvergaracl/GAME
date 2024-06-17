@@ -66,12 +66,10 @@ router = APIRouter(
 
 """
 
-summary_query_user_points = "Query User Points"
+summary_query_user_points = "Query User Points by External IDs"
 description_query_user_points = """
-## Query User Points
-This endpoint retrieves the point totals for a list of users based on their
- external user IDs. This operation does not modify any user data.
-"""
+## Query User Points by External IDs
+### This endpoint retrieves the total points for a list of users based on their external user IDs. No user data is modified by this operation. """  # noqa
 
 
 @router.post(
@@ -100,11 +98,10 @@ def query_user_points(
     return response
 
 
-summary_get_user_points = "Get user points"
+summary_get_user_points = "Retrieve User Points"
 description_get_user_points = """
-## Get user points
-### Get user points
-"""
+## Retrieve User Points
+### This endpoint retrieves the points details associated with a specific user using their external user ID. """  # noqa
 
 
 @ router.get(
@@ -132,11 +129,10 @@ def get_points_by_user_id(
     return service.get_points_by_externalUserId(externalUserId)
 
 
-summary_get_user_wallet = "Get user wallet"
+summary_get_user_wallet = "Retrieve User Wallet"
 description_get_user_wallet = """
-## Get user wallet
-### Get user wallet
-"""
+## Retrieve User Wallet
+### This endpoint retrieves the wallet details associated with a specific user using their external user ID. """  # noqa
 
 
 @ router.get(
@@ -226,9 +222,9 @@ def get_wallet_by_user_id(
 
 
 summary_preview_points = "Preview Points to Coins Conversion"
-description_preview_points = """## Preview Points to Coins Conversion
-### Provides a preview of the points to coins conversion for a specific user.
-"""
+description_preview_points = """
+## Preview Points to Coins Conversion
+### This endpoint provides a preview of the conversion from points to coins for a specific user. """  # noqa
 
 
 @ router.get(
@@ -262,9 +258,9 @@ def preview_points_to_coins_conversion(
 
 
 summary_convert_points = "Convert Points to Coins"
-description_convert_points = """## Convert Points to Coins
-### Performs the actual conversion of points to coins for the specified user.
-"""
+description_convert_points = """
+## Convert Points to Coins
+### This endpoint performs the actual conversion of points to coins for the specified user. """  # noqa
 
 
 @ router.post(

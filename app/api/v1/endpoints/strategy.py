@@ -11,11 +11,10 @@ router = APIRouter(
     tags=["strategies"],
 )
 
-summary_get_strategies_list = "Get Strategies List"
+summary_get_strategies_list = "Retrieve Strategies List"
 description_get_strategies_list = """
-## Find Strategy
-### Find all strategies
-"""
+## Retrieve Strategies List
+### This endpoint retrieves a list of all available strategies. """
 
 
 @router.get(
@@ -41,13 +40,16 @@ def get_strategy_list(
     return response
 
 
-summary_get_strategy_by_id = "Get Strategy by id"
+summary_get_strategy_by_id = "Retrieve Strategy by ID"
 description_get_strategy_by_id = """
-Get Strategy by id
-"""
+## Retrieve Strategy by ID
+### This endpoint retrieves the details of a strategy using its unique ID. """
 
 
-@router.get("/{id}", response_model=Strategy)
+@router.get("/{id}", response_model=Strategy,
+            summary=summary_get_strategy_by_id,
+            description=description_get_strategy_by_id,
+            )
 @inject
 def get_strategy_by_id(
     id: str,
