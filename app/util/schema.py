@@ -4,6 +4,10 @@ from pydantic.main import ModelMetaclass
 
 
 class AllOptional(ModelMetaclass):
+    """
+    Metaclass that makes all fields of a Pydantic model optional.
+    """
+
     def __new__(self, name, bases, namespaces, **kwargs):
         annotations = namespaces.get("__annotations__", {})
         for base in bases:

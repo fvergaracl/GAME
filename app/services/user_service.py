@@ -13,8 +13,11 @@ from app.schema.user_points_schema import (
     BaseUserPointsBaseModel, UserPointsAssigned
 )
 from app.schema.user_schema import (
-    CreateWallet, PostPointsConversionRequest, ResponsePointsConversion,
-    UserPointsTasks, UserWallet
+    CreateWallet,
+    PostPointsConversionRequest,
+    ResponsePointsConversion,
+    UserPointsTasks,
+    UserWallet
 )
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
@@ -22,14 +25,40 @@ from app.util.serialize_wallet import serialize_wallet
 
 
 class UserService(BaseService):
+    """
+    Service class for managing users.
+
+    Attributes:
+        user_repository (UserRepository): Repository instance for users.
+        user_points_repository (UserPointsRepository): Repository instance for
+          user points.
+        task_repository (TaskRepository): Repository instance for tasks.
+        wallet_repository (WalletRepository): Repository instance for wallets.
+        wallet_transaction_repository (WalletTransactionRepository):
+          Repository instance for wallet transactions.
+    """
+
     def __init__(
-        self,
-        user_repository: UserRepository,
-        user_points_repository: UserPointsRepository,
-        task_repository: TaskRepository,
-        wallet_repository: WalletRepository,
-        wallet_transaction_repository: WalletTransactionRepository,
+            self,
+            user_repository: UserRepository,
+            user_points_repository: UserPointsRepository,
+            task_repository: TaskRepository,
+            wallet_repository: WalletRepository,
+            wallet_transaction_repository: WalletTransactionRepository
     ):
+        """
+        Initializes the UserService with the provided repositories.
+
+        Args:
+            user_repository (UserRepository): The user repository instance.
+            user_points_repository (UserPointsRepository): The user points
+              repository instance.
+            task_repository (TaskRepository): The task repository instance.
+            wallet_repository (WalletRepository): The wallet repository
+              instance.
+            wallet_transaction_repository (WalletTransactionRepository): The
+              wallet transaction repository instance.
+        """
         self.user_repository = user_repository
         self.user_points_repository = user_points_repository
         self.task_repository = task_repository
@@ -37,14 +66,13 @@ class UserService(BaseService):
         self.wallet_transaction_repository = wallet_transaction_repository
         super().__init__(user_repository)
 
-    # Move to a helper class
     def basic_engagement_points(self):
         """
         Provides a fixed number of points as a basic engagement reward for a
           user's initial actions within the gamification system.
 
         Returns:
-        - int: The fixed number of basic engagement points.
+            int: The fixed number of basic engagement points.
         """
         basic_points = 1
 
@@ -56,7 +84,7 @@ class UserService(BaseService):
           below a certain threshold.
 
         Returns:
-        - int: The number of points to deduct.
+            int: The number of points to deduct.
         """
         penalty_points = -5
 
@@ -68,7 +96,7 @@ class UserService(BaseService):
           above a certain threshold.
 
         Returns:
-        - int: The number of bonus points to award.
+            int: The number of bonus points to award.
         """
         bonus_points = 10
 
@@ -77,11 +105,11 @@ class UserService(BaseService):
     def individual_over_global_points(self):
         """
         Awards additional points for users who have improved their individual
-          performance
-        compared to their own history, even if below the global average.
+          performance compared to their own history, even if below the global
+            average.
 
         Returns:
-        - int: The number of additional points to award.
+            int: The number of additional points to award.
         """
         improvement_points = 5
 
@@ -90,11 +118,10 @@ class UserService(BaseService):
     def need_for_motivation_points(self):
         """
         Provides a small point incentive for users who are underperforming
-          both individually
-        and globally, to motivate improvement.
+          both individually and globally, to motivate improvement.
 
         Returns:
-        - int: The number of points to award as motivation.
+            int: The number of points to award as motivation.
         """
         motivation_points = 2
 
@@ -103,11 +130,10 @@ class UserService(BaseService):
     def peak_performer_bonus_points(self):
         """
         Rewards users who have exceeded both their individual performance and
-          the global average,
-        standing out as peak performers in the system.
+          the global average, standing out as peak performers in the system.
 
         Returns:
-        - int: The number of bonus points for peak performers.
+            int: The number of bonus points for peak performers.
         """
         peak_points = 15
 
@@ -116,13 +142,14 @@ class UserService(BaseService):
     def global_advantage_adjustment_points(self):
         """
         Awards additional points to users whose performance is above the
-        global average but have shown a decrease in their individual
-        performance. It's designed to encourage users to strive for
-        above-average performance, recognizing their effort amidst challenges.
+          global average but have shown a decrease in their individual
+            performance. It's designed to encourage users to strive for
+              above-average performance, recognizing their effort amidst
+                challenges.
 
         Returns:
-        - int: The number of adjustment points for maintaining a global
-        advantage.
+            int: The number of adjustment points for maintaining a global
+              advantage.
         """
         adjustment_points = 7
 
@@ -131,35 +158,53 @@ class UserService(BaseService):
     def individual_adjustment_points(self):
         """
         Rewards users who have improved their individual performance,
-        regardless of theirstanding against the global average. It aims to
-        acknowledge and encourage personal improvement, motivating users to
-        keep advancing.
+          regardless of their standing against the global average. It aims to
+            acknowledge and encourage personal improvement, motivating users
+              to keep advancing.
 
         Returns:
-        - int: The number of points to award for individual performance
-        improvement.
+            int: The number of points to award for individual performance
+              improvement.
         """
         improvement_points = 8
 
         return improvement_points
 
-    # End of helper class
-
     def create_user(self, schema):
+        """
+        Creates a new user using the provided schema.
+
+        Args:
+            schema: The schema representing the user to be created.
+
+        Returns:
+            object: The created user.
+        """
         return self.user_repository.create(schema)
 
     def assign_points_to_user(self, userId, schema: BaseUserPointsBaseModel):
+        """
+        Assigns points to a user based on the provided schema.
+
+        Args:
+            userId (str): The user ID.
+            schema (BaseUserPointsBaseModel): The schema containing point
+              assignment details.
+
+        Returns:
+            UserPointsAssigned: The assigned points details.
+        """
         user = self.user_repository.read_by_id(
             userId, not_found_message=f"User not found with userId: {userId}"
         )
         points = schema.points
-        measurement_count = self.user_points_repository.get_user_measurement_count(
+        measurement_count = self.user_points_repository.get_user_measurement_count(  # noqa: E501
             userId
         )
-        start_time_last_task = self.user_points_repository.get_start_time_for_last_task(
+        start_time_last_task = self.user_points_repository.get_start_time_for_last_task(  # noqa: E501
             userId
         )
-        end_time_last_task = self.user_points_repository.get_time_taken_for_last_task(
+        end_time_last_task = self.user_points_repository.get_time_taken_for_last_task(  # noqa: E501
             userId
         )
 
@@ -170,23 +215,23 @@ class UserService(BaseService):
         else:
             duration_last_task = 0
 
-        individual_calculation = self.user_points_repository.get_individual_calculation(
+        individual_calculation = self.user_points_repository.get_individual_calculation(  # noqa: E501
             userId
         )
 
-        global_calculation = self.user_points_repository.get_global_calculation()
+        global_calculation = self.user_points_repository.get_global_calculation()  # noqa: E501
         schema.data["label_function_choose"] = "-"
         if not points:
             if measurement_count <= 2:
                 points = self.basic_engagement_points()
-                schema.data["label_function_choose"] = "basic_engagement_points"
+                schema.data["label_function_choose"] = "basic_engagement_points"  # noqa: E501
             elif measurement_count == 2:
                 if duration_last_task > global_calculation:
                     points = self.performance_penalty_points()
-                    schema.data["label_function_choose"] = "performance_penalty_points"
+                    schema.data["label_function_choose"] = "performance_penalty_points"  # noqa: E501
                 else:
                     points = self.performance_bonus_points()
-                    schema.data["label_function_choose"] = "performance_bonus_points"
+                    schema.data["label_function_choose"] = "performance_bonus_points"  # noqa: E501
             else:
                 if duration_last_task >= individual_calculation:
                     if (
@@ -274,6 +319,15 @@ class UserService(BaseService):
         return response
 
     def get_wallet_by_user_id(self, userId):
+        """
+        Retrieves the wallet associated with a user by their user ID.
+
+        Args:
+            userId (str): The user ID.
+
+        Returns:
+            UserWallet: The wallet details.
+        """
         user = self.user_repository.read_by_id(
             userId, not_found_message=f"User not found with userId: {userId}"
         )
@@ -290,19 +344,32 @@ class UserService(BaseService):
 
             wallet = self.wallet_repository.create(new_wallet)
 
-        wallet_transactions = self.wallet_transaction_repository.read_by_column(
-            "walletId", str(wallet.id), only_one=False, not_found_raise_exception=False
+        wallet_transactions = self.wallet_transaction_repository.read_by_column(  # noqa: E501
+            "walletId",
+            str(wallet.id),
+            only_one=False,
+            not_found_raise_exception=False
         )
         for transaction in wallet_transactions:
-            # created_at = transaction.created_at to string
             transaction.created_at = str(transaction.created_at)
         response = UserWallet(
-            userId=str(user.id), wallet=wallet, walletTransactions=wallet_transactions
+            userId=str(user.id),
+            wallet=wallet,
+            walletTransactions=wallet_transactions
         )
 
         return response
 
     def get_wallet_by_externalUserId(self, externalUserId):
+        """
+        Retrieves the wallet associated with a user by their external user ID.
+
+        Args:
+            externalUserId (str): The external user ID.
+
+        Returns:
+            UserWallet: The wallet details.
+        """
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
@@ -310,11 +377,23 @@ class UserService(BaseService):
         return response
 
     def get_points_by_user_id(self, userId):
+        """
+        Retrieves points associated with a user by their user ID.
+
+        Args:
+            userId (str): The user ID.
+
+        Returns:
+            UserPointsTasks: The user's points and associated tasks.
+        """
         user = self.user_repository.read_by_id(
             userId, not_found_message=f"User not found with userId: {userId}"
         )
         tasks = self.user_points_repository.read_by_column(
-            "userId", str(user.id), only_one=False, not_found_raise_exception=False
+            "userId",
+            str(user.id),
+            only_one=False,
+            not_found_raise_exception=False
         )
         tasks = list({v.taskId: v for v in tasks}.values())
         if not tasks:
@@ -326,9 +405,9 @@ class UserService(BaseService):
             taskId = str(task.taskId)
             task.userId = str(task.userId)
             task = self.task_repository.read_by_id(
-                taskId, not_found_message="Task not found by id : {taskId}"
+                taskId, not_found_message="Task not found by id: {taskId}"
             )
-            all_points = self.user_points_repository.get_points_and_users_by_taskId(
+            all_points = self.user_points_repository.get_points_and_users_by_taskId(  # noqa: E501
                 taskId
             )
             points = 0
@@ -349,7 +428,16 @@ class UserService(BaseService):
         return response
 
     def preview_points_to_coins_conversion(self, userId, points):
+        """
+        Previews the conversion of points to coins for a user.
 
+        Args:
+            userId (str): The user ID.
+            points (int): The number of points to convert.
+
+        Returns:
+            dict: The conversion preview details.
+        """
         if not points:
             raise ValueError("Points must be provided")
 
@@ -372,7 +460,6 @@ class UserService(BaseService):
 
             wallet = self.wallet_repository.create(new_wallet)
 
-        # check if have enough points
         coins = points / wallet.conversionRate
         haveEnoughPoints = True
         if wallet.pointsBalance < points:
@@ -388,7 +475,20 @@ class UserService(BaseService):
         }
         return response
 
-    def preview_points_to_coins_conversion_externalUserId(self, externalUserId, points):
+    def preview_points_to_coins_conversion_externalUserId(
+            self, externalUserId, points
+    ):
+        """
+        Previews the conversion of points to coins for a user by their
+          external user ID.
+
+        Args:
+            externalUserId (str): The external user ID.
+            points (int): The number of points to convert.
+
+        Returns:
+            dict: The conversion preview details.
+        """
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
@@ -396,7 +496,20 @@ class UserService(BaseService):
             str(user.id), points)
         return response
 
-    def convert_points_to_coins(self, userId, schema: PostPointsConversionRequest):
+    def convert_points_to_coins(
+            self, userId, schema: PostPointsConversionRequest
+    ):
+        """
+        Converts points to coins for a user based on the provided schema.
+
+        Args:
+            userId (str): The user ID.
+            schema (PostPointsConversionRequest): The schema containing
+              conversion details.
+
+        Returns:
+            ResponsePointsConversion: The conversion details.
+        """
         points = schema.points
         if not points:
             raise ValueError("Points must be provided")
@@ -422,7 +535,6 @@ class UserService(BaseService):
 
         wallet_before = copy.deepcopy(wallet)
 
-        # check if have enough points
         coins = points / wallet.conversionRate
         haveEnoughPoints = True
 
@@ -466,7 +578,20 @@ class UserService(BaseService):
         response = ResponsePointsConversion(**response)
         return response
 
-    def convert_points_to_coins_externalUserId(self, externalUserId, schema: PostPointsConversionRequest):
+    def convert_points_to_coins_externalUserId(
+            self, externalUserId, schema: PostPointsConversionRequest):
+        """
+        Converts points to coins for a user by their external user ID based on
+          the provided schema.
+
+        Args:
+            externalUserId (str): The external user ID.
+            schema (PostPointsConversionRequest): The schema containing
+              conversion details.
+
+        Returns:
+            ResponsePointsConversion: The conversion details.
+        """
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
