@@ -26,11 +26,10 @@ router = APIRouter(
     tags=["games"],
 )
 
-summary_get_games_list = "Get Games List"
+summary_get_games_list = "Retrieve All Games"
 description_get_games_list = """
-## Find Game
-### Find all games and params
-"""
+## Retrieve All Games
+### This endpoint retrieves a list of all games along with their associated parameters."""  # noqa
 
 
 @router.get(
@@ -57,9 +56,10 @@ def get_games_list(
     return service.get_all_games(schema)
 
 
-summary_get_game_by_id = "Get Game by gameId"
+summary_get_game_by_id = "Retrieve Game by ID"
 description_get_game_by_id = """
-Get Game by gameId
+## Retrieve Game by ID
+### This endpoint retrieves the details of a game by its unique game ID.
 """
 
 
@@ -88,10 +88,10 @@ def get_game_by_id(
     return response
 
 
-summary_create_game = "Create Game"
+summary_create_game = "Create a New Game"
 description_create_game = """
-Create Game
-"""
+## Create a New Game
+### This endpoint allows for the creation of a new game with the specified parameters. """  # noqa
 
 
 @router.post(
@@ -118,11 +118,10 @@ def create_game(
     return service.create(schema)
 
 
-summary_patch_game = "Update Game"
+summary_patch_game = "Update Game Details"
 description_patch_game = """
-Update Game
-can update even the GameParams
-"""
+## Update Game Details
+### This endpoint allows for updating the details of a game by its ID, including game parameters. """  # noqa
 
 
 @router.patch(
@@ -151,10 +150,10 @@ def patch_game(
     return service.patch_game_by_id(gameId, schema)
 
 
-summary_get_strategy_by_gameId = "Get Strategy by gameId"
+summary_get_strategy_by_gameId = "Retrieve Strategy by Game ID"
 description_get_strategy_by_gameId = """
-Get Strategy by gameId
-"""
+## Retrieve Strategy by Game ID
+### This endpoint retrieves the strategy details associated with a specific game by its ID."""  # noqa
 
 
 @router.get(
@@ -181,21 +180,24 @@ def get_strategy_by_gameId(
     return service.get_strategy_by_gameId(gameId)
 
 
-summary_create_task = "Create Task"
+summary_create_task = "Create a New Task"
 description_create_task = """
-Create Task in a game using gameId
-"""
+## Create a New Task
+### This endpoint allows for the creation of a new task within a specific game using the game's ID. """  # noqa
 
 
 @router.post(
     "/{gameId}/tasks",
-    response_model=CreateTaskPostSuccesfullyCreated
+    response_model=CreateTaskPostSuccesfullyCreated,
+    summary=summary_create_task,
+    description=description_create_task,
 )
 @inject
 def create_task(
     gameId: UUID,
     create_query: CreateTaskPost = Body(..., example=CreateTaskPost.example()),
     service: TaskService = Depends(Provide[Container.task_service]),
+
 ):
     """
     Create a task for a specific game.
@@ -211,10 +213,10 @@ def create_task(
     return service.create_task_by_game_id(gameId, create_query)
 
 
-summary_get_task_list = "Get Task List"
+summary_get_task_list = "Retrieve Task List"
 description_get_task_list = """
-Get Task List
-"""
+## Retrieve Task List
+### This endpoint retrieves a list of tasks associated with a specific game using the game's ID. """  # noqa
 
 
 @router.get(
@@ -244,11 +246,11 @@ def get_task_list(
 
 
 summary_get_task_by_gameId_taskId = (
-    "Get Task by externalGameId and externalTaskId"
+    "Retrieve Task by Game ID and External Task ID"
 )
 description_get_task_by_gameId_taskId = """
-Get Task by externalGameId and externalTaskId
-"""
+## Retrieve Task by Game ID and External Task ID
+### This endpoint retrieves the details of a task using the game's ID and the external task ID. """  # noqa
 
 
 @router.get(
@@ -278,10 +280,10 @@ def get_task_by_externalGameId_taskId(
         gameId, externalTaskId)
 
 
-summary_get_points_by_gameId = "Get points by gameId"
+summary_get_points_by_gameId = "Retrieve Points by Game ID"
 description_get_points_by_gameId = """
-Get points by gameId
-"""
+## Retrieve Points by Game ID
+### This endpoint retrieves the points details associated with a specific game by its ID. """  # noqa
 
 
 @router.get(
@@ -309,10 +311,10 @@ def get_points_by_gameId(
     return service.get_points_by_gameId(gameId)
 
 
-summary_get_points_of_user_in_game = "Get points of user in game"
+summary_get_points_of_user_in_game = "Retrieve User Points in Game"
 description_get_points_of_user_in_game = """
-Get points of user in game
-"""
+## Retrieve User Points in Game
+### This endpoint retrieves the points details of a user within a specific game using the game's ID and the user's external ID. """  # noqa
 
 
 @router.get(
@@ -343,11 +345,10 @@ def get_points_of_user_in_game(
     return service.get_points_of_user_in_game(gameId, externalUserId)
 
 
-summary_assing_points_to_user = "Assign points to user"
+summary_assing_points_to_user = "Assign Points to User"
 description_assing_points_to_user = """
-## Assign points to user
-### Assign points to user
-"""
+## Assign Points to User
+### This endpoint assigns points to a user for a specific task within a game. """  # noqa
 
 
 @router.post(
@@ -379,11 +380,10 @@ def assign_points_to_user(
     return service.assign_points_to_user(gameId, externalTaskId, schema)
 
 
-summary_get_points_by_task_id = "Get points by task id"
+summary_get_points_by_task_id = "Retrieve Points by Task ID"
 description_get_points_by_task_id = """
-## Get points by task id
-### Get points by task id
-"""
+## Retrieve Points by Task ID
+### This endpoint retrieves the points details associated with a specific task using the game's ID and the external task ID. """  # noqa
 
 
 @router.get(
@@ -412,11 +412,10 @@ def get_points_by_task_id(
     return service.get_points_by_task_id(gameId, externalTaskId)
 
 
-summary_get_points_of_user_by_task_id = "Get points of user by task id"
+summary_get_points_of_user_by_task_id = "Retrieve User Points by Task ID"
 description_get_points_of_user_by_task_id = """
-## Get points of user by task id
-### Get points of user by task id
-"""
+## Retrieve User Points by Task ID
+### This endpoint retrieves the points details of a user associated with a specific task using the game's ID and the user's external ID. """  # noqa
 
 
 @router.get(
@@ -453,12 +452,11 @@ def get_points_of_user_by_task_id(
 
 
 summary_get_points_by_task_id_with_details = (
-    "Get points by task id with details"
+    "Retrieve Detailed Points by Task ID"
 )
 description_get_points_by_task_id_with_details = """
-## Get points by task id with details
-### Get points by task id with details
-"""
+## Retrieve Detailed Points by Task ID
+### This endpoint retrieves detailed points information associated with a specific task using the game's ID and the external task ID. """  # noqa
 
 
 @router.get(
@@ -487,11 +485,10 @@ def get_points_by_task_id_with_details(
     return service.get_points_by_task_id_with_details(gameId, externalTaskId)
 
 
-summary_get_users_by_gameId = "Get users by gameId"
+summary_get_users_by_gameId = "Retrieve Users by Game ID"
 description_get_users_by_gameId = """
-## Get users by gameId
-### Get users by gameId
-"""
+## Retrieve Users by Game ID
+### This endpoint retrieves the list of users associated with a specific game using the game's ID. """  # noqa
 
 
 @router.get(
