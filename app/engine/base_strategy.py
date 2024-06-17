@@ -165,8 +165,7 @@ class BaseStrategy:
         Returns:
             dict: A dictionary of variable names and their values.
         """
-        return {k: v for k, v in self.__dict__.items() if
-                k.startswith("variable_")}
+        return {k: v for k, v in self.__dict__.items() if k.startswith("variable_")}
 
     def get_variable(self, variable_name):
         """

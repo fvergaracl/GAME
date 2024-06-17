@@ -1,6 +1,5 @@
-from app.repository.wallet_transaction_repository import (
+from app.repository.wallet_transaction_repository import \
     WalletTransactionRepository
-)
 from app.services.base_service import BaseService
 
 
@@ -13,8 +12,7 @@ class WalletTransactionService(BaseService):
           Repository instance for wallet transactions.
     """
 
-    def __init__(
-            self, wallet_transaction_repository: WalletTransactionRepository):
+    def __init__(self, wallet_transaction_repository: WalletTransactionRepository):
         """
         Initializes the WalletTransactionService with the provided repository.
 

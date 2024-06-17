@@ -1,7 +1,9 @@
-import pytest
 from datetime import datetime, timezone
-from app.model.user_points import UserPoints
 from uuid import uuid4
+
+import pytest
+
+from app.model.user_points import UserPoints
 
 
 def test_user_points_creation_and_representation():
@@ -15,7 +17,7 @@ def test_user_points_creation_and_representation():
         data={"level": 1, "score": 1500},
         description="First level completion",
         userId=user_id,
-        taskId=task_id
+        taskId=task_id,
     )
 
     expected_str = (
@@ -34,14 +36,14 @@ def test_user_points_equality():
         data={"level": 2, "score": 2500},
         description="Second level achievement",
         userId=user_id,
-        taskId=task_id
+        taskId=task_id,
     )
     user_points2 = UserPoints(
         points=100,
         data={"level": 2, "score": 2500},
         description="Second level achievement",
         userId=user_id,
-        taskId=task_id
+        taskId=task_id,
     )
     # Assuming different IDs, equality checks all fields
     assert user_points1 != user_points2
@@ -59,7 +61,7 @@ def test_user_points_hash():
         data={"level": 3, "achievements": ["win", "fastest_time"]},
         description="Third level special",
         userId=user_id,
-        taskId=task_id
+        taskId=task_id,
     )
 
     user_id_2 = str(uuid4())
@@ -69,7 +71,7 @@ def test_user_points_hash():
         data={"level": 3, "achievements": ["win", "fastest_time"]},
         description="Third level special",
         userId=user_id_2,
-        taskId=task_id_2
+        taskId=task_id_2,
     )
 
     # Even if all attributes are the same, different IDs mean different objects

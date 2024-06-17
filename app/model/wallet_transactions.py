@@ -45,8 +45,7 @@ class WalletTransactions(BaseModel, table=True):
     coins: float = Field(sa_column=Column(Float))
     data: dict = Field(sa_column=Column(JSONB), nullable=True)
     appliedConversionRate: float = Field(sa_column=Column(Float))
-    walletId: str = Field(sa_column=Column(
-        UUID(as_uuid=True), ForeignKey("wallet.id")))
+    walletId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("wallet.id")))
 
     class Config:  # noqa
         orm_mode = True  # noqa
@@ -79,4 +78,13 @@ class WalletTransactions(BaseModel, table=True):
 
     def __hash__(self):
         data_as_hashable = self.make_hashable(self.data)
-        return hash((self.transactionType, self.points, self.coins, data_as_hashable, self.appliedConversionRate, self.walletId))
+        return hash(
+            (
+                self.transactionType,
+                self.points,
+                self.coins,
+                data_as_hashable,
+                self.appliedConversionRate,
+                self.walletId,
+            )
+        )

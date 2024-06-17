@@ -1,5 +1,7 @@
 from typing import Dict, List, Optional
+
 from pydantic import BaseModel
+
 from app.schema.base_schema import ModelBaseInfo
 
 
@@ -14,6 +16,7 @@ class Strategy(BaseModel):
         version (str): Strategy version
         variables (Dict[str, int]): Strategy variables
     """
+
     id: str
     name: Optional[str] = None
     description: Optional[str] = None
@@ -32,6 +35,7 @@ class RuleBase(BaseModel):
         reward (str): Reward
         priority (int): Priority
     """
+
     name: str
     description: str
     conditions: List[str]
@@ -47,6 +51,7 @@ class StaticVariables(BaseModel):
         BASIC_POINTS (int): Basic points
         BONUS_FACTOR (float): Bonus factor
     """
+
     BASIC_POINTS: int
     BONUS_FACTOR: float
 
@@ -62,6 +67,7 @@ class DataStrategy(BaseModel):
         static_variables (StaticVariables): Static variables
         rules (List[RuleBase]): List of rules
     """
+
     label: str
     description: str
     tags: List[str]
@@ -77,5 +83,6 @@ class BaseStrategy(ModelBaseInfo):
         strategyName (str): Strategy name
         data (DataStrategy): Data strategy
     """
+
     strategyName: str
     data: DataStrategy

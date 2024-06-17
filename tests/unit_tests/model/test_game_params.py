@@ -1,5 +1,7 @@
-import pytest
 from uuid import uuid4
+
+import pytest
+
 from app.model.game_params import GamesParams
 
 
@@ -10,11 +12,7 @@ def test_games_params_creation_and_representation():
     game_id = str(uuid4())  # Assuming UUID is used for game IDs
 
     # Create a GamesParams instance
-    game_params = GamesParams(
-        key=key,
-        value=value,
-        gameId=game_id
-    )
+    game_params = GamesParams(key=key, value=value, gameId=game_id)
 
     # Test the string representation
     expected_str = (
@@ -27,21 +25,9 @@ def test_games_params_creation_and_representation():
 
 def test_games_params_equality():
     game_id = uuid4()
-    game_params1 = GamesParams(
-        key="difficulty",
-        value="hard",
-        gameId=game_id
-    )
-    game_params2 = GamesParams(
-        key="difficulty",
-        value="hard",
-        gameId=game_id
-    )
-    game_params3 = GamesParams(
-        key="level",
-        value="10",
-        gameId=game_id
-    )
+    game_params1 = GamesParams(key="difficulty", value="hard", gameId=game_id)
+    game_params2 = GamesParams(key="difficulty", value="hard", gameId=game_id)
+    game_params3 = GamesParams(key="level", value="10", gameId=game_id)
 
     # Test equality
     assert game_params1 == game_params2
@@ -50,21 +36,9 @@ def test_games_params_equality():
 
 def test_games_params_hash():
     game_id = uuid4()
-    game_params1 = GamesParams(
-        key="difficulty",
-        value="hard",
-        gameId=game_id
-    )
-    game_params2 = GamesParams(
-        key="difficulty",
-        value="hard",
-        gameId=game_id
-    )
-    game_params3 = GamesParams(
-        key="level",
-        value="10",
-        gameId=game_id
-    )
+    game_params1 = GamesParams(key="difficulty", value="hard", gameId=game_id)
+    game_params2 = GamesParams(key="difficulty", value="hard", gameId=game_id)
+    game_params3 = GamesParams(key="level", value="10", gameId=game_id)
 
     # Hashes should be the same for objects with the same content
     assert hash(game_params1) == hash(game_params2)

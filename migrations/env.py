@@ -15,7 +15,6 @@ from app.model.users import Users
 from app.model.wallet import Wallet
 from app.model.wallet_transactions import WalletTransactions
 
-
 cmd_kwargs = context.get_x_argument(as_dictionary=True)
 if "ENV" in cmd_kwargs:
     os.environ["ENV"] = cmd_kwargs["ENV"]
@@ -45,7 +44,6 @@ target_metadata = SQLModel.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-
 
 
 # code doesn't reach here

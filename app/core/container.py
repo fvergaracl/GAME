@@ -4,14 +4,12 @@ from app.core.config import configs
 from app.core.database import Database
 # pylint: disable=unused-wildcard-import
 from app.repository import (GameParamsRepository, GameRepository,
-                            TaskRepository,
+                            TaskParamsRepository, TaskRepository,
                             UserPointsRepository, UserRepository,
-                            WalletRepository, WalletTransactionRepository,
-                            TaskParamsRepository)
-from app.services import (GameParamsService, GameService,
-                          TaskService, UserPointsService,
-                          UserService, WalletService, WalletTransactionService,
-                          StrategyService)
+                            WalletRepository, WalletTransactionRepository)
+from app.services import (GameParamsService, GameService, StrategyService,
+                          TaskService, UserPointsService, UserService,
+                          WalletService, WalletTransactionService)
 
 
 class Container(containers.DeclarativeContainer):
@@ -51,6 +49,7 @@ class Container(containers.DeclarativeContainer):
         wallet_transaction_service (providers.Factory): Factory provider for
           WalletTransactionService.
     """
+
     wiring_config = containers.WiringConfiguration(
         modules=[
             "app.api.v1.endpoints.games",
@@ -102,9 +101,7 @@ class Container(containers.DeclarativeContainer):
         GameParamsService, game_params_repository=game_params_repository
     )
 
-    strategy_service = providers.Factory(  # noqa
-        StrategyService
-    )
+    strategy_service = providers.Factory(StrategyService)  # noqa
 
     game_service = providers.Factory(  # noqa
         GameService,

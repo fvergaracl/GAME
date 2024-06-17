@@ -40,10 +40,8 @@ class Tasks(BaseModel, table=True):
     """
 
     externalTaskId: str = Field(sa_column=Column(String, unique=True))
-    gameId: str = Field(sa_column=Column(
-        UUID(as_uuid=True), ForeignKey("games.id")))
-    strategyId: str = Field(sa_column=Column(
-        String, nullable=False, default="default"))
+    gameId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id")))
+    strategyId: str = Field(sa_column=Column(String, nullable=False, default="default"))
 
     class Config:
         orm_mode = True  # Enable ORM mode
@@ -61,13 +59,12 @@ class Tasks(BaseModel, table=True):
 
     def __eq__(self, other):
         return (
-            isinstance(other, Tasks) and self.id == other.id and
-            self.externalTaskId == other.externalTaskId and
-            self.gameId == other.gameId and
-            self.strategyId == other.strategyId
+            isinstance(other, Tasks)
+            and self.id == other.id
+            and self.externalTaskId == other.externalTaskId
+            and self.gameId == other.gameId
+            and self.strategyId == other.strategyId
         )
 
     def __hash__(self):
-        return hash(
-            self.id, self.externalTaskId, self.gameId, self.strategyId
-        )
+        return hash(self.id, self.externalTaskId, self.gameId, self.strategyId)

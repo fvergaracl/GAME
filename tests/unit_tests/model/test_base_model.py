@@ -1,14 +1,17 @@
-import pytest
 from datetime import datetime, timezone
-from sqlmodel import Field
-from app.model.base_model import BaseModel
 from uuid import UUID
+
+import pytest
+from sqlmodel import Field
+
+from app.model.base_model import BaseModel
 
 
 class DerivedModel(BaseModel, table=True):
     """
     A derived model to test the inheritance capabilities of BaseModel.
     """
+
     name: str = Field(default="Test Name")
 
 

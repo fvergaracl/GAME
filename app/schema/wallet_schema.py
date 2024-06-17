@@ -14,6 +14,7 @@ class WalletWithoutUserId(BaseModel):
         pointsBalance (Optional[float]): Points balance
         conversionRate (Optional[float]): Conversion rate
     """
+
     coinsBalance: Optional[float]
     pointsBalance: Optional[float]
     conversionRate: Optional[float]
@@ -26,6 +27,7 @@ class Wallet(WalletWithoutUserId):
     Attributes:
         userId (Optional[str]): User ID
     """
+
     userId: Optional[str]
 
 
@@ -39,6 +41,7 @@ class BaseWallet(ModelBaseInfo):
         conversionRate (Optional[float]): Conversion rate
         userId (Optional[int]): User ID
     """
+
     coinsBalance: Optional[float]
     pointsBalance: Optional[float]
     conversionRate: Optional[float]
@@ -53,6 +56,7 @@ class BaseWalletOnlyUserId(BaseModel):
         userId (int): User ID
         pointsBalance (Optional[float]): Points balance
     """
+
     userId: int
     pointsBalance: Optional[float]
 
@@ -65,6 +69,7 @@ class PostPreviewConvertPoints(BaseModel):
         points (float): Points
         externalUserId (str): External user ID
     """
+
     points: float
     externalUserId: str
 
@@ -81,6 +86,7 @@ class ResponsePreviewConvertPoints(BaseModel):
         afterConversionCoins (float): Coins after conversion
         externalUserId (str): External user ID
     """
+
     coins: float
     points_converted: float
     conversionRate: float
@@ -91,4 +97,5 @@ class ResponsePreviewConvertPoints(BaseModel):
 
 class CreateWallet(Wallet):
     """Model for creating a wallet."""
+
     ...

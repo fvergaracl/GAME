@@ -1,7 +1,9 @@
-import pytest
 from datetime import datetime, timezone
-from app.model.wallet_transactions import WalletTransactions
 from uuid import uuid4
+
+import pytest
+
+from app.model.wallet_transactions import WalletTransactions
 
 
 def test_wallet_transactions_creation_and_representation():
@@ -15,7 +17,7 @@ def test_wallet_transactions_creation_and_representation():
         coins=50.0,
         data={"description": "Deposit into wallet"},
         appliedConversionRate=1.0,
-        walletId=wallet_id
+        walletId=wallet_id,
     )
 
     expected_str = (
@@ -35,7 +37,7 @@ def test_wallet_transactions_equality():
         coins=0.0,
         data={"event": "Completed task"},
         appliedConversionRate=0.0,
-        walletId=wallet_id
+        walletId=wallet_id,
     )
     transaction2 = WalletTransactions(
         transactionType="EarnRewards",
@@ -43,7 +45,7 @@ def test_wallet_transactions_equality():
         coins=0.0,
         data={"event": "Completed task"},
         appliedConversionRate=0.0,
-        walletId=wallet_id
+        walletId=wallet_id,
     )
 
     # Even if all attributes match, transactions are unique by their id
@@ -62,7 +64,7 @@ def test_wallet_transactions_hash():
         coins=20.0,
         data={"description": "Withdrawal from wallet"},
         appliedConversionRate=1.0,
-        walletId=wallet_id
+        walletId=wallet_id,
     )
 
     # Use the make_hashable method to prepare the 'data' field for hashing

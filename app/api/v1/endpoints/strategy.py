@@ -1,6 +1,8 @@
+from typing import List
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
-from typing import List
+
 from app.core.container import Container
 from app.core.exceptions import NotFoundError
 from app.schema.strategy_schema import Strategy
@@ -46,10 +48,12 @@ description_get_strategy_by_id = """
 ### This endpoint retrieves the details of a strategy using its unique ID. """
 
 
-@router.get("/{id}", response_model=Strategy,
-            summary=summary_get_strategy_by_id,
-            description=description_get_strategy_by_id,
-            )
+@router.get(
+    "/{id}",
+    response_model=Strategy,
+    summary=summary_get_strategy_by_id,
+    description=description_get_strategy_by_id,
+)
 @inject
 def get_strategy_by_id(
     id: str,

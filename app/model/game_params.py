@@ -31,9 +31,7 @@ class GamesParams(BaseModel, table=True):
     # Field definitions
     key: str = Field(sa_column=Column(String))
     value: str = Field(sa_column=Column(String))
-    gameId: str = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id"))
-    )
+    gameId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id")))
 
     class Config:
         orm_mode = True

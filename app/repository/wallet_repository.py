@@ -18,9 +18,10 @@ class WalletRepository(BaseRepository):
     """
 
     def __init__(
-            self,
-            session_factory: Callable[..., AbstractContextManager[Session]],
-            model=Wallet) -> None:
+        self,
+        session_factory: Callable[..., AbstractContextManager[Session]],
+        model=Wallet,
+    ) -> None:
         """
         Initializes the WalletRepository with the provided session factory and
           model.

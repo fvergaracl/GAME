@@ -1,15 +1,15 @@
-import pytest
 from datetime import datetime, timezone
-from app.model.wallet import Wallet
 from uuid import uuid4
+
+import pytest
+
 from app.core.config import configs
+from app.model.wallet import Wallet
 
 
 def test_wallet_initialization():
     user_id = str(uuid4())
-    wallet = Wallet(
-        userId=user_id
-    )
+    wallet = Wallet(userId=user_id)
 
     # Check default values
     assert wallet.coinsBalance == 0.0
@@ -21,11 +21,7 @@ def test_wallet_initialization():
 def test_wallet_string_representation():
     now = datetime.now(timezone.utc)
     user_id = str(uuid4())
-    wallet = Wallet(
-        created_at=now,
-        updated_at=now,
-        userId=user_id
-    )
+    wallet = Wallet(created_at=now, updated_at=now, userId=user_id)
 
     expected_str = (
         f"Wallet: (id={wallet.id}, created_at={wallet.created_at}, "
@@ -56,6 +52,11 @@ def test_wallet_hash():
 
     # Ensure hash incorporates all relevant fields
     assert hash(wallet) == hash(
-        (wallet.id, wallet.coinsBalance, wallet.pointsBalance,
-         wallet.conversionRate, wallet.userId)
+        (
+            wallet.id,
+            wallet.coinsBalance,
+            wallet.pointsBalance,
+            wallet.conversionRate,
+            wallet.userId,
+        )
     )

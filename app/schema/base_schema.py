@@ -17,6 +17,7 @@ class RootEndpoint(BaseModel):
         redocs (str): URL to the redoc documentation
         commitVersion (str): Commit version
     """
+
     projectName: str
     version: str
     message: str
@@ -34,6 +35,7 @@ class ModelBaseInfo(BaseModel):
         created_at (datetime): Created date
         updated_at (datetime): Updated date
     """
+
     id: UUID
     created_at: datetime
     updated_at: datetime
@@ -48,6 +50,7 @@ class FindBase(BaseModel):
         page (Optional[int]): Page number
         page_size (Optional[Union[int, str]]): Page size
     """
+
     ordering: Optional[str]
     page: Optional[int]
     page_size: Optional[Union[int, str]]
@@ -60,6 +63,7 @@ class SearchOptions(FindBase):
     Attributes:
         total_count (Optional[int]): Total count of results
     """
+
     total_count: Optional[int]
 
 
@@ -71,6 +75,7 @@ class FindResult(BaseModel):
         items (Optional[List]): List of items
         search_options (Optional[SearchOptions]): Search options
     """
+
     items: Optional[List]
     search_options: Optional[SearchOptions]
 
@@ -85,6 +90,7 @@ class FindDateRange(BaseModel):
         created_at__gt (str): Greater than filter for created date
         created_at__gte (str): Greater than or equal filter for created date
     """
+
     created_at__lt: str
     created_at__lte: str
     created_at__gt: str
@@ -98,9 +104,11 @@ class SuccesfullyCreated(BaseModel):
     Attributes:
         message (Optional[str]): Success message
     """
+
     message: Optional[str] = "Successfully created"
 
 
 class Blank(BaseModel):
     """A blank model used for various purposes."""
+
     pass

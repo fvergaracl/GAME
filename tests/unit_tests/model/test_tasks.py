@@ -1,7 +1,9 @@
-import pytest
 from datetime import datetime, timezone
-from app.model.tasks import Tasks
 from uuid import uuid4
+
+import pytest
+
+from app.model.tasks import Tasks
 
 
 def test_tasks_creation_and_representation():
@@ -14,7 +16,7 @@ def test_tasks_creation_and_representation():
         updated_at=now,
         externalTaskId="external_task_123",
         gameId=game_id,
-        strategyId=strategy_id
+        strategyId=strategy_id,
     )
 
     expected_str = (
@@ -29,20 +31,12 @@ def test_tasks_equality():
     game_id = str(uuid4())
     strategy_id = str(uuid4())
 
-    task1 = Tasks(
-        externalTaskId="task_123",
-        gameId=game_id,
-        strategyId=strategy_id
-    )
-    task2 = Tasks(
-        externalTaskId="task_123",
-        gameId=game_id,
-        strategyId=strategy_id
-    )
+    task1 = Tasks(externalTaskId="task_123", gameId=game_id, strategyId=strategy_id)
+    task2 = Tasks(externalTaskId="task_123", gameId=game_id, strategyId=strategy_id)
     task3 = Tasks(
         externalTaskId="task_124",
         gameId=str(uuid4()),  # Different game ID
-        strategyId=str(uuid4())  # Different strategy ID
+        strategyId=str(uuid4()),  # Different strategy ID
     )
 
     # Even if externalTaskId, gameId, and strategyId match, tasks are unique by their id
@@ -55,20 +49,12 @@ def test_tasks_hash():
     game_id = str(uuid4())
     strategy_id = str(uuid4())
 
-    task1 = Tasks(
-        externalTaskId="task_123",
-        gameId=game_id,
-        strategyId=strategy_id
-    )
+    task1 = Tasks(externalTaskId="task_123", gameId=game_id, strategyId=strategy_id)
 
     game_id_2 = str(uuid4())
     strategy_id_2 = str(uuid4())
 
-    task2 = Tasks(
-        externalTaskId="task_123",
-        gameId=game_id_2,
-        strategyId=strategy_id_2
-    )
+    task2 = Tasks(externalTaskId="task_123", gameId=game_id_2, strategyId=strategy_id_2)
 
     # Hashes rely on externalTaskId, gameId, and strategyId, but unique id should differentiate them
     assert hash(task1) != hash(task2)

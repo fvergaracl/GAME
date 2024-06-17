@@ -4,8 +4,8 @@ https://dreampuf.github.io/GraphvizOnline/#digraph%20G%20%7B%0A%20%20%20%20rankd
 
 """
 
-from app.engine.base_strategy import BaseStrategy
 from app.core.container import Container
+from app.engine.base_strategy import BaseStrategy
 
 
 class SocioBeeStrategy(BaseStrategy):  # noqa
@@ -38,39 +38,36 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
                 externalTaskId, externalUserId
             )
         )
-        if (user_task_measurements_count < 2):
-            return (
-                self.variable_basic_points, "BasicEngagement"
-            )
+        if user_task_measurements_count < 2:
+            return (self.variable_basic_points, "BasicEngagement")
 
         self.debug_print(
-            f"user_task_measurements_count: {user_task_measurements_count}")
+            f"user_task_measurements_count: {user_task_measurements_count}"
+        )
 
         user_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_by_user_and_game_task(  # noqa
             externalGameId, externalTaskId, externalUserId
         )
         self.debug_print(f"user_avg_time_taken: {user_avg_time_taken}")
 
-        all_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_for_all_users(
-            externalGameId,
-            externalTaskId
+        all_avg_time_taken = (
+            self.user_points_service.get_avg_time_between_tasks_for_all_users(
+                externalGameId, externalTaskId
+            )
         )
         self.debug_print(f"all_avg_time_taken: {all_avg_time_taken}")
 
-        if (user_avg_time_taken < all_avg_time_taken):
+        if user_avg_time_taken < all_avg_time_taken:
 
             points = self.variable_basic_points + self.variable_bonus_points
             return (
                 points,
                 "PerformanceBonus",
             )
-        user_last_window_time_diff = (
-            self.user_points_service.get_last_window_time_diff(
-                externalTaskId, externalUserId
-            )
+        user_last_window_time_diff = self.user_points_service.get_last_window_time_diff(
+            externalTaskId, externalUserId
         )
-        self.debug_print(
-            f"user_last_window_time_diff: {user_last_window_time_diff}")
+        self.debug_print(f"user_last_window_time_diff: {user_last_window_time_diff}")
 
         user_new_last_window_time_diff = (
             self.user_points_service.get_new_last_window_time_diff(
@@ -81,26 +78,18 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
             f"user_new_last_window_time_diff: {user_new_last_window_time_diff}"
         )
 
-        user_diff_time = (
-            user_new_last_window_time_diff - user_last_window_time_diff
-        )
+        user_diff_time = user_new_last_window_time_diff - user_last_window_time_diff
         self.debug_print(f"user_diff_time: {user_diff_time}")
-        if (user_diff_time > 0):
-            if (user_diff_time < all_avg_time_taken):
+        if user_diff_time > 0:
+            if user_diff_time < all_avg_time_taken:
                 return (
                     self.variable_individual_over_global_points,
-                    "IndividualOverGlobal"
+                    "IndividualOverGlobal",
                 )
-            if (user_diff_time < user_avg_time_taken):
-                return (
-                    self.variable_peak_performer_bonus_points,
-                    "PeakPerformerBonus"
-                )
+            if user_diff_time < user_avg_time_taken:
+                return (self.variable_peak_performer_bonus_points, "PeakPerformerBonus")
             return (
                 self.variable_global_advantage_adjustment_points,
-                "GlobalAdvantageAdjustment"
+                "GlobalAdvantageAdjustment",
             )
-        return (
-            self.variable_individual_adjustment_points,
-            "IndividualAdjustment"
-        )
+        return (self.variable_individual_adjustment_points, "IndividualAdjustment")

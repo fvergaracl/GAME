@@ -1,5 +1,7 @@
-import pytest
 from datetime import datetime, timezone
+
+import pytest
+
 from app.model.games import Games
 
 
@@ -11,9 +13,7 @@ def test_games_instance_creation_and_representation():
 
     # Create a Games instance
     game = Games(
-        externalGameId=external_game_id,
-        platform=platform,
-        endDateTime=end_date_time
+        externalGameId=external_game_id, platform=platform, endDateTime=end_date_time
     )
 
     # Test the string representation
@@ -29,17 +29,17 @@ def test_games_equality():
     game1 = Games(
         externalGameId="game123",
         platform="PC",
-        endDateTime=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        endDateTime=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
     )
     game2 = Games(
         externalGameId="game123",
         platform="PC",
-        endDateTime=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        endDateTime=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
     )
     game3 = Games(
         externalGameId="game124",
         platform="Console",
-        endDateTime=datetime(2024, 1, 2, 13, 0, 0, tzinfo=timezone.utc)
+        endDateTime=datetime(2024, 1, 2, 13, 0, 0, tzinfo=timezone.utc),
     )
 
     # Test equality
@@ -51,17 +51,17 @@ def test_games_hash():
     game1 = Games(
         externalGameId="game123",
         platform="PC",
-        endDateTime=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        endDateTime=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
     )
     game2 = Games(
         externalGameId="game123",
         platform="PC",
-        endDateTime=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        endDateTime=datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc),
     )
     game3 = Games(
         externalGameId="game124",
         platform="Console",
-        endDateTime=datetime(2024, 1, 2, 13, 0, 0, tzinfo=timezone.utc)
+        endDateTime=datetime(2024, 1, 2, 13, 0, 0, tzinfo=timezone.utc),
     )
 
     # Hashes should be the same for objects with the same content

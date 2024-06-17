@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import List, Optional
+from uuid import UUID
+
 from pydantic import BaseModel
+
 from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
-from app.schema.games_params_schema import (
-    BaseFindGameParams, CreateGameParams, UpdateGameParams
-)
+from app.schema.games_params_schema import (BaseFindGameParams,
+                                            CreateGameParams, UpdateGameParams)
 from app.schema.task_schema import TasksWithUsers
 from app.util.schema import AllOptional
-from uuid import UUID
 
 
 class BaseGame(BaseModel):
@@ -17,6 +18,7 @@ class BaseGame(BaseModel):
     Attributes:
         platform (str): Platform name
     """
+
     platform: str
 
     class Config:
@@ -36,6 +38,7 @@ class BaseGameResult(BaseModel):
         platform (Optional[str]): Platform name
         params (Optional[List[BaseFindGameParams]]): Game parameters
     """
+
     gameId: UUID
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
@@ -58,6 +61,7 @@ class PostCreateGame(BaseModel):
         strategyId (Optional[str]): Strategy ID
         params (Optional[List[CreateGameParams]]): Game parameters
     """
+
     externalGameId: str
     platform: str
     strategyId: Optional[str] = "default"
@@ -68,12 +72,7 @@ class PostCreateGame(BaseModel):
             "externalGameId": "string",
             "platform": "string",
             "strategyId": "default",
-            "params": [
-                {
-                    "key": "variable_basic_points",
-                    "value": 10
-                }
-            ]
+            "params": [{"key": "variable_basic_points", "value": 10}],
         }
 
 
@@ -87,6 +86,7 @@ class PatchGame(BaseModel):
         platform (Optional[str]): Platform name
         params (Optional[List[UpdateGameParams]]): Game parameters
     """
+
     externalGameId: Optional[str]
     strategyId: Optional[str]
     platform: Optional[str]
@@ -100,6 +100,7 @@ class GameCreated(BaseGameResult):
     Attributes:
         message (Optional[str]): Success message
     """
+
     message: Optional[str] = "Successfully created"
 
 
@@ -110,6 +111,7 @@ class ResponsePatchGame(PatchGame):
     Attributes:
         message (Optional[str]): Success message
     """
+
     message: Optional[str] = "Successfully updated"
 
 
@@ -122,6 +124,7 @@ class FindGameById(ModelBaseInfo):
         platform (Optional[str]): Platform name
         params (Optional[List[UpdateGameParams]]): Game parameters
     """
+
     externalGameId: Optional[str]
     platform: Optional[str]
     params: Optional[List[UpdateGameParams]]
@@ -133,6 +136,7 @@ class PostFindGame(FindBase, BaseGame, metaclass=AllOptional):
 
     Inherits attributes from FindBase and BaseGame.
     """
+
     ...
 
 
@@ -144,6 +148,7 @@ class FindGameResult(BaseModel):
         items (Optional[List[BaseGameResult]]): List of game results
         search_options (Optional[SearchOptions]): Search options
     """
+
     items: Optional[List[BaseGameResult]]
     search_options: Optional[SearchOptions]
 
@@ -156,5 +161,6 @@ class ListTasksWithUsers(BaseModel):
         gameId (UUID): Game ID
         tasks (List[TasksWithUsers]): List of tasks with users
     """
+
     gameId: UUID
     tasks: List[TasksWithUsers]

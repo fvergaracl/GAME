@@ -1,4 +1,5 @@
 from sqlmodel import Column, Field, String
+
 from app.model.base_model import BaseModel
 
 
