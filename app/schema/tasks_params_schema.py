@@ -1,18 +1,31 @@
-from uuid import UUID
 from pydantic import BaseModel
 
 
 class BaseTaskParams(BaseModel):
+    """
+    Base model for task parameters
+
+    Attributes:
+        key (str): Parameter key
+        value (str | int | float | bool): Parameter value
+    """
     key: str
     value: str | int | float | bool
 
-    class Config:  # noqa
-        orm_mode = True  # noqa
+    class Config:
+        orm_mode = True
 
 
 class CreateTaskParams(BaseTaskParams):
+    """Model for creating task parameters."""
     ...
 
 
 class InsertTaskParams(BaseTaskParams):
+    """
+    Model for inserting task parameters
+
+    Attributes:
+        taskId (str): Task ID
+    """
     taskId: str

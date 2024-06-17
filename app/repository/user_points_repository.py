@@ -11,13 +11,30 @@ from app.repository.base_repository import BaseRepository
 
 
 class UserPointsRepository(BaseRepository):
+    """
+    Repository class for user points.
+
+    Attributes:
+        session_factory (Callable[..., AbstractContextManager[Session]]):
+          Factory for creating SQLAlchemy sessions.
+        model: SQLAlchemy model class for user points.
+        task_repository (BaseRepository): Repository instance for tasks.
+        user_repository (BaseRepository): Repository instance for users.
+    """
 
     def __init__(
-        self,
-        session_factory: Callable[..., AbstractContextManager[Session]],
-        model=UserPoints,
-    ) -> None:
+            self,
+            session_factory: Callable[..., AbstractContextManager[Session]],
+            model=UserPoints) -> None:
+        """
+        Initializes the UserPointsRepository with the provided session factory
+          and model.
 
+        Args:
+            session_factory (Callable[..., AbstractContextManager[Session]]):
+              The session factory.
+            model: The SQLAlchemy model class for user points.
+        """
         session_factory_task = Callable[..., AbstractContextManager[Session]]
         model_task = Tasks
         self.task_repository = BaseRepository(session_factory_task, model_task)
@@ -28,8 +45,20 @@ class UserPointsRepository(BaseRepository):
         super().__init__(session_factory, model)
 
     def get_first_user_points_in_external_task_id_by_user_id(
-            self, externalTaskId, externalUserId
-            ):
+            self,
+            externalTaskId,
+            externalUserId
+    ):
+        """
+        Retrieves the first user points in an external task by user ID.
+
+        Args:
+            externalTaskId (str): The external task ID.
+            externalUserId (str): The external user ID.
+
+        Returns:
+            UserPoints: The first user points in the task.
+        """
         with self.session_factory() as session:
             query = (
                 session.query(UserPoints)
@@ -44,24 +73,13 @@ class UserPointsRepository(BaseRepository):
 
     def get_all_UserPoints_by_gameId(self, gameId):
         """
-        [
-            {
-                "externalTaskId": "string",
-                "points": [
-                    {
-                    "externalUserId": "string",
-                    "points": 0,
-                    "timesAwarded": 0
-                    }
-                ]
-            }
-        ]
-        # WIP
-                # WIP
-                        # WIP
-                                # WIP
-                                        # WIP
-                                                # WIP
+        Retrieves all user points associated with a game ID.
+
+        Args:
+            gameId (int): The game ID.
+
+        Returns:
+            list: A list of user points grouped by task and user.
         """
         with self.session_factory() as session:
             query = (
@@ -81,15 +99,13 @@ class UserPointsRepository(BaseRepository):
 
     def get_all_UserPoints_by_taskId(self, taskId):
         """
-        Retrieves all UserPoints for a specific task, sum of points and count
-          of times awarded.
+        Retrieves all user points for a specific task.
 
-        Parameters:
-        - taskId (str): The unique identifier of the task.
+        Args:
+            taskId (str): The task ID.
 
         Returns:
-        - list: A list of tuples containing the externalUserId, sum of points,
-          and count of times awarded.
+            list: A list of user points.
         """
         with self.session_factory() as session:
             query = (
@@ -106,6 +122,15 @@ class UserPointsRepository(BaseRepository):
             return query
 
     def get_all_UserPoints_by_taskId_with_details(self, taskId):
+        """
+        Retrieves all user points for a specific task with details.
+
+        Args:
+            taskId (str): The task ID.
+
+        Returns:
+            list: A list of user points with detailed information.
+        """
         with self.session_factory() as session:
             query = (
                 session.query(
@@ -130,6 +155,15 @@ class UserPointsRepository(BaseRepository):
             return query
 
     def get_points_and_users_by_taskId(self, taskId):
+        """
+        Retrieves points and users associated with a task ID.
+
+        Args:
+            taskId (int): The task ID.
+
+        Returns:
+            list: A list of user points with user information.
+        """
         with self.session_factory() as session:
             query = (
                 session.query(
@@ -152,6 +186,15 @@ class UserPointsRepository(BaseRepository):
             return query
 
     def get_task_by_externalUserId(self, externalUserId):
+        """
+        Retrieves tasks associated with a user by their external user ID.
+
+        Args:
+            externalUserId (str): The external user ID.
+
+        Returns:
+            list: A list of tasks.
+        """
         with self.session_factory() as session:
             query = (
                 session.query(Tasks)
@@ -163,10 +206,16 @@ class UserPointsRepository(BaseRepository):
             return query
 
     def get_task_and_sum_points_by_userId(self, userId):
+        """
+        Retrieves tasks and the sum of points for a user by their user ID.
+
+        Args:
+            userId (str): The user ID.
+
+        Returns:
+            list: A list of tasks with the sum of points.
+        """
         with self.session_factory() as session:
-            """
-            get points by users separeted by tasks . only with userId
-            """
             query = (
                 session.query(
                     Tasks.externalTaskId.label("externalTaskId"),
@@ -179,21 +228,19 @@ class UserPointsRepository(BaseRepository):
                 .order_by(Tasks.id)
                 .all()
             )
-
             return query
 
     def get_user_measurement_count(self, userId):
         """
-        Retrieves the total number of measurements (or tasks completed) by a
-        specific user.
+        Retrieves the total number of measurements (tasks completed) by a
+          specific user.
 
-        Parameters:
-        - userId (str): The unique identifier of the user.
+        Args:
+            userId (str): The user ID.
 
         Returns:
-        - int: The total number of measurements completed by the user.
+            int: The total number of measurements completed by the user.
         """
-
         with self.session_factory() as session:
             query = (
                 session.query(func.count(
@@ -201,19 +248,17 @@ class UserPointsRepository(BaseRepository):
                 .filter(UserPoints.userId == userId)
                 .one()
             )
-
             return query.measurement_count
 
     def get_time_taken_for_last_task(self, userId):
         """
-        Retrieves the time taken by a specific user to complete the last task.
+        Retrieves the time taken by a user to complete the last task.
 
-        Parameters:
-        - userId (str): The unique identifier of the user.
+        Args:
+            userId (str): The user ID.
 
         Returns:
-        - float: The time taken to complete the last task, in minutes or other
-          relevant unit.
+            datetime: The time taken to complete the last task.
         """
         with self.session_factory() as session:
             query = (
@@ -222,20 +267,17 @@ class UserPointsRepository(BaseRepository):
                 .filter(UserPoints.userId == userId)
                 .one()
             )
-
             return query.last_task_time
 
     def get_individual_calculation(self, userId):
         """
-        Calculates and retrieves a specific performance metric for an
-          individual user,
-        such as average time taken to complete tasks.
+        Calculates and retrieves an individual performance metric for a user.
 
-        Parameters:
-        - userId (str): The unique identifier of the user.
+        Args:
+            userId (str): The user ID.
 
         Returns:
-        - float: The calculated individual performance metric for the user.
+            float: The calculated individual performance metric.
         """
         with self.session_factory() as session:
             query = (
@@ -244,33 +286,29 @@ class UserPointsRepository(BaseRepository):
                 .filter(UserPoints.userId == userId)
                 .one()
             )
-
             return query.average_points
 
     def get_global_calculation(self):
         """
-        Calculates and retrieves a specific global performance metric,
-        such as the average time taken to complete tasks across all users.
+        Calculates and retrieves a global performance metric.
 
         Returns:
-        - float: The calculated global performance metric.
+            float: The calculated global performance metric.
         """
         with self.session_factory() as session:
             query = session.query(
-                func.avg(UserPoints.points).label("average_points")
-            ).one()
-
+                func.avg(UserPoints.points).label("average_points")).one()
             return query.average_points
 
     def get_start_time_for_last_task(self, userId):
         """
-        Retrieves the start time of the last task completed by a specific user.
+        Retrieves the start time of the last task completed by a user.
 
-        Parameters:
-        - userId (str): The unique identifier of the user.
+        Args:
+            userId (str): The user ID.
 
         Returns:
-        - datetime: The start time of the last task completed by the user.
+            datetime: The start time of the last task.
         """
         with self.session_factory() as session:
             query = (
@@ -279,22 +317,18 @@ class UserPointsRepository(BaseRepository):
                 .filter(UserPoints.userId == userId)
                 .one()
             )
-
             return query.start_time
 
     def count_measurements_by_external_task_id(self, external_task_id):
         """
-        Retrieves the total number of measurements (or tasks completed) by
-         specific external task ID.
+        Retrieves the total number of measurements by external task ID.
 
-        Parameters:
-        - external_task_id (str): The unique identifier of the external task.
+        Args:
+            external_task_id (str): The external task ID.
 
         Returns:
-        - int: The total number of measurements completed for the task.
-
+            int: The total number of measurements completed for the task.
         """
-
         with self.session_factory() as session:
             query = (
                 session.query(func.count(
@@ -303,23 +337,19 @@ class UserPointsRepository(BaseRepository):
                 .filter(Tasks.externalTaskId == external_task_id)
                 .one()
             )
-
             return query.measurement_count
 
     def get_user_task_measurements_count(self, externalTaskId, externalUserId):
         """
-        Retrieves the total number of measurements (or tasks completed) by a
-        specific user for a specific task.
+        Retrieves the total number of measurements by user and task.
 
-        Parameters:
-        - externalTaskId (str): The unique identifier of the external task.
-        - externalUserId (str): The unique identifier of the user.
+        Args:
+            externalTaskId (str): The external task ID.
+            externalUserId (str): The external user ID.
 
         Returns:
-        - int: The total number of measurements completed by the user for the
-         task.
+            int: The total number of measurements by user and task.
         """
-
         with self.session_factory() as session:
             query = (
                 session.query(func.count(
@@ -330,7 +360,6 @@ class UserPointsRepository(BaseRepository):
                 .filter(Users.externalUserId == externalUserId)
                 .one()
             )
-
             return query.measurement_count
 
     def get_avg_time_between_tasks_by_user_and_game_task(
@@ -340,19 +369,16 @@ class UserPointsRepository(BaseRepository):
             externalUserId
     ):
         """
-        Retrieves the average time difference between consecutive tasks completed by
-        a specific user for a specific task within a specific game.
+        Retrieves the average time between tasks for a user and game task.
 
-        Parameters:
-        - externalGameId (str): The unique identifier of the external game.
-        - externalTaskId (str): The unique identifier of the external task.
-        - externalUserId (str): The unique identifier of the user.
+        Args:
+            externalGameId (str): The external game ID.
+            externalTaskId (str): The external task ID.
+            externalUserId (str): The external user ID.
 
         Returns:
-        - float: The average time in seconds between consecutive tasks completed by the user.
-                Returns -1 if there are fewer than two tasks completed, thus an average cannot be calculated.
+            float: The average time between tasks.
         """
-
         with self.session_factory() as session:
             timestamps = (
                 session.query(UserPoints.created_at)
@@ -369,28 +395,27 @@ class UserPointsRepository(BaseRepository):
             if len(timestamps) < 2:
                 return -1
 
-            time_diffs = [(timestamps[i + 1][0] - timestamps[i][0]
-                           ).total_seconds() for i in range(len(timestamps) - 1)]
-
+            time_diffs = [(
+                timestamps[i + 1][0] - timestamps[i][0]
+            ).total_seconds() for i in range(len(timestamps) - 1)]
             avg_time_diff = sum(time_diffs) / len(time_diffs)
-
             return avg_time_diff
 
-    def get_avg_time_between_tasks_for_all_users(self, externalGameId, externalTaskId):
+    def get_avg_time_between_tasks_for_all_users(
+            self,
+            externalGameId,
+            externalTaskId
+    ):
         """
-        Retrieves the average time difference between consecutive tasks completed by
-        all users for a specific task within a specific game.
+        Retrieves the average time between tasks for all users for a game task.
 
-        Parameters:
-        - externalGameId (str): The unique identifier of the external game.
-        - externalTaskId (str): The unique identifier of the external task.
+        Args:
+            externalGameId (str): The external game ID.
+            externalTaskId (str): The external task ID.
 
         Returns:
-        - float: The average time in seconds between consecutive tasks completed by all users
-                for the specific task within the specified game. Returns -1 if the average
-                cannot be calculated.
+            float: The average time between tasks for all users.
         """
-
         with self.session_factory() as session:
             timestamps = (
                 session.query(UserPoints.created_at)
@@ -406,28 +431,23 @@ class UserPointsRepository(BaseRepository):
                 return -1
 
             time_diffs = [(
-                timestamps[i + 1][0] - timestamps[i][0]).total_seconds()
-                for i in range(len(timestamps) - 1)]
-
+                timestamps[i + 1][0] - timestamps[i][0]
+            ).total_seconds() for i in range(len(timestamps) - 1)]
             avg_time_diff = sum(time_diffs) / len(time_diffs)
-
             return avg_time_diff
 
     def get_last_window_time_diff(self, externalTaskId, externalUserId):
         """
-        Retrieves the time difference between the last two measurements by a
-        specific user for a specific task.
+        Retrieves the time difference between the last two measurements by
+          a user for a task.
 
-        Parameters:
-        - externalTaskId (str): The unique identifier of the external task.
-        - externalUserId (str): The unique identifier of the user.
+        Args:
+            externalTaskId (str): The external task ID.
+            externalUserId (str): The external user ID.
 
         Returns:
-        - float: The time difference in seconds between the last two
-         measurements by the user for the task. If there are fewer than two
-         measurements, returns 0.
+            float: The time difference between the last two measurements.
         """
-
         with self.session_factory() as session:
             last_two_points = (
                 session.query(UserPoints)
@@ -445,25 +465,26 @@ class UserPointsRepository(BaseRepository):
 
             time_diff = last_two_points[0].created_at - \
                 last_two_points[1].created_at
-
             return time_diff.total_seconds()
 
-    def get_new_last_window_time_diff(self, externalTaskId, externalUserId, externalGameId):
+    def get_new_last_window_time_diff(
+            self,
+            externalTaskId,
+            externalUserId,
+            externalGameId):
         """
-        Retrieves the last measurement time difference by a specific user for a
-        specific task in a specific game and diff with current time.
+        Retrieves the time difference between the last measurement and current
+          time for a user for a task in a game.
 
-        Parameters:
-        - externalTaskId (str): The unique identifier of the external task.
-        - externalUserId (str): The unique identifier of the user.
-        - externalGameId (str): The unique identifier of the external game.
+        Args:
+            externalTaskId (str): The external task ID.
+            externalUserId (str): The external user ID.
+            externalGameId (str): The external game ID.
 
         Returns:
-        - float: The time difference in seconds between now and the last time the 
-        user completed the task for the specific game. If the user has not 
-        completed the task before, returns 0.
+            float: The time difference between the last measurement and
+              current time.
         """
-
         with self.session_factory() as session:
             last_point = (
                 session.query(UserPoints)
@@ -492,5 +513,4 @@ class UserPointsRepository(BaseRepository):
                 last_created_at = last_point.created_at
 
             time_diff = current_time - last_created_at
-
             return time_diff.total_seconds()

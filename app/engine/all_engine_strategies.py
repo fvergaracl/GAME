@@ -7,20 +7,22 @@ from app.engine.check_base_strategy_class import (
 
 def all_engine_strategies() -> list:
     """
-    Scans the 'app/engine' directory for Python modules that define strategy classes,
-    excluding base and utility modules. Each strategy class is instantiated, checked for
-    required methods and variables, and if valid, added to a list with its 'id' attribute set
-    to the module name.
+    Scans the 'app/engine' directory for Python modules that define strategy
+      classes, excluding base and utility modules. Each strategy class is
+        instantiated, checked for required methods and variables, and if
+          valid, added to a list with its 'id' attribute set to the module
+            name. This process dynamically discovers and validates strategy
+              implementations at runtime, facilitating a plug-and-play
+                architecture for strategies without hardcoding their
+                  references.
 
-    This process dynamically discovers and validates strategy implementations at runtime,
-    facilitating a plug-and-play architecture for strategies without hardcoding their references.
+    **Note**: Strategies must extend a base strategy class and implement all
+      required methods and variables as per :func:
+      `check_class_methods_and_variables` criteria to be considered valid.
 
-    **Note**: Strategies must extend a base strategy class and implement all required methods and
-    variables as per :func:`check_class_methods_and_variables` criteria to be considered valid.
-
-    :return: A list of instantiated and validated strategy class objects, each with an 'id'
-             attribute corresponding to their module name. The 'BaseStrategy' class, if found,
-             is excluded from the returned list.
+    :return: A list of instantiated and validated strategy class objects,
+      each with an 'id' attribute corresponding to their module name. The
+        'BaseStrategy' class, if found, is excluded from the returned list.
     :rtype: list
     """
     strategies = []

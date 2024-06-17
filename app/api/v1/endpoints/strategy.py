@@ -3,8 +3,7 @@ from fastapi import APIRouter, Depends
 from typing import List
 from app.core.container import Container
 from app.core.exceptions import NotFoundError
-from app.schema.strategy_schema import (
-    Strategy)
+from app.schema.strategy_schema import Strategy
 from app.services.strategy_service import StrategyService
 
 router = APIRouter(
@@ -12,11 +11,10 @@ router = APIRouter(
     tags=["strategies"],
 )
 
-summary_get_strategies_list = "Get Strategies List"
+summary_get_strategies_list = "Retrieve Strategies List"
 description_get_strategies_list = """
-## Find Strategy
-### Find all strategies
-"""
+## Retrieve Strategies List
+### This endpoint retrieves a list of all available strategies. """
 
 
 @router.get(
@@ -29,26 +27,46 @@ description_get_strategies_list = """
 def get_strategy_list(
     service: StrategyService = Depends(Provide[Container.strategy_service]),
 ):
+    """
+    Retrieve a list of all strategies.
+
+    Args:
+        service (StrategyService): Injected StrategyService dependency.
+
+    Returns:
+        List[Strategy]: The list of all strategies.
+    """
     response = service.list_all_strategies()
     return response
 
 
-summary_get_strategy_by_id = "Get Strategy by id"
+summary_get_strategy_by_id = "Retrieve Strategy by ID"
 description_get_strategy_by_id = """
-Get Strategy by id
-"""
+## Retrieve Strategy by ID
+### This endpoint retrieves the details of a strategy using its unique ID. """
 
 
-@router.get("/{id}", response_model=Strategy)
+@router.get("/{id}", response_model=Strategy,
+            summary=summary_get_strategy_by_id,
+            description=description_get_strategy_by_id,
+            )
 @inject
 def get_strategy_by_id(
     id: str,
     service: StrategyService = Depends(Provide[Container.strategy_service]),
 ):
+    """
+    Retrieve a strategy by its ID.
+
+    Args:
+        id (str): The ID of the strategy.
+        service (StrategyService): Injected StrategyService dependency.
+
+    Returns:
+        Strategy: The details of the specified strategy.
+    """
     all_strategies = service.list_all_strategies()
     for strategy in all_strategies:
         if strategy["id"] == id:
             return strategy
-    raise NotFoundError(
-        detail=f"Strategy not found with id: {id}"
-    )
+    raise NotFoundError(detail=f"Strategy not found with id: {id}")

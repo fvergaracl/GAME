@@ -16,16 +16,6 @@ class RootEndpoint(BaseModel):
         docs (str): URL to the documentation
         redocs (str): URL to the redoc documentation
         commitVersion (str): Commit version
-
-    Example:
-        {
-            "projectName": "Game API",
-            "version": "0.1.0",
-            "message": "Welcome to GAME API",
-            "docs": "/docs",
-            "redocs": "/redocs",
-            "commitVersion": "c3f1e2a"
-        }
     """
     projectName: str
     version: str
@@ -43,14 +33,6 @@ class ModelBaseInfo(BaseModel):
         id (UUID): Unique identifier
         created_at (datetime): Created date
         updated_at (datetime): Updated date
-
-    Example:
-        {
-            "id": "123e4567-e89b-12d3-a456-426614174000",
-            "created_at": "2024-01-01T00:00:00",
-            "updated_at": "2024-01-01T00:00:00"
-        }
-
     """
     id: UUID
     created_at: datetime
@@ -58,21 +40,51 @@ class ModelBaseInfo(BaseModel):
 
 
 class FindBase(BaseModel):
+    """
+    Base model for search functionality
+
+    Attributes:
+        ordering (Optional[str]): Ordering parameter
+        page (Optional[int]): Page number
+        page_size (Optional[Union[int, str]]): Page size
+    """
     ordering: Optional[str]
     page: Optional[int]
     page_size: Optional[Union[int, str]]
 
 
 class SearchOptions(FindBase):
+    """
+    Model for search options
+
+    Attributes:
+        total_count (Optional[int]): Total count of results
+    """
     total_count: Optional[int]
 
 
-class FindResult(BaseModel):  # noqa
+class FindResult(BaseModel):
+    """
+    Model for search results
+
+    Attributes:
+        items (Optional[List]): List of items
+        search_options (Optional[SearchOptions]): Search options
+    """
     items: Optional[List]
     search_options: Optional[SearchOptions]
 
 
-class FindDateRange(BaseModel):  # noqa
+class FindDateRange(BaseModel):
+    """
+    Model for date range search filters
+
+    Attributes:
+        created_at__lt (str): Less than filter for created date
+        created_at__lte (str): Less than or equal filter for created date
+        created_at__gt (str): Greater than filter for created date
+        created_at__gte (str): Greater than or equal filter for created date
+    """
     created_at__lt: str
     created_at__lte: str
     created_at__gt: str
@@ -80,8 +92,15 @@ class FindDateRange(BaseModel):  # noqa
 
 
 class SuccesfullyCreated(BaseModel):
+    """
+    Model for successful creation response
+
+    Attributes:
+        message (Optional[str]): Success message
+    """
     message: Optional[str] = "Successfully created"
 
 
-class Blank(BaseModel):  # noqa
+class Blank(BaseModel):
+    """A blank model used for various purposes."""
     pass
