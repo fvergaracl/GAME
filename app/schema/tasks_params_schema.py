@@ -20,6 +20,12 @@ class CreateTaskParams(BaseTaskParams):
     """Model for creating task parameters."""
     ...
 
+    def example():
+        return {
+            "key": "variable_bonus_points",
+            "value": 20
+        }
+
 
 class InsertTaskParams(BaseTaskParams):
     """

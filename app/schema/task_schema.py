@@ -54,10 +54,8 @@ class CreateTaskPost(BaseModel):
             "externalTaskId": "string",
             "strategyId": "default",
             "params": [
-                {
-                    "key": "variable_bonus_points",
-                    "value": 20
-                }
+                CreateTaskParams.example()
+
             ]
         }
 
