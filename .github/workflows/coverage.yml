@@ -15,11 +15,13 @@ jobs:
     - name: Install Graphviz
       run: |
         sudo apt-get update
-        sudo apt-get install graphviz graphviz-dev
+        sudo apt-get install -y graphviz graphviz-dev
     - name: Install Poetry
       run: |
         curl -sSL https://install.python-poetry.org | python3 -
-        export PATH="$HOME/.local/bin:$PATH"
+        echo "export PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+      env:
+        POETRY_HOME: $HOME/.local
     - name: Install dependencies
       run: |
         poetry install
