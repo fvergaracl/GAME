@@ -1,6 +1,6 @@
 # GAME (Goals And Motivation Engine) 🎮
 
-Coverage: [0-9]\*%
+Coverage: [0-9]*%
 
 ## Description 📝
 

@@ -16,10 +16,11 @@ jobs:
           pip install pytest pytest-cov
       - name: Run pytest and update README
         run: |
-          coverage=$(pytest --cov=app --cov-report=term tests/ | tail -n 1 | awk '{print $4}')
-          sed -i "s/coverage: [0-9]*%/coverage: $coverage/" README.md
+          coverage=$(pytest --cov=app --cov-report=term-missing tests/ | grep -Eo '[0-9]+%' | tail -n 1)
+          sed -i "s/Coverage: [0-9]*%/Coverage: $coverage/" README.md
       - name: Commit and push if changed
         run: |
           git config --global user.email "fvergaracl+coverage@gmail.com"
           git config --global user.name "Coverage Bot"
-          git commit -am "Update coverage in README" && git push || echo "No changes to commit"
+          git add README.md
+          git commit -m "Update coverage in README" && git push || echo "No changes to commit"
