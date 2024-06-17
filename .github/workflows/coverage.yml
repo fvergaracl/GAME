@@ -11,14 +11,17 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.x
+        python-version: '3.x'
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        export PATH="$HOME/.local/bin:$PATH"
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install pytest pytest-cov codecov
+        poetry install
     - name: Run tests
       run: |
-        pytest --cov=tu_paquete
+        poetry run pytest --cov=src tests/
     - name: Upload coverage to Codecov
       run: |
         bash <(curl -s https://codecov.io/bash)
