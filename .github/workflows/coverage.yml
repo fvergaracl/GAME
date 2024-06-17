@@ -17,7 +17,9 @@ jobs:
       - name: Run pytest and update README
         run: |
           coverage=$(pytest --cov=app --cov-report=term-missing tests/ | grep -Eo '[0-9]+%' | tail -n 1)
+          echo "Coverage: $coverage"
           sed -i "s/Coverage: [0-9]*%/Coverage: $coverage/" README.md
+          cat README.md
       - name: Commit and push if changed
         run: |
           git config --global user.email "fvergaracl+coverage@gmail.com"
