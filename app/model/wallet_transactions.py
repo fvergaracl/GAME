@@ -36,7 +36,8 @@ class WalletTransactions(BaseModel, table=True):
         points (int): The number of points involved in the transaction.
         coins (float): The number of coins involved in the transaction.
         data (dict): Additional data associated with the transaction.
-        appliedConversionRate (float): The conversion rate applied to the transaction.
+        appliedConversionRate (float): The conversion rate applied to the
+          transaction.
         walletId (str): The ID of the wallet associated with the transaction.
     """
 
@@ -52,10 +53,24 @@ class WalletTransactions(BaseModel, table=True):
         orm_mode = True  # noqa
 
     def __str__(self):
-        return f"WalletTransactions: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, transactionType={self.transactionType}, points={self.points}, coins={self.coins}, data={self.data}, appliedConversionRate={self.appliedConversionRate}, walletId={self.walletId})"
+        return (
+            f"WalletTransactions: (id={self.id}, created_at={self.created_at},"
+            f" updated_at={self.updated_at}, "
+            f"transactionType={self.transactionType}, points={self.points}, "
+            f"coins={self.coins}, data={self.data}, "
+            f"appliedConversionRate={self.appliedConversionRate}, "
+            f"walletId={self.walletId})"
+        )
 
     def __repr__(self):
-        return f"WalletTransactions: (id={self.id}, created_at={self.created_at}, updated_at={self.updated_at}, transactionType={self.transactionType}, points={self.points}, coins={self.coins}, data={self.data}, appliedConversionRate={self.appliedConversionRate}, walletId={self.walletId})"
+        return (
+            f"WalletTransactions: (id={self.id}, created_at={self.created_at},"
+            f" updated_at={self.updated_at}, "
+            f"transactionType={self.transactionType}, points={self.points}, "
+            f"coins={self.coins}, data={self.data}, "
+            f"appliedConversionRate={self.appliedConversionRate}, "
+            f"walletId={self.walletId})"
+        )
 
     def __eq__(self, other):
         return (
@@ -73,10 +88,16 @@ class WalletTransactions(BaseModel, table=True):
         if isinstance(obj, (tuple, list)):
             return tuple(self.make_hashable(e) for e in obj)
         elif isinstance(obj, dict):
-            return tuple(sorted((k, self.make_hashable(v)) for k, v in obj.items()))
+            return (
+                tuple(sorted((k, self.make_hashable(v))
+                      for k, v in obj.items()))
+            )
         else:
             return obj
 
     def __hash__(self):
         data_as_hashable = self.make_hashable(self.data)
-        return hash((self.transactionType, self.points, self.coins, data_as_hashable, self.appliedConversionRate, self.walletId))
+        return hash(
+            (self.transactionType, self.points, self.coins,
+             data_as_hashable, self.appliedConversionRate, self.walletId)
+        )
