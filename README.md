@@ -1,6 +1,6 @@
 # GAME (Goals And Motivation Engine) 🎮
 
-Coverage: [0-9]*%
+[![codecov](https://codecov.io/gh/fvergaracl/GAME/branch/main/graph/badge.svg)](https://codecov.io/gh/fvergaracl/GAME)
 
 ## Description 📝
 

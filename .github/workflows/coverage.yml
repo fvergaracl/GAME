@@ -1,28 +1,26 @@
-name: Update Coverage in README
+name: Test and Coverage
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  update-readme:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-      - name: Install dependencies
-        run: |
-          pip install pytest pytest-cov
-      - name: Run pytest and update README
-        run: |
-          coverage=$(pytest --cov=app --cov-report=term-missing tests/ | grep -Eo '[0-9]+%' | tail -n 1)
-          echo "Coverage: $coverage"
-          sed -i "s/Coverage: [0-9]*%/Coverage: $coverage/" README.md
-          cat README.md
-      - name: Commit and push if changed
-        run: |
-          git config --global user.email "fvergaracl+coverage@gmail.com"
-          git config --global user.name "Coverage Bot"
-          git add README.md
-          git commit -m "Update coverage in README" && git push || echo "No changes to commit"
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov codecov
+    - name: Run tests
+      run: |
+        pytest --cov=tu_paquete
+    - name: Upload coverage to Codecov
+      run: |
+        bash <(curl -s https://codecov.io/bash)
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
