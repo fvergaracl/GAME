@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from app.schema.base_schema import ModelBaseInfo
 from app.schema.task_schema import TaskPointsResponseByUser
-from app.schema.wallet_schema import Wallet, WalletWithoutUserId
+from app.schema.wallet_schema import WalletWithoutUserId
 from app.schema.wallet_transaction_schema import BaseWalletTransactionInfo
 
 
@@ -38,11 +38,6 @@ class PostAssignPointsToUser(BaseModel):
     points: Optional[int]
     description: Optional[str]
     data: Optional[dict]
-
-
-class CreateWallet(Wallet):
-    """Model for creating a wallet."""
-    ...
 
 
 class UserWallet(BaseModel):

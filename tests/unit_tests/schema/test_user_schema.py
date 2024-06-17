@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 from app.schema.user_schema import (
-    BaseUser, UserBasicInfo, PostAssignPointsToUser, CreateWallet, UserWallet,
+    BaseUser, UserBasicInfo, PostAssignPointsToUser, UserWallet,
     UserPointsTasks, ResponseConversionPreview, PostPointsConversionRequest,
     ResponsePointsConversion
 )
@@ -62,25 +62,6 @@ def test_post_assign_points_to_user():
     assert assign_points.points == data["points"]
     assert assign_points.description == data["description"]
     assert assign_points.data == data["data"]
-
-
-def test_create_wallet():
-    """
-    Test the CreateWallet model.
-
-    The CreateWallet model is used for creating a wallet.
-    """
-    data = {
-        "userId": "user123",
-        "coinsBalance": 100.0,
-        "pointsBalance": 200.0,
-        "conversionRate": 1.5
-    }
-    wallet = CreateWallet(**data)
-    assert wallet.userId == data["userId"]
-    assert wallet.coinsBalance == data["coinsBalance"]
-    assert wallet.pointsBalance == data["pointsBalance"]
-    assert wallet.conversionRate == data["conversionRate"]
 
 
 def test_user_wallet():
