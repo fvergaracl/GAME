@@ -1,10 +1,15 @@
-# GAME (Goals And Motivation Engine) 🎮
 
-[![codecov](https://codecov.io/gh/fvergaracl/GAME/branch/main/graph/badge.svg?token=R0MGAOMUBU)](https://codecov.io/gh/fvergaracl/GAME)
+# GAME (Goals And Motivation Engine) 🎮 [![codecov](https://codecov.io/gh/fvergaracl/GAME/branch/main/graph/badge.svg?token=R0MGAOMUBU)](https://codecov.io/gh/fvergaracl/GAME)
+
+
+<p align="center">
+  <img src="GAME_logo.png" alt="GAME Logo">
+</p>
+
 
 ## Description 📝
 
-GAME (Goals And Motivation Engine) is a system designed to foster motivation and achievement of goals through gamification. This open-source project utilizes a PostgreSQL database and is developed with FastAPI in Python, managed via Poetry for environment handling.
+**GAME** (Goals And Motivation Engine) is a system designed to foster motivation and achievement of goals through gamification. This open-source project utilizes a PostgreSQL database and is developed with FastAPI in Python, managed via Poetry for environment handling.
 
 ## Requirements 🛠️
 
