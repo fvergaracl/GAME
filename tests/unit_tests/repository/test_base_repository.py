@@ -10,29 +10,23 @@ from dependency_injector import containers, providers
 
 Base = declarative_base()
 
-# Modelo de prueba
 
-
-class TestModel(Base):
+class Model(Base):
     __tablename__ = 'test_model'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
     value = Column(String, nullable=True)
 
-# Esquema Pydantic correspondiente
 
-
-class TestModelSchema(BaseModel):
+class ModelSchema(BaseModel):
     name: str
     value: str = None
 
     class Config:
         orm_mode = True
 
-# Contenedor de pruebas
 
-
-class TestContainer(containers.DeclarativeContainer):
+class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
     db = providers.Singleton(
         create_engine, 'sqlite:///:memory:', echo=True
@@ -41,13 +35,13 @@ class TestContainer(containers.DeclarativeContainer):
         sessionmaker, bind=db
     )
     test_repository = providers.Factory(
-        BaseRepository, session_factory=session_factory, model=TestModel
+        BaseRepository, session_factory=session_factory, model=Model
     )
 
 
 @pytest.fixture(scope='module')
 def container():
-    return TestContainer()
+    return Container()
 
 
 @pytest.fixture(scope='function')
@@ -66,14 +60,14 @@ def repository(container, setup_database):
 
 
 def test_create(repository):
-    schema = TestModelSchema(name='test', value='value')
+    schema = ModelSchema(name='test', value='value')
     created = repository.create(schema)
     assert created.id is not None
     assert created.name == 'test'
 
 
 def test_read_by_id(repository):
-    schema = TestModelSchema(name='test_read', value='value')
+    schema = ModelSchema(name='test_read', value='value')
     created = repository.create(schema)
     found = repository.read_by_id(created.id)
     assert found.id == created.id
@@ -81,15 +75,15 @@ def test_read_by_id(repository):
 
 
 def test_update(repository):
-    schema = TestModelSchema(name='test_update', value='value')
+    schema = ModelSchema(name='test_update', value='value')
     created = repository.create(schema)
-    update_schema = TestModelSchema(name='test_update', value='new_value')
+    update_schema = ModelSchema(name='test_update', value='new_value')
     updated = repository.update(created.id, update_schema)
     assert updated.value == 'new_value'
 
 
 def test_delete(repository):
-    schema = TestModelSchema(name='test_delete', value='value')
+    schema = ModelSchema(name='test_delete', value='value')
     created = repository.create(schema)
     repository.delete_by_id(created.id)
     with pytest.raises(NotFoundError):
@@ -97,8 +91,8 @@ def test_delete(repository):
 
 
 def test_read_by_column(repository):
-    schema1 = TestModelSchema(name='test_column_1', value='value1')
-    schema2 = TestModelSchema(name='test_column_2', value='value2')
+    schema1 = ModelSchema(name='test_column_1', value='value1')
+    schema2 = ModelSchema(name='test_column_2', value='value2')
     repository.create(schema1)
     repository.create(schema2)
     result = repository.read_by_column('name', 'test_column_1')
@@ -106,8 +100,8 @@ def test_read_by_column(repository):
 
 
 def test_duplicate_error(repository):
-    schema1 = TestModelSchema(name='unique_name', value='value1')
-    schema2 = TestModelSchema(name='unique_name', value='value2')
+    schema1 = ModelSchema(name='unique_name', value='value1')
+    schema2 = ModelSchema(name='unique_name', value='value2')
     repository.create(schema1)
     with pytest.raises(DuplicatedError):
         repository.create(schema2)
@@ -119,7 +113,7 @@ def test_not_found_error(repository):
 
 
 def test_update_attr(repository):
-    schema = TestModelSchema(name='test_attr', value='value')
+    schema = ModelSchema(name='test_attr', value='value')
     created = repository.create(schema)
     repository.update_attr(created.id, 'value', 'new_value')
     updated = repository.read_by_id(created.id)
@@ -127,9 +121,9 @@ def test_update_attr(repository):
 
 
 def test_whole_update(repository):
-    schema = TestModelSchema(name='test_whole', value='value')
+    schema = ModelSchema(name='test_whole', value='value')
     created = repository.create(schema)
-    update_schema = TestModelSchema(name='updated_name', value='updated_value')
+    update_schema = ModelSchema(name='updated_name', value='updated_value')
     updated = repository.whole_update(created.id, update_schema)
     assert updated.name == 'updated_name'
     assert updated.value == 'updated_value'

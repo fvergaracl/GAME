@@ -11,4 +11,6 @@
   },
   "editor.minimap.enabled": false,
   "editor.selectionClipboard": false,
+  // auto save
+  "files.autoSave": "afterDelay",
 }
