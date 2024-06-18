@@ -75,11 +75,17 @@ class AppCreator:
 
     def __init__(self):
         self.app = FastAPI(
+            title=project_data['name'],
+            version=project_data['version'],
+            description=project_data['description'],
+            license_info={"name": project_data['license']},
+            contact={"name": project_data['authors'][0],
+                     "email": project_data['authors'][0]},
             redoc_url="/redocs",
             docs_url="/docs",
             servers=[{"url": configs.API_V1_STR, "description": "Local"}]
         )
-        self.app.openapi = custom_openapi  # noqa
+        self.app.openapi = custom_openapi
 
         self.container = Container()
         self.db = self.container.db()
@@ -93,7 +99,7 @@ class AppCreator:
                 allow_headers=["*"],
             )
 
-        @self.app.get("/", include_in_schema=False)  # noqa
+        @self.app.get("/", include_in_schema=False)
         def read_root():
             """
             Redirect to /docs
