@@ -394,7 +394,7 @@ description_get_points_by_task_id = """
 )
 @inject
 def get_points_by_task_id(
-    gameId: str,
+    gameId: UUID,
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
@@ -402,7 +402,7 @@ def get_points_by_task_id(
     Retrieve points by task ID.
 
     Args:
-        gameId (str): The ID of the game.
+        gameId (UUID): The ID of the game.
         externalTaskId (str): The external task ID.
         service (TaskService): Injected TaskService dependency.
 
