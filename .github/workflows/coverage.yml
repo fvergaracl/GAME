@@ -19,8 +19,6 @@ jobs:
     - name: Install Poetry
       run: |
         curl -sSL https://install.python-poetry.org | python3 -
-      env:
-        POETRY_HOME: $HOME/.local
     - name: Install dependencies
       run: |
         poetry install
