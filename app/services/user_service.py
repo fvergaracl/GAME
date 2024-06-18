@@ -13,12 +13,12 @@ from app.schema.user_points_schema import (
     BaseUserPointsBaseModel, UserPointsAssigned
 )
 from app.schema.user_schema import (
-    CreateWallet,
     PostPointsConversionRequest,
     ResponsePointsConversion,
     UserPointsTasks,
     UserWallet
 )
+from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
 from app.util.serialize_wallet import serialize_wallet
