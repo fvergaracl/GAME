@@ -208,6 +208,19 @@ class GameService(BaseService):
         )
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
+        if (
+            schema.externalGameId and
+            schema.externalGameId != game.externalGameId
+        ):
+            externalGameId_exist = self.game_repository.read_by_column(
+                "externalGameId", schema.externalGameId,
+                not_found_raise_exception=False
+            )
+            if externalGameId_exist:
+                raise ConflictError(
+                    detail=f"Game already exists with externalGameId: "
+                    f"{schema.externalGameId} . Cannot update externalGameId"
+                )
         is_matching = are_variables_matching(schema.dict(), game.dict())
         params_schema = schema.dict().get('params', None)
         params_game = game.dict().get('params', None)
