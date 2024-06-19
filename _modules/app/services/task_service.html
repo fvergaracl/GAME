@@ -513,23 +513,23 @@
 <div class="viewcode-block" id="TaskService.get_task_by_externalGameId_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId">[docs]</a>
     <span class="k">def</span> <span class="nf">get_task_by_externalGameId_externalTaskId</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Retrieves a task by its external game ID and external task ID.</span>
+<span class="sd">        Retrieves a task by its game ID and external task ID.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            externalGameId (str): The external game ID.</span>
+<span class="sd">            gameId (UUID): The game ID.</span>
 <span class="sd">            externalTaskId (str): The external task ID.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            CreateTaskPostSuccesfullyCreated: The task details.</span>
 <span class="sd">        """</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
-            <span class="s2">"externalGameId"</span><span class="p">,</span>
-            <span class="n">externalGameId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found with externalGameId: "</span>
-            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="n">gameId</span><span class="p">,</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found with id: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
             <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
