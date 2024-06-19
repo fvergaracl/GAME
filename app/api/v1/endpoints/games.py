@@ -277,7 +277,7 @@ def get_task_by_externalGameId_taskId(
         CreateTaskPostSuccesfullyCreated: The details of the specified task.
     """
     return service.get_task_by_externalGameId_externalTaskId(
-        gameId, externalTaskId)
+        str(gameId), externalTaskId)
 
 
 summary_get_points_by_gameId = "Retrieve Points by Game ID"

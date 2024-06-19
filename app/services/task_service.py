@@ -262,23 +262,23 @@ class TaskService(BaseService):
         return response
 
     def get_task_by_externalGameId_externalTaskId(
-            self, externalGameId, externalTaskId
+            self, gameId, externalTaskId
     ):
         """
-        Retrieves a task by its external game ID and external task ID.
+        Retrieves a task by its game ID and external task ID.
 
         Args:
-            externalGameId (str): The external game ID.
+            gameId (UUID): The game ID.
             externalTaskId (str): The external task ID.
 
         Returns:
             CreateTaskPostSuccesfullyCreated: The task details.
         """
         game = self.game_repository.read_by_column(
-            "externalGameId",
-            externalGameId,
-            not_found_message=f"Game not found with externalGameId: "
-            f"{externalGameId}",
+            "id",
+            gameId,
+            not_found_message=f"Game not found with id: "
+            f"{gameId}",
             only_one=True,
         )
 
