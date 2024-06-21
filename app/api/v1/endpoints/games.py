@@ -29,7 +29,8 @@ router = APIRouter(
 summary_get_games_list = "Retrieve All Games"
 description_get_games_list = """
 ## Retrieve All Games
-### This endpoint retrieves a list of all games along with their associated parameters."""  # noqa
+### This endpoint retrieves a list of all games along with their associated parameters.
+<sub>**Id_endpoint:** get_games_list</sub>"""  # noqa
 
 
 @router.get(
@@ -44,11 +45,11 @@ def get_games_list(
     service: GameService = Depends(Provide[Container.game_service]),
 ):
     """
-    Retrieve a list of all games with their parameters.
+  Retrieve a list of all games with their parameters.
 
-    Args:
-        schema (PostFindGame): Query parameters for finding games.
-        service (GameService): Injected GameService dependency.
+   Args:
+        schema(PostFindGame): Query parameters for finding games.
+        service(GameService): Injected GameService dependency.
 
     Returns:
         FindGameResult: A result set containing the games and search options.
@@ -60,6 +61,7 @@ summary_get_game_by_id = "Retrieve Game by ID"
 description_get_game_by_id = """
 ## Retrieve Game by ID
 ### This endpoint retrieves the details of a game by its unique game ID.
+<sub>**Id_endpoint:** get_game_by_id</sub>
 """
 
 
@@ -75,11 +77,11 @@ def get_game_by_id(
     service: GameService = Depends(Provide[Container.game_service]),
 ):
     """
-    Retrieve a game by its ID.
+  Retrieve a game by its ID.
 
-    Args:
-        gameId (UUID): The ID of the game.
-        service (GameService): Injected GameService dependency.
+   Args:
+        gameId(UUID): The ID of the game.
+        service(GameService): Injected GameService dependency.
 
     Returns:
         BaseGameResult: The details of the specified game.
@@ -91,7 +93,8 @@ def get_game_by_id(
 summary_create_game = "Create a New Game"
 description_create_game = """
 ## Create a New Game
-### This endpoint allows for the creation of a new game with the specified parameters. """  # noqa
+### This endpoint allows for the creation of a new game with the specified parameters.
+<sub>**Id_endpoint:** get_game_by_id</sub>"""  # noqa
 
 
 @router.post(
@@ -121,7 +124,8 @@ def create_game(
 summary_patch_game = "Update Game Details"
 description_patch_game = """
 ## Update Game Details
-### This endpoint allows for updating the details of a game by its ID, including game parameters. """  # noqa
+### This endpoint allows for updating the details of a game by its ID, including game parameters. 
+<sub>**Id_endpoint:** patch_game"""  # noqa
 
 
 @router.patch(
@@ -153,7 +157,8 @@ def patch_game(
 summary_get_strategy_by_gameId = "Retrieve Strategy by Game ID"
 description_get_strategy_by_gameId = """
 ## Retrieve Strategy by Game ID
-### This endpoint retrieves the strategy details associated with a specific game by its ID."""  # noqa
+### This endpoint retrieves the strategy details associated with a specific game by its ID.
+<sub>**Id_endpoint:** get_strategy_by_gameId</sub>"""  # noqa
 
 
 @router.get(
@@ -183,7 +188,8 @@ def get_strategy_by_gameId(
 summary_create_task = "Create a New Task"
 description_create_task = """
 ## Create a New Task
-### This endpoint allows for the creation of a new task within a specific game using the game's ID. """  # noqa
+### This endpoint allows for the creation of a new task within a specific game using the game's ID. 
+<sub>**Id_endpoint:** create_task</sub>"""  # noqa
 
 
 @router.post(
@@ -216,7 +222,8 @@ def create_task(
 summary_get_task_list = "Retrieve Task List"
 description_get_task_list = """
 ## Retrieve Task List
-### This endpoint retrieves a list of tasks associated with a specific game using the game's ID. """  # noqa
+### This endpoint retrieves a list of tasks associated with a specific game using the game's ID. 
+<sub>**Id_endpoint:** get_task_list</sub>"""  # noqa
 
 
 @router.get(
@@ -250,7 +257,8 @@ summary_get_task_by_gameId_taskId = (
 )
 description_get_task_by_gameId_taskId = """
 ## Retrieve Task by Game ID and External Task ID
-### This endpoint retrieves the details of a task using the game's ID and the external task ID. """  # noqa
+### This endpoint retrieves the details of a task using the game's ID and the external task ID. 
+<sub>**Id_endpoint:** get_task_by_gameId_taskId</sub>"""  # noqa
 
 
 @router.get(
@@ -260,7 +268,7 @@ description_get_task_by_gameId_taskId = """
     description=description_get_task_by_gameId_taskId,
 )
 @inject
-def get_task_by_externalGameId_taskId(
+def get_task_by_gameId_taskId(
     gameId: UUID,
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
@@ -283,7 +291,8 @@ def get_task_by_externalGameId_taskId(
 summary_get_points_by_gameId = "Retrieve Points by Game ID"
 description_get_points_by_gameId = """
 ## Retrieve Points by Game ID
-### This endpoint retrieves the points details associated with a specific game by its ID. """  # noqa
+### This endpoint retrieves the points details associated with a specific game by its ID. 
+<sub>**Id_endpoint:** get_points_by_gameId</sub>"""  # noqa
 
 
 @router.get(
@@ -314,7 +323,9 @@ def get_points_by_gameId(
 summary_get_points_of_user_in_game = "Retrieve User Points in Game"
 description_get_points_of_user_in_game = """
 ## Retrieve User Points in Game
-### This endpoint retrieves the points details of a user within a specific game using the game's ID and the user's external ID. """  # noqa
+### This endpoint retrieves the points details of a user within a specific game using the game's ID and the user's external ID. 
+<sub>**Id_endpoint:** get_points_of_user_in_game</sub>
+"""  # noqa
 
 
 @router.get(
@@ -348,7 +359,9 @@ def get_points_of_user_in_game(
 summary_assing_points_to_user = "Assign Points to User"
 description_assing_points_to_user = """
 ## Assign Points to User
-### This endpoint assigns points to a user for a specific task within a game. """  # noqa
+### This endpoint assigns points to a user for a specific task within a game. 
+<sub>**Id_endpoint:** assign_points_to_user</sub>
+"""  # noqa
 
 
 @router.post(
@@ -383,7 +396,8 @@ def assign_points_to_user(
 summary_get_points_by_task_id = "Retrieve Points by Task ID"
 description_get_points_by_task_id = """
 ## Retrieve Points by Task ID
-### This endpoint retrieves the points details associated with a specific task using the game's ID and the external task ID. """  # noqa
+### This endpoint retrieves the points details associated with a specific task using the game's ID and the external task ID. 
+<sub>**Id_endpoint:** get_points_by_task_id</sub>"""  # noqa
 
 
 @router.get(
@@ -415,7 +429,8 @@ def get_points_by_task_id(
 summary_get_points_of_user_by_task_id = "Retrieve User Points by Task ID"
 description_get_points_of_user_by_task_id = """
 ## Retrieve User Points by Task ID
-### This endpoint retrieves the points details of a user associated with a specific task using the game's ID and the user's external ID. """  # noqa
+### This endpoint retrieves the points details of a user associated with a specific task using the game's ID and the user's external ID. 
+<sub>**Id_endpoint:** get_points_of_user_by_task_id</sub>"""  # noqa
 
 
 @router.get(
@@ -456,7 +471,9 @@ summary_get_points_by_task_id_with_details = (
 )
 description_get_points_by_task_id_with_details = """
 ## Retrieve Detailed Points by Task ID
-### This endpoint retrieves detailed points information associated with a specific task using the game's ID and the external task ID. """  # noqa
+### This endpoint retrieves detailed points information associated with a specific task using the game's ID and the external task ID. 
+<sub>**Id_endpoint:** get_points_by_task_id_with_details</sub>
+"""  # noqa
 
 
 @router.get(
@@ -488,7 +505,9 @@ def get_points_by_task_id_with_details(
 summary_get_users_by_gameId = "Retrieve Users by Game ID"
 description_get_users_by_gameId = """
 ## Retrieve Users by Game ID
-### This endpoint retrieves the list of users associated with a specific game using the game's ID. """  # noqa
+### This endpoint retrieves the list of users associated with a specific game using the game's ID. 
+<sub>**Id_endpoint:** get_users_by_gameId</sub>
+"""  # noqa
 
 
 @router.get(
