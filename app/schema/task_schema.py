@@ -135,6 +135,43 @@ class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
     strategy: Optional[Strategy]
 
 
+class AddActionDidByUserInTask(BaseModel):
+    """
+    Model for action done by user in task
+
+    Attributes:
+        typeAction (str): Type of action
+        data (dict): Additional data
+        description (str): Description
+        externalTaskId (str): External task ID
+        externalUserId (str): External user ID
+    """
+
+    typeAction: str
+    data: dict
+    description: str
+    externalTaskId: str
+    externalUserId: str
+
+
+class ResponseAddActionDidByUserInTask(
+    ModelBaseInfo,
+    AddActionDidByUserInTask
+):
+    """
+    Model for response of action done by user in task
+
+    Attributes:
+        typeAction (str): Type of action
+        data (dict): Additional data
+        description (str): Description
+        externalTaskId (str): External task ID
+        externalUserId (str): External user ID
+    """
+    message: Optional[str]
+    ...
+
+
 class AssignedPointsToExternalUserId(BaseModel):
     """
     Model for assigning points to an external user ID
