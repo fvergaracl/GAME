@@ -278,10 +278,13 @@ kubectl port-forward service/gamificationengine-service 8080:80
 
 ### Server
 
-- `uvicorn app.main:app --reload`: Runs the development server.
+- `poetry run uvicorn app.main:app `: Runs the development server.
   - Options:
     - `--host 0.0.0.0`: Specifies the host.
     - `--port 8000`: Specifies the port.
+
+
+**`poetry run uvicorn app.main:app --host 0.0.0.0 --reload`**
 
 ### Documentation
 
@@ -291,8 +294,8 @@ With hotreload `poetry run sphinx-autobuild docs/source docs/build/html --port 9
 
 ### Testing
 
-- `pytest`: Runs basic tests.
-- `pytest --cov=app --cov-report=term-missing`: Runs tests with coverage and displays the report in the terminal.
-- `pytest --cov=app --cov-report=html`: Generates a coverage report in HTML.
+- `poetry run pytest`: Runs basic tests.
+- `poetry run pytest --cov=app --cov-report=term-missing`: Runs tests with coverage and displays the report in the terminal.
+- `poetry run pytest --cov=app --cov-report=html`: Generates a coverage report in HTML.
 
 ### Official Documentation: [https://fvergaracl.github.io/GAME](https://fvergaracl.github.io/GAME)
