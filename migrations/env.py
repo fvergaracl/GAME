@@ -10,6 +10,7 @@ from app.model.game_params import GamesParams
 from app.model.games import Games
 from app.model.task_params import TasksParams
 from app.model.tasks import Tasks
+from app.model.user_actions import UserActions
 from app.model.user_points import UserPoints
 from app.model.users import Users
 from app.model.wallet import Wallet
@@ -45,7 +46,6 @@ target_metadata = SQLModel.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-
 
 
 # code doesn't reach here
