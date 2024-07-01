@@ -3,8 +3,8 @@ from uuid import uuid4
 from app.schema.task_schema import (
     BaseTask, AsignPointsToExternalUserId, CreateTaskPost, FoundTask,
     FoundTasks, CreateTask, FindTask, CreateTaskPostSuccesfullyCreated,
-    AssignedPointsToExternalUserId, TaskPointsResponseByUser, BaseUser,
-    BaseUserFirstAction, TasksWithUsers, PostFindTask
+    AddActionDidByUserInTask, AssignedPointsToExternalUserId,
+    TaskPointsResponseByUser, BaseUser, BaseUserFirstAction, TasksWithUsers, PostFindTask
 )
 from app.schema.games_params_schema import CreateGameParams
 from app.schema.base_schema import SearchOptions
@@ -251,6 +251,35 @@ def test_create_task_post_succesfully_created():
         data["taskParams"]
     )
     assert create_task_post_succesfully_created.strategy == data["strategy"]
+
+
+def test_add_action_did_by_user_in_task():
+    """
+    Test the AddActionDidByUserInTask model.
+
+    The AddActionDidByUserInTask model is used for an action done by a user in
+      a task.
+
+    The model has the following attributes:
+    - typeAction (str): Type of action
+    - data (dict): Additional data
+    - description (str): Description
+    - externalTaskId (str): External task ID
+    - externalUserId (str): External user ID
+    """
+    data = {
+        "typeAction": "login",
+        "data": {"key": "value"},
+        "description": "User login",
+        "externalTaskId": "task123",
+        "externalUserId": "user123"
+    }
+    add_action = AddActionDidByUserInTask(**data)
+    assert add_action.typeAction == data["typeAction"]
+    assert add_action.data == data["data"]
+    assert add_action.description == data["description"]
+    assert add_action.externalTaskId == data["externalTaskId"]
+    assert add_action.externalUserId == data["externalUserId"]
 
 
 def test_assigned_points_to_external_user_id():

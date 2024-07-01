@@ -4,13 +4,13 @@ from typing import List
 from app.core.container import Container
 from app.schema.games_schema import (
     FindGameResult, GameCreated, PatchGame, PostCreateGame, PostFindGame,
-    ResponsePatchGame, ListTasksWithUsers, BaseGameResult
+    ResponsePatchGame, BaseGameResult
 )
 from app.schema.strategy_schema import Strategy
 
 from app.schema.task_schema import (
     CreateTaskPost, CreateTaskPostSuccesfullyCreated, FoundTasks, PostFindTask,
-    AsignPointsToExternalUserId, AssignedPointsToExternalUserId
+    ResponseAddActionDidByUserInTask, AddActionDidByUserInTask, AssignedPointsToExternalUserId
 )
 from app.schema.user_points_schema import (
     PointsAssignedToUser, AllPointsByGame
@@ -356,6 +356,64 @@ def get_points_of_user_in_game(
     return service.get_points_of_user_in_game(gameId, externalUserId)
 
 
+summary_user_action = "User Action"
+description_user_action = """
+## User Action
+### This endpoint allows for the assignment of points to a user for a specific task within a game.
+<sub>**Id_endpoint:** user_action_in_task</sub>
+"""  # noqa
+
+
+@router.post(
+    "/{gameId}/tasks/{externalTaskId}/action",
+    response_model=AddActionDidByUserInTask,
+    summary=summary_user_action,
+    description=description_user_action,
+)
+@inject
+def user_action_in_task(
+    gameId: UUID,
+    externalTaskId: str,
+    schema: AddActionDidByUserInTask = Body(...),
+    service: TaskService = Depends(Provide[Container.task_service]),
+):
+    """
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    WIP
+    Assign points to a user for a specific task in a game.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        externalTaskId (str): The external task ID.
+        schema (AddActionDidByUserInTask): The schema for assigning points.
+        service (TaskService): Injected TaskService dependency.
+
+    Returns:
+        AddActionDidByUserInTask: The details of the points assigned.
+    """
+    return service.user_action_in_task(gameId, externalTaskId, schema)
+
+
 summary_assing_points_to_user = "Assign Points to User"
 description_assing_points_to_user = """
 ## Assign Points to User
@@ -364,13 +422,13 @@ description_assing_points_to_user = """
 """  # noqa
 
 
-@router.post(
+@ router.post(
     "/{gameId}/tasks/{externalTaskId}/points",
     response_model=AssignedPointsToExternalUserId,
     summary=summary_assing_points_to_user,
     description=description_assing_points_to_user,
 )
-@inject
+@ inject
 def assign_points_to_user(
     gameId: UUID,
     externalTaskId: str,
@@ -400,13 +458,13 @@ description_get_points_by_task_id = """
 <sub>**Id_endpoint:** get_points_by_task_id</sub>"""  # noqa
 
 
-@router.get(
+@ router.get(
     "/{gameId}/tasks/{externalTaskId}/points",
     response_model=List[PointsAssignedToUser],
     summary=summary_get_points_by_task_id,
     description=description_get_points_by_task_id,
 )
-@inject
+@ inject
 def get_points_by_task_id(
     gameId: UUID,
     externalTaskId: str,
@@ -433,13 +491,13 @@ description_get_points_of_user_by_task_id = """
 <sub>**Id_endpoint:** get_points_of_user_by_task_id</sub>"""  # noqa
 
 
-@router.get(
+@ router.get(
     "/{gameId}/tasks/{externalTaskId}/users/{externalUserId}/points",
     response_model=PointsAssignedToUser,
     summary=summary_get_points_of_user_by_task_id,
     description=description_get_points_of_user_by_task_id,
 )
-@inject
+@ inject
 def get_points_of_user_by_task_id(
     gameId: UUID,
     externalTaskId: str,
@@ -476,13 +534,13 @@ description_get_points_by_task_id_with_details = """
 """  # noqa
 
 
-@router.get(
+@ router.get(
     "/{gameId}/tasks/{externalTaskId}/points/details",
     response_model=List[dict],  # WIP ACA FIX
     summary=summary_get_points_by_task_id_with_details,
     description=description_get_points_by_task_id_with_details,
 )
-@inject
+@ inject
 def get_points_by_task_id_with_details(
     gameId: UUID,
     externalTaskId: str,
@@ -510,13 +568,13 @@ description_get_users_by_gameId = """
 """  # noqa
 
 
-@router.get(
+@ router.get(
     "/{gameId}/users",
     response_model=ListTasksWithUsers,
     summary=summary_get_users_by_gameId,
     description=description_get_users_by_gameId,
 )
-@inject
+@ inject
 def get_users_by_gameId(
     gameId: UUID,
     service: UserPointsService = Depends(
