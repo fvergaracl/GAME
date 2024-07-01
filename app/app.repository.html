@@ -487,6 +487,14 @@
         </li></ul>
             </nav>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.UserActionsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserActionsRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.UserActionsRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserActionsRepository.session_factory</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserActionsRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserActionsRepository.model</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.session_factory</span></code></a>
@@ -1865,6 +1873,27 @@ the record is not found.</p></li>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
 </dd>
 </dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.UserActionsRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">UserActionsRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.user_actions.UserActions'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_actions_repository.html#UserActionsRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserActionsRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<p>Repository class for user points.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.repository.UserActionsRepository.session_factory">
+<span class="sig-name descname"><span class="pre">session_factory</span></span><a class="headerlink" href="#app.repository.UserActionsRepository.session_factory" title="Link to this definition">¶</a></dt>
+<dd><p>Factory for creating SQLAlchemy sessions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable[…, AbstractContextManager[Session]]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.repository.UserActionsRepository.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#app.repository.UserActionsRepository.model" title="Link to this definition">¶</a></dt>
+<dd><p>SQLAlchemy model class for user points.</p>
 </dd></dl>
 </dd></dl>
 <dl class="py class">
