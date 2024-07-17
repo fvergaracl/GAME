@@ -339,6 +339,29 @@ class UserPointsRepository(BaseRepository):
             )
             return query.measurement_count
 
+    def get_user_task_measurements(self, externalTaskId, externalUserId):
+        """
+        Retrieves measurements for a user and task.
+
+        Args:
+            externalTaskId (str): The external task ID.
+            externalUserId (str): The external user ID.
+
+        Returns:
+            list: A list of measurements for the user and task.
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(UserPoints.created_at.label("timestamp"))
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .filter(Users.externalUserId == externalUserId)
+                .order_by(UserPoints.created_at)
+                .all()
+            )
+            return query
+
     def get_user_task_measurements_count(self, externalTaskId, externalUserId):
         """
         Retrieves the total number of measurements by user and task.

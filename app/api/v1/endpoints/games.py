@@ -4,13 +4,15 @@ from typing import List
 from app.core.container import Container
 from app.schema.games_schema import (
     FindGameResult, GameCreated, PatchGame, PostCreateGame, PostFindGame,
-    ResponsePatchGame, BaseGameResult
+    ResponsePatchGame, BaseGameResult, ListTasksWithUsers
 )
 from app.schema.strategy_schema import Strategy
 
 from app.schema.task_schema import (
-    CreateTaskPost, CreateTaskPostSuccesfullyCreated, FoundTasks, PostFindTask,
-    ResponseAddActionDidByUserInTask, AddActionDidByUserInTask, AssignedPointsToExternalUserId
+    CreateTaskPost, CreateTaskPostSuccesfullyCreated, FoundTasks,
+    PostFindTask, AsignPointsToExternalUserId,
+    ResponseAddActionDidByUserInTask, AddActionDidByUserInTask,
+    AssignedPointsToExternalUserId
 )
 from app.schema.user_points_schema import (
     PointsAssignedToUser, AllPointsByGame
@@ -378,40 +380,11 @@ def user_action_in_task(
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
     """
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    WIP
-    Assign points to a user for a specific task in a game.
-
-    Args:
-        gameId (UUID): The ID of the game.
-        externalTaskId (str): The external task ID.
-        schema (AddActionDidByUserInTask): The schema for assigning points.
-        service (TaskService): Injected TaskService dependency.
-
-    Returns:
-        AddActionDidByUserInTask: The details of the points assigned.
+    Register a user action in a task within a game. This endpoint is used to
+    assign points to a user for a specific task within a game, when the game
+    requires it.
     """
-    return service.user_action_in_task(gameId, externalTaskId, schema)
+    return service.user_add_action_in_task(gameId, externalTaskId, schema)
 
 
 summary_assing_points_to_user = "Assign Points to User"
