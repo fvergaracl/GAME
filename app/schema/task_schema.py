@@ -150,8 +150,8 @@ class AddActionDidByUserInTask(BaseModel):
     typeAction: str
     data: dict
     description: str
-    externalTaskId: str
     externalUserId: str
+    externalTaskId: Optional[str]
 
 
 class ResponseAddActionDidByUserInTask(

@@ -9,7 +9,7 @@ from app.repository import (GameParamsRepository, GameRepository,
                             WalletRepository, WalletTransactionRepository,
                             TaskParamsRepository)
 from app.services import (GameParamsService, GameService,
-                          TaskService, UserPointsService,
+                          TaskService, UserActionsService, UserPointsService,
                           UserService, WalletService, WalletTransactionService,
                           StrategyService)
 
@@ -30,6 +30,8 @@ class Container(containers.DeclarativeContainer):
           TaskParamsRepository.
         task_repository (providers.Factory): Factory provider for
           TaskRepository.
+        user_actions_repository (providers.Factory): Factory provider for
+          UserActionsRepository.
         user_points_repository (providers.Factory): Factory provider for
           UserPointsRepository.
         user_repository (providers.Factory): Factory provider for
@@ -127,6 +129,13 @@ class Container(containers.DeclarativeContainer):
         user_points_repository=user_points_repository,
         game_params_repository=game_params_repository,
         task_params_repository=task_params_repository,
+    )
+
+    user_actions_service = providers.Factory(
+        UserActionsService,
+        users_repository=user_repository,
+        game_repository=game_repository,
+        task_repository=task_repository,
     )
 
     user_points_service = providers.Factory(  # noqa
