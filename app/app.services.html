@@ -357,19 +357,19 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.user_points_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.user_points_repository</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.assign_points_to_user" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.assign_points_to_user()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.users_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.users_repository</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.count_measurements_by_external_task_id()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.game_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.game_repository</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_all_points_by_externalUserId()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.task_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.task_repository</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_avg_time_between_tasks_by_user_and_game_task()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.wallet_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.wallet_repository</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_avg_time_between_tasks_for_all_users()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.wallet_transaction_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.wallet_transaction_repository</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_last_window_time_diff()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.strategy_service" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.strategy_service</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_new_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_new_last_window_time_diff()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_by_externalUserId()</span></code></a>
         </li>
@@ -377,7 +377,21 @@
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_by_user_list" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_by_user_list()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_of_user" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_of_user()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_of_user_in_game" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_of_user_in_game()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_user_task_measurements" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_user_task_measurements()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_user_task_measurements_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_user_task_measurements_count()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_by_gameId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_points_by_externalGameId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_points_by_externalTaskId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_points_by_externalTaskId_and_externalUserId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.query_user_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.query_user_points()</span></code></a>
         </li></ul>
@@ -1183,158 +1197,82 @@ task parameters.</p>
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.user_points_service.</span></span><span class="sig-name descname"><span class="pre">UserPointsService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_points_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository"><span class="pre">UserPointsRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">users_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository"><span class="pre">UserRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.game_repository.GameRepository" title="app.repository.game_repository.GameRepository"><span class="pre">GameRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository"><span class="pre">TaskRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository"><span class="pre">WalletRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet_transaction_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository"><span class="pre">WalletTransactionRepository</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
-<p>Service class for managing user points.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.user_points_repository">
-<span class="sig-name descname"><span class="pre">user_points_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.user_points_repository" title="Link to this definition">¶</a></dt>
-<dd><p>Repository instance for
-user points.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository">UserPointsRepository</a></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.users_repository">
-<span class="sig-name descname"><span class="pre">users_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.users_repository" title="Link to this definition">¶</a></dt>
-<dd><p>Repository instance for users.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository">UserRepository</a></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.game_repository">
-<span class="sig-name descname"><span class="pre">game_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.game_repository" title="Link to this definition">¶</a></dt>
-<dd><p>Repository instance for games.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.game_repository.GameRepository" title="app.repository.game_repository.GameRepository">GameRepository</a></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.task_repository">
-<span class="sig-name descname"><span class="pre">task_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.task_repository" title="Link to this definition">¶</a></dt>
-<dd><p>Repository instance for tasks.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository">TaskRepository</a></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.wallet_repository">
-<span class="sig-name descname"><span class="pre">wallet_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.wallet_repository" title="Link to this definition">¶</a></dt>
-<dd><p>Repository instance for wallets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository">WalletRepository</a></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.wallet_transaction_repository">
-<span class="sig-name descname"><span class="pre">wallet_transaction_repository</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.wallet_transaction_repository" title="Link to this definition">¶</a></dt>
-<dd><p>Repository instance for wallet transactions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository">WalletTransactionRepository</a></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.strategy_service">
-<span class="sig-name descname"><span class="pre">strategy_service</span></span><a class="headerlink" href="#app.services.user_points_service.UserPointsService.strategy_service" title="Link to this definition">¶</a></dt>
-<dd><p>Service instance for strategies.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#app.services.strategy_service.StrategyService" title="app.services.strategy_service.StrategyService">StrategyService</a></p>
-</dd>
-</dl>
-</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.assign_points_to_user">
+<span class="sig-name descname"><span class="pre">assign_points_to_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.assign_points_to_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.assign_points_to_user" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id">
+<span class="sig-name descname"><span class="pre">count_measurements_by_external_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.count_measurements_by_external_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId">
+<span class="sig-name descname"><span class="pre">get_all_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_all_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task">
+<span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_by_user_and_game_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_avg_time_between_tasks_by_user_and_game_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users">
+<span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_for_all_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_avg_time_between_tasks_for_all_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_last_window_time_diff">
+<span class="sig-name descname"><span class="pre">get_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_last_window_time_diff" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_new_last_window_time_diff">
+<span class="sig-name descname"><span class="pre">get_new_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_new_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_new_last_window_time_diff" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_externalUserId">
 <span class="sig-name descname"><span class="pre">get_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_externalUserId" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves points associated with a user by their external user ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of points details for the user.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_gameId">
 <span class="sig-name descname"><span class="pre">get_points_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_gameId" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves points associated with a game by its game ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The points details for the game.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ResponseGetPointsByGame</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_user_list">
 <span class="sig-name descname"><span class="pre">get_points_by_user_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_user_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_user_list" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves points associated with a list of users.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>users_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – A list of user IDs.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of user points details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_of_user">
+<span class="sig-name descname"><span class="pre">get_points_of_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_user" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_of_user_in_game">
+<span class="sig-name descname"><span class="pre">get_points_of_user_in_game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_user_in_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_user_in_game" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_user_task_measurements">
+<span class="sig-name descname"><span class="pre">get_user_task_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_user_task_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_user_task_measurements" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_user_task_measurements_count">
+<span class="sig-name descname"><span class="pre">get_user_task_measurements_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_user_task_measurements_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_user_task_measurements_count" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_by_gameId">
 <span class="sig-name descname"><span class="pre">get_users_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_by_gameId" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves users associated with a game by its game ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of tasks with associated users.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ListTasksWithUsers</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId">
+<span class="sig-name descname"><span class="pre">get_users_points_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId">
+<span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId">
+<span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId_and_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalTaskId_and_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.query_user_points">
 <span class="sig-name descname"><span class="pre">query_user_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.query_user_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.query_user_points" title="Link to this definition">¶</a></dt>
-<dd><p>Queries user points based on the provided schema.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – The schema for querying user points.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of user points matching the schema.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.user_service">

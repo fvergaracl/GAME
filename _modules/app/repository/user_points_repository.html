@@ -618,6 +618,32 @@
             <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">measurement_count</span></div>
 
 
+<div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_user_task_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves measurements for a user and task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId (str): The external task ID.</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of measurements for the user and task.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"timestamp"</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">query</span></div>
+
+
 <div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements_count">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count">[docs]</a>
     <span class="k">def</span> <span class="nf">get_user_task_measurements_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>

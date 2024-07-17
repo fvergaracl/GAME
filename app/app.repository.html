@@ -367,6 +367,8 @@
         </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_user_measurement_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_measurement_count()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count()</span></code></a>
         </li></ul>
             </nav>
@@ -492,6 +494,8 @@
         <li class="md-nav__item"><a href="#app.repository.UserActionsRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserActionsRepository.session_factory</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.UserActionsRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserActionsRepository.model</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserActionsRepository.add_action_in_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserActionsRepository.add_action_in_task()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -538,6 +542,8 @@
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_time_taken_for_last_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_time_taken_for_last_task()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_user_measurement_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_measurement_count()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_user_task_measurements" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_user_task_measurements_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count()</span></code></a>
         </li></ul>
@@ -1357,6 +1363,25 @@ the record is not found.</p></li>
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements">
+<span class="sig-name descname"><span class="pre">get_user_task_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_user_task_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves measurements for a user and task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalTaskId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external task ID.</p></li>
+<li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of measurements for the user and task.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count">
 <span class="sig-name descname"><span class="pre">get_user_task_measurements_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_user_task_measurements_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves the total number of measurements by user and task.</p>
@@ -1895,6 +1920,26 @@ the record is not found.</p></li>
 <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#app.repository.UserActionsRepository.model" title="Link to this definition">¶</a></dt>
 <dd><p>SQLAlchemy model class for user points.</p>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserActionsRepository.add_action_in_task">
+<span class="sig-name descname"><span class="pre">add_action_in_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AddActionDidByUserInTask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_actions_repository.html#UserActionsRepository.add_action_in_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserActionsRepository.add_action_in_task" title="Link to this definition">¶</a></dt>
+<dd><p>Add action in task for user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The user ID.</p></li>
+<li><p><strong>task_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The task ID.</p></li>
+<li><p><strong>action</strong> (<em>AddActionDidByUserInTask</em>) – The action to add.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The added action in task for user.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.repository.UserPointsRepository">
@@ -2232,6 +2277,25 @@ the record is not found.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_user_task_measurements">
+<span class="sig-name descname"><span class="pre">get_user_task_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_user_task_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_user_task_measurements" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves measurements for a user and task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalTaskId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external task ID.</p></li>
+<li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of measurements for the user and task.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
 </dd>
 </dl>
 </dd></dl>

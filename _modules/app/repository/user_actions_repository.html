@@ -241,6 +241,7 @@
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
 <span class="kn">from</span> <span class="nn">app.model.user_actions</span> <span class="kn">import</span> <span class="n">UserActions</span>
 <span class="kn">from</span> <span class="nn">app.repository.base_repository</span> <span class="kn">import</span> <span class="n">BaseRepository</span>
+<span class="kn">from</span> <span class="nn">app.schema.task_schema</span> <span class="kn">import</span> <span class="n">AddActionDidByUserInTask</span>
 
 
 <div class="viewcode-block" id="UserActionsRepository">
@@ -274,7 +275,39 @@
         <span class="n">model_userAction</span> <span class="o">=</span> <span class="n">UserActions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">userAction_repository</span> <span class="o">=</span> <span class="n">BaseRepository</span><span class="p">(</span>
             <span class="n">session_factory_userAction</span><span class="p">,</span> <span class="n">model_userAction</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+<div class="viewcode-block" id="UserActionsRepository.add_action_in_task">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.UserActionsRepository.add_action_in_task">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_action_in_task</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">AddActionDidByUserInTask</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Add action in task for user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            user_id (str): The user ID.</span>
+<span class="sd">            task_id (str): The task ID.</span>
+<span class="sd">            action (AddActionDidByUserInTask): The action to add.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The added action in task for user.</span>
+<span class="sd">        """</span>
+        
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span>
+                <span class="n">userId</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span>
+                <span class="n">taskId</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
+                <span class="n">typeAction</span><span class="o">=</span><span class="n">action</span><span class="o">.</span><span class="n">typeAction</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">action</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="n">action</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">action</span></div>
+</div>
 
 </pre></div>
 
