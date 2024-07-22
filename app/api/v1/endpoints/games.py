@@ -509,7 +509,7 @@ description_get_points_by_task_id_with_details = """
 
 @ router.get(
     "/{gameId}/tasks/{externalTaskId}/points/details",
-    response_model=List[dict],  # WIP ACA FIX
+    response_model=List[dict],  # WIP FIX
     summary=summary_get_points_by_task_id_with_details,
     description=description_get_points_by_task_id_with_details,
 )
