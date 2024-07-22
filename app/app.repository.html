@@ -370,6 +370,8 @@
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count_the_last_seconds()</span></code></a>
         </li></ul>
             </nav>
         </li></ul>
@@ -546,6 +548,8 @@
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_user_task_measurements" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_user_task_measurements_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count_the_last_seconds()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -1394,6 +1398,33 @@ the record is not found.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The total number of measurements by user and task.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds">
+<span class="sig-name descname"><span class="pre">get_user_task_measurements_count_the_last_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_user_task_measurements_count_the_last_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Retrieves the total number of measurements by user and task in the last</dt><dd><p>n seconds.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalTaskId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external task ID.</p></li>
+<li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p></li>
+<li><p><strong>seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of seconds to consider.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The total number of measurements by user and task in the last</dt><dd><p>n seconds.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
@@ -2312,6 +2343,33 @@ the record is not found.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The total number of measurements by user and task.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds">
+<span class="sig-name descname"><span class="pre">get_user_task_measurements_count_the_last_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_user_task_measurements_count_the_last_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Retrieves the total number of measurements by user and task in the last</dt><dd><p>n seconds.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalTaskId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external task ID.</p></li>
+<li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user ID.</p></li>
+<li><p><strong>seconds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of seconds to consider.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The total number of measurements by user and task in the last</dt><dd><p>n seconds.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>

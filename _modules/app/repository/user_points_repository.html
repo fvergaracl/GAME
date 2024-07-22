@@ -240,7 +240,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">func</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timezone</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">app.model.tasks</span> <span class="kn">import</span> <span class="n">Tasks</span>
 <span class="kn">from</span> <span class="nn">app.model.user_points</span> <span class="kn">import</span> <span class="n">UserPoints</span>
 <span class="kn">from</span> <span class="nn">app.model.users</span> <span class="kn">import</span> <span class="n">Users</span>
@@ -665,6 +665,41 @@
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">measurement_count</span></div>
+
+
+<div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements_count_the_last_seconds">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_user_task_measurements_count_the_last_seconds</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">externalTaskId</span><span class="p">,</span>
+            <span class="n">externalUserId</span><span class="p">,</span>
+            <span class="n">seconds</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves the total number of measurements by user and task in the last</span>
+<span class="sd">          n seconds.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId (str): The external task ID.</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+<span class="sd">            seconds (int): The number of seconds to consider.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The total number of measurements by user and task in the last</span>
+<span class="sd">              n seconds.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span>
+                    <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&gt;</span> <span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">one</span><span class="p">()</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">measurement_count</span></div>
