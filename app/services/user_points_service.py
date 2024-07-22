@@ -563,6 +563,13 @@ class UserPointsService(BaseService):
             externalUserId
         )
 
+    def get_user_task_measurements_count_the_last_seconds(self, externalTaskId, externalUserId, seconds):
+        return self.user_points_repository.get_user_task_measurements_count_the_last_seconds(
+            externalTaskId,
+            externalUserId,
+            seconds
+        )
+
     def get_avg_time_between_tasks_by_user_and_game_task(
         self, externalGameId, externalTaskId, externalUserId
     ):
