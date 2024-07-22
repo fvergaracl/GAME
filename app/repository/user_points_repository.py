@@ -2,7 +2,7 @@ from contextlib import AbstractContextManager
 from typing import Callable
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from datetime import timezone
+from datetime import timezone, timedelta
 from app.model.tasks import Tasks
 from app.model.user_points import UserPoints
 from app.model.users import Users
@@ -381,6 +381,38 @@ class UserPointsRepository(BaseRepository):
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
                 .filter(Users.externalUserId == externalUserId)
+                .one()
+            )
+            return query.measurement_count
+
+    def get_user_task_measurements_count_the_last_seconds(
+            self,
+            externalTaskId,
+            externalUserId,
+            seconds
+    ):
+        """
+        Retrieves the total number of measurements by user and task in the last
+          n seconds.
+
+        Args:
+            externalTaskId (str): The external task ID.
+            externalUserId (str): The external user ID.
+            seconds (int): The number of seconds to consider.
+
+        Returns:
+            int: The total number of measurements by user and task in the last
+              n seconds.
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(func.count(
+                    UserPoints.taskId).label("measurement_count"))
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .filter(Users.externalUserId == externalUserId)
+                .filter(UserPoints.created_at > func.now() - timedelta(seconds=seconds))
                 .one()
             )
             return query.measurement_count

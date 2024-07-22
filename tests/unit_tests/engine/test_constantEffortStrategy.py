@@ -15,24 +15,17 @@ def strategy():
 
 
 def test_calculate_points_default(strategy):
-    strategy.user_points_service.get_user_task_measurements.return_value = []
+    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = 0
 
     points, reward_type = strategy.calculate_points(
         "game_id", "task_id", "user_id")
 
     assert points == 1
-    assert reward_type == "default"
+    assert reward_type == "BasicReward"
 
 
 def test_calculate_points_consistent_effort(strategy):
-    now = datetime.now()
-    measurements = [
-        {"timestamp": now - timedelta(minutes=10)},
-        {"timestamp": now - timedelta(minutes=8)},
-        {"timestamp": now - timedelta(minutes=5)},
-        {"timestamp": now - timedelta(minutes=2)}
-    ]
-    strategy.user_points_service.get_user_task_measurements.return_value = measurements
+    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = 4
 
     points, reward_type = strategy.calculate_points(
         "game_id", "task_id", "user_id")
@@ -42,33 +35,26 @@ def test_calculate_points_consistent_effort(strategy):
 
 
 def test_calculate_points_no_measurements(strategy):
-    strategy.user_points_service.get_user_task_measurements.return_value = []
+    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = 0
 
     points, reward_type = strategy.calculate_points(
         "game_id", "task_id", "user_id")
 
     assert points == 1
-    assert reward_type == "default"
-
-
-def test_calculate_consistent_effort(strategy):
-    now = datetime.now()
-    measurements = [
-        {"timestamp": now - timedelta(minutes=6)},
-        {"timestamp": now - timedelta(minutes=4)},
-        {"timestamp": now - timedelta(minutes=3)},
-        {"timestamp": now}
-    ]
-    consistent_effort_count = strategy._calculate_consistent_effort(
-        measurements)
-
-    assert consistent_effort_count == 3
+    assert reward_type == "BasicReward"
 
 
 def test_calculate_points_from_consistency(strategy):
+    effort_interval = strategy.get_variable(
+        "variable_constant_effort_interval_minutes")
+    if effort_interval == 100:
+        points = strategy._calculate_points_from_consistency(100)
+        assert points == 100
     points = strategy._calculate_points_from_consistency(50)
-
     assert points == 50
+
+    points = strategy._calculate_points_from_consistency(0)
+    assert points == 1
 
 
 def test_debug_print(strategy, capsys):
