@@ -3,7 +3,6 @@
 """
 from app.engine.base_strategy import BaseStrategy
 from app.core.container import Container
-from datetime import datetime, timedelta
 
 
 class ConstantEffortStrategy(BaseStrategy):  # noqa
