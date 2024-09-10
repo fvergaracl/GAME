@@ -9,7 +9,7 @@ from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import \
     WalletTransactionRepository
-
+from app.repository.apikey_repository import ApiKeyRepository
 
 __all__ = [
     "BaseRepository",
@@ -22,4 +22,5 @@ __all__ = [
     "WalletRepository",
     "WalletTransactionRepository",
     "GameParamsRepository",
+    "ApiKeyRepository"
 ]

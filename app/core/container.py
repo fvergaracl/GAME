@@ -7,11 +7,11 @@ from app.repository import (GameParamsRepository, GameRepository,
                             TaskRepository, UserActionsRepository,
                             UserPointsRepository, UserRepository,
                             WalletRepository, WalletTransactionRepository,
-                            TaskParamsRepository)
+                            TaskParamsRepository, ApiKeyRepository)
 from app.services import (GameParamsService, GameService,
                           TaskService, UserActionsService, UserPointsService,
                           UserService, WalletService, WalletTransactionService,
-                          StrategyService)
+                          StrategyService, ApiKeyService)
 
 
 class Container(containers.DeclarativeContainer):
@@ -40,6 +40,8 @@ class Container(containers.DeclarativeContainer):
           WalletRepository.
         wallet_transaction_repository (providers.Factory): Factory provider
           for WalletTransactionRepository.
+        apikey_repository (providers.Factory): Factory provider for
+          ApiKeyRepository.
         game_params_service (providers.Factory): Factory provider for
           GameParamsService.
         strategy_service (providers.Factory): Factory provider for
@@ -52,6 +54,8 @@ class Container(containers.DeclarativeContainer):
         wallet_service (providers.Factory): Factory provider for WalletService.
         wallet_transaction_service (providers.Factory): Factory provider for
           WalletTransactionService.
+        apikey_service (providers.Factory): Factory provider for
+          ApiKeyService.
     """
     wiring_config = containers.WiringConfiguration(
         modules=[
@@ -102,17 +106,21 @@ class Container(containers.DeclarativeContainer):
         WalletTransactionRepository, session_factory=db.provided.session
     )
 
+    apikey_repository = providers.Factory(
+        ApiKeyRepository, session_factory=db.provided.session
+    )
+
     # Services (Add in here)
 
-    game_params_service = providers.Factory(  # noqa
+    game_params_service = providers.Factory(
         GameParamsService, game_params_repository=game_params_repository
     )
 
-    strategy_service = providers.Factory(  # noqa
+    strategy_service = providers.Factory(
         StrategyService
     )
 
-    game_service = providers.Factory(  # noqa
+    game_service = providers.Factory(
         GameService,
         game_repository=game_repository,
         game_params_repository=game_params_repository,
@@ -120,7 +128,7 @@ class Container(containers.DeclarativeContainer):
         strategy_service=strategy_service,
     )
 
-    task_service = providers.Factory(  # noqa
+    task_service = providers.Factory(
         TaskService,
         strategy_service=StrategyService,
         task_repository=task_repository,
@@ -138,7 +146,7 @@ class Container(containers.DeclarativeContainer):
         task_repository=task_repository,
     )
 
-    user_points_service = providers.Factory(  # noqa
+    user_points_service = providers.Factory(
         UserPointsService,
         user_points_repository=user_points_repository,
         users_repository=user_repository,
@@ -148,7 +156,7 @@ class Container(containers.DeclarativeContainer):
         wallet_transaction_repository=wallet_transaction_repository,
     )
 
-    user_service = providers.Factory(  # noqa
+    user_service = providers.Factory(
         UserService,
         user_repository=user_repository,
         user_points_repository=user_points_repository,
@@ -157,13 +165,18 @@ class Container(containers.DeclarativeContainer):
         wallet_transaction_repository=wallet_transaction_repository,
     )
 
-    wallet_service = providers.Factory(  # noqa
+    wallet_service = providers.Factory(
         WalletService,
         wallet_repository=wallet_repository,
         user_repository=user_repository,
     )
 
-    wallet_transaction_service = providers.Factory(  # noqa
+    wallet_transaction_service = providers.Factory(
         WalletTransactionService,
         wallet_transaction_repository=wallet_transaction_repository,
+    )
+
+    apikey_service = providers.Factory(
+        ApiKeyService,
+        apikey_repository=apikey_repository,
     )

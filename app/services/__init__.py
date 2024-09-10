@@ -8,3 +8,4 @@ from app.services.user_service import UserService
 from app.services.wallet_service import WalletService
 from app.services.wallet_transaction_service import WalletTransactionService
 from app.services.strategy_service import StrategyService
+from app.services.apikey_service import ApiKeyService
