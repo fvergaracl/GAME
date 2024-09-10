@@ -25,6 +25,10 @@ class UserPoints(BaseModel, table=True):
         UUID(as_uuid=True), ForeignKey("users.id")))
     taskId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("tasks.id")))
+    apiKey_used: str = Field(
+        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+            "apikey.apiKey"), nullable=True)
+    )
 
     class Config:  # noqa
         orm_mode = True  # noqa

@@ -34,6 +34,10 @@ class GamesParams(BaseModel, table=True):
     gameId: str = Field(
         sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id"))
     )
+    apiKey_used: str = Field(
+        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+            "apikey.apiKey"), nullable=True)
+    )
 
     class Config:
         orm_mode = True

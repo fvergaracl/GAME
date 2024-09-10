@@ -48,6 +48,10 @@ class WalletTransactions(BaseModel, table=True):
     appliedConversionRate: float = Field(sa_column=Column(Float))
     walletId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("wallet.id")))
+    apiKey_used: str = Field(
+        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+            "apikey.apiKey"), nullable=True)
+    )
 
     class Config:  # noqa
         orm_mode = True  # noqa

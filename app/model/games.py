@@ -1,5 +1,6 @@
+from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import Column, Field, String
-from app.model.base_model import BaseModel
+from app.model.base_model import BaseModel, ForeignKey
 
 
 class Games(BaseModel, table=True):
@@ -32,6 +33,10 @@ class Games(BaseModel, table=True):
     strategyId: str = Field(sa_column=Column(String),
                             nullable=False, default="default")
     platform: str = Field(sa_column=Column(String), nullable=False)
+    apiKey_used: str = Field(
+        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+            "apikey.apiKey"), nullable=True)
+    )
 
     class Config:
         orm_mode = True

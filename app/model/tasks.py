@@ -46,6 +46,10 @@ class Tasks(BaseModel, table=True):
         String, nullable=False, default="default"))
     status: str = Field(sa_column=Column(
         String, nullable=False, default="open"))
+    apiKey_used: str = Field(
+        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+            "apikey.apiKey"), nullable=True)
+    )
 
     class Config:
         orm_mode = True  # Enable ORM mode

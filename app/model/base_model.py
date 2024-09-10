@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from sqlalchemy.dialects.postgresql import UUID
-from sqlmodel import Column, DateTime, Field, SQLModel, func
+from sqlmodel import Column, DateTime, Field, SQLModel, func, ForeignKey
 
 
 class BaseModel(SQLModel):
@@ -43,6 +43,10 @@ class BaseModel(SQLModel):
         sa_column=Column(
             DateTime(timezone=True), default=func.now(), onupdate=func.now()
         )
+    )
+    apiKey_used: str = Field(
+        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+            "apikey.apiKey"), nullable=True)
     )
 
     class Config:  # noqa
