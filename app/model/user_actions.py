@@ -22,7 +22,7 @@ class UserActions(BaseModel, table=True):
     userId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("users.id")))
     apiKey_used: str = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+        sa_column=Column(String, ForeignKey(
             "apikey.apiKey"), nullable=True)
     )
 

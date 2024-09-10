@@ -2,7 +2,9 @@ from datetime import datetime
 from uuid import uuid4
 
 from sqlalchemy.dialects.postgresql import UUID
-from sqlmodel import Column, DateTime, Field, SQLModel, func, ForeignKey
+from sqlmodel import (
+    Column, DateTime, Field, SQLModel, func, ForeignKey, String
+)
 
 
 class BaseModel(SQLModel):
@@ -45,7 +47,7 @@ class BaseModel(SQLModel):
         )
     )
     apiKey_used: str = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+        sa_column=Column(String, ForeignKey(
             "apikey.apiKey"), nullable=True)
     )
 

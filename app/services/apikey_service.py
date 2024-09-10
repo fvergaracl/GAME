@@ -2,6 +2,7 @@ from app.repository.apikey_repository import (
     ApiKeyRepository
 )
 from app.services.base_service import BaseService
+from app.util.generate_api_key import generate_api_key
 
 
 class ApiKeyService(BaseService):
@@ -22,7 +23,21 @@ class ApiKeyService(BaseService):
         self.apikey_repository = apikey_repository
         super().__init__(apikey_repository)
 
-    async def create_api_key(self, apikeyPostBody):
+    async def generate_api_key(self):
+        """
+        Generate a random API key.
+
+        Returns:
+            str: The generated API key.
+        """
+        exist_key = True
+        while not (exist_key is None):
+            api_key = generate_api_key()
+            exist_key = self.apikey_repository.read_by_column(
+                "apiKey", api_key, not_found_raise_exception=False)
+        return api_key
+
+    def create_api_key(self, apikeyPostBody):
         """
         Create an API key.
 
@@ -32,5 +47,13 @@ class ApiKeyService(BaseService):
         Returns:
             The created API key.
         """
-        print('************************')
-        return await self.apikey_repository.create(apikeyPostBody)
+        return self.apikey_repository.create(apikeyPostBody)
+
+    def get_all_api_keys(self):
+        """
+        Get all API keys.
+
+        Returns:
+            List[ApiKey]: All API keys in the database.
+        """
+        return self.apikey_repository.read_all()

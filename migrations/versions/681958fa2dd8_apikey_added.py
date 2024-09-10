@@ -1,8 +1,8 @@
 """apiKey added
 
-Revision ID: 6e93da0af925
+Revision ID: 681958fa2dd8
 Revises: 59843af22ade
-Create Date: 2024-09-10 09:57:38.530154
+Create Date: 2024-09-10 11:18:40.943153
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '6e93da0af925'
+revision = '681958fa2dd8'
 down_revision = '59843af22ade'
 branch_labels = None
 depends_on = None
@@ -22,7 +22,7 @@ def upgrade():
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('apiKey', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.Column('apiKey', sa.String(), nullable=True),
     sa.Column('client', sa.String(), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('active', sa.Boolean(), nullable=True),
@@ -31,23 +31,23 @@ def upgrade():
     sa.UniqueConstraint('apiKey')
     )
     op.create_index(op.f('ix_apikey_id'), 'apikey', ['id'], unique=False)
-    op.add_column('games', sa.Column('apiKey_used', postgresql.UUID(as_uuid=True), nullable=True))
+    op.add_column('games', sa.Column('apiKey_used', sa.String(), nullable=True))
     op.create_foreign_key(None, 'games', 'apikey', ['apiKey_used'], ['apiKey'])
-    op.add_column('gamesparams', sa.Column('apiKey_used', postgresql.UUID(as_uuid=True), nullable=True))
+    op.add_column('gamesparams', sa.Column('apiKey_used', sa.String(), nullable=True))
     op.create_foreign_key(None, 'gamesparams', 'apikey', ['apiKey_used'], ['apiKey'])
-    op.add_column('tasks', sa.Column('apiKey_used', postgresql.UUID(as_uuid=True), nullable=True))
+    op.add_column('tasks', sa.Column('apiKey_used', sa.String(), nullable=True))
     op.create_foreign_key(None, 'tasks', 'apikey', ['apiKey_used'], ['apiKey'])
-    op.add_column('tasksparams', sa.Column('apiKey_used', postgresql.UUID(as_uuid=True), nullable=True))
+    op.add_column('tasksparams', sa.Column('apiKey_used', sa.String(), nullable=True))
     op.create_foreign_key(None, 'tasksparams', 'apikey', ['apiKey_used'], ['apiKey'])
-    op.add_column('useractions', sa.Column('apiKey_used', postgresql.UUID(as_uuid=True), nullable=True))
+    op.add_column('useractions', sa.Column('apiKey_used', sa.String(), nullable=True))
     op.create_foreign_key(None, 'useractions', 'apikey', ['apiKey_used'], ['apiKey'])
-    op.add_column('userpoints', sa.Column('apiKey_used', postgresql.UUID(as_uuid=True), nullable=True))
+    op.add_column('userpoints', sa.Column('apiKey_used', sa.String(), nullable=True))
     op.create_foreign_key(None, 'userpoints', 'apikey', ['apiKey_used'], ['apiKey'])
-    op.add_column('users', sa.Column('apiKey_used', postgresql.UUID(as_uuid=True), nullable=True))
+    op.add_column('users', sa.Column('apiKey_used', sa.String(), nullable=True))
     op.create_foreign_key(None, 'users', 'apikey', ['apiKey_used'], ['apiKey'])
-    op.add_column('wallet', sa.Column('apiKey_used', postgresql.UUID(as_uuid=True), nullable=True))
+    op.add_column('wallet', sa.Column('apiKey_used', sa.String(), nullable=True))
     op.create_foreign_key(None, 'wallet', 'apikey', ['apiKey_used'], ['apiKey'])
-    op.add_column('wallettransactions', sa.Column('apiKey_used', postgresql.UUID(as_uuid=True), nullable=True))
+    op.add_column('wallettransactions', sa.Column('apiKey_used', sa.String(), nullable=True))
     op.create_foreign_key(None, 'wallettransactions', 'apikey', ['apiKey_used'], ['apiKey'])
     # ### end Alembic commands ###
 
