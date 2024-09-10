@@ -26,7 +26,7 @@ class UserPoints(BaseModel, table=True):
     taskId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("tasks.id")))
     apiKey_used: str = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+        sa_column=Column(String, ForeignKey(
             "apikey.apiKey"), nullable=True)
     )
 

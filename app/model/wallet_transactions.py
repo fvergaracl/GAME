@@ -49,7 +49,7 @@ class WalletTransactions(BaseModel, table=True):
     walletId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("wallet.id")))
     apiKey_used: str = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+        sa_column=Column(String, ForeignKey(
             "apikey.apiKey"), nullable=True)
     )
 

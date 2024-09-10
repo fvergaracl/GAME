@@ -29,4 +29,28 @@ class ApiKeyRepository(BaseRepository):
             model: The SQLAlchemy model class for API keys.
         """
         super().__init__(session_factory, model)
-    
+
+    def read_all(self, page: int = 1, page_size: int = 10):
+        """
+        Reads all API keys. Order by created_at.
+
+        Args:
+            page (int): The page number.
+            page_size (int): The number of items per page.
+
+        Returns:
+            List[ApiKey]: All API keys in the database.
+
+        """
+        max_page_size = 100
+        if page_size > max_page_size:
+            page_size = max_page_size
+
+        with self.session_factory() as session:
+            return (
+                session.query(self.model)
+                .order_by(self.model.created_at.desc())
+                .limit(page_size)
+                .offset((page - 1) * page_size)
+                .all()
+            )

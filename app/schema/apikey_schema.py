@@ -12,7 +12,7 @@ class ApikeyBase(BaseModel):
     apiKey: str
 
 
-class ApiKeyPostBody(ApikeyBase):
+class ApiKeyPostBody(BaseModel):
     """
     Model for creating a new API key
     """
@@ -25,9 +25,10 @@ class ApiKeyCreate(ApiKeyPostBody):
     Model for creating a new API key with createdBy field
     """
     createdBy: str
+    apiKey: str
 
 
-class ApiKeyCreated(ApikeyBase):
+class ApiKeyCreateBase(ApikeyBase):
     """
     Model for creating a new API key
     """
@@ -35,4 +36,17 @@ class ApiKeyCreated(ApikeyBase):
     client: str
     description: str
     createdBy: str
+
+
+class ApiKeyCreatedUnitList(ApiKeyCreateBase):
+    """
+    Model for creating a new API key 
+    """
+    created_at: datetime
+
+
+class ApiKeyCreated(ApiKeyCreateBase):
+    """
+    Model for creating a new API key
+    """
     message: Optional[str]

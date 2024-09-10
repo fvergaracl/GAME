@@ -65,6 +65,7 @@ class Container(containers.DeclarativeContainer):
             "app.api.v1.endpoints.userPoints",
             "app.api.v1.endpoints.users",
             "app.api.v1.endpoints.wallet",
+            "app.api.v1.endpoints.apikey",
         ]
     )
 

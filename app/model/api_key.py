@@ -34,7 +34,7 @@ class ApiKey(SQLModel, table=True):
         )
     )
     apiKey: str = Field(
-        sa_column=Column(UUID(as_uuid=True), unique=True)
+        sa_column=Column(String, unique=True)
     )
     client: str = Field(
         sa_column=Column(String)
@@ -51,18 +51,21 @@ class ApiKey(SQLModel, table=True):
 
     class Config:
         orm_mode = True
-        arbitrary_types_allowed = True  # Allow arbitrary types like UUID
 
     def __str__(self):
         return (
-            f"ApiKey: (apiKey={self.apiKey}, description={self.description}, "
-            f"active={self.active}, createdBy={self.createdBy})"
+            f"ApiKey: (id={self.id}, created_at={self.created_at}, "
+            f"updated_at={self.updated_at}, apiKey={self.apiKey}, "
+            f"description={self.description}, active={self.active}, "
+            f"createdBy={self.createdBy})"
         )
 
     def __repr__(self):
         return (
-            f"ApiKey: (apiKey={self.apiKey}, description={self.description}, "
-            f"active={self.active}, createdBy={self.createdBy})"
+            f"ApiKey: (id={self.id}, created_at={self.created_at}, "
+            f"updated_at={self.updated_at}, apiKey={self.apikey}, "
+            f"description={self.description}, active={self.active}, "
+            f"createdBy={self.createdBy})"
         )
 
     def __eq__(self, other):

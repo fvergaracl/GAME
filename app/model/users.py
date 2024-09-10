@@ -1,6 +1,5 @@
 from sqlmodel import Column, Field, String, ForeignKey
 from app.model.base_model import BaseModel
-from sqlalchemy.dialects.postgresql import UUID
 
 
 class Users(BaseModel, table=True):
@@ -14,7 +13,7 @@ class Users(BaseModel, table=True):
 
     externalUserId: str = Field(sa_column=Column(String, unique=True))
     apiKey_used: str = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+        sa_column=Column(String, ForeignKey(
             "apikey.apiKey"), nullable=True)
     )
 

@@ -47,7 +47,7 @@ class Tasks(BaseModel, table=True):
     status: str = Field(sa_column=Column(
         String, nullable=False, default="open"))
     apiKey_used: str = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+        sa_column=Column(String, ForeignKey(
             "apikey.apiKey"), nullable=True)
     )
 
