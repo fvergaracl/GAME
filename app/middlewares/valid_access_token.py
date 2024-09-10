@@ -22,14 +22,14 @@ async def valid_access_token(
     jwks_client = PyJWKClient(url, headers=optional_custom_headers)
 
     try:
-        signing_key = jwks_client.get_signing_key_from_jwt(access_token))
-        data= jwt.decode(
+        signing_key = jwks_client.get_signing_key_from_jwt(access_token)
+        data = jwt.decode(
             access_token,
-            key = signing_key.key,
-            algorithms = ["RS256"],
-            issuer = f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}",
-            audience = configs.KEYCLOAK_AUDIENCE,
-            options = {"verify_exp": True},
+            key=signing_key.key,
+            algorithms=["RS256"],
+            issuer=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}",
+            audience=configs.KEYCLOAK_AUDIENCE,
+            options={"verify_exp": True},
         )
         return data
 
@@ -52,8 +52,8 @@ def refresh_access_token(
     Refresh the access token using the refresh token.
     """
 
-    url= f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/token"  # noqa
-    data= {
+    url = f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/token"  # noqa
+    data = {
         "grant_type": "refresh_token",
         "refresh_token": refresh_token,
         "client_id": configs.KEYCLOAK_CLIENT_ID,
