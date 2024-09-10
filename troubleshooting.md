@@ -20,3 +20,10 @@ Step 3: Install uvicorn in the project
 ```bash
 poetry add uvicorn
 ```
+
+## Token expired
+
+If you have a token expired problem, you have 2 options
+
+1) Just log out and login again
+2) **(Best way)** In the identity and access management (**Keycloak** in this case) you must change the setting related with the **Access Token Lifespan** . In keycloak, first select the realm that contains your client, then click over "Clients" and select your client , after that select the "Advance" tab an chage the options of **Access Token Lifespan** to the desired time
