@@ -286,6 +286,13 @@ kubectl port-forward service/gamificationengine-service 8080:80
 
 **`poetry run uvicorn app.main:app --host 0.0.0.0 --reload`**
 
+
+### Admin dashboard
+
+In the "dashboard" folder excecute the following commands
+- `npm i` : Install all necesaries dependencies
+- `npm start` : Start dashboard in dev mode in the port 3000
+
 ### Documentation
 
 First, you should activate poetry environment

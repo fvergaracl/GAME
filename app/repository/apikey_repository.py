@@ -30,7 +30,7 @@ class ApiKeyRepository(BaseRepository):
         """
         super().__init__(session_factory, model)
 
-    def read_all(self, page: int = 1, page_size: int = 10):
+    def read_all(self, page: int = 1, page_size: int = 100):
         """
         Reads all API keys. Order by created_at.
 
