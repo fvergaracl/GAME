@@ -11,11 +11,14 @@ from app.schema.strategy_schema import Strategy
 from app.schema.task_schema import (
     CreateTaskPost, CreateTaskPostSuccesfullyCreated, FoundTasks,
     PostFindTask, AsignPointsToExternalUserId,
-    ResponseAddActionDidByUserInTask, AddActionDidByUserInTask,
+    AddActionDidByUserInTask,
     AssignedPointsToExternalUserId
 )
 from app.schema.user_points_schema import (
     PointsAssignedToUser, AllPointsByGame
+)
+from app.middlewares.valid_access_token import (
+    oauth_2_scheme
 )
 
 from app.services.game_service import GameService
@@ -40,11 +43,13 @@ description_get_games_list = """
     response_model=FindGameResult,
     description=description_get_games_list,
     summary=summary_get_games_list,
+    dependencies=[Depends(oauth_2_scheme)]
 )
 @inject
 def get_games_list(
     schema: PostFindGame = Depends(),
     service: GameService = Depends(Provide[Container.game_service]),
+    token: str = Depends(oauth_2_scheme)
 ):
     """
   Retrieve a list of all games with their parameters.

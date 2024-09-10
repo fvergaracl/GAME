@@ -21,6 +21,10 @@ class UserActions(BaseModel, table=True):
     description: str = Field(sa_column=Column(String), nullable=True)
     userId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("users.id")))
+    apiKey_used: str = Field(
+        sa_column=Column(UUID(as_uuid=True), ForeignKey(
+            "apikey.apiKey"), nullable=True)
+    )
 
     class Config:  # noqa
         orm_mode = True  # noqa

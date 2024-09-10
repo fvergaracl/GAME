@@ -31,7 +31,7 @@ services:
       KEYCLOAK_USER: ${KEYCLOAK_USER}
       KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
     volumes:
-      - keycloak-data:/opt/jboss/keycloak/standalone/data
+      - keycloak-data:/opt/keycloak/data
     command: ["start-dev"]
 
 networks:

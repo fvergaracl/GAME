@@ -5,9 +5,8 @@ from app.core.container import Container
 from app.core.exceptions import NotFoundError
 from app.schema.strategy_schema import Strategy
 from app.services.strategy_service import StrategyService
-# valid_access_token
 from app.middlewares.valid_access_token import (
-    valid_access_token, oauth_2_scheme
+    oauth_2_scheme
 )
 router = APIRouter(
     prefix="/strategies",
@@ -26,13 +25,13 @@ description_get_strategies_list = """
     response_model=List[Strategy],
     summary=summary_get_strategies_list,
     description=description_get_strategies_list,
-    dependencies=[Depends(valid_access_token), Depends(oauth_2_scheme)]
+    dependencies=[Depends(oauth_2_scheme)]
 )
 @inject
-def get_strategy_list(
+async def get_strategy_list(
     service: StrategyService = Depends(
         Provide[Container.strategy_service]),
-
+    token: str = Depends(oauth_2_scheme)
 ):
     """
     Retrieve a list of all strategies.
@@ -43,6 +42,7 @@ def get_strategy_list(
     Returns:
         List[Strategy]: The list of all strategies.
     """
+
     response = service.list_all_strategies()
     return response
 

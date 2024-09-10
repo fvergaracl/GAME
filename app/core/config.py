@@ -25,6 +25,10 @@ class Configs(BaseSettings):
         DEFAULT_CONVERTION_RATE_POINTS_TO_COIN (int): The default conversion
           rate from points to coins.
         BACKEND_CORS_ORIGINS (List[str]): A list of allowed CORS origins.
+        KEYCLOAK_REALM (str): The Keycloak realm.
+        KEYCLOAK_CLIENT_ID (str): The Keycloak client ID.
+        KEYCLOAK_CLIENT_SECRET (str): The Keycloak client secret.
+        KEYCLOAK_URL (str): The Keycloak URL.
         DB_USER (str): The database user.
         DB_PASSWORD (str): The database password.
         DB_HOST (str): The database host.
