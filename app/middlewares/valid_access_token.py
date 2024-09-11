@@ -1,21 +1,21 @@
+from typing import Annotated
+
 import jwt
 import requests
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
-from app.core.config import configs
-from typing import Annotated
 from jwt import PyJWKClient, exceptions
+
+from app.core.config import configs
 
 oauth_2_scheme = OAuth2AuthorizationCodeBearer(
     tokenUrl=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/token",  # noqa
     authorizationUrl=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/auth",  # noqa
-    refreshUrl=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/token"  # noqa
+    refreshUrl=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/token",  # noqa
 )
 
 
-async def valid_access_token(
-    access_token: Annotated[str, Depends(oauth_2_scheme)]
-):
+async def valid_access_token(access_token: Annotated[str, Depends(oauth_2_scheme)]):
     url = f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/certs"  # noqa
     optional_custom_headers = {"User-agent": "custom-user-agent"}
 
@@ -45,9 +45,7 @@ async def valid_access_token(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-def refresh_access_token(
-    refresh_token: Annotated[str, Depends(oauth_2_scheme)]
-):
+def refresh_access_token(refresh_token: Annotated[str, Depends(oauth_2_scheme)]):
     """
     Refresh the access token using the refresh token.
     """

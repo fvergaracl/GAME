@@ -3,15 +3,15 @@ from dependency_injector import containers, providers
 from app.core.config import configs
 from app.core.database import Database
 # pylint: disable=unused-wildcard-import
-from app.repository import (GameParamsRepository, GameRepository,
+from app.repository import (ApiKeyRepository, GameParamsRepository,
+                            GameRepository, TaskParamsRepository,
                             TaskRepository, UserActionsRepository,
                             UserPointsRepository, UserRepository,
-                            WalletRepository, WalletTransactionRepository,
-                            TaskParamsRepository, ApiKeyRepository)
-from app.services import (GameParamsService, GameService,
-                          TaskService, UserActionsService, UserPointsService,
-                          UserService, WalletService, WalletTransactionService,
-                          StrategyService, ApiKeyService)
+                            WalletRepository, WalletTransactionRepository)
+from app.services import (ApiKeyService, GameParamsService, GameService,
+                          StrategyService, TaskService, UserActionsService,
+                          UserPointsService, UserService, WalletService,
+                          WalletTransactionService)
 
 
 class Container(containers.DeclarativeContainer):
@@ -57,6 +57,7 @@ class Container(containers.DeclarativeContainer):
         apikey_service (providers.Factory): Factory provider for
           ApiKeyService.
     """
+
     wiring_config = containers.WiringConfiguration(
         modules=[
             "app.api.v1.endpoints.games",
@@ -117,9 +118,7 @@ class Container(containers.DeclarativeContainer):
         GameParamsService, game_params_repository=game_params_repository
     )
 
-    strategy_service = providers.Factory(
-        StrategyService
-    )
+    strategy_service = providers.Factory(StrategyService)
 
     game_service = providers.Factory(
         GameService,

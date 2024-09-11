@@ -46,11 +46,9 @@ class WalletTransactions(BaseModel, table=True):
     coins: float = Field(sa_column=Column(Float))
     data: dict = Field(sa_column=Column(JSONB), nullable=True)
     appliedConversionRate: float = Field(sa_column=Column(Float))
-    walletId: str = Field(sa_column=Column(
-        UUID(as_uuid=True), ForeignKey("wallet.id")))
+    walletId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("wallet.id")))
     apiKey_used: str = Field(
-        sa_column=Column(String, ForeignKey(
-            "apikey.apiKey"), nullable=True)
+        sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
     class Config:  # noqa
@@ -92,16 +90,19 @@ class WalletTransactions(BaseModel, table=True):
         if isinstance(obj, (tuple, list)):
             return tuple(self.make_hashable(e) for e in obj)
         elif isinstance(obj, dict):
-            return (
-                tuple(sorted((k, self.make_hashable(v))
-                      for k, v in obj.items()))
-            )
+            return tuple(sorted((k, self.make_hashable(v)) for k, v in obj.items()))
         else:
             return obj
 
     def __hash__(self):
         data_as_hashable = self.make_hashable(self.data)
         return hash(
-            (self.transactionType, self.points, self.coins,
-             data_as_hashable, self.appliedConversionRate, self.walletId)
+            (
+                self.transactionType,
+                self.points,
+                self.coins,
+                data_as_hashable,
+                self.appliedConversionRate,
+                self.walletId,
+            )
         )

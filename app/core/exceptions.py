@@ -1,4 +1,5 @@
 from typing import Any, Dict, Optional
+
 from fastapi import HTTPException, status
 
 
@@ -13,9 +14,7 @@ class DuplicatedError(HTTPException):
     """
 
     def __init__(
-        self,
-        detail: Any = None,
-        headers: Optional[Dict[str, Any]] = None
+        self, detail: Any = None, headers: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Initializes the DuplicatedError with the provided details.
@@ -39,9 +38,7 @@ class NotFoundError(HTTPException):
     """
 
     def __init__(
-        self,
-        detail: Any = None,
-        headers: Optional[Dict[str, Any]] = None
+        self, detail: Any = None, headers: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Initializes the NotFoundError with the provided details.
@@ -65,9 +62,7 @@ class GoneError(HTTPException):
     """
 
     def __init__(
-        self,
-        detail: Any = None,
-        headers: Optional[Dict[str, Any]] = None
+        self, detail: Any = None, headers: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Initializes the GoneError with the provided details.
@@ -91,9 +86,7 @@ class ConflictError(HTTPException):
     """
 
     def __init__(
-        self,
-        detail: Any = None,
-        headers: Optional[Dict[str, Any]] = None
+        self, detail: Any = None, headers: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Initializes the ConflictError with the provided details.
@@ -117,9 +110,7 @@ class PreconditionFailedError(HTTPException):
     """
 
     def __init__(
-        self,
-        detail: Any = None,
-        headers: Optional[Dict[str, Any]] = None
+        self, detail: Any = None, headers: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Initializes the PreconditionFailedError with the provided details.
@@ -143,9 +134,7 @@ class InternalServerError(HTTPException):
     """
 
     def __init__(
-        self,
-        detail: Any = None,
-        headers: Optional[Dict[str, Any]] = None
+        self, detail: Any = None, headers: Optional[Dict[str, Any]] = None
     ) -> None:
         """
         Initializes the InternalServerError with the provided details.
@@ -155,5 +144,4 @@ class InternalServerError(HTTPException):
             headers (Optional[Dict[str, Any]], optional): The headers for the
               exception response.
         """
-        super().__init__(
-            status.HTTP_500_INTERNAL_SERVER_ERROR, detail, headers)
+        super().__init__(status.HTTP_500_INTERNAL_SERVER_ERROR, detail, headers)

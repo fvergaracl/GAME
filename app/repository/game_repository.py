@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session, joinedload
 from app.core.config import configs
 from app.core.exceptions import DuplicatedError, NotFoundError
 from app.model.game_params import GamesParams
-from app.model.tasks import Tasks
 from app.model.games import Games
+from app.model.tasks import Tasks
 from app.repository.base_repository import BaseRepository
 from app.schema.games_schema import BaseGameResult, FindGameResult
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
@@ -27,11 +27,12 @@ class GameRepository(BaseRepository):
     """
 
     def __init__(
-            self,
-            session_factory: Callable[..., AbstractContextManager[Session]],
-            model=Games,
-            model_tasks=Tasks,
-            model_game_params=GamesParams) -> None:
+        self,
+        session_factory: Callable[..., AbstractContextManager[Session]],
+        model=Games,
+        model_tasks=Tasks,
+        model_game_params=GamesParams,
+    ) -> None:
         """
         Initializes the GameRepository with the provided session factory and
           models.
@@ -69,7 +70,8 @@ class GameRepository(BaseRepository):
             page = schema_as_dict.get("page", configs.PAGE)
             page_size = schema_as_dict.get("page_size", configs.PAGE_SIZE)
             filter_options = dict_to_sqlalchemy_filter_options(
-                self.model, schema_as_dict)
+                self.model, schema_as_dict
+            )
 
             query = session.query(
                 Games.id.label("id"),
@@ -94,14 +96,13 @@ class GameRepository(BaseRepository):
                 Games.created_at,
                 Games.platform,
                 Games.externalGameId,
-                GamesParams
+                GamesParams,
             )
 
             if page_size == "all":
                 games = query.all()
             else:
-                games = query.limit(page_size).offset(
-                    (page - 1) * page_size).all()
+                games = query.limit(page_size).offset((page - 1) * page_size).all()
 
             game_results = {}
             for game in games:
@@ -147,14 +148,18 @@ class GameRepository(BaseRepository):
             BaseGameResult: The game details.
         """
         with self.session_factory() as session:
-            game = session.query(self.model).filter(
-                self.model.id == id).first()
+            game = session.query(self.model).filter(self.model.id == id).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {id}")
-            params = session.query(self.model_game_params).filter(
-                self.model_game_params.gameId == id).all()
-            game_params = [{"id": param.id, "key": param.key,
-                            "value": param.value} for param in params]
+            params = (
+                session.query(self.model_game_params)
+                .filter(self.model_game_params.gameId == id)
+                .all()
+            )
+            game_params = [
+                {"id": param.id, "key": param.key, "value": param.value}
+                for param in params
+            ]
 
             return BaseGameResult(
                 gameId=game.id,
@@ -181,8 +186,7 @@ class GameRepository(BaseRepository):
             DuplicatedError: If a duplicated error occurs during update.
         """
         with self.session_factory() as session:
-            game = session.query(self.model).filter(
-                self.model.id == gameId).first()
+            game = session.query(self.model).filter(self.model.id == gameId).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {gameId}")
 

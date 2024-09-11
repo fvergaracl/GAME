@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import uuid4
+
 from app.model.users import Users
 
 
@@ -8,7 +9,7 @@ def create_user_instance():
         id=str(uuid4()),
         created_at=datetime.now(),
         updated_at=datetime.now(),
-        externalUserId="external_user_123"
+        externalUserId="external_user_123",
     )
 
 

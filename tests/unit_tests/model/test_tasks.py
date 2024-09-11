@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import uuid4
+
 from app.model.tasks import Tasks
 
 
@@ -10,7 +11,7 @@ def create_tasks_instance():
         updated_at=datetime.now(),
         externalTaskId="task123",
         gameId=str(uuid4()),
-        strategyId="default"
+        strategyId="default",
     )
 
 

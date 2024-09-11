@@ -5,19 +5,14 @@ from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
-from app.repository.wallet_transaction_repository import (
+from app.repository.wallet_transaction_repository import \
     WalletTransactionRepository
-)
 from app.schema.task_schema import TaskPointsResponseByUser
-from app.schema.user_points_schema import (
-    BaseUserPointsBaseModel, UserPointsAssigned
-)
-from app.schema.user_schema import (
-    PostPointsConversionRequest,
-    ResponsePointsConversion,
-    UserPointsTasks,
-    UserWallet
-)
+from app.schema.user_points_schema import (BaseUserPointsBaseModel,
+                                           UserPointsAssigned)
+from app.schema.user_schema import (PostPointsConversionRequest,
+                                    ResponsePointsConversion, UserPointsTasks,
+                                    UserWallet)
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
@@ -39,12 +34,12 @@ class UserService(BaseService):
     """
 
     def __init__(
-            self,
-            user_repository: UserRepository,
-            user_points_repository: UserPointsRepository,
-            task_repository: TaskRepository,
-            wallet_repository: WalletRepository,
-            wallet_transaction_repository: WalletTransactionRepository
+        self,
+        user_repository: UserRepository,
+        user_points_repository: UserPointsRepository,
+        task_repository: TaskRepository,
+        wallet_repository: WalletRepository,
+        wallet_transaction_repository: WalletTransactionRepository,
     ):
         """
         Initializes the UserService with the provided repositories.
@@ -198,14 +193,18 @@ class UserService(BaseService):
             userId, not_found_message=f"User not found with userId: {userId}"
         )
         points = schema.points
-        measurement_count = self.user_points_repository.get_user_measurement_count(  # noqa: E501
+        measurement_count = self.user_points_repository.get_user_measurement_count(
             userId
+        )  # noqa: E501
+        start_time_last_task = (
+            self.user_points_repository.get_start_time_for_last_task(  # noqa: E501
+                userId
+            )
         )
-        start_time_last_task = self.user_points_repository.get_start_time_for_last_task(  # noqa: E501
-            userId
-        )
-        end_time_last_task = self.user_points_repository.get_time_taken_for_last_task(  # noqa: E501
-            userId
+        end_time_last_task = (
+            self.user_points_repository.get_time_taken_for_last_task(  # noqa: E501
+                userId
+            )
         )
 
         if end_time_last_task and start_time_last_task:
@@ -215,23 +214,31 @@ class UserService(BaseService):
         else:
             duration_last_task = 0
 
-        individual_calculation = self.user_points_repository.get_individual_calculation(  # noqa: E501
+        individual_calculation = self.user_points_repository.get_individual_calculation(
             userId
-        )
+        )  # noqa: E501
 
-        global_calculation = self.user_points_repository.get_global_calculation()  # noqa: E501
+        global_calculation = (
+            self.user_points_repository.get_global_calculation()
+        )  # noqa: E501
         schema.data["label_function_choose"] = "-"
         if not points:
             if measurement_count <= 2:
                 points = self.basic_engagement_points()
-                schema.data["label_function_choose"] = "basic_engagement_points"  # noqa: E501
+                schema.data["label_function_choose"] = (
+                    "basic_engagement_points"  # noqa: E501
+                )
             elif measurement_count == 2:
                 if duration_last_task > global_calculation:
                     points = self.performance_penalty_points()
-                    schema.data["label_function_choose"] = "performance_penalty_points"  # noqa: E501
+                    schema.data["label_function_choose"] = (
+                        "performance_penalty_points"  # noqa: E501
+                    )
                 else:
                     points = self.performance_bonus_points()
-                    schema.data["label_function_choose"] = "performance_bonus_points"  # noqa: E501
+                    schema.data["label_function_choose"] = (
+                        "performance_bonus_points"  # noqa: E501
+                    )
             else:
                 if duration_last_task >= individual_calculation:
                     if (
@@ -344,18 +351,18 @@ class UserService(BaseService):
 
             wallet = self.wallet_repository.create(new_wallet)
 
-        wallet_transactions = self.wallet_transaction_repository.read_by_column(  # noqa: E501
-            "walletId",
-            str(wallet.id),
-            only_one=False,
-            not_found_raise_exception=False
+        wallet_transactions = (
+            self.wallet_transaction_repository.read_by_column(  # noqa: E501
+                "walletId",
+                str(wallet.id),
+                only_one=False,
+                not_found_raise_exception=False,
+            )
         )
         for transaction in wallet_transactions:
             transaction.created_at = str(transaction.created_at)
         response = UserWallet(
-            userId=str(user.id),
-            wallet=wallet,
-            walletTransactions=wallet_transactions
+            userId=str(user.id), wallet=wallet, walletTransactions=wallet_transactions
         )
 
         return response
@@ -390,10 +397,7 @@ class UserService(BaseService):
             userId, not_found_message=f"User not found with userId: {userId}"
         )
         tasks = self.user_points_repository.read_by_column(
-            "userId",
-            str(user.id),
-            only_one=False,
-            not_found_raise_exception=False
+            "userId", str(user.id), only_one=False, not_found_raise_exception=False
         )
         tasks = list({v.taskId: v for v in tasks}.values())
         if not tasks:
@@ -475,9 +479,7 @@ class UserService(BaseService):
         }
         return response
 
-    def preview_points_to_coins_conversion_externalUserId(
-            self, externalUserId, points
-    ):
+    def preview_points_to_coins_conversion_externalUserId(self, externalUserId, points):
         """
         Previews the conversion of points to coins for a user by their
           external user ID.
@@ -492,13 +494,10 @@ class UserService(BaseService):
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
-        response = self.preview_points_to_coins_conversion(
-            str(user.id), points)
+        response = self.preview_points_to_coins_conversion(str(user.id), points)
         return response
 
-    def convert_points_to_coins(
-            self, userId, schema: PostPointsConversionRequest
-    ):
+    def convert_points_to_coins(self, userId, schema: PostPointsConversionRequest):
         """
         Converts points to coins for a user based on the provided schema.
 
@@ -563,8 +562,7 @@ class UserService(BaseService):
             },
         )
 
-        transaction = self.wallet_transaction_repository.create(
-            wallet_transaction)
+        transaction = self.wallet_transaction_repository.create(wallet_transaction)
 
         response = {
             "transactionId": str(transaction.id),
@@ -579,7 +577,8 @@ class UserService(BaseService):
         return response
 
     def convert_points_to_coins_externalUserId(
-            self, externalUserId, schema: PostPointsConversionRequest):
+        self, externalUserId, schema: PostPointsConversionRequest
+    ):
         """
         Converts points to coins for a user by their external user ID based on
           the provided schema.

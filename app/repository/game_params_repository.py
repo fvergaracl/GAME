@@ -19,9 +19,10 @@ class GameParamsRepository(BaseRepository):
     """
 
     def __init__(
-            self,
-            session_factory: Callable[..., AbstractContextManager[Session]],
-            model=GamesParams) -> None:
+        self,
+        session_factory: Callable[..., AbstractContextManager[Session]],
+        model=GamesParams,
+    ) -> None:
         """
         Initializes the GameParamsRepository with the provided session factory
           and model.
@@ -48,8 +49,9 @@ class GameParamsRepository(BaseRepository):
             NotFoundError: If the game parameters are not found.
         """
         with self.session_factory() as session:
-            game_params_model = session.query(
-                self.model).filter(self.model.id == id).first()
+            game_params_model = (
+                session.query(self.model).filter(self.model.id == id).first()
+            )
 
             if game_params_model:
                 for key, value in schema.dict(exclude_none=True).items():

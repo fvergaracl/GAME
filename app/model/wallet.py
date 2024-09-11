@@ -24,13 +24,11 @@ class Wallet(BaseModel, table=True):
     )
     userId: str = Field(
         sa_column=Column(
-            UUID(as_uuid=True), ForeignKey("users.id"), unique=True,
-            nullable=False
+            UUID(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False
         )
     )
     apiKey_used: str = Field(
-        sa_column=Column(String, ForeignKey(
-            "apikey.apiKey"), nullable=True)
+        sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
     class Config:  # noqa
@@ -64,6 +62,11 @@ class Wallet(BaseModel, table=True):
 
     def __hash__(self):
         return hash(
-            (self.id, self.coinsBalance, self.pointsBalance,
-             self.conversionRate, self.userId)
+            (
+                self.id,
+                self.coinsBalance,
+                self.pointsBalance,
+                self.conversionRate,
+                self.userId,
+            )
         )

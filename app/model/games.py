@@ -1,4 +1,5 @@
 from sqlmodel import Column, Field, String
+
 from app.model.base_model import BaseModel, ForeignKey
 
 
@@ -28,13 +29,12 @@ class Games(BaseModel, table=True):
     Configuration:
         orm_mode (bool): Enables ORM mode for Pydantic models.
     """
+
     externalGameId: str = Field(sa_column=Column(String, unique=True))
-    strategyId: str = Field(sa_column=Column(String),
-                            nullable=False, default="default")
+    strategyId: str = Field(sa_column=Column(String), nullable=False, default="default")
     platform: str = Field(sa_column=Column(String), nullable=False)
     apiKey_used: str = Field(
-        sa_column=Column(String, ForeignKey(
-            "apikey.apiKey"), nullable=True)
+        sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
     class Config:
@@ -53,9 +53,9 @@ class Games(BaseModel, table=True):
 
     def __eq__(self, other):
         return (
-            isinstance(other, Games) and
-            self.externalGameId == other.externalGameId and
-            self.platform == other.platform
+            isinstance(other, Games)
+            and self.externalGameId == other.externalGameId
+            and self.platform == other.platform
         )
 
     def __hash__(self):

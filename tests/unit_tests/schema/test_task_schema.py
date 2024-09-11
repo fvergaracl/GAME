@@ -1,14 +1,17 @@
 from datetime import datetime
 from uuid import uuid4
-from app.schema.task_schema import (
-    BaseTask, AsignPointsToExternalUserId, CreateTaskPost, FoundTask,
-    FoundTasks, CreateTask, FindTask, CreateTaskPostSuccesfullyCreated,
-    AddActionDidByUserInTask, AssignedPointsToExternalUserId,
-    TaskPointsResponseByUser, BaseUser, BaseUserFirstAction, TasksWithUsers, PostFindTask
-)
-from app.schema.games_params_schema import CreateGameParams
+
 from app.schema.base_schema import SearchOptions
+from app.schema.games_params_schema import CreateGameParams
 from app.schema.strategy_schema import Strategy
+from app.schema.task_schema import (AddActionDidByUserInTask,
+                                    AsignPointsToExternalUserId,
+                                    AssignedPointsToExternalUserId, BaseTask,
+                                    BaseUser, BaseUserFirstAction, CreateTask,
+                                    CreateTaskPost,
+                                    CreateTaskPostSuccesfullyCreated, FindTask,
+                                    FoundTask, FoundTasks, PostFindTask,
+                                    TaskPointsResponseByUser, TasksWithUsers)
 from app.schema.tasks_params_schema import CreateTaskParams
 
 
@@ -22,10 +25,7 @@ def test_base_task():
     - externalTaskId (str): External task ID
     - gameId (UUID): Game ID
     """
-    data = {
-        "externalTaskId": "task123",
-        "gameId": uuid4()
-    }
+    data = {"externalTaskId": "task123", "gameId": uuid4()}
     task = BaseTask(**data)
     assert task.externalTaskId == data["externalTaskId"]
     assert task.gameId == data["gameId"]
@@ -43,10 +43,7 @@ def test_asign_points_to_external_user_id():
     - data (Optional[dict]): Additional data
     """
 
-    data = {
-        "externalUserId": "user123",
-        "data": {"key": "value"}
-    }
+    data = {"externalUserId": "user123", "data": {"key": "value"}}
     asign_points = AsignPointsToExternalUserId(**data)
     assert asign_points.externalUserId == data["externalUserId"]
     assert asign_points.data == data["data"]
@@ -67,7 +64,7 @@ def test_create_task_post():
     data = {
         "externalTaskId": "task123",
         "strategyId": "default",
-        "params": [{"key": "var1", "value": 10}]
+        "params": [{"key": "var1", "value": 10}],
     }
     create_task = CreateTaskPost(**data)
     assert create_task.externalTaskId == data["externalTaskId"]
@@ -85,11 +82,7 @@ def test_post_find_task():
     The model inherits attributes from FindBase.
     """
 
-    data = {
-        "ordering": "asc",
-        "page": 1,
-        "page_size": 10
-    }
+    data = {"ordering": "asc", "page": 1, "page_size": 10}
     post_find_task = PostFindTask(**data)
     assert post_find_task.ordering == data["ordering"]
     assert post_find_task.page == data["page"]
@@ -116,20 +109,14 @@ def test_found_task():
         "externalTaskId": "task123",
         "gameParams": [CreateGameParams(key="var1", value=10)],
         "taskParams": [CreateTaskParams(key="var2", value=20)],
-        "strategy": Strategy(
-            id="strategy123",
-            version="1.0",
-            variables={"var1": 10}
-        )
+        "strategy": Strategy(id="strategy123", version="1.0", variables={"var1": 10}),
     }
     found_task = FoundTask(**data)
     assert found_task.externalTaskId == data["externalTaskId"]
     assert found_task.gameParams[0].key == data["gameParams"][0].key
     assert found_task.taskParams[0].key == data["taskParams"][0].key
     assert found_task.strategy.id == data["strategy"].id
-    assert found_task.strategy.variables["var1"] == (
-        data["strategy"].variables["var1"]
-    )
+    assert found_task.strategy.variables["var1"] == (data["strategy"].variables["var1"])
 
 
 def test_found_tasks():
@@ -152,18 +139,13 @@ def test_found_tasks():
                 gameParams=[CreateGameParams(key="var1", value=10)],
                 taskParams=[CreateTaskParams(key="var2", value=20)],
                 strategy=Strategy(
-                    id="strategy123",
-                    version="1.0",
-                    variables={"var1": 10}
-                )
+                    id="strategy123", version="1.0", variables={"var1": 10}
+                ),
             )
         ],
         "search_options": SearchOptions(
-            ordering="asc",
-            page=1,
-            page_size=10,
-            total_count=1
-        )
+            ordering="asc", page=1, page_size=10, total_count=1
+        ),
     }
     found_tasks = FoundTasks(**data)
     assert found_tasks.items == data["items"]
@@ -183,7 +165,7 @@ def test_create_task():
         "externalTaskId": "task123",
         "strategyId": "default",
         "params": [CreateTaskParams(key="var1", value=10)],
-        "gameId": "game123"
+        "gameId": "game123",
     }
     create_task = CreateTask(**data)
     assert create_task.externalTaskId == data["externalTaskId"]
@@ -202,9 +184,7 @@ def test_find_task():
     The model has the following attributes:
     - gameId (UUID): Game ID
     """
-    data = {
-        "gameId": uuid4()
-    }
+    data = {"gameId": uuid4()}
     find_task = FindTask(**data)
     assert find_task.gameId == data["gameId"]
 
@@ -229,14 +209,9 @@ def test_create_task_post_succesfully_created():
         "externalGameId": "game123",
         "gameParams": [CreateGameParams(key="var1", value=10)],
         "taskParams": [CreateTaskParams(key="var2", value=20)],
-        "strategy": Strategy(
-            id="strategy123",
-            version="1.0",
-            variables={"var1": 10}
-        )
+        "strategy": Strategy(id="strategy123", version="1.0", variables={"var1": 10}),
     }
-    create_task_post_succesfully_created = CreateTaskPostSuccesfullyCreated(
-        **data)
+    create_task_post_succesfully_created = CreateTaskPostSuccesfullyCreated(**data)
     assert create_task_post_succesfully_created.message == data["message"]
     assert create_task_post_succesfully_created.externalTaskId == (
         data["externalTaskId"]
@@ -244,12 +219,8 @@ def test_create_task_post_succesfully_created():
     assert create_task_post_succesfully_created.externalGameId == (
         data["externalGameId"]
     )
-    assert create_task_post_succesfully_created.gameParams == (
-        data["gameParams"]
-    )
-    assert create_task_post_succesfully_created.taskParams == (
-        data["taskParams"]
-    )
+    assert create_task_post_succesfully_created.gameParams == (data["gameParams"])
+    assert create_task_post_succesfully_created.taskParams == (data["taskParams"])
     assert create_task_post_succesfully_created.strategy == data["strategy"]
 
 
@@ -272,7 +243,7 @@ def test_add_action_did_by_user_in_task():
         "data": {"key": "value"},
         "description": "User login",
         "externalTaskId": "task123",
-        "externalUserId": "user123"
+        "externalUserId": "user123",
     }
     add_action = AddActionDidByUserInTask(**data)
     assert add_action.typeAction == data["typeAction"]
@@ -303,7 +274,7 @@ def test_assigned_points_to_external_user_id():
         "isACreatedUser": True,
         "gameId": uuid4(),
         "externalTaskId": "task123",
-        "created_at": "2023-01-01T00:00:00"
+        "created_at": "2023-01-01T00:00:00",
     }
     assigned_points = AssignedPointsToExternalUserId(**data)
     assert assigned_points.points == data["points"]
@@ -331,7 +302,7 @@ def test_task_points_response_by_user():
         "taskId": "task123",
         "externalTaskId": "task123",
         "gameId": "game123",
-        "points": 100
+        "points": 100,
     }
     task_points_response = TaskPointsResponseByUser(**data)
     assert task_points_response.taskId == data["taskId"]
@@ -350,10 +321,7 @@ def test_base_user():
     - externalUserId (str): External user ID
     - created_at (Optional[str]): Created date
     """
-    data = {
-        "externalUserId": "user123",
-        "created_at": "2023-01-01T00:00:00"
-    }
+    data = {"externalUserId": "user123", "created_at": "2023-01-01T00:00:00"}
     base_user = BaseUser(**data)
     assert base_user.externalUserId == data["externalUserId"]
     assert base_user.created_at == data["created_at"]
@@ -373,7 +341,7 @@ def test_base_user_first_action():
     data = {
         "externalUserId": "user123",
         "created_at": "2023-01-01T00:00:00",
-        "firstAction": "login"
+        "firstAction": "login",
     }
     user_first_action = BaseUserFirstAction(**data)
     assert user_first_action.externalUserId == data["externalUserId"]
@@ -397,14 +365,14 @@ def test_tasks_with_users():
             BaseUserFirstAction(
                 externalUserId="user123",
                 created_at="2023-01-01T00:00:00",
-                firstAction="login"
+                firstAction="login",
             ),
             BaseUserFirstAction(
                 externalUserId="user456",
                 created_at="2023-01-02T00:00:00",
-                firstAction="purchase"
-            )
-        ]
+                firstAction="purchase",
+            ),
+        ],
     }
     tasks_with_users = TasksWithUsers(**data)
     assert tasks_with_users.externalTaskId == data["externalTaskId"]

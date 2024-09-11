@@ -1,15 +1,15 @@
+from typing import List
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query
-from typing import List
+
 from app.core.container import Container
-from app.schema.user_points_schema import AllPointsByGame
-from app.schema.user_schema import (
-    PostPointsConversionRequest, ResponseConversionPreview,
-    ResponsePointsConversion, UserWallet
-)
-from app.services.user_service import UserService
+from app.schema.user_points_schema import AllPointsByGame, UserGamePoints
+from app.schema.user_schema import (PostPointsConversionRequest,
+                                    ResponseConversionPreview,
+                                    ResponsePointsConversion, UserWallet)
 from app.services.user_points_service import UserPointsService
-from app.schema.user_points_schema import UserGamePoints
+from app.services.user_service import UserService
 
 router = APIRouter(
     prefix="/users",
@@ -83,8 +83,7 @@ description_query_user_points = """
 @inject
 def query_user_points(
     schema: List[str],
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service])
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
 ):
     """
     Retrieve point totals for a list of users based on their external user IDs.
@@ -108,17 +107,16 @@ description_get_user_points = """
 """  # noqa
 
 
-@ router.get(
+@router.get(
     "/{externalUserId}/points",
     response_model=List[AllPointsByGame],
     summary=summary_get_user_points,
     description=description_get_user_points,
 )
-@ inject
+@inject
 def get_points_by_user_id(
     externalUserId: str,
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
 ):
     """
     Retrieve points associated with a user by their external user ID.
@@ -140,13 +138,13 @@ description_get_user_wallet = """
 <sub>**Id_endpoint:** get_user_wallet</sub>"""  # noqa
 
 
-@ router.get(
+@router.get(
     "/{externalUserId}/wallet",
     response_model=UserWallet,
     summary=summary_get_user_wallet,
     description=description_get_user_wallet,
 )
-@ inject
+@inject
 def get_wallet_by_user_id(
     externalUserId: str,
     service: UserService = Depends(Provide[Container.user_service]),
@@ -234,18 +232,16 @@ description_preview_points = """
 """  # noqa
 
 
-@ router.get(
+@router.get(
     "/{externalUserId}/convert/preview",
     response_model=ResponseConversionPreview,
     summary=summary_preview_points,
     description=description_preview_points,
 )
-@ inject
+@inject
 def preview_points_to_coins_conversion(
     externalUserId: str,
-    points: int = Query(
-        ...,
-        description="The number of points to convert to coins"),
+    points: int = Query(..., description="The number of points to convert to coins"),
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     """
@@ -272,13 +268,13 @@ description_convert_points = """
 """  # noqa
 
 
-@ router.post(
+@router.post(
     "/{externalUserId}/convert",
     response_model=ResponsePointsConversion,
     summary=summary_convert_points,
     description=description_convert_points,
 )
-@ inject
+@inject
 def convert_points_to_coins(
     externalUserId: str,
     schema: PostPointsConversionRequest,
@@ -296,5 +292,4 @@ def convert_points_to_coins(
     Returns:
         ResponsePointsConversion: The conversion details.
     """
-    return service.convert_points_to_coins_externalUserId(
-        externalUserId, schema)
+    return service.convert_points_to_coins_externalUserId(externalUserId, schema)
