@@ -33,63 +33,81 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
         self.variable_individual_adjustment_points = 8
 
     def calculate_points(self, externalGameId, externalTaskId, externalUserId):
+        task_measurements_count = (
+            self.user_points_service.count_measurements_by_external_task_id(
+                externalTaskId
+            )
+        )
+        self.debug_print(f"task_measurements_count: {task_measurements_count}")
+        if task_measurements_count < 2:
+            return (self.variable_basic_points, "BasicEngagement")
         user_task_measurements_count = (
             self.user_points_service.get_user_task_measurements_count(
                 externalTaskId, externalUserId
             )
         )
-        if user_task_measurements_count < 2:
-            return (self.variable_basic_points, "BasicEngagement")
-
         self.debug_print(
             f"user_task_measurements_count: {user_task_measurements_count}"
         )
 
-        user_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_by_user_and_game_task(  # noqa
-            externalGameId, externalTaskId, externalUserId
-        )
-        self.debug_print(f"user_avg_time_taken: {user_avg_time_taken}")
+        if user_task_measurements_count > 2:
+            user_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_by_user_and_game_task(  # noqa
+                externalGameId, externalTaskId, externalUserId
+            )
+            self.debug_print(f"user_avg_time_taken: {user_avg_time_taken}")
 
-        all_avg_time_taken = (
-            self.user_points_service.get_avg_time_between_tasks_for_all_users(
+            all_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_for_all_users(  # noqa
                 externalGameId, externalTaskId
             )
-        )
-        self.debug_print(f"all_avg_time_taken: {all_avg_time_taken}")
+            self.debug_print(f"all_avg_time_taken: {all_avg_time_taken}")
 
-        if user_avg_time_taken < all_avg_time_taken:
+            if user_avg_time_taken < all_avg_time_taken:
 
-            points = self.variable_basic_points + self.variable_bonus_points
-            return (
-                points,
-                "PerformanceBonus",
-            )
-        user_last_window_time_diff = self.user_points_service.get_last_window_time_diff(
-            externalTaskId, externalUserId
-        )
-        self.debug_print(f"user_last_window_time_diff: {user_last_window_time_diff}")
-
-        user_new_last_window_time_diff = (
-            self.user_points_service.get_new_last_window_time_diff(
-                externalTaskId, externalUserId, externalGameId
-            )
-        )
-        self.debug_print(
-            f"user_new_last_window_time_diff: {user_new_last_window_time_diff}"
-        )
-
-        user_diff_time = user_new_last_window_time_diff - user_last_window_time_diff
-        self.debug_print(f"user_diff_time: {user_diff_time}")
-        if user_diff_time > 0:
-            if user_diff_time < all_avg_time_taken:
+                points = self.variable_basic_points + self.variable_bonus_points
                 return (
-                    self.variable_individual_over_global_points,
-                    "IndividualOverGlobal",
+                    points,
+                    "PerformanceBonus",
                 )
-            if user_diff_time < user_avg_time_taken:
-                return (self.variable_peak_performer_bonus_points, "PeakPerformerBonus")
-            return (
-                self.variable_global_advantage_adjustment_points,
-                "GlobalAdvantageAdjustment",
+            user_last_window_time_diff = (
+                self.user_points_service.get_last_window_time_diff(
+                    externalTaskId, externalUserId
+                )
             )
-        return (self.variable_individual_adjustment_points, "IndividualAdjustment")
+            self.debug_print(
+                f"user_last_window_time_diff: {user_last_window_time_diff}"
+            )
+
+            user_new_last_window_time_diff = (
+                self.user_points_service.get_new_last_window_time_diff(
+                    externalTaskId, externalUserId, externalGameId
+                )
+            )
+            self.debug_print(
+                f"user_new_last_window_time_diff: " f"{user_new_last_window_time_diff}"
+            )
+
+            user_diff_time = user_new_last_window_time_diff - user_last_window_time_diff
+            self.debug_print(f"user_diff_time: {user_diff_time}")
+            if user_diff_time > 0:
+                if user_diff_time < all_avg_time_taken:
+                    return (
+                        self.variable_individual_over_global_points,
+                        "IndividualOverGlobal",
+                    )
+                if user_diff_time < user_avg_time_taken:
+                    return (
+                        self.variable_peak_performer_bonus_points,
+                        "PeakPerformerBonus",
+                    )
+                if user_diff_time > user_avg_time_taken:
+                    return (
+                        self.variable_global_advantage_adjustment_points,
+                        "GlobalAdvantageAdjustment",
+                    )
+            if user_diff_time < 0:
+                return (
+                    self.variable_individual_adjustment_points,
+                    "IndividualAdjustment",
+                )
+            return (self.default_points_task_campaign, "default")
+        return (self.default_points_task_campaign, "default")
