@@ -43,7 +43,7 @@ async def create_api_key(
     """
     token_decoded = await valid_access_token(token)
     created_by = token_decoded["sub"]
-    apiKey = await service.generate_api_key()
+    apiKey = await service.generate_api_key_service()
     apikeyBody = ApiKeyCreate(**schema.dict(), createdBy=created_by, apiKey=apiKey)
     response = service.create_api_key(apikeyBody)
 
