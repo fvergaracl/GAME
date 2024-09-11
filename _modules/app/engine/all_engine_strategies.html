@@ -236,11 +236,11 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-engine-all-engine-strategies--page-root">Source code for app.engine.all_engine_strategies</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">importlib</span>
-<span class="kn">from</span> <span class="nn">app.engine.check_base_strategy_class</span> <span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">app.engine.check_base_strategy_class</span> <span class="kn">import</span> \
     <span class="n">check_class_methods_and_variables</span>
-<span class="p">)</span>
 
 
 <div class="viewcode-block" id="all_engine_strategies">
@@ -268,20 +268,20 @@
     <span class="n">strategies</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s2">"app/engine"</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
-                <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".py"</span><span class="p">)</span> <span class="ow">and</span>
-                <span class="n">file</span> <span class="o">!=</span> <span class="s2">"__init__.py"</span> <span class="ow">and</span>
-                <span class="n">file</span> <span class="o">!=</span> <span class="s2">"base_strategy.py"</span> <span class="ow">and</span>
-                <span class="n">file</span> <span class="o">!=</span> <span class="s2">"check_base_strategy_class.py"</span> <span class="ow">and</span>
-                <span class="n">file</span> <span class="o">!=</span> <span class="s2">"all_engine_strategies.py"</span><span class="p">):</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".py"</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">file</span> <span class="o">!=</span> <span class="s2">"__init__.py"</span>
+            <span class="ow">and</span> <span class="n">file</span> <span class="o">!=</span> <span class="s2">"base_strategy.py"</span>
+            <span class="ow">and</span> <span class="n">file</span> <span class="o">!=</span> <span class="s2">"check_base_strategy_class.py"</span>
+            <span class="ow">and</span> <span class="n">file</span> <span class="o">!=</span> <span class="s2">"all_engine_strategies.py"</span>
+        <span class="p">):</span>
             <span class="n">strategy</span> <span class="o">=</span> <span class="n">file</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
             <span class="n">strategies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">strategy</span><span class="p">)</span>
 
     <span class="n">all_strategies_classes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">strategies</span><span class="p">:</span>
         <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">"app.engine.</span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-                   <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">()]</span>
-        <span class="n">classes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">'app.engine'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">classes</span><span class="p">))</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">()]</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">"app.engine"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">classes</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">Class</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">check_class_methods_and_variables</span><span class="p">(</span><span class="n">Class</span><span class="p">):</span>
                 <span class="n">strategies</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">strategy</span><span class="p">)</span>
@@ -294,8 +294,7 @@
 
     <span class="c1"># delete BaseStrategy from the list of strategies</span>
     <span class="n">all_strategies_classes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-        <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">get_strategy_id</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">'BaseStrategy'</span><span class="p">,</span>
-               <span class="n">all_strategies_classes</span><span class="p">)</span>
+        <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">get_strategy_id</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"BaseStrategy"</span><span class="p">,</span> <span class="n">all_strategies_classes</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">all_strategies_classes</span></div>
 
