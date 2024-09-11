@@ -1,5 +1,6 @@
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import Column, Field, ForeignKey, String
+
 from app.model.base_model import BaseModel
 
 
@@ -32,8 +33,9 @@ class TasksParams(BaseModel, table=True):
 
     key: str = Field(sa_column=Column(String))
     value: str = Field(sa_column=Column(String))
-    taskId: str = Field(
-        sa_column=Column(UUID(as_uuid=True), ForeignKey("tasks.id"))
+    taskId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("tasks.id")))
+    apiKey_used: str = Field(
+        sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
     class Config:
@@ -55,10 +57,10 @@ class TasksParams(BaseModel, table=True):
 
     def __eq__(self, other):
         return (
-            isinstance(other, TasksParams) and
-            self.key == other.key and
-            self.value == other.value and
-            self.taskId == other.taskId
+            isinstance(other, TasksParams)
+            and self.key == other.key
+            and self.value == other.value
+            and self.taskId == other.taskId
         )
 
     def __hash__(self):

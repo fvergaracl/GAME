@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import uuid4
+
 from app.model.task_params import TasksParams
 
 
@@ -10,7 +11,7 @@ def create_tasks_params_instance():
         updated_at=datetime.now(),
         key="param_key",
         value="param_value",
-        taskId=str(uuid4())
+        taskId=str(uuid4()),
     )
 
 

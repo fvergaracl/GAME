@@ -1,12 +1,13 @@
 from uuid import UUID
-from app.services.strategy_service import StrategyService
-from app.services.base_service import BaseService
-from app.schema.task_schema import AddActionDidByUserInTask
-from app.core.exceptions import NotFoundError, GoneError
+
+from app.core.exceptions import GoneError, NotFoundError
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_actions_repository import UserActionsRepository
 from app.repository.user_repository import UserRepository
+from app.schema.task_schema import AddActionDidByUserInTask
+from app.services.base_service import BaseService
+from app.services.strategy_service import StrategyService
 
 
 class UserActionsService(BaseService):
@@ -26,11 +27,11 @@ class UserActionsService(BaseService):
     """
 
     def __init__(
-            self,
-            users_actions_repository: UserActionsRepository,
-            users_repository: UserRepository,
-            game_repository: GameRepository,
-            task_repository: TaskRepository,
+        self,
+        users_actions_repository: UserActionsRepository,
+        users_repository: UserRepository,
+        game_repository: GameRepository,
+        task_repository: TaskRepository,
     ):
         """
         Initializes the UserPointsService with the provided repositories and
@@ -51,9 +52,11 @@ class UserActionsService(BaseService):
         super().__init__(users_actions_repository)
 
     def user_add_action_in_task(
-            # action is JSON object
-            self, gameId: UUID, externalTaskId: str,
-            action: AddActionDidByUserInTask
+        # action is JSON object
+        self,
+        gameId: UUID,
+        externalTaskId: str,
+        action: AddActionDidByUserInTask,
     ):
         """
         Add action in task for user.

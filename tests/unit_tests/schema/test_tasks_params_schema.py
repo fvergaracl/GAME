@@ -1,6 +1,5 @@
-from app.schema.tasks_params_schema import (
-    BaseTaskParams, CreateTaskParams, InsertTaskParams
-)
+from app.schema.tasks_params_schema import (BaseTaskParams, CreateTaskParams,
+                                            InsertTaskParams)
 
 
 def test_base_task_params():
@@ -13,10 +12,7 @@ def test_base_task_params():
     - key (str): Parameter key
     - value (str | int | float | bool): Parameter value
     """
-    data = {
-        "key": "param1",
-        "value": 100
-    }
+    data = {"key": "param1", "value": 100}
     base_task_params = BaseTaskParams(**data)
     assert base_task_params.key == data["key"]
     assert base_task_params.value == data["value"].__str__()
@@ -30,10 +26,7 @@ def test_create_task_params():
 
     The model inherits attributes from BaseTaskParams.
     """
-    data = {
-        "key": "param2",
-        "value": "test value"
-    }
+    data = {"key": "param2", "value": "test value"}
     create_task_params = CreateTaskParams(**data)
     assert create_task_params.key == data["key"]
     assert create_task_params.value == data["value"]
@@ -54,11 +47,7 @@ def test_insert_task_params():
     - value (str | int | float | bool): Parameter value
     - taskId (str): Task ID
     """
-    data = {
-        "key": "param3",
-        "value": 50.5,
-        "taskId": "task123"
-    }
+    data = {"key": "param3", "value": 50.5, "taskId": "task123"}
     insert_task_params = InsertTaskParams(**data)
     assert insert_task_params.key == data["key"]
     assert insert_task_params.value == data["value"].__str__()

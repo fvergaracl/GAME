@@ -1,12 +1,19 @@
-from uuid import uuid4
 from datetime import datetime
-from app.schema.user_points_schema import (
-    PostAssignPointsToUser, PointsAssigned, PointsData, PointsAssignedToUser,
-    TaskPointsByGame, AllPointsByGame, UserPointsAssign, UserPointsAssigned,
-    UserPoints, ResponseGetPointsByTask, PointsDetail, TaskDetail, GameDetail,
-    UserGamePoints, ResponseGetPointsByGame, PointsByUserInTask,
-    ResponsePointsByExternalUserId
-)
+from uuid import uuid4
+
+from app.schema.user_points_schema import (AllPointsByGame, GameDetail,
+                                           PointsAssigned,
+                                           PointsAssignedToUser,
+                                           PointsByUserInTask, PointsData,
+                                           PointsDetail,
+                                           PostAssignPointsToUser,
+                                           ResponseGetPointsByGame,
+                                           ResponseGetPointsByTask,
+                                           ResponsePointsByExternalUserId,
+                                           TaskDetail, TaskPointsByGame,
+                                           UserGamePoints, UserPoints,
+                                           UserPointsAssign,
+                                           UserPointsAssigned)
 from app.schema.wallet_schema import WalletWithoutUserId
 
 
@@ -28,7 +35,7 @@ def test_post_assign_points_to_user():
         "caseName": "Case1",
         "points": 10,
         "description": "Test description",
-        "data": {"key": "value"}
+        "data": {"key": "value"},
     }
     assign_points = PostAssignPointsToUser(**data)
     assert assign_points.taskId == data["taskId"]
@@ -48,10 +55,7 @@ def test_points_assigned():
     - points (int): Points
     - timesAwarded (int): Times awarded
     """
-    data = {
-        "points": 100,
-        "timesAwarded": 5
-    }
+    data = {"points": 100, "timesAwarded": 5}
     points_assigned = PointsAssigned(**data)
     assert points_assigned.points == data["points"]
     assert points_assigned.timesAwarded == data["timesAwarded"]
@@ -68,11 +72,7 @@ def test_points_data():
     - caseName (str): Case name
     - created_at (str): Created date
     """
-    data = {
-        "points": 50,
-        "caseName": "Case2",
-        "created_at": "2023-01-01T00:00:00"
-    }
+    data = {"points": 50, "caseName": "Case2", "created_at": "2023-01-01T00:00:00"}
     points_data = PointsData(**data)
     assert points_data.points == data["points"]
     assert points_data.caseName == data["caseName"]
@@ -94,12 +94,8 @@ def test_points_assigned_to_user():
         "points": 100,
         "timesAwarded": 3,
         "pointsData": [
-            {
-                "points": 50,
-                "caseName": "Case2",
-                "created_at": "2023-01-01T00:00:00"
-            }
-        ]
+            {"points": 50, "caseName": "Case2", "created_at": "2023-01-01T00:00:00"}
+        ],
     }
     points_assigned_to_user = PointsAssignedToUser(**data)
     assert points_assigned_to_user.externalUserId == data["externalUserId"]
@@ -135,11 +131,11 @@ def test_task_points_by_game():
                     {
                         "points": 100,
                         "caseName": "Case1",
-                        "created_at": "2023-01-01T00:00:00"
+                        "created_at": "2023-01-01T00:00:00",
                     }
-                ]
+                ],
             }
-        ]
+        ],
     }
     task_points_by_game = TaskPointsByGame(**data)
     assert task_points_by_game.externalTaskId == data["externalTaskId"]
@@ -187,13 +183,13 @@ def test_all_points_by_game():
                             {
                                 "points": 50,
                                 "caseName": "Case2",
-                                "created_at": "2023-01-01T00:00:00"
+                                "created_at": "2023-01-01T00:00:00",
                             }
-                        ]
+                        ],
                     }
-                ]
+                ],
             }
-        ]
+        ],
     }
     all_points_by_game = AllPointsByGame(**data)
     assert all_points_by_game.externalGameId == data["externalGameId"]
@@ -213,8 +209,10 @@ def test_all_points_by_game():
     assert all_points_by_game.task[0].points[0].pointsData[0].points == (
         data["task"][0]["points"][0]["pointsData"][0]["points"]
     )
-    assert all_points_by_game.task[0].points[0].pointsData[0].caseName == data[
-        "task"][0]["points"][0]["pointsData"][0]["caseName"]
+    assert (
+        all_points_by_game.task[0].points[0].pointsData[0].caseName
+        == data["task"][0]["points"][0]["pointsData"][0]["caseName"]
+    )
     assert all_points_by_game.task[0].points[0].pointsData[0].created_at == (
         data["task"][0]["points"][0]["pointsData"][0]["created_at"]
     )
@@ -232,7 +230,7 @@ def test_user_points_assign():
         "caseName": "Case1",
         "points": 10,
         "description": "Test description",
-        "data": {"key": "value"}
+        "data": {"key": "value"},
     }
     user_points_assign = UserPointsAssign(**data)
     assert user_points_assign.userId == data["userId"]
@@ -256,11 +254,7 @@ def test_user_points_assigned():
     - description (Optional[str]): Description
     - message (Optional[str]): Success message
     """
-    wallet_data = {
-        "coinsBalance": 100.0,
-        "pointsBalance": 200.0,
-        "conversionRate": 1.5
-    }
+    wallet_data = {"coinsBalance": 100.0, "pointsBalance": 200.0, "conversionRate": 1.5}
 
     wallet = WalletWithoutUserId(**wallet_data)
 
@@ -272,21 +266,15 @@ def test_user_points_assigned():
         "taskId": "task123",
         "wallet": wallet,
         "description": "Points assigned successfully",
-        "message": "Successfully assigned"
+        "message": "Successfully assigned",
     }
     user_points_assigned = UserPointsAssigned(**data)
     assert user_points_assigned.userId == data["userId"]
     assert user_points_assigned.taskId == data["taskId"]
     assert user_points_assigned.wallet == wallet
-    assert user_points_assigned.wallet.coinsBalance == (
-        wallet_data["coinsBalance"]
-    )
-    assert user_points_assigned.wallet.pointsBalance == (
-        wallet_data["pointsBalance"]
-    )
-    assert user_points_assigned.wallet.conversionRate == (
-        wallet_data["conversionRate"]
-    )
+    assert user_points_assigned.wallet.coinsBalance == (wallet_data["coinsBalance"])
+    assert user_points_assigned.wallet.pointsBalance == (wallet_data["pointsBalance"])
+    assert user_points_assigned.wallet.conversionRate == (wallet_data["conversionRate"])
     assert user_points_assigned.description == data["description"]
     assert user_points_assigned.message == data["message"]
 
@@ -306,7 +294,7 @@ def test_user_points():
         "caseName": "Case1",
         "points": 10,
         "description": "Test description",
-        "data": {"key": "value"}
+        "data": {"key": "value"},
     }
     user_points = UserPoints(**data)
     assert user_points.userId == data["userId"]
@@ -327,10 +315,7 @@ def test_response_get_points_by_task():
     - externalUserId (str): External user ID
     - points (int): Points
     """
-    data = {
-        "externalUserId": "user123",
-        "points": 100
-    }
+    data = {"externalUserId": "user123", "points": 100}
     response = ResponseGetPointsByTask(**data)
     assert response.externalUserId == data["externalUserId"]
     assert response.points == data["points"]
@@ -347,11 +332,7 @@ def test_points_detail():
     - caseName (str): Case name
     - created_at (str): Created date
     """
-    data = {
-        "points": 100,
-        "caseName": "Case1",
-        "created_at": "2023-01-01T00:00:00"
-    }
+    data = {"points": 100, "caseName": "Case1", "created_at": "2023-01-01T00:00:00"}
     points_detail = PointsDetail(**data)
     assert points_detail.points == data["points"]
     assert points_detail.caseName == data["caseName"]
@@ -371,12 +352,8 @@ def test_task_detail():
     data = {
         "externalTaskId": "task123",
         "pointsData": [
-            {
-                "points": 100,
-                "caseName": "Case1",
-                "created_at": "2023-01-01T00:00:00"
-            }
-        ]
+            {"points": 100, "caseName": "Case1", "created_at": "2023-01-01T00:00:00"}
+        ],
     }
     task_detail = TaskDetail(**data)
     assert task_detail.externalTaskId == data["externalTaskId"]
@@ -406,19 +383,17 @@ def test_game_detail():
                     {
                         "points": 100,
                         "caseName": "Case1",
-                        "created_at": "2023-01-01T00:00:00"
+                        "created_at": "2023-01-01T00:00:00",
                     }
-                ]
+                ],
             }
-        ]
+        ],
     }
     game_detail = GameDetail(**data)
     assert game_detail.externalGameId == data["externalGameId"]
     assert game_detail.points == data["points"]
     assert game_detail.timesAwarded == data["timesAwarded"]
-    assert game_detail.tasks[0].externalTaskId == (
-        data["tasks"][0]["externalTaskId"]
-    )
+    assert game_detail.tasks[0].externalTaskId == (data["tasks"][0]["externalTaskId"])
 
 
 def test_user_game_points():
@@ -450,14 +425,14 @@ def test_user_game_points():
                             {
                                 "points": 100,
                                 "caseName": "Case1",
-                                "created_at": "2023-01-01T00:00:00"
+                                "created_at": "2023-01-01T00:00:00",
                             }
-                        ]
+                        ],
                     }
-                ]
+                ],
             }
         ],
-        "userExists": True
+        "userExists": True,
     }
     user_game_points = UserGamePoints(**data)
     assert user_game_points.externalUserId == data["externalUserId"]
@@ -481,18 +456,11 @@ def test_response_get_points_by_game():
     """
     data = {
         "externalTaskId": "task123",
-        "points": [
-            {
-                "externalUserId": "user123",
-                "points": 100
-            }
-        ]
+        "points": [{"externalUserId": "user123", "points": 100}],
     }
     response = ResponseGetPointsByGame(**data)
     assert response.externalTaskId == data["externalTaskId"]
-    assert response.points[0].externalUserId == (
-        data["points"][0]["externalUserId"]
-    )
+    assert response.points[0].externalUserId == (data["points"][0]["externalUserId"])
     assert response.points[0].points == data["points"][0]["points"]
 
 
@@ -506,10 +474,7 @@ def test_points_by_user_in_task():
     - externalTaskId (str): External task ID
     - points (int): Points
     """
-    data = {
-        "externalTaskId": "task123",
-        "points": 100
-    }
+    data = {"externalTaskId": "task123", "points": 100}
     points_by_user_in_task = PointsByUserInTask(**data)
     assert points_by_user_in_task.externalTaskId == data["externalTaskId"]
     assert points_by_user_in_task.points == data["points"]
@@ -530,12 +495,7 @@ def test_response_points_by_external_user_id():
     data = {
         "externalUserId": "user123",
         "points": 100,
-        "points_by_task": [
-            {
-                "externalTaskId": "task123",
-                "points": 100
-            }
-        ]
+        "points_by_task": [{"externalTaskId": "task123", "points": 100}],
     }
     response = ResponsePointsByExternalUserId(**data)
     assert response.externalUserId == data["externalUserId"]
@@ -543,6 +503,4 @@ def test_response_points_by_external_user_id():
     assert response.points_by_task[0].externalTaskId == (
         data["points_by_task"][0]["externalTaskId"]
     )
-    assert response.points_by_task[0].points == (
-        data["points_by_task"][0]["points"]
-    )
+    assert response.points_by_task[0].points == (data["points_by_task"][0]["points"])

@@ -16,11 +16,13 @@ class BaseUser(BaseModel):
     Attributes:
         externalUserId (str): External user ID
     """
+
     externalUserId: str
 
 
 class UserBasicInfo(ModelBaseInfo, BaseUser):  # noqa
     """Model for basic user information."""
+
     ...
 
 
@@ -34,6 +36,7 @@ class PostAssignPointsToUser(BaseModel):
         description (Optional[str]): Description
         data (Optional[dict]): Additional data
     """
+
     taskId: UUID
     points: Optional[int]
     description: Optional[str]
@@ -50,6 +53,7 @@ class UserWallet(BaseModel):
         walletTransactions (Optional[list[BaseWalletTransactionInfo]]): Wallet
           transactions
     """
+
     userId: str
     wallet: Optional[WalletWithoutUserId]
     walletTransactions: Optional[list[BaseWalletTransactionInfo]]
@@ -63,6 +67,7 @@ class UserPointsTasks(BaseModel):
         id (UUID): Unique identifier
         tasks (list[TaskPointsResponseByUser]): List of tasks
     """
+
     id: UUID
     tasks: list[TaskPointsResponseByUser]
 
@@ -79,6 +84,7 @@ class ResponseConversionPreview(BaseModel):
         convertedCurrency (str): Converted currency
         haveEnoughPoints (bool): If the user has enough points
     """
+
     points: int
     conversionRate: float
     conversionRateDate: str
@@ -94,6 +100,7 @@ class PostPointsConversionRequest(BaseModel):
     Attributes:
         points (int): Points
     """
+
     points: int
 
 
@@ -110,6 +117,7 @@ class ResponsePointsConversion(BaseModel):
         convertedCurrency (str): Converted currency
         haveEnoughPoints (bool): If the user has enough points
     """
+
     transactionId: str
     points: int
     conversionRate: float

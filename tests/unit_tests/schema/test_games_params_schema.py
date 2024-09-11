@@ -1,8 +1,9 @@
 from uuid import uuid4
-from app.schema.games_params_schema import (
-    BaseGameParams, BaseCreateGameParams, InsertGameParams,
-    CreateGameParams, BaseFindGameParams, UpdateGameParams
-)
+
+from app.schema.games_params_schema import (BaseCreateGameParams,
+                                            BaseFindGameParams, BaseGameParams,
+                                            CreateGameParams, InsertGameParams,
+                                            UpdateGameParams)
 
 
 def test_base_game_params():
@@ -15,10 +16,7 @@ def test_base_game_params():
     - key (str): Parameter key
     - value (str | int | float | bool): Parameter value
     """
-    data = {
-        "key": "difficulty",
-        "value": "hard"
-    }
+    data = {"key": "difficulty", "value": "hard"}
     params = BaseGameParams(**data)
     assert params.key == data["key"]
     assert params.value == data["value"]
@@ -30,10 +28,7 @@ def test_base_create_game_params():
 
     The BaseCreateGameParams model is used for creating game parameters.
     """
-    data = {
-        "key": "difficulty",
-        "value": "hard"
-    }
+    data = {"key": "difficulty", "value": "hard"}
     params = BaseCreateGameParams(**data)
     assert params.key == data["key"]
     assert params.value == data["value"]
@@ -50,11 +45,7 @@ def test_insert_game_params():
     - value (str | int | float | bool): Parameter value
     - gameId (str): Game ID
     """
-    data = {
-        "key": "difficulty",
-        "value": "hard",
-        "gameId": "game123"
-    }
+    data = {"key": "difficulty", "value": "hard", "gameId": "game123"}
     params = InsertGameParams(**data)
     assert params.key == data["key"]
     assert params.value == data["value"]
@@ -67,10 +58,7 @@ def test_create_game_params():
 
     The CreateGameParams model is used for creating game parameters.
     """
-    data = {
-        "key": "difficulty",
-        "value": "hard"
-    }
+    data = {"key": "difficulty", "value": "hard"}
     params = CreateGameParams(**data)
     assert params.key == data["key"]
     assert params.value == data["value"]
@@ -87,11 +75,7 @@ def test_base_find_game_params():
     - key (str): Parameter key
     - value (str | int | float | bool): Parameter value
     """
-    data = {
-        "id": uuid4(),
-        "key": "difficulty",
-        "value": "hard"
-    }
+    data = {"id": uuid4(), "key": "difficulty", "value": "hard"}
     params = BaseFindGameParams(**data)
     assert params.id == data["id"]
     assert params.key == data["key"]
@@ -109,11 +93,7 @@ def test_update_game_params():
     - key (str): Parameter key
     - value (str | int | float | bool): Parameter value
     """
-    data = {
-        "id": uuid4(),
-        "key": "difficulty",
-        "value": "hard"
-    }
+    data = {"id": uuid4(), "key": "difficulty", "value": "hard"}
     params = UpdateGameParams(**data)
     assert params.id == data["id"]
     assert params.key == data["key"]

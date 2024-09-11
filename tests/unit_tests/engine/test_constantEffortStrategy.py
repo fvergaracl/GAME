@@ -1,7 +1,8 @@
 # tests/test_constant_effort_strategy.py
-import pytest
-from unittest.mock import MagicMock
 from datetime import datetime, timedelta
+from unittest.mock import MagicMock
+
+import pytest
 
 from app.engine.constantEffortStrategy import ConstantEffortStrategy
 
@@ -15,38 +16,40 @@ def strategy():
 
 
 def test_calculate_points_default(strategy):
-    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = 0
+    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = (
+        0
+    )
 
-    points, reward_type = strategy.calculate_points(
-        "game_id", "task_id", "user_id")
+    points, reward_type = strategy.calculate_points("game_id", "task_id", "user_id")
 
     assert points == 1
     assert reward_type == "BasicReward"
 
 
 def test_calculate_points_consistent_effort(strategy):
-    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = 4
+    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = (
+        4
+    )
 
-    points, reward_type = strategy.calculate_points(
-        "game_id", "task_id", "user_id")
+    points, reward_type = strategy.calculate_points("game_id", "task_id", "user_id")
 
     assert points > 1
     assert reward_type == "ConstantEffortReward"
 
 
 def test_calculate_points_no_measurements(strategy):
-    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = 0
+    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = (
+        0
+    )
 
-    points, reward_type = strategy.calculate_points(
-        "game_id", "task_id", "user_id")
+    points, reward_type = strategy.calculate_points("game_id", "task_id", "user_id")
 
     assert points == 1
     assert reward_type == "BasicReward"
 
 
 def test_calculate_points_from_consistency(strategy):
-    effort_interval = strategy.get_variable(
-        "variable_constant_effort_interval_minutes")
+    effort_interval = strategy.get_variable("variable_constant_effort_interval_minutes")
     if effort_interval == 100:
         points = strategy._calculate_points_from_consistency(100)
         assert points == 100
