@@ -15,11 +15,8 @@ def are_variables_matching(new_variables, old_variables) -> bool:
     :return: True if all key-value pairs in 'new_variables' match their
       counterparts in 'old_variables', False if at least one mismatch is found.
     """
-    if not isinstance(new_variables, dict) or not isinstance(
-        old_variables, dict
-    ):
-        raise ValueError(
-            "Both new_variables and old_variables must be dictionaries.")
+    if not isinstance(new_variables, dict) or not isinstance(old_variables, dict):
+        raise ValueError("Both new_variables and old_variables must be dictionaries.")
 
     for key, value in new_variables.items():
         if key in old_variables:

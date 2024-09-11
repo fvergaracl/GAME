@@ -1,6 +1,8 @@
+from typing import List
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
-from typing import List
+
 from app.core.container import Container
 from app.core.exceptions import NotFoundError
 from app.schema.strategy_schema import Strategy
@@ -14,7 +16,7 @@ router = APIRouter(
 summary_get_strategies_list = "Retrieve Strategies List"
 description_get_strategies_list = """
 ## Retrieve Strategies List
-### This endpoint retrieves a list of all available strategies. 
+### This endpoint retrieves a list of all available strategies.
 <sub>**Id_endpoint:** get_strategy_list</sub>"""
 
 
@@ -25,7 +27,7 @@ description_get_strategies_list = """
     description=description_get_strategies_list,
 )
 @inject
-def get_strategy_list(
+async def get_strategy_list(
     service: StrategyService = Depends(Provide[Container.strategy_service]),
 ):
     """
@@ -37,6 +39,7 @@ def get_strategy_list(
     Returns:
         List[Strategy]: The list of all strategies.
     """
+
     response = service.list_all_strategies()
     return response
 
@@ -48,10 +51,12 @@ description_get_strategy_by_id = """
 <sub>**Id_endpoint:** get_strategy_by_id</sub>"""
 
 
-@router.get("/{id}", response_model=Strategy,
-            summary=summary_get_strategy_by_id,
-            description=description_get_strategy_by_id,
-            )
+@router.get(
+    "/{id}",
+    response_model=Strategy,
+    summary=summary_get_strategy_by_id,
+    description=description_get_strategy_by_id,
+)
 @inject
 def get_strategy_by_id(
     id: str,

@@ -14,9 +14,7 @@ class WalletService(BaseService):
     """
 
     def __init__(
-            self,
-            wallet_repository: WalletRepository,
-            user_repository: UserRepository
+        self, wallet_repository: WalletRepository, user_repository: UserRepository
     ):
         """
         Initializes the WalletService with the provided repositories.

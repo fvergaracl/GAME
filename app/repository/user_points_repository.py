@@ -1,12 +1,14 @@
 from contextlib import AbstractContextManager
+from datetime import timedelta, timezone
 from typing import Callable
+
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from datetime import timezone, timedelta
+
+from app.model.games import Games
 from app.model.tasks import Tasks
 from app.model.user_points import UserPoints
 from app.model.users import Users
-from app.model.games import Games
 from app.repository.base_repository import BaseRepository
 
 
@@ -23,9 +25,10 @@ class UserPointsRepository(BaseRepository):
     """
 
     def __init__(
-            self,
-            session_factory: Callable[..., AbstractContextManager[Session]],
-            model=UserPoints) -> None:
+        self,
+        session_factory: Callable[..., AbstractContextManager[Session]],
+        model=UserPoints,
+    ) -> None:
         """
         Initializes the UserPointsRepository with the provided session factory
           and model.
@@ -45,9 +48,7 @@ class UserPointsRepository(BaseRepository):
         super().__init__(session_factory, model)
 
     def get_first_user_points_in_external_task_id_by_user_id(
-            self,
-            externalTaskId,
-            externalUserId
+        self, externalTaskId, externalUserId
     ):
         """
         Retrieves the first user points in an external task by user ID.
@@ -139,13 +140,18 @@ class UserPointsRepository(BaseRepository):
                     func.count(UserPoints.id).label("timesAwarded"),
                     func.array_agg(
                         func.json_build_object(
-                            "points", UserPoints.points,
-                            "caseName", UserPoints.caseName,
-                            "data", UserPoints.data,
-                            "description", UserPoints.description,
-                            "created_at", UserPoints.created_at
+                            "points",
+                            UserPoints.points,
+                            "caseName",
+                            UserPoints.caseName,
+                            "data",
+                            UserPoints.data,
+                            "description",
+                            UserPoints.description,
+                            "created_at",
+                            UserPoints.created_at,
                         )
-                    ).label("pointsData")
+                    ).label("pointsData"),
                 )
                 .join(UserPoints, Users.id == UserPoints.userId)
                 .filter(UserPoints.taskId == taskId)
@@ -172,11 +178,14 @@ class UserPointsRepository(BaseRepository):
                     func.count(UserPoints.id).label("timesAwarded"),
                     func.array_agg(
                         func.json_build_object(
-                            "points", UserPoints.points,
-                            "caseName", UserPoints.caseName,
-                            "created_at", UserPoints.created_at
+                            "points",
+                            UserPoints.points,
+                            "caseName",
+                            UserPoints.caseName,
+                            "created_at",
+                            UserPoints.created_at,
                         )
-                    ).label("pointsData")
+                    ).label("pointsData"),
                 )
                 .join(UserPoints, Users.id == UserPoints.userId)
                 .filter(UserPoints.taskId == taskId)
@@ -243,8 +252,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(
-                    UserPoints.id).label("measurement_count"))
+                session.query(func.count(UserPoints.id).label("measurement_count"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -262,8 +270,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(
-                    func.max(UserPoints.created_at).label("last_task_time"))
+                session.query(func.max(UserPoints.created_at).label("last_task_time"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -281,8 +288,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(
-                    func.avg(UserPoints.points).label("average_points"))
+                session.query(func.avg(UserPoints.points).label("average_points"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -297,7 +303,8 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = session.query(
-                func.avg(UserPoints.points).label("average_points")).one()
+                func.avg(UserPoints.points).label("average_points")
+            ).one()
             return query.average_points
 
     def get_start_time_for_last_task(self, userId):
@@ -312,8 +319,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(
-                    func.min(UserPoints.created_at).label("start_time"))
+                session.query(func.min(UserPoints.created_at).label("start_time"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -331,8 +337,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(
-                    UserPoints.taskId).label("measurement_count"))
+                session.query(func.count(UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .filter(Tasks.externalTaskId == external_task_id)
                 .one()
@@ -375,8 +380,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(
-                    UserPoints.taskId).label("measurement_count"))
+                session.query(func.count(UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
@@ -386,10 +390,7 @@ class UserPointsRepository(BaseRepository):
             return query.measurement_count
 
     def get_user_task_measurements_count_the_last_seconds(
-            self,
-            externalTaskId,
-            externalUserId,
-            seconds
+        self, externalTaskId, externalUserId, seconds
     ):
         """
         Retrieves the total number of measurements by user and task in the last
@@ -406,8 +407,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(
-                    UserPoints.taskId).label("measurement_count"))
+                session.query(func.count(UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
@@ -418,10 +418,7 @@ class UserPointsRepository(BaseRepository):
             return query.measurement_count
 
     def get_avg_time_between_tasks_by_user_and_game_task(
-            self,
-            externalGameId,
-            externalTaskId,
-            externalUserId
+        self, externalGameId, externalTaskId, externalUserId
     ):
         """
         Retrieves the average time between tasks for a user and game task.
@@ -450,17 +447,14 @@ class UserPointsRepository(BaseRepository):
             if len(timestamps) < 2:
                 return -1
 
-            time_diffs = [(
-                timestamps[i + 1][0] - timestamps[i][0]
-            ).total_seconds() for i in range(len(timestamps) - 1)]
+            time_diffs = [
+                (timestamps[i + 1][0] - timestamps[i][0]).total_seconds()
+                for i in range(len(timestamps) - 1)
+            ]
             avg_time_diff = sum(time_diffs) / len(time_diffs)
             return avg_time_diff
 
-    def get_avg_time_between_tasks_for_all_users(
-            self,
-            externalGameId,
-            externalTaskId
-    ):
+    def get_avg_time_between_tasks_for_all_users(self, externalGameId, externalTaskId):
         """
         Retrieves the average time between tasks for all users for a game task.
 
@@ -485,9 +479,10 @@ class UserPointsRepository(BaseRepository):
             if len(timestamps) < 2:
                 return -1
 
-            time_diffs = [(
-                timestamps[i + 1][0] - timestamps[i][0]
-            ).total_seconds() for i in range(len(timestamps) - 1)]
+            time_diffs = [
+                (timestamps[i + 1][0] - timestamps[i][0]).total_seconds()
+                for i in range(len(timestamps) - 1)
+            ]
             avg_time_diff = sum(time_diffs) / len(time_diffs)
             return avg_time_diff
 
@@ -518,15 +513,12 @@ class UserPointsRepository(BaseRepository):
             if len(last_two_points) < 2:
                 return 0
 
-            time_diff = last_two_points[0].created_at - \
-                last_two_points[1].created_at
+            time_diff = last_two_points[0].created_at - last_two_points[1].created_at
             return time_diff.total_seconds()
 
     def get_new_last_window_time_diff(
-            self,
-            externalTaskId,
-            externalUserId,
-            externalGameId):
+        self, externalTaskId, externalUserId, externalGameId
+    ):
         """
         Retrieves the time difference between the last measurement and current
           time for a user for a task in a game.
@@ -562,8 +554,7 @@ class UserPointsRepository(BaseRepository):
                 current_time = current_time.replace(tzinfo=timezone.utc)
 
             if last_point.created_at.tzinfo is None:
-                last_created_at = last_point.created_at.replace(
-                    tzinfo=timezone.utc)
+                last_created_at = last_point.created_at.replace(tzinfo=timezone.utc)
             else:
                 last_created_at = last_point.created_at
 

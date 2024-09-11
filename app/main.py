@@ -1,13 +1,15 @@
-from fastapi import FastAPI
-from starlette.middleware.cors import CORSMiddleware
 import subprocess
+
 import toml
+from fastapi import FastAPI
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import RedirectResponse
+from starlette.middleware.cors import CORSMiddleware
+
 from app.api.v1.routes import routers as v1_routers
 from app.core.config import configs
 from app.core.container import Container
 from app.util.class_object import singleton
-from fastapi.openapi.utils import get_openapi
-from fastapi.responses import RedirectResponse
 
 
 def get_project_data():
@@ -20,7 +22,7 @@ def get_project_data():
     pyproject_path = "pyproject.toml"
     with open(pyproject_path, "r") as pyproject_file:
         pyproject_content = toml.load(pyproject_file)
-    return pyproject_content['tool']['poetry']
+    return pyproject_content["tool"]["poetry"]
 
 
 project_data = get_project_data()
@@ -36,17 +38,16 @@ def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
-        title=project_data['name'],
-        version=project_data['version'],
-        description=project_data['description'],
+        title=project_data["name"],
+        version=project_data["version"],
+        description=project_data["description"],
         routes=app.routes,
-        servers=[{"url": "/api/v1", "description": "Local"}]
+        servers=[{"url": "/api/v1", "description": "Local"}],
     )
     for path in list(openapi_schema["paths"].keys()):
 
         if path.startswith("/api/v1"):
-            openapi_schema["paths"][path[7:]
-                                    ] = openapi_schema["paths"].pop(path)
+            openapi_schema["paths"][path[7:]] = openapi_schema["paths"].pop(path)
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
@@ -60,8 +61,11 @@ def get_git_commit_hash() -> str:
     """
     try:
 
-        commit_hash = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"]).decode("ascii").strip()
+        commit_hash = (
+            subprocess.check_output(["git", "rev-parse", "HEAD"])
+            .decode("ascii")
+            .strip()
+        )
     except Exception:
         commit_hash = "unknown"
     return commit_hash
@@ -75,15 +79,17 @@ class AppCreator:
 
     def __init__(self):
         self.app = FastAPI(
-            title=project_data['name'],
-            version=project_data['version'],
-            description=project_data['description'],
-            license_info={"name": project_data['license']},
-            contact={"name": project_data['authors'][0],
-                     "email": project_data['authors'][0]},
+            title=project_data["name"],
+            version=project_data["version"],
+            description=project_data["description"],
+            license_info={"name": project_data["license"]},
+            contact={
+                "name": project_data["authors"][0],
+                "email": project_data["authors"][0],
+            },
             redoc_url="/redocs",
             docs_url="/docs",
-            servers=[{"url": configs.API_V1_STR, "description": "Local"}]
+            servers=[{"url": configs.API_V1_STR, "description": "Local"}],
         )
         self.app.openapi = custom_openapi
 
@@ -92,8 +98,7 @@ class AppCreator:
         if configs.BACKEND_CORS_ORIGINS:
             self.app.add_middleware(
                 CORSMiddleware,
-                allow_origins=[str(origin)
-                               for origin in configs.BACKEND_CORS_ORIGINS],
+                allow_origins=[str(origin) for origin in configs.BACKEND_CORS_ORIGINS],
                 allow_credentials=True,
                 allow_methods=["*"],
                 allow_headers=["*"],
@@ -107,7 +112,7 @@ class AppCreator:
             return:
                 RedirectResponse: Redirect to /docs
             """
-            return RedirectResponse(url='/docs')
+            return RedirectResponse(url="/docs")
 
         self.app.include_router(v1_routers, prefix=configs.API_V1_STR)
 

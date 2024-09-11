@@ -1,5 +1,5 @@
 from sqlalchemy.dialects.postgresql import UUID
-from sqlmodel import Column, Field, Float, ForeignKey, Integer
+from sqlmodel import Column, Field, Float, ForeignKey, Integer, String
 
 from app.core.config import configs
 from app.model.base_model import BaseModel
@@ -24,9 +24,11 @@ class Wallet(BaseModel, table=True):
     )
     userId: str = Field(
         sa_column=Column(
-            UUID(as_uuid=True), ForeignKey("users.id"), unique=True,
-            nullable=False
+            UUID(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False
         )
+    )
+    apiKey_used: str = Field(
+        sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
     class Config:  # noqa
@@ -60,6 +62,11 @@ class Wallet(BaseModel, table=True):
 
     def __hash__(self):
         return hash(
-            (self.id, self.coinsBalance, self.pointsBalance,
-             self.conversionRate, self.userId)
+            (
+                self.id,
+                self.coinsBalance,
+                self.pointsBalance,
+                self.conversionRate,
+                self.userId,
+            )
         )

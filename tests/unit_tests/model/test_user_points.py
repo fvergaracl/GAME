@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import uuid4
+
 from app.model.user_points import UserPoints
 
 
@@ -13,7 +14,7 @@ def create_user_points_instance():
         data={"key1": "value1", "key2": "value2"},
         description="Test description",
         userId=str(uuid4()),
-        taskId=str(uuid4())
+        taskId=str(uuid4()),
     )
 
 
@@ -86,11 +87,16 @@ def test_user_points_hash():
     Test the __hash__ method of UserPoints.
     """
     user_points = create_user_points_instance()
-    expected_hash = hash((
-        user_points.points, user_points.caseName,
-        user_points.make_hashable(user_points.data), user_points.description,
-        user_points.userId, user_points.taskId
-    ))
+    expected_hash = hash(
+        (
+            user_points.points,
+            user_points.caseName,
+            user_points.make_hashable(user_points.data),
+            user_points.description,
+            user_points.userId,
+            user_points.taskId,
+        )
+    )
     assert hash(user_points) == expected_hash
 
 
@@ -99,10 +105,12 @@ def test_user_points_make_hashable():
     Test the make_hashable method of UserPoints.
     """
     user_points = create_user_points_instance()
-    original_data = {"key1": "value1", "key2": [
-        "list_item1", {"nested_key": "nested_value"}]}
+    original_data = {
+        "key1": "value1",
+        "key2": ["list_item1", {"nested_key": "nested_value"}],
+    }
     expected_hashable_data = (
         ("key1", "value1"),
-        ("key2", ("list_item1", (("nested_key", "nested_value"),)))
+        ("key2", ("list_item1", (("nested_key", "nested_value"),))),
     )
     assert user_points.make_hashable(original_data) == expected_hashable_data

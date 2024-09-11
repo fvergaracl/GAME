@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import uuid4
+
 from app.model.game_params import GamesParams
 
 
@@ -10,7 +11,7 @@ def create_games_params_instance():
         updated_at=datetime.now(),
         key="test_key",
         value="test_value",
-        gameId=str(uuid4())
+        gameId=str(uuid4()),
     )
 
 

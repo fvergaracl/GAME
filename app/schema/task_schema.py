@@ -3,12 +3,11 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from app.schema.tasks_params_schema import CreateTaskParams
+from app.schema.base_schema import (FindBase, ModelBaseInfo, SearchOptions,
+                                    SuccesfullyCreated)
 from app.schema.games_params_schema import CreateGameParams
-from app.schema.base_schema import (
-    FindBase, ModelBaseInfo, SearchOptions, SuccesfullyCreated
-)
 from app.schema.strategy_schema import Strategy
+from app.schema.tasks_params_schema import CreateTaskParams
 from app.util.schema import AllOptional
 
 
@@ -20,6 +19,7 @@ class BaseTask(BaseModel):
         externalTaskId (str): External task ID
         gameId (UUID): Game ID
     """
+
     externalTaskId: str
     gameId: UUID
 
@@ -32,6 +32,7 @@ class AsignPointsToExternalUserId(BaseModel):
         externalUserId (str): External user ID
         data (Optional[dict]): Additional data
     """
+
     externalUserId: str
     data: Optional[dict]
 
@@ -45,6 +46,7 @@ class CreateTaskPost(BaseModel):
         strategyId (Optional[str]): Strategy ID
         params (Optional[List[CreateTaskParams]]): Task parameters
     """
+
     externalTaskId: str
     strategyId: Optional[str]
     params: Optional[List[CreateTaskParams]]
@@ -53,10 +55,7 @@ class CreateTaskPost(BaseModel):
         return {
             "externalTaskId": "string",
             "strategyId": "default",
-            "params": [
-                CreateTaskParams.example()
-
-            ]
+            "params": [CreateTaskParams.example()],
         }
 
 
@@ -66,6 +65,7 @@ class PostFindTask(FindBase, metaclass=AllOptional):  # noqa
 
     Inherits attributes from FindBase.
     """
+
     ...
 
 
@@ -79,6 +79,7 @@ class FoundTask(ModelBaseInfo):
         taskParams (Optional[List[CreateTaskParams]]): Task parameters
         strategy (Optional[Strategy]): Strategy
     """
+
     externalTaskId: str
     gameParams: Optional[List[CreateGameParams]]
     taskParams: Optional[List[CreateTaskParams]]
@@ -93,6 +94,7 @@ class FoundTasks(BaseModel):
         items (Optional[List[FoundTask]]): List of found tasks
         search_options (Optional[SearchOptions]): Search options
     """
+
     items: Optional[List[FoundTask]]
     search_options: Optional[SearchOptions]
 
@@ -104,6 +106,7 @@ class CreateTask(CreateTaskPost, metaclass=AllOptional):
     Attributes:
         gameId (str): Game ID
     """
+
     gameId: str
 
 
@@ -114,6 +117,7 @@ class FindTask(FindBase, metaclass=AllOptional):
     Attributes:
         gameId (UUID): Game ID
     """
+
     gameId: UUID
 
 
@@ -128,6 +132,7 @@ class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
         taskParams (Optional[List[CreateTaskParams]]): Task parameters
         strategy (Optional[Strategy]): Strategy
     """
+
     externalTaskId: str
     externalGameId: str
     gameParams: Optional[List[CreateGameParams]]
@@ -154,10 +159,7 @@ class AddActionDidByUserInTask(BaseModel):
     externalTaskId: Optional[str]
 
 
-class ResponseAddActionDidByUserInTask(
-    ModelBaseInfo,
-    AddActionDidByUserInTask
-):
+class ResponseAddActionDidByUserInTask(ModelBaseInfo, AddActionDidByUserInTask):
     """
     Model for response of action done by user in task
 
@@ -168,6 +170,7 @@ class ResponseAddActionDidByUserInTask(
         externalTaskId (str): External task ID
         externalUserId (str): External user ID
     """
+
     message: Optional[str]
     ...
 
@@ -184,6 +187,7 @@ class AssignedPointsToExternalUserId(BaseModel):
         externalTaskId (str): External task ID
         created_at (str): Created date
     """
+
     points: int
     caseName: str
     isACreatedUser: bool
@@ -202,6 +206,7 @@ class TaskPointsResponseByUser(BaseTask):
         gameId (str): Game ID
         points (Optional[int]): Points
     """
+
     taskId: str
     externalTaskId: str
     gameId: str
@@ -216,6 +221,7 @@ class BaseUser(BaseModel):
         externalUserId (str): External user ID
         created_at (Optional[str]): Created date
     """
+
     externalUserId: str
     created_at: Optional[str]
 
@@ -227,6 +233,7 @@ class BaseUserFirstAction(BaseUser):
     Attributes:
         firstAction (Optional[str]): First action
     """
+
     firstAction: Optional[str]
 
 
@@ -238,5 +245,6 @@ class TasksWithUsers(BaseModel):
         externalTaskId (str): External task ID
         users (List[BaseUserFirstAction]): List of users
     """
+
     externalTaskId: str
     users: List[BaseUserFirstAction]

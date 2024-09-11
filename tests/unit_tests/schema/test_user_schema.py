@@ -1,13 +1,14 @@
 from datetime import datetime
 from uuid import uuid4
-from app.schema.user_schema import (
-    BaseUser, UserBasicInfo, PostAssignPointsToUser, UserWallet,
-    UserPointsTasks, ResponseConversionPreview, PostPointsConversionRequest,
-    ResponsePointsConversion
-)
+
+from app.schema.task_schema import TaskPointsResponseByUser
+from app.schema.user_schema import (BaseUser, PostAssignPointsToUser,
+                                    PostPointsConversionRequest,
+                                    ResponseConversionPreview,
+                                    ResponsePointsConversion, UserBasicInfo,
+                                    UserPointsTasks, UserWallet)
 from app.schema.wallet_schema import WalletWithoutUserId
 from app.schema.wallet_transaction_schema import BaseWalletTransactionInfo
-from app.schema.task_schema import TaskPointsResponseByUser
 
 
 def test_base_user():
@@ -19,9 +20,7 @@ def test_base_user():
     The model has the following attributes:
     - externalUserId (str): External user ID
     """
-    data = {
-        "externalUserId": "user123"
-    }
+    data = {"externalUserId": "user123"}
     user = BaseUser(**data)
     assert user.externalUserId == data["externalUserId"]
 
@@ -36,7 +35,7 @@ def test_user_basic_info():
         "id": uuid4(),
         "created_at": datetime.now(),
         "updated_at": datetime.now(),
-        "externalUserId": "user123"
+        "externalUserId": "user123",
     }
     user_info = UserBasicInfo(**data)
     assert user_info.id == data["id"]
@@ -55,7 +54,7 @@ def test_post_assign_points_to_user():
         "taskId": uuid4(),
         "points": 100,
         "description": "Good job",
-        "data": {"extra": "value"}
+        "data": {"extra": "value"},
     }
     assign_points = PostAssignPointsToUser(**data)
     assert assign_points.taskId == data["taskId"]
@@ -70,43 +69,34 @@ def test_user_wallet():
 
     The UserWallet model is used for a user wallet.
     """
-    wallet_data = {
-        "coinsBalance": 100.0,
-        "pointsBalance": 200.0,
-        "conversionRate": 1.5
-    }
+    wallet_data = {"coinsBalance": 100.0, "pointsBalance": 200.0, "conversionRate": 1.5}
 
     wallet_transaction_data = {
         "id": uuid4(),
         "created_at": str(datetime.now()),
         "transactionType": "reward",
         "points": 100,
-        "coins": 50.0
+        "coins": 50.0,
     }
 
     data = {
         "userId": "user123",
         "wallet": WalletWithoutUserId(**wallet_data),
-        "walletTransactions": [
-            BaseWalletTransactionInfo(**wallet_transaction_data)]
+        "walletTransactions": [BaseWalletTransactionInfo(**wallet_transaction_data)],
     }
     user_wallet = UserWallet(**data)
     assert user_wallet.userId == data["userId"]
     assert user_wallet.wallet.coinsBalance == wallet_data["coinsBalance"]
     assert user_wallet.wallet.pointsBalance == wallet_data["pointsBalance"]
     assert user_wallet.wallet.conversionRate == wallet_data["conversionRate"]
-    assert user_wallet.walletTransactions[0].id == (
-        wallet_transaction_data["id"]
-    )
+    assert user_wallet.walletTransactions[0].id == (wallet_transaction_data["id"])
     assert user_wallet.walletTransactions[0].transactionType == (
         wallet_transaction_data["transactionType"]
     )
     assert user_wallet.walletTransactions[0].points == (
         wallet_transaction_data["points"]
     )
-    assert user_wallet.walletTransactions[0].coins == (
-        wallet_transaction_data["coins"]
-    )
+    assert user_wallet.walletTransactions[0].coins == (wallet_transaction_data["coins"])
 
 
 def test_user_points_tasks():
@@ -119,12 +109,9 @@ def test_user_points_tasks():
         "taskId": "task123",
         "externalTaskId": "task123",
         "gameId": "game123",
-        "points": 100
+        "points": 100,
     }
-    data = {
-        "id": uuid4(),
-        "tasks": [TaskPointsResponseByUser(**task_points_data)]
-    }
+    data = {"id": uuid4(), "tasks": [TaskPointsResponseByUser(**task_points_data)]}
     user_points_tasks = UserPointsTasks(**data)
     assert user_points_tasks.id == data["id"]
     assert user_points_tasks.tasks[0].taskId == task_points_data["taskId"]
@@ -148,7 +135,7 @@ def test_response_conversion_preview():
         "conversionRateDate": "2023-01-01",
         "convertedAmount": 150.0,
         "convertedCurrency": "USD",
-        "haveEnoughPoints": True
+        "haveEnoughPoints": True,
     }
     conversion_preview = ResponseConversionPreview(**data)
     assert conversion_preview.points == data["points"]
@@ -166,9 +153,7 @@ def test_post_points_conversion_request():
     The PostPointsConversionRequest model is used for points conversion
       request.
     """
-    data = {
-        "points": 100
-    }
+    data = {"points": 100}
     points_conversion_request = PostPointsConversionRequest(**data)
     assert points_conversion_request.points == data["points"]
 
@@ -186,7 +171,7 @@ def test_response_points_conversion():
         "conversionRateDate": "2023-01-01",
         "convertedAmount": 150.0,
         "convertedCurrency": "USD",
-        "haveEnoughPoints": True
+        "haveEnoughPoints": True,
     }
     points_conversion = ResponsePointsConversion(**data)
     assert points_conversion.transactionId == data["transactionId"]

@@ -9,6 +9,7 @@ class BaseTaskParams(BaseModel):
         key (str): Parameter key
         value (str | int | float | bool): Parameter value
     """
+
     key: str
     value: str | int | float | bool
 
@@ -18,13 +19,11 @@ class BaseTaskParams(BaseModel):
 
 class CreateTaskParams(BaseTaskParams):
     """Model for creating task parameters."""
+
     ...
 
     def example():
-        return {
-            "key": "variable_bonus_points",
-            "value": 20
-        }
+        return {"key": "variable_bonus_points", "value": 20}
 
 
 class InsertTaskParams(BaseTaskParams):
@@ -34,4 +33,5 @@ class InsertTaskParams(BaseTaskParams):
     Attributes:
         taskId (str): Task ID
     """
+
     taskId: str

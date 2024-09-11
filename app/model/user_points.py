@@ -21,10 +21,11 @@ class UserPoints(BaseModel, table=True):
     caseName: str = Field(sa_column=Column(String), nullable=True)
     data: dict = Field(sa_column=Column(JSONB), nullable=True)
     description: str = Field(sa_column=Column(String), nullable=True)
-    userId: str = Field(sa_column=Column(
-        UUID(as_uuid=True), ForeignKey("users.id")))
-    taskId: str = Field(sa_column=Column(
-        UUID(as_uuid=True), ForeignKey("tasks.id")))
+    userId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("users.id")))
+    taskId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("tasks.id")))
+    apiKey_used: str = Field(
+        sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
+    )
 
     class Config:  # noqa
         orm_mode = True  # noqa
@@ -63,13 +64,19 @@ class UserPoints(BaseModel, table=True):
         if isinstance(obj, (tuple, list)):
             return tuple(self.make_hashable(e) for e in obj)
         elif isinstance(obj, dict):
-            return tuple(sorted(
-                (k, self.make_hashable(v)) for k, v in obj.items()))
+            return tuple(sorted((k, self.make_hashable(v)) for k, v in obj.items()))
         else:
             return obj
 
     def __hash__(self):
         data_as_hashable = self.make_hashable(self.data)
-        return hash((
-            self.points, self.caseName, data_as_hashable, self.description,
-            self.userId, self.taskId))
+        return hash(
+            (
+                self.points,
+                self.caseName,
+                data_as_hashable,
+                self.description,
+                self.userId,
+                self.taskId,
+            )
+        )

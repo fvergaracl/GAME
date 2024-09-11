@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import uuid4
+
 from app.model.games import Games
 
 
@@ -10,7 +11,7 @@ def create_games_instance():
         updated_at=datetime.now(),
         externalGameId="ext_game_123",
         strategyId="strategy_123",
-        platform="PC"
+        platform="PC",
     )
 
 
