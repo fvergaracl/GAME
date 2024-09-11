@@ -25,4 +25,7 @@ def singleton(class_):
             instances[class_] = class_(*args, **kwargs)
         return instances[class_]
 
+    # Method to reset the single instance
+    getinstance._reset_instance = lambda: instances.clear()
+
     return getinstance
