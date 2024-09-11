@@ -59,10 +59,11 @@ class Configs(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
     # keycloak
-    KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM")
-    KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE")
-    KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
-    KEYCLOAK_CLIENT_SECRET = os.getenv("KEYCLOAK_CLIENT_SECRET")
+    KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "master")
+    KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "account")
+    KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "admin-cli")
+    KEYCLOAK_CLIENT_SECRET = os.getenv(
+        "KEYCLOAK_CLIENT_SECRET", "admin-client-secret")
     KEYCLOAK_URL = os.getenv("KEYCLOAK_URL")
 
     # database
