@@ -21,7 +21,7 @@ class ApiKeyService(BaseService):
         self.apikey_repository = apikey_repository
         super().__init__(apikey_repository)
 
-    async def generate_api_key(self):
+    async def generate_api_key_service(self):
         """
         Generate a random API key.
 
