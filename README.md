@@ -2,6 +2,7 @@
 # GAME (Goals And Motivation Engine) 🎮 [![codecov](https://codecov.io/gh/fvergaracl/GAME/branch/main/graph/badge.svg?token=R0MGAOMUBU)](https://codecov.io/gh/fvergaracl/GAME)
 
 
+
 <p align="center">
   <img src="GAME_logo.png" alt="GAME Logo">
 </p>
@@ -305,4 +306,18 @@ With hotreload `poetry run sphinx-autobuild docs/source docs/build/html --port 9
 - `poetry run pytest --cov=app --cov-report=term-missing`: Runs tests with coverage and displays the report in the terminal.
 - `poetry run pytest --cov=app --cov-report=html`: Generates a coverage report in HTML.
 
+#### Current test details
+
+This project uses unit tests to ensure the correctness of the code and maintain high standards of code quality. The tests are integrated with Codecov, which provides a detailed analysis of the code coverage across different parts of the codebase. Below is a visual representation of the current test coverage:
+
+<div style="text-align: center;">
+  <a href="https://codecov.io/gh/fvergaracl/GAME">
+    <img src="https://codecov.io/gh/fvergaracl/GAME/graphs/tree.svg?token=R0MGAOMUBU" alt="Code coverage graph" />
+  </a>
+</div>
+
+
+
 ### Official Documentation: [https://fvergaracl.github.io/GAME](https://fvergaracl.github.io/GAME)
+
+
