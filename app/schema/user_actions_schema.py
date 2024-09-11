@@ -1,5 +1,7 @@
 from typing import List, Optional
+
 from pydantic import BaseModel
+
 from app.schema.base_schema import ModelBaseInfo
 from app.schema.wallet_schema import WalletWithoutUserId
 from app.util.schema import AllOptional
@@ -15,6 +17,7 @@ class UserActions(BaseModel):
         data (Optional[dict]): Additional data
         created_at (str): Created date
     """
+
     userId: str
     action: str
     data: Optional[dict]

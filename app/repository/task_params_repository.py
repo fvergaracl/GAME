@@ -20,7 +20,8 @@ class TaskParamsRepository(BaseRepository):
     def __init__(
         self,
         session_factory: Callable[..., AbstractContextManager[Session]],
-            model=TasksParams) -> None:
+        model=TasksParams,
+    ) -> None:
         """
         Initializes the TaskParamsRepository with the provided session factory
           and model.

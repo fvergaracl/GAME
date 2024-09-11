@@ -1,7 +1,8 @@
 from datetime import datetime
 from uuid import uuid4
-from app.model.wallet import Wallet
+
 from app.core.config import configs
+from app.model.wallet import Wallet
 
 
 def create_wallet_instance():
@@ -12,7 +13,7 @@ def create_wallet_instance():
         coinsBalance=100.0,
         pointsBalance=200.0,
         conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
-        userId=str(uuid4())
+        userId=str(uuid4()),
     )
 
 
@@ -27,9 +28,7 @@ def test_wallet_creation():
     assert isinstance(wallet.updated_at, datetime)
     assert wallet.coinsBalance == 100.0
     assert wallet.pointsBalance == 200.0
-    assert wallet.conversionRate == (
-        configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN
-    )
+    assert wallet.conversionRate == (configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN)
     assert isinstance(wallet.userId, str)
 
 
@@ -81,8 +80,13 @@ def test_wallet_hash():
     Test the __hash__ method of Wallet.
     """
     wallet = create_wallet_instance()
-    expected_hash = hash((
-        wallet.id, wallet.coinsBalance, wallet.pointsBalance,
-        wallet.conversionRate, wallet.userId
-    ))
+    expected_hash = hash(
+        (
+            wallet.id,
+            wallet.coinsBalance,
+            wallet.pointsBalance,
+            wallet.conversionRate,
+            wallet.userId,
+        )
+    )
     assert hash(wallet) == expected_hash

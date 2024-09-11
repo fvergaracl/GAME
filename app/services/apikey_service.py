@@ -1,6 +1,4 @@
-from app.repository.apikey_repository import (
-    ApiKeyRepository
-)
+from app.repository.apikey_repository import ApiKeyRepository
 from app.services.base_service import BaseService
 from app.util.generate_api_key import generate_api_key
 
@@ -34,7 +32,8 @@ class ApiKeyService(BaseService):
         while not (exist_key is None):
             api_key = generate_api_key()
             exist_key = self.apikey_repository.read_by_column(
-                "apiKey", api_key, not_found_raise_exception=False)
+                "apiKey", api_key, not_found_raise_exception=False
+            )
         return api_key
 
     def create_api_key(self, apikeyPostBody):

@@ -1,9 +1,8 @@
 from uuid import uuid4
+
 from app.schema.wallet_transaction_schema import (
-    BaseWalletTransactionWithoutWalletId,
-    BaseWalletTransaction,
-    BaseWalletTransactionInfo
-)
+    BaseWalletTransaction, BaseWalletTransactionInfo,
+    BaseWalletTransactionWithoutWalletId)
 
 
 def test_base_wallet_transaction_without_wallet_id():
@@ -23,7 +22,7 @@ def test_base_wallet_transaction_without_wallet_id():
         "transactionType": "conversion",
         "points": 100,
         "coins": 50.0,
-        "data": {"key": "value"}
+        "data": {"key": "value"},
     }
     transaction = BaseWalletTransactionWithoutWalletId(**data)
     assert transaction.transactionType == data["transactionType"]
@@ -48,7 +47,7 @@ def test_base_wallet_transaction():
         "coins": 50.0,
         "data": {"key": "value"},
         "walletId": "wallet123",
-        "appliedConversionRate": 1.5
+        "appliedConversionRate": 1.5,
     }
     transaction = BaseWalletTransaction(**data)
     assert transaction.transactionType == data["transactionType"]
@@ -76,7 +75,7 @@ def test_base_wallet_transaction_info():
         "coins": 50.0,
         "data": {"key": "value"},
         "id": uuid4(),
-        "created_at": "2023-01-01T00:00:00"
+        "created_at": "2023-01-01T00:00:00",
     }
     transaction_info = BaseWalletTransactionInfo(**data)
     assert transaction_info.transactionType == data["transactionType"]

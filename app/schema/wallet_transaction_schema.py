@@ -14,6 +14,7 @@ class BaseWalletTransactionWithoutWalletId(BaseModel):
         coins (float): Coins
         data (Optional[dict]): Additional data
     """
+
     transactionType: str
     points: int
     coins: float
@@ -28,6 +29,7 @@ class BaseWalletTransaction(BaseWalletTransactionWithoutWalletId):
         walletId (str): Wallet ID
         appliedConversionRate (float): Applied conversion rate
     """
+
     walletId: str
     appliedConversionRate: float
 
@@ -40,5 +42,6 @@ class BaseWalletTransactionInfo(BaseWalletTransactionWithoutWalletId):
         id (UUID): Unique identifier
         created_at (str): Created date
     """
+
     id: UUID
     created_at: str

@@ -12,7 +12,6 @@ def generate_api_key(length=40):
     Returns:
         str: API Key generated randomly.
     """
-    characters = string.ascii_letters + \
-        string.digits
-    api_key = ''.join(random.choice(characters) for _ in range(length))
+    characters = string.ascii_letters + string.digits
+    api_key = "".join(random.choice(characters) for _ in range(length))
     return api_key

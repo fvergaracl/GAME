@@ -1,6 +1,8 @@
 from contextlib import AbstractContextManager
 from typing import Callable
+
 from sqlalchemy.orm import Session
+
 from app.model.api_key import ApiKey
 from app.repository.base_repository import BaseRepository
 
@@ -16,9 +18,10 @@ class ApiKeyRepository(BaseRepository):
     """
 
     def __init__(
-            self,
-            session_factory: Callable[..., AbstractContextManager[Session]],
-            model=ApiKey) -> None:
+        self,
+        session_factory: Callable[..., AbstractContextManager[Session]],
+        model=ApiKey,
+    ) -> None:
         """
         Initializes the ApiKeyRepository with the provided session factory and
           model.

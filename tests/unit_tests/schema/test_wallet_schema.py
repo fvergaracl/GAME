@@ -1,10 +1,10 @@
-
-from app.schema.wallet_schema import (
-    WalletWithoutUserId, Wallet, BaseWallet, BaseWalletOnlyUserId,
-    PostPreviewConvertPoints, ResponsePreviewConvertPoints, CreateWallet
-)
 from datetime import datetime
 from uuid import uuid4
+
+from app.schema.wallet_schema import (BaseWallet, BaseWalletOnlyUserId,
+                                      CreateWallet, PostPreviewConvertPoints,
+                                      ResponsePreviewConvertPoints, Wallet,
+                                      WalletWithoutUserId)
 
 
 def test_wallet_without_user_id():
@@ -18,11 +18,7 @@ def test_wallet_without_user_id():
     - pointsBalance (Optional[float]): Points balance
     - conversionRate (Optional[float]): Conversion rate
     """
-    data = {
-        "coinsBalance": 100.0,
-        "pointsBalance": 200.0,
-        "conversionRate": 1.5
-    }
+    data = {"coinsBalance": 100.0, "pointsBalance": 200.0, "conversionRate": 1.5}
     wallet = WalletWithoutUserId(**data)
     assert wallet.coinsBalance == data["coinsBalance"]
     assert wallet.pointsBalance == data["pointsBalance"]
@@ -45,7 +41,7 @@ def test_wallet():
         "coinsBalance": 100.0,
         "pointsBalance": 200.0,
         "conversionRate": 1.5,
-        "userId": "user123"
+        "userId": "user123",
     }
     wallet = Wallet(**data)
     assert wallet.coinsBalance == data["coinsBalance"]
@@ -73,7 +69,7 @@ def test_base_wallet():
         "coinsBalance": 100.0,
         "pointsBalance": 200.0,
         "conversionRate": 1.5,
-        "userId": 123
+        "userId": 123,
     }
     wallet = BaseWallet(**data)
     assert wallet.id == data["id"]
@@ -95,10 +91,7 @@ def test_base_wallet_only_user_id():
     - userId (int): User ID
     - pointsBalance (Optional[float]): Points balance
     """
-    data = {
-        "userId": 123,
-        "pointsBalance": 200.0
-    }
+    data = {"userId": 123, "pointsBalance": 200.0}
     wallet = BaseWalletOnlyUserId(**data)
     assert wallet.userId == data["userId"]
     assert wallet.pointsBalance == data["pointsBalance"]
@@ -115,10 +108,7 @@ def test_post_preview_convert_points():
     - points (float): Points
     - externalUserId (str): External user ID
     """
-    data = {
-        "points": 100.0,
-        "externalUserId": "user123"
-    }
+    data = {"points": 100.0, "externalUserId": "user123"}
     preview = PostPreviewConvertPoints(**data)
     assert preview.points == data["points"]
     assert preview.externalUserId == data["externalUserId"]
@@ -145,7 +135,7 @@ def test_response_preview_convert_points():
         "conversionRate": 1.5,
         "afterConversionPoints": 200.0,
         "afterConversionCoins": 75.0,
-        "externalUserId": "user123"
+        "externalUserId": "user123",
     }
     response = ResponsePreviewConvertPoints(**data)
     assert response.coins == data["coins"]
@@ -166,7 +156,7 @@ def test_create_wallet():
         "coinsBalance": 100.0,
         "pointsBalance": 200.0,
         "conversionRate": 1.5,
-        "userId": "user123"
+        "userId": "user123",
     }
     wallet = CreateWallet(**data)
     assert wallet.coinsBalance == data["coinsBalance"]

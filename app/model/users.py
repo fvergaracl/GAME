@@ -1,4 +1,5 @@
-from sqlmodel import Column, Field, String, ForeignKey
+from sqlmodel import Column, Field, ForeignKey, String
+
 from app.model.base_model import BaseModel
 
 
@@ -13,8 +14,7 @@ class Users(BaseModel, table=True):
 
     externalUserId: str = Field(sa_column=Column(String, unique=True))
     apiKey_used: str = Field(
-        sa_column=Column(String, ForeignKey(
-            "apikey.apiKey"), nullable=True)
+        sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
     class Config:  # noqa

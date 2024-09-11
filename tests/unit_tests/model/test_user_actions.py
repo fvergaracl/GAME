@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import uuid4
+
 from app.model.user_actions import UserActions
 
 
@@ -11,7 +12,7 @@ def create_user_actions_instance():
         typeAction="Test Action",
         data={"key1": "value1", "key2": "value2"},
         description="Test description",
-        userId=str(uuid4())
+        userId=str(uuid4()),
     )
 
 
@@ -78,10 +79,14 @@ def test_user_actions_hash():
     Test the __hash__ method of UserActions.
     """
     user_actions = create_user_actions_instance()
-    expected_hash = hash((
-        user_actions.typeAction, user_actions.make_hashable(user_actions.data),
-        user_actions.description, user_actions.userId
-    ))
+    expected_hash = hash(
+        (
+            user_actions.typeAction,
+            user_actions.make_hashable(user_actions.data),
+            user_actions.description,
+            user_actions.userId,
+        )
+    )
     assert hash(user_actions) == expected_hash
 
 
@@ -90,10 +95,12 @@ def test_user_actions_make_hashable():
     Test the make_hashable method of UserActions.
     """
     user_actions = create_user_actions_instance()
-    original_data = {"key1": "value1", "key2": [
-        "list_item1", {"nested_key": "nested_value"}]}
+    original_data = {
+        "key1": "value1",
+        "key2": ["list_item1", {"nested_key": "nested_value"}],
+    }
     expected_hashable_data = (
         ("key1", "value1"),
-        ("key2", ("list_item1", (("nested_key", "nested_value"),)))
+        ("key2", ("list_item1", (("nested_key", "nested_value"),))),
     )
     assert user_actions.make_hashable(original_data) == expected_hashable_data

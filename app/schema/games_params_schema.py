@@ -11,6 +11,7 @@ class BaseGameParams(BaseModel):
         key (str): Parameter key
         value (str | int | float | bool): Parameter value
     """
+
     key: str
     value: str | int | float | bool
 
@@ -20,6 +21,7 @@ class BaseGameParams(BaseModel):
 
 class BaseCreateGameParams(BaseGameParams):
     """Model for creating game parameters."""
+
     ...
 
 
@@ -30,11 +32,13 @@ class InsertGameParams(BaseGameParams):
     Attributes:
         gameId (str): Game ID
     """
+
     gameId: str
 
 
 class CreateGameParams(BaseCreateGameParams):
     """Model for creating game parameters."""
+
     ...
 
 
@@ -45,6 +49,7 @@ class BaseFindGameParams(BaseGameParams):
     Attributes:
         id (UUID): Unique identifier
     """
+
     id: UUID
 
 
@@ -57,6 +62,7 @@ class UpdateGameParams(CreateGameParams):
         key (str): Parameter key
         value (str | int | float | bool): Parameter value
     """
+
     id: UUID
     key: str
     value: str | int | float | bool

@@ -72,13 +72,15 @@ class Configs(BaseSettings):
     DB_PORT: str = os.getenv("DB_PORT", "3306")
     DB_ENGINE: str = os.getenv("DB_ENGINE", "postgresql")
 
-    DATABASE_URI = "{db_engine}://{user}:{password}@{host}:{port}/{database}".format(  # noqa: E501
-        db_engine=DB_ENGINE,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT,
-        database=ENV_DATABASE_MAPPER[ENV],
+    DATABASE_URI = (
+        "{db_engine}://{user}:{password}@{host}:{port}/{database}".format(  # noqa: E501
+            db_engine=DB_ENGINE,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT,
+            database=ENV_DATABASE_MAPPER[ENV],
+        )
     )
 
     # find query

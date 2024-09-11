@@ -40,15 +40,11 @@ class Tasks(BaseModel, table=True):
     """
 
     externalTaskId: str = Field(sa_column=Column(String, nullable=False))
-    gameId: str = Field(sa_column=Column(
-        UUID(as_uuid=True), ForeignKey("games.id")))
-    strategyId: str = Field(sa_column=Column(
-        String, nullable=False, default="default"))
-    status: str = Field(sa_column=Column(
-        String, nullable=False, default="open"))
+    gameId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id")))
+    strategyId: str = Field(sa_column=Column(String, nullable=False, default="default"))
+    status: str = Field(sa_column=Column(String, nullable=False, default="open"))
     apiKey_used: str = Field(
-        sa_column=Column(String, ForeignKey(
-            "apikey.apiKey"), nullable=True)
+        sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
     class Config:
@@ -67,19 +63,15 @@ class Tasks(BaseModel, table=True):
 
     def __eq__(self, other):
         return (
-            isinstance(other, Tasks) and self.id == other.id and
-            self.externalTaskId == other.externalTaskId and
-            self.gameId == other.gameId and
-            self.strategyId == other.strategyId and
-            self.status == other.status
+            isinstance(other, Tasks)
+            and self.id == other.id
+            and self.externalTaskId == other.externalTaskId
+            and self.gameId == other.gameId
+            and self.strategyId == other.strategyId
+            and self.status == other.status
         )
 
     def __hash__(self):
         return hash(
-            (
-                self.id,
-                self.externalTaskId,
-                self.gameId,
-                self.strategyId,
-                self.status
-            ))
+            (self.id, self.externalTaskId, self.gameId, self.strategyId, self.status)
+        )

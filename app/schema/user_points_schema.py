@@ -1,5 +1,7 @@
 from typing import List, Optional
+
 from pydantic import BaseModel
+
 from app.schema.base_schema import ModelBaseInfo
 from app.schema.wallet_schema import WalletWithoutUserId
 from app.util.schema import AllOptional
@@ -16,6 +18,7 @@ class PostAssignPointsToUser(BaseModel):
         description (Optional[str]): Description
         data (Optional[dict]): Additional data
     """
+
     taskId: str
     caseName: Optional[str]
     points: Optional[int]
@@ -31,6 +34,7 @@ class PointsAssigned(BaseModel):
         points (int): Points
         timesAwarded (int): Times awarded
     """
+
     points: int
     timesAwarded: int
 
@@ -44,6 +48,7 @@ class PointsData(BaseModel):
         caseName (str): Case name
         created_at (str): Created date
     """
+
     points: int
     caseName: str
     created_at: str
@@ -57,12 +62,14 @@ class PointsAssignedToUser(PointsAssigned):
         externalUserId (str): External user ID
         pointsData (Optional[List[PointsData]]): Points data
     """
+
     externalUserId: str
     pointsData: Optional[List[PointsData]]
 
 
 class PointsAssignedToUserWithDetails(PointsAssignedToUser):  # noqa
     """Model for points assigned to a user with details."""
+
     pointsData: List[PointsAssignedToUser]
 
 
@@ -74,6 +81,7 @@ class TaskPointsByGame(BaseModel):
         externalTaskId (str): External task ID
         points (List[PointsAssignedToUser]): Points assigned to user
     """
+
     externalTaskId: str
     points: List[PointsAssignedToUser]
 
@@ -87,6 +95,7 @@ class AllPointsByGame(BaseModel):
         created_at (str): Created date
         task (List[TaskPointsByGame]): List of task points by game
     """
+
     externalGameId: str
     created_at: str
     task: List[TaskPointsByGame]
@@ -99,11 +108,13 @@ class BaseUserPointsBaseModel(PostAssignPointsToUser):
     Attributes:
         userId (str): User ID
     """
+
     userId: str
 
 
 class UserPointsAssign(BaseUserPointsBaseModel):
     """Model for user points assignment."""
+
     ...
 
 
@@ -118,6 +129,7 @@ class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
         description (Optional[str]): Description
         message (Optional[str]): Success message
     """
+
     userId: str
     taskId: str
     wallet: Optional[WalletWithoutUserId]
@@ -125,10 +137,9 @@ class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
     message: Optional[str] = "Successfully assigned"
 
 
-class UserPoints(
-        ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional
-):
+class UserPoints(ModelBaseInfo, BaseUserPointsBaseModel, metaclass=AllOptional):
     """Model for user points."""
+
     ...
 
 
@@ -140,6 +151,7 @@ class ResponseGetPointsByTask(BaseModel):
         externalUserId (str): External user ID
         points (int): Points
     """
+
     externalUserId: str
     points: int
 
@@ -153,6 +165,7 @@ class PointsDetail(BaseModel):
         caseName (str): Case name
         created_at (str): Created date
     """
+
     points: int
     caseName: str
     created_at: str
@@ -166,6 +179,7 @@ class TaskDetail(BaseModel):
         externalTaskId (str): External task ID
         pointsData (List[PointsDetail]): Points data
     """
+
     externalTaskId: str
     pointsData: List[PointsDetail]
 
@@ -180,6 +194,7 @@ class GameDetail(BaseModel):
         timesAwarded (int): Times awarded
         tasks (List[TaskDetail]): List of task details
     """
+
     externalGameId: str
     points: int
     timesAwarded: int
@@ -197,6 +212,7 @@ class UserGamePoints(BaseModel):
         games (List[GameDetail]): List of game details
         userExists (Optional[bool]): If the user exists
     """
+
     externalUserId: str
     points: int
     timesAwarded: int
@@ -212,6 +228,7 @@ class ResponseGetPointsByGame(BaseModel):
         externalTaskId (str): External task ID
         points (List[ResponseGetPointsByTask]): Points by task
     """
+
     externalTaskId: str
     points: List[ResponseGetPointsByTask]
 
@@ -224,6 +241,7 @@ class PointsByUserInTask(BaseModel):
         externalTaskId (str): External task ID
         points (int): Points
     """
+
     externalTaskId: str
     points: int
 
@@ -237,6 +255,7 @@ class ResponsePointsByExternalUserId(BaseModel):
         points (int): Points
         points_by_task (List[PointsByUserInTask]): Points by task
     """
+
     externalUserId: str
     points: int
     points_by_task: List[PointsByUserInTask]

@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import uuid4
+
 from app.model.wallet_transactions import WalletTransactions
 
 
@@ -13,7 +14,7 @@ def create_wallet_transaction_instance():
         coins=10.5,
         data={"description": "Test transaction"},
         appliedConversionRate=1.5,
-        walletId=str(uuid4())
+        walletId=str(uuid4()),
     )
 
 
@@ -94,11 +95,17 @@ def test_wallet_transaction_hash():
     transaction = create_wallet_transaction_instance()
     data_as_hashable = (
         tuple(sorted((k, v) for k, v in transaction.data.items()))
-        if transaction.data else None
+        if transaction.data
+        else None
     )
-    expected_hash = hash((
-        transaction.transactionType, transaction.points, transaction.coins,
-        data_as_hashable, transaction.appliedConversionRate,
-        transaction.walletId
-    ))
+    expected_hash = hash(
+        (
+            transaction.transactionType,
+            transaction.points,
+            transaction.coins,
+            data_as_hashable,
+            transaction.appliedConversionRate,
+            transaction.walletId,
+        )
+    )
     assert hash(transaction) == expected_hash
