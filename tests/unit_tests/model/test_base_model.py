@@ -6,7 +6,10 @@ from app.model.base_model import BaseModel
 
 def create_base_model_instance():
     return BaseModel(
-        id=str(uuid4()), created_at=datetime.now(), updated_at=datetime.now()
+        id=str(uuid4()),
+        created_at=datetime.now(),
+        updated_at=datetime.now(),
+        apiKey_used="",
     )
 
 
