@@ -13,6 +13,7 @@ import {
   cilSpeedometer,
   cilStar,
 } from '@coreui/icons'
+
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 const _nav = [
@@ -25,17 +26,21 @@ const _nav = [
       color: 'info',
       text: 'NEW',
     },
-  },
-  {
-    component: CNavTitle,
-    name: 'Theme',
-  },
+  },  
   {
     component: CNavItem,
-    name: 'Colors',
-    to: '/theme/colors',
-    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
-  },
+    name: 'Games',
+    to: '/games',
+    icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
+  
+  }
+
+  // {
+  //   component: CNavItem,
+  //   name: 'Colors',
+  //   to: '/theme/colors',
+  //   icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+  // },
 ]
 
 const _nav_administrator = [
@@ -48,7 +53,7 @@ const _nav_administrator = [
     component: CNavItem,
     name: 'API keys',
     to: '/admin/api-keys',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
     badge: {
       color: 'info',
       text: 'NEW',

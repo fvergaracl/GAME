@@ -59,6 +59,23 @@ class CreateTaskPost(BaseModel):
         }
 
 
+class CreateTasksPost(BaseModel):
+    """
+    Model for creating multiple tasks (bulk creation).
+
+    Attributes:
+        tasks (List[CreateTaskPost]): List of tasks to be created.
+    """
+    tasks: List[CreateTaskPost]
+
+    def example():
+        return {
+            "tasks": [CreateTaskPost.example()],
+            "strategyId": "default",
+            "params": [CreateTaskParams.example()]
+        }
+
+
 class PostFindTask(FindBase, metaclass=AllOptional):  # noqa
     """
     Model for finding tasks
@@ -138,6 +155,34 @@ class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
     gameParams: Optional[List[CreateGameParams]]
     taskParams: Optional[List[CreateTaskParams]]
     strategy: Optional[Strategy]
+
+
+class CreateTaskPostError(BaseModel):
+    """
+    Model for error response when creating a task
+
+    Attributes:
+        task (CreateTaskPost): Task
+        error (str): Error message
+    """
+
+    task: CreateTaskPost
+    error: str
+
+
+class CreateTasksPostBulkCreated(BaseModel):
+    """
+    Model for successful task creation response
+
+    Attributes:
+        succesfully_created (List[CreateTaskPostSuccesfullyCreated]): List of
+          successfully created tasks
+        failed_to_create (List[CreateTaskPostError]): List of tasks that
+          failed to be created
+    """
+
+    succesfully_created: List[CreateTaskPostSuccesfullyCreated]
+    failed_to_create: List[CreateTaskPostError]
 
 
 class AddActionDidByUserInTask(BaseModel):
