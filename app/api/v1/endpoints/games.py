@@ -5,23 +5,22 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Body, Depends
 
 from app.core.container import Container
-from app.schema.games_schema import (BaseGameResult, FindGameResult,
-                                     GameCreated, ListTasksWithUsers,
-                                     PatchGame, PostCreateGame, PostFindGame,
-                                     ResponsePatchGame)
+from app.schema.games_schema import (
+    BaseGameResult, FindGameResult, GameCreated, ListTasksWithUsers,
+    PatchGame, PostCreateGame, PostFindGame, ResponsePatchGame
+)
 from app.schema.strategy_schema import Strategy
-from app.schema.task_schema import (AddActionDidByUserInTask,
-                                    AsignPointsToExternalUserId,
-                                    AssignedPointsToExternalUserId,
-                                    CreateTaskPost,
-                                    CreateTaskPostSuccesfullyCreated,
-                                    CreateTasksPostBulkCreated, FoundTasks,
-                                    PostFindTask, CreateTasksPost)
+from app.schema.task_schema import (
+    AddActionDidByUserInTask, AsignPointsToExternalUserId,
+    AssignedPointsToExternalUserId, CreateTaskPost,
+    CreateTaskPostSuccesfullyCreated, CreateTasksPostBulkCreated, FoundTasks,
+    PostFindTask, CreateTasksPost
+)
 from app.schema.user_points_schema import AllPointsByGame, PointsAssignedToUser
 from app.services.game_service import GameService
 from app.services.task_service import TaskService
 from app.services.user_points_service import UserPointsService
-
+from app.middlewares.authentication import auth_api_key_or_oauth2
 router = APIRouter(
     prefix="/games",
     tags=["games"],
@@ -39,6 +38,7 @@ description_get_games_list = """
     response_model=FindGameResult,
     description=description_get_games_list,
     summary=summary_get_games_list,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_games_list(
