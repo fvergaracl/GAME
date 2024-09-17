@@ -5,7 +5,7 @@ import requests
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from jwt import PyJWKClient, exceptions
-
+from app.util.response import Response
 from app.core.config import configs
 
 oauth_2_scheme = OAuth2AuthorizationCodeBearer(
@@ -15,7 +15,9 @@ oauth_2_scheme = OAuth2AuthorizationCodeBearer(
 )
 
 
-async def valid_access_token(access_token: Annotated[str, Depends(oauth_2_scheme)]):
+async def valid_access_token(
+        access_token: Annotated[str, Depends(oauth_2_scheme)]
+) -> Response:
     url = f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/certs"  # noqa
     optional_custom_headers = {"User-agent": "custom-user-agent"}
 
@@ -31,21 +33,48 @@ async def valid_access_token(access_token: Annotated[str, Depends(oauth_2_scheme
             audience=configs.KEYCLOAK_AUDIENCE,
             options={"verify_exp": True},
         )
-        return data
+        return Response.ok(data)
 
     except exceptions.InvalidSignatureError:
-        raise HTTPException(status_code=401, detail="Invalid token signature")
+        return Response.fail(
+            error=HTTPException(
+                status_code=401,
+                detail="Invalid token signature"
+            )
+        )
+
     except exceptions.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token has expired")
+        return Response.fail(
+            error=HTTPException(
+                status_code=401,
+                detail="Token has expired"
+            )
+        )
     except exceptions.InvalidAudienceError:
-        raise HTTPException(status_code=403, detail="Invalid audience")
+        return Response.fail(
+            error=HTTPException(
+                status_code=403,
+                detail="Invalid audience"
+            )
+        )
     except exceptions.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+        return Response.fail(
+            error=HTTPException(
+                status_code=401,
+                detail="Invalid token"
+            )
+        )
     except exceptions.PyJWKClientError:
-        raise HTTPException(status_code=500, detail="Internal server error")
+        return Response.fail(
+            error=HTTPException(
+                status_code=500,
+                detail="Internal server error"
+            )
+        )
 
 
-def refresh_access_token(refresh_token: Annotated[str, Depends(oauth_2_scheme)]):
+def refresh_access_token(
+        refresh_token: Annotated[str, Depends(oauth_2_scheme)]):
     """
     Refresh the access token using the refresh token.
     """

@@ -5,9 +5,10 @@ from fastapi import APIRouter, Depends, Query
 
 from app.core.container import Container
 from app.schema.user_points_schema import AllPointsByGame, UserGamePoints
-from app.schema.user_schema import (PostPointsConversionRequest,
-                                    ResponseConversionPreview,
-                                    ResponsePointsConversion, UserWallet)
+from app.schema.user_schema import (
+    PostPointsConversionRequest, ResponseConversionPreview,
+    ResponsePointsConversion, UserWallet
+)
 from app.services.user_points_service import UserPointsService
 from app.services.user_service import UserService
 
@@ -83,7 +84,8 @@ description_query_user_points = """
 @inject
 def query_user_points(
     schema: List[str],
-    service: UserPointsService = Depends(Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(
+        Provide[Container.user_points_service]),
 ):
     """
     Retrieve point totals for a list of users based on their external user IDs.
@@ -116,7 +118,8 @@ description_get_user_points = """
 @inject
 def get_points_by_user_id(
     externalUserId: str,
-    service: UserPointsService = Depends(Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(
+        Provide[Container.user_points_service]),
 ):
     """
     Retrieve points associated with a user by their external user ID.
@@ -241,7 +244,8 @@ description_preview_points = """
 @inject
 def preview_points_to_coins_conversion(
     externalUserId: str,
-    points: int = Query(..., description="The number of points to convert to coins"),
+    points: int = Query(...,
+                        description="The number of points to convert to coins"),
     service: UserService = Depends(Provide[Container.user_service]),
 ):
     """

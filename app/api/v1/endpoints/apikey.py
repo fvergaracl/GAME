@@ -4,10 +4,12 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Body, Depends
 
 from app.core.container import Container
-from app.middlewares.valid_access_token import (oauth_2_scheme,
-                                                valid_access_token)
-from app.schema.apikey_schema import (ApiKeyCreate, ApiKeyCreated,
-                                      ApiKeyCreatedUnitList, ApiKeyPostBody)
+from app.middlewares.valid_access_token import (
+    oauth_2_scheme, valid_access_token
+)
+from app.schema.apikey_schema import (
+    ApiKeyCreate, ApiKeyCreated,  ApiKeyCreatedUnitList, ApiKeyPostBody
+)
 from app.services.apikey_service import ApiKeyService
 
 router = APIRouter(
@@ -42,12 +44,16 @@ async def create_api_key(
     Endpoint to create an API key, requires authentication.
     """
     token_decoded = await valid_access_token(token)
+    token_decoded = token_decoded.data
     created_by = token_decoded["sub"]
     apiKey = await service.generate_api_key_service()
-    apikeyBody = ApiKeyCreate(**schema.dict(), createdBy=created_by, apiKey=apiKey)
+    apikeyBody = ApiKeyCreate(**schema.dict(),
+                              createdBy=created_by,
+                              apiKey=apiKey)
     response = service.create_api_key(apikeyBody)
 
-    return ApiKeyCreated(**response.dict(), message="API Key created successfully")
+    return ApiKeyCreated(**response.dict(),
+                         message="API Key created successfully")
 
 
 summary_get_all_api_keys = "Get all API keys"
@@ -75,5 +81,8 @@ async def get_all_api_keys(
     """
     Endpoint to get all API keys, requires authentication.
     """
-    await valid_access_token(token)
+    response = await valid_access_token(token)
+    if response.error:
+        return response
+
     return service.get_all_api_keys()
