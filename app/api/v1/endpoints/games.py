@@ -14,7 +14,7 @@ from app.schema.task_schema import (
     AddActionDidByUserInTask, AsignPointsToExternalUserId,
     AssignedPointsToExternalUserId, CreateTaskPost,
     CreateTaskPostSuccesfullyCreated, CreateTasksPostBulkCreated, FoundTasks,
-    PostFindTask, CreateTasksPost
+    PostFindTask, CreateTasksPost, ResponseAddActionDidByUserInTask
 )
 from app.schema.user_points_schema import AllPointsByGame, PointsAssignedToUser
 from app.services.game_service import GameService
@@ -424,7 +424,7 @@ description_user_action = """
 
 @router.post(
     "/{gameId}/tasks/{externalTaskId}/action",
-    response_model=AddActionDidByUserInTask,
+    response_model=ResponseAddActionDidByUserInTask,
     summary=summary_user_action,
     description=description_user_action,
     dependencies=[Depends(auth_api_key_or_oauth2)]
@@ -434,14 +434,14 @@ def user_action_in_task(
     gameId: UUID,
     externalTaskId: str,
     schema: AddActionDidByUserInTask = Body(...),
-    service: TaskService = Depends(Provide[Container.task_service]),
+    service: TaskService = Depends(Provide[Container.user_actions_service]),
 ):
     """
     Register a user action in a task within a game. This endpoint is used to
     assign points to a user for a specific task within a game, when the game
     requires it.
     """
-    return service.user_add_action_in_task(gameId, externalTaskId, schema)
+    return service.user_add_action_in_task(externalTaskId, schema)
 
 
 summary_assing_points_to_user = "Assign Points to User"

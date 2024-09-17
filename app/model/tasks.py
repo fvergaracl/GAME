@@ -40,9 +40,12 @@ class Tasks(BaseModel, table=True):
     """
 
     externalTaskId: str = Field(sa_column=Column(String, nullable=False))
-    gameId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id")))
-    strategyId: str = Field(sa_column=Column(String, nullable=False, default="default"))
-    status: str = Field(sa_column=Column(String, nullable=False, default="open"))
+    gameId: str = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("games.id")))
+    strategyId: str = Field(sa_column=Column(
+        String, nullable=False, default="default"))
+    status: str = Field(sa_column=Column(
+        String, nullable=False, default="open"))
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
@@ -55,11 +58,16 @@ class Tasks(BaseModel, table=True):
             f"Tasks(id={self.id}, created_at={self.created_at}, "
             f"updated_at={self.updated_at}, "
             f"externalTaskId={self.externalTaskId}, gameId={self.gameId}, "
-            f"strategyId={self.strategyId}), status={self.status}"
+            f"strategyId={self.strategyId}, status={self.status})"
         )
 
     def __repr__(self):
-        return self.__str__()
+        return (
+            f"Tasks(id={self.id}, created_at={self.created_at}, "
+            f"updated_at={self.updated_at}, "
+            f"externalTaskId={self.externalTaskId}, gameId={self.gameId}, "
+            f"strategyId={self.strategyId}, status={self.status})"
+        )
 
     def __eq__(self, other):
         return (
@@ -73,5 +81,7 @@ class Tasks(BaseModel, table=True):
 
     def __hash__(self):
         return hash(
-            (self.id, self.externalTaskId, self.gameId, self.strategyId, self.status)
+            (
+                self.id, self.externalTaskId, self.gameId, self.strategyId,
+                self.status)
         )

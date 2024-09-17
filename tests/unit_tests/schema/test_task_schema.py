@@ -116,7 +116,8 @@ def test_found_task():
     assert found_task.gameParams[0].key == data["gameParams"][0].key
     assert found_task.taskParams[0].key == data["taskParams"][0].key
     assert found_task.strategy.id == data["strategy"].id
-    assert found_task.strategy.variables["var1"] == (data["strategy"].variables["var1"])
+    assert found_task.strategy.variables["var1"] == (
+        data["strategy"].variables["var1"])
 
 
 def test_found_tasks():
@@ -211,7 +212,8 @@ def test_create_task_post_succesfully_created():
         "taskParams": [CreateTaskParams(key="var2", value=20)],
         "strategy": Strategy(id="strategy123", version="1.0", variables={"var1": 10}),
     }
-    create_task_post_succesfully_created = CreateTaskPostSuccesfullyCreated(**data)
+    create_task_post_succesfully_created = CreateTaskPostSuccesfullyCreated(
+        **data)
     assert create_task_post_succesfully_created.message == data["message"]
     assert create_task_post_succesfully_created.externalTaskId == (
         data["externalTaskId"]
@@ -219,8 +221,10 @@ def test_create_task_post_succesfully_created():
     assert create_task_post_succesfully_created.externalGameId == (
         data["externalGameId"]
     )
-    assert create_task_post_succesfully_created.gameParams == (data["gameParams"])
-    assert create_task_post_succesfully_created.taskParams == (data["taskParams"])
+    assert create_task_post_succesfully_created.gameParams == (
+        data["gameParams"])
+    assert create_task_post_succesfully_created.taskParams == (
+        data["taskParams"])
     assert create_task_post_succesfully_created.strategy == data["strategy"]
 
 
@@ -249,7 +253,6 @@ def test_add_action_did_by_user_in_task():
     assert add_action.typeAction == data["typeAction"]
     assert add_action.data == data["data"]
     assert add_action.description == data["description"]
-    assert add_action.externalTaskId == data["externalTaskId"]
     assert add_action.externalUserId == data["externalUserId"]
 
 

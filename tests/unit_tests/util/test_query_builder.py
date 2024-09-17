@@ -9,6 +9,9 @@ Base = declarative_base()
 
 
 class TestModel(Base):
+    """
+    Test model for the query builder tests.
+    """
     __tablename__ = 'test_model'
     id = Column(Integer, primary_key=True)
     name = Column(String)

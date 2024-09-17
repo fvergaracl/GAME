@@ -1,13 +1,13 @@
-from uuid import UUID
-
-from app.core.exceptions import GoneError, NotFoundError
+from app.core.exceptions import GoneError
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_actions_repository import UserActionsRepository
 from app.repository.user_repository import UserRepository
-from app.schema.task_schema import AddActionDidByUserInTask
+from app.schema.task_schema import (
+    AddActionDidByUserInTask, ResponseAddActionDidByUserInTask
+)
 from app.services.base_service import BaseService
-from app.services.strategy_service import StrategyService
+from app.schema.user_actions_schema import CreateUserActions
 
 
 class UserActionsService(BaseService):
@@ -28,7 +28,7 @@ class UserActionsService(BaseService):
 
     def __init__(
         self,
-        users_actions_repository: UserActionsRepository,
+        user_actions_repository: UserActionsRepository,
         users_repository: UserRepository,
         game_repository: GameRepository,
         task_repository: TaskRepository,
@@ -38,23 +38,20 @@ class UserActionsService(BaseService):
           services.
 
         Args:
-            users_actions_repository: The user points repository instance.
+            user_actions_repository: The user points repository instance.
             users_repository: The user repository instance.
             game_repository: The game repository instance.
             task_repository: The task repository instance.
-            strategy_service: The strategy service instance.
         """
-        self.users_actions_repository = users_actions_repository
+        self.user_actions_repository = user_actions_repository
         self.users_repository = users_repository
         self.game_repository = game_repository
         self.task_repository = task_repository
-        self.strategy_service = StrategyService()
-        super().__init__(users_actions_repository)
+        super().__init__(user_actions_repository)
 
     def user_add_action_in_task(
         # action is JSON object
         self,
-        gameId: UUID,
         externalTaskId: str,
         action: AddActionDidByUserInTask,
     ):
@@ -73,18 +70,36 @@ class UserActionsService(BaseService):
             NotFoundError: If the user or task is not found.
             GoneError: If the task is not active.
         """
-        user = self.users_repository.read_by_id(
-            action.userId,
-            not_found_message=f"User not found (id) : {action.userId}",
+        user = self.users_repository.read_by_column(
+            "externalUserId",
+            action.externalUserId,
+            not_found_raise_exception=False,
         )
-        task = self.task_repository.read_by_id(
-            action.taskId,
-            not_found_message=f"Task not found (id) : {action.taskId}",
+        if user is None:
+            user = self.users_repository.create_user_by_externalUserId(
+                externalUserId=action.externalUserId
+            )
+        task = self.task_repository.read_by_column(
+            "externalTaskId",
+            externalTaskId,
+            not_found_message=(
+                f"Task not found (externalTaskId) : {externalTaskId}"
+            ),
         )
 
-        if not task.active:
-            raise GoneError(f"Task not active (id) : {task.id}")
+        if task.status != "open":
+            raise GoneError("Task is not active")
 
-        return self.users_actions_repository.add_action_in_task(
-            user.id, task.id, action
+        new_action = CreateUserActions(
+            typeAction=action.typeAction,
+            data=action.data,
+            description=action.description,
+            userId=str(user.id),
         )
+        created_action = self.user_actions_repository.create(new_action)
+        response = ResponseAddActionDidByUserInTask(
+            **created_action.dict(),
+            externalUserId=str(action.externalUserId),
+            message="Action added successfully",
+        )
+        return response

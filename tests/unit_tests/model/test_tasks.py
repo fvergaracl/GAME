@@ -38,7 +38,7 @@ def test_tasks_str():
         f"Tasks(id={task.id}, created_at={task.created_at}, "
         f"updated_at={task.updated_at}, "
         f"externalTaskId={task.externalTaskId}, gameId={task.gameId}, "
-        f"strategyId={task.strategyId}), status={task.status}"
+        f"strategyId={task.strategyId}, status={task.status})"
     )
     assert str(task) == expected_str
 
@@ -52,7 +52,7 @@ def test_tasks_repr():
         f"Tasks(id={task.id}, created_at={task.created_at}, "
         f"updated_at={task.updated_at}, "
         f"externalTaskId={task.externalTaskId}, gameId={task.gameId}, "
-        f"strategyId={task.strategyId}), status={task.status}"
+        f"strategyId={task.strategyId}, status={task.status})"
     )
     assert repr(task) == expected_repr
 

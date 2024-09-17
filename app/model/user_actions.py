@@ -19,7 +19,8 @@ class UserActions(BaseModel, table=True):
     typeAction: str = Field(sa_column=Column(String), nullable=True)
     data: dict = Field(sa_column=Column(JSONB), nullable=True)
     description: str = Field(sa_column=Column(String), nullable=True)
-    userId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("users.id")))
+    userId: str = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("users.id")))
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
