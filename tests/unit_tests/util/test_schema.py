@@ -5,6 +5,9 @@ from app.util.schema import AllOptional
 
 
 class TestModel(BaseModel, metaclass=AllOptional):
+    """
+    Test model with all fields optional.
+    """
     id: int
     name: str
     is_active: bool

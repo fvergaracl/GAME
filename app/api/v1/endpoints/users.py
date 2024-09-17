@@ -288,7 +288,7 @@ description_convert_points = """
 def convert_points_to_coins(
     externalUserId: str,
     schema: PostPointsConversionRequest,
-    service: UserService = Depends(Provide[Container.user_service]),
+    service: UserService = Depends(Provide[Container.user_actions_service]),
 ):
     """
     Convert points to coins for a specific user.

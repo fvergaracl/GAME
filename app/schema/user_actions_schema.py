@@ -21,3 +21,19 @@ class UserActions(BaseModel):
     userId: str
     action: str
     data: Optional[dict]
+
+
+class CreateUserActions(BaseModel):
+    """
+    Model for creating user actions
+
+    Attributes:
+        userId (str): User ID
+        action (str): Action
+        data (Optional[dict]): Additional data
+    """
+
+    typeAction: str
+    data: Optional[dict]
+    description: Optional[str]
+    userId: str
