@@ -273,7 +273,8 @@
 <span class="sd">              The session factory.</span>
 <span class="sd">            model: The SQLAlchemy model class for user points.</span>
 <span class="sd">        """</span>
-        <span class="n">session_factory_userAction</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]]</span>
+        <span class="n">session_factory_userAction</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span>
+                                              <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]]</span>
         <span class="n">model_userAction</span> <span class="o">=</span> <span class="n">UserActions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">userAction_repository</span> <span class="o">=</span> <span class="n">BaseRepository</span><span class="p">(</span>
             <span class="n">session_factory_userAction</span><span class="p">,</span> <span class="n">model_userAction</span>
