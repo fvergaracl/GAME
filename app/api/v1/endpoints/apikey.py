@@ -11,6 +11,8 @@ from app.schema.apikey_schema import (
     ApiKeyCreate, ApiKeyCreated,  ApiKeyCreatedUnitList, ApiKeyPostBody
 )
 from app.services.apikey_service import ApiKeyService
+from app.util.check_role import check_role
+from app.core.exceptions import ForbiddenError
 
 router = APIRouter(
     prefix="/apikey",
@@ -45,6 +47,8 @@ async def create_api_key(
     """
     token_decoded = await valid_access_token(token)
     token_decoded = token_decoded.data
+    if not check_role(token_decoded, "AdministratorGAME"):
+        raise ForbiddenError("You do not have permission to create an API key")
     created_by = token_decoded["sub"]
     apiKey = await service.generate_api_key_service()
     apikeyBody = ApiKeyCreate(**schema.dict(),
@@ -81,6 +85,10 @@ async def get_all_api_keys(
     """
     Endpoint to get all API keys, requires authentication.
     """
+    token_decoded = await valid_access_token(token)
+    token_decoded = token_decoded.data
+    if not check_role(token_decoded, "AdministratorGAME"):
+        raise ForbiddenError("You do not have permission to get all API keys")
     response = await valid_access_token(token)
     if response.error:
         return response
