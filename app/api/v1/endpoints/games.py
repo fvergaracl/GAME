@@ -71,6 +71,7 @@ description_get_game_by_id = """
     response_model=BaseGameResult,
     description=description_get_game_by_id,
     summary=summary_get_game_by_id,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_game_by_id(
@@ -103,6 +104,7 @@ description_create_game = """
     response_model=GameCreated,
     summary=summary_create_game,
     description=description_create_game,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def create_game(
@@ -134,6 +136,7 @@ description_patch_game = """
     response_model=ResponsePatchGame,
     summary=summary_patch_game,
     description=description_patch_game,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def patch_game(
@@ -167,6 +170,7 @@ description_get_strategy_by_gameId = """
     response_model=Strategy,
     summary=summary_get_strategy_by_gameId,
     description=description_get_strategy_by_gameId,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_strategy_by_gameId(
@@ -198,6 +202,7 @@ description_create_task = """
     response_model=CreateTaskPostSuccesfullyCreated,
     summary=summary_create_task,
     description=description_create_task,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def create_task(
@@ -229,9 +234,9 @@ description_create_tasks_bulk = """
 @router.post(
     "/games/{gameId}/tasks/bulk",
     response_model=CreateTasksPostBulkCreated,
-
     summary=summary_create_tasks_bulk,
     description=description_create_tasks_bulk,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def create_tasks_bulk(
@@ -281,6 +286,7 @@ description_get_task_list = """
     response_model=FoundTasks,
     summary=summary_get_task_list,
     description=description_get_task_list,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_task_list(
@@ -314,6 +320,7 @@ description_get_task_by_gameId_taskId = """
     response_model=CreateTaskPostSuccesfullyCreated,
     summary=summary_get_task_by_gameId_taskId,
     description=description_get_task_by_gameId_taskId,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_task_by_gameId_taskId(
@@ -349,6 +356,7 @@ description_get_points_by_gameId = """
     response_model=AllPointsByGame,
     summary=summary_get_points_by_gameId,
     description=description_get_points_by_gameId,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_points_by_gameId(
@@ -382,6 +390,7 @@ description_get_points_of_user_in_game = """
     response_model=List[PointsAssignedToUser],
     summary=summary_get_points_of_user_in_game,
     description=description_get_points_of_user_in_game,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_points_of_user_in_game(
@@ -418,6 +427,7 @@ description_user_action = """
     response_model=AddActionDidByUserInTask,
     summary=summary_user_action,
     description=description_user_action,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def user_action_in_task(
@@ -447,6 +457,7 @@ description_assing_points_to_user = """
     response_model=AssignedPointsToExternalUserId,
     summary=summary_assing_points_to_user,
     description=description_assing_points_to_user,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def assign_points_to_user(
@@ -483,6 +494,7 @@ description_get_points_by_task_id = """
     response_model=List[PointsAssignedToUser],
     summary=summary_get_points_by_task_id,
     description=description_get_points_by_task_id,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_points_by_task_id(
@@ -516,6 +528,7 @@ description_get_points_of_user_by_task_id = """
     response_model=PointsAssignedToUser,
     summary=summary_get_points_of_user_by_task_id,
     description=description_get_points_of_user_by_task_id,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_points_of_user_by_task_id(
@@ -555,6 +568,7 @@ description_get_points_by_task_id_with_details = """
     response_model=List[dict],  # WIP FIX
     summary=summary_get_points_by_task_id_with_details,
     description=description_get_points_by_task_id_with_details,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_points_by_task_id_with_details(
@@ -589,6 +603,7 @@ description_get_users_by_gameId = """
     response_model=ListTasksWithUsers,
     summary=summary_get_users_by_gameId,
     description=description_get_users_by_gameId,
+    dependencies=[Depends(auth_api_key_or_oauth2)]
 )
 @inject
 def get_users_by_gameId(
