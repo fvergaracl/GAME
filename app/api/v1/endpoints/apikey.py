@@ -86,11 +86,11 @@ async def get_all_api_keys(
     Endpoint to get all API keys, requires authentication.
     """
     token_decoded = await valid_access_token(token)
-    token_decoded = token_decoded.data
-    if not check_role(token_decoded, "AdministratorGAME"):
+    token_decoded_error = token_decoded.error
+    token_decoded_data = token_decoded.data
+    if token_decoded_error:
+        raise token_decoded_error
+    if not check_role(token_decoded_data, "AdministratorGAME"):
         raise ForbiddenError("You do not have permission to get all API keys")
-    response = await valid_access_token(token)
-    if response.error:
-        return response
-
+    await valid_access_token(token)
     return service.get_all_api_keys()
