@@ -105,6 +105,54 @@ class TestQueryBuilder(unittest.TestCase):
         self.assertIn("test_model.name LIKE", sql_string)
         self.assertIn("test_model.is_active IS true", sql_string)
 
+    def test_in_filter_empty(self):
+        """
+        Test that the function generates an IN filter with an empty list.
+        """
+        filter_dict = {"age__in": ""}
+        filter_options = dict_to_sqlalchemy_filter_options(
+            TestModel, filter_dict)
+        expected_filter = TestModel.age.in_([])
+        self.assertEqual(str(filter_options), str(and_(True, expected_filter)))
+
+    def test_isnull_filter_false(self):
+        """
+        Test that the function generates an IS NOT NULL filter.
+        """
+        filter_dict = {"age__isnull": False}
+        filter_options = dict_to_sqlalchemy_filter_options(
+            TestModel, filter_dict)
+        expected_filter = TestModel.age.__ne__(None)
+        self.assertEqual(str(filter_options), str(and_(True, expected_filter)))
+
+    def test_non_existent_attribute(self):
+        """
+        Test that the function skips non-existent model attributes.
+        """
+        filter_dict = {"non_existent_attribute": "some_value"}
+        filter_options = dict_to_sqlalchemy_filter_options(
+            TestModel, filter_dict)
+        self.assertEqual(str(filter_options), str(and_(True)))
+
+    def test_invalid_custom_command(self):
+        """
+        Test that the function skips invalid custom commands.
+        """
+        filter_dict = {"age__invalid": 30}
+        filter_options = dict_to_sqlalchemy_filter_options(
+            TestModel, filter_dict)
+        self.assertEqual(str(filter_options), str(and_(True)))
+
+    def test_non_existent_attribute_with_custom_command(self):
+        """
+        Test that the function skips non-existent model attributes with custom
+          commands.
+        """
+        filter_dict = {"non_existent__gt": 30}
+        filter_options = dict_to_sqlalchemy_filter_options(
+            TestModel, filter_dict)
+        self.assertEqual(str(filter_options), str(and_(True)))
+
 
 if __name__ == "__main__":
     unittest.main()
