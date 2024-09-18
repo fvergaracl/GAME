@@ -84,6 +84,7 @@ prettytable = "^3.11.0"
 fastapi = "^0.114.2"
 starlette = "^0.38.5"
 prometheus-fastapi-instrumentator = "^7.0.0"
+freezegun = "^1.5.1"
 
 
 [tool.poetry.group.dev.dependencies]
