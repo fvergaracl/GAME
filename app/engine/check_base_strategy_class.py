@@ -39,7 +39,8 @@ def check_class_methods_and_variables(Class_to_check, debug=False):
         "variable_bonus_points",
     ]
 
-    missing_methods = [method for method in methods if not hasattr(instance, method)]
+    missing_methods = [method for method in methods if not hasattr(
+        instance, method)]
     if missing_methods:
         print(f"Missing methods: {missing_methods}")
     else:
