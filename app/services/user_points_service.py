@@ -271,6 +271,7 @@ class UserPointsService(BaseService):
                 externalGameId=externalGameId,
                 externalTaskId=externalTaskId,
                 externalUserId=externalUserId,
+                data=schema.data,
             )
         except Exception as e:
             print("----------------- ERROR -----------------")
@@ -281,13 +282,25 @@ class UserPointsService(BaseService):
                     f"Error in calculate points for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Please try again later or contact support"  # noqa
                 )
             )
-        print(f"points: {points} | case_name: {case_name}")
+        if points == -1:
+            raise PreconditionFailedError(
+                detail=(
+                    case_name
+                )
+            )
+        if points == 0:
+            raise PreconditionFailedError(
+                detail=(
+                    f"Points not calculated for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Please try again later or contact support"  # noqa
+                )
+            )
         if not points or not case_name:
             raise InternalServerError(
                 detail=(
                     f"Points not calculated for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Beacuse the strategy don't have condition to calculate it or the strategy don't have a case name"  # noqa
                 )
             )
+        print(f"points: {points} | case_name: {case_name}")
 
         user_points_schema = UserPointsAssign(
             userId=str(user.id),

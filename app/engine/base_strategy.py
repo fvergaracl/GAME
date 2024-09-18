@@ -213,7 +213,7 @@ class BaseStrategy:
             "variables": self.get_variables(),
         }
 
-    def calculate_points(self):
+    def calculate_points(self, data=None):
         """
         Calculates the points for the strategy.
 
