@@ -252,7 +252,8 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(UserPoints.id).label("measurement_count"))
+                session.query(func.count(
+                    UserPoints.id).label("measurement_count"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -270,7 +271,8 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.max(UserPoints.created_at).label("last_task_time"))
+                session.query(
+                    func.max(UserPoints.created_at).label("last_task_time"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -288,7 +290,8 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.avg(UserPoints.points).label("average_points"))
+                session.query(
+                    func.avg(UserPoints.points).label("average_points"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -319,7 +322,8 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.min(UserPoints.created_at).label("start_time"))
+                session.query(
+                    func.min(UserPoints.created_at).label("start_time"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -337,7 +341,8 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(UserPoints.taskId).label("measurement_count"))
+                session.query(func.count(
+                    UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .filter(Tasks.externalTaskId == external_task_id)
                 .one()
@@ -380,7 +385,8 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(UserPoints.taskId).label("measurement_count"))
+                session.query(func.count(
+                    UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
@@ -407,7 +413,8 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(UserPoints.taskId).label("measurement_count"))
+                session.query(func.count(
+                    UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
@@ -513,7 +520,8 @@ class UserPointsRepository(BaseRepository):
             if len(last_two_points) < 2:
                 return 0
 
-            time_diff = last_two_points[0].created_at - last_two_points[1].created_at
+            time_diff = last_two_points[0].created_at - \
+                last_two_points[1].created_at
             return time_diff.total_seconds()
 
     def get_new_last_window_time_diff(
@@ -554,9 +562,117 @@ class UserPointsRepository(BaseRepository):
                 current_time = current_time.replace(tzinfo=timezone.utc)
 
             if last_point.created_at.tzinfo is None:
-                last_created_at = last_point.created_at.replace(tzinfo=timezone.utc)
+                last_created_at = last_point.created_at.replace(
+                    tzinfo=timezone.utc)
             else:
                 last_created_at = last_point.created_at
 
             time_diff = current_time - last_created_at
             return time_diff.total_seconds()
+
+    def count_personal_records_by_external_game_id(
+        self, externalGameId, externalUserId
+    ):
+        """
+        Retrieves the total number of personal records by external game ID.
+
+        Args:
+            externalGameId (str): The external game ID.
+            externalUserId (str): The external user ID.
+
+        Returns:
+            int: The total number of personal records.
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(func.count(UserPoints.id).label("record_count"))
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Games, Tasks.gameId == Games.id)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Games.externalGameId == externalGameId)
+                .filter(Users.externalUserId == externalUserId)
+                .one()
+            )
+            return query.record_count
+
+    def user_has_record_before_in_externalTaskId_last_min(
+        self, externalTaskId, externalUserId, minutes
+    ):
+        """
+        Checks if a user has at least one record before in an external task.
+
+        Args:
+            externalTaskId (str): The external task ID.
+            externalUserId (str): The external user ID.
+            minutes (int): The number of minutes to consider.
+
+        Returns:
+            bool: True if the user has one record before, False otherwise.
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(UserPoints)
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .filter(Users.externalUserId == externalUserId)
+                .filter(UserPoints.created_at > func.now() - timedelta(
+                    minutes=minutes))
+                .count()
+            )
+            return query > 0
+
+    def get_global_avg_by_external_game_id(self, externalGameId):
+        """
+        Retrieves the global average time using data["minutes"] for a given
+          external game ID.
+
+        Args:
+            externalGameId (str): The external game ID.
+
+        Returns:
+            float: The global average time, or -1 if no valid data exists.
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(
+                    func.avg(UserPoints.data["minutes"].as_float()).label(
+                        "average_minutes")
+                )
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Games, Tasks.gameId == Games.id)
+                .filter(Games.externalGameId == externalGameId)
+                .filter(UserPoints.data["minutes"].as_float() > 0)
+                .one()
+            )
+
+            return query.average_minutes if query.average_minutes is not None else -1
+
+    def get_personal_avg_by_external_game_id(self, externalGameId, externalUserId):
+        """
+        Retrieves the personal average time using data["minutes"] for a given
+          external game ID and user ID.
+
+        Args:
+            externalGameId (str): The external game ID.
+            externalUserId (str): The external user ID.
+
+        Returns:
+            float: The personal average time, or -1 if no valid data exists.
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(
+                    func.avg(UserPoints.data["minutes"].as_float()).label(
+                        "average_minutes")
+                )
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .join(Games, Tasks.gameId == Games.id)
+                .join(Users, UserPoints.userId == Users.id)
+                .filter(Games.externalGameId == externalGameId)
+                .filter(Users.externalUserId == externalUserId)
+                .filter(UserPoints.data["minutes"].as_float() > 0)
+                .one()
+            )
+
+            return query.average_minutes if query.average_minutes is not None else -1

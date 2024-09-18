@@ -576,3 +576,72 @@ class UserPointsService(BaseService):
         return self.user_points_repository.get_user_task_measurements(
             externalTaskId, externalUserId
         )
+
+    # get count personal points in the game, should have "minutes" field in the data
+    def count_personal_records_by_external_game_id(
+            self, external_game_id, externalUserId
+    ):
+        """
+        Count the number of records for a user in a game.
+
+        Args:
+            external_game_id (str): The external game id.
+            externalUserId (str): The external user id.
+
+        Returns:
+            int: The number of records.
+        """
+        return self.user_points_repository.count_personal_records_by_external_game_id(
+            external_game_id,
+            externalUserId
+        )
+
+    def user_has_record_before_in_externalTaskId_last_min(
+        self, externalTaskId, externalUserId, minutes
+    ):
+        """
+        Check if a user has a record before in the task in the last minute.
+
+        Args:
+            externalTaskId (str): The external task id.
+            externalUserId (str): The external user id.
+            minutes (int): The number of minutes.
+
+        Returns:
+            bool: True if the user has a record before in the task,
+              False otherwise
+        """
+        return self.user_points_repository.user_has_record_before_in_externalTaskId_last_min(
+            externalTaskId, externalUserId, minutes
+        )
+
+    def get_global_avg_by_external_game_id(self, external_game_id):
+        """
+        Get the global average time rewarded. It does not take into account
+          the time with 0 value (minutes)
+
+        Args:
+            external_game_id (str): The external game id.
+
+        Returns:
+            float: The global average.
+        """
+        return self.user_points_repository.get_global_avg_by_external_game_id(
+            external_game_id
+        )
+
+    def get_personal_avg_by_external_game_id(self, external_game_id, externalUserId):
+        """
+        Get the personal average time rewarded. It does not take into account
+          the time with 0 value (minutes)
+
+        Args:
+            external_game_id (str): The external game id.
+            externalUserId (str): The external user id.
+
+        Returns:
+            float: The personal average.
+        """
+        return self.user_points_repository.get_personal_avg_by_external_game_id(
+            external_game_id, externalUserId
+        )
