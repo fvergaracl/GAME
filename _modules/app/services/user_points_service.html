@@ -531,6 +531,7 @@
                 <span class="n">externalGameId</span><span class="o">=</span><span class="n">externalGameId</span><span class="p">,</span>
                 <span class="n">externalTaskId</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
                 <span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">"----------------- ERROR -----------------"</span><span class="p">)</span>
@@ -541,13 +542,25 @@
                     <span class="sa">f</span><span class="s2">"Error in calculate points for task with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> and user with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">. Please try again later or contact support"</span>  <span class="c1"># noqa</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"points: </span><span class="si">{</span><span class="n">points</span><span class="si">}</span><span class="s2"> | case_name: </span><span class="si">{</span><span class="n">case_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">points</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">case_name</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">points</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Points not calculated for task with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> and user with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">. Please try again later or contact support"</span>  <span class="c1"># noqa</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">points</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">case_name</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InternalServerError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">"Points not calculated for task with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> and user with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">. Beacuse the strategy don't have condition to calculate it or the strategy don't have a case name"</span>  <span class="c1"># noqa</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"points: </span><span class="si">{</span><span class="n">points</span><span class="si">}</span><span class="s2"> | case_name: </span><span class="si">{</span><span class="n">case_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">user_points_schema</span> <span class="o">=</span> <span class="n">UserPointsAssign</span><span class="p">(</span>
             <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
@@ -861,6 +874,87 @@
     <span class="k">def</span> <span class="nf">get_user_task_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_user_task_measurements</span><span class="p">(</span>
             <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
+        <span class="p">)</span></div>
+
+
+    <span class="c1"># get count personal points in the game, should have "minutes" field in the data</span>
+<div class="viewcode-block" id="UserPointsService.count_personal_records_by_external_game_id">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.count_personal_records_by_external_game_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_personal_records_by_external_game_id</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">external_game_id</span><span class="p">,</span> <span class="n">externalUserId</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Count the number of records for a user in a game.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            external_game_id (str): The external game id.</span>
+<span class="sd">            externalUserId (str): The external user id.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The number of records.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">count_personal_records_by_external_game_id</span><span class="p">(</span>
+            <span class="n">external_game_id</span><span class="p">,</span>
+            <span class="n">externalUserId</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserPointsService.user_has_record_before_in_externalTaskId_last_min">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.user_has_record_before_in_externalTaskId_last_min">[docs]</a>
+    <span class="k">def</span> <span class="nf">user_has_record_before_in_externalTaskId_last_min</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">minutes</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Check if a user has a record before in the task in the last minute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId (str): The external task id.</span>
+<span class="sd">            externalUserId (str): The external user id.</span>
+<span class="sd">            minutes (int): The number of minutes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the user has a record before in the task,</span>
+<span class="sd">              False otherwise</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">user_has_record_before_in_externalTaskId_last_min</span><span class="p">(</span>
+            <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">minutes</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserPointsService.get_global_avg_by_external_game_id">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_global_avg_by_external_game_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_global_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_game_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the global average time rewarded. It does not take into account</span>
+<span class="sd">          the time with 0 value (minutes)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            external_game_id (str): The external game id.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The global average.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_global_avg_by_external_game_id</span><span class="p">(</span>
+            <span class="n">external_game_id</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UserPointsService.get_personal_avg_by_external_game_id">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_personal_avg_by_external_game_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_personal_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_game_id</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the personal average time rewarded. It does not take into account</span>
+<span class="sd">          the time with 0 value (minutes)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            external_game_id (str): The external game id.</span>
+<span class="sd">            externalUserId (str): The external user id.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The personal average.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_personal_avg_by_external_game_id</span><span class="p">(</span>
+            <span class="n">external_game_id</span><span class="p">,</span> <span class="n">externalUserId</span>
         <span class="p">)</span></div>
 </div>
 

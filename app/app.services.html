@@ -361,15 +361,21 @@
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.count_measurements_by_external_task_id()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.count_personal_records_by_external_game_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.count_personal_records_by_external_game_id()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_all_points_by_externalUserId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_avg_time_between_tasks_by_user_and_game_task()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_avg_time_between_tasks_for_all_users()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_global_avg_by_external_game_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_global_avg_by_external_game_id()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_last_window_time_diff()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_new_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_new_last_window_time_diff()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_personal_avg_by_external_game_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_personal_avg_by_external_game_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_points_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_points_by_externalUserId()</span></code></a>
         </li>
@@ -396,6 +402,8 @@
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.get_users_points_by_externalTaskId_and_externalUserId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.query_user_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.query_user_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_service.UserPointsService.user_has_record_before_in_externalTaskId_last_min" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsService.user_has_record_before_in_externalTaskId_last_min()</span></code></a>
         </li></ul>
             </nav>
         </li></ul>
@@ -1208,6 +1216,25 @@ task parameters.</p>
 <span class="sig-name descname"><span class="pre">count_measurements_by_external_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.count_measurements_by_external_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.count_personal_records_by_external_game_id">
+<span class="sig-name descname"><span class="pre">count_personal_records_by_external_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_game_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.count_personal_records_by_external_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.count_personal_records_by_external_game_id" title="Link to this definition">¶</a></dt>
+<dd><p>Count the number of records for a user in a game.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>external_game_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external game id.</p></li>
+<li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user id.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of records.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId">
 <span class="sig-name descname"><span class="pre">get_all_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_all_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1220,6 +1247,25 @@ task parameters.</p>
 <span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_for_all_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_avg_time_between_tasks_for_all_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_global_avg_by_external_game_id">
+<span class="sig-name descname"><span class="pre">get_global_avg_by_external_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_game_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_global_avg_by_external_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_global_avg_by_external_game_id" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Get the global average time rewarded. It does not take into account</dt><dd><p>the time with 0 value (minutes)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>external_game_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external game id.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The global average.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_last_window_time_diff">
 <span class="sig-name descname"><span class="pre">get_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_last_window_time_diff" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1227,6 +1273,28 @@ task parameters.</p>
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_new_last_window_time_diff">
 <span class="sig-name descname"><span class="pre">get_new_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_new_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_new_last_window_time_diff" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_personal_avg_by_external_game_id">
+<span class="sig-name descname"><span class="pre">get_personal_avg_by_external_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_game_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_personal_avg_by_external_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_personal_avg_by_external_game_id" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Get the personal average time rewarded. It does not take into account</dt><dd><p>the time with 0 value (minutes)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>external_game_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external game id.</p></li>
+<li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user id.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The personal average.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_externalUserId">
 <span class="sig-name descname"><span class="pre">get_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_externalUserId" title="Link to this definition">¶</a></dt>
@@ -1279,6 +1347,30 @@ task parameters.</p>
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.query_user_points">
 <span class="sig-name descname"><span class="pre">query_user_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.query_user_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.query_user_points" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.user_has_record_before_in_externalTaskId_last_min">
+<span class="sig-name descname"><span class="pre">user_has_record_before_in_externalTaskId_last_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.user_has_record_before_in_externalTaskId_last_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.user_has_record_before_in_externalTaskId_last_min" title="Link to this definition">¶</a></dt>
+<dd><p>Check if a user has a record before in the task in the last minute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalTaskId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external task id.</p></li>
+<li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The external user id.</p></li>
+<li><p><strong>minutes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The number of minutes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>True if the user has a record before in the task,</dt><dd><p>False otherwise</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.user_service">

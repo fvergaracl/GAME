@@ -43,5 +43,5 @@ If correctly implemented, the strategy should be displayed in the ``GET /api/v1/
             self.variable_global_advantage_adjustment_points = 7
             self.variable_individual_adjustment_points = 8
 
-        def calculate_points(self, externalGameId, externalTaskId, externalUserId):
+        def calculate_points(self, externalGameId, externalTaskId, externalUserId, data=None):
             # Strategy logic goes here

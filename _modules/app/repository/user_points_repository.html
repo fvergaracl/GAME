@@ -515,7 +515,8 @@
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span>
+                    <span class="n">UserPoints</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">one</span><span class="p">()</span>
             <span class="p">)</span>
@@ -536,7 +537,8 @@
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"last_task_time"</span><span class="p">))</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"last_task_time"</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">one</span><span class="p">()</span>
             <span class="p">)</span>
@@ -557,7 +559,8 @@
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"average_points"</span><span class="p">))</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">func</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"average_points"</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">one</span><span class="p">()</span>
             <span class="p">)</span>
@@ -594,7 +597,8 @@
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"start_time"</span><span class="p">))</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"start_time"</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">one</span><span class="p">()</span>
             <span class="p">)</span>
@@ -615,7 +619,8 @@
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span>
+                    <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">external_task_id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">one</span><span class="p">()</span>
@@ -664,7 +669,8 @@
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span>
+                    <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
@@ -694,7 +700,8 @@
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span>
+                    <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
@@ -809,7 +816,8 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">last_two_points</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="k">return</span> <span class="mi">0</span>
 
-            <span class="n">time_diff</span> <span class="o">=</span> <span class="n">last_two_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">created_at</span> <span class="o">-</span> <span class="n">last_two_points</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">created_at</span>
+            <span class="n">time_diff</span> <span class="o">=</span> <span class="n">last_two_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">created_at</span> <span class="o">-</span> \
+                <span class="n">last_two_points</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">created_at</span>
             <span class="k">return</span> <span class="n">time_diff</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span></div>
 
 
@@ -853,12 +861,132 @@
                 <span class="n">current_time</span> <span class="o">=</span> <span class="n">current_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">last_point</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">last_created_at</span> <span class="o">=</span> <span class="n">last_point</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+                <span class="n">last_created_at</span> <span class="o">=</span> <span class="n">last_point</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">last_created_at</span> <span class="o">=</span> <span class="n">last_point</span><span class="o">.</span><span class="n">created_at</span>
 
             <span class="n">time_diff</span> <span class="o">=</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">last_created_at</span>
             <span class="k">return</span> <span class="n">time_diff</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="UserPointsRepository.count_personal_records_by_external_game_id">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.count_personal_records_by_external_game_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">count_personal_records_by_external_game_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalUserId</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves the total number of personal records by external game ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId (str): The external game ID.</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The total number of personal records.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"record_count"</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Games</span><span class="p">,</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">Games</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Games</span><span class="o">.</span><span class="n">externalGameId</span> <span class="o">==</span> <span class="n">externalGameId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">record_count</span></div>
+
+
+<div class="viewcode-block" id="UserPointsRepository.user_has_record_before_in_externalTaskId_last_min">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min">[docs]</a>
+    <span class="k">def</span> <span class="nf">user_has_record_before_in_externalTaskId_last_min</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">minutes</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Checks if a user has at least one record before in an external task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId (str): The external task ID.</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+<span class="sd">            minutes (int): The number of minutes to consider.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the user has one record before, False otherwise.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&gt;</span> <span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span>
+                    <span class="n">minutes</span><span class="o">=</span><span class="n">minutes</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">query</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="UserPointsRepository.get_global_avg_by_external_game_id">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_global_avg_by_external_game_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_global_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves the global average time using data["minutes"] for a given</span>
+<span class="sd">          external game ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId (str): The external game ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The global average time, or -1 if no valid data exists.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">func</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"minutes"</span><span class="p">]</span><span class="o">.</span><span class="n">as_float</span><span class="p">())</span><span class="o">.</span><span class="n">label</span><span class="p">(</span>
+                        <span class="s2">"average_minutes"</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Games</span><span class="p">,</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">Games</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Games</span><span class="o">.</span><span class="n">externalGameId</span> <span class="o">==</span> <span class="n">externalGameId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"minutes"</span><span class="p">]</span><span class="o">.</span><span class="n">as_float</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">average_minutes</span> <span class="k">if</span> <span class="n">query</span><span class="o">.</span><span class="n">average_minutes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="UserPointsRepository.get_personal_avg_by_external_game_id">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_personal_avg_by_external_game_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_personal_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Retrieves the personal average time using data["minutes"] for a given</span>
+<span class="sd">          external game ID and user ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId (str): The external game ID.</span>
+<span class="sd">            externalUserId (str): The external user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: The personal average time, or -1 if no valid data exists.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">func</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"minutes"</span><span class="p">]</span><span class="o">.</span><span class="n">as_float</span><span class="p">())</span><span class="o">.</span><span class="n">label</span><span class="p">(</span>
+                        <span class="s2">"average_minutes"</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Games</span><span class="p">,</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">Games</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Games</span><span class="o">.</span><span class="n">externalGameId</span> <span class="o">==</span> <span class="n">externalGameId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"minutes"</span><span class="p">]</span><span class="o">.</span><span class="n">as_float</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">query</span><span class="o">.</span><span class="n">average_minutes</span> <span class="k">if</span> <span class="n">query</span><span class="o">.</span><span class="n">average_minutes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span></div>
 </div>
 
 </pre></div>
