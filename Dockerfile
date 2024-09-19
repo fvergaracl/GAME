@@ -1,4 +1,4 @@
-FROM python:3.10.13-slim as builder
+FROM python:3.11.10-slim as builder
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgraphviz-dev \  
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install poetry==1.7.1
+RUN pip3 install poetry==1.8.3
 RUN poetry config virtualenvs.create false
 WORKDIR /app/
 
