@@ -113,6 +113,9 @@ def get_strategy_graph_by_id(
         raise NotFoundError(detail=f"Strategy not found with id: {id}")
     print(strategy)
     strategy_class = service.get_Class_by_id(id)
+    if strategy_class is None:
+        raise NotFoundError(
+            detail=f"No class found for strategy with id: {id}")
     dot = strategy_class.generate_logic_graph(format="png")
 
     graph_png = dot.pipe(format="png")
