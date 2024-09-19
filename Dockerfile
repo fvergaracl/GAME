@@ -1,11 +1,12 @@
-FROM python:3.11.10-slim as builder
+FROM python:3.12-slim as builder
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
-    build-essential \ 
-    libgraphviz-dev \  
+    build-essential \
+    libgraphviz-dev \
+    graphviz \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install poetry==1.8.3
@@ -21,7 +22,7 @@ ENV PYTHONPATH=/app/app
 
 FROM builder as dev
 RUN poetry install --no-root
-CMD ["bash", "./start-dev.sh"]
+CMD ["bash", "./app/start-dev.sh"]
 
 FROM builder as prod
 RUN poetry install --no-root --no-dev --no-cache
