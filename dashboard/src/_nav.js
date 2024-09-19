@@ -13,6 +13,7 @@ import {
   cilSpeedometer,
   cilStar,
 } from '@coreui/icons'
+import { TbClockPin } from 'react-icons/tb'
 
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -26,14 +27,13 @@ const _nav = [
       color: 'info',
       text: 'NEW',
     },
-  },  
+  },
   {
     component: CNavItem,
     name: 'Games',
     to: '/games',
     icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
-  
-  }
+  },
 
   // {
   //   component: CNavItem,
@@ -58,6 +58,12 @@ const _nav_administrator = [
       color: 'info',
       text: 'NEW',
     },
+  },
+  {
+    component: CNavItem,
+    name: 'KPI',
+    to: '/admin/KPI',
+    icon: <TbClockPin style={{ fontSize: '1.5em', marginRight: '10px' }} />,
   },
 ]
 

@@ -6,11 +6,14 @@
     "**/.pytest_cache": true,
     "**/.mypy_cache": true
   },
-  "[python]": {
-    "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "[javascriptreact]": {
+    "source.fixAll.eslint": "explicit"
   },
   "editor.minimap.enabled": false,
   "editor.selectionClipboard": false,
-  // auto save
-  "files.autoSave": "afterDelay",
+  "files.autoSave": "afterDelay"
 }
