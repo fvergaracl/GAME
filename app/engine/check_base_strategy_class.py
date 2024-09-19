@@ -28,6 +28,7 @@ def check_class_methods_and_variables(Class_to_check, debug=False):
         "set_variable",
         "get_strategy",
         "calculate_points",
+        "generate_logic_graph"
     ]
 
     variables = [

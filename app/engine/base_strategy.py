@@ -1,5 +1,6 @@
 import hashlib
 import inspect
+from graphviz import Digraph
 
 
 class BaseStrategy:
@@ -221,3 +222,14 @@ class BaseStrategy:
             int: The basic points variable.
         """
         return self.get_variable_basic_points()
+
+    def generate_logic_graph(self, format="png"):
+        """
+        Generates a logic graph for the strategy.
+
+        Returns:
+            str: The logic graph as a string.
+        """
+        dot = Digraph(comment="Points Calculation Logic", format=format)
+        dot.node("A", "No logic graph available")
+        return dot

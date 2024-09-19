@@ -54,6 +54,9 @@ class TestCheckClassMethodsAndVariables(unittest.TestCase):
         def calculate_points(self):
             pass
 
+        def generate_logic_graph(self):
+            pass
+
     class IncompleteClass:
         """A class missing some methods and variables."""
         strategy_name = "Test Strategy"
@@ -85,7 +88,7 @@ class TestCheckClassMethodsAndVariables(unittest.TestCase):
             self.IncompleteClass, debug=True)
         self.assertFalse(result)
 
-        expected_missing_methods = "Missing methods: ['get_strategy_id', 'get_strategy_description', 'get_strategy_name_slug', 'get_strategy_version', 'get_variable_basic_points', 'get_variable_bonus_points', 'set_variables', 'get_variables', 'get_variable', 'set_variable', 'get_strategy']"  # noqa
+        expected_missing_methods = "Missing methods: ['get_strategy_id', 'get_strategy_description', 'get_strategy_name_slug', 'get_strategy_version', 'get_variable_basic_points', 'get_variable_bonus_points', 'set_variables', 'get_variables', 'get_variable', 'set_variable', 'get_strategy', 'generate_logic_graph']"  # noqa
         expected_missing_variables = "Missing variables: ['strategy_description', 'strategy_name_slug', 'strategy_version', 'variable_bonus_points']"  # noqa
 
         print(

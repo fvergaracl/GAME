@@ -79,6 +79,16 @@ async def test_create_api_key_success(
 
 @pytest.mark.asyncio
 async def test_create_api_key_forbidden(mock_api_key_service):
+    """
+    Test that a user without the AdministratorGAME role cannot create an API
+     key
+
+    Args:
+        mock_api_key_service (MagicMock): The mocked API key service
+
+    Returns:
+        None
+    """
     mock_invalid_token = {
         "data": {"sub": "test_user", "roles": ["User"]},
         "error": None,
