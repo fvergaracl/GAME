@@ -95,6 +95,10 @@ DEFAULT_CONVERSION_RATE_POINTS_TO_COIN=100 # Default conversion rate of points t
 DATABASE_URL=postgresql://root:example@localhost:5432/game_dev_db # Database connection URL
 ```
 
+### Access to protected endpoint
+
+**IMPORTANT:** Several points is protected, in this case you must define a Role into de Realm that you choose, and add the **"AdministratorGAME"** to the user
+
 ### Activating the Poetry Environment
 
 To activate the Poetry environment, run:
