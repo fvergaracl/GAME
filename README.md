@@ -97,7 +97,7 @@ DATABASE_URL=postgresql://root:example@localhost:5432/game_dev_db # Database con
 
 ### Access to protected endpoint
 
-**IMPORTANT:** Several points is protected, in this case you must define a Role into de Realm that you choose, and add the **"AdministratorGAME"** to the user
+**IMPORTANT:** Several points is protected, in this case you must define a Role into de Realm that you choose, and add the **"AdministratorGAME"** into the client called "account", after this, add the  **"AdministratorGAME"** role to the selected user
 
 ### Activating the Poetry Environment
 
