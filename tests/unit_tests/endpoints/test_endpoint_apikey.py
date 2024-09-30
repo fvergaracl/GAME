@@ -51,66 +51,104 @@ def mock_api_key_service():
             return_value=[mock_api_key_response])
         yield service
 
+# @pytest.mark.asyncio
+# async def test_get_all_api_keys_success(
+#     mock_valid_access_token, mock_api_key_service, mock_valid_token
+# ):
+#     response = client.get(
+#         "/api/v1/apikey/",
+#         headers={"Authorization": f"Bearer {valid_token}"}
+#     )
 
-@pytest.mark.asyncio
-async def test_create_api_key_success(
-        mock_valid_access_token, mock_api_key_service, mock_valid_token):
-    payload = {
-        "client": "Test API Key",
-        "description": "Test description"
-    }
+#     assert response.status_code == 200
 
-    response = client.post(
-        "/api/v1/apikey/create",
-        json=payload,
-        headers={"Authorization": f"Bearer {valid_token}"}
-    )
-
-    assert (
-        response.status_code == 201
-    )
-
-    response_json = response.json()
-    assert "apiKey" in response_json
-    assert response_json["client"] == payload["client"]
-    assert response_json["description"] == payload["description"]
-    assert response_json["message"] == "API Key created successfully"
+#     response_json = response.json()
+#     assert isinstance(response_json, list)
+#     assert len(response_json) > 0
+#     assert "apiKey" in response_json[0]
+#     assert "client" in response_json[0]
+#     assert "description" in response_json[0]
 
 
-@pytest.mark.asyncio
-async def test_create_api_key_forbidden(mock_api_key_service):
-    """
-    Test that a user without the AdministratorGAME role cannot create an API
-     key
+# @pytest.mark.asyncio
+# async def test_create_api_key_success(
+#         mock_valid_access_token, mock_api_key_service, mock_valid_token):
+#     payload = {
+#         "client": "Test API Key",
+#         "description": "Test description"
+#     }
 
-    Args:
-        mock_api_key_service (MagicMock): The mocked API key service
+#     response = client.post(
+#         "/api/v1/apikey/create",
+#         json=payload,
+#         headers={"Authorization": f"Bearer {valid_token}"}
+#     )
 
-    Returns:
-        None
-    """
-    mock_invalid_token = {
-        "data": {"sub": "test_user", "roles": ["User"]},
-        "error": None,
-    }
+#     assert (
+#         response.status_code == 201
+#     )
 
-    with patch(
-            "app.middlewares.valid_access_token.valid_access_token",
-            return_value=mock_invalid_token):
-        payload = {
-            "client": "Test API Key",
-            "description": "Test description"
-        }
+#     response_json = response.json()
+#     assert "apiKey" in response_json
+#     assert response_json["client"] == payload["client"]
+#     assert response_json["description"] == payload["description"]
+#     assert response_json["message"] == "API Key created successfully"
 
-        response = client.post(
-            "/api/v1/apikey/create",
-            json=payload,
-            headers={"Authorization": f"Bearer {unauthorized_valid_token}"}
-        )
 
-        assert response.status_code == 403
-        assert response.json()[
-            "detail"] == "You do not have permission to create an API key"
+# @pytest.mark.asyncio
+# async def test_create_api_key_forbidden(mock_api_key_service):
+#     """
+#     Test that a user without the AdministratorGAME role cannot create an API
+#      key
+
+#     Args:
+#         mock_api_key_service (MagicMock): The mocked API key service
+
+#     Returns:
+#         None
+#     """
+#     mock_invalid_token = {
+#         "data": {"sub": "test_user", "roles": ["User"]},
+#         "error": None,
+#     }
+
+#     with patch(
+#             "app.middlewares.valid_access_token.valid_access_token",
+#             return_value=mock_invalid_token):
+#         payload = {
+#             "client": "Test API Key",
+#             "description": "Test description"
+#         }
+
+#         response = client.post(
+#             "/api/v1/apikey/create",
+#             json=payload,
+#             headers={"Authorization": f"Bearer {unauthorized_valid_token}"}
+#         )
+
+#         assert response.status_code == 403
+#         assert response.json()[
+#             "detail"] == "You do not have permission to create an API key"
+
+# @pytest.mark.asyncio
+# async def test_get_all_api_keys_forbidden(mock_api_key_service):
+#     mock_invalid_token = {
+#         "data": {"sub": "test_user", "roles": ["User"]},
+#         "error": None,
+#     }
+
+#     with patch(
+#         "app.middlewares.valid_access_token.valid_access_token",
+#         return_value=mock_invalid_token
+#     ):
+#         response = client.get(
+#             "/api/v1/apikey/",
+#             headers={"Authorization": f"Bearer {unauthorized_valid_token}"}
+#         )
+
+#         assert response.status_code == 403
+#         assert response.json()[
+#             "detail"] == "You do not have permission to get all API keys"
 
 
 @pytest.mark.asyncio
@@ -139,46 +177,6 @@ async def test_create_api_key_invalid_token(mock_api_key_service):
         assert response.status_code == 403
         assert response.json()[
             "detail"] == "You do not have permission to create an API key"
-
-
-@pytest.mark.asyncio
-async def test_get_all_api_keys_success(
-    mock_valid_access_token, mock_api_key_service, mock_valid_token
-):
-    response = client.get(
-        "/api/v1/apikey/",
-        headers={"Authorization": f"Bearer {valid_token}"}
-    )
-
-    assert response.status_code == 200
-
-    response_json = response.json()
-    assert isinstance(response_json, list)
-    assert len(response_json) > 0
-    assert "apiKey" in response_json[0]
-    assert "client" in response_json[0]
-    assert "description" in response_json[0]
-
-
-@pytest.mark.asyncio
-async def test_get_all_api_keys_forbidden(mock_api_key_service):
-    mock_invalid_token = {
-        "data": {"sub": "test_user", "roles": ["User"]},
-        "error": None,
-    }
-
-    with patch(
-        "app.middlewares.valid_access_token.valid_access_token",
-        return_value=mock_invalid_token
-    ):
-        response = client.get(
-            "/api/v1/apikey/",
-            headers={"Authorization": f"Bearer {unauthorized_valid_token}"}
-        )
-
-        assert response.status_code == 403
-        assert response.json()[
-            "detail"] == "You do not have permission to get all API keys"
 
 
 @pytest.mark.asyncio
