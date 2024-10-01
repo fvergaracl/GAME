@@ -1,6 +1,7 @@
 from sqlmodel import (
     Column, Field, SQLModel, String, Integer, ForeignKey
 )
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class ApiRequests(SQLModel, table=True):
@@ -8,7 +9,7 @@ class ApiRequests(SQLModel, table=True):
     Represents an API request entity.
 
     Attributes:
-        user_id (int): User identifier.
+        userId (str): The ID of the user associate with the request.
         endpoint (str): API endpoint name.
         status_code (int): HTTP response code.
         response_time_ms (int): Response time in milliseconds.
@@ -16,8 +17,8 @@ class ApiRequests(SQLModel, table=True):
 
     """
 
-    user_id: int = Field(sa_column=Column(
-        Integer, ForeignKey("users.user_id"), nullable=True))
+    userId: str = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("users.id")))
     endpoint: str = Field(sa_column=Column(String))
     status_code: int = Field(sa_column=Column(Integer))
     response_time_ms: int = Field(sa_column=Column(Integer))
@@ -35,7 +36,7 @@ class ApiRequests(SQLModel, table=True):
         """
         return (
             f"ApiRequests: (id={self.id}, created_at={self.created_at}, "
-            f"updated_at={self.updated_at}, user_id={self.user_id}, "
+            f"updated_at={self.updated_at}, userId={self.userId}, "
             f"endpoint={self.endpoint}, status_code={self.status_code}, "
             f"response_time_ms={self.response_time_ms}, "
             f"request_type={self.request_type})"
@@ -62,7 +63,7 @@ class ApiRequests(SQLModel, table=True):
         """
         return (
             isinstance(other, ApiRequests)
-            and self.user_id == other.user_id
+            and self.userId == other.userId
             and self.endpoint == other.endpoint
             and self.status_code == other.status_code
             and self.response_time_ms == other.response_time_ms
