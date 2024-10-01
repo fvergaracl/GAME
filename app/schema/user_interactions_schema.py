@@ -10,4 +10,3 @@ class UserInteractionsBase(BaseModel):
     taskId: str
     interactionType: str
     interactionDetail: str
-    

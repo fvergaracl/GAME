@@ -7,7 +7,7 @@ from app.model.kpi_metrics import KPIMetrics
 from app.repository.base_repository import BaseRepository
 
 
-class KPIMetricsRepository(BaseRepository):
+class KpiMetricsRepository(BaseRepository):
     """
     Repository class for KPI metrics.
 
