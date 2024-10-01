@@ -6,5 +6,8 @@ class UserInteractionsBase(BaseModel):
     Base model for user's interactions
     """
 
-    user_id: str
-    task_id: str
+    userId: str
+    taskId: str
+    interactionType: str
+    interactionDetail: str
+    

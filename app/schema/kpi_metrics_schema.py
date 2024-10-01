@@ -7,10 +7,10 @@ class KpiMetricsBase(BaseModel):
     """
 
     day: str
-    total_requests: int
-    success_rate: float
-    avg_latency_ms: float
-    error_rate: float
-    active_users: int
-    retention_rate: float
-    avg_interactions_per_user: float
+    totalRequests: int
+    successRate: float
+    avgLatencyMS: float
+    errorRate: float
+    activeUsers: int
+    retentionRate: float
+    avgInteractionsPerUser: float
