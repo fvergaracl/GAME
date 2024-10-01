@@ -9,24 +9,24 @@ class KPIMetrics(SQLModel, table=True):
 
     Attributes:
         day (str): Day of the metrics period (e.g., 2021-01-01).
-        total_requests (int): Total requests in the period.
-        success_rate (float): Success rate of the requests.
-        avg_latency_ms (float): Average latency in ms.
-        error_rate (float): Error rate in percentage.
-        active_users (int): Number of active users in the period.
-        retention_rate (float): User retention rate.
-        avg_interactions_per_user (float): Average number of interactions per
+        totalRequests (int): Total requests in the period.
+        successRate (float): Success rate of the requests.
+        avgLatencyMS (float): Average latency in ms.
+        errorRate (float): Error rate in percentage.
+        activeUsers (int): Number of active users in the period.
+        retentionRate (float): User retention rate.
+        avgInteractionsPerUser (float): Average number of interactions per
           user.
     """
 
     day: str = Field(sa_column=Column(String))
-    total_requests: int = Field(sa_column=Column(Integer))
-    success_rate: float = Field(sa_column=Column(Integer))
-    avg_latency_ms: float = Field(sa_column=Column(Integer))
-    error_rate: float = Field(sa_column=Column(Integer))
-    active_users: int = Field(sa_column=Column(Integer))
-    retention_rate: float = Field(sa_column=Column(Integer))
-    avg_interactions_per_user: float = Field(sa_column=Column(Integer))
+    totalRequests: int = Field(sa_column=Column(Integer))
+    successRate: float = Field(sa_column=Column(Integer))
+    avgLatencyMS: float = Field(sa_column=Column(Integer))
+    errorRate: float = Field(sa_column=Column(Integer))
+    activeUsers: int = Field(sa_column=Column(Integer))
+    retentionRate: float = Field(sa_column=Column(Integer))
+    avgInteractionsPerUser: float = Field(sa_column=Column(Integer))
 
     class Config:
         orm_mode = True
@@ -41,11 +41,11 @@ class KPIMetrics(SQLModel, table=True):
         return (
             f"KPIMetrics: (id={self.id}, created_at={self.created_at}, "
             f"updated_at={self.updated_at}, day={self.day}, "
-            f"total_requests={self.total_requests}, success_rate="
-            f"{self.success_rate}, avg_latency_ms={self.avg_latency_ms}, "
-            f"error_rate={self.error_rate}, active_users={self.active_users}, "
-            f"retention_rate={self.retention_rate}, "
-            f"avg_interactions_per_user={self.avg_interactions_per_user})"
+            f"totalRequests={self.totalRequests}, successRate="
+            f"{self.successRate}, avgLatencyMS={self.avgLatencyMS}, "
+            f"errorRate={self.errorRate}, activeUsers={self.activeUsers}, "
+            f"retentionRate={self.retentionRate}, "
+            f"avgInteractionsPerUser={self.avgInteractionsPerUser})"
         )
 
     def __repr__(self):
@@ -70,11 +70,11 @@ class KPIMetrics(SQLModel, table=True):
         return (
             isinstance(other, KPIMetrics)
             and self.day == other.day
-            and self.total_requests == other.total_requests
-            and self.success_rate == other.success_rate
-            and self.avg_latency_ms == other.avg_latency_ms
-            and self.error_rate == other.error_rate
-            and self.active_users == other.active_users
-            and self.retention_rate == other.retention_rate
-            and self.avg_interactions_per_user == other.avg_interactions_per_user
+            and self.totalRequests == other.totalRequests
+            and self.successRate == other.successRate
+            and self.avgLatencyMS == other.avgLatencyMS
+            and self.errorRate == other.errorRate
+            and self.activeUsers == other.activeUsers
+            and self.retentionRate == other.retentionRate
+            and self.avgInteractionsPerUser == other.avgInteractionsPerUser
         )

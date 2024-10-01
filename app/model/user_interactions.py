@@ -1,21 +1,24 @@
+from sqlalchemy.dialects.postgresql import UUID
+from app.model.base_model import BaseModel
 from sqlmodel import (
-    Column, Field, SQLModel, String, Integer, ForeignKey
+    Column, Field, String, Integer, ForeignKey
 )
 
 
-class UserInteractions(SQLModel, table=True):
+class UserInteractions(BaseModel, table=True):
     """
     Represents a user interaction entity.
 
     Attributes:
-        user_id (int): User identifier.
-        interaction_type (str): Type of interaction (achievement, mission,
-          reward).
+        userId (str): The ID of the user associated with the interaction.
+        taskId (str): The ID of the task associated with the interaction.
         interaction_detail (str): Description of the achievement or task.
     """
 
-    user_id: int = Field(sa_column=Column(
+    userId: int = Field(sa_column=Column(
         Integer, ForeignKey("users.user_id"), nullable=True))
+    taskId: str = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("tasks.id"), nullable=True))
     interaction_type: str = Field(sa_column=Column(String))
     interaction_detail: str = Field(sa_column=Column(String))
 
@@ -31,7 +34,7 @@ class UserInteractions(SQLModel, table=True):
         """
         return (
             f"UserInteractions: (id={self.id}, created_at={self.created_at}, "
-            f"updated_at={self.updated_at}, user_id={self.user_id}, "
+            f"updated_at={self.updated_at}, userId={self.userId}, "
             f"interaction_type={self.interaction_type}, "
             f"interaction_detail={self.interaction_detail})"
         )
@@ -57,7 +60,7 @@ class UserInteractions(SQLModel, table=True):
         """
         return (
             isinstance(other, UserInteractions)
-            and self.user_id == other.user_id
+            and self.userId == other.userId
             and self.interaction_type == other.interaction_type
             and self.interaction_detail == other.interaction_detail
         )
