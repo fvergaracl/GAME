@@ -11,18 +11,18 @@ class ApiRequests(SQLModel, table=True):
     Attributes:
         userId (str): The ID of the user associate with the request.
         endpoint (str): API endpoint name.
-        status_code (int): HTTP response code.
-        response_time_ms (int): Response time in milliseconds.
-        request_type (str): Request type (GET, POST, etc.).
+        statusCode (int): HTTP response code.
+        responseTimeMS (int): Response time in milliseconds.
+        requestType (str): Request type (GET, POST, etc.).
 
     """
 
     userId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("users.id")))
     endpoint: str = Field(sa_column=Column(String))
-    status_code: int = Field(sa_column=Column(Integer))
-    response_time_ms: int = Field(sa_column=Column(Integer))
-    request_type: str = Field(sa_column=Column(String))
+    statusCode: int = Field(sa_column=Column(Integer))
+    responseTimeMS: int = Field(sa_column=Column(Integer))
+    requestType: str = Field(sa_column=Column(String))
 
     class Config:
         orm_mode = True
@@ -37,9 +37,9 @@ class ApiRequests(SQLModel, table=True):
         return (
             f"ApiRequests: (id={self.id}, created_at={self.created_at}, "
             f"updated_at={self.updated_at}, userId={self.userId}, "
-            f"endpoint={self.endpoint}, status_code={self.status_code}, "
-            f"response_time_ms={self.response_time_ms}, "
-            f"request_type={self.request_type})"
+            f"endpoint={self.endpoint}, statusCode={self.statusCode}, "
+            f"responseTimeMS={self.responseTimeMS}, "
+            f"requestType={self.requestType})"
         )
 
     def __repr__(self):
@@ -65,7 +65,7 @@ class ApiRequests(SQLModel, table=True):
             isinstance(other, ApiRequests)
             and self.userId == other.userId
             and self.endpoint == other.endpoint
-            and self.status_code == other.status_code
-            and self.response_time_ms == other.response_time_ms
-            and self.request_type == other.request_type
+            and self.statusCode == other.statusCode
+            and self.responseTimeMS == other.responseTimeMS
+            and self.requestType == other.requestType
         )

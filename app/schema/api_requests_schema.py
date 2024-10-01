@@ -6,8 +6,8 @@ class ApiRequestBase(BaseModel):
     Base model for ApiRequest
     """
 
-    user_id: str
+    userId: str
     endpoint: str
-    status_code: int
-    response_time_ms: int
-    request_type: str
+    statusCode: int
+    responseTimeMS: int
+    requestType: str
