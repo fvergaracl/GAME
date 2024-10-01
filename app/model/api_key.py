@@ -7,7 +7,6 @@ from sqlmodel import Column, DateTime, Field, SQLModel, String, func
 
 
 class ApiKey(SQLModel, table=True):
-    # api_key allows access to the API for third parties
     """
     Represents an API key.
 
