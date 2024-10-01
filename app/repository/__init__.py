@@ -10,6 +10,11 @@ from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import \
     WalletTransactionRepository
+from app.repository.api_requests_repository import ApiRequestsRepository
+from app.repository.kpi_metrics_repository import KpiMetricsRepository
+from app.repository.uptime_logs_repository import UptimeLogsRepository
+from app.repository.user_interactions_repository import \
+    UserInteractionsRepository
 
 __all__ = [
     "BaseRepository",
@@ -23,4 +28,8 @@ __all__ = [
     "WalletTransactionRepository",
     "GameParamsRepository",
     "ApiKeyRepository",
+    "ApiRequestsRepository",
+    "KpiMetricsRepository",
+    "UptimeLogsRepository",
+    "UserInteractionsRepository",
 ]
