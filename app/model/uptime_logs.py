@@ -1,9 +1,10 @@
 from sqlmodel import (
-    Column, Field, SQLModel, String
+    Column, Field, String
 )
+from app.model.base_model import BaseModel
 
 
-class UptimeLogs(SQLModel, table=True):
+class UptimeLogs(BaseModel, table=True):
     """
 
     Represents an uptime log entity.
