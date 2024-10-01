@@ -8,12 +8,16 @@ from app.repository import (
     GameRepository, TaskParamsRepository,
     TaskRepository, UserActionsRepository,
     UserPointsRepository, UserRepository,
-    WalletRepository, WalletTransactionRepository)
+    WalletRepository, WalletTransactionRepository,
+    ApiRequestsRepository, KpiMetricsRepository,
+    UptimeLogsRepository, UserInteractionsRepository,
+)
 from app.services import (
     ApiKeyService, GameParamsService, GameService,
     StrategyService, TaskService, UserActionsService,
     UserPointsService, UserService, WalletService,
-    WalletTransactionService
+    WalletTransactionService, ApiRequestsService,
+    KpiMetricsService, UptimeLogsService, UserInteractionsService,
 )
 
 
@@ -45,6 +49,14 @@ class Container(containers.DeclarativeContainer):
           for WalletTransactionRepository.
         apikey_repository (providers.Factory): Factory provider for
           ApiKeyRepository.
+        api_requests_repository (providers.Factory): Factory provider for
+          ApiRequestsRepository.
+        kpi_metrics_repository (providers.Factory): Factory provider for
+          KpiMetricsRepository.
+        uptime_logs_repository (providers.Factory): Factory provider for
+          UptimeLogsRepository.
+        user_interactions_repository (providers.Factory): Factory provider for
+          UserInteractionsRepository.
         game_params_service (providers.Factory): Factory provider for
           GameParamsService.
         strategy_service (providers.Factory): Factory provider for
@@ -59,6 +71,14 @@ class Container(containers.DeclarativeContainer):
           WalletTransactionService.
         apikey_service (providers.Factory): Factory provider for
           ApiKeyService.
+        api_requests_service (providers.Factory): Factory provider for
+          ApiRequestsService.
+        kpi_metrics_service (providers.Factory): Factory provider for
+          KpiMetricsService.
+        uptime_logs_service (providers.Factory): Factory provider for
+          UptimeLogsService.
+        user_interactions_service (providers.Factory): Factory provider for
+          UserInteractionsService.
     """
 
     wiring_config = containers.WiringConfiguration(
@@ -70,6 +90,7 @@ class Container(containers.DeclarativeContainer):
             "app.api.v1.endpoints.users",
             "app.api.v1.endpoints.wallet",
             "app.api.v1.endpoints.apikey",
+            "app.api.v1.endpoints.kpi",
         ]
     )
 
@@ -113,6 +134,22 @@ class Container(containers.DeclarativeContainer):
 
     apikey_repository = providers.Factory(
         ApiKeyRepository, session_factory=db.provided.session
+    )
+
+    api_requests_repository = providers.Factory(
+        ApiRequestsRepository, session_factory=db.provided.session
+    )
+
+    kpi_metrics_repository = providers.Factory(
+        KpiMetricsRepository, session_factory=db.provided.session
+    )
+
+    uptime_logs_repository = providers.Factory(
+        UptimeLogsRepository, session_factory=db.provided.session
+    )
+
+    user_interactions_repository = providers.Factory(
+        UserInteractionsRepository, session_factory=db.provided.session
     )
 
     # Services (Add in here)
@@ -183,4 +220,24 @@ class Container(containers.DeclarativeContainer):
     apikey_service = providers.Factory(
         ApiKeyService,
         apikey_repository=apikey_repository,
+    )
+
+    api_requests_service = providers.Factory(
+        ApiRequestsService,
+        api_requests_repository=api_requests_repository,
+    )
+
+    kpi_metrics_service = providers.Factory(
+        KpiMetricsService,
+        kpi_metrics_repository=kpi_metrics_repository,
+    )
+
+    uptime_logs_service = providers.Factory(
+        UptimeLogsService,
+        uptime_logs_repository=uptime_logs_repository,
+    )
+
+    user_interactions_service = providers.Factory(
+        UserInteractionsService,
+        user_interactions_repository=user_interactions_repository,
     )

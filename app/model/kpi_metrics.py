@@ -1,9 +1,10 @@
 from sqlmodel import (
-    Column, Field, SQLModel, String, Integer
+    Column, Field, String, Integer
 )
+from app.model.base_model import BaseModel
 
 
-class KPIMetrics(SQLModel, table=True):
+class KpiMetrics(BaseModel, table=True):
     """
     Represents a KPI metrics entity.
 
@@ -39,7 +40,7 @@ class KPIMetrics(SQLModel, table=True):
             str: A string representation of the object.
         """
         return (
-            f"KPIMetrics: (id={self.id}, created_at={self.created_at}, "
+            f"KpiMetrics: (id={self.id}, created_at={self.created_at}, "
             f"updated_at={self.updated_at}, day={self.day}, "
             f"totalRequests={self.totalRequests}, successRate="
             f"{self.successRate}, avgLatencyMS={self.avgLatencyMS}, "
@@ -68,7 +69,7 @@ class KPIMetrics(SQLModel, table=True):
             bool: True if the objects are equal, False otherwise.
         """
         return (
-            isinstance(other, KPIMetrics)
+            isinstance(other, KpiMetrics)
             and self.day == other.day
             and self.totalRequests == other.totalRequests
             and self.successRate == other.successRate

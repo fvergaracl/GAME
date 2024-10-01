@@ -16,6 +16,10 @@ from app.model.user_points import UserPoints
 from app.model.users import Users
 from app.model.wallet import Wallet
 from app.model.wallet_transactions import WalletTransactions
+from app.model.api_requests import ApiRequests
+from app.model.kpi_metrics import KpiMetrics
+from app.model.uptime_logs import UptimeLogs
+from app.model.user_interactions import UserInteractions
 
 cmd_kwargs = context.get_x_argument(as_dictionary=True)
 if "ENV" in cmd_kwargs:

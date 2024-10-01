@@ -18,8 +18,8 @@ class UserInteractions(BaseModel, table=True):
           task completed, achievement unlocked).
     """
 
-    userId: int = Field(sa_column=Column(
-        Integer, ForeignKey("users.user_id"), nullable=True))
+    userId: str = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=True))
     taskId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("tasks.id"), nullable=True))
     interactionType: str = Field(sa_column=Column(String))

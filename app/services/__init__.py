@@ -9,3 +9,7 @@ from app.services.user_points_service import UserPointsService
 from app.services.user_service import UserService
 from app.services.wallet_service import WalletService
 from app.services.wallet_transaction_service import WalletTransactionService
+from app.services.api_requests_service import ApiRequestsService
+from app.services.kpi_metrics_service import KpiMetricsService
+from app.services.uptime_logs_service import UptimeLogsService
+from app.services.user_interactions_service import UserInteractionsService

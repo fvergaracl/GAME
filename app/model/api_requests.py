@@ -1,10 +1,11 @@
 from sqlmodel import (
-    Column, Field, SQLModel, String, Integer, ForeignKey
+    Column, Field, String, Integer, ForeignKey
 )
 from sqlalchemy.dialects.postgresql import UUID
+from app.model.base_model import BaseModel
 
 
-class ApiRequests(SQLModel, table=True):
+class ApiRequests(BaseModel, table=True):
     """
     Represents an API request entity.
 
