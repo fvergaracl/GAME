@@ -276,7 +276,7 @@ kubectl port-forward service/gamificationengine-service 8080:80
 
 ### How to run local environment
 
-- `docker-compose -f docker-compose-dev.yml up --build  -d`
+- `docker-compose -f docker-compose-dev.yml up --build`
 
 It will reload automatically when changes are detected
 
