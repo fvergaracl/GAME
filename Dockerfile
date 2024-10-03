@@ -1,4 +1,4 @@
-FROM python:3.11.10-slim as builder
+FROM python:3.11.10-slim AS builder
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -20,11 +20,12 @@ RUN chmod +x /app/app/start-dev.sh
 RUN chmod +x /app/app/start-prod.sh
 ENV PYTHONPATH=/app/app
 
-FROM builder as dev
+FROM builder AS dev
 RUN poetry install --no-root
+
 CMD ["bash", "./app/start-dev.sh"]
 
-FROM builder as prod
+FROM builder AS prod
 RUN poetry install --no-root --no-dev --no-cache
 RUN pip install gunicorn
 

@@ -1,15 +1,37 @@
 version: "3.7"
 
 services:
+  api:
+    container_name: "GAME_API_DEV"
+    build:
+      context: .
+      target: dev
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - ENV=dev
+      - HOST=0.0.0.0
+      - PORT=8000
+      - LOG_LEVEL=debug
+    networks:
+      - backend
+    depends_on:
+      - postgres
+    volumes:
+      - ./app:/app/app
+      - ./migrations:/app/migrations
+      - game-logs:/app/logs
+
   postgres:
     container_name: "postgres"
-    image: postgres
+    image: postgres:16.0
     hostname: postgres
     ports:
       - "5432:5432"
     env_file:
       - .env
-
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -27,12 +49,23 @@ services:
       - "8080:8080"
     env_file:
       - .env
-    environment:
-      KEYCLOAK_USER: ${KEYCLOAK_USER}
-      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
     volumes:
       - keycloak-data:/opt/keycloak/data
     command: ["start-dev"]
+
+  healthcheck_service:
+    build: ./healthcheck_service
+    container_name: health_checker
+    env_file:
+      - .env
+    environment:
+      DB_HOST: "postgres"
+      API_URL_KPI: "http://api:8000/api/v1/kpi"
+    depends_on:
+      - postgres
+      - api
+    networks:
+      - backend
 
 networks:
   backend:
@@ -41,3 +74,4 @@ networks:
 volumes:
   postgres-data:
   keycloak-data:
+  game-logs:
