@@ -15,7 +15,7 @@ description_health_check = """
 
 
 @router.get(
-    "",
+    "/health_check",
     summary=summary_health_check,
     description=description_health_check,
 )
