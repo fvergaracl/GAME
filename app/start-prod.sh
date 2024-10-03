@@ -17,6 +17,9 @@ HOST=${HOST:-0.0.0.0}
 PORT=${PORT}
 LOG_LEVEL=${LOG_LEVEL:-info}
 
+echo "-----------------------------------------------------"
+echo "Starting in production mode with uvicorn --reload..."
+echo "-----------------------------------------------------"
 
 # Start Fastapi app
-exec gunicorn -k "uvicorn.workers.UvicornWorker" -c "app/gunicorn_conf.py" "app.main:app"
+exec gunicorn -k "uvicorn.workers.UvicornWorker" -c "app/gunicorn_conf.py" "app.main:app" --reload 

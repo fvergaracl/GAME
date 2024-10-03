@@ -274,6 +274,12 @@ kubectl port-forward service/gamificationengine-service 8080:80
 
 ## Other Useful Commands 🚀
 
+### How to run local environment
+
+- `docker-compose -f docker-compose-dev.yml up --build  -d`
+
+It will reload automatically when changes are detected
+
 ### Alembic (Database Migrations)
 
 - `alembic upgrade head`: Applies all migrations.

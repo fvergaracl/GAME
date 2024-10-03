@@ -1,6 +1,10 @@
-FROM tiangolo/uvicorn-gunicorn:python3.10
+FROM tiangolo/uvicorn-gunicorn:python3.11
 
 COPY . /home
+
+# show all files in /home
+RUN ls -la /home
+
 WORKDIR /home
 ENV ENV=dev
 RUN pip install "poetry==1.7.1"
