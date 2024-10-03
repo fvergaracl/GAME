@@ -29,6 +29,7 @@ class Configs(BaseSettings):
         KEYCLOAK_CLIENT_ID (str): The Keycloak client ID.
         KEYCLOAK_CLIENT_SECRET (str): The Keycloak client secret.
         KEYCLOAK_URL (str): The Keycloak URL.
+        KEYCLOAK_URL_DOCKER (str): The Keycloak URL for Docker.
         DB_USER (str): The database user.
         DB_PASSWORD (str): The database password.
         DB_HOST (str): The database host.
@@ -65,7 +66,8 @@ class Configs(BaseSettings):
     KEYCLOAK_CLIENT_SECRET = os.getenv(
         "KEYCLOAK_CLIENT_SECRET", "admin-client-secret")
     KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
-
+    KEYCLOAK_URL_DOCKER = os.getenv(
+        "KEYCLOAK_URL_DOCKER", "http://keycloak:8080")
     # database
     DB_USER: str = os.getenv("DB_USER")
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")
