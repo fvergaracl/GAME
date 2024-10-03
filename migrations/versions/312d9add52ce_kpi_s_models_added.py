@@ -104,7 +104,6 @@ def upgrade():
     op.create_index(op.f('ix_userinteractions_id'),
                     'userinteractions', ['id'], unique=False)
 
-
     generated_uuid = str(uuid.uuid4())
     op.execute(
         f"""
