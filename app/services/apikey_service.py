@@ -91,4 +91,4 @@ class ApiKeyService(BaseService):
         if not api_key_in_db.active:
             raise ForbiddenError(
                 "API key is inactive. Please contact an admin.")
-        return api_key_in_db
+        return Response.ok(data=api_key_in_db)
