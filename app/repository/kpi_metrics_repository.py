@@ -3,7 +3,7 @@ from typing import Callable
 
 from sqlalchemy.orm import Session
 
-from app.model.kpi_metrics import KPIMetrics
+from app.model.kpi_metrics import KpiMetrics
 from app.repository.base_repository import BaseRepository
 
 
@@ -20,10 +20,10 @@ class KpiMetricsRepository(BaseRepository):
     def __init__(
         self,
         session_factory: Callable[..., AbstractContextManager[Session]],
-        model=KPIMetrics,
+        model=KpiMetrics,
     ) -> None:
         """
-        Initializes the KPIMetricsRepository with the provided session factory
+        Initializes the KpiMetricsRepository with the provided session factory
           and model.
 
         Args:
