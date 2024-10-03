@@ -18,6 +18,14 @@ services:
       - postgres
     volumes:
       - game-logs:/app/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+        labels: "app=high_logging"
+        env: "ENV,DEBUG"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
   postgres:
     container_name: "postgres"
