@@ -23,6 +23,14 @@ services:
       - ./app:/app/app
       - ./migrations:/app/migrations
       - game-logs:/app/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+        labels: "app=high_logging"
+        env: "ENV,DEBUG"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
   postgres:
     container_name: "postgres"
@@ -37,7 +45,9 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     networks:
-      - backend
+      backend:
+        aliases:
+          - localhost
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -52,6 +62,10 @@ services:
     volumes:
       - keycloak-data:/opt/keycloak/data
     command: ["start-dev"]
+    networks:
+      backend:
+        aliases:
+          - localhost
 
   healthcheck_service:
     build: ./healthcheck_service
