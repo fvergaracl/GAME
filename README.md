@@ -4,7 +4,8 @@
   <img src="https://codecov.io/gh/fvergaracl/GAME/branch/main/graph/badge.svg?token=R0MGAOMUBU" alt="codecov">
   <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License Apache 2.0">
   <img src="https://img.shields.io/github/stars/fvergaracl/GAME" alt="GitHub Repo stars">
-  <img src="https://img.shields.io/github/v/release/fvergaracl/GAME" alt="Last release">
+  <img src="https://img.shields.io/github/v/tag/fvergaracl/game?color=green" alt="Last TAG">
+
 </p>
 
 
