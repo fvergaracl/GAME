@@ -46,7 +46,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   healthcheck_service:
-    build: ./healthcheck_service
+    image: fvergaracl/game-health-check:latest
     container_name: health_checker
     env_file:
       - .env.prod
