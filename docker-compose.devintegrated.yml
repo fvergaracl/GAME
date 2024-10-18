@@ -1,0 +1,71 @@
+# Settings related with https://github.com/Greengage-project/interlink-project
+version: "3.7"
+
+services:
+  api:
+    container_name: "GAME_API_DEV"
+    build:
+      context: .
+      target: dev
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.integrated
+    environment:
+      - ENV=dev
+      - HOST=0.0.0.0
+      - PORT=8000
+      - LOG_LEVEL=debug
+    networks:
+      - backend
+    volumes:
+      - ./app:/app/app
+      - ./migrations:/app/migrations
+      - game-logs:/app/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+        labels: "app=high_logging"
+        env: "ENV,DEBUG"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+
+
+  keycloakGame:
+    container_name: "keycloakGame"
+    image: keycloak/keycloak:25.0
+    hostname: keycloak
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+    command: ["start-dev"]
+    networks:
+      backend:
+        aliases:
+          - localhost
+
+  healthcheck_service:
+    build: ./healthcheck_service
+    container_name: health_checker
+    env_file:
+      - .env
+    environment:
+      DB_HOST: "postgres"
+      API_URL_KPI: "http://api:8000/api/v1/kpi"
+    depends_on:
+      - api
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: "bridge"
+
+volumes:
+  postgres-data:
+  keycloak-data:
+  game-logs:
