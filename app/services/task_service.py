@@ -5,8 +5,11 @@ from app.repository.task_params_repository import TaskParamsRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
-from app.schema.task_schema import (CreateTask,
-                                    CreateTaskPostSuccesfullyCreated, FindTask)
+from app.schema.task_schema import (
+    CreateTask,
+    CreateTaskPostSuccesfullyCreated,
+    FindTask,
+)
 from app.schema.tasks_params_schema import InsertTaskParams
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
@@ -84,8 +87,7 @@ class TaskService(BaseService):
         )
 
         if not game:
-            raise NotFoundError(
-                f"Game not found with externalGameId: {externalGameId}")
+            raise NotFoundError(f"Game not found with externalGameId: {externalGameId}")
 
         return self.get_tasks_list_by_gameId(game.id, find_query)
 
@@ -100,18 +102,15 @@ class TaskService(BaseService):
         Returns:
             list: A list of tasks associated with the game.
         """
-        game = self.game_repository.read_by_id(
-            gameId, not_found_raise_exception=False)
+        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
 
         if not game:
             raise NotFoundError(f"Game not found with gameId: {gameId}")
 
-        find_task_query = FindTask(
-            gameId=game.id, **find_query.dict(exclude_none=True))
+        find_task_query = FindTask(gameId=game.id, **find_query.dict(exclude_none=True))
         all_tasks = self.task_repository.read_by_gameId(find_task_query)
 
-        strategy_data = self.strategy_service.get_strategy_by_id(
-            game.strategyId)
+        strategy_data = self.strategy_service.get_strategy_by_id(game.strategyId)
         game_params = self.game_params_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
         )
@@ -126,14 +125,12 @@ class TaskService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy_data["variables"][param.key])
+                    type_strategy_variable = type(strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
         cleaned_tasks = []
         for task in all_tasks["items"]:
-            strategy_data = self.strategy_service.get_strategy_by_id(
-                task.strategyId)
+            strategy_data = self.strategy_service.get_strategy_by_id(task.strategyId)
             task_params = self.task_params_repository.read_by_column(
                 "taskId", task.id, not_found_raise_exception=False, only_one=False
             )
@@ -190,8 +187,7 @@ class TaskService(BaseService):
         Returns:
             CreateTaskPostSuccesfullyCreated: The task details.
         """
-        game = self.game_repository.read_by_id(
-            gameId, not_found_raise_exception=False)
+        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
         if not game:
             raise NotFoundError(f"Game not found with gameId: {gameId}")
 
@@ -204,8 +200,7 @@ class TaskService(BaseService):
                 f"gameId: {gameId}"
             )
 
-        strategy_data = self.strategy_service.get_strategy_by_id(
-            task.strategyId)
+        strategy_data = self.strategy_service.get_strategy_by_id(task.strategyId)
 
         game_params = self.game_params_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
@@ -221,8 +216,7 @@ class TaskService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy_data["variables"][param.key])
+                    type_strategy_variable = type(strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
 
@@ -240,8 +234,7 @@ class TaskService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy_data["variables"][param.key])
+                    type_strategy_variable = type(strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
 
@@ -328,8 +321,7 @@ class TaskService(BaseService):
 
         strategy_data = None
         if strategy_id:
-            strategy_data = self.strategy_service.get_strategy_by_id(
-                strategy_id)
+            strategy_data = self.strategy_service.get_strategy_by_id(strategy_id)
             if not strategy_data:
                 raise NotFoundError(
                     f"Strategy not found with strategyId: {strategy_id}"
@@ -358,8 +350,7 @@ class TaskService(BaseService):
                 params_dict["taskId"] = str(created_task.id)
 
                 params_to_insert = InsertTaskParams(**params_dict)
-                created_param = self.task_params_repository.create(
-                    params_to_insert)
+                created_param = self.task_params_repository.create(params_to_insert)
                 created_params.append(created_param)
 
         game_params = self.game_params_repository.read_by_column(
@@ -377,8 +368,7 @@ class TaskService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy_data["variables"][param.key])
+                    type_strategy_variable = type(strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
 
@@ -393,8 +383,7 @@ class TaskService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy_data["variables"][param.key])
+                    type_strategy_variable = type(strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
         externalGameId = game_data.externalGameId
@@ -462,8 +451,7 @@ class TaskService(BaseService):
 
         task_id = task.id
 
-        user_points = self.user_points_repository.get_all_UserPoints_by_taskId(
-            task_id)
+        user_points = self.user_points_repository.get_all_UserPoints_by_taskId(task_id)
 
         return user_points
 
@@ -479,8 +467,7 @@ class TaskService(BaseService):
         Returns:
             dict: The user's points details.
         """
-        points_task = self.get_points_by_task_id_with_details(
-            gameId, externalTaskId)
+        points_task = self.get_points_by_task_id_with_details(gameId, externalTaskId)
         user_points = list(
             filter(lambda x: x.externalUserId == externalUserId, points_task)
         )
@@ -518,3 +505,32 @@ class TaskService(BaseService):
             task_id
         )
         return user_points
+
+    def get_task_params_by_externalTaskId(self, externalTaskId):
+        """
+        Retrieves task parameters by external task ID.
+
+        Args:
+            externalTaskId (str): The external task ID.
+
+        Returns:
+            list: A list of task parameters associated with the task.
+        """
+        task = self.task_repository.read_by_column(
+            "externalTaskId",
+            externalTaskId,
+            not_found_message=f"Task not found with externalTaskId: "
+            f"{externalTaskId}",
+            only_one=True,
+        )
+
+        task_id = task.id
+
+        task_params = self.task_params_repository.read_by_column(
+            "taskId",
+            task_id,
+            not_found_raise_exception=False,
+            only_one=False,
+        )
+
+        return task_params
