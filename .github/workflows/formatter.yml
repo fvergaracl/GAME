@@ -8,6 +8,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     if: github.ref_name != 'main'
+    if: github.actor != 'dependabot[bot]'
     steps:
       - uses: actions/checkout@v2
         with:
