@@ -35,6 +35,17 @@ def custom_openapi():
     Returns:
         dict: The customized OpenAPI schema.
     """
+    servers = [{"url": configs.API_V1_STR, "description": "Local"}]
+
+    extra_server_url = configs.EXTRA_SERVER_URL
+    extra_server_description = configs.EXTRA_SERVER_DESCRIPTION
+    print(configs)
+
+    if extra_server_url:
+        servers.append(
+            {"url": extra_server_url, "description": extra_server_description}
+        )
+
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
@@ -42,7 +53,7 @@ def custom_openapi():
         version=project_data["version"],
         description=project_data["description"],
         routes=app.routes,
-        servers=[{"url": "/api/v1", "description": "Local"}],
+        servers=servers,
     )
     for path in list(openapi_schema["paths"].keys()):
 
@@ -79,6 +90,7 @@ class AppCreator:
 
     def __init__(self):
         self.app = FastAPI(
+            root_path=configs.ROOT_PATH,
             title=project_data["name"],
             version=project_data["version"],
             description=project_data["description"],
