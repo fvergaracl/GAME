@@ -17,11 +17,19 @@ services:
       - PORT=8000
       - LOG_LEVEL=debug
     networks:
-      - backend
+      - traefik-public
     volumes:
       - ./app:/app/app
       - ./migrations:/app/migrations
       - game-logs:/app/logs
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.GAME_API_DEV.rule=PathPrefix(`/gamengine`)
+      - traefik.http.middlewares.strip-gamengine.stripprefix.prefixes=/gamengine
+      - traefik.http.routers.GAME_API_DEV.middlewares=strip-gamengine
+      - traefik.http.services.GAME_API_DEV.loadbalancer.server.port=8000
+      
     logging:
       driver: "json-file"
       options:
@@ -44,9 +52,7 @@ services:
       - keycloak-data:/opt/keycloak/data
     command: ["start-dev"]
     networks:
-      backend:
-        aliases:
-          - localhost
+      - traefik-public
 
   healthcheck_service:
     build: ./healthcheck_service
@@ -59,11 +65,11 @@ services:
     depends_on:
       - api
     networks:
-      - backend
+      - traefik-public
 
 networks:
-  backend:
-    driver: "bridge"
+  traefik-public:
+    external: true
 
 volumes:
   postgres-data:
