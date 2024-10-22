@@ -42,11 +42,16 @@ class Configs(BaseSettings):
     """
 
     ENV: str = os.getenv("ENV", "dev")
+    ROOT_PATH: str = os.getenv("ROOT_PATH", "")
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "GAME-api"
     GAMIFICATIONENGINE_VERSION_APP: str = os.getenv(
         "GAMIFICATIONENGINE_VERSION_APP", "No_version"
     )
+
+    EXTRA_SERVER_URL: str = os.getenv("EXTRA_SERVER_URL", None)
+    EXTRA_SERVER_DESCRIPTION: str = os.getenv("EXTRA_SERVER_DESCRIPTION", None)
+
     ENV_DATABASE_MAPPER: dict = {
         "prod": "game_dev_db",
         "stage": "game_dev_db",
@@ -63,11 +68,9 @@ class Configs(BaseSettings):
     KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "master")
     KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "account")
     KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "admin-cli")
-    KEYCLOAK_CLIENT_SECRET = os.getenv(
-        "KEYCLOAK_CLIENT_SECRET", "admin-client-secret")
+    KEYCLOAK_CLIENT_SECRET = os.getenv("KEYCLOAK_CLIENT_SECRET", "admin-client-secret")
     KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
-    KEYCLOAK_URL_DOCKER = os.getenv(
-        "KEYCLOAK_URL_DOCKER", "http://keycloak:8080")
+    KEYCLOAK_URL_DOCKER = os.getenv("KEYCLOAK_URL_DOCKER", "http://keycloak:8080")
     # database
     DB_USER: str = os.getenv("DB_USER")
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")
