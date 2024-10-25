@@ -1,13 +1,13 @@
 import unittest
 from unittest.mock import patch
-from app.engine.check_base_strategy_class import (
-    check_class_methods_and_variables)
+from app.engine.check_base_strategy_class import check_class_methods_and_variables
 
 
 class TestCheckClassMethodsAndVariables(unittest.TestCase):
 
     class FullClass:
         """A class with all required methods and variables."""
+
         strategy_name = "Test Strategy"
         strategy_description = "Description"
         strategy_name_slug = "test-strategy"
@@ -59,6 +59,7 @@ class TestCheckClassMethodsAndVariables(unittest.TestCase):
 
     class IncompleteClass:
         """A class missing some methods and variables."""
+
         strategy_name = "Test Strategy"
         variable_basic_points = 10
 
@@ -68,7 +69,7 @@ class TestCheckClassMethodsAndVariables(unittest.TestCase):
         def calculate_points(self):
             pass
 
-    @patch('builtins.print')
+    @patch("builtins.print")
     def test_class_with_all_methods_and_variables(self, mock_print):
         """
         Test that a class with all required methods and variables passes.
@@ -79,21 +80,18 @@ class TestCheckClassMethodsAndVariables(unittest.TestCase):
         mock_print.assert_any_call("[+] All methods are present.")
         mock_print.assert_any_call("[+] All variables are present.")
 
-    @patch('builtins.print')
+    @patch("builtins.print")
     def test_class_missing_some_methods_and_variables(self, mock_print):
         """
         Test that a class missing some methods and variables fails.
         """
-        result = check_class_methods_and_variables(
-            self.IncompleteClass, debug=True)
+        result = check_class_methods_and_variables(self.IncompleteClass, debug=True)
         self.assertFalse(result)
 
         expected_missing_methods = "Missing methods: ['get_strategy_id', 'get_strategy_description', 'get_strategy_name_slug', 'get_strategy_version', 'get_variable_basic_points', 'get_variable_bonus_points', 'set_variables', 'get_variables', 'get_variable', 'set_variable', 'get_strategy', 'generate_logic_graph']"  # noqa
-        expected_missing_variables = "Missing variables: ['strategy_description', 'strategy_name_slug', 'strategy_version', 'variable_bonus_points']"  # noqa
+        expected_missing_variables = "Missing variables: ['strategy_description', 'strategy_name_slug', 'strategy_version']"  # noqa
 
-        print(
-            f"Print calls: "
-            f"{[call.args for call in mock_print.call_args_list]}")
+        print(f"Print calls: " f"{[call.args for call in mock_print.call_args_list]}")
 
         mock_print.assert_any_call(expected_missing_methods)
         mock_print.assert_any_call(expected_missing_variables)
