@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -21,7 +21,8 @@ class Strategy(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     version: str
-    variables: Dict[str, int]
+    variables: Dict[str, Any]
+    hash_version: Optional[str] = None
 
 
 class RuleBase(BaseModel):

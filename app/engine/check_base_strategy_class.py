@@ -28,7 +28,7 @@ def check_class_methods_and_variables(Class_to_check, debug=False):
         "set_variable",
         "get_strategy",
         "calculate_points",
-        "generate_logic_graph"
+        "generate_logic_graph",
     ]
 
     variables = [
@@ -36,12 +36,9 @@ def check_class_methods_and_variables(Class_to_check, debug=False):
         "strategy_description",
         "strategy_name_slug",
         "strategy_version",
-        "variable_basic_points",
-        "variable_bonus_points",
     ]
 
-    missing_methods = [method for method in methods if not hasattr(
-        instance, method)]
+    missing_methods = [method for method in methods if not hasattr(instance, method)]
     if missing_methods:
         print(f"Missing methods: {missing_methods}")
     else:

@@ -40,6 +40,7 @@ class StrategyService(BaseService):
                     "description": strategy.get_strategy_description(),
                     "version": strategy.get_strategy_version(),
                     "variables": strategy.get_variables(),
+                    "hash_version": strategy._generate_hash_of_calculate_points(),
                 }
             )
         return response

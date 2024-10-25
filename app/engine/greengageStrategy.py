@@ -19,6 +19,12 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
             strategy_name_slug="greengage_gamification",
             strategy_version="0.0.1",
         )
+
+        if hasattr(self, "variable_bonus_points"):
+            del self.variable_bonus_points
+        if hasattr(self, "variable_basic_points"):
+            del self.variable_basic_points
+            
         self.task_service = Container.task_service()
         self.user_points_service = Container.user_points_service()
 
@@ -29,12 +35,12 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
         self.time_ranges = [0, 1, 15, 30, 60, float("inf")]
 
         self.variable_complexity = {
-            "A": 0,
-            "B": 20,
-            "C": 40,
-            "D": 60,
-            "E": 80,
-            "F": 100,
+            "None": 0,
+            "Very_low": 20,
+            "Low": 40,
+            "Normal": 60,
+            "High": 80,
+            "Very_high": 100,
         }
 
         self.variable_dimension_complexity = {
