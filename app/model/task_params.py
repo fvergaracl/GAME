@@ -32,7 +32,7 @@ class TasksParams(BaseModel, table=True):
     """
 
     key: str = Field(sa_column=Column(String))
-    value: str = Field(sa_column=Column(String))
+    value: str | int | float | bool | dict = Field(sa_column=Column(String))
     taskId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("tasks.id")))
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)

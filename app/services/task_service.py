@@ -348,6 +348,7 @@ class TaskService(BaseService):
             for param in params:
                 params_dict = param.dict()
                 params_dict["taskId"] = str(created_task.id)
+                params_dict["value"] = str(params_dict["value"])
 
                 params_to_insert = InsertTaskParams(**params_dict)
                 created_param = self.task_params_repository.create(params_to_insert)

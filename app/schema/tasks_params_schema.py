@@ -11,7 +11,7 @@ class BaseTaskParams(BaseModel):
     """
 
     key: str
-    value: str | int | float | bool
+    value: str | int | float | bool | dict
 
     class Config:
         orm_mode = True

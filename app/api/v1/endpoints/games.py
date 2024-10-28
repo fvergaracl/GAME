@@ -6,21 +6,34 @@ from fastapi import APIRouter, Body, Depends
 
 from app.core.container import Container
 from app.schema.games_schema import (
-    BaseGameResult, FindGameResult, GameCreated, ListTasksWithUsers,
-    PatchGame, PostCreateGame, PostFindGame, ResponsePatchGame
+    BaseGameResult,
+    FindGameResult,
+    GameCreated,
+    ListTasksWithUsers,
+    PatchGame,
+    PostCreateGame,
+    PostFindGame,
+    ResponsePatchGame,
 )
 from app.schema.strategy_schema import Strategy
 from app.schema.task_schema import (
-    AddActionDidByUserInTask, AsignPointsToExternalUserId,
-    AssignedPointsToExternalUserId, CreateTaskPost,
-    CreateTaskPostSuccesfullyCreated, CreateTasksPostBulkCreated, FoundTasks,
-    PostFindTask, CreateTasksPost, ResponseAddActionDidByUserInTask
+    AddActionDidByUserInTask,
+    AsignPointsToExternalUserId,
+    AssignedPointsToExternalUserId,
+    CreateTaskPost,
+    CreateTaskPostSuccesfullyCreated,
+    CreateTasksPostBulkCreated,
+    FoundTasks,
+    PostFindTask,
+    CreateTasksPost,
+    ResponseAddActionDidByUserInTask,
 )
 from app.schema.user_points_schema import AllPointsByGame, PointsAssignedToUser
 from app.services.game_service import GameService
 from app.services.task_service import TaskService
 from app.services.user_points_service import UserPointsService
 from app.middlewares.authentication import auth_api_key_or_oauth2
+
 router = APIRouter(
     prefix="/games",
     tags=["games"],
@@ -38,7 +51,7 @@ description_get_games_list = """
     response_model=FindGameResult,
     description=description_get_games_list,
     summary=summary_get_games_list,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_games_list(
@@ -71,7 +84,7 @@ description_get_game_by_id = """
     response_model=BaseGameResult,
     description=description_get_game_by_id,
     summary=summary_get_game_by_id,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_game_by_id(
@@ -104,7 +117,7 @@ description_create_game = """
     response_model=GameCreated,
     summary=summary_create_game,
     description=description_create_game,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def create_game(
@@ -136,7 +149,7 @@ description_patch_game = """
     response_model=ResponsePatchGame,
     summary=summary_patch_game,
     description=description_patch_game,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def patch_game(
@@ -170,7 +183,7 @@ description_get_strategy_by_gameId = """
     response_model=Strategy,
     summary=summary_get_strategy_by_gameId,
     description=description_get_strategy_by_gameId,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_strategy_by_gameId(
@@ -202,7 +215,7 @@ description_create_task = """
     response_model=CreateTaskPostSuccesfullyCreated,
     summary=summary_create_task,
     description=description_create_task,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def create_task(
@@ -232,17 +245,16 @@ description_create_tasks_bulk = """
 
 
 @router.post(
-    "/games/{gameId}/tasks/bulk",
+    "/{gameId}/tasks/bulk",
     response_model=CreateTasksPostBulkCreated,
     summary=summary_create_tasks_bulk,
     description=description_create_tasks_bulk,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def create_tasks_bulk(
     gameId: UUID,
-    create_query: CreateTasksPost = Body(...,
-                                         example=CreateTasksPost.example()),
+    create_query: CreateTasksPost = Body(..., example=CreateTasksPost.example()),
     service: TaskService = Depends(Provide[Container.task_service]),
 ):
     """
@@ -264,10 +276,7 @@ def create_tasks_bulk(
             created_task = service.create_task_by_game_id(gameId, task)
             succesfully_created.append(created_task)
         except Exception as e:
-            failed_to_create.append({
-                "task": task,
-                "error": str(e)
-            })
+            failed_to_create.append({"task": task, "error": str(e)})
     return {
         "succesfully_created": succesfully_created,
         "failed_to_create": failed_to_create,
@@ -286,7 +295,7 @@ description_get_task_list = """
     response_model=FoundTasks,
     summary=summary_get_task_list,
     description=description_get_task_list,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_task_list(
@@ -308,7 +317,9 @@ def get_task_list(
     return service.get_tasks_list_by_gameId(gameId, find_query)
 
 
-summary_get_task_by_gameId_taskId = "Retrieve Task by Game ID and External Task ID"  # noqa
+summary_get_task_by_gameId_taskId = (
+    "Retrieve Task by Game ID and External Task ID"  # noqa
+)
 description_get_task_by_gameId_taskId = """
 ## Retrieve Task by Game ID and External Task ID
 ### This endpoint retrieves the details of a task using the game's ID and the external task ID. 
@@ -320,7 +331,7 @@ description_get_task_by_gameId_taskId = """
     response_model=CreateTaskPostSuccesfullyCreated,
     summary=summary_get_task_by_gameId_taskId,
     description=description_get_task_by_gameId_taskId,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_task_by_gameId_taskId(
@@ -356,13 +367,12 @@ description_get_points_by_gameId = """
     response_model=AllPointsByGame,
     summary=summary_get_points_by_gameId,
     description=description_get_points_by_gameId,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_points_by_gameId(
     gameId: UUID,
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
 ):
     """
     Retrieve points associated with a specific game by its ID.
@@ -390,14 +400,13 @@ description_get_points_of_user_in_game = """
     response_model=List[PointsAssignedToUser],
     summary=summary_get_points_of_user_in_game,
     description=description_get_points_of_user_in_game,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_points_of_user_in_game(
     gameId: UUID,
     externalUserId: str,
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
 ):
     """
     Retrieve points of a user in a specific game.
@@ -427,7 +436,7 @@ description_user_action = """
     response_model=ResponseAddActionDidByUserInTask,
     summary=summary_user_action,
     description=description_user_action,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def user_action_in_task(
@@ -457,15 +466,14 @@ description_assing_points_to_user = """
     response_model=AssignedPointsToExternalUserId,
     summary=summary_assing_points_to_user,
     description=description_assing_points_to_user,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def assign_points_to_user(
     gameId: UUID,
     externalTaskId: str,
     schema: AsignPointsToExternalUserId = Body(...),
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
 ):
     """
     Assign points to a user for a specific task in a game.
@@ -494,7 +502,7 @@ description_get_points_by_task_id = """
     response_model=List[PointsAssignedToUser],
     summary=summary_get_points_by_task_id,
     description=description_get_points_by_task_id,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_points_by_task_id(
@@ -528,7 +536,7 @@ description_get_points_of_user_by_task_id = """
     response_model=PointsAssignedToUser,
     summary=summary_get_points_of_user_by_task_id,
     description=description_get_points_of_user_by_task_id,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_points_of_user_by_task_id(
@@ -550,12 +558,12 @@ def get_points_of_user_by_task_id(
         PointsAssignedToUser: The points details of the user for the specified
           task.
     """
-    return service.get_points_of_user_by_task_id(
-        gameId, externalTaskId, externalUserId
-    )
+    return service.get_points_of_user_by_task_id(gameId, externalTaskId, externalUserId)
 
 
-summary_get_points_by_task_id_with_details = "Retrieve Detailed Points by Task ID"  # noqa
+summary_get_points_by_task_id_with_details = (
+    "Retrieve Detailed Points by Task ID"  # noqa
+)
 description_get_points_by_task_id_with_details = """
 ## Retrieve Detailed Points by Task ID
 ### This endpoint retrieves detailed points information associated with a specific task using the game's ID and the external task ID. 
@@ -568,7 +576,7 @@ description_get_points_by_task_id_with_details = """
     response_model=List[dict],  # WIP FIX
     summary=summary_get_points_by_task_id_with_details,
     description=description_get_points_by_task_id_with_details,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_points_by_task_id_with_details(
@@ -603,13 +611,12 @@ description_get_users_by_gameId = """
     response_model=ListTasksWithUsers,
     summary=summary_get_users_by_gameId,
     description=description_get_users_by_gameId,
-    dependencies=[Depends(auth_api_key_or_oauth2)]
+    dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
 def get_users_by_gameId(
     gameId: UUID,
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
 ):
     """
     Retrieve users associated with a game by its ID.

@@ -6,8 +6,13 @@ from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.schema.games_params_schema import InsertGameParams
-from app.schema.games_schema import (BaseGameResult, GameCreated, PatchGame,
-                                     PostCreateGame, ResponsePatchGame)
+from app.schema.games_schema import (
+    BaseGameResult,
+    GameCreated,
+    PatchGame,
+    PostCreateGame,
+    ResponsePatchGame,
+)
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
 from app.util.are_variables_matching import are_variables_matching
@@ -132,7 +137,11 @@ class GameService(BaseService):
 
         if externalGameId_exist:
             raise ConflictError(
-                detail=f"Game already exists with externalGameId: " f"{externalGameId}"
+                detail={
+                    "message": f"Game already exists with externalGameId: "
+                    f"{externalGameId}",
+                    "gameId": str(externalGameId_exist.id),
+                }
             )
         created_params = []
         default_strategyId = schema.strategyId
