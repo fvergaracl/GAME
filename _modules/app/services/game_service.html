@@ -244,8 +244,13 @@
 <span class="kn">from</span> <span class="nn">app.repository.game_repository</span> <span class="kn">import</span> <span class="n">GameRepository</span>
 <span class="kn">from</span> <span class="nn">app.repository.task_repository</span> <span class="kn">import</span> <span class="n">TaskRepository</span>
 <span class="kn">from</span> <span class="nn">app.schema.games_params_schema</span> <span class="kn">import</span> <span class="n">InsertGameParams</span>
-<span class="kn">from</span> <span class="nn">app.schema.games_schema</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BaseGameResult</span><span class="p">,</span> <span class="n">GameCreated</span><span class="p">,</span> <span class="n">PatchGame</span><span class="p">,</span>
-                                     <span class="n">PostCreateGame</span><span class="p">,</span> <span class="n">ResponsePatchGame</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">app.schema.games_schema</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseGameResult</span><span class="p">,</span>
+    <span class="n">GameCreated</span><span class="p">,</span>
+    <span class="n">PatchGame</span><span class="p">,</span>
+    <span class="n">PostCreateGame</span><span class="p">,</span>
+    <span class="n">ResponsePatchGame</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
 <span class="kn">from</span> <span class="nn">app.services.strategy_service</span> <span class="kn">import</span> <span class="n">StrategyService</span>
 <span class="kn">from</span> <span class="nn">app.util.are_variables_matching</span> <span class="kn">import</span> <span class="n">are_variables_matching</span>
@@ -383,7 +388,11 @@
 
         <span class="k">if</span> <span class="n">externalGameId_exist</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ConflictError</span><span class="p">(</span>
-                <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game already exists with externalGameId: "</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2">"</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">"message"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Game already exists with externalGameId: "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="s2">"gameId"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">externalGameId_exist</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                <span class="p">}</span>
             <span class="p">)</span>
         <span class="n">created_params</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">default_strategyId</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">strategyId</span>
