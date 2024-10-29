@@ -7,8 +7,7 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
-    if: github.ref_name != 'main'
-    if: github.actor != 'dependabot[bot]'
+    if: ${{ github.ref_name != 'main' && github.actor != 'dependabot[bot]' }}
     steps:
       - name: Get current date
         id: date
