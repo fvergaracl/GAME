@@ -28,7 +28,12 @@ from app.schema.task_schema import (
     CreateTasksPost,
     ResponseAddActionDidByUserInTask,
 )
-from app.schema.user_points_schema import AllPointsByGame, PointsAssignedToUser
+from app.schema.user_points_schema import (
+    AllPointsByGame,
+    AllPointsByGameWithDetails,
+    PointsAssignedToUser,
+)
+
 from app.services.game_service import GameService
 from app.services.task_service import TaskService
 from app.services.user_points_service import UserPointsService
@@ -358,7 +363,7 @@ def get_task_by_gameId_taskId(
 summary_get_points_by_gameId = "Retrieve Points by Game ID"
 description_get_points_by_gameId = """
 ## Retrieve Points by Game ID
-### This endpoint retrieves the points details associated with a specific game by its ID. 
+### This endpoint retrieves the points details associated with a specific game by its ID.
 <sub>**Id_endpoint:** get_points_by_gameId</sub>"""  # noqa
 
 
@@ -385,6 +390,38 @@ def get_points_by_gameId(
         AllPointsByGame: The points details for the specified game.
     """
     return service.get_points_by_gameId(gameId)
+
+
+summary_get_points_by_gameId_with_details = "Retrieve Points by Game ID with Details"
+description_get_points_by_gameId_with_details = """
+## Retrieve Points by Game ID with Details
+### This endpoint retrieves the points details associated with a specific game by its ID. 
+<sub>**Id_endpoint:** get_points_by_gameId_with_details</sub>"""  # noqa
+
+
+@router.get(
+    "/{gameId}/points/details",
+    response_model=AllPointsByGameWithDetails,
+    summary=summary_get_points_by_gameId_with_details,
+    description=description_get_points_by_gameId_with_details,
+    dependencies=[Depends(auth_api_key_or_oauth2)],
+)
+@inject
+def get_points_by_gameId_with_details(
+    gameId: UUID,
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
+):
+    """
+    Retrieve points associated with a specific game by its ID.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        service (UserPointsService): Injected UserPointsService dependency.
+
+    Returns:
+        AllPointsByGame: The points details for the specified game.
+    """
+    return service.get_points_by_gameId_with_details(gameId)
 
 
 summary_get_points_of_user_in_game = "Retrieve User Points in Game"

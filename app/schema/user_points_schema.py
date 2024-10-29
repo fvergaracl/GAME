@@ -60,17 +60,21 @@ class PointsAssignedToUser(PointsAssigned):
 
     Attributes:
         externalUserId (str): External user ID
-        pointsData (Optional[List[PointsData]]): Points data
     """
 
     externalUserId: str
+
+
+class PointsAssignedToUserDetails(PointsAssignedToUser):
+    """
+    Model for points assigned to a user with details
+
+    Attributes:
+        externalUserId (str): External user ID
+        pointsData (Optional[List[PointsData]]): Points data
+    """
+
     pointsData: Optional[List[PointsData]]
-
-
-class PointsAssignedToUserWithDetails(PointsAssignedToUser):  # noqa
-    """Model for points assigned to a user with details."""
-
-    pointsData: List[PointsAssignedToUser]
 
 
 class TaskPointsByGame(BaseModel):
@@ -86,19 +90,62 @@ class TaskPointsByGame(BaseModel):
     points: List[PointsAssignedToUser]
 
 
+class TaskPointsByGameWithDetails(BaseModel):
+    """
+    Model for task points by game with details
+
+    Attributes:
+        externalTaskId (str): External task ID
+        points (List[PointsAssignedToUser]): Points assigned to user
+    """
+
+    externalTaskId: str
+    points: List[PointsAssignedToUserDetails]
+
+
 class AllPointsByGame(BaseModel):
     """
-    Model for all points by game
+    Model for all points by game with details
 
     Attributes:
         externalGameId (str): External game ID
         created_at (str): Created date
-        task (List[TaskPointsByGame]): List of task points by game
+        task (List[TaskPointsByGame]): List of task points by game details
     """
 
     externalGameId: str
     created_at: str
     task: List[TaskPointsByGame]
+
+
+class AllPointsByGameWithDetails(BaseModel):
+    """
+    Model for all points by game with details
+
+    Attributes:
+        externalGameId (str): External game ID
+        created_at (str): Created date
+        task (List[TaskPointsByGame]): List of task points by game details
+    """
+
+    externalGameId: str
+    created_at: str
+    task: List[TaskPointsByGameWithDetails]
+
+
+class AllPointsByGameWithDetails(BaseModel):
+    """
+    Model for all points by game with details
+
+    Attributes:
+        externalGameId (str): External game ID
+        created_at (str): Created date
+        task (List[TaskPointsByGame]): List of task points by game details
+    """
+
+    externalGameId: str
+    created_at: str
+    task: List[TaskPointsByGameWithDetails]
 
 
 class BaseUserPointsBaseModel(PostAssignPointsToUser):

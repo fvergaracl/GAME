@@ -1,19 +1,28 @@
 from datetime import datetime
 from uuid import uuid4
 
-from app.schema.user_points_schema import (AllPointsByGame, GameDetail,
-                                           PointsAssigned,
-                                           PointsAssignedToUser,
-                                           PointsByUserInTask, PointsData,
-                                           PointsDetail,
-                                           PostAssignPointsToUser,
-                                           ResponseGetPointsByGame,
-                                           ResponseGetPointsByTask,
-                                           ResponsePointsByExternalUserId,
-                                           TaskDetail, TaskPointsByGame,
-                                           UserGamePoints, UserPoints,
-                                           UserPointsAssign,
-                                           UserPointsAssigned)
+from app.schema.user_points_schema import (
+    AllPointsByGame,
+    AllPointsByGameWithDetails,
+    GameDetail,
+    PointsAssigned,
+    PointsAssignedToUser,
+    PointsAssignedToUserDetails,
+    PointsByUserInTask,
+    PointsData,
+    PointsDetail,
+    PostAssignPointsToUser,
+    ResponseGetPointsByGame,
+    ResponseGetPointsByTask,
+    ResponsePointsByExternalUserId,
+    TaskDetail,
+    TaskPointsByGame,
+    TaskPointsByGameWithDetails,
+    UserGamePoints,
+    UserPoints,
+    UserPointsAssign,
+    UserPointsAssigned,
+)
 from app.schema.wallet_schema import WalletWithoutUserId
 
 
@@ -81,9 +90,9 @@ def test_points_data():
 
 def test_points_assigned_to_user():
     """
-    Test the PointsAssignedToUser model.
+    Test the PointsAssignedToUserDetails model.
 
-    The PointsAssignedToUser model is used for points assigned to a user.
+    The PointsAssignedToUserDetails model is used for points assigned to a user.
 
     The model has the following attributes:
     - externalUserId (str): External user ID
@@ -97,7 +106,7 @@ def test_points_assigned_to_user():
             {"points": 50, "caseName": "Case2", "created_at": "2023-01-01T00:00:00"}
         ],
     }
-    points_assigned_to_user = PointsAssignedToUser(**data)
+    points_assigned_to_user = PointsAssignedToUserDetails(**data)
     assert points_assigned_to_user.externalUserId == data["externalUserId"]
     assert points_assigned_to_user.pointsData[0].points == (
         data["pointsData"][0]["points"]
@@ -112,13 +121,13 @@ def test_points_assigned_to_user():
 
 def test_task_points_by_game():
     """
-    Test the TaskPointsByGame model.
+    Test the TaskPointsByGameWithDetails model.
 
-    The TaskPointsByGame model is used for task points by game.
+    The TaskPointsByGameWithDetails model is used for task points by game.
 
     The model has the following attributes:
     - externalTaskId (str): External task ID
-    - points (List[PointsAssignedToUser]): Points assigned to user
+    - points (List[PointsAssignedToUserDetails]): Points assigned to user
     """
     data = {
         "externalTaskId": "task123",
@@ -137,7 +146,7 @@ def test_task_points_by_game():
             }
         ],
     }
-    task_points_by_game = TaskPointsByGame(**data)
+    task_points_by_game = TaskPointsByGameWithDetails(**data)
     assert task_points_by_game.externalTaskId == data["externalTaskId"]
     assert task_points_by_game.points[0].externalUserId == (
         data["points"][0]["externalUserId"]
@@ -159,9 +168,9 @@ def test_task_points_by_game():
 
 def test_all_points_by_game():
     """
-    Test the AllPointsByGame model.
+    Test the AllPointsByGameWithDetails model.
 
-    The AllPointsByGame model is used for all points by game.
+    The AllPointsByGameWithDetails model is used for all points by game.
 
     The model has the following attributes:
     - externalGameId (str): External game ID
@@ -191,7 +200,7 @@ def test_all_points_by_game():
             }
         ],
     }
-    all_points_by_game = AllPointsByGame(**data)
+    all_points_by_game = AllPointsByGameWithDetails(**data)
     assert all_points_by_game.externalGameId == data["externalGameId"]
     assert all_points_by_game.created_at == data["created_at"]
     assert all_points_by_game.task[0].externalTaskId == (
