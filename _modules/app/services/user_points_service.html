@@ -528,7 +528,9 @@
 
 <div class="viewcode-block" id="UserPointsService.assign_points_to_user">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.assign_points_to_user">[docs]</a>
-    <span class="k">def</span> <span class="nf">assign_points_to_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">assign_points_to_user</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
         <span class="n">externalUserId</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">externalUserId</span>
         <span class="n">is_a_created_user</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -610,6 +612,7 @@
             <span class="n">caseName</span><span class="o">=</span><span class="n">case_name</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s2">"Points assigned by GAME"</span><span class="p">,</span>
+            <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">user_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user_points_schema</span><span class="p">)</span>
         <span class="n">wallet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
@@ -635,6 +638,7 @@
             <span class="n">data</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="n">appliedConversionRate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">walletId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">wallet_transaction_repository</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">wallet_transaction</span>

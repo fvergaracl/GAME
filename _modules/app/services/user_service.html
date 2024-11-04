@@ -243,14 +243,15 @@
 <span class="kn">from</span> <span class="nn">app.repository.user_points_repository</span> <span class="kn">import</span> <span class="n">UserPointsRepository</span>
 <span class="kn">from</span> <span class="nn">app.repository.user_repository</span> <span class="kn">import</span> <span class="n">UserRepository</span>
 <span class="kn">from</span> <span class="nn">app.repository.wallet_repository</span> <span class="kn">import</span> <span class="n">WalletRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.wallet_transaction_repository</span> <span class="kn">import</span> \
-    <span class="n">WalletTransactionRepository</span>
+<span class="kn">from</span> <span class="nn">app.repository.wallet_transaction_repository</span> <span class="kn">import</span> <span class="n">WalletTransactionRepository</span>
 <span class="kn">from</span> <span class="nn">app.schema.task_schema</span> <span class="kn">import</span> <span class="n">TaskPointsResponseByUser</span>
-<span class="kn">from</span> <span class="nn">app.schema.user_points_schema</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BaseUserPointsBaseModel</span><span class="p">,</span>
-                                           <span class="n">UserPointsAssigned</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">app.schema.user_schema</span> <span class="kn">import</span> <span class="p">(</span><span class="n">PostPointsConversionRequest</span><span class="p">,</span>
-                                    <span class="n">ResponsePointsConversion</span><span class="p">,</span> <span class="n">UserPointsTasks</span><span class="p">,</span>
-                                    <span class="n">UserWallet</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">app.schema.user_points_schema</span> <span class="kn">import</span> <span class="n">BaseUserPointsBaseModel</span><span class="p">,</span> <span class="n">UserPointsAssigned</span>
+<span class="kn">from</span> <span class="nn">app.schema.user_schema</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PostPointsConversionRequest</span><span class="p">,</span>
+    <span class="n">ResponsePointsConversion</span><span class="p">,</span>
+    <span class="n">UserPointsTasks</span><span class="p">,</span>
+    <span class="n">UserWallet</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">app.schema.wallet_schema</span> <span class="kn">import</span> <span class="n">CreateWallet</span>
 <span class="kn">from</span> <span class="nn">app.schema.wallet_transaction_schema</span> <span class="kn">import</span> <span class="n">BaseWalletTransaction</span>
 <span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
@@ -784,7 +785,9 @@
 
 <div class="viewcode-block" id="UserService.convert_points_to_coins">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.convert_points_to_coins">[docs]</a>
-    <span class="k">def</span> <span class="nf">convert_points_to_coins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostPointsConversionRequest</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">convert_points_to_coins</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostPointsConversionRequest</span><span class="p">,</span> <span class="n">api_key</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Converts points to coins for a user based on the provided schema.</span>
 
@@ -792,6 +795,7 @@
 <span class="sd">            userId (str): The user ID.</span>
 <span class="sd">            schema (PostPointsConversionRequest): The schema containing</span>
 <span class="sd">              conversion details.</span>
+<span class="sd">              api_key (str): The API key.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ResponsePointsConversion: The conversion details.</span>
@@ -815,6 +819,7 @@
                 <span class="n">pointsBalance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                 <span class="n">conversionRate</span><span class="o">=</span><span class="n">configs</span><span class="o">.</span><span class="n">DEFAULT_CONVERTION_RATE_POINTS_TO_COIN</span><span class="p">,</span>
                 <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">wallet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">new_wallet</span><span class="p">)</span>
@@ -847,6 +852,7 @@
                 <span class="s2">"walletBefore"</span><span class="p">:</span> <span class="n">wallet_before_serializable</span><span class="p">,</span>
                 <span class="s2">"walletAfter"</span><span class="p">:</span> <span class="n">wallet_serializable</span><span class="p">,</span>
             <span class="p">},</span>
+            <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">transaction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">wallet_transaction</span><span class="p">)</span>
@@ -867,7 +873,7 @@
 <div class="viewcode-block" id="UserService.convert_points_to_coins_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.convert_points_to_coins_externalUserId">[docs]</a>
     <span class="k">def</span> <span class="nf">convert_points_to_coins_externalUserId</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostPointsConversionRequest</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostPointsConversionRequest</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Converts points to coins for a user by their external user ID based on</span>
@@ -877,6 +883,7 @@
 <span class="sd">            externalUserId (str): The external user ID.</span>
 <span class="sd">            schema (PostPointsConversionRequest): The schema containing</span>
 <span class="sd">              conversion details.</span>
+<span class="sd">            api_key (str): The API key.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ResponsePointsConversion: The conversion details.</span>
@@ -884,7 +891,7 @@
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"externalUserId"</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_points_to_coins</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">schema</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_points_to_coins</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">schema</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">response</span></div>
 </div>
 

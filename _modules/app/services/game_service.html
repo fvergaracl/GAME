@@ -357,7 +357,7 @@
 
 <div class="viewcode-block" id="GameService.create">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.create">[docs]</a>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostCreateGame</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostCreateGame</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates a new game using the provided schema.</span>
 
@@ -410,6 +410,8 @@
                 <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Strategy with id: </span><span class="si">{</span><span class="n">default_strategyId</span><span class="si">}</span><span class="s2"> not found"</span>
             <span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">api_key</span><span class="p">:</span>
+            <span class="n">schema</span><span class="o">.</span><span class="n">apiKey_used</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">schema</span><span class="o">.</span><span class="n">params</span>
@@ -417,6 +419,8 @@
             <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
                 <span class="n">params_dict</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
                 <span class="n">params_dict</span><span class="p">[</span><span class="s2">"gameId"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">api_key</span><span class="p">:</span>
+                    <span class="n">params_dict</span><span class="p">[</span><span class="s2">"apiKey_used"</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_key</span>
                 <span class="n">params_to_insert</span> <span class="o">=</span> <span class="n">InsertGameParams</span><span class="p">(</span><span class="o">**</span><span class="n">params_dict</span><span class="p">)</span>
                 <span class="n">created_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_params_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params_to_insert</span><span class="p">)</span>
 

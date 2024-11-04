@@ -548,7 +548,7 @@
 
 <div class="viewcode-block" id="TaskService.create_task_by_game_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.create_task_by_game_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_task_by_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">create_query</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create_task_by_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">create_query</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates a task for a game by its game ID.</span>
 
@@ -594,6 +594,8 @@
         <span class="n">new_task_dict</span><span class="p">[</span><span class="s2">"gameId"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gameId</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">strategy_id</span><span class="p">:</span>
             <span class="n">new_task_dict</span><span class="p">[</span><span class="s2">"strategyId"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">api_key</span><span class="p">:</span>
+            <span class="n">new_task_dict</span><span class="p">[</span><span class="s2">"apiKey_used"</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="n">new_task</span> <span class="o">=</span> <span class="n">CreateTask</span><span class="p">(</span><span class="o">**</span><span class="n">new_task_dict</span><span class="p">)</span>
 
         <span class="n">created_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">new_task</span><span class="p">)</span>
@@ -606,7 +608,8 @@
                 <span class="n">params_dict</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
                 <span class="n">params_dict</span><span class="p">[</span><span class="s2">"taskId"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">created_task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="n">params_dict</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params_dict</span><span class="p">[</span><span class="s2">"value"</span><span class="p">])</span>
-
+                <span class="k">if</span> <span class="n">api_key</span><span class="p">:</span>
+                    <span class="n">params_dict</span><span class="p">[</span><span class="s2">"apiKey_used"</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_key</span>
                 <span class="n">params_to_insert</span> <span class="o">=</span> <span class="n">InsertTaskParams</span><span class="p">(</span><span class="o">**</span><span class="n">params_dict</span><span class="p">)</span>
                 <span class="n">created_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params_to_insert</span><span class="p">)</span>
                 <span class="n">created_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">created_param</span><span class="p">)</span>
