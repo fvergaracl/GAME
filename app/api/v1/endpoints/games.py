@@ -33,9 +33,10 @@ from app.schema.user_points_schema import (
     AllPointsByGameWithDetails,
     PointsAssignedToUser,
 )
-
+from app.services.apikey_service import ApiKeyService
 from app.services.game_service import GameService
 from app.services.task_service import TaskService
+from app.services.user_actions_service import UserActionsService
 from app.services.user_points_service import UserPointsService
 from app.middlewares.authentication import auth_api_key_or_oauth2
 
@@ -128,6 +129,7 @@ description_create_game = """
 def create_game(
     schema: PostCreateGame = Body(..., example=PostCreateGame.example()),
     service: GameService = Depends(Provide[Container.game_service]),
+    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
     """
     Create a new game.
@@ -139,7 +141,8 @@ def create_game(
     Returns:
         GameCreated: The details of the created game.
     """
-    return service.create(schema)
+    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    return service.create(schema, api_key)
 
 
 summary_patch_game = "Update Game Details"
@@ -227,6 +230,7 @@ def create_task(
     gameId: UUID,
     create_query: CreateTaskPost = Body(..., example=CreateTaskPost.example()),
     service: TaskService = Depends(Provide[Container.task_service]),
+    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
     """
     Create a task for a specific game.
@@ -239,7 +243,8 @@ def create_task(
     Returns:
         CreateTaskPostSuccesfullyCreated: The details of the created task.
     """
-    return service.create_task_by_game_id(gameId, create_query)
+    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    return service.create_task_by_game_id(gameId, create_query, api_key)
 
 
 summary_create_tasks_bulk = "Create Multiple New Tasks"
@@ -261,6 +266,7 @@ def create_tasks_bulk(
     gameId: UUID,
     create_query: CreateTasksPost = Body(..., example=CreateTasksPost.example()),
     service: TaskService = Depends(Provide[Container.task_service]),
+    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
     """
     Create multiple tasks for a specific game (bulk creation).
@@ -274,11 +280,12 @@ def create_tasks_bulk(
         List[CreateTaskPostSuccesfullyCreated]: The details of the created
           tasks.
     """
+    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
     succesfully_created = []
     failed_to_create = []
     for task in create_query.tasks:
         try:
-            created_task = service.create_task_by_game_id(gameId, task)
+            created_task = service.create_task_by_game_id(gameId, task, api_key)
             succesfully_created.append(created_task)
         except Exception as e:
             failed_to_create.append({"task": task, "error": str(e)})
@@ -480,14 +487,16 @@ def user_action_in_task(
     gameId: UUID,
     externalTaskId: str,
     schema: AddActionDidByUserInTask = Body(...),
-    service: TaskService = Depends(Provide[Container.user_actions_service]),
+    service: UserActionsService = Depends(Provide[Container.user_actions_service]),
+    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
     """
     Register a user action in a task within a game. This endpoint is used to
     assign points to a user for a specific task within a game, when the game
     requires it.
     """
-    return service.user_add_action_in_task(externalTaskId, schema)
+    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    return service.user_add_action_in_task(gameId, externalTaskId, schema, api_key)
 
 
 summary_assing_points_to_user = "Assign Points to User"
@@ -511,6 +520,7 @@ def assign_points_to_user(
     externalTaskId: str,
     schema: AsignPointsToExternalUserId = Body(...),
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
+    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
     """
     Assign points to a user for a specific task in a game.
@@ -524,7 +534,8 @@ def assign_points_to_user(
     Returns:
         AssignedPointsToExternalUserId: The details of the points assigned.
     """
-    return service.assign_points_to_user(gameId, externalTaskId, schema)
+    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    return service.assign_points_to_user(gameId, externalTaskId, schema, api_key)
 
 
 summary_get_points_by_task_id = "Retrieve Points by Task ID"

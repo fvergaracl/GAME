@@ -1,6 +1,4 @@
-from app.middlewares.valid_access_token import (
-    oauth_2_scheme, valid_access_token
-)
+from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
 from app.services.apikey_service import ApiKeyService
 from fastapi import Depends, HTTPException, status
 
@@ -8,7 +6,7 @@ from fastapi import Depends, HTTPException, status
 async def auth_api_key_or_oauth2(
     api_key: str = Depends(ApiKeyService.get_api_key_header),
     # token is "Authorization: Bearer " got from the header
-        oauth_2_scheme: str = Depends(oauth_2_scheme)
+    oauth_2_scheme: str = Depends(oauth_2_scheme),
 ):
     """
     Authenticate using API Key or OAuth2.
@@ -34,8 +32,7 @@ async def auth_api_key_or_oauth2(
     if api_key and api_key.data:
 
         return True
-    return await auth_oauth2(
-        oauth_2_scheme=oauth_2_scheme)
+    return await auth_oauth2(oauth_2_scheme=oauth_2_scheme)
 
 
 async def auth_oauth2(

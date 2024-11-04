@@ -1,5 +1,5 @@
 from uuid import UUID
-
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -34,6 +34,7 @@ class InsertGameParams(BaseGameParams):
     """
 
     gameId: str
+    apiKey_used: Optional[str]
 
 
 class CreateGameParams(BaseCreateGameParams):

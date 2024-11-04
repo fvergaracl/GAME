@@ -99,3 +99,4 @@ class CreateWallet(Wallet):
     """Model for creating a wallet."""
 
     ...
+    apiKey_used: Optional[str]

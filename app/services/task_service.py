@@ -291,7 +291,7 @@ class TaskService(BaseService):
 
         return self.create_task_by_game_id(game.id, externalGameId, create_query)
 
-    def create_task_by_game_id(self, gameId, create_query):
+    def create_task_by_game_id(self, gameId, create_query, api_key: str = None):
         """
         Creates a task for a game by its game ID.
 
@@ -337,6 +337,8 @@ class TaskService(BaseService):
         new_task_dict["gameId"] = str(gameId)
         if strategy_id:
             new_task_dict["strategyId"] = str(strategy_id)
+        if api_key:
+            new_task_dict["apiKey_used"] = api_key
         new_task = CreateTask(**new_task_dict)
 
         created_task = self.task_repository.create(new_task)
@@ -349,7 +351,8 @@ class TaskService(BaseService):
                 params_dict = param.dict()
                 params_dict["taskId"] = str(created_task.id)
                 params_dict["value"] = str(params_dict["value"])
-
+                if api_key:
+                    params_dict["apiKey_used"] = api_key
                 params_to_insert = InsertTaskParams(**params_dict)
                 created_param = self.task_params_repository.create(params_to_insert)
                 created_params.append(created_param)

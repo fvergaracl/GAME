@@ -5,14 +5,15 @@ from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
-from app.repository.wallet_transaction_repository import \
-    WalletTransactionRepository
+from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.schema.task_schema import TaskPointsResponseByUser
-from app.schema.user_points_schema import (BaseUserPointsBaseModel,
-                                           UserPointsAssigned)
-from app.schema.user_schema import (PostPointsConversionRequest,
-                                    ResponsePointsConversion, UserPointsTasks,
-                                    UserWallet)
+from app.schema.user_points_schema import BaseUserPointsBaseModel, UserPointsAssigned
+from app.schema.user_schema import (
+    PostPointsConversionRequest,
+    ResponsePointsConversion,
+    UserPointsTasks,
+    UserWallet,
+)
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
@@ -497,7 +498,9 @@ class UserService(BaseService):
         response = self.preview_points_to_coins_conversion(str(user.id), points)
         return response
 
-    def convert_points_to_coins(self, userId, schema: PostPointsConversionRequest):
+    def convert_points_to_coins(
+        self, userId, schema: PostPointsConversionRequest, api_key
+    ):
         """
         Converts points to coins for a user based on the provided schema.
 
@@ -505,6 +508,7 @@ class UserService(BaseService):
             userId (str): The user ID.
             schema (PostPointsConversionRequest): The schema containing
               conversion details.
+              api_key (str): The API key.
 
         Returns:
             ResponsePointsConversion: The conversion details.
@@ -528,6 +532,7 @@ class UserService(BaseService):
                 pointsBalance=0,
                 conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
                 userId=str(user.id),
+                apiKey_used=api_key,
             )
 
             wallet = self.wallet_repository.create(new_wallet)
@@ -560,6 +565,7 @@ class UserService(BaseService):
                 "walletBefore": wallet_before_serializable,
                 "walletAfter": wallet_serializable,
             },
+            apiKey_used=api_key,
         )
 
         transaction = self.wallet_transaction_repository.create(wallet_transaction)
@@ -577,7 +583,7 @@ class UserService(BaseService):
         return response
 
     def convert_points_to_coins_externalUserId(
-        self, externalUserId, schema: PostPointsConversionRequest
+        self, externalUserId, schema: PostPointsConversionRequest, api_key: str = None
     ):
         """
         Converts points to coins for a user by their external user ID based on
@@ -587,6 +593,7 @@ class UserService(BaseService):
             externalUserId (str): The external user ID.
             schema (PostPointsConversionRequest): The schema containing
               conversion details.
+            api_key (str): The API key.
 
         Returns:
             ResponsePointsConversion: The conversion details.
@@ -594,5 +601,5 @@ class UserService(BaseService):
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
-        response = self.convert_points_to_coins(str(user.id), schema)
+        response = self.convert_points_to_coins(str(user.id), schema, api_key)
         return response

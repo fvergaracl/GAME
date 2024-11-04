@@ -3,8 +3,12 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from app.schema.base_schema import (FindBase, ModelBaseInfo, SearchOptions,
-                                    SuccesfullyCreated)
+from app.schema.base_schema import (
+    FindBase,
+    ModelBaseInfo,
+    SearchOptions,
+    SuccesfullyCreated,
+)
 from app.schema.games_params_schema import CreateGameParams
 from app.schema.strategy_schema import Strategy
 from app.schema.tasks_params_schema import CreateTaskParams
@@ -66,13 +70,14 @@ class CreateTasksPost(BaseModel):
     Attributes:
         tasks (List[CreateTaskPost]): List of tasks to be created.
     """
+
     tasks: List[CreateTaskPost]
 
     def example():
         return {
             "tasks": [CreateTaskPost.example()],
             "strategyId": "default",
-            "params": [CreateTaskParams.example()]
+            "params": [CreateTaskParams.example()],
         }
 
 
@@ -125,6 +130,7 @@ class CreateTask(CreateTaskPost, metaclass=AllOptional):
     """
 
     gameId: str
+    apiKey_used: Optional[str]
 
 
 class FindTask(FindBase, metaclass=AllOptional):

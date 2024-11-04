@@ -106,7 +106,7 @@ class GameService(BaseService):
         """
         return self.game_repository.read_by_column("externalGameId", externalGameId)
 
-    def create(self, schema: PostCreateGame):
+    def create(self, schema: PostCreateGame, api_key: str = None):
         """
         Creates a new game using the provided schema.
 
@@ -159,6 +159,8 @@ class GameService(BaseService):
                 detail=f"Strategy with id: {default_strategyId} not found"
             )
 
+        if api_key:
+            schema.apiKey_used = api_key
         game = self.game_repository.create(schema)
         if params:
             del schema.params
@@ -166,6 +168,8 @@ class GameService(BaseService):
             for param in params:
                 params_dict = param.dict()
                 params_dict["gameId"] = str(game.id)
+                if api_key:
+                    params_dict["apiKey_used"] = api_key
                 params_to_insert = InsertGameParams(**params_dict)
                 created_param = self.game_params_repository.create(params_to_insert)
 

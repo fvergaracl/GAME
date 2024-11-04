@@ -37,3 +37,4 @@ class CreateUserActions(BaseModel):
     data: Optional[dict]
     description: Optional[str]
     userId: str
+    apiKey_used: Optional[str]

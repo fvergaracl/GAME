@@ -265,7 +265,9 @@ class UserPointsService(BaseService):
                         )
         return response
 
-    def assign_points_to_user(self, gameId, externalTaskId, schema):
+    def assign_points_to_user(
+        self, gameId, externalTaskId, schema, api_key: str = None
+    ):
         externalUserId = schema.externalUserId
         is_a_created_user = False
 
@@ -347,6 +349,7 @@ class UserPointsService(BaseService):
             caseName=case_name,
             data=schema.data,
             description="Points assigned by GAME",
+            apiKey_used=api_key,
         )
         user_points = self.user_points_repository.create(user_points_schema)
         wallet = self.wallet_repository.read_by_column(
@@ -372,6 +375,7 @@ class UserPointsService(BaseService):
             data=schema.data,
             appliedConversionRate=0,
             walletId=str(wallet.id),
+            apiKey_used=api_key,
         )
         wallet_transaction_repository = self.wallet_transaction_repository.create(
             wallet_transaction

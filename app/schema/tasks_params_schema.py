@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class BaseTaskParams(BaseModel):
@@ -35,3 +36,4 @@ class InsertTaskParams(BaseTaskParams):
     """
 
     taskId: str
+    apiKey_used: Optional[str]

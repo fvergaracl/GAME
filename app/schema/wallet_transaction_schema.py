@@ -32,6 +32,7 @@ class BaseWalletTransaction(BaseWalletTransactionWithoutWalletId):
 
     walletId: str
     appliedConversionRate: float
+    apiKey_used: Optional[str]
 
 
 class BaseWalletTransactionInfo(BaseWalletTransactionWithoutWalletId):

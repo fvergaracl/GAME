@@ -163,6 +163,7 @@ class UserPointsAssign(BaseUserPointsBaseModel):
     """Model for user points assignment."""
 
     ...
+    apiKey_used: Optional[str]
 
 
 class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):

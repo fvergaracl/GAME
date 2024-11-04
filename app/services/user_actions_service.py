@@ -4,7 +4,8 @@ from app.repository.task_repository import TaskRepository
 from app.repository.user_actions_repository import UserActionsRepository
 from app.repository.user_repository import UserRepository
 from app.schema.task_schema import (
-    AddActionDidByUserInTask, ResponseAddActionDidByUserInTask
+    AddActionDidByUserInTask,
+    ResponseAddActionDidByUserInTask,
 )
 from app.services.base_service import BaseService
 from app.schema.user_actions_schema import CreateUserActions
@@ -52,8 +53,10 @@ class UserActionsService(BaseService):
     def user_add_action_in_task(
         # action is JSON object
         self,
+        gameId: str,
         externalTaskId: str,
         action: AddActionDidByUserInTask,
+        api_key: str = None,
     ):
         """
         Add action in task for user.
@@ -75,6 +78,13 @@ class UserActionsService(BaseService):
             action.externalUserId,
             not_found_raise_exception=False,
         )
+        response = self.game_repository.read_by_column(
+            "id",
+            gameId,
+            not_found_raise_exception=True,
+            only_one=True,
+            not_found_message=f"Game not found by gameId: {gameId}",
+        )
         if user is None:
             user = self.users_repository.create_user_by_externalUserId(
                 externalUserId=action.externalUserId
@@ -82,9 +92,7 @@ class UserActionsService(BaseService):
         task = self.task_repository.read_by_column(
             "externalTaskId",
             externalTaskId,
-            not_found_message=(
-                f"Task not found (externalTaskId) : {externalTaskId}"
-            ),
+            not_found_message=(f"Task not found (externalTaskId) : {externalTaskId}"),
         )
 
         if task.status != "open":
@@ -95,7 +103,9 @@ class UserActionsService(BaseService):
             data=action.data,
             description=action.description,
             userId=str(user.id),
+            apiKey_used=api_key,
         )
+
         created_action = self.user_actions_repository.create(new_action)
         response = ResponseAddActionDidByUserInTask(
             **created_action.dict(),
