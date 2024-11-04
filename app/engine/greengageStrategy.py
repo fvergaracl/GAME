@@ -24,7 +24,7 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
             del self.variable_bonus_points
         if hasattr(self, "variable_basic_points"):
             del self.variable_basic_points
-            
+
         self.task_service = Container.task_service()
         self.user_points_service = Container.user_points_service()
 
@@ -107,7 +107,7 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
         # Add Legend nodes
         dot.node(
             "leyend",
-            label="m: Minutes \nDP: Default Points \nBP: Bonus Points \nPBP: Personal Bonus Points \nDPTE: Default Points Time Elapsed \nCD=Complejidad Development [0,100] \nCE=Complejidad Exploitation [0,100] \nCM=Complejidad Management [0,100] \nCT=Complejidad Total",
+            label="m: Minutes \nDP: Default Points \nBP: Bonus Points \nPBP: Personal Bonus Points \nDPTE: Default Points Time Elapsed \DC=Development Complexity [0,100] \nEC=Exploitation Complexity [0,100] \nMC=Management Complexity [0,100] \nTC=Total Complexity [100,300]",
             fillcolor="yellowgreen",
         )
 
@@ -115,15 +115,15 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
         dot.node("start", "Start", shape="ellipse", fillcolor="lightgray")
         dot.node(
             "leyend2",
-            label="Calculation \nCT= CD + CE + CM \nDP: Defined in strategy * (CT/100) \nDPTE = DP × m \nBP = DPTE + (DPTE/2) \nPBP = DPTE + (DPTE/4)",
+            label="Calculation \TC= DC + EC + MC \nDP: Defined in strategy * (CT/100) \nDPTE = DP × m \nBP = DPTE + (DPTE/2) \nPBP = DPTE + (DPTE/4)",
             fillcolor="Turquoise",
         )
         dot.node("checkif0", "m=0")
         dot.node("checkuserhasrecordBeforeInTask", "User has record before (task)")
         dot.node("checkifLastPointWas1MinBefore", "last points rewarded (task) < 1 min")
         dot.node("checkif2records", "user have > 2 records? (Game)")
-        dot.node("checkififTimeIsGreaterThanGlobalAVG", "x > Global AVG (Game)")
-        dot.node("checkififTimeIsGreaterThanPersonalAVG", "x > Personal AVG (Game)")
+        dot.node("checkififTimeIsGreaterThanGlobalAVG", "m > Global AVG (Game)")
+        dot.node("checkififTimeIsGreaterThanPersonalAVG", "m > Personal AVG (Game)")
 
         # Case Nodes
         dot.node(
