@@ -82,6 +82,34 @@ class GameService(BaseService):
 
         return response
 
+    def delete_game_by_id(self, gameId: UUID):
+        """
+        Deletes a game by its game ID.
+
+        Args:
+            gameId (UUID): The game ID.
+
+        Raises:
+            NotFoundError: If the game is not found.
+        """
+        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
+        if not game:
+            raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
+
+        if self.game_repository.delete_game_by_id(gameId):
+            response = BaseGameResult(
+                externalGameId=game.externalGameId,
+                strategyId=game.strategyId,
+                platform=game.platform,
+                gameId=gameId,
+                created_at=game.created_at,
+                updated_at=game.updated_at,
+                params=[],
+                message=f"Game with gameId: {gameId} deleted successfully",
+            )
+            return response
+        return {"message": f"Game with gameId: {gameId} not deleted"}
+
     def get_all_games(self, schema):
         """
         Retrieves all games based on the provided schema.

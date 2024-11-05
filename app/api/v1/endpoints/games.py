@@ -111,6 +111,39 @@ def get_game_by_id(
     return response
 
 
+# delete game by gameId
+summary_delete_game_by_id = "Delete Game by ID"
+description_delete_game_by_id = """
+## Delete Game by ID    
+### This endpoint deletes a game by its unique game ID.
+<sub>**Id_endpoint:** delete_game_by_id</sub>"""  # noqa
+
+@router.delete(
+    "/{gameId}",
+    response_model=BaseGameResult,
+    description=description_delete_game_by_id,
+    summary=summary_delete_game_by_id,
+    dependencies=[Depends(auth_api_key_or_oauth2)],
+)
+@inject
+def delete_game_by_id(
+    gameId: UUID,
+    service: GameService = Depends(Provide[Container.game_service]),
+):
+    """
+    Delete a game by its ID.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        service (GameService): Injected GameService dependency.
+
+    Returns:
+        BaseGameResult: The details of the deleted game.
+    """
+    return service.delete_game_by_id(gameId)
+
+
+
 summary_create_game = "Create a New Game"
 description_create_game = """
 ## Create a New Game

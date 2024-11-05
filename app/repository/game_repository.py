@@ -10,6 +10,8 @@ from app.model.game_params import GamesParams
 from app.model.task_params import TasksParams
 from app.model.games import Games
 from app.model.tasks import Tasks
+from app.model.user_points import UserPoints
+from app.model.user_actions import UserActions
 from app.repository.base_repository import BaseRepository
 from app.schema.games_schema import BaseGameResult, FindGameResult
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
@@ -34,6 +36,7 @@ class GameRepository(BaseRepository):
         model_tasks=Tasks,
         model_game_params=GamesParams,
         model_tasks_params=TasksParams,
+        model_user_points=UserPoints,
     ) -> None:
         """
         Initializes the GameRepository with the provided session factory and
@@ -49,6 +52,7 @@ class GameRepository(BaseRepository):
         self.model_tasks = model_tasks
         self.model_game_params = model_game_params
         self.model_tasks_params = model_tasks_params
+        self.model_user_points = model_user_points
         super().__init__(session_factory, model)
 
     def get_all_games(self, schema):
@@ -210,27 +214,40 @@ class GameRepository(BaseRepository):
         Raises:
             NotFoundError: If the game is not found.
         """
-        with self.session_factory() as session:
-            game = session.query(self.model).filter(self.model.id == game_id).first()
-            if not game:
-                raise NotFoundError(detail=f"Not found id : {game_id}")
+        try:
+            with self.session_factory() as session:
+                game = (
+                    session.query(self.model).filter(self.model.id == game_id).first()
+                )
+                if not game:
+                    raise NotFoundError(detail=f"Not found id : {game_id}")
 
-            session.query(self.model_game_params).filter(
-                self.model_game_params.gameId == game_id
-            ).delete()
-
-            tasks = (
-                session.query(self.model_tasks)
-                .filter(self.model_tasks.gameId == game_id)
-                .all()
-            )
-            for task in tasks:
-                session.query(self.model_tasks_params).filter(
-                    self.model_tasks_params.taskId == task.id
+                session.query(self.model_game_params).filter(
+                    self.model_game_params.gameId == game_id
                 ).delete()
-            session.query(self.model_tasks).filter(
-                self.model_tasks.gameId == game_id
-            ).delete()
 
-            session.delete(game)
-            session.commit()
+                tasks = (
+                    session.query(self.model_tasks)
+                    .filter(self.model_tasks.gameId == game_id)
+                    .all()
+                )
+                for task in tasks:
+                    session.query(self.model_tasks_params).filter(
+                        self.model_tasks_params.taskId == task.id
+                    ).delete()
+
+                    session.query(self.model_user_points).filter(
+                        self.model_user_points.taskId == task.id
+                    ).delete()
+
+                session.query(self.model_tasks).filter(
+                    self.model_tasks.gameId == game_id
+                ).delete()
+
+                session.delete(game)
+                session.commit()
+                return True
+        except IntegrityError as e:
+            raise DuplicatedError(detail=str(e.orig))
+        except Exception as e:
+            raise NotFoundError(detail=str(e))
