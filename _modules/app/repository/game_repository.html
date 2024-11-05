@@ -245,6 +245,7 @@
 <span class="kn">from</span> <span class="nn">app.core.config</span> <span class="kn">import</span> <span class="n">configs</span>
 <span class="kn">from</span> <span class="nn">app.core.exceptions</span> <span class="kn">import</span> <span class="n">DuplicatedError</span><span class="p">,</span> <span class="n">NotFoundError</span>
 <span class="kn">from</span> <span class="nn">app.model.game_params</span> <span class="kn">import</span> <span class="n">GamesParams</span>
+<span class="kn">from</span> <span class="nn">app.model.task_params</span> <span class="kn">import</span> <span class="n">TasksParams</span>
 <span class="kn">from</span> <span class="nn">app.model.games</span> <span class="kn">import</span> <span class="n">Games</span>
 <span class="kn">from</span> <span class="nn">app.model.tasks</span> <span class="kn">import</span> <span class="n">Tasks</span>
 <span class="kn">from</span> <span class="nn">app.repository.base_repository</span> <span class="kn">import</span> <span class="n">BaseRepository</span>
@@ -272,6 +273,7 @@
         <span class="n">model</span><span class="o">=</span><span class="n">Games</span><span class="p">,</span>
         <span class="n">model_tasks</span><span class="o">=</span><span class="n">Tasks</span><span class="p">,</span>
         <span class="n">model_game_params</span><span class="o">=</span><span class="n">GamesParams</span><span class="p">,</span>
+        <span class="n">model_tasks_params</span><span class="o">=</span><span class="n">TasksParams</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initializes the GameRepository with the provided session factory and</span>
@@ -286,6 +288,7 @@
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_tasks</span> <span class="o">=</span> <span class="n">model_tasks</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_game_params</span> <span class="o">=</span> <span class="n">model_game_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_tasks_params</span> <span class="o">=</span> <span class="n">model_tasks_params</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GameRepository.get_all_games">
@@ -332,14 +335,7 @@
             <span class="n">filtered_query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_options</span><span class="p">)</span>
             <span class="n">query</span> <span class="o">=</span> <span class="n">filtered_query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">order_query</span><span class="p">)</span>
 
-            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GamesParams</span><span class="p">,</span> <span class="n">Games</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">GamesParams</span><span class="o">.</span><span class="n">gameId</span><span class="p">)</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span>
-                <span class="n">Games</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                <span class="n">Games</span><span class="o">.</span><span class="n">created_at</span><span class="p">,</span>
-                <span class="n">Games</span><span class="o">.</span><span class="n">platform</span><span class="p">,</span>
-                <span class="n">Games</span><span class="o">.</span><span class="n">externalGameId</span><span class="p">,</span>
-                <span class="n">GamesParams</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">outerjoin</span><span class="p">(</span><span class="n">GamesParams</span><span class="p">,</span> <span class="n">Games</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">GamesParams</span><span class="o">.</span><span class="n">gameId</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">page_size</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
                 <span class="n">games</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
@@ -347,6 +343,7 @@
                 <span class="n">games</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">((</span><span class="n">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
             <span class="n">game_results</span> <span class="o">=</span> <span class="p">{}</span>
+
             <span class="k">for</span> <span class="n">game</span> <span class="ow">in</span> <span class="n">games</span><span class="p">:</span>
                 <span class="n">game_id</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">id</span>
                 <span class="k">if</span> <span class="n">game_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">game_results</span><span class="p">:</span>
@@ -359,13 +356,14 @@
                         <span class="n">platform</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">platform</span><span class="p">,</span>
                         <span class="n">params</span><span class="o">=</span><span class="p">[],</span>
                     <span class="p">)</span>
-                <span class="n">game_results</span><span class="p">[</span><span class="n">game_id</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="s2">"id"</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">GamesParams</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                        <span class="s2">"key"</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">GamesParams</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-                        <span class="s2">"value"</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">GamesParams</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                    <span class="p">}</span>
-                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">GamesParams</span><span class="p">:</span>
+                    <span class="n">game_results</span><span class="p">[</span><span class="n">game_id</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="s2">"id"</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">GamesParams</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                            <span class="s2">"key"</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">GamesParams</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                            <span class="s2">"value"</span><span class="p">:</span> <span class="n">game</span><span class="o">.</span><span class="n">GamesParams</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
 
             <span class="n">total_count</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">game_results</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
 
@@ -448,6 +446,45 @@
                 <span class="k">raise</span> <span class="n">DuplicatedError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">orig</span><span class="p">))</span>
 
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_game_by_id</span><span class="p">(</span><span class="n">gameId</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GameRepository.delete_game_by_id">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.game_repository.GameRepository.delete_game_by_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Deletes a game by its ID , it's delete all games related with gameId in</span>
+<span class="sd">            games, game_params, tasks and tasks_params.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            game_id (str): The game ID.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the game is not found.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">game_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Not found id : </span><span class="si">{</span><span class="n">game_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+            <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_game_params</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model_game_params</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">game_id</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+            <span class="n">tasks</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_tasks</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_tasks</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">game_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_tasks_params</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">model_tasks_params</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_tasks</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model_tasks</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">game_id</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+            <span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
 </div>
 
 </pre></div>

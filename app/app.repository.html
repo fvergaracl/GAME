@@ -281,6 +281,8 @@
         </li>
         <li class="md-nav__item"><a href="#app.repository.game_repository.GameRepository.model_game_params" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.model_game_params</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.game_repository.GameRepository.delete_game_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.delete_game_by_id()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.game_repository.GameRepository.get_all_games" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.get_all_games()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.game_repository.GameRepository.get_game_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.get_game_by_id()</span></code></a>
@@ -486,6 +488,8 @@
         <li class="md-nav__item"><a href="#app.repository.GameRepository.model_tasks" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.model_tasks</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.GameRepository.model_game_params" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.model_game_params</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.GameRepository.delete_game_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.delete_game_by_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.GameRepository.get_all_games" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameRepository.get_all_games()</span></code></a>
         </li>
@@ -890,7 +894,7 @@ the record is not found.</p></li>
 <span id="app-repository-game-repository-module"></span><h2 id="module-app.repository.game_repository">app.repository.game_repository module<a class="headerlink" href="#module-app.repository.game_repository" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.repository.game_repository.GameRepository">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.game_repository.</span></span><span class="sig-name descname"><span class="pre">GameRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.games.Games'&gt;,</span> <span class="pre">model_tasks=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;,</span> <span class="pre">model_game_params=&lt;class</span> <span class="pre">'app.model.game_params.GamesParams'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_repository.GameRepository" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.game_repository.</span></span><span class="sig-name descname"><span class="pre">GameRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.games.Games'&gt;,</span> <span class="pre">model_tasks=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;,</span> <span class="pre">model_game_params=&lt;class</span> <span class="pre">'app.model.game_params.GamesParams'&gt;,</span> <span class="pre">model_tasks_params=&lt;class</span> <span class="pre">'app.model.task_params.TasksParams'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_repository.GameRepository" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
 <p>Repository class for games.</p>
 <dl class="py attribute">
@@ -917,6 +921,22 @@ the record is not found.</p></li>
 <dt class="sig sig-object py" id="app.repository.game_repository.GameRepository.model_game_params">
 <span class="sig-name descname"><span class="pre">model_game_params</span></span><a class="headerlink" href="#app.repository.game_repository.GameRepository.model_game_params" title="Link to this definition">¶</a></dt>
 <dd><p>SQLAlchemy model class for game parameters.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.game_repository.GameRepository.delete_game_by_id">
+<span class="sig-name descname"><span class="pre">delete_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository.delete_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_repository.GameRepository.delete_game_by_id" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Deletes a game by its ID , it’s delete all games related with gameId in</dt><dd><p>games, game_params, tasks and tasks_params.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>game_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The game ID.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotFoundError</strong> – If the game is not found.</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.repository.game_repository.GameRepository.get_all_games">
@@ -1944,7 +1964,7 @@ the record is not found.</p></li>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.repository.GameRepository">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">GameRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.games.Games'&gt;,</span> <span class="pre">model_tasks=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;,</span> <span class="pre">model_game_params=&lt;class</span> <span class="pre">'app.model.game_params.GamesParams'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.GameRepository" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">GameRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.games.Games'&gt;,</span> <span class="pre">model_tasks=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;,</span> <span class="pre">model_game_params=&lt;class</span> <span class="pre">'app.model.game_params.GamesParams'&gt;,</span> <span class="pre">model_tasks_params=&lt;class</span> <span class="pre">'app.model.task_params.TasksParams'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.GameRepository" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
 <p>Repository class for games.</p>
 <dl class="py attribute">
@@ -1971,6 +1991,22 @@ the record is not found.</p></li>
 <dt class="sig sig-object py" id="app.repository.GameRepository.model_game_params">
 <span class="sig-name descname"><span class="pre">model_game_params</span></span><a class="headerlink" href="#app.repository.GameRepository.model_game_params" title="Link to this definition">¶</a></dt>
 <dd><p>SQLAlchemy model class for game parameters.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.GameRepository.delete_game_by_id">
+<span class="sig-name descname"><span class="pre">delete_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository.delete_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.GameRepository.delete_game_by_id" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Deletes a game by its ID , it’s delete all games related with gameId in</dt><dd><p>games, game_params, tasks and tasks_params.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>game_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The game ID.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotFoundError</strong> – If the game is not found.</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.repository.GameRepository.get_all_games">
