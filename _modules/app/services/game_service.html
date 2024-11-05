@@ -325,6 +325,37 @@
         <span class="k">return</span> <span class="n">response</span></div>
 
 
+<div class="viewcode-block" id="GameService.delete_game_by_id">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.delete_game_by_id">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Deletes a game by its game ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (UUID): The game ID.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the game is not found.</span>
+<span class="sd">        """</span>
+        <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span><span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found by gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">delete_game_by_id</span><span class="p">(</span><span class="n">gameId</span><span class="p">):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">BaseGameResult</span><span class="p">(</span>
+                <span class="n">externalGameId</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">externalGameId</span><span class="p">,</span>
+                <span class="n">strategyId</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">strategyId</span><span class="p">,</span>
+                <span class="n">platform</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">platform</span><span class="p">,</span>
+                <span class="n">gameId</span><span class="o">=</span><span class="n">gameId</span><span class="p">,</span>
+                <span class="n">created_at</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">created_at</span><span class="p">,</span>
+                <span class="n">updated_at</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">updated_at</span><span class="p">,</span>
+                <span class="n">params</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2"> deleted successfully"</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">response</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Game with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2"> not deleted"</span><span class="p">}</span></div>
+
+
 <div class="viewcode-block" id="GameService.get_all_games">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.get_all_games">[docs]</a>
     <span class="k">def</span> <span class="nf">get_all_games</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
