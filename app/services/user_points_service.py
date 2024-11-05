@@ -309,13 +309,16 @@ class UserPointsService(BaseService):
             is_a_created_user = True
 
         strategy_instance = self.strategy_service.get_Class_by_id(strategyId)
-
+        data_to_add = schema.data
         try:
+
+            data_to_add["externalGameId"] = externalGameId
+            data_to_add["externalTaskId"] = externalTaskId
             points, case_name = strategy_instance.calculate_points(
                 externalGameId=externalGameId,
                 externalTaskId=externalTaskId,
                 externalUserId=externalUserId,
-                data=schema.data,
+                data=data_to_add,
             )
         except Exception as e:
             print("----------------- ERROR -----------------")
@@ -347,7 +350,7 @@ class UserPointsService(BaseService):
             taskId=str(task.id),
             points=points,
             caseName=case_name,
-            data=schema.data,
+            data=data_to_add,
             description="Points assigned by GAME",
             apiKey_used=api_key,
         )
@@ -366,13 +369,15 @@ class UserPointsService(BaseService):
                 coinsBalance=0,
                 pointsBalance=points,
                 conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
+                apiKey_used=api_key,
             )
             wallet = self.wallet_repository.create(new_wallet)
+
         wallet_transaction = BaseWalletTransaction(
             transactionType="AssignPoints",
             points=points,
             coins=0,
-            data=schema.data,
+            data=data_to_add,
             appliedConversionRate=0,
             walletId=str(wallet.id),
             apiKey_used=api_key,
