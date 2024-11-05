@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.core.config import configs
 from app.core.exceptions import DuplicatedError, NotFoundError
 from app.model.game_params import GamesParams
+from app.model.task_params import TasksParams
 from app.model.games import Games
 from app.model.tasks import Tasks
 from app.repository.base_repository import BaseRepository
@@ -32,6 +33,7 @@ class GameRepository(BaseRepository):
         model=Games,
         model_tasks=Tasks,
         model_game_params=GamesParams,
+        model_tasks_params=TasksParams,
     ) -> None:
         """
         Initializes the GameRepository with the provided session factory and
@@ -46,6 +48,7 @@ class GameRepository(BaseRepository):
         """
         self.model_tasks = model_tasks
         self.model_game_params = model_game_params
+        self.model_tasks_params = model_tasks_params
         super().__init__(session_factory, model)
 
     def get_all_games(self, schema):
@@ -90,14 +93,7 @@ class GameRepository(BaseRepository):
             filtered_query = query.filter(filter_options)
             query = filtered_query.order_by(order_query)
 
-            query = query.join(GamesParams, Games.id == GamesParams.gameId)
-            query = query.group_by(
-                Games.id,
-                Games.created_at,
-                Games.platform,
-                Games.externalGameId,
-                GamesParams,
-            )
+            query = query.outerjoin(GamesParams, Games.id == GamesParams.gameId)
 
             if page_size == "all":
                 games = query.all()
@@ -105,6 +101,7 @@ class GameRepository(BaseRepository):
                 games = query.limit(page_size).offset((page - 1) * page_size).all()
 
             game_results = {}
+
             for game in games:
                 game_id = game.id
                 if game_id not in game_results:
@@ -117,13 +114,14 @@ class GameRepository(BaseRepository):
                         platform=game.platform,
                         params=[],
                     )
-                game_results[game_id].params.append(
-                    {
-                        "id": game.GamesParams.id,
-                        "key": game.GamesParams.key,
-                        "value": game.GamesParams.value,
-                    }
-                )
+                if game.GamesParams:
+                    game_results[game_id].params.append(
+                        {
+                            "id": game.GamesParams.id,
+                            "key": game.GamesParams.key,
+                            "value": game.GamesParams.value,
+                        }
+                    )
 
             total_count = list(game_results.values()).__len__()
 
@@ -200,3 +198,39 @@ class GameRepository(BaseRepository):
                 raise DuplicatedError(detail=str(e.orig))
 
             return self.get_game_by_id(gameId)
+
+    def delete_game_by_id(self, game_id: str):
+        """
+        Deletes a game by its ID , it's delete all games related with gameId in
+            games, game_params, tasks and tasks_params.
+
+        Args:
+            game_id (str): The game ID.
+
+        Raises:
+            NotFoundError: If the game is not found.
+        """
+        with self.session_factory() as session:
+            game = session.query(self.model).filter(self.model.id == game_id).first()
+            if not game:
+                raise NotFoundError(detail=f"Not found id : {game_id}")
+
+            session.query(self.model_game_params).filter(
+                self.model_game_params.gameId == game_id
+            ).delete()
+
+            tasks = (
+                session.query(self.model_tasks)
+                .filter(self.model_tasks.gameId == game_id)
+                .all()
+            )
+            for task in tasks:
+                session.query(self.model_tasks_params).filter(
+                    self.model_tasks_params.taskId == task.id
+                ).delete()
+            session.query(self.model_tasks).filter(
+                self.model_tasks.gameId == game_id
+            ).delete()
+
+            session.delete(game)
+            session.commit()
