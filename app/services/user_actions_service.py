@@ -8,7 +8,11 @@ from app.schema.task_schema import (
     ResponseAddActionDidByUserInTask,
 )
 from app.services.base_service import BaseService
-from app.schema.user_actions_schema import CreateUserActions
+from app.schema.user_actions_schema import (
+    CreateUserBodyActions,
+    CreateUserActions,
+    CreatedUserActions,
+)
 
 
 class UserActionsService(BaseService):
@@ -110,6 +114,51 @@ class UserActionsService(BaseService):
         response = ResponseAddActionDidByUserInTask(
             **created_action.dict(),
             externalUserId=str(action.externalUserId),
+            message="Action added successfully",
+        )
+        return response
+
+    def user_add_action_default(
+        self,
+        externalUserId: str,
+        schema: CreateUserBodyActions,
+        api_key: str = None,
+    ):
+        """
+        Add action for user.
+
+        Args:
+            externalUserId (str): The external user ID.
+            schema (CreateUserActions): The action schema.
+            api_key (str): The API key.
+
+        Returns:
+            object: The added action for user.
+        """
+        user = self.users_repository.read_by_column(
+            "externalUserId",
+            externalUserId,
+            not_found_raise_exception=False,
+        )
+        user_created = False
+        if user is None:
+            user = self.users_repository.create_user_by_externalUserId(
+                externalUserId=externalUserId
+            )
+            user_created = True
+
+        new_action = CreateUserActions(
+            **schema.dict(),
+            userId=str(user.id),
+        )
+
+        created_action = self.user_actions_repository.create(new_action)
+
+        response = CreatedUserActions(
+            typeAction=created_action.typeAction,
+            description=created_action.description,
+            userId=str(user.id),
+            is_user_created=user_created,
             message="Action added successfully",
         )
         return response

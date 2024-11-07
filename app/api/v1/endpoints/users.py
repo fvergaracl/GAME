@@ -11,8 +11,10 @@ from app.schema.user_schema import (
     ResponsePointsConversion,
     UserWallet,
 )
+from app.schema.user_actions_schema import CreateUserBodyActions, CreatedUserActions
 from app.services.user_points_service import UserPointsService
 from app.services.user_service import UserService
+from app.services.user_actions_service import UserActionsService
 from app.middlewares.authentication import auth_api_key_or_oauth2
 
 router = APIRouter(
@@ -306,3 +308,41 @@ def convert_points_to_coins(
     return service.convert_points_to_coins_externalUserId(
         externalUserId, schema, api_key
     )
+
+
+summary_add_action_to_user = "Add Action to User"
+description_add_action_to_user = """
+## Add Action to User
+### This endpoint adds an action to a specific user.
+<sub>**Id_endpoint:** add_action_to_user</sub>
+"""
+
+
+@router.post(
+    "/{externalUserId}/actions",
+    response_model=CreatedUserActions,
+    summary=summary_add_action_to_user,
+    description=description_add_action_to_user,
+    dependencies=[Depends(auth_api_key_or_oauth2)],
+)
+@inject
+def add_action_to_user(
+    externalUserId: str,
+    schema: CreateUserBodyActions,
+    service: UserActionsService = Depends(Provide[Container.user_actions_service]),
+    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+):
+    """
+    Add an action to a specific user.
+
+    Args:
+        externalUserId (str): The external user ID.
+        schema (PostPointsConversionRequest): The schema containing action
+          details.
+        service (UserService): Injected UserService dependency.
+
+    Returns:
+        ResponsePointsConversion: The action details.
+    """
+    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    return service.user_add_action_default(externalUserId, schema, api_key)
