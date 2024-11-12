@@ -2,22 +2,41 @@ from dependency_injector import containers, providers
 
 from app.core.config import configs
 from app.core.database import Database
+
 # pylint: disable=unused-wildcard-import
 from app.repository import (
-    ApiKeyRepository, GameParamsRepository,
-    GameRepository, TaskParamsRepository,
-    TaskRepository, UserActionsRepository,
-    UserPointsRepository, UserRepository,
-    WalletRepository, WalletTransactionRepository,
-    ApiRequestsRepository, KpiMetricsRepository,
-    UptimeLogsRepository, UserInteractionsRepository,
+    ApiKeyRepository,
+    GameParamsRepository,
+    GameRepository,
+    TaskParamsRepository,
+    TaskRepository,
+    UserActionsRepository,
+    UserPointsRepository,
+    UserRepository,
+    WalletRepository,
+    WalletTransactionRepository,
+    ApiRequestsRepository,
+    KpiMetricsRepository,
+    UptimeLogsRepository,
+    UserInteractionsRepository,
+    dashboard_repository,
 )
 from app.services import (
-    ApiKeyService, GameParamsService, GameService,
-    StrategyService, TaskService, UserActionsService,
-    UserPointsService, UserService, WalletService,
-    WalletTransactionService, ApiRequestsService,
-    KpiMetricsService, UptimeLogsService, UserInteractionsService,
+    ApiKeyService,
+    GameParamsService,
+    GameService,
+    StrategyService,
+    TaskService,
+    UserActionsService,
+    UserPointsService,
+    UserService,
+    WalletService,
+    WalletTransactionService,
+    ApiRequestsService,
+    KpiMetricsService,
+    UptimeLogsService,
+    UserInteractionsService,
+    dashboard_service,
 )
 
 
@@ -57,6 +76,8 @@ class Container(containers.DeclarativeContainer):
           UptimeLogsRepository.
         user_interactions_repository (providers.Factory): Factory provider for
           UserInteractionsRepository.
+        dashboard_repository (providers.Factory): Factory provider for
+          DashboardRepository.
         game_params_service (providers.Factory): Factory provider for
           GameParamsService.
         strategy_service (providers.Factory): Factory provider for
@@ -79,6 +100,8 @@ class Container(containers.DeclarativeContainer):
           UptimeLogsService.
         user_interactions_service (providers.Factory): Factory provider for
           UserInteractionsService.
+        dashboard_service (providers.Factory): Factory provider for
+          DashboardService.
     """
 
     wiring_config = containers.WiringConfiguration(
@@ -91,6 +114,7 @@ class Container(containers.DeclarativeContainer):
             "app.api.v1.endpoints.wallet",
             "app.api.v1.endpoints.apikey",
             "app.api.v1.endpoints.kpi",
+            "app.api.v1.endpoints.dashboard",
         ]
     )
 
@@ -150,6 +174,11 @@ class Container(containers.DeclarativeContainer):
 
     user_interactions_repository = providers.Factory(
         UserInteractionsRepository, session_factory=db.provided.session
+    )
+
+    dashboard_repository = providers.Factory(
+        dashboard_repository.DashboardRepository,
+        session_factory=db.provided.session,
     )
 
     # Services (Add in here)
@@ -240,4 +269,23 @@ class Container(containers.DeclarativeContainer):
     user_interactions_service = providers.Factory(
         UserInteractionsService,
         user_interactions_repository=user_interactions_repository,
+    )
+
+    """
+    dashboard_repository: DashboardRepository,
+        game_service: GameService,
+        task_service: TaskService,
+        user_service: UserService,
+        user_points_service: UserPointsService,
+        user_actions_service: UserActionsService,
+    """
+
+    dashboard_service = providers.Factory(
+        dashboard_service.DashboardService,
+        dashboard_repository=dashboard_repository,
+        game_repository=game_repository,
+        task_repository=task_repository,
+        user_repository=user_repository,
+        user_points_repository=user_points_repository,
+        user_actions_repository=user_actions_repository,
     )

@@ -14,3 +14,4 @@ from app.services.kpi_metrics_service import KpiMetricsService
 from app.services.uptime_logs_service import UptimeLogsService
 from app.services.user_interactions_service import UserInteractionsService
 from app.services.user_actions_service import UserActionsService
+from app.services.dashboard_service import DashboardService

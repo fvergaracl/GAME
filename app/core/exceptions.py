@@ -144,8 +144,7 @@ class InternalServerError(HTTPException):
             headers (Optional[Dict[str, Any]], optional): The headers for the
               exception response.
         """
-        super().__init__(status.HTTP_500_INTERNAL_SERVER_ERROR, detail,
-                         headers)
+        super().__init__(status.HTTP_500_INTERNAL_SERVER_ERROR, detail, headers)
 
 
 class ForbiddenError(HTTPException):
@@ -170,3 +169,30 @@ class ForbiddenError(HTTPException):
               exception response.
         """
         super().__init__(status.HTTP_403_FORBIDDEN, detail, headers)
+
+
+# HTTP_400_BAD_REQUEST
+
+
+class BadRequestError(HTTPException):
+    """
+    Exception raised for bad request errors.
+
+    Attributes:
+        detail (Any): The detail message for the exception.
+        headers (Optional[Dict[str, Any]]): The headers for the exception
+          response.
+    """
+
+    def __init__(
+        self, detail: Any = None, headers: Optional[Dict[str, Any]] = None
+    ) -> None:
+        """
+        Initializes the BadRequestError with the provided details.
+
+        Args:
+            detail (Any, optional): The detail message for the exception.
+            headers (Optional[Dict[str, Any]], optional): The headers for the
+              exception response.
+        """
+        super().__init__(status.HTTP_400_BAD_REQUEST, detail, headers)

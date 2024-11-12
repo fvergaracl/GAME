@@ -11,6 +11,8 @@ from app.api.v1.endpoints.tasks import router as task_router
 from app.api.v1.endpoints.userPoints import router as user_points_router
 from app.api.v1.endpoints.users import router as user_router
 from app.api.v1.endpoints.wallet import router as wallet_router
+from app.api.v1.endpoints.dashboard import router as dashboard_router
+
 routers = APIRouter()
 router_list = [
     apikey_router,
@@ -21,6 +23,7 @@ router_list = [
     user_router,
     wallet_router,
     kpi_router,
+    dashboard_router,
 ]
 
 
