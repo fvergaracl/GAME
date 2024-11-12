@@ -469,6 +469,14 @@
         </li></ul>
             </nav>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.DashboardRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DashboardRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.DashboardRepository.get_dashboard_summary" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DashboardRepository.get_dashboard_summary()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.DashboardRepository.process_query" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DashboardRepository.process_query()</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.GameParamsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameParamsRepository</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.repository.GameParamsRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GameParamsRepository.session_factory</span></code></a>
@@ -1915,6 +1923,53 @@ the record is not found.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.DashboardRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">DashboardRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model_games=&lt;class</span> <span class="pre">'app.model.games.Games'&gt;,</span> <span class="pre">model_tasks=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;,</span> <span class="pre">model_users=&lt;class</span> <span class="pre">'app.model.users.Users'&gt;,</span> <span class="pre">model_user_points=&lt;class</span> <span class="pre">'app.model.user_points.UserPoints'&gt;,</span> <span class="pre">model_user_actions=&lt;class</span> <span class="pre">'app.model.user_actions.UserActions'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/dashboard_repository.html#DashboardRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.DashboardRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<p>Repository class for API keys and dashboard metrics.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.DashboardRepository.get_dashboard_summary">
+<span class="sig-name descname"><span class="pre">get_dashboard_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_by</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/dashboard_repository.html#DashboardRepository.get_dashboard_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.DashboardRepository.get_dashboard_summary" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the dashboard summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> – The start date for the summary.</p></li>
+<li><p><strong>end_date</strong> – The end date for the summary.</p></li>
+<li><p><strong>group_by</strong> – The group by for the summary (e.g. day, week, month).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dashboard summary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a>, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.DashboardRepository.process_query">
+<span class="sig-name descname"><span class="pre">process_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_by_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/dashboard_repository.html#DashboardRepository.process_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.DashboardRepository.process_query" title="Link to this definition">¶</a></dt>
+<dd><p>Processes the query by filtering and grouping the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> – The query to process.</p></li>
+<li><p><strong>start_date</strong> – The start date for the query.</p></li>
+<li><p><strong>end_date</strong> – The end date for the query.</p></li>
+<li><p><strong>group_by_column</strong> – The column to group by.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The processed query.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
 </dd>
 </dl>
 </dd></dl>
