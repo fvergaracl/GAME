@@ -16,17 +16,153 @@ import CIcon from '@coreui/icons-react'
 import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons'
 import { API_URL, fetcher } from '@utils/api'
 
+const WidgetNewUsers = ({ dataUsers }) => {
+  const widgetChartRefUsers = useRef(null)
+
+  useEffect(() => {
+    document.documentElement.addEventListener('ColorSchemeChange', () => {
+      if (widgetChartRefUsers.current) {
+        setTimeout(() => {
+          widgetChartRefUsers.current.data.datasets[0].pointBackgroundColor =
+            getStyle('--cui-primary')
+          widgetChartRefUsers.current.update()
+        })
+      }
+    })
+  }, [widgetChartRefUsers])
+
+  dataUsers.sort((a, b) => parseInt(a.label, 10) - parseInt(b.label, 10))
+  // convert label to month name
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+
+  const data = {
+    // Mapea los labels de dataUsers a nombres de los últimos 6 meses
+    labels: dataUsers.map((item) => monthNames[parseInt(item.label, 10) - 1]),
+    datasets: [
+      {
+        label: 'New Users',
+        backgroundColor: 'transparent',
+        borderColor: 'rgba(255,255,255,.55)',
+        pointBackgroundColor: getStyle('--cui-primary'),
+        data: dataUsers.map((item) => parseInt(item?.count || 0, 10)),
+      },
+    ],
+  }
+
+  const numberNewUsersLastMonth = dataUsers.reverse()?.[0]?.count
+  const diffNewUsersPercentage =
+    ((dataUsers?.[0]?.count - dataUsers?.[1]?.count) / dataUsers?.[1]?.count) * 100 || 0
+  const IconArrow = () =>
+    diffNewUsersPercentage === 0 ? (
+      <></>
+    ) : diffNewUsersPercentage > 0 ? (
+      <CIcon icon={cilArrowTop} />
+    ) : (
+      <CIcon icon={cilArrowBottom} />
+    )
+
+  const minValue = Math.min(...data.datasets[0].data)
+  const maxValue = Math.max(...data.datasets[0].data)
+
+  return (
+    <CWidgetStatsA
+      color="primary"
+      value={
+        <>
+          {numberNewUsersLastMonth}{' '}
+          <span className="fs-6 fw-normal">
+            ({diffNewUsersPercentage}% )
+            <IconArrow />
+          </span>
+        </>
+      }
+      title="New users"
+      chart={
+        <CChartLine
+          ref={widgetChartRefUsers}
+          className="mt-3 mx-3"
+          style={{ height: '70px' }}
+          data={data}
+          options={{
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                border: {
+                  display: false,
+                },
+                grid: {
+                  display: false,
+                  drawBorder: false,
+                },
+                ticks: {
+                  display: false,
+                },
+              },
+              y: {
+                min: minValue,
+                max: maxValue,
+                display: false,
+                grid: {
+                  display: false,
+                },
+                ticks: {
+                  display: false,
+                },
+              },
+            },
+            elements: {
+              line: {
+                borderWidth: 1,
+                tension: 0.4,
+              },
+              point: {
+                radius: 4,
+                hitRadius: 10,
+                hoverRadius: 4,
+              },
+            },
+          }}
+        />
+      }
+    />
+  )
+}
+
+WidgetNewUsers.propTypes = {
+  dataUsers: PropTypes.array || PropTypes.arrayOf(PropTypes.object),
+  widgetChartRefUsers: PropTypes.object,
+}
+
 const WidgetsDropdown = (props) => {
   const [data, setData] = useState([])
-  const widgetChartRef1 = useRef(null)
+  const widgetChartRefUsers = useRef(null)
   const widgetChartRef2 = useRef(null)
 
   useEffect(() => {
     document.documentElement.addEventListener('ColorSchemeChange', () => {
-      if (widgetChartRef1.current) {
+      if (widgetChartRefUsers.current) {
         setTimeout(() => {
-          widgetChartRef1.current.data.datasets[0].pointBackgroundColor = getStyle('--cui-primary')
-          widgetChartRef1.current.update()
+          widgetChartRefUsers.current.data.datasets[0].pointBackgroundColor =
+            getStyle('--cui-primary')
+          widgetChartRefUsers.current.update()
         })
       }
 
@@ -37,7 +173,7 @@ const WidgetsDropdown = (props) => {
         })
       }
     })
-  }, [widgetChartRef1, widgetChartRef2])
+  }, [widgetChartRefUsers, widgetChartRef2])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,93 +191,9 @@ const WidgetsDropdown = (props) => {
   return (
     <CRow className={props.className} xs={{ gutter: 4 }}>
       <CCol sm={6} xl={4} xxl={3}>
-        <CWidgetStatsA
-          color="primary"
-          value={
-            <>
-              26K{' '}
-              <span className="fs-6 fw-normal">
-                (-12.4% <CIcon icon={cilArrowBottom} />)
-              </span>
-            </>
-          }
-          title="Users"
-          action={
-            <CDropdown alignment="end">
-              <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-                <CIcon icon={cilOptions} />
-              </CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem>Action</CDropdownItem>
-                <CDropdownItem>Another action</CDropdownItem>
-                <CDropdownItem>Something else here...</CDropdownItem>
-                <CDropdownItem disabled>Disabled action</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
-          }
-          chart={
-            <CChartLine
-              ref={widgetChartRef1}
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                  {
-                    label: 'My First dataset',
-                    backgroundColor: 'transparent',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    pointBackgroundColor: getStyle('--cui-primary'),
-                    data: [65, 59, 84, 84, 51, 55, 40],
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    border: {
-                      display: false,
-                    },
-                    grid: {
-                      display: false,
-                      drawBorder: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    min: 30,
-                    max: 89,
-                    display: false,
-                    grid: {
-                      display: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-                elements: {
-                  line: {
-                    borderWidth: 1,
-                    tension: 0.4,
-                  },
-                  point: {
-                    radius: 4,
-                    hitRadius: 10,
-                    hoverRadius: 4,
-                  },
-                },
-              }}
-            />
-          }
+        <WidgetNewUsers
+          dataUsers={data?.new_users || []}
+          widgetChartRefUsers={widgetChartRefUsers}
         />
       </CCol>
       <CCol sm={6} xl={4} xxl={3}>
@@ -156,19 +208,6 @@ const WidgetsDropdown = (props) => {
             </>
           }
           title="Income"
-          // action={
-          //   <CDropdown alignment="end">
-          //     <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
-          //       <CIcon icon={cilOptions} />
-          //     </CDropdownToggle>
-          //     <CDropdownMenu>
-          //       <CDropdownItem>Action</CDropdownItem>
-          //       <CDropdownItem>Another action</CDropdownItem>
-          //       <CDropdownItem>Something else here...</CDropdownItem>
-          //       <CDropdownItem disabled>Disabled action</CDropdownItem>
-          //     </CDropdownMenu>
-          //   </CDropdown>
-          // }
           chart={
             <CChartLine
               ref={widgetChartRef2}
@@ -404,8 +443,13 @@ const WidgetsDropdown = (props) => {
 }
 
 WidgetsDropdown.propTypes = {
+  props: PropTypes.object,
   className: PropTypes.string,
   withCharts: PropTypes.bool,
+}
+
+WidgetsDropdown.defaultProps = {
+  withCharts: true,
 }
 
 export default WidgetsDropdown

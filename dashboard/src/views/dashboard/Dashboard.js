@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import classNames from 'classnames'
 
 import {
@@ -51,7 +51,8 @@ import avatar5 from 'src/assets/images/avatars/5.jpg'
 import avatar6 from 'src/assets/images/avatars/6.jpg'
 
 import WidgetsBrand from '../widgets/WidgetsBrand'
-import WidgetsDropdown from '../widgets/WidgetsDropdown'
+// import WidgetsDropdown from '../widgets/WidgetsDropdown'
+import WidgetsDropdown from './topDashboard/WidgetsDropdown'
 import MainChart from './MainChart'
 
 const Dashboard = () => {
@@ -178,6 +179,7 @@ const Dashboard = () => {
 
   return (
     <>
+      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
       <WidgetsDropdown className="mb-4" />
       <CCard className="mb-4">
         <CCardBody>

@@ -36,6 +36,10 @@ export default defineConfig(() => {
           find: 'src/',
           replacement: `${path.resolve(__dirname, 'src')}/`,
         },
+        {
+          find: '@utils',
+          replacement: path.resolve(__dirname, 'src/utils'),
+        },
       ],
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.scss'],
     },
