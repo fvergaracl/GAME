@@ -29,8 +29,8 @@ jobs:
       - name: Build and push Docker Image
         uses: docker/build-push-action@v4
         with:
-          context: dashboard
-          file: Dockerfile
+          context: ./dashboard  
+          file: ./dashboard/Dockerfile
           push: true
           tags: |
             fvergaracl/game-dashboard:latest
