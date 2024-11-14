@@ -7,7 +7,7 @@ import { CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
 import { cilArrowBottom, cilArrowTop } from '@coreui/icons'
 
-const WidgetNewUsers = ({ dataWidget }) => {
+const WidgetGamesOpened = ({ dataWidget }) => {
   const widgetChartRef = useRef(null)
 
   useEffect(() => {
@@ -42,10 +42,10 @@ const WidgetNewUsers = ({ dataWidget }) => {
     labels: dataWidget.map((item) => monthNames[parseInt(item.label, 10) - 1]),
     datasets: [
       {
-        label: 'New Users',
+        label: 'Games Opened',
         backgroundColor: 'transparent',
         borderColor: 'rgba(255,255,255,.55)',
-        pointBackgroundColor: getStyle('--cui-primary'),
+        pointBackgroundColor: getStyle('--cui-info'),
         data: dataWidget.map((item) => parseInt(item?.count || 0, 10)),
       },
     ],
@@ -68,7 +68,7 @@ const WidgetNewUsers = ({ dataWidget }) => {
 
   return (
     <CWidgetStatsA
-      color="primary"
+      color="info"
       value={
         <>
           {numberNewUsersLastMonth}{' '}
@@ -78,7 +78,7 @@ const WidgetNewUsers = ({ dataWidget }) => {
           </span>
         </>
       }
-      title="New users"
+      title="Games Opened"
       chart={
         <CChartLine
           ref={widgetChartRef}
@@ -135,8 +135,8 @@ const WidgetNewUsers = ({ dataWidget }) => {
   )
 }
 
-WidgetNewUsers.propTypes = {
+WidgetGamesOpened.propTypes = {
   dataWidget: PropTypes.array || PropTypes.arrayOf(PropTypes.object),
 }
 
-export default WidgetNewUsers
+export default WidgetGamesOpened

@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 
-import { CWidgetStatsA } from '@coreui/react'
+import { CWidgetStatsA, CTooltip } from '@coreui/react'
 import { getStyle } from '@coreui/utils'
-import { CChartLine } from '@coreui/react-chartjs'
+import { CChartBar } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
-import { cilArrowBottom, cilArrowTop } from '@coreui/icons'
+import { cilArrowBottom, cilArrowTop, cilInfo } from '@coreui/icons'
 
-const WidgetNewUsers = ({ dataWidget }) => {
+const WidgetActionsPerformanced = ({ dataWidget }) => {
   const widgetChartRef = useRef(null)
 
   useEffect(() => {
@@ -42,11 +42,11 @@ const WidgetNewUsers = ({ dataWidget }) => {
     labels: dataWidget.map((item) => monthNames[parseInt(item.label, 10) - 1]),
     datasets: [
       {
-        label: 'New Users',
-        backgroundColor: 'transparent',
+        label: 'Actions Performance',
+        backgroundColor: 'rgba(255,255,255,.2)',
         borderColor: 'rgba(255,255,255,.55)',
-        pointBackgroundColor: getStyle('--cui-primary'),
         data: dataWidget.map((item) => parseInt(item?.count || 0, 10)),
+        barPercentage: 0.6,
       },
     ],
   }
@@ -63,12 +63,9 @@ const WidgetNewUsers = ({ dataWidget }) => {
       <CIcon icon={cilArrowBottom} />
     )
 
-  const minValue = Math.min(...data.datasets[0].data) - 5
-  const maxValue = Math.max(...data.datasets[0].data) + 5
-
   return (
     <CWidgetStatsA
-      color="primary"
+      color="danger"
       value={
         <>
           {numberNewUsersLastMonth}{' '}
@@ -78,54 +75,49 @@ const WidgetNewUsers = ({ dataWidget }) => {
           </span>
         </>
       }
-      title="New users"
+      title={
+        <>
+          Actions Performed{' '}
+          <CTooltip content="This is the total number of actions performed by users in tasks">
+            <CIcon icon={cilInfo} className="ms-1" style={{ cursor: 'pointer' }} />
+          </CTooltip>
+        </>
+      }
       chart={
-        <CChartLine
+        <CChartBar
           ref={widgetChartRef}
           className="mt-3 mx-3"
           style={{ height: '70px' }}
           data={data}
           options={{
+            maintainAspectRatio: false,
             plugins: {
               legend: {
                 display: false,
               },
             },
-            maintainAspectRatio: false,
             scales: {
               x: {
-                border: {
-                  display: false,
-                },
                 grid: {
                   display: false,
-                  drawBorder: false,
+                  drawTicks: false,
                 },
                 ticks: {
                   display: false,
                 },
               },
               y: {
-                min: minValue,
-                max: maxValue,
-                display: false,
+                border: {
+                  display: false,
+                },
                 grid: {
                   display: false,
+                  drawBorder: false,
+                  drawTicks: false,
                 },
                 ticks: {
                   display: false,
                 },
-              },
-            },
-            elements: {
-              line: {
-                borderWidth: 1,
-                tension: 0.4,
-              },
-              point: {
-                radius: 4,
-                hitRadius: 10,
-                hoverRadius: 4,
               },
             },
           }}
@@ -135,8 +127,8 @@ const WidgetNewUsers = ({ dataWidget }) => {
   )
 }
 
-WidgetNewUsers.propTypes = {
+WidgetActionsPerformanced.propTypes = {
   dataWidget: PropTypes.array || PropTypes.arrayOf(PropTypes.object),
 }
 
-export default WidgetNewUsers
+export default WidgetActionsPerformanced

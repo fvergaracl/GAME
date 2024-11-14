@@ -7,7 +7,7 @@ import { CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
 import { cilArrowBottom, cilArrowTop } from '@coreui/icons'
 
-const WidgetNewUsers = ({ dataWidget }) => {
+const WidgetPointsRewarded = ({ dataWidget }) => {
   const widgetChartRef = useRef(null)
 
   useEffect(() => {
@@ -42,10 +42,11 @@ const WidgetNewUsers = ({ dataWidget }) => {
     labels: dataWidget.map((item) => monthNames[parseInt(item.label, 10) - 1]),
     datasets: [
       {
-        label: 'New Users',
-        backgroundColor: 'transparent',
+        label: 'Points Rewarded',
+        backgroundColor: 'rgba(255,255,255,.2)',
         borderColor: 'rgba(255,255,255,.55)',
-        pointBackgroundColor: getStyle('--cui-primary'),
+        fill: true,
+        pointBackgroundColor: getStyle('--cui-warning'),
         data: dataWidget.map((item) => parseInt(item?.count || 0, 10)),
       },
     ],
@@ -68,7 +69,7 @@ const WidgetNewUsers = ({ dataWidget }) => {
 
   return (
     <CWidgetStatsA
-      color="primary"
+      color="warning"
       value={
         <>
           {numberNewUsersLastMonth}{' '}
@@ -78,7 +79,7 @@ const WidgetNewUsers = ({ dataWidget }) => {
           </span>
         </>
       }
-      title="New users"
+      title="Points Rewarded"
       chart={
         <CChartLine
           ref={widgetChartRef}
@@ -94,36 +95,19 @@ const WidgetNewUsers = ({ dataWidget }) => {
             maintainAspectRatio: false,
             scales: {
               x: {
-                border: {
-                  display: false,
-                },
-                grid: {
-                  display: false,
-                  drawBorder: false,
-                },
-                ticks: {
-                  display: false,
-                },
+                display: false,
               },
               y: {
-                min: minValue,
-                max: maxValue,
                 display: false,
-                grid: {
-                  display: false,
-                },
-                ticks: {
-                  display: false,
-                },
               },
             },
             elements: {
               line: {
-                borderWidth: 1,
+                borderWidth: 2,
                 tension: 0.4,
               },
               point: {
-                radius: 4,
+                radius: 0,
                 hitRadius: 10,
                 hoverRadius: 4,
               },
@@ -135,8 +119,8 @@ const WidgetNewUsers = ({ dataWidget }) => {
   )
 }
 
-WidgetNewUsers.propTypes = {
+WidgetPointsRewarded.propTypes = {
   dataWidget: PropTypes.array || PropTypes.arrayOf(PropTypes.object),
 }
 
-export default WidgetNewUsers
+export default WidgetPointsRewarded
