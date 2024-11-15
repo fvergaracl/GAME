@@ -115,7 +115,7 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
         dot.node("start", "Start", shape="ellipse", fillcolor="lightgray")
         dot.node(
             "leyend2",
-            label="Calculation \TC= DC + EC + MC \nDP: Defined in strategy * (CT/100) \nDPTE = DP × m \nBP = DPTE + (DPTE/2) \nPBP = DPTE + (DPTE/4)",
+            label="TC= DC + EC + MC \nDP: Defined in strategy * (TC/100) \nDPTE = DP × m \nBP = DPTE + (DPTE/2) \nPBP = DPTE + (DPTE/4)",
             fillcolor="Turquoise",
         )
         dot.node("checkif0", "m=0")
