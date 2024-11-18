@@ -39,6 +39,8 @@ from app.services.task_service import TaskService
 from app.services.user_actions_service import UserActionsService
 from app.services.user_points_service import UserPointsService
 from app.middlewares.authentication import auth_api_key_or_oauth2
+from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
+from app.util.check_role import check_role
 
 router = APIRouter(
     prefix="/games",
@@ -60,9 +62,11 @@ description_get_games_list = """
     dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
-def get_games_list(
+async def get_games_list(
     schema: PostFindGame = Depends(),
     service: GameService = Depends(Provide[Container.game_service]),
+    token: str = Depends(oauth_2_scheme),
+    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
     """
     Retrieve a list of all games with their parameters.
@@ -74,7 +78,13 @@ def get_games_list(
       Returns:
           FindGameResult: A result set containing the games and search options.
     """
-    return service.get_all_games(schema)
+    token_decoded = await valid_access_token(token)
+    token_decoded = token_decoded.data
+    is_admin = check_role(token_decoded, "AdministratorGAME")
+    if is_admin:
+        return service.get_all_games(schema)
+    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    return service.get_all_games(schema, api_key)
 
 
 summary_get_game_by_id = "Retrieve Game by ID"
@@ -118,6 +128,7 @@ description_delete_game_by_id = """
 ### This endpoint deletes a game by its unique game ID.
 <sub>**Id_endpoint:** delete_game_by_id</sub>"""  # noqa
 
+
 @router.delete(
     "/{gameId}",
     response_model=BaseGameResult,
@@ -141,7 +152,6 @@ def delete_game_by_id(
         BaseGameResult: The details of the deleted game.
     """
     return service.delete_game_by_id(gameId)
-
 
 
 summary_create_game = "Create a New Game"

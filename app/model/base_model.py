@@ -2,8 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from sqlalchemy.dialects.postgresql import UUID
-from sqlmodel import (Column, DateTime, Field, ForeignKey, SQLModel, String,
-                      func)
+from sqlmodel import Column, DateTime, Field, ForeignKey, SQLModel, String, func
 
 
 class BaseModel(SQLModel):
@@ -17,6 +16,8 @@ class BaseModel(SQLModel):
           set to the current time by default.
         updated_at (datetime): Timestamp recording the last update of an
           instance, set to the current time on creation and updates.
+        apiKey_used (str): The API key used for the instance.
+        oauth_user_id (str): The OAuth user ID associated with the instance.
 
     Methods:
         __str__(self): Returns a string representation of the model instance.
@@ -49,19 +50,25 @@ class BaseModel(SQLModel):
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
+    oauth_user_id: str = Field(
+        sa_column=Column(String, ForeignKey("oauth_users.id"), nullable=True)
+    )
+
     class Config:  # noqa
         orm_mode = True  # noqa
 
     def __str__(self):
         return (
             f"BaseModel: (id={self.id}, created_at={self.created_at}, "
-            f"updated_at={self.updated_at})"
+            f"updated_at={self.updated_at} apiKey_used={self.apiKey_used}, "
+            f"oauth_user_id={self.oauth_user_id})"
         )
 
     def __repr__(self):
         return (
             f"BaseModel: (id={self.id}, created_at={self.created_at}, "
-            f"updated_at={self.updated_at})"
+            f"updated_at={self.updated_at} apiKey_used={self.apiKey_used}, "
+            f"oauth_user_id={self.oauth_user_id})"
         )
 
     def __eq__(self, other):
@@ -70,7 +77,17 @@ class BaseModel(SQLModel):
             and self.id == other.id
             and self.created_at == other.created_at
             and self.updated_at == other.updated_at
+            and self.apiKey_used == other.apiKey_used
+            and self.oauth_user_id == other.oauth_user_id
         )
 
     def __hash__(self):
-        return hash((self.id, self.created_at, self.updated_at))
+        return hash(
+            (
+                self.id,
+                self.created_at,
+                self.updated_at,
+                self.apiKey_used,
+                self.oauth_user_id,
+            )
+        )

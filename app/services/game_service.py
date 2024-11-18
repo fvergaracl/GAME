@@ -110,17 +110,18 @@ class GameService(BaseService):
             return response
         return {"message": f"Game with gameId: {gameId} not deleted"}
 
-    def get_all_games(self, schema):
+    def get_all_games(self, schema, api_key=None):
         """
         Retrieves all games based on the provided schema.
 
         Args:
             schema: The schema for filtering the games.
+            api_key (str): The API key.
 
         Returns:
             list: A list of all games matching the schema.
         """
-        return self.game_repository.get_all_games(schema)
+        return self.game_repository.get_all_games(schema, api_key)
 
     def get_by_externalId(self, externalGameId: str):
         """

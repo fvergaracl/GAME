@@ -55,7 +55,7 @@ class GameRepository(BaseRepository):
         self.model_user_points = model_user_points
         super().__init__(session_factory, model)
 
-    def get_all_games(self, schema):
+    def get_all_games(self, schema, api_key=None):
         """
         Retrieves all games based on the provided schema.
 
@@ -98,7 +98,8 @@ class GameRepository(BaseRepository):
             query = filtered_query.order_by(order_query)
 
             query = query.outerjoin(GamesParams, Games.id == GamesParams.gameId)
-
+            if api_key:
+                query = query.filter(Games.apiKey_used == api_key)
             if page_size == "all":
                 games = query.all()
             else:

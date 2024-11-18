@@ -22,7 +22,7 @@ const WidgetActionsPerformanced = ({ dataWidget }) => {
   }, [widgetChartRef])
 
   dataWidget.sort((a, b) => parseInt(a.label, 10) - parseInt(b.label, 10))
-  // convert label to month name
+
   const monthNames = [
     'January',
     'February',
