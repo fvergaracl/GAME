@@ -2,7 +2,7 @@ from app.schema.logs_schema import CreateLogs
 
 
 async def add_log(
-    log_level, message, details, service_log, api_key=None, oauth_user_id=None
+    module, log_level, message, details, service_log, api_key=None, oauth_user_id=None
 ):
     """
     Helper to add a log entry with apiKey or oauth_user_id if available.
@@ -17,10 +17,10 @@ async def add_log(
     """
 
     log_entry = CreateLogs(
-        log_level=log_level, message=message, module="Game", details=details
+        log_level=log_level, message=message, module=module, details=details
     )
     if api_key:
         log_entry.apiKey_used = api_key
     if oauth_user_id:
         log_entry.oauth_user_id = oauth_user_id
-    service_log.add(log_entry)
+    await service_log.add(log_entry)

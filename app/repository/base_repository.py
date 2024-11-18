@@ -151,7 +151,7 @@ class BaseRepository:
             query = query.filter(getattr(self.model, column) == value).all()
             return query
 
-    def create(self, schema):
+    async def create(self, schema):
         """
         Creates a new record.
 

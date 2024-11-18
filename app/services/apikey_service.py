@@ -43,7 +43,7 @@ class ApiKeyService(BaseService):
             )
         return api_key
 
-    def create_api_key(self, apikeyPostBody):
+    async def create_api_key(self, apikeyPostBody):
         """
         Create an API key.
 
@@ -53,7 +53,7 @@ class ApiKeyService(BaseService):
         Returns:
             The created API key.
         """
-        return self.apikey_repository.create(apikeyPostBody)
+        return await self.apikey_repository.create(apikeyPostBody)
 
     def get_all_api_keys(self):
         """
@@ -69,6 +69,7 @@ class ApiKeyService(BaseService):
         api_key: str = Security(api_key_header),
     ):
         from app.core.container import Container
+
         """
         Get an API key by header.
 
@@ -79,9 +80,7 @@ class ApiKeyService(BaseService):
             ApiKey: The API key with the provided header.
         """
         if api_key is None:
-            return Response.fail(
-                error=ForbiddenError("API key not provided.")
-            )
+            return Response.fail(error=ForbiddenError("API key not provided."))
         api_key_Repository = Container.apikey_repository()
         api_key_in_db = api_key_Repository.read_by_column(
             "apiKey", api_key, not_found_raise_exception=False
@@ -89,6 +88,5 @@ class ApiKeyService(BaseService):
         if api_key_in_db is None:
             raise ForbiddenError("API key is invalid or does not exist.")
         if not api_key_in_db.active:
-            raise ForbiddenError(
-                "API key is inactive. Please contact an admin.")
+            raise ForbiddenError("API key is inactive. Please contact an admin.")
         return Response.ok(data=api_key_in_db)
