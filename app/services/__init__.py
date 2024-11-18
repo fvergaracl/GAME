@@ -15,3 +15,5 @@ from app.services.uptime_logs_service import UptimeLogsService
 from app.services.user_interactions_service import UserInteractionsService
 from app.services.user_actions_service import UserActionsService
 from app.services.dashboard_service import DashboardService
+from app.services.oauth_users_service import OAuthUsersService
+from app.services.logs_service import LogsService

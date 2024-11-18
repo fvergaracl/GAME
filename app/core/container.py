@@ -20,6 +20,8 @@ from app.repository import (
     UptimeLogsRepository,
     UserInteractionsRepository,
     dashboard_repository,
+    oauth_users_repository,
+    logs_repository,
 )
 from app.services import (
     ApiKeyService,
@@ -37,6 +39,8 @@ from app.services import (
     UptimeLogsService,
     UserInteractionsService,
     dashboard_service,
+    oauth_users_service,
+    logs_service,
 )
 
 
@@ -78,6 +82,10 @@ class Container(containers.DeclarativeContainer):
           UserInteractionsRepository.
         dashboard_repository (providers.Factory): Factory provider for
           DashboardRepository.
+        oauth_users_repository (providers.Factory): Factory provider for
+          OAuthUsersRepository.
+        logs_repository (providers.Factory): Factory provider for
+          LogsRepository.
         game_params_service (providers.Factory): Factory provider for
           GameParamsService.
         strategy_service (providers.Factory): Factory provider for
@@ -102,6 +110,9 @@ class Container(containers.DeclarativeContainer):
           UserInteractionsService.
         dashboard_service (providers.Factory): Factory provider for
           DashboardService.
+        oauth_users_service (providers.Factory): Factory provider for
+          OAuthUsersService.
+        logs_service (providers.Factory): Factory provider for LogsService.
     """
 
     wiring_config = containers.WiringConfiguration(
@@ -178,6 +189,16 @@ class Container(containers.DeclarativeContainer):
 
     dashboard_repository = providers.Factory(
         dashboard_repository.DashboardRepository,
+        session_factory=db.provided.session,
+    )
+
+    oauth_users_repository = providers.Factory(
+        oauth_users_repository.OAuthUsersRepository,
+        session_factory=db.provided.session,
+    )
+
+    logs_repository = providers.Factory(
+        logs_repository.LogsRepository,
         session_factory=db.provided.session,
     )
 
@@ -271,15 +292,6 @@ class Container(containers.DeclarativeContainer):
         user_interactions_repository=user_interactions_repository,
     )
 
-    """
-    dashboard_repository: DashboardRepository,
-        game_service: GameService,
-        task_service: TaskService,
-        user_service: UserService,
-        user_points_service: UserPointsService,
-        user_actions_service: UserActionsService,
-    """
-
     dashboard_service = providers.Factory(
         dashboard_service.DashboardService,
         dashboard_repository=dashboard_repository,
@@ -288,4 +300,14 @@ class Container(containers.DeclarativeContainer):
         user_repository=user_repository,
         user_points_repository=user_points_repository,
         user_actions_repository=user_actions_repository,
+    )
+
+    oauth_users_service = providers.Factory(
+        oauth_users_service.OAuthUsersService,
+        oauth_users_repository=oauth_users_repository,
+    )
+
+    logs_service = providers.Factory(
+        logs_service.LogsService,
+        logs_repository=logs_repository,
     )

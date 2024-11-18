@@ -14,6 +14,8 @@ from app.repository.kpi_metrics_repository import KpiMetricsRepository
 from app.repository.uptime_logs_repository import UptimeLogsRepository
 from app.repository.user_interactions_repository import UserInteractionsRepository
 from app.repository.dashboard_repository import DashboardRepository
+from app.repository.oauth_users_repository import OAuthUsersRepository
+from app.repository.logs_repository import LogsRepository
 
 __all__ = [
     "BaseRepository",
@@ -32,4 +34,6 @@ __all__ = [
     "UptimeLogsRepository",
     "UserInteractionsRepository",
     "DashboardRepository",
+    "OAuthUsersRepository",
+    "LogsRepository",
 ]
