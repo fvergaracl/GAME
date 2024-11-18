@@ -271,7 +271,23 @@
 <span class="sd">              The session factory.</span>
 <span class="sd">            model: The SQLAlchemy model class for OAuth users.</span>
 <span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OAuthUsersRepository.get_user_by_sub">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.OAuthUsersRepository.get_user_by_sub">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_user_by_sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get a user by their sub.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sub: The sub of the user to get (provider_user_id)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The user with the provided sub.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">provider_user_id</span><span class="o">=</span><span class="n">sub</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
+</div>
 
 </pre></div>
 
