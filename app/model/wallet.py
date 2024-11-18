@@ -30,11 +30,6 @@ class Wallet(BaseModel, table=True):
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
-    oauthusers_id: str = Field(
-        sa_column=Column(
-            String, ForeignKey("oauthusers.provider_user_id"), nullable=True
-        )
-    )
 
     class Config:  # noqa
         orm_mode = True  # noqa

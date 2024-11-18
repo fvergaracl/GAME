@@ -36,18 +36,13 @@ class Games(BaseModel, table=True):
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
-    oauthusers_id: str = Field(
-        sa_column=Column(
-            String, ForeignKey("oauthusers.provider_user_id"), nullable=True
-        )
-    )
 
     class Config:
         orm_mode = True
 
     def __str__(self):
         return (
-            f"Games(id={self.id}, created_at={self.created_at}, "
+            f"Games(id={str(self.id)}, created_at={self.created_at}, "
             f"updated_at={self.updated_at}, externalGameId="
             f"{self.externalGameId}, strategyId={self.strategyId}, "
             f"platform={self.platform})"

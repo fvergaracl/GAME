@@ -135,13 +135,17 @@ class GameService(BaseService):
         """
         return self.game_repository.read_by_column("externalGameId", externalGameId)
 
-    def create(self, schema: PostCreateGame, api_key: str = None):
+    async def create(
+        self, schema: PostCreateGame, api_key: str = None, oauth_user_id=None
+    ):
         """
         Creates a new game using the provided schema.
 
         Args:
             schema (PostCreateGame): The schema representing the game to be
               created.
+            api_key (str): The API key.
+            oauth_user_id (str): The OAuth user ID.
 
         Returns:
             GameCreated: The created game details.
@@ -190,6 +194,9 @@ class GameService(BaseService):
 
         if api_key:
             schema.apiKey_used = api_key
+
+        if oauth_user_id:
+            schema.oauth_user_id = oauth_user_id
         game = self.game_repository.create(schema)
         if params:
             del schema.params
@@ -199,6 +206,8 @@ class GameService(BaseService):
                 params_dict["gameId"] = str(game.id)
                 if api_key:
                     params_dict["apiKey_used"] = api_key
+                if oauth_user_id:
+                    params_dict["oauth_user_id"] = oauth_user_id
                 params_to_insert = InsertGameParams(**params_dict)
                 created_param = self.game_params_repository.create(params_to_insert)
 

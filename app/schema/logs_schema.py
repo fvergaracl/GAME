@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -11,5 +12,14 @@ class LogsBase(BaseModel):
     message: str
     module: str
     details: dict
-    apiKey_used: str
-    oauthusers_id: str
+    apiKey_used: Optional[str]
+    oauth_user_id: Optional[str]
+
+
+class CreateLogs(LogsBase):
+    """
+    Model for creating a log
+
+    """
+
+    pass

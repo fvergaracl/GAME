@@ -38,7 +38,7 @@ class ApiKey(SQLModel, table=True):
     description: str = Field(sa_column=Column(String), nullable=True)
     active: bool = Field(sa_column=Column(Boolean), default=True)
     createdBy: str = Field(sa_column=Column(String))
-    oauthusers_id: str = Field(
+    oauth_user_id: str = Field(
         sa_column=Column(
             String, ForeignKey("oauthusers.provider_user_id"), nullable=True
         )

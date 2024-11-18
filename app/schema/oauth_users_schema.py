@@ -10,6 +10,7 @@ class OAuthUserBase(BaseModel):
     provider_user_id: str
     status: str
     apiKey_used: str
+    oauth_user_id: str
 
 
 class CreateOAuthUser(BaseModel):

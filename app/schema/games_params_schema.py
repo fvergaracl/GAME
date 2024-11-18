@@ -35,6 +35,7 @@ class InsertGameParams(BaseGameParams):
 
     gameId: str
     apiKey_used: Optional[str]
+    oauth_user_id: Optional[str]
 
 
 class CreateGameParams(BaseCreateGameParams):

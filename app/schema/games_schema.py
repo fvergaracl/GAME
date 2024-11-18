@@ -70,6 +70,7 @@ class PostCreateGame(BaseModel):
     strategyId: Optional[str] = "default"
     params: Optional[List[CreateGameParams]]
     apiKey_used: Optional[str]
+    oauth_user_id: Optional[str]
 
     def example():
         return {

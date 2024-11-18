@@ -35,12 +35,14 @@ from app.schema.user_points_schema import (
 )
 from app.services.apikey_service import ApiKeyService
 from app.services.game_service import GameService
+from app.services.logs_service import LogsService
 from app.services.task_service import TaskService
 from app.services.user_actions_service import UserActionsService
 from app.services.user_points_service import UserPointsService
 from app.middlewares.authentication import auth_api_key_or_oauth2
 from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
 from app.util.check_role import check_role
+from app.util.add_log import add_log
 
 router = APIRouter(
     prefix="/games",
@@ -169,9 +171,11 @@ description_create_game = """
     dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
-def create_game(
+async def create_game(
     schema: PostCreateGame = Body(..., example=PostCreateGame.example()),
     service: GameService = Depends(Provide[Container.game_service]),
+    service_log: LogsService = Depends(Provide[Container.logs_service]),
+    token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
     """
@@ -180,12 +184,49 @@ def create_game(
     Args:
         schema (PostCreateGame): The schema for creating a new game.
         service (GameService): Injected GameService dependency.
+        service_log (LogsService): Injected LogsService dependency.
+        api_key_header (str): The API key header.
 
     Returns:
         GameCreated: The details of the created game.
     """
+
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    return service.create(schema, api_key)
+    oauthusers_id = None
+    if token:
+        token_data = await valid_access_token(token)
+        oauthusers_id = token_data.data["sub"]
+    await add_log(
+        "INFO",
+        "Game creation",
+        schema.dict(),
+        service_log,
+        api_key,
+        oauthusers_id,
+    )
+
+    try:
+        response = await service.create(schema, api_key, oauthusers_id)
+        data_to_log = {"body": schema.dict(), "gameId": str(response.gameId)}
+        await add_log(
+            "SUCCESS",
+            "Game creation successful",
+            data_to_log,
+            service_log,
+            api_key,
+            oauthusers_id,
+        )
+        return response
+    except Exception as e:
+        await add_log(
+            "ERROR",
+            "Game creation failed",
+            {"error": str(e)},
+            service_log,
+            api_key,
+            oauthusers_id,
+        )
+        raise e
 
 
 summary_patch_game = "Update Game Details"
