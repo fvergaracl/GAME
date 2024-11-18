@@ -1,4 +1,4 @@
-from sqlmodel import Column, Field, String, JSON, TIMESTAMP
+from sqlmodel import Column, Field, String, JSON, ForeignKey
 from app.model.base_model import BaseModel
 
 
@@ -26,6 +26,14 @@ class Logs(BaseModel, table=True):
     message: str = Field(sa_column=Column(String))
     module: str = Field(sa_column=Column(String), nullable=True)
     details: dict = Field(sa_column=Column(JSON), nullable=True)
+    apiKey_used: str = Field(
+        sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
+    )
+    oauthusers_id: str = Field(
+        sa_column=Column(
+            String, ForeignKey("oauthusers.provider_user_id"), nullable=True
+        )
+    )
 
     class Config:  # noqa
         orm_mode = True  # noqa

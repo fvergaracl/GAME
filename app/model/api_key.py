@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from sqlalchemy import Boolean
 from sqlalchemy.dialects.postgresql import UUID
-from sqlmodel import Column, DateTime, Field, SQLModel, String, func
+from sqlmodel import Column, DateTime, Field, SQLModel, String, func, ForeignKey
 
 
 class ApiKey(SQLModel, table=True):
@@ -38,6 +38,11 @@ class ApiKey(SQLModel, table=True):
     description: str = Field(sa_column=Column(String), nullable=True)
     active: bool = Field(sa_column=Column(Boolean), default=True)
     createdBy: str = Field(sa_column=Column(String))
+    oauthusers_id: str = Field(
+        sa_column=Column(
+            String, ForeignKey("oauthusers.provider_user_id"), nullable=True
+        )
+    )
 
     class Config:
         orm_mode = True

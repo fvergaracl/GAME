@@ -19,7 +19,9 @@ from app.model.wallet_transactions import WalletTransactions
 from app.model.api_requests import ApiRequests
 from app.model.kpi_metrics import KpiMetrics
 from app.model.uptime_logs import UptimeLogs
-from app.model.user_interactions import UserInteractions
+from app.model.oauth_users import OAuthUsers
+from app.model.logs import Logs
+
 
 cmd_kwargs = context.get_x_argument(as_dictionary=True)
 if "ENV" in cmd_kwargs:

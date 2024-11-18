@@ -51,7 +51,9 @@ class BaseModel(SQLModel):
     )
 
     oauth_user_id: str = Field(
-        sa_column=Column(String, ForeignKey("oauth_users.id"), nullable=True)
+        sa_column=Column(
+            String, ForeignKey("oauthusers.provider_user_id"), nullable=True
+        )
     )
 
     class Config:  # noqa
