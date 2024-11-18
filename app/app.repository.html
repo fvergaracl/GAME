@@ -515,6 +515,22 @@
         </li></ul>
             </nav>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.LogsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">LogsRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.LogsRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">LogsRepository.session_factory</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.LogsRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">LogsRepository.model</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.OAuthUsersRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">OAuthUsersRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.OAuthUsersRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">OAuthUsersRepository.session_factory</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.OAuthUsersRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">OAuthUsersRepository.model</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.TaskParamsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskParamsRepository</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.repository.TaskParamsRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskParamsRepository.session_factory</span></code></a>
@@ -2144,6 +2160,48 @@ the record is not found.</p></li>
 <dt class="sig sig-object py" id="app.repository.KpiMetricsRepository.model">
 <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#app.repository.KpiMetricsRepository.model" title="Link to this definition">¶</a></dt>
 <dd><p>SQLAlchemy model class for KPI metrics.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.LogsRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">LogsRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.logs.Logs'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/logs_repository.html#LogsRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.LogsRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<p>Repository class for Logs.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.repository.LogsRepository.session_factory">
+<span class="sig-name descname"><span class="pre">session_factory</span></span><a class="headerlink" href="#app.repository.LogsRepository.session_factory" title="Link to this definition">¶</a></dt>
+<dd><p>Factory for creating SQLAlchemy sessions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable[…, AbstractContextManager[Session]]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.repository.LogsRepository.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#app.repository.LogsRepository.model" title="Link to this definition">¶</a></dt>
+<dd><p>SQLAlchemy model class for Logs.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.OAuthUsersRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">OAuthUsersRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.oauth_users.OAuthUsers'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/oauth_users_repository.html#OAuthUsersRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.OAuthUsersRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<p>Repository class for OAuth users.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.repository.OAuthUsersRepository.session_factory">
+<span class="sig-name descname"><span class="pre">session_factory</span></span><a class="headerlink" href="#app.repository.OAuthUsersRepository.session_factory" title="Link to this definition">¶</a></dt>
+<dd><p>Factory for creating SQLAlchemy sessions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable[…, AbstractContextManager[Session]]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.repository.OAuthUsersRepository.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#app.repository.OAuthUsersRepository.model" title="Link to this definition">¶</a></dt>
+<dd><p>SQLAlchemy model class for OAuth users.</p>
 </dd></dl>
 </dd></dl>
 <dl class="py class">
