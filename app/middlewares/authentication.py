@@ -58,6 +58,12 @@ async def auth_oauth2(
         HTTPException: Raises a 401 Unauthorized error if OAuth2
           authentication fails.
     """
+    print(" * auth_oauth2 *")
+    print(" * auth_oauth2 *")
+    print(" * auth_oauth2 *")
+    print(" * auth_oauth2 *")
+    print(" * auth_oauth2 *")
+
     oauth_user_service = Container.oauth_users_service()
     try:
         is_valid = await valid_access_token(oauth_2_scheme)
@@ -72,7 +78,14 @@ async def auth_oauth2(
             )
             await oauth_user_service.add(create_user)
         return True
-    except HTTPException:
+    except HTTPException as e:
+        print("------------------------------------------------------------")
+        print("------------------------------------------------------------")
+        print("---------------------------333---------------------------------")
+        print("------------------------------------------------------------")
+        print("------------------------------------------------------------")
+        print(e)
+        print
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",

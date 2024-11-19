@@ -298,6 +298,7 @@ class Container(containers.DeclarativeContainer):
         game_repository=game_repository,
         task_repository=task_repository,
         user_repository=user_repository,
+        logs_repository=logs_repository,
         user_points_repository=user_points_repository,
         user_actions_repository=user_actions_repository,
     )

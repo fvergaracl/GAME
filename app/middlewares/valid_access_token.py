@@ -47,43 +47,28 @@ async def valid_access_token(
     except exceptions.InvalidSignatureError as e:
         print(f"Error: InvalidSignatureError - {e}")
         return Response.fail(
-            error=HTTPException(
-                status_code=401,
-                detail="Invalid token signature"
-            )
+            error=HTTPException(status_code=401, detail="Invalid token signature")
         )
 
     except exceptions.ExpiredSignatureError as e:
         print(f"Error: ExpiredSignatureError - {e}")
         return Response.fail(
-            error=HTTPException(
-                status_code=401,
-                detail="Token has expired"
-            )
+            error=HTTPException(status_code=401, detail="Token has expired")
         )
     except exceptions.InvalidAudienceError as e:
         print(f"Error: InvalidAudienceError - {e}")
         return Response.fail(
-            error=HTTPException(
-                status_code=403,
-                detail="Invalid audience"
-            )
+            error=HTTPException(status_code=403, detail="Invalid audience")
         )
     except exceptions.InvalidTokenError as e:
         print(f"Error: InvalidTokenError - {e}")
         return Response.fail(
-            error=HTTPException(
-                status_code=401,
-                detail="Invalid token"
-            )
+            error=HTTPException(status_code=401, detail="Invalid token")
         )
     except exceptions.PyJWKClientError as e:
         print(f"Error: PyJWKClientError - {e}")
         return Response.fail(
-            error=HTTPException(
-                status_code=500,
-                detail="Internal server error"
-            )
+            error=HTTPException(status_code=500, detail="Internal server error")
         )
 
 
@@ -112,10 +97,10 @@ def refresh_access_token(refresh_token: str):
     except requests.HTTPError as http_err:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to refresh token: {http_err}"
+            detail=f"Failed to refresh token: {http_err}",
         )
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {err}"
+            detail=f"Internal server error: {err}",
         )

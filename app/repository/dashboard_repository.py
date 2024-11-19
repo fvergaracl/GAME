@@ -6,6 +6,7 @@ from app.core.exceptions import BadRequestError
 from app.model.games import Games
 from app.model.tasks import Tasks
 from app.model.users import Users
+from app.model.logs import Logs
 from app.model.user_points import UserPoints
 from app.model.user_actions import UserActions
 from app.repository.base_repository import BaseRepository
@@ -22,6 +23,7 @@ class DashboardRepository(BaseRepository):
         model_games=Games,
         model_tasks=Tasks,
         model_users=Users,
+        model_logs=Logs,
         model_user_points=UserPoints,
         model_user_actions=UserActions,
     ) -> None:
@@ -32,6 +34,7 @@ class DashboardRepository(BaseRepository):
         self.model_games = model_games
         self.model_tasks = model_tasks
         self.model_users = model_users
+        self.model_logs = model_logs
         self.model_user_points = model_user_points
         self.model_user_actions = model_user_actions
         super().__init__(session_factory, model_games)
@@ -180,4 +183,48 @@ class DashboardRepository(BaseRepository):
             "games_opened": games_opened,
             "points_earned": points_earned,
             "actions_performed": actions_performed,
+        }
+
+    def get_dashboard_summary_logs(self, start_date, end_date, group_by):
+        """
+        Retrieves the dashboard summary logs.
+
+        Args:
+            start_date: The start date for the summary.
+            end_date: The end date for the summary.
+            group_by: The group by for the summary (e.g. day, week, month).
+
+        Returns:
+            Dict[str, Any]: The dashboard summary logs.
+        """
+
+        group_by_column = self._get_group_by_column(self.model_logs, group_by)
+        info = self._execute_query(
+            self.model_logs,
+            group_by_column,
+            start_date,
+            end_date,
+            func.count(case([(self.model_logs.log_level == "INFO", 1)])),
+        )
+
+        success = self._execute_query(
+            self.model_logs,
+            group_by_column,
+            start_date,
+            end_date,
+            func.count(case([(self.model_logs.log_level == "SUCCESS", 1)])),
+        )
+
+        error = self._execute_query(
+            self.model_logs,
+            group_by_column,
+            start_date,
+            end_date,
+            func.count(case([(self.model_logs.log_level == "ERROR", 1)])),
+        )
+
+        return {
+            "info": info,
+            "success": success,
+            "error": error,
         }

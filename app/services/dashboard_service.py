@@ -10,6 +10,7 @@ from app.services.base_service import BaseService
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_repository import UserRepository
+from app.repository.logs_repository import LogsRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_actions_repository import UserActionsRepository
 
@@ -28,6 +29,7 @@ class DashboardService(BaseService):
         game_repository: GameRepository,
         task_repository: TaskRepository,
         user_repository: UserRepository,
+        logs_repository: LogsRepository,
         user_points_repository: UserPointsRepository,
         user_actions_repository: UserActionsRepository,
     ):
@@ -42,6 +44,7 @@ class DashboardService(BaseService):
         self.game_repository = game_repository
         self.task_repository = task_repository
         self.user_repository = user_repository
+        self.logs_repository = logs_repository
         self.user_points_repository = user_points_repository
         self.user_actions_repository = user_actions_repository
         super().__init__(dashboard_repository)
@@ -59,5 +62,21 @@ class DashboardService(BaseService):
             Dict[str, Any]: The dashboard summary.
         """
         return self.dashboard_repository.get_dashboard_summary(
+            start_date, end_date, group_by
+        )
+
+    def get_dashboard_summary_logs(self, start_date, end_date, group_by):
+        """
+        Retrieves the dashboard summary logs.
+
+        Args:
+            start_date: The start date for the summary.
+            end_date: The end date for the summary.
+            group_by: The group by for the summary (e.g. day, week, month).
+
+        Returns:
+            Dict[str, Any]: The dashboard summary logs.
+        """
+        return self.dashboard_repository.get_dashboard_summary_logs(
             start_date, end_date, group_by
         )

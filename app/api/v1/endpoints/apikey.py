@@ -11,8 +11,11 @@ from app.schema.apikey_schema import (
     ApiKeyCreatedUnitList,
     ApiKeyPostBody,
 )
+
 from app.services.apikey_service import ApiKeyService
 from app.services.logs_service import LogsService
+from app.services.oauth_users_service import OAuthUsersService
+from app.schema.oauth_users_schema import CreateOAuthUser
 from app.util.check_role import check_role
 from app.core.exceptions import ForbiddenError
 from app.util.add_log import add_log
@@ -44,6 +47,7 @@ async def create_api_key(
     schema: ApiKeyPostBody = Body(...),
     service: ApiKeyService = Depends(Provide[Container.apikey_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -54,6 +58,7 @@ async def create_api_key(
         schema (ApiKeyPostBody): The API key schema.
         service (ApiKeyService): The API key service.
         service_log (LogsService): The logs service.
+        service_oauth (OAuthUsersService): The OAuth users service.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -71,7 +76,7 @@ async def create_api_key(
             {
                 "client": schema.client,
                 "description": schema.description,
-                "error": token_decoded.error,
+                "error": str(token_decoded.error),
             },
             service_log,
             api_key=api_key,
@@ -81,6 +86,26 @@ async def create_api_key(
         raise token_decoded.error
     if token_decoded.data:
         oauth_user_id = token_decoded.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "api_key",
+                "INFO",
+                "Creating API key - User created",
+                {
+                    "client": schema.client,
+                    "description": schema.description,
+                    "oauth_user_id": oauth_user_id,
+                },
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     await add_log(
         "api_key",
         "INFO",
@@ -88,7 +113,7 @@ async def create_api_key(
         {"client": schema.client, "description": schema.description},
         service_log,
         api_key=api_key,
-        oauth_user_id=oauth_user_id,
+        oauth_user_id=str(oauth_user_id),
     )
 
     token_decoded = token_decoded.data
@@ -105,7 +130,7 @@ async def create_api_key(
             },
             service_log,
             api_key=api_key,
-            oauth_user_id=oauth_user_id,
+            oauth_user_id=str(oauth_user_id),
         )
         raise ForbiddenError("You do not have permission to create an API key")
     apiKey = await service.generate_api_key_service()
@@ -164,11 +189,22 @@ description_get_all_api_keys = """
 async def get_all_api_keys(
     service: ApiKeyService = Depends(Provide[Container.apikey_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
     """
     Endpoint to get all API keys, requires authentication.
+
+    Args:
+        service (ApiKeyService): The API key service.
+        service_log (LogsService): The logs service.
+        service_oauth (OAuthUsersService): The OAuth users service.
+        token (str): The OAuth2 token.
+        api_key_header (str): The API key header.
+
+    Returns:
+        List[ApiKeyCreatedUnitList]: The list of all API keys.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
     oauth_user_id = None
@@ -179,7 +215,7 @@ async def get_all_api_keys(
             "ERROR",
             "Error getting all API keys",
             {
-                "error": token_decoded.error,
+                "error": str(token_decoded.error),
             },
             service_log,
             api_key=api_key,
@@ -190,6 +226,22 @@ async def get_all_api_keys(
     token_decoded_data = token_decoded.data
     if token_decoded_data:
         oauth_user_id = token_decoded_data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "api_key",
+                "INFO",
+                "Getting all API keys - User created",
+                {},
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     if not check_role(token_decoded_data, "AdministratorGAME"):
         await add_log(
             "api_key",

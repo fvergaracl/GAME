@@ -12,9 +12,8 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         self.apikey_repository = MagicMock(spec=ApiKeyRepository)
         self.api_key_service = ApiKeyService(self.apikey_repository)
 
-    @patch('app.services.apikey_service.generate_api_key')
-    async def test_generate_api_key_creates_unique_key(
-            self, mock_generate_api_key):
+    @patch("app.services.apikey_service.generate_api_key")
+    async def test_generate_api_key_creates_unique_key(self, mock_generate_api_key):
         """
         Test that the generate_api_key_service method generates a unique API
           key.
@@ -22,19 +21,19 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         mock_generate_api_key.side_effect = ["key_1", "key_2"]
         self.apikey_repository.read_by_column.side_effect = [True, None]
 
-        generated_api_key = await (
-            self.api_key_service.generate_api_key_service()
-        )
+        generated_api_key = await self.api_key_service.generate_api_key_service()
 
         self.assertEqual(mock_generate_api_key.call_count, 2)
         self.assertEqual(generated_api_key, "key_2")
 
         self.apikey_repository.read_by_column.assert_any_call(
-            "apiKey", "key_1", not_found_raise_exception=False)
+            "apiKey", "key_1", not_found_raise_exception=False
+        )
         self.apikey_repository.read_by_column.assert_any_call(
-            "apiKey", "key_2", not_found_raise_exception=False)
+            "apiKey", "key_2", not_found_raise_exception=False
+        )
 
-    def test_create_api_key_successfully(self):
+    async def test_create_api_key_successfully(self):
         """
         Test that the create_api_key method successfully creates a new API key.
         """
@@ -42,7 +41,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
 
         self.apikey_repository.create.return_value = api_key_data
 
-        created_api_key = self.api_key_service.create_api_key(api_key_data)
+        created_api_key = await self.api_key_service.create_api_key(api_key_data)
 
         self.apikey_repository.create.assert_called_once_with(api_key_data)
 

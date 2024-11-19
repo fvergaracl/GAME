@@ -10,9 +10,6 @@ class DashboardBase(BaseModel):
     pass
 
 
-# [{'label': datetime.datetime(2024, 10, 31, 0, 0, tzinfo=datetime.timezone.utc), 'count': 1}, {'label': datetime.datetime(2024, 10, 29, 0, 0, tzinfo=datetime.timezone.utc), 'count': 7}]
-
-
 class DashboardSummaryElement(BaseModel):
     """
     Model for the dashboard summary element
@@ -20,7 +17,6 @@ class DashboardSummaryElement(BaseModel):
 
     label: str
     count: int | float
-
 
 
 class DashboardSummary(BaseModel):
@@ -33,3 +29,13 @@ class DashboardSummary(BaseModel):
     games_opened: List[DashboardSummaryElement]
     points_earned: List[DashboardSummaryElement]
     actions_performed: List[DashboardSummaryElement]
+
+
+class DashboardSummaryLogs(BaseModel):
+    """
+    Model for the dashboard summary logs
+    """
+
+    info: List[DashboardSummaryElement]
+    success: List[DashboardSummaryElement]
+    error: List[DashboardSummaryElement]

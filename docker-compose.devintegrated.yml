@@ -47,7 +47,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env
+      - .env.integrated
     volumes:
       - keycloak-data:/opt/keycloak/data
     command: ["start-dev"]
@@ -58,7 +58,7 @@ services:
     build: ./healthcheck_service
     container_name: health_checker
     env_file:
-      - .env
+      - .env.integrated
     environment:
       DB_HOST: "postgres"
       API_URL_KPI: "http://api:8000/api/v1/kpi"

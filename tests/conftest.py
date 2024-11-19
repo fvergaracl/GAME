@@ -17,8 +17,9 @@ def pytest_runtest_makereport(item, call):
         frame = test_function.__code__.co_varnames
 
         # Get the variables from the function's frame
-        local_variables = {var: item.funcargs[var]
-                           for var in frame if var in item.funcargs}
+        local_variables = {
+            var: item.funcargs[var] for var in frame if var in item.funcargs
+        }
 
         # Show variables in a pretty table format
         if local_variables:
@@ -26,5 +27,3 @@ def pytest_runtest_makereport(item, call):
             table.field_names = ["Variable Name", "Value"]
             for var_name, value in local_variables.items():
                 table.add_row([var_name, value])
-            print("\nCaptured Variables (on failure):\n")
-            print(table)

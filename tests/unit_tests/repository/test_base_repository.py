@@ -53,55 +53,58 @@ def repository(container, setup_database):
     return container.test_repository()
 
 
-# Pruebas
-
-
-def test_create(repository):
+@pytest.mark.asyncio
+async def test_create(repository):
     schema = ModelSchema(name="test", value="value")
-    created = repository.create(schema)
+    created = await repository.create(schema)
     assert created.id is not None
     assert created.name == "test"
 
 
-def test_read_by_id(repository):
+@pytest.mark.asyncio
+async def test_read_by_id(repository):
     schema = ModelSchema(name="test_read", value="value")
-    created = repository.create(schema)
+    created = await repository.create(schema)
     found = repository.read_by_id(created.id)
     assert found.id == created.id
     assert found.name == "test_read"
 
 
-def test_update(repository):
+@pytest.mark.asyncio
+async def test_update(repository):
     schema = ModelSchema(name="test_update", value="value")
-    created = repository.create(schema)
+    created = await repository.create(schema)
     update_schema = ModelSchema(name="test_update", value="new_value")
     updated = repository.update(created.id, update_schema)
     assert updated.value == "new_value"
 
 
-def test_delete(repository):
+@pytest.mark.asyncio
+async def test_delete(repository):
     schema = ModelSchema(name="test_delete", value="value")
-    created = repository.create(schema)
+    created = await repository.create(schema)
     repository.delete_by_id(created.id)
     with pytest.raises(NotFoundError):
         repository.read_by_id(created.id)
 
 
-def test_read_by_column(repository):
+@pytest.mark.asyncio
+async def test_read_by_column(repository):
     schema1 = ModelSchema(name="test_column_1", value="value1")
     schema2 = ModelSchema(name="test_column_2", value="value2")
-    repository.create(schema1)
-    repository.create(schema2)
+    await repository.create(schema1)
+    await repository.create(schema2)
     result = repository.read_by_column("name", "test_column_1")
     assert result.name == "test_column_1"
 
 
-def test_duplicate_error(repository):
+@pytest.mark.asyncio
+async def test_duplicate_error(repository):
     schema1 = ModelSchema(name="unique_name", value="value1")
     schema2 = ModelSchema(name="unique_name", value="value2")
-    repository.create(schema1)
+    await repository.create(schema1)
     with pytest.raises(DuplicatedError):
-        repository.create(schema2)
+        await repository.create(schema2)
 
 
 def test_not_found_error(repository):
@@ -109,17 +112,19 @@ def test_not_found_error(repository):
         repository.read_by_id(999)
 
 
-def test_update_attr(repository):
+@pytest.mark.asyncio
+async def test_update_attr(repository):
     schema = ModelSchema(name="test_attr", value="value")
-    created = repository.create(schema)
+    created = await repository.create(schema)
     repository.update_attr(created.id, "value", "new_value")
     updated = repository.read_by_id(created.id)
     assert updated.value == "new_value"
 
 
-def test_whole_update(repository):
+@pytest.mark.asyncio
+async def test_whole_update(repository):
     schema = ModelSchema(name="test_whole", value="value")
-    created = repository.create(schema)
+    created = await repository.create(schema)
     update_schema = ModelSchema(name="updated_name", value="updated_value")
     updated = repository.whole_update(created.id, update_schema)
     assert updated.name == "updated_name"

@@ -37,6 +37,8 @@ from app.services.apikey_service import ApiKeyService
 from app.services.game_service import GameService
 from app.services.logs_service import LogsService
 from app.services.task_service import TaskService
+from app.services.oauth_users_service import OAuthUsersService
+from app.schema.oauth_users_schema import CreateOAuthUser
 from app.services.user_actions_service import UserActionsService
 from app.services.user_points_service import UserPointsService
 from app.middlewares.authentication import auth_api_key_or_oauth2
@@ -68,6 +70,7 @@ async def get_games_list(
     schema: PostFindGame = Depends(),
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -78,6 +81,7 @@ async def get_games_list(
         schema(PostFindGame): Query parameters for finding games.
         service(GameService): Injected GameService dependency.
         service_log(LogsService): Injected LogsService dependency.
+        service_oauth(OAuthUsersService): Injected OAuthUsersService dependency.
         token(str): The OAuth2 token.
         api_key_header(str): The API key header.
 
@@ -86,10 +90,26 @@ async def get_games_list(
         FindGameResult: A result set containing the games and search options.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Get games list - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
         is_admin = check_role(token_data, "AdministratorGAME")
         if is_admin:
             return service.get_all_games(schema)
@@ -100,7 +120,7 @@ async def get_games_list(
         schema.dict(),
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
     return service.get_all_games(schema, api_key)
 
@@ -125,6 +145,7 @@ async def get_game_by_id(
     gameId: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -135,6 +156,7 @@ async def get_game_by_id(
         gameId(UUID): The ID of the game.
         service(GameService): Injected GameService dependency.
         service_log(LogsService): Injected LogsService dependency.
+        service_oauth(OAuthUsersService): Injected OAuthUsersService dependency.
         token(str): The OAuth2 token.
         api_key_header(str): The API key header.
 
@@ -142,10 +164,26 @@ async def get_game_by_id(
         BaseGameResult: The details of the specified game.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Get game by ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -153,7 +191,7 @@ async def get_game_by_id(
         {"gameId": str(gameId)},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
     response = service.get_by_gameId(gameId)
     return response
@@ -179,6 +217,7 @@ async def delete_game_by_id(
     gameId: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -189,6 +228,7 @@ async def delete_game_by_id(
         gameId (UUID): The ID of the game.
         service (GameService): Injected GameService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -196,10 +236,27 @@ async def delete_game_by_id(
         BaseGameResult: The details of the deleted game.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Delete game by ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
+
     await add_log(
         "game",
         "INFO",
@@ -207,7 +264,7 @@ async def delete_game_by_id(
         {"gameId": str(gameId)},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
 
     try:
@@ -220,7 +277,7 @@ async def delete_game_by_id(
             data_to_log,
             service_log,
             api_key,
-            oauthusers_id,
+            oauth_user_id,
         )
         return response
     except Exception as e:
@@ -231,7 +288,7 @@ async def delete_game_by_id(
             {"error": str(e)},
             service_log,
             api_key,
-            oauthusers_id,
+            oauth_user_id,
         )
         raise e
 
@@ -255,6 +312,7 @@ async def create_game(
     schema: PostCreateGame = Body(..., example=PostCreateGame.example()),
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -265,6 +323,7 @@ async def create_game(
         schema (PostCreateGame): The schema for creating a new game.
         service (GameService): Injected GameService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         api_key_header (str): The API key header.
 
     Returns:
@@ -272,10 +331,26 @@ async def create_game(
     """
 
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Create game - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -283,11 +358,10 @@ async def create_game(
         schema.dict(),
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
-
     try:
-        response = await service.create(schema, api_key, oauthusers_id)
+        response = await service.create(schema, api_key, oauth_user_id)
         data_to_log = {"body": schema.dict(), "gameId": str(response.gameId)}
         await add_log(
             "game",
@@ -296,7 +370,7 @@ async def create_game(
             data_to_log,
             service_log,
             api_key,
-            oauthusers_id,
+            oauth_user_id,
         )
         return response
     except Exception as e:
@@ -307,7 +381,7 @@ async def create_game(
             {"error": str(e)},
             service_log,
             api_key,
-            oauthusers_id,
+            oauth_user_id,
         )
         raise e
 
@@ -332,6 +406,7 @@ async def patch_game(
     schema: PatchGame,
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -343,6 +418,7 @@ async def patch_game(
         schema (PatchGame): The schema for updating the game.
         service (GameService): Injected GameService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -350,10 +426,26 @@ async def patch_game(
         ResponsePatchGame: The updated game details.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Update game by ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -361,7 +453,7 @@ async def patch_game(
         {"gameId": str(gameId), "body": schema.dict()},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
 
     try:
@@ -374,7 +466,7 @@ async def patch_game(
             data_to_log,
             service_log,
             api_key,
-            oauthusers_id,
+            oauth_user_id,
         )
         return response
     except Exception as e:
@@ -385,7 +477,7 @@ async def patch_game(
             {"error": str(e)},
             service_log,
             api_key,
-            oauthusers_id,
+            oauth_user_id,
         )
         raise e
 
@@ -409,6 +501,7 @@ async def get_strategy_by_gameId(
     gameId: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -419,6 +512,7 @@ async def get_strategy_by_gameId(
         gameId (UUID): The ID of the game.
         service (GameService): Injected GameService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -426,10 +520,26 @@ async def get_strategy_by_gameId(
         Strategy: The strategy associated with the specified game.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Get strategy by game ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -437,7 +547,7 @@ async def get_strategy_by_gameId(
         {"gameId": str(gameId)},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
 
     return service.get_strategy_by_gameId(gameId)
@@ -463,6 +573,7 @@ async def create_task(
     create_query: CreateTaskPost = Body(..., example=CreateTaskPost.example()),
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -474,6 +585,7 @@ async def create_task(
         create_query (CreateTaskPost): The schema for creating a task.
         service (TaskService): Injected TaskService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -481,10 +593,26 @@ async def create_task(
         CreateTaskPostSuccesfullyCreated: The details of the created task.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Create task - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -492,7 +620,7 @@ async def create_task(
         {"gameId": str(gameId), "body": create_query.dict()},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
     try:
         response = await service.create_task_by_game_id(gameId, create_query, api_key)
@@ -504,7 +632,7 @@ async def create_task(
             data_to_log,
             service_log,
             api_key,
-            oauthusers_id,
+            oauth_user_id,
         )
         return response
     except Exception as e:
@@ -515,7 +643,7 @@ async def create_task(
             {"error": str(e)},
             service_log,
             api_key,
-            oauthusers_id,
+            oauth_user_id,
         )
         raise e
 
@@ -540,6 +668,7 @@ async def create_tasks_bulk(
     create_query: CreateTasksPost = Body(..., example=CreateTasksPost.example()),
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -551,6 +680,7 @@ async def create_tasks_bulk(
         create_query (CreateTasksPost): The schema for creating multiple tasks.
         service (TaskService): Injected TaskService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -559,10 +689,26 @@ async def create_tasks_bulk(
           tasks.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Bulk task creation - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     succesfully_created = []
     failed_to_create = []
     await add_log(
@@ -572,7 +718,7 @@ async def create_tasks_bulk(
         {"gameId": str(gameId), "body": create_query.dict()},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
 
     for task in create_query.tasks:
@@ -593,7 +739,7 @@ async def create_tasks_bulk(
             },
             service_log,
             api_key,
-            oauthusers_id,
+            oauth_user_id,
         )
     if len(succesfully_created) > 0:
         await add_log(
@@ -607,7 +753,7 @@ async def create_tasks_bulk(
             },
             service_log,
             api_key,
-            oauthusers_id,
+            oauth_user_id,
         )
 
     return {
@@ -636,6 +782,7 @@ async def get_task_list(
     find_query: PostFindTask = Depends(),
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -647,6 +794,7 @@ async def get_task_list(
         find_query (PostFindTask): Query parameters for finding tasks.
         service (TaskService): Injected TaskService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -654,10 +802,26 @@ async def get_task_list(
         FoundTasks: A result set containing the tasks.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Task list retrieval - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -665,7 +829,7 @@ async def get_task_list(
         {"gameId": str(gameId), "body": find_query.dict()},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
     return service.get_tasks_list_by_gameId(gameId, find_query)
 
@@ -692,6 +856,7 @@ async def get_task_by_gameId_taskId(
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -703,6 +868,7 @@ async def get_task_by_gameId_taskId(
         externalTaskId (str): The external task ID.
         service (TaskService): Injected TaskService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -710,10 +876,27 @@ async def get_task_by_gameId_taskId(
         CreateTaskPostSuccesfullyCreated: The details of the specified task.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Task retrieval by game ID and external task ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
+
     await add_log(
         "game",
         "INFO",
@@ -721,7 +904,7 @@ async def get_task_by_gameId_taskId(
         {"gameId": str(gameId), "externalTaskId": externalTaskId},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
 
     return service.get_task_by_externalGameId_externalTaskId(
@@ -748,6 +931,7 @@ async def get_points_by_gameId(
     gameId: UUID,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -758,6 +942,7 @@ async def get_points_by_gameId(
         gameId (UUID): The ID of the game.
         service (UserPointsService): Injected UserPointsService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -765,10 +950,26 @@ async def get_points_by_gameId(
         AllPointsByGame: The points details for the specified game.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Points retrieval by game ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -776,7 +977,7 @@ async def get_points_by_gameId(
         {"gameId": str(gameId)},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
 
     return service.get_points_by_gameId(gameId)
@@ -801,6 +1002,7 @@ async def get_points_by_gameId_with_details(
     gameId: UUID,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -811,6 +1013,7 @@ async def get_points_by_gameId_with_details(
         gameId (UUID): The ID of the game.
         service (UserPointsService): Injected UserPointsService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -818,10 +1021,26 @@ async def get_points_by_gameId_with_details(
         AllPointsByGame: The points details for the specified game.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Points retrieval by game ID with details - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -829,7 +1048,7 @@ async def get_points_by_gameId_with_details(
         {"gameId": str(gameId)},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
 
     return service.get_points_by_gameId_with_details(gameId)
@@ -856,6 +1075,7 @@ async def get_points_of_user_in_game(
     externalUserId: str,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -867,6 +1087,7 @@ async def get_points_of_user_in_game(
         externalUserId (str): The external user ID.
         service (UserPointsService): Injected UserPointsService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -875,10 +1096,26 @@ async def get_points_of_user_in_game(
           specified game.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "User points retrieval by game ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -886,7 +1123,7 @@ async def get_points_of_user_in_game(
         {"gameId": str(gameId), "externalUserId": externalUserId},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
     return service.get_points_of_user_in_game(gameId, externalUserId)
 
@@ -913,6 +1150,7 @@ async def user_action_in_task(
     schema: AddActionDidByUserInTask = Body(...),
     service: UserActionsService = Depends(Provide[Container.user_actions_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -920,12 +1158,41 @@ async def user_action_in_task(
     Register a user action in a task within a game. This endpoint is used to
     assign points to a user for a specific task within a game, when the game
     requires it.
+
+    Args:
+        gameId (UUID): The ID of the game.
+        externalTaskId (str): The external task ID.
+        schema (AddActionDidByUserInTask): The schema for adding an action.
+        service (UserActionsService): Injected UserActionsService dependency.
+        service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
+        token (str): The OAuth2 token.
+        api_key_header (str): The API key header.
+
+    Returns:
+        ResponseAddActionDidByUserInTask: The details of the action added.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "User action in task - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -937,7 +1204,7 @@ async def user_action_in_task(
         },
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
 
     return service.user_add_action_in_task(gameId, externalTaskId, schema, api_key)
@@ -965,6 +1232,7 @@ async def assign_points_to_user(
     schema: AsignPointsToExternalUserId = Body(...),
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -977,6 +1245,7 @@ async def assign_points_to_user(
         schema (AsignPointsToExternalUserId): The schema for assigning points.
         service (UserPointsService): Injected UserPointsService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -984,10 +1253,26 @@ async def assign_points_to_user(
         AssignedPointsToExternalUserId: The details of the points assigned.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Points assignment to user - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -999,7 +1284,7 @@ async def assign_points_to_user(
         },
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
     return service.assign_points_to_user(gameId, externalTaskId, schema, api_key)
 
@@ -1024,6 +1309,7 @@ async def get_points_by_task_id(
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1035,6 +1321,7 @@ async def get_points_by_task_id(
         externalTaskId (str): The external task ID.
         service (TaskService): Injected TaskService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -1042,10 +1329,26 @@ async def get_points_by_task_id(
         List[PointsAssignedToUser]: The points details for the specified task.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Points retrieval by task ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -1053,7 +1356,7 @@ async def get_points_by_task_id(
         {"gameId": str(gameId), "externalTaskId": externalTaskId},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
     return service.get_points_by_task_id(gameId, externalTaskId)
 
@@ -1079,6 +1382,7 @@ async def get_points_of_user_by_task_id(
     externalUserId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1091,6 +1395,7 @@ async def get_points_of_user_by_task_id(
         externalUserId (str): The external user ID.
         service (TaskService): Injected TaskService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -1099,10 +1404,26 @@ async def get_points_of_user_by_task_id(
           task.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "User points retrieval by task ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -1114,7 +1435,7 @@ async def get_points_of_user_by_task_id(
         },
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
     return service.get_points_of_user_by_task_id(gameId, externalTaskId, externalUserId)
 
@@ -1142,6 +1463,7 @@ async def get_points_by_task_id_with_details(
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1153,6 +1475,7 @@ async def get_points_by_task_id_with_details(
         externalTaskId (str): The external task ID.
         service (TaskService): Injected TaskService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -1160,10 +1483,26 @@ async def get_points_by_task_id_with_details(
         List[dict]: Detailed points information for the specified task.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Detailed points retrieval by task ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -1171,7 +1510,7 @@ async def get_points_by_task_id_with_details(
         {"gameId": str(gameId), "externalTaskId": externalTaskId},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
     return service.get_points_by_task_id_with_details(gameId, externalTaskId)
 
@@ -1196,6 +1535,7 @@ async def get_users_by_gameId(
     gameId: UUID,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1206,6 +1546,7 @@ async def get_users_by_gameId(
         gameId (UUID): The ID of the game.
         service (UserPointsService): Injected UserPointsService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -1214,10 +1555,26 @@ async def get_users_by_gameId(
           game.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "game",
+                "INFO",
+                "Users retrieval by game ID - User created",
+                {"oauth_user_id": oauth_user_id},
+                service_log,
+                api_key,
+                oauth_user_id,
+            )
     await add_log(
         "game",
         "INFO",
@@ -1225,6 +1582,6 @@ async def get_users_by_gameId(
         {"gameId": str(gameId)},
         service_log,
         api_key,
-        oauthusers_id,
+        oauth_user_id,
     )
     return service.get_users_by_gameId(gameId)

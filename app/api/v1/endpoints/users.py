@@ -7,6 +7,7 @@ from app.services.apikey_service import ApiKeyService
 from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
 from app.util.add_log import add_log
 from app.core.container import Container
+from app.schema.oauth_users_schema import CreateOAuthUser
 from app.schema.user_points_schema import AllPointsByGame, UserGamePoints
 from app.schema.user_schema import (
     PostPointsConversionRequest,
@@ -18,6 +19,7 @@ from app.schema.user_actions_schema import CreateUserBodyActions, CreatedUserAct
 from app.services.user_points_service import UserPointsService
 from app.services.user_service import UserService
 from app.services.user_actions_service import UserActionsService
+from app.services.oauth_users_service import OAuthUsersService
 from app.middlewares.authentication import auth_api_key_or_oauth2
 
 router = APIRouter(
@@ -95,6 +97,7 @@ async def query_user_points(
     schema: List[str],
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -105,6 +108,7 @@ async def query_user_points(
         schema (List[str]): A list of external user IDs.
         service (UserPointsService): Injected UserPointsService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): The OAuth users service.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -112,10 +116,28 @@ async def query_user_points(
         List[UserGamePoints]: The point details for each user.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "users",
+                "INFO",
+                "Query user points - User created",
+                {
+                    "oauth_user_id": oauth_user_id,
+                },
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     try:
         await add_log(
             "users",
@@ -124,7 +146,7 @@ async def query_user_points(
             {"externalUserIds": schema},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         response = service.get_points_by_user_list(schema)
         return response
@@ -136,7 +158,7 @@ async def query_user_points(
             {"error": str(e)},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         raise e
 
@@ -161,6 +183,7 @@ async def get_points_by_user_id(
     externalUserId: str,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -171,6 +194,7 @@ async def get_points_by_user_id(
         externalUserId (str): The external user ID.
         service (UserPointsService): Injected UserPointsService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): The OAuth users service.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -178,10 +202,28 @@ async def get_points_by_user_id(
         List[AllPointsByGame]: The points details for the specified user.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "users",
+                "INFO",
+                "Get user points - User created",
+                {
+                    "oauth_user_id": oauth_user_id,
+                },
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     try:
         await add_log(
             "users",
@@ -190,7 +232,7 @@ async def get_points_by_user_id(
             {"externalUserId": externalUserId},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         response = service.get_points_by_externalUserId(externalUserId)
         return response
@@ -202,7 +244,7 @@ async def get_points_by_user_id(
             {"error": str(e)},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         raise e
 
@@ -226,6 +268,7 @@ async def get_wallet_by_user_id(
     externalUserId: str,
     service: UserService = Depends(Provide[Container.user_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -237,6 +280,7 @@ async def get_wallet_by_user_id(
         externalUserId (str): The external user ID.
         service (UserService): Injected UserService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): The OAuth users service.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -244,10 +288,28 @@ async def get_wallet_by_user_id(
         UserWallet: The wallet details for the specified user.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "users",
+                "INFO",
+                "Get user wallet - User created",
+                {
+                    "oauth_user_id": oauth_user_id,
+                },
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     try:
         await add_log(
             "users",
@@ -256,7 +318,7 @@ async def get_wallet_by_user_id(
             {"externalUserId": externalUserId},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         response = service.get_wallet_by_externalUserId(externalUserId)
         return response
@@ -268,7 +330,7 @@ async def get_wallet_by_user_id(
             {"error": str(e)},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         raise e
 
@@ -355,6 +417,7 @@ async def preview_points_to_coins_conversion(
     points: int = Query(..., description="The number of points to convert to coins"),
     service: UserService = Depends(Provide[Container.user_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -366,6 +429,7 @@ async def preview_points_to_coins_conversion(
         points (int): The number of points to convert.
         service (UserService): Injected UserService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): The OAuth users service.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -373,10 +437,28 @@ async def preview_points_to_coins_conversion(
         ResponseConversionPreview: The conversion preview details.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "users",
+                "INFO",
+                "Preview points to coins conversion - User created",
+                {
+                    "oauth_user_id": oauth_user_id,
+                },
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     try:
         await add_log(
             "users",
@@ -385,7 +467,7 @@ async def preview_points_to_coins_conversion(
             {"externalUserId": externalUserId, "points": points},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         response = service.preview_points_to_coins_conversion_externalUserId(
             externalUserId, points
@@ -399,7 +481,7 @@ async def preview_points_to_coins_conversion(
             {"error": str(e)},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         raise e
 
@@ -425,6 +507,7 @@ async def convert_points_to_coins(
     schema: PostPointsConversionRequest,
     service: UserService = Depends(Provide[Container.user_actions_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -437,6 +520,7 @@ async def convert_points_to_coins(
           details.
         service (UserService): Injected UserService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): The OAuth users service.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -444,10 +528,28 @@ async def convert_points_to_coins(
         ResponsePointsConversion: The conversion details.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "users",
+                "INFO",
+                "Convert points to coins - User created",
+                {
+                    "oauth_user_id": oauth_user_id,
+                },
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     try:
         add_log(
             "users",
@@ -456,7 +558,7 @@ async def convert_points_to_coins(
             {"externalUserId": externalUserId, "schema": schema},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         response = service.convert_points_to_coins_externalUserId(
             externalUserId, schema, api_key
@@ -470,7 +572,7 @@ async def convert_points_to_coins(
             {"error": str(e)},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         raise e
 
@@ -496,6 +598,7 @@ async def add_action_to_user(
     schema: CreateUserBodyActions,
     service: UserActionsService = Depends(Provide[Container.user_actions_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -508,6 +611,7 @@ async def add_action_to_user(
           details.
         service (UserService): Injected UserService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): The OAuth users service.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -515,10 +619,28 @@ async def add_action_to_user(
         ResponsePointsConversion: The action details.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "users",
+                "INFO",
+                "Add action to user - User created",
+                {
+                    "oauth_user_id": oauth_user_id,
+                },
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     try:
         add_log(
             "users",
@@ -527,7 +649,7 @@ async def add_action_to_user(
             {"externalUserId": externalUserId, "schema": schema},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         response = service.user_add_action_default(externalUserId, schema, api_key)
         return response
@@ -539,6 +661,6 @@ async def add_action_to_user(
             {"error": str(e)},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         raise e

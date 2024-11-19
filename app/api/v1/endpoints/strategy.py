@@ -9,6 +9,8 @@ from app.schema.strategy_schema import Strategy
 from app.services.strategy_service import StrategyService
 from app.services.logs_service import LogsService
 from app.services.apikey_service import ApiKeyService
+from app.services.oauth_users_service import OAuthUsersService
+from app.schema.oauth_users_schema import CreateOAuthUser
 from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
 from app.util.add_log import add_log
 
@@ -34,6 +36,7 @@ description_get_strategies_list = """
 async def get_strategy_list(
     service: StrategyService = Depends(Provide[Container.strategy_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -43,6 +46,7 @@ async def get_strategy_list(
     Args:
         service (StrategyService): Injected StrategyService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -50,10 +54,28 @@ async def get_strategy_list(
         List[Strategy]: The list of all strategies.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "strategies",
+                "INFO",
+                "Get all strategies - User created",
+                {
+                    "oauth_user_id": oauth_user_id,
+                },
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     await add_log(
         "strategies",
         "INFO",
@@ -61,7 +83,7 @@ async def get_strategy_list(
         {},
         service_log,
         api_key=api_key,
-        oauth_user_id=oauthusers_id,
+        oauth_user_id=oauth_user_id,
     )
     try:
         response = service.list_all_strategies()
@@ -74,7 +96,7 @@ async def get_strategy_list(
             {"error": str(e)},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         raise e
 
@@ -97,6 +119,7 @@ async def get_strategy_by_id(
     id: str,
     service: StrategyService = Depends(Provide[Container.strategy_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -107,6 +130,7 @@ async def get_strategy_by_id(
         id (str): The ID of the strategy.
         service (StrategyService): Injected StrategyService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -114,10 +138,28 @@ async def get_strategy_by_id(
         Strategy: The details of the specified strategy.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "strategies",
+                "INFO",
+                "Get strategy by ID - User created",
+                {
+                    "oauth_user_id": oauth_user_id,
+                },
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     await add_log(
         "strategies",
         "INFO",
@@ -125,7 +167,7 @@ async def get_strategy_by_id(
         {"id": id},
         service_log,
         api_key=api_key,
-        oauth_user_id=oauthusers_id,
+        oauth_user_id=oauth_user_id,
     )
     all_strategies = service.list_all_strategies()
     try:
@@ -141,7 +183,7 @@ async def get_strategy_by_id(
             {"id": id, "error": str(e)},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         raise e
 
@@ -163,6 +205,7 @@ async def get_strategy_graph_by_id(
     id: str,
     service: StrategyService = Depends(Provide[Container.strategy_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -173,6 +216,7 @@ async def get_strategy_graph_by_id(
         id (str): The ID of the strategy.
         service (StrategyService): Injected StrategyService dependency.
         service_log (LogsService): Injected LogsService dependency.
+        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
         token (str): The OAuth2 token.
         api_key_header (str): The API key header.
 
@@ -180,10 +224,28 @@ async def get_strategy_graph_by_id(
         StreamingResponse: The logic graph of the specified strategy.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauthusers_id = None
+    oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauthusers_id = token_data.data["sub"]
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            create_user = CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            )
+            await service_oauth.add(create_user)
+            await add_log(
+                "strategies",
+                "INFO",
+                "Get strategy graph by ID - User created",
+                {
+                    "oauth_user_id": oauth_user_id,
+                },
+                service_log,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
     try:
         await add_log(
             "strategies",
@@ -192,7 +254,7 @@ async def get_strategy_graph_by_id(
             {"id": id},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         strategy = service.get_strategy_by_id(id)
         if not strategy:
@@ -213,6 +275,6 @@ async def get_strategy_graph_by_id(
             {"id": id, "error": str(e)},
             service_log,
             api_key=api_key,
-            oauth_user_id=oauthusers_id,
+            oauth_user_id=oauth_user_id,
         )
         raise e
