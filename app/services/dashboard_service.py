@@ -80,3 +80,19 @@ class DashboardService(BaseService):
         return self.dashboard_repository.get_dashboard_summary_logs(
             start_date, end_date, group_by
         )
+
+    # def get_dashboard_summary_logs_module_counts(self, start_date, end_date, group_by):
+    #     """
+    #     Retrieves the dashboard summary logs counts "grouped by" for each module.
+
+    #     Args:
+    #         start_date: The start date for the summary.
+    #         end_date: The end date for the summary.
+    #         group_by: The group by for the summary (e.g. day, week, month).
+
+    #     Returns:
+    #         Dict[str, Any]: The dashboard summary logs counts.
+    #     """
+    #     return self.dashboard_repository.get_dashboard_summary_logs_module_counts(
+    #         start_date, end_date, group_by
+    #     )

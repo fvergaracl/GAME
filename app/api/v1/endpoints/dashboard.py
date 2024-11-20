@@ -199,3 +199,98 @@ async def get_dashboard_summary_logs(
         success=response.get("success", []),
         error=response.get("error", []),
     )
+
+
+# # get_dashboard_summary_logs_module_counts
+# summary_get_dashboard_summary_logs_module_counts = (
+#     "Get dashboard summary logs module counts"
+# )
+# description_get_dashboard_summary_logs_module_counts = """
+# ## Get dashboard summary logs module counts
+# ### Get dashboard summary logs module counts
+
+# This endpoint returns the logs of the dashboard summary as INFO, SUCESS, ERROR.
+# <sub>**Id_endpoint:** get_dashboard_summary_logs_module_counts</sub>
+# """
+
+
+# @router.get(
+#     "/summary/logs/module_counts",
+#     summary=summary_get_dashboard_summary_logs_module_counts,
+#     description=description_get_dashboard_summary_logs_module_counts,
+#     response_model=DashboardSummaryLogs,
+#     dependencies=[Depends(auth_api_key_or_oauth2)],
+# )
+# @inject
+# async def get_dashboard_summary_logs_module_counts(
+#     start_date: str = Query(None, description="Start date"),
+#     end_date: str = Query(None, description="End date"),
+#     group_by: str = Query(None, description="Group by (day, week, month)"),
+#     service: DashboardService = Depends(Provide[Container.dashboard_service]),
+#     service_log: LogsService = Depends(Provide[Container.logs_service]),
+#     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
+#     token: str = Depends(oauth_2_scheme),
+#     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+# ):
+#     """
+#     Get dashboard summary logs module counts , group by (day, week, month) and start_date and end_date
+
+#     Args:
+#         start_date (str): Start date.
+#         end_date (str): End date.
+#         group_by (str): Group by (day, week, month).
+#         service (DashboardService): The dashboard service.
+#         service_log (LogsService): The logs service.
+#         service_oauth (OAuthUsersService): The OAuth users service.
+#         token (str): The OAuth2 token.
+#         api_key_header (str): The API key header.
+
+#     Returns:
+#         DashboardSummaryLogs: The dashboard summary logs.
+#     """
+#     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+#     oauth_user_id = None
+#     if token:
+#         token_data = await valid_access_token(token)
+#         oauth_user_id = token_data.data["sub"]
+#         if service_oauth.get_user_by_sub(oauth_user_id) is None:
+#             create_user = CreateOAuthUser(
+#                 provider="keycloak",
+#                 provider_user_id=oauth_user_id,
+#                 status="active",
+#             )
+#             await service_oauth.add(create_user)
+#             await add_log(
+#                 "api_key",
+#                 "INFO",
+#                 "Get dashboard summary logs module counts - User created",
+#                 {
+#                     "oauth_user_id": oauth_user_id,
+#                 },
+#                 service_log,
+#                 api_key=api_key,
+#                 oauth_user_id=oauth_user_id,
+#             )
+
+#     response = service.get_dashboard_summary_logs_module_counts(
+#         start_date, end_date, group_by
+#     )
+#     await add_log(
+#         "dashboard",
+#         "INFO",
+#         "Get dashboard summary logs module counts",
+#         {
+#             "length_info": len(response.get("info", [])),
+#             "length_success": len(response.get("success", [])),
+#             "length_error": len(response.get("error", [])),
+#         },
+#         service_log,
+#         api_key,
+#         oauth_user_id,
+#     )
+
+#     return DashboardSummaryLogs(
+#         info=response.get("info", []),
+#         success=response.get("success", []),
+#         error=response.get("error", []),
+#     )

@@ -42,7 +42,7 @@ const Widgets = () => {
       <CCardHeader>Widgets</CCardHeader>
       <CCardBody>
         <DocsExample href="components/widgets/#cwidgetstatsa">
-          <WidgetsDropdown />
+          {/* <WidgetsDropdown /> */}
         </DocsExample>
         <DocsExample href="components/widgets/#cwidgetstatsb">
           <CRow xs={{ gutter: 4 }}>
