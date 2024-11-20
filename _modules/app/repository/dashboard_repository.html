@@ -478,6 +478,29 @@
         <span class="p">}</span></div>
 </div>
 
+
+    <span class="c1"># def get_dashboard_summary_logs_module_counts(self, start_date, end_date, group_by):</span>
+    <span class="c1">#     """</span>
+    <span class="c1">#     Retrieves the dashboard summary logs counts "grouped by" for each module and log level.</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         start_date: The start date for the summary.</span>
+    <span class="c1">#         end_date: The end date for the summary.</span>
+    <span class="c1">#         group_by: The group by for the summary (e.g. day, week, month).</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         Dict[str, Any]: The dashboard summary logs counts.</span>
+    <span class="c1">#     """</span>
+    <span class="c1">#     group_by_column = self._get_group_by_column(self.model_logs, group_by)</span>
+    <span class="c1">#     module_counts = self._execute_query(</span>
+    <span class="c1">#         self.model_logs,</span>
+    <span class="c1">#         group_by_column,</span>
+    <span class="c1">#         start_date,</span>
+    <span class="c1">#         end_date,</span>
+    <span class="c1">#         func.count(self.model_logs.module),</span>
+    <span class="c1">#     )</span>
+
+    <span class="c1">#     return module_counts</span>
 </pre></div>
 
           </article>
