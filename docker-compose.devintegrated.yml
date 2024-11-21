@@ -38,6 +38,31 @@ services:
         labels: "app=high_logging"
         env: "ENV,DEBUG"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+  
+  dashboard_game:
+    container_name: "dashboard_game"
+    build:
+        context: ./dashboard
+        dockerfile: Dockerfile
+    volumes:
+        - ./dashboard:/app 
+        - /app/node_modules 
+    environment:
+        NODE_ENV: development
+    depends_on:
+        - api 
+    labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-public
+        - traefik.http.routers.dashboard_game.rule=PathPrefix(`/gameDashboard`)
+        - traefik.http.middlewares.strip-dashboard_game.stripprefix.prefixes=/gameDashboard
+        - traefik.http.routers.dashboard_game.middlewares=strip-dashboard_game
+        - traefik.http.services.dashboard_game.loadbalancer.server.port=3000
+    networks:
+        - traefik-public
+
+
+    
 
 
   keycloakGame:

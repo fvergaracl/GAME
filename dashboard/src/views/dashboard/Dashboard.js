@@ -57,8 +57,8 @@ const Dashboard = () => {
                   style={{
                     position: 'absolute',
                     top: '100%', // Justo debajo del botón
-                    right: '0', // Posiciona el DateRangePicker a la derecha
-                    zIndex: 9999, // Asegura que esté por encima de otros elementos
+                    right: '0', 
+                    zIndex: 9999, 
                     background: 'white',
                     boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
                     borderRadius: '8px',
