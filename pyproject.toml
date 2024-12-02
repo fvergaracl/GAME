@@ -85,7 +85,7 @@ starlette = "^0.38.5"
 prometheus-fastapi-instrumentator = "^7.0.0"
 freezegun = "^1.5.1"
 graphviz = "^0.20.3"
-pyjwt = "^2.10.0"
+pyjwt = "^2.10.1"
 
 
 [tool.poetry.group.dev.dependencies]
