@@ -81,6 +81,7 @@ DB_HOST=localhost # Database host
 DB_PORT=5432 # Database port
 DEFAULT_CONVERSION_RATE_POINTS_TO_COIN=100 # Default conversion rate of points to coins
 DATABASE_URL=postgresql://root:example@localhost:5432/game_dev_db # Database connection URL
+SECRET_KEY=secret
 ```
 
 ## Step-by-step Setup 🛠️

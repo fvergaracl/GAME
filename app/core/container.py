@@ -12,6 +12,7 @@ from app.repository import (
     TaskRepository,
     UserActionsRepository,
     UserPointsRepository,
+    UserGameConfigRepository,
     UserRepository,
     WalletRepository,
     WalletTransactionRepository,
@@ -31,6 +32,7 @@ from app.services import (
     TaskService,
     UserActionsService,
     UserPointsService,
+    UserGameConfigService,
     UserService,
     WalletService,
     WalletTransactionService,
@@ -95,6 +97,8 @@ class Container(containers.DeclarativeContainer):
         user_points_service (providers.Factory): Factory provider for
           UserPointsService.
         user_service (providers.Factory): Factory provider for UserService.
+        user_game_config_service (providers.Factory): Factory provider for
+          UserGameConfigService.
         wallet_service (providers.Factory): Factory provider for WalletService.
         wallet_transaction_service (providers.Factory): Factory provider for
           WalletTransactionService.
@@ -108,6 +112,8 @@ class Container(containers.DeclarativeContainer):
           UptimeLogsService.
         user_interactions_service (providers.Factory): Factory provider for
           UserInteractionsService.
+        user_game_config_service (providers.Factory): Factory provider for
+            UserGameConfigService.
         dashboard_service (providers.Factory): Factory provider for
           DashboardService.
         oauth_users_service (providers.Factory): Factory provider for
@@ -187,6 +193,9 @@ class Container(containers.DeclarativeContainer):
         UserInteractionsRepository, session_factory=db.provided.session
     )
 
+    user_game_config_repository = providers.Factory(
+        UserGameConfigRepository, session_factory=db.provided.session
+    )
     dashboard_repository = providers.Factory(
         dashboard_repository.DashboardRepository,
         session_factory=db.provided.session,
@@ -290,6 +299,11 @@ class Container(containers.DeclarativeContainer):
     user_interactions_service = providers.Factory(
         UserInteractionsService,
         user_interactions_repository=user_interactions_repository,
+    )
+
+    user_game_config_service = providers.Factory(
+        UserGameConfigService,
+        user_game_config_repository=user_game_config_repository
     )
 
     dashboard_service = providers.Factory(

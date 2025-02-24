@@ -1,0 +1,33 @@
+from sqlmodel import Field, SQLModel, Column, String, JSON, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+
+
+class UserGameConfig(SQLModel, table=True):
+    """
+    Stores user-specific configuration for each game.
+
+    Attributes:
+        userId (str): The ID of the user.
+        gameId (str): The ID of the game.
+        experimentGroup (str): A/B testing group ('A' or 'B').
+        configData (dict): Custom configurations for the user in this game.
+    """
+
+    id: str = Field(sa_column=Column(
+        UUID(as_uuid=True), primary_key=True, index=True))
+    userId: str = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("users.id")))
+    gameId: str = Field(sa_column=Column(
+        UUID(as_uuid=True), ForeignKey("games.id")))
+    experimentGroup: str = Field(sa_column=Column(String), nullable=False)
+    configData: dict = Field(sa_column=Column(JSON), nullable=True)
+
+    class Config:
+        orm_mode = True
+
+    def __str__(self):
+        return (
+            f"UserGameConfig: (id={self.id}, userId={self.userId}, "
+            f"gameId={self.gameId}, experimentGroup={self.experimentGroup}, "
+            f"configData={self.configData})"
+        )
