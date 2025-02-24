@@ -197,7 +197,7 @@ class GameService(BaseService):
 
         if oauth_user_id:
             schema.oauth_user_id = oauth_user_id
-        game = self.game_repository.create(schema)
+        game = await self.game_repository.create(schema)
         if params:
             del schema.params
 

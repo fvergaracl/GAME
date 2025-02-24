@@ -17,3 +17,4 @@ from app.services.user_actions_service import UserActionsService
 from app.services.dashboard_service import DashboardService
 from app.services.oauth_users_service import OAuthUsersService
 from app.services.logs_service import LogsService
+from app.services.user_game_config_service import UserGameConfigService

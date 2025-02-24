@@ -21,7 +21,7 @@ from app.model.kpi_metrics import KpiMetrics
 from app.model.uptime_logs import UptimeLogs
 from app.model.oauth_users import OAuthUsers
 from app.model.logs import Logs
-
+from app.model.user_game_config import UserGameConfig
 
 cmd_kwargs = context.get_x_argument(as_dictionary=True)
 if "ENV" in cmd_kwargs:
