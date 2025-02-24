@@ -246,6 +246,27 @@ class AssignedPointsToExternalUserId(BaseModel):
     created_at: str
 
 
+class SimulatedPointsAssignedToUser(BaseModel):
+    """
+    Model for simulated points
+
+    Attributes:
+        externalUserId (str): External user ID
+        simulatedPoints (dict): Simulated points
+        externalTaskId (str): External task ID
+        gameId (UUID): Game ID
+        expirationDate (str): Expiration date
+        simulationHash (str): Simulation hash
+    """
+
+    externalUserId: str
+    simulatedPoints: dict
+    externalTaskId: str
+    gameId: UUID
+    expirationDate: str
+    simulationHash: str
+
+
 class TaskPointsResponseByUser(BaseTask):
     """
     Model for task points response by user
