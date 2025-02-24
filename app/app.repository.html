@@ -575,6 +575,14 @@
         </li></ul>
             </nav>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.UserGameConfigRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserGameConfigRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.UserGameConfigRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserGameConfigRepository.session_factory</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserGameConfigRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserGameConfigRepository.model</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.UserInteractionsRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserInteractionsRepository</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.repository.UserInteractionsRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserInteractionsRepository.session_factory</span></code></a>
@@ -2397,6 +2405,27 @@ the record is not found.</p></li>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)">object</a></p>
 </dd>
 </dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.UserGameConfigRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">UserGameConfigRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_factory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractContextManager" title="(in Python v3.13)"><span class="pre">AbstractContextManager</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Session</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_game_config_repository.html#UserGameConfigRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserGameConfigRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<p>Repository class for managing user-specific game configurations.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.repository.UserGameConfigRepository.session_factory">
+<span class="sig-name descname"><span class="pre">session_factory</span></span><a class="headerlink" href="#app.repository.UserGameConfigRepository.session_factory" title="Link to this definition">¶</a></dt>
+<dd><p>Factory for creating SQLAlchemy sessions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable[…, AbstractContextManager[Session]]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.repository.UserGameConfigRepository.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#app.repository.UserGameConfigRepository.model" title="Link to this definition">¶</a></dt>
+<dd><p>SQLAlchemy model class for user game configurations.</p>
 </dd></dl>
 </dd></dl>
 <dl class="py class">

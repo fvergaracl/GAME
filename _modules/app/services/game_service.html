@@ -451,7 +451,7 @@
 
         <span class="k">if</span> <span class="n">oauth_user_id</span><span class="p">:</span>
             <span class="n">schema</span><span class="o">.</span><span class="n">oauth_user_id</span> <span class="o">=</span> <span class="n">oauth_user_id</span>
-        <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+        <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">schema</span><span class="o">.</span><span class="n">params</span>
 
