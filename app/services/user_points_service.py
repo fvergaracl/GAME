@@ -75,7 +75,8 @@ class UserPointsService(BaseService):
         all_tasks = []
         for task in tasks:
             all_externalUserId = []
-            points = self.user_points_repository.get_points_and_users_by_taskId(task.id)
+            points = self.user_points_repository.get_points_and_users_by_taskId(
+                task.id)
 
             externalTaskId = task.externalTaskId
             if points:
@@ -99,7 +100,8 @@ class UserPointsService(BaseService):
                             firstAction=str(first_user_point.created_at),
                         )
                     )
-            all_tasks = {"externalTaskId": externalTaskId, "users": all_externalUserId}
+            all_tasks = {"externalTaskId": externalTaskId,
+                         "users": all_externalUserId}
             response.append(TasksWithUsers(**all_tasks))
         return ListTasksWithUsers(gameId=gameId, tasks=response)
 
@@ -172,7 +174,8 @@ class UserPointsService(BaseService):
         game_points = []
         for task in tasks:
             user_points = []
-            points = self.user_points_repository.get_points_and_users_by_taskId(task.id)
+            points = self.user_points_repository.get_points_and_users_by_taskId(
+                task.id)
             if points:
 
                 for point in points:
@@ -208,7 +211,8 @@ class UserPointsService(BaseService):
         game_points = []
         for task in tasks:
             user_points = []
-            points = self.user_points_repository.get_points_and_users_by_taskId(task.id)
+            points = self.user_points_repository.get_points_and_users_by_taskId(
+                task.id)
             if points:
 
                 for point in points:
@@ -252,7 +256,8 @@ class UserPointsService(BaseService):
             raise NotFoundError(detail=f"Tasks not found by gameId: {game.id}")
         response = []
         for task in tasks:
-            points = self.user_points_repository.get_points_and_users_by_taskId(task.id)
+            points = self.user_points_repository.get_points_and_users_by_taskId(
+                task.id)
             if points:
                 for point in points:
                     if point.externalUserId == externalUserId:
@@ -268,6 +273,21 @@ class UserPointsService(BaseService):
     def assign_points_to_user(
         self, gameId, externalTaskId, schema, api_key: str = None
     ):
+        """
+        Assign points to a user.
+
+        Args:
+            gameId (UUID): The game ID.
+            externalTaskId (str): The external task ID.
+            schema (PostAssignPointsToUser): The schema with the data to
+              assign points.
+            api_key (str): The API key used.
+
+        Returns:
+            AssignedPointsToExternalUserId: The response with the points
+              assigned.
+
+        """
         externalUserId = schema.externalUserId
         is_a_created_user = False
 
@@ -282,7 +302,8 @@ class UserPointsService(BaseService):
             game.id, externalTaskId
         )
         if not task:
-            raise NotFoundError(f"Task not found with externalTaskId: {externalTaskId}")
+            raise NotFoundError(
+                f"Task not found with externalTaskId: {externalTaskId}")
 
         strategyId = task.strategyId
         strategy = self.strategy_service.get_strategy_by_id(strategyId)
@@ -403,11 +424,97 @@ class UserPointsService(BaseService):
         )
         return response
 
+    async def get_points_simulated_of_user_in_game(
+        self, gameId, externalUserId
+    ):
+        """
+        Simulates the assignment of points for a user without persisting the
+          changes.
+
+        Args:
+            gameId (UUID): The ID of the game.
+            externalTaskId (str): The external task ID.
+            schema: The schema containing user and action data.
+            api_key (Optional[str]): The API key used for authentication.
+
+        Returns:
+            dict: Simulation result with calculated points and case name.
+        """
+        game = self.game_repository.read_by_column(
+            column="id",
+            value=gameId,
+            not_found_message=(f"Game with gameId {gameId} not found"),
+            only_one=True,
+        )
+        all_tasks = self.task_repository.read_by_column(
+            "gameId", game.id, not_found_raise_exception=False, only_one=False
+        )
+        if not all_tasks:
+            raise NotFoundError(detail=f"Tasks not found by gameId: {game.id}")
+
+        # First: Check if all strategies exist
+        strategy = None
+        for task in all_tasks:
+            strategyId = task.strategyId
+            strategy = self.strategy_service.get_strategy_by_id(strategyId)
+
+            if not strategy:
+                raise NotFoundError(
+                    f"One of the strategies not found with id: {strategyId} for task with externalTaskId: {task.externalTaskId}"  # noqa
+                )
+
+        user = self.users_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=False
+        )
+
+        grouped_by_strategyId = {}
+        for task in all_tasks:
+            strategy_id_applied = task.strategyId
+            if strategy_id_applied not in grouped_by_strategyId:
+                grouped_by_strategyId[strategy_id_applied] = []
+            grouped_by_strategyId[strategy_id_applied].append(task)
+        print('--------------- grouped_by_strategyId ------------------------')
+        print('--------------- grouped_by_strategyId ------------------------')
+        print('--------------- grouped_by_strategyId ------------------------')
+        print(grouped_by_strategyId)
+        print(" ")
+        print(" ")
+        print(" ")
+        print(" ")
+        print(" ")
+        print(" ")
+        """
+
+        {'greencrowdStrategy': [Tasks(id=f572f877-8eba-486a-b93c-948c9d85bcfb, created_at=2025-02-25 13:56:56.787123+00:00, updated_at=2025-02-25 13:56:56.787123+00:00, externalTaskId=POI_6623df1a-2486-40af-90f7-96b6bccde472_Task_20fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=a7938e5c-80a7-4603-b325-da1a773b44c1, created_at=2025-02-25 13:56:57.261614+00:00, updated_at=2025-02-25 13:56:57.261614+00:00, externalTaskId=POI_d8fd6554-a140-42ff-8d73-fa314c0358bd_Task_30fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=e321fbbb-6c78-4b10-a1e1-fe9e6d2b9e66, created_at=2025-02-25 13:56:57.749188+00:00, updated_at=2025-02-25 13:56:57.749188+00:00, externalTaskId=POI_3e134cfc-75a2-4e21-85e9-89983d98a819_Task_40fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=3497366d-1fba-46d9-bc7b-9936a997daf4, created_at=2025-02-25 13:56:58.220683+00:00, updated_at=2025-02-25 13:56:58.220683+00:00, externalTaskId=POI_a908261b-2a21-41ef-a1f1-eb4e3eccde15_Task_50fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=5e8c1e3a-0b8b-4ae1-a6a9-a479000a6b4b, created_at=2025-02-25 13:56:58.697977+00:00, updated_at=2025-02-25 13:56:58.697977+00:00, externalTaskId=POI_867a3095-e40c-4fdd-93f1-99f94596e9ab_Task_60fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=9e66ea4f-da99-45c3-85da-d27501aa5c9c, created_at=2025-02-25 13:56:59.214998+00:00, updated_at=2025-02-25 13:56:59.214998+00:00, externalTaskId=POI_db490f8d-961e-4781-a201-44ad1e844bfa_Task_70fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=d2ff40d6-02c0-448f-a970-49332bcc7217, created_at=2025-02-25 13:56:59.709000+00:00, updated_at=2025-02-25 13:56:59.709000+00:00, externalTaskId=POI_239b1cd2-4d6b-4e3e-980c-3f1c98b2838d_Task_80fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=91ba53f3-7130-40ef-89bc-23dbb65b59d7, created_at=2025-02-25 13:57:00.197095+00:00, updated_at=2025-02-25 13:57:00.197095+00:00, externalTaskId=POI_a5bca879-3b11-4fc6-880b-b3d8b8aba839_Task_90fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open)]}
+
+        """
+        response = []
+        for strategy_id_applied, tasks in grouped_by_strategyId.items():
+            strategy_instance = self.strategy_service.get_Class_by_id(
+                strategy_id_applied)
+            # check if strategy_instance have simulate_strategy
+            if not hasattr(strategy_instance, "simulate_strategy"):
+                raise NotFoundError(
+                    f"Strategy with id: {strategy_id_applied} don't have simulate_strategy method"
+                )
+            for task in tasks:
+                data_to_simulate = {
+                    "task": task,
+                    "allTasks": tasks,
+                    "externalUserId": externalUserId
+                }
+                task_simulation = strategy_instance.simulate_strategy(
+                    data=data_to_simulate
+                )
+                response.append(task_simulation)
+        return response
+
     def get_users_points_by_externalGameId(self, externalGameId):
         game = self.game_repository.read_by_column(
             column="externalGameId",
             value=externalGameId,
-            not_found_message=(f"Game with externalGameId {externalGameId} not found"),
+            not_found_message=(
+                f"Game with externalGameId {externalGameId} not found"),
         )
 
         tasks = self.task_repository.read_by_column(
@@ -424,7 +531,8 @@ class UserPointsService(BaseService):
 
         response = []
         for task in tasks:
-            points = self.user_points_repository.get_points_and_users_by_taskId(task)
+            points = self.user_points_repository.get_points_and_users_by_taskId(
+                task)
             response_by_task = []
             if points:
                 for point in points:
@@ -447,7 +555,8 @@ class UserPointsService(BaseService):
         task = self.task_repository.read_by_column(
             column="externalTaskId",
             value=externalTaskId,
-            not_found_message=(f"Task with externalTaskId {externalTaskId} not found"),
+            not_found_message=(
+                f"Task with externalTaskId {externalTaskId} not found"),
         )
 
         points_by_task = self.user_points_repository.get_points_and_users_by_taskId(
@@ -469,12 +578,14 @@ class UserPointsService(BaseService):
         task = self.task_repository.read_by_column(
             column="externalTaskId",
             value=externalTaskId,
-            not_found_message=(f"Task with externalTaskId {externalTaskId} not found"),
+            not_found_message=(
+                f"Task with externalTaskId {externalTaskId} not found"),
         )
         user = self.users_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
-            not_found_message=(f"User with externalUserId {externalUserId} not found"),
+            not_found_message=(
+                f"User with externalUserId {externalUserId} not found"),
         )
 
         points = self.user_points_repository.read_by_columns(
@@ -487,7 +598,8 @@ class UserPointsService(BaseService):
         user_data = self.users_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
-            not_found_message=(f"User with externalUserId {externalUserId} not found"),
+            not_found_message=(
+                f"User with externalUserId {externalUserId} not found"),
             not_found_raise_exception=False,
         )
         if not user_data:
@@ -499,7 +611,8 @@ class UserPointsService(BaseService):
                 userExists=False,
             )
 
-        tasks = self.user_points_repository.get_task_by_externalUserId(externalUserId)
+        tasks = self.user_points_repository.get_task_by_externalUserId(
+            externalUserId)
 
         response = []
         for task in tasks:
@@ -553,10 +666,12 @@ class UserPointsService(BaseService):
         user = self.users_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
-            not_found_message=(f"User with externalUserId {externalUserId} not found"),
+            not_found_message=(
+                f"User with externalUserId {externalUserId} not found"),
         )
 
-        points = self.user_points_repository.get_task_and_sum_points_by_userId(user.id)
+        points = self.user_points_repository.get_task_and_sum_points_by_userId(
+            user.id)
 
         total_points = 0
         for point in points:

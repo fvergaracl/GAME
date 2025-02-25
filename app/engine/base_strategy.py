@@ -224,6 +224,15 @@ class BaseStrategy:
         """
         return self.get_variable_basic_points()
 
+    def simulate_strategy(self, data=None):
+        """
+        Simulates the strategy for testing purposes.
+
+        Returns:
+            dict: A dictionary containing the simulated points.
+        """
+        return None
+
     def generate_logic_graph(self, format="png"):
         """
         Generates a logic graph for the strategy.

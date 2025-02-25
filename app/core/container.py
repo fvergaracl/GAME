@@ -224,6 +224,7 @@ class Container(containers.DeclarativeContainer):
         game_repository=game_repository,
         game_params_repository=game_params_repository,
         task_repository=task_repository,
+        user_points_repository=user_points_repository,
         strategy_service=strategy_service,
     )
 

@@ -676,3 +676,6 @@ class UserPointsRepository(BaseRepository):
             )
 
             return query.average_minutes if query.average_minutes is not None else -1
+
+
+    

@@ -6,6 +6,7 @@ https://dreampuf.github.io/GraphvizOnline/?engine=dot#digraph%20G%7B%0A%20%20%20
 import datetime
 import hashlib
 from app.core.container import Container
+from app.core.exceptions import InternalServerError
 from app.engine.base_strategy import BaseStrategy
 from graphviz import Digraph
 
@@ -21,13 +22,16 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             strategy_name_slug="greencrowdStrategy",
             strategy_version="1.0.0",
         )
-        
+        self.task_service = Container.task_service()
+        self.user_points_service = Container.user_points_service()
+
         self.variable_basic_points = 10
-        self.variable_valid_until_minutes = 15
+        self.variable_simulation_valid_until = 15
         self.time_slots = [(0, 6), (6, 12), (12, 18), (18, 24)]
-        
+
     def generate_logic_graph(self, format="png"):
-        dot = Digraph(comment="GREENCROWD Points Calculation Logic", format=format)
+        dot = Digraph(
+            comment="GREENCROWD Points Calculation Logic", format=format)
         dot.attr("node", shape="box", style="filled", fillcolor="lightgray")
         dot.attr("edge", fontsize="10")
 
@@ -40,22 +44,33 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
 
         # Add Nodes
         dot.node("start", "Start", shape="ellipse", fillcolor="lightgray")
-        dot.node("taskCompleted", "Task Completed?", shape="diamond", fillcolor="lightblue")
-        dot.node("assignBP", "Assign BP (DIM_BP)", shape="parallelogram", fillcolor="lightyellow")
+        dot.node("taskCompleted", "Task Completed?",
+                 shape="diamond", fillcolor="lightblue")
+        dot.node("assignBP", "Assign BP (DIM_BP)",
+                 shape="parallelogram", fillcolor="lightyellow")
 
-        dot.node("checkLBE", "Evaluate DIM_LBE\n(Geolocation Equity)", shape="diamond", fillcolor="lightblue")
-        dot.node("assignLBE", "Assign BP * 0.5 (if POI < Avg)", shape="parallelogram", fillcolor="lightyellow")
+        dot.node("checkLBE", "Evaluate DIM_LBE\n(Geolocation Equity)",
+                 shape="diamond", fillcolor="lightblue")
+        dot.node("assignLBE", "Assign BP * 0.5 (if POI < Avg)",
+                 shape="parallelogram", fillcolor="lightyellow")
 
-        dot.node("checkTD", "Evaluate DIM_TD\n(Time Diversity)", shape="diamond", fillcolor="lightblue")
-        dot.node("assignTD", "Assign BP * Coe_time", shape="parallelogram", fillcolor="lightyellow")
+        dot.node("checkTD", "Evaluate DIM_TD\n(Time Diversity)",
+                 shape="diamond", fillcolor="lightblue")
+        dot.node("assignTD", "Assign BP * Coe_time",
+                 shape="parallelogram", fillcolor="lightyellow")
 
-        dot.node("checkPP", "Evaluate DIM_PP\n(Personal Performance)", shape="diamond", fillcolor="lightblue")
-        dot.node("assignPP", "Assign BP * (AVG_Time_Window - Last_Time_Window) / AVG_Time_Window", shape="parallelogram", fillcolor="lightyellow")
+        dot.node("checkPP", "Evaluate DIM_PP\n(Personal Performance)",
+                 shape="diamond", fillcolor="lightblue")
+        dot.node("assignPP", "Assign BP * (AVG_Time_Window - Last_Time_Window) / AVG_Time_Window",
+                 shape="parallelogram", fillcolor="lightyellow")
 
-        dot.node("checkStreak", "Evaluate DIM_S\n(Consistency)", shape="diamond", fillcolor="lightblue")
-        dot.node("assignStreak", "Assign BP * (2^Days_Consecutive / 7)", shape="parallelogram", fillcolor="lightyellow")
+        dot.node("checkStreak", "Evaluate DIM_S\n(Consistency)",
+                 shape="diamond", fillcolor="lightblue")
+        dot.node("assignStreak", "Assign BP * (2^Days_Consecutive / 7)",
+                 shape="parallelogram", fillcolor="lightyellow")
 
-        dot.node("totalPoints", "Total Reward Calculation", shape="parallelogram", fillcolor="lightyellow")
+        dot.node("totalPoints", "Total Reward Calculation",
+                 shape="parallelogram", fillcolor="lightyellow")
 
         # Add Edges
         dot.edge("start", "taskCompleted")
@@ -81,41 +96,127 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
 
         return dot
 
-
     def generate_hash(self, response_data):
         """
         Generate a hash for the response to ensure integrity.
         """
         data_string = str(response_data).encode("utf-8")
         return hashlib.sha256((self.secret_key + str(data_string)).encode("utf-8")).hexdigest()
-    
+
+    def simulate_strategy(self, data_to_simulate=None):
+        """
+        Simulates a strategy execution to estimate the points a user would
+        receive based on a given game strategy and task set, without
+        actually assigning the points.
+
+        Dimensions:
+            - Task Diversity (DIM_TD)
+            - Location-Based Equity (DIM_LBE)
+            - Time Diversity (DIM_TD)
+            - Personal Performance (DIM_PP)
+            - Streak Bonus (DIM_S)
+
+        Args:
+            data_to_simulate (dict, optional): A dictionary containing the
+            necessary data for simulating the strategy. Expected structure:
+
+                {
+                    "task": dict # Single task object,
+                    "allTasks": list # List of all tasks,
+                    "externalUserId": str   # The external ID of the user for
+                    whom the simulation is run.
+                }
+
+        Returns:
+            list: A list of dictionaries containing the results of the strategy
+            simulation.
+            Structure:
+            [
+                {
+                    "externalUserId": str,  # The external ID of the user.
+                    "dimensions": list,     # A list of dictionaries
+                    containing the points for each dimension.
+                    "totalSimulatedPoints": int,  # The total estimated points.
+                }
+            ]
+        """
+
+        # destructuring data_to_simulate to get the necessary data
+        game_strategy_id = data_to_simulate.get("gameStrategyId")
+        task = data_to_simulate.get("task")
+        allTasks = data_to_simulate.get("allTasks")
+        external_user_id = data_to_simulate.get("externalUserId")
+
+        # if not all necessary data is provided, return an error message
+        if not game_strategy_id or not task or not allTasks or not external_user_id:
+            return InternalServerError("Missing data for simulation - gameStrategyId, tasks, externalUserId")
+
+        # initialize the total points variable
+        total_simulated_points = 0
+
+# - Task Diversity (DIM_TD)
+#             - Location-Based Equity (DIM_LBE)
+#             - Time Diversity (DIM_TD)
+#             - Personal Performance (DIM_PP)
+#             - Streak Bonus (DIM_S)
+        DIM_TD = 0
+        DIM_LBE = 0
+        DIM_TD = 0
+        DIM_PP = 0
+        DIM_S = 0
+
+        all_poi_task_in_db = 
+
+        return {
+            game_strategy_id,
+            task,
+            allTasks,
+            external_user_id
+        }
+
+        # POI_6623df1a-2486-40af-90f7-96b6bccde472_Task_20fcb063-5e3d-48c5-9532-259aaba7d03a
+        # POI_${POI_ID}_Task_${Task_ID}
+
     def calculate_points(self, task_completed, poi_samples, avg_poi_samples, time_slot_samples, total_samples, avg_time_window, last_time_window, streak_days):
         """
         Calculate the total points based on EquiQuest gamification strategy.
-        
+
         The calculation is based on five reward dimensions:
-        1. **Base Points (DIM_BP):** Assigned if the task is successfully completed.
-        2. **Location-Based Equity (DIM_LBE):** Encourages sampling in underrepresented POIs by providing a bonus if the POI is below the average sample count.
-        3. **Time Diversity (DIM_TD):** Rewards users for sampling in less covered time slots to ensure a balanced temporal distribution.
-        4. **Personal Performance (DIM_PP):** Provides a bonus if the user completes the task faster than their personal average time.
-        5. **Streak (DIM_S):** Encourages consistent participation by rewarding exponential bonuses for consecutive participation days.
-        
+        1. **Base Points (DIM_BP):** Assigned if the task is successfully
+          completed.
+        2. **Location-Based Equity (DIM_LBE):** Encourages sampling in
+          underrepresented POIs by providing a bonus if the POI is below the average sample count.
+        3. **Time Diversity (DIM_TD):** Rewards users for sampling in less
+          covered time slots to ensure a balanced temporal distribution.
+        4. **Personal Performance (DIM_PP):** Provides a bonus if the user
+          completes the task faster than their personal average time.
+        5. **Streak (DIM_S):** Encourages consistent participation by
+          rewarding exponential bonuses for consecutive participation days.
+
         Args:
             task_completed (bool): Whether the task was completed successfully.
-            poi_samples (int): The number of samples collected in the current POI.
+            poi_samples (int): The number of samples collected in the current
+              POI.
             avg_poi_samples (int): The average number of samples across POIs.
-            time_slot_samples (int): The number of samples collected in the current time slot.
-            total_samples (int): The total number of samples collected in all time slots.
-            avg_time_window (float): The user's average time window between task completions (in seconds).
-            last_time_window (float): The time difference between the user's last two task completions (in seconds).
+            time_slot_samples (int): The number of samples collected in the
+              current time slot.
+            total_samples (int): The total number of samples collected in all
+              time slots.
+            avg_time_window (float): The user's average time window between
+              task completions (in seconds).
+            last_time_window (float): The time difference between the user's
+              last two task completions (in seconds).
             streak_days (int): The number of consecutive days the user has participated.
-        
+
         Returns:
             dict: A dictionary containing:
                 - "total_points" (float): The total points awarded.
-                - "breakdown" (dict): Detailed points earned for each dimension.
-                - "normalized" (dict): Percentage contribution of each dimension to the total points.
-                - "valid_until" (datetime): The date until which the points are valid.
+                - "breakdown" (dict): Detailed points earned for each
+                  dimension.
+                - "normalized" (dict): Percentage contribution of each
+                  dimension to the total points.
+                - "valid_until" (datetime): The date until which the points
+                  are valid.
                 - "hash" (str): A hash to verify data integrity.
             str: A message summarizing the calculation.
         """
@@ -128,11 +229,11 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             }
             response["hash"] = self.generate_hash(response)
             return response, "Task not completed"
-        
+
         breakdown = {}
         total_points = self.variable_basic_points  # DIM_BP
         breakdown["Base Points"] = self.variable_basic_points
-        
+
         # DIM_LBE (Location-Based Equity)
         if poi_samples < avg_poi_samples:
             lbe_bonus = self.variable_basic_points * 0.5
@@ -140,30 +241,34 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             breakdown["Location-Based Equity"] = lbe_bonus
         else:
             breakdown["Location-Based Equity"] = 0
-        
+
         # DIM_TD (Time Diversity)
-        coe_time = (total_samples - time_slot_samples) / total_samples if total_samples else 1
+        coe_time = (total_samples - time_slot_samples) / \
+            total_samples if total_samples else 1
         td_bonus = self.variable_basic_points * coe_time
         total_points += td_bonus
         breakdown["Time Diversity"] = td_bonus
-        
+
         # DIM_PP (Personal Performance)
         if last_time_window < avg_time_window:
-            pp_bonus = self.variable_basic_points * (avg_time_window - last_time_window) / avg_time_window
+            pp_bonus = self.variable_basic_points * \
+                (avg_time_window - last_time_window) / avg_time_window
             total_points += pp_bonus
             breakdown["Personal Performance"] = pp_bonus
         else:
             breakdown["Personal Performance"] = 0
-        
+
         # DIM_S (Streak Bonus)
         streak_bonus = self.variable_basic_points * (2 ** (streak_days / 7))
         total_points += streak_bonus
         breakdown["Streak Bonus"] = streak_bonus
-        
+
         # Normalize points contribution
-        normalized = {key: (value / total_points) * 100 if total_points > 0 else 0 for key, value in breakdown.items()}
-        valid_until = datetime.datetime.now() + datetime.timedelta(minutes=self.variable_valid_until_minutes)
-        
+        normalized = {key: (value / total_points) * 100 if total_points >
+                      0 else 0 for key, value in breakdown.items()}
+        valid_until = datetime.datetime.now(
+        ) + datetime.timedelta(minutes=self.variable_valid_until_minutes)
+
         response = {
             "total_points": total_points,
             "breakdown": breakdown,
@@ -171,5 +276,5 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             "valid_until": valid_until,
         }
         response["hash"] = self.generate_hash(response)
-        
+
         return response, "Points Calculation Completed"

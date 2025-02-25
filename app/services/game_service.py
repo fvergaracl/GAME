@@ -5,6 +5,7 @@ from app.engine.all_engine_strategies import all_engine_strategies
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
+from app.repository.user_points_repository import UserPointsRepository
 from app.schema.games_params_schema import InsertGameParams
 from app.schema.games_schema import (
     BaseGameResult,
@@ -36,6 +37,7 @@ class GameService(BaseService):
         game_repository: GameRepository,
         game_params_repository: GameParamsRepository,
         task_repository: TaskRepository,
+        user_points_repository: UserPointsRepository,
         strategy_service: StrategyService,
     ):
         """
