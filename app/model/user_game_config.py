@@ -31,3 +31,23 @@ class UserGameConfig(BaseModel, table=True):
             f"configData={self.configData}, created_at={self.created_at}, "
             f"updated_at={self.updated_at})"
         )
+
+    def __repr__(self):
+        return (
+            f"UserGameConfig: (id={self.id}, userId={self.userId}, "
+            f"gameId={self.gameId}, experimentGroup={self.experimentGroup}, "
+            f"configData={self.configData}, created_at={self.created_at}, "
+            f"updated_at={self.updated_at})"
+        )
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, UserGameConfig)
+            and self.id == other.id
+            and self.userId == other.userId
+            and self.gameId == other.gameId
+            and self.experimentGroup == other.experimentGroup
+            and self.configData == other.configData
+            and self.created_at == other.created_at
+            and self.updated_at == other.updated_at
+        )

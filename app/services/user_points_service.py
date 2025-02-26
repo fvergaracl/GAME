@@ -275,7 +275,12 @@ class UserPointsService(BaseService):
         return response
 
     def assign_points_to_user(
-        self, gameId, externalTaskId, schema, api_key: str = None
+        self,
+        gameId,
+        externalTaskId,
+        schema,
+        isSimulated: bool = False,
+        api_key: str = None
     ):
         """
         Assign points to a user.
@@ -429,7 +434,7 @@ class UserPointsService(BaseService):
         return response
 
     async def get_points_simulated_of_user_in_game(
-        self, gameId, externalUserId, oauth_user_id: str = None
+        self, gameId, externalUserId, oauth_user_id: str = None, assign_control_group: bool = False
     ):
         """
         Simulates the assignment of points for a user without persisting the
@@ -483,58 +488,34 @@ class UserPointsService(BaseService):
                 oauth_user_id=oauth_user_id,
 
             )
-
-        user_config = self.users_game_config_repository.read_by_columns(
-            {"userId": user.id, "gameId": game.id},
-            only_one=False,
-            not_found_raise_exception=False
-        )
-        userGroup = user_config.experimentGroup if user_config else None
-        print('------------userGroup ')
-        print('------------userGroup ')
-        print('------------userGroup ')
-        print('------------userGroup ')
-        print('------------userGroup ')
-        print(userGroup)
-        if not userGroup:
-            print('.....................')
-            print('.....................')
-            print('.....................')
-            print('.....................')
-            print('.....................')
-            print('.....................')
-            print('>1')
-            group_control = ["random", "static", "dynamic"]
-            print(">2")
-            all_users = self.users_game_config_repository.get_all_users_by_gameId(
-                game.id)
-            print(">3")
-            group_counts = Counter(
-                user_config.experimentGroup for user_config in all_users)
-            print(">4")
-            min_group = min(
-                group_control, key=lambda g: group_counts.get(g, 0))
-            print(">5")
-            userGroup = min_group
-            print(">6")
-            new_user_config = CreateUserGameConfig(
-                userId=str(user.id),
-                gameId=str(game.id),
-                experimentGroup=userGroup,
-                configData={}
+        userGroup = None
+        if assign_control_group:
+            user_config = self.users_game_config_repository.read_by_columns(
+                {"userId": user.id, "gameId": game.id},
+                only_one=True,
+                not_found_raise_exception=False
             )
-            print(">7")
+            if user_config:
+                userGroup = user_config.experimentGroup
+            if not userGroup:
 
-            user_config = await self.users_game_config_repository.create(
-                new_user_config)
-            print('0000************************')
-            print('0000************************')
-            print('0000************************')
-            print('0000************************')
-            print(user_config)
-            print('************************')
-            print('************************')
-            print('************************')
+                group_control = ["random_range", "average_score", "dynamic_calculation"]
+                all_users = self.users_game_config_repository.get_all_users_by_gameId(
+                    game.id)
+                group_counts = Counter(
+                    user_config.experimentGroup for user_config in all_users)
+                min_group = min(
+                    group_control, key=lambda g: group_counts.get(g, 0))
+                userGroup = min_group
+                new_user_config = CreateUserGameConfig(
+                    userId=str(user.id),
+                    gameId=str(game.id),
+                    experimentGroup=userGroup,
+                    configData={}
+                )
+
+                user_config = await self.users_game_config_repository.create(
+                    new_user_config)
 
         grouped_by_strategyId = {}
         for task in all_tasks:
@@ -542,21 +523,7 @@ class UserPointsService(BaseService):
             if strategy_id_applied not in grouped_by_strategyId:
                 grouped_by_strategyId[strategy_id_applied] = []
             grouped_by_strategyId[strategy_id_applied].append(task)
-        print('--------------- grouped_by_strategyId ------------------------')
-        print('--------------- grouped_by_strategyId ------------------------')
-        print('--------------- grouped_by_strategyId ------------------------')
-        print(grouped_by_strategyId)
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        print(" ")
-        """
 
-        {'greencrowdStrategy': [Tasks(id=f572f877-8eba-486a-b93c-948c9d85bcfb, created_at=2025-02-25 13:56:56.787123+00:00, updated_at=2025-02-25 13:56:56.787123+00:00, externalTaskId=POI_6623df1a-2486-40af-90f7-96b6bccde472_Task_20fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=a7938e5c-80a7-4603-b325-da1a773b44c1, created_at=2025-02-25 13:56:57.261614+00:00, updated_at=2025-02-25 13:56:57.261614+00:00, externalTaskId=POI_d8fd6554-a140-42ff-8d73-fa314c0358bd_Task_30fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=e321fbbb-6c78-4b10-a1e1-fe9e6d2b9e66, created_at=2025-02-25 13:56:57.749188+00:00, updated_at=2025-02-25 13:56:57.749188+00:00, externalTaskId=POI_3e134cfc-75a2-4e21-85e9-89983d98a819_Task_40fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=3497366d-1fba-46d9-bc7b-9936a997daf4, created_at=2025-02-25 13:56:58.220683+00:00, updated_at=2025-02-25 13:56:58.220683+00:00, externalTaskId=POI_a908261b-2a21-41ef-a1f1-eb4e3eccde15_Task_50fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=5e8c1e3a-0b8b-4ae1-a6a9-a479000a6b4b, created_at=2025-02-25 13:56:58.697977+00:00, updated_at=2025-02-25 13:56:58.697977+00:00, externalTaskId=POI_867a3095-e40c-4fdd-93f1-99f94596e9ab_Task_60fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=9e66ea4f-da99-45c3-85da-d27501aa5c9c, created_at=2025-02-25 13:56:59.214998+00:00, updated_at=2025-02-25 13:56:59.214998+00:00, externalTaskId=POI_db490f8d-961e-4781-a201-44ad1e844bfa_Task_70fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=d2ff40d6-02c0-448f-a970-49332bcc7217, created_at=2025-02-25 13:56:59.709000+00:00, updated_at=2025-02-25 13:56:59.709000+00:00, externalTaskId=POI_239b1cd2-4d6b-4e3e-980c-3f1c98b2838d_Task_80fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open), Tasks(id=91ba53f3-7130-40ef-89bc-23dbb65b59d7, created_at=2025-02-25 13:57:00.197095+00:00, updated_at=2025-02-25 13:57:00.197095+00:00, externalTaskId=POI_a5bca879-3b11-4fc6-880b-b3d8b8aba839_Task_90fcb063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open)]}
-
-        """
         response = []
         for strategy_id_applied, tasks in grouped_by_strategyId.items():
             strategy_instance = self.strategy_service.get_Class_by_id(
@@ -576,13 +543,7 @@ class UserPointsService(BaseService):
                     data_to_simulate=data_to_simulate,
                     userGroup=userGroup
                 )
-                print('--------------- task_simulation ------------------------')
-                print('--------------- task_simulation ------------------------')
-                print('--------------- task_simulation ------------------------')
-                print('--------------- task_simulation ------------------------')
-                print('--------------- task_simulation ------------------------')
                 response.append(task_simulation)
-                print('')
 
         return response
 

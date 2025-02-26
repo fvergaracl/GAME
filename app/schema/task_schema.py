@@ -39,6 +39,7 @@ class AsignPointsToExternalUserId(BaseModel):
 
     externalUserId: str
     data: Optional[dict]
+    isSimulated: Optional[bool] = False
 
 
 class CreateTaskPost(BaseModel):

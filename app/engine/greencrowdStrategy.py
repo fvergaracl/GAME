@@ -104,7 +104,12 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         data_string = str(response_data).encode("utf-8")
         return hashlib.sha256((self.secret_key + str(data_string)).encode("utf-8")).hexdigest()
 
-    def simulate_strategy(self, data_to_simulate: dict = None, userGroup: str = "dynamic"):
+    def simulate_strategy(
+            self,
+
+            data_to_simulate: dict = None,
+            userGroup: str = "dynamic"
+    ):
         """
         Simulates a strategy execution to estimate the points a user would
         receive based on a given game strategy and task set, without
@@ -127,7 +132,8 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
                     "externalUserId": str   # The external ID of the user for
                     whom the simulation is run.
                 }
-            userGroup (str): The user group to simulate the strategy for. Could be "random" , "static" or "dynamic"
+            userGroup (str): The user group to simulate the strategy for.
+              Could be ["random_range", "average_score", "dynamic_calculation"]
 
         Returns:
             list: A list of dictionaries containing the results of the strategy
@@ -143,35 +149,26 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             ]
         """
 
-        # destructuring data_to_simulate to get the necessary data
         task = data_to_simulate.get("task")
         allTasks = data_to_simulate.get("allTasks")
         external_user_id = data_to_simulate.get("externalUserId")
 
-        # if not all necessary data is provided, return an error message
         if not task or not allTasks or not external_user_id:
             return InternalServerError("Missing data to simulate the strategy")
 
-        # initialize the total points variable
         total_simulated_points = 0
 
-        # - Task Diversity (DIM_TD)
-        #             - Location-Based Equity (DIM_LBE)
-        #             - Time Diversity (DIM_TD)
-        #             - Personal Performance (DIM_PP)
-        #             - Streak Bonus (DIM_S)
         DIM_TD = 0
         DIM_LBE = 0
         DIM_TD = 0
         DIM_PP = 0
         DIM_S = 0
 
+        ###########################################################################################################################
         total_simulated_points = DIM_TD + DIM_LBE + DIM_TD + DIM_PP + DIM_S
 
-        # expirationDate = datetime.datetime.now() + datetime.timedelta( minutes=self.variable_simulation_valid_until) but in UTC 0
         expiration_date = datetime.datetime.now() + datetime.timedelta(
             minutes=self.variable_simulation_valid_until)
-        # expirationDate with Time zone
         expiration_date = expiration_date.replace(tzinfo=datetime.timezone.utc)
 
         return SimulatedTaskPoints(
@@ -188,104 +185,65 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             expirationDate=str(expiration_date),
         )
 
-    def calculate_points(self, task_completed, poi_samples, avg_poi_samples, time_slot_samples, total_samples, avg_time_window, last_time_window, streak_days):
+    def calculate_points(
+            self, externalGameId, externalTaskId, externalUserId, data):
         """
-        Calculate the total points based on EquiQuest gamification strategy.
+        Calculate the points for the GREENCROWD gamification strategy.
 
-        The calculation is based on five reward dimensions:
-        1. **Base Points (DIM_BP):** Assigned if the task is successfully
-          completed.
-        2. **Location-Based Equity (DIM_LBE):** Encourages sampling in
-          underrepresented POIs by providing a bonus if the POI is below the average sample count.
-        3. **Time Diversity (DIM_TD):** Rewards users for sampling in less
-          covered time slots to ensure a balanced temporal distribution.
-        4. **Personal Performance (DIM_PP):** Provides a bonus if the user
-          completes the task faster than their personal average time.
-        5. **Streak (DIM_S):** Encourages consistent participation by
-          rewarding exponential bonuses for consecutive participation days.
-
-        Args:
-            task_completed (bool): Whether the task was completed successfully.
-            poi_samples (int): The number of samples collected in the current
-              POI.
-            avg_poi_samples (int): The average number of samples across POIs.
-            time_slot_samples (int): The number of samples collected in the
-              current time slot.
-            total_samples (int): The total number of samples collected in all
-              time slots.
-            avg_time_window (float): The user's average time window between
-              task completions (in seconds).
-            last_time_window (float): The time difference between the user's
-              last two task completions (in seconds).
-            streak_days (int): The number of consecutive days the user has participated.
-
-        Returns:
-            dict: A dictionary containing:
-                - "total_points" (float): The total points awarded.
-                - "breakdown" (dict): Detailed points earned for each
-                  dimension.
-                - "normalized" (dict): Percentage contribution of each
-                  dimension to the total points.
-                - "valid_until" (datetime): The date until which the points
-                  are valid.
-                - "hash" (str): A hash to verify data integrity.
-            str: A message summarizing the calculation.
-        """
-        if not task_completed:
-            response = {
-                "total_points": 0,
-                "breakdown": {},
-                "normalized": {},
-                "valid_until": None,
-            }
-            response["hash"] = self.generate_hash(response)
-            return response, "Task not completed"
-
-        breakdown = {}
-        total_points = self.variable_basic_points  # DIM_BP
-        breakdown["Base Points"] = self.variable_basic_points
-
-        # DIM_LBE (Location-Based Equity)
-        if poi_samples < avg_poi_samples:
-            lbe_bonus = self.variable_basic_points * 0.5
-            total_points += lbe_bonus
-            breakdown["Location-Based Equity"] = lbe_bonus
-        else:
-            breakdown["Location-Based Equity"] = 0
-
-        # DIM_TD (Time Diversity)
-        coe_time = (total_samples - time_slot_samples) / \
-            total_samples if total_samples else 1
-        td_bonus = self.variable_basic_points * coe_time
-        total_points += td_bonus
-        breakdown["Time Diversity"] = td_bonus
-
-        # DIM_PP (Personal Performance)
-        if last_time_window < avg_time_window:
-            pp_bonus = self.variable_basic_points * \
-                (avg_time_window - last_time_window) / avg_time_window
-            total_points += pp_bonus
-            breakdown["Personal Performance"] = pp_bonus
-        else:
-            breakdown["Personal Performance"] = 0
-
-        # DIM_S (Streak Bonus)
-        streak_bonus = self.variable_basic_points * (2 ** (streak_days / 7))
-        total_points += streak_bonus
-        breakdown["Streak Bonus"] = streak_bonus
-
-        # Normalize points contribution
-        normalized = {key: (value / total_points) * 100 if total_points >
-                      0 else 0 for key, value in breakdown.items()}
-        valid_until = datetime.datetime.now(
-        ) + datetime.timedelta(minutes=self.variable_valid_until_minutes)
-
-        response = {
-            "total_points": total_points,
-            "breakdown": breakdown,
-            "normalized": normalized,
-            "valid_until": valid_until,
+        Dimensions in data:
+            {
+            experimentGroup: str,
+            simulationHash: str,
+            dimensions: [
+        {
+          "DIM_TD": 0
+        },
+        {
+          "DIM_LBE": 0
+        },
+        {
+          "DIM_TD": 0
+        },
+        {
+          "DIM_PP": 0
+        },
+        {
+          "DIM_S": 0
         }
-        response["hash"] = self.generate_hash(response)
+      ]
+             }
+        Args:
+            externalGameId (str): The external game ID.
+            externalTaskId (str): The external task ID.
+            externalUserId (str): The external user ID.
+            data (dict): The data containing the dimensions for the points
+              calculation. With the following structure:
+                {
+                    "experimentGroup": str,
+                    "simulationHash": str,
+                    "indexDimensionChoice": int,
+                    "dimensions": [
+                        {
+                            "DIM_TD": int,
+                            "DIM_LBE": int,
+                            "DIM_TD": int,
+                            "DIM_PP": int,
+                            "DIM_S": int
+                        }...
+                    ]
+                }
 
+
+        """
+        case_name = '-'
+        points = -1
+
+        # destructuring data
+        experimentGroup = data.get("experimentGroup")
+        simulationHash = data.get("simulationHash")
+        indexDimensionChoice = data.get("indexDimensionChoice")
+        dimensions = data.get("dimensions")
+
+        #  simulationHash = hashlib.sha256(str(tasks_simulated).encode() + configs.SECRET_KEY.encode() + str(gameId).encode() + externalUserId.encode()).hexdigest()
+        calculated_hash = 
         return response, "Points Calculation Completed"

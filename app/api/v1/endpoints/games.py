@@ -1213,7 +1213,7 @@ async def get_points_simulated_of_user_in_game(
             provider_user_id=oauth_user_id,
             status="active",
         )
-        await service_oauth.add(create_user)
+        service_oauth.add(create_user)
         await add_log(
             "game",
             "INFO",
@@ -1229,16 +1229,26 @@ async def get_points_simulated_of_user_in_game(
     print(' <<     Before')
     print(' <<     Before')
     tasks_simulated = await service.get_points_simulated_of_user_in_game(
-        gameId, externalUserId, oauth_user_id=oauth_user_id)
+        gameId, externalUserId, oauth_user_id=oauth_user_id, assign_control_group=True)
     print(' > AFTER response')
     print(tasks_simulated)
 
-
     simulationHash = hashlib.sha256(
         str(tasks_simulated).encode() + configs.SECRET_KEY.encode() + str(gameId).encode() + externalUserId.encode()).hexdigest()
-
+    
     response = SimulatedPointsAssignedToUser(
         simulationHash=simulationHash, tasks=tasks_simulated)
+
+    await add_log(
+        "game",
+        "INFO",
+        "Simulated user points retrieval by game ID",
+        {"gameId": str(gameId), "externalUserId": externalUserId,
+         "response": response.dict()},
+        service_log,
+        None,
+        oauth_user_id,
+    )
     return response
 
 summary_user_action = "User Action"
@@ -1403,7 +1413,14 @@ async def assign_points_to_user(
         api_key,
         oauth_user_id,
     )
-    return service.assign_points_to_user(gameId, externalTaskId, schema, api_key)
+    isSimulated = schema.isSimulated if hasattr(
+        schema, "isSimulated") else False
+    return service.assign_points_to_user(
+        gameId,
+        externalTaskId,
+        schema,
+        isSimulated,
+        api_key)
 
 
 summary_get_points_by_task_id = "Retrieve Points by Task ID"
