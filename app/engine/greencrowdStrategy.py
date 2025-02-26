@@ -8,6 +8,7 @@ import hashlib
 from app.core.container import Container
 from app.core.exceptions import InternalServerError
 from app.engine.base_strategy import BaseStrategy
+from app.schema.task_schema import SimulatedTaskPoints
 from graphviz import Digraph
 
 
@@ -103,7 +104,7 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         data_string = str(response_data).encode("utf-8")
         return hashlib.sha256((self.secret_key + str(data_string)).encode("utf-8")).hexdigest()
 
-    def simulate_strategy(self, data_to_simulate=None):
+    def simulate_strategy(self, data_to_simulate: dict = None, userGroup: str = "dynamic"):
         """
         Simulates a strategy execution to estimate the points a user would
         receive based on a given game strategy and task set, without
@@ -126,6 +127,7 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
                     "externalUserId": str   # The external ID of the user for
                     whom the simulation is run.
                 }
+            userGroup (str): The user group to simulate the strategy for. Could be "random" , "static" or "dynamic"
 
         Returns:
             list: A list of dictionaries containing the results of the strategy
@@ -142,40 +144,49 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         """
 
         # destructuring data_to_simulate to get the necessary data
-        game_strategy_id = data_to_simulate.get("gameStrategyId")
         task = data_to_simulate.get("task")
         allTasks = data_to_simulate.get("allTasks")
         external_user_id = data_to_simulate.get("externalUserId")
 
         # if not all necessary data is provided, return an error message
-        if not game_strategy_id or not task or not allTasks or not external_user_id:
-            return InternalServerError("Missing data for simulation - gameStrategyId, tasks, externalUserId")
+        if not task or not allTasks or not external_user_id:
+            return InternalServerError("Missing data to simulate the strategy")
 
         # initialize the total points variable
         total_simulated_points = 0
 
-# - Task Diversity (DIM_TD)
-#             - Location-Based Equity (DIM_LBE)
-#             - Time Diversity (DIM_TD)
-#             - Personal Performance (DIM_PP)
-#             - Streak Bonus (DIM_S)
+        # - Task Diversity (DIM_TD)
+        #             - Location-Based Equity (DIM_LBE)
+        #             - Time Diversity (DIM_TD)
+        #             - Personal Performance (DIM_PP)
+        #             - Streak Bonus (DIM_S)
         DIM_TD = 0
         DIM_LBE = 0
         DIM_TD = 0
         DIM_PP = 0
         DIM_S = 0
 
-        all_poi_task_in_db = 
+        total_simulated_points = DIM_TD + DIM_LBE + DIM_TD + DIM_PP + DIM_S
 
-        return {
-            game_strategy_id,
-            task,
-            allTasks,
-            external_user_id
-        }
+        # expirationDate = datetime.datetime.now() + datetime.timedelta( minutes=self.variable_simulation_valid_until) but in UTC 0
+        expiration_date = datetime.datetime.now() + datetime.timedelta(
+            minutes=self.variable_simulation_valid_until)
+        # expirationDate with Time zone
+        expiration_date = expiration_date.replace(tzinfo=datetime.timezone.utc)
 
-        # POI_6623df1a-2486-40af-90f7-96b6bccde472_Task_20fcb063-5e3d-48c5-9532-259aaba7d03a
-        # POI_${POI_ID}_Task_${Task_ID}
+        return SimulatedTaskPoints(
+            externalUserId=external_user_id,
+            taksId=str(task.id),
+            dimensions=[
+                {"DIM_TD": DIM_TD},
+                {"DIM_LBE": DIM_LBE},
+                {"DIM_TD": DIM_TD},
+                {"DIM_PP": DIM_PP},
+                {"DIM_S": DIM_S},
+            ],
+            totalSimulatedPoints=total_simulated_points,
+            expirationDate=str(expiration_date),
+        )
 
     def calculate_points(self, task_completed, poi_samples, avg_poi_samples, time_slot_samples, total_samples, avg_time_window, last_time_window, streak_days):
         """

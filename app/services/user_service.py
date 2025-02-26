@@ -368,6 +368,21 @@ class UserService(BaseService):
 
         return response
 
+    def get_user_by_externalUserId(self, externalUserId):
+        """
+        Retrieves a user by their external user ID.
+
+        Args:
+            externalUserId (str): The external user ID.
+
+        Returns:
+            object: The user details.
+        """
+        user = self.user_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=False
+        )
+        return user
+
     def get_wallet_by_externalUserId(self, externalUserId):
         """
         Retrieves the wallet associated with a user by their external user ID.
@@ -495,7 +510,8 @@ class UserService(BaseService):
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
-        response = self.preview_points_to_coins_conversion(str(user.id), points)
+        response = self.preview_points_to_coins_conversion(
+            str(user.id), points)
         return response
 
     def convert_points_to_coins(
@@ -568,7 +584,8 @@ class UserService(BaseService):
             apiKey_used=api_key,
         )
 
-        transaction = self.wallet_transaction_repository.create(wallet_transaction)
+        transaction = self.wallet_transaction_repository.create(
+            wallet_transaction)
 
         response = {
             "transactionId": str(transaction.id),

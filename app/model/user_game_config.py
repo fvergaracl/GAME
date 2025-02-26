@@ -1,8 +1,9 @@
 from sqlmodel import Field, SQLModel, Column, String, JSON, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
+from app.model.base_model import BaseModel
 
 
-class UserGameConfig(SQLModel, table=True):
+class UserGameConfig(BaseModel, table=True):
     """
     Stores user-specific configuration for each game.
 
@@ -13,8 +14,6 @@ class UserGameConfig(SQLModel, table=True):
         configData (dict): Custom configurations for the user in this game.
     """
 
-    id: str = Field(sa_column=Column(
-        UUID(as_uuid=True), primary_key=True, index=True))
     userId: str = Field(sa_column=Column(
         UUID(as_uuid=True), ForeignKey("users.id")))
     gameId: str = Field(sa_column=Column(
@@ -29,5 +28,6 @@ class UserGameConfig(SQLModel, table=True):
         return (
             f"UserGameConfig: (id={self.id}, userId={self.userId}, "
             f"gameId={self.gameId}, experimentGroup={self.experimentGroup}, "
-            f"configData={self.configData})"
+            f"configData={self.configData}, created_at={self.created_at}, "
+            f"updated_at={self.updated_at})"
         )

@@ -251,6 +251,7 @@ class Container(containers.DeclarativeContainer):
         UserPointsService,
         user_points_repository=user_points_repository,
         users_repository=user_repository,
+        users_game_config_repository=user_game_config_repository,
         game_repository=game_repository,
         task_repository=task_repository,
         wallet_repository=wallet_repository,

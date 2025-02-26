@@ -1,11 +1,11 @@
 from typing import List
 from uuid import UUID
-
+import hashlib
+from app.core.config import configs
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Body, Depends
-
 from app.core.container import Container
-from app.core.exceptions import NotFoundError
+from app.core.exceptions import InternalServerError, ForbiddenError
 from app.schema.games_schema import (
     BaseGameResult,
     FindGameResult,
@@ -1160,7 +1160,7 @@ description_get_points_simulated_of_user_in_game = """
 
 @router.get(
     "/{gameId}/users/{externalUserId}/points/simulated",
-    response_model=List[SimulatedPointsAssignedToUser],
+    response_model=SimulatedPointsAssignedToUser,
     summary=summary_get_points_simulated_of_user_in_game,
     description=description_get_points_simulated_of_user_in_game,
     dependencies=[Depends(auth_oauth2)],
@@ -1194,8 +1194,19 @@ async def get_points_simulated_of_user_in_game(
     # if user is None:
     #     raise NotFoundError(
     #         detail=f"User with external ID {externalUserId} not found.")
+
+    if not configs.SECRET_KEY:
+        raise InternalServerError(
+            detail="SECRET_KEY is not set. Please set the SECRET_KEY in the environment variables"
+        )
+
     token_data = await valid_access_token(token)
     oauth_user_id = token_data.data["sub"]
+    is_admin = check_role(token_data, "AdministratorGAME")
+    if is_admin and (not (oauth_user_id == externalUserId)):
+        raise ForbiddenError(
+            detail="You are not authorized to access this resource.")
+
     if service_oauth.get_user_by_sub(oauth_user_id) is None:
         create_user = CreateOAuthUser(
             provider="keycloak",
@@ -1217,23 +1228,17 @@ async def get_points_simulated_of_user_in_game(
     print(' <<     Before')
     print(' <<     Before')
     print(' <<     Before')
-    response = await service.get_points_simulated_of_user_in_game(
-        gameId, externalUserId)
+    tasks_simulated = await service.get_points_simulated_of_user_in_game(
+        gameId, externalUserId, oauth_user_id=oauth_user_id)
     print(' > AFTER response')
-    print(response)
-    await add_log(
-        "game",
-        "INFO",
-        "Simulated user points retrieval by game ID",
-        {
-            "gameId": str(gameId),
-            "externalUserId": externalUserId,
-            "response": response
-        },
-        service_log,
-        None,
-        oauth_user_id,
-    )
+    print(tasks_simulated)
+
+
+    simulationHash = hashlib.sha256(
+        str(tasks_simulated).encode() + configs.SECRET_KEY.encode() + str(gameId).encode() + externalUserId.encode()).hexdigest()
+
+    response = SimulatedPointsAssignedToUser(
+        simulationHash=simulationHash, tasks=tasks_simulated)
     return response
 
 summary_user_action = "User Action"

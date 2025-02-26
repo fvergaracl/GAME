@@ -1,5 +1,5 @@
 from uuid import UUID
-
+from collections import Counter
 from app.core.config import configs
 from app.core.exceptions import (
     InternalServerError,
@@ -10,9 +10,11 @@ from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
+from app.repository.user_game_config_repository import UserGameConfigRepository
 from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.schema.games_schema import ListTasksWithUsers
+from app.schema.user_game_config_schema import CreateUserGameConfig
 from app.schema.task_schema import (
     AssignedPointsToExternalUserId,
     BaseUserFirstAction,
@@ -43,6 +45,7 @@ class UserPointsService(BaseService):
         self,
         user_points_repository: UserPointsRepository,
         users_repository: UserRepository,
+        users_game_config_repository: UserGameConfigRepository,
         game_repository: GameRepository,
         task_repository: TaskRepository,
         wallet_repository: WalletRepository,
@@ -50,6 +53,7 @@ class UserPointsService(BaseService):
     ):
         self.user_points_repository = user_points_repository
         self.users_repository = users_repository
+        self.users_game_config_repository = users_game_config_repository
         self.game_repository = game_repository
         self.task_repository = task_repository
         self.wallet_repository = wallet_repository
@@ -425,7 +429,7 @@ class UserPointsService(BaseService):
         return response
 
     async def get_points_simulated_of_user_in_game(
-        self, gameId, externalUserId
+        self, gameId, externalUserId, oauth_user_id: str = None
     ):
         """
         Simulates the assignment of points for a user without persisting the
@@ -435,7 +439,7 @@ class UserPointsService(BaseService):
             gameId (UUID): The ID of the game.
             externalTaskId (str): The external task ID.
             schema: The schema containing user and action data.
-            api_key (Optional[str]): The API key used for authentication.
+            oauth_user_id (str): The OAuth user ID.
 
         Returns:
             dict: Simulation result with calculated points and case name.
@@ -466,6 +470,71 @@ class UserPointsService(BaseService):
         user = self.users_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=False
         )
+        if not user:
+            is_valid_externalUserId = is_valid_slug(externalUserId)
+            if not is_valid_externalUserId:
+                raise PreconditionFailedError(
+                    detail=(
+                        f"Invalid externalUserId: {externalUserId}. externalUserId should be a valid (Should have only alphanumeric characters and Underscore . Length should be between 3 and 50)"  # noqa
+                    )
+                )
+            user = self.users_repository.create_user_by_externalUserId(
+                externalUserId=externalUserId,
+                oauth_user_id=oauth_user_id,
+
+            )
+
+        user_config = self.users_game_config_repository.read_by_columns(
+            {"userId": user.id, "gameId": game.id},
+            only_one=False,
+            not_found_raise_exception=False
+        )
+        userGroup = user_config.experimentGroup if user_config else None
+        print('------------userGroup ')
+        print('------------userGroup ')
+        print('------------userGroup ')
+        print('------------userGroup ')
+        print('------------userGroup ')
+        print(userGroup)
+        if not userGroup:
+            print('.....................')
+            print('.....................')
+            print('.....................')
+            print('.....................')
+            print('.....................')
+            print('.....................')
+            print('>1')
+            group_control = ["random", "static", "dynamic"]
+            print(">2")
+            all_users = self.users_game_config_repository.get_all_users_by_gameId(
+                game.id)
+            print(">3")
+            group_counts = Counter(
+                user_config.experimentGroup for user_config in all_users)
+            print(">4")
+            min_group = min(
+                group_control, key=lambda g: group_counts.get(g, 0))
+            print(">5")
+            userGroup = min_group
+            print(">6")
+            new_user_config = CreateUserGameConfig(
+                userId=str(user.id),
+                gameId=str(game.id),
+                experimentGroup=userGroup,
+                configData={}
+            )
+            print(">7")
+
+            user_config = await self.users_game_config_repository.create(
+                new_user_config)
+            print('0000************************')
+            print('0000************************')
+            print('0000************************')
+            print('0000************************')
+            print(user_config)
+            print('************************')
+            print('************************')
+            print('************************')
 
         grouped_by_strategyId = {}
         for task in all_tasks:
@@ -504,9 +573,17 @@ class UserPointsService(BaseService):
                     "externalUserId": externalUserId
                 }
                 task_simulation = strategy_instance.simulate_strategy(
-                    data=data_to_simulate
+                    data_to_simulate=data_to_simulate,
+                    userGroup=userGroup
                 )
+                print('--------------- task_simulation ------------------------')
+                print('--------------- task_simulation ------------------------')
+                print('--------------- task_simulation ------------------------')
+                print('--------------- task_simulation ------------------------')
+                print('--------------- task_simulation ------------------------')
                 response.append(task_simulation)
+                print('')
+
         return response
 
     def get_users_points_by_externalGameId(self, externalGameId):

@@ -28,3 +28,17 @@ class UserGameConfigRepository(BaseRepository):
               The session factory.
         """
         super().__init__(session_factory, UserGameConfig)
+
+    def get_all_users_by_gameId(
+            self, gameId: str) -> List[UserGameConfig]:
+        """
+        Get all users by gameId.
+
+        Args:
+            gameId: The gameId of the users to get.
+
+        Returns:
+            List of users with the provided gameId.
+        """
+        with self.session_factory() as session:
+            return session.query(self.model).filter_by(gameId=gameId).all()
