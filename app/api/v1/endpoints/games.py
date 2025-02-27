@@ -1,6 +1,5 @@
 from typing import List
 from uuid import UUID
-import hashlib
 from app.core.config import configs
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Body, Depends
@@ -50,6 +49,7 @@ from app.middlewares.authentication import (
 from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
 from app.util.check_role import check_role
 from app.util.add_log import add_log
+from app.util.calculate_hash_simulated_strategy import calculate_hash_simulated_strategy
 
 router = APIRouter(
     prefix="/games",
@@ -1223,19 +1223,18 @@ async def get_points_simulated_of_user_in_game(
             None,
             oauth_user_id,
         )
-    print(' <<     Before')
-    print(' <<     Before')
-    print(' <<     Before')
-    print(' <<     Before')
-    print(' <<     Before')
-    tasks_simulated = await service.get_points_simulated_of_user_in_game(
+
+    tasks_simulated, externalGameId = await service.get_points_simulated_of_user_in_game(
         gameId, externalUserId, oauth_user_id=oauth_user_id, assign_control_group=True)
     print(' > AFTER response')
     print(tasks_simulated)
 
-    simulationHash = hashlib.sha256(
-        str(tasks_simulated).encode() + configs.SECRET_KEY.encode() + str(gameId).encode() + externalUserId.encode()).hexdigest()
-    
+    simulationHash = calculate_hash_simulated_strategy(
+        tasks_simulated,
+        externalGameId,
+        externalUserId,
+    )
+
     response = SimulatedPointsAssignedToUser(
         simulationHash=simulationHash, tasks=tasks_simulated)
 
@@ -1415,7 +1414,7 @@ async def assign_points_to_user(
     )
     isSimulated = schema.isSimulated if hasattr(
         schema, "isSimulated") else False
-    return service.assign_points_to_user(
+    return await service.assign_points_to_user(
         gameId,
         externalTaskId,
         schema,

@@ -40,7 +40,7 @@ async def valid_access_token(
             algorithms=["RS256"],
             issuer=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}",
             audience=configs.KEYCLOAK_AUDIENCE,
-            options={"verify_exp": True},
+            options={"verify_exp": True, "verify_aud": False},
         )
         return Response.ok(data)
 

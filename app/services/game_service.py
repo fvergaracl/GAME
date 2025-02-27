@@ -410,3 +410,32 @@ class GameService(BaseService):
         game_dict["tasks"] = tasks_list
 
         return game_dict
+
+    def get_game_by_external_id(
+        self, externalGameId: str, api_key: str = None, oauth_user_id=None
+    ):
+        """
+        Retrieves a game by its external game ID.
+
+        Args:
+            externalGameId (str): The external game ID.
+            api_key (str): The API key.
+            oauth_user_id (str): The OAuth user ID.
+
+        Returns:
+            dict: The game details.
+        """
+        game = self.game_repository.read_by_column(
+            "externalGameId", externalGameId, not_found_raise_exception=False
+        )
+        if not game:
+            raise NotFoundError(
+                detail=f"Game not found by externalGameId: {externalGameId}"
+            )
+
+        if api_key:
+            game.apiKey_used = api_key
+        if oauth_user_id:
+            game.oauth_user_id = oauth_user_id
+
+        return game

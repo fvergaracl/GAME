@@ -254,14 +254,15 @@ class SimulatedTaskPoints(BaseModel):
 
     Attributes:
         externalUserId (str): External user ID
-        taksId (str): Task ID
+        taksexternalTaskIdId (str): External task ID
         dimensions (List[dict]): Dimensions
         totalSimulatedPoints (int): Total simulated points
         expirationDate (str): Expiration date
     """
 
     externalUserId: str
-    taksId: str
+    externalTaskId: str
+    userGroup: Optional[str]
     dimensions: List[dict]
     totalSimulatedPoints: int
     expirationDate: str

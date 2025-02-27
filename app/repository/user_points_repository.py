@@ -677,5 +677,61 @@ class UserPointsRepository(BaseRepository):
 
             return query.average_minutes if query.average_minutes is not None else -1
 
+    def get_points_of_simulated_task(self, externalTaskId: str, simulationHash: str):
+        """
+        Retrieves all simulated points associated with a specific
+          externalTaskId and simulationHash.
 
-    
+        Args:
+            externalTaskId (str): The external task ID.
+            simulationHash (str): The hash value used to verify the simulated
+              data.
+
+        Returns:
+            list: A list of records containing the specified externalTaskId
+              and simulationHash.
+        """
+        with self.session_factory() as session:
+            query = (
+                session.query(UserPoints)
+                .join(Tasks, UserPoints.taskId == Tasks.id)
+                .filter(Tasks.externalTaskId == externalTaskId)
+                .filter(
+                    UserPoints.data["simulationHash"].astext == simulationHash
+                )
+                .all()
+            )
+
+            return query
+
+    def get_all_point_of_tasks_list(self, task_list, withData=False):
+        """
+        Retrieves all points associated with a list of tasks IDs.
+        If withData is True, it returns the full UserPoints object; otherwise, it returns only selected fields.
+
+        Args:
+            task_list (list): A list of task IDs.
+            withData (bool): A flag to determine if the data field should be returned.
+
+        Returns:
+            list: A list of records containing the specified task IDs.
+        """
+
+        with self.session_factory() as session:
+            query = session.query(UserPoints).filter(
+                UserPoints.taskId.in_(task_list))
+
+            if not withData:
+                query = query.with_entities(
+                    UserPoints.id,
+                    UserPoints.created_at,
+                    UserPoints.updated_at,
+                    UserPoints.points,
+                    UserPoints.caseName,
+                    UserPoints.description,
+                    UserPoints.userId,
+                    UserPoints.taskId,
+                    UserPoints.apiKey_used
+                )
+
+            return query.yield_per(1000)

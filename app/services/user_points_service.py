@@ -274,7 +274,7 @@ class UserPointsService(BaseService):
                         )
         return response
 
-    def assign_points_to_user(
+    async def assign_points_to_user(
         self,
         gameId,
         externalTaskId,
@@ -344,12 +344,25 @@ class UserPointsService(BaseService):
 
             data_to_add["externalGameId"] = externalGameId
             data_to_add["externalTaskId"] = externalTaskId
-            points, case_name = strategy_instance.calculate_points(
+            result_calculated_points = await strategy_instance.calculate_points(
                 externalGameId=externalGameId,
                 externalTaskId=externalTaskId,
                 externalUserId=externalUserId,
                 data=data_to_add,
             )
+
+            points, case_name, callbackData = (
+                result_calculated_points + (None,))[:3]
+            print(f"points: {points} | case_name: {case_name}")
+            print(f"points: {points} | case_name: {case_name}")
+            print(f"points: {points} | case_name: {case_name}")
+            print(f"points: {points} | case_name: {case_name}")
+            print(f"points: {points} | case_name: {case_name}")
+            print(f"points: {points} | case_name: {case_name}")
+            print(f"points: {points} | case_name: {case_name}")
+            if callbackData is not None:
+                data_to_add["callbackData"] = callbackData
+
         except Exception as e:
             print("----------------- ERROR -----------------")
             print(e)
@@ -384,7 +397,7 @@ class UserPointsService(BaseService):
             description="Points assigned by GAME",
             apiKey_used=api_key,
         )
-        user_points = self.user_points_repository.create(user_points_schema)
+        user_points = await self.user_points_repository.create(user_points_schema)
         wallet = self.wallet_repository.read_by_column(
             "userId", user.id, not_found_raise_exception=False
         )
@@ -401,7 +414,7 @@ class UserPointsService(BaseService):
                 conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
                 apiKey_used=api_key,
             )
-            wallet = self.wallet_repository.create(new_wallet)
+            wallet = await self.wallet_repository.create(new_wallet)
 
         wallet_transaction = BaseWalletTransaction(
             transactionType="AssignPoints",
@@ -499,7 +512,8 @@ class UserPointsService(BaseService):
                 userGroup = user_config.experimentGroup
             if not userGroup:
 
-                group_control = ["random_range", "average_score", "dynamic_calculation"]
+                group_control = ["random_range",
+                                 "average_score", "dynamic_calculation"]
                 all_users = self.users_game_config_repository.get_all_users_by_gameId(
                     game.id)
                 group_counts = Counter(
@@ -545,7 +559,8 @@ class UserPointsService(BaseService):
                 )
                 response.append(task_simulation)
 
-        return response
+        externalGameId = game.externalGameId
+        return response, externalGameId
 
     def get_users_points_by_externalGameId(self, externalGameId):
         game = self.game_repository.read_by_column(
@@ -834,4 +849,16 @@ class UserPointsService(BaseService):
         """
         return self.user_points_repository.get_personal_avg_by_external_game_id(
             external_game_id, externalUserId
+        )
+
+    def get_points_of_simulated_task(self, externalTaskId, simulationHash):
+        return self.user_points_repository.get_points_of_simulated_task(
+            externalTaskId, simulationHash
+        )
+
+    def get_all_point_of_tasks_list(
+        self, list_ids_tasks, withData=False
+    ):
+        return self.user_points_repository.get_all_point_of_tasks_list(
+            list_ids_tasks, withData
         )
