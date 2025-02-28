@@ -386,7 +386,6 @@ class UserPointsService(BaseService):
                     f"Points not calculated for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Beacuse the strategy don't have condition to calculate it or the strategy don't have a case name"  # noqa
                 )
             )
-        print(f"points: {points} | case_name: {case_name}")
 
         user_points_schema = UserPointsAssign(
             userId=str(user.id),
@@ -511,7 +510,6 @@ class UserPointsService(BaseService):
             if user_config:
                 userGroup = user_config.experimentGroup
             if not userGroup:
-
                 group_control = ["random_range",
                                  "average_score", "dynamic_calculation"]
                 all_users = self.users_game_config_repository.get_all_users_by_gameId(

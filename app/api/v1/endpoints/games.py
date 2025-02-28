@@ -1226,8 +1226,6 @@ async def get_points_simulated_of_user_in_game(
 
     tasks_simulated, externalGameId = await service.get_points_simulated_of_user_in_game(
         gameId, externalUserId, oauth_user_id=oauth_user_id, assign_control_group=True)
-    print(' > AFTER response')
-    print(tasks_simulated)
 
     simulationHash = calculate_hash_simulated_strategy(
         tasks_simulated,

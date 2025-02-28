@@ -58,7 +58,8 @@ def custom_openapi():
     for path in list(openapi_schema["paths"].keys()):
 
         if path.startswith("/api/v1"):
-            openapi_schema["paths"][path[7:]] = openapi_schema["paths"].pop(path)
+            openapi_schema["paths"][path[7:]
+                                    ] = openapi_schema["paths"].pop(path)
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
@@ -110,7 +111,8 @@ class AppCreator:
         if configs.BACKEND_CORS_ORIGINS:
             self.app.add_middleware(
                 CORSMiddleware,
-                allow_origins=[str(origin) for origin in configs.BACKEND_CORS_ORIGINS],
+                allow_origins=[str(origin)
+                               for origin in configs.BACKEND_CORS_ORIGINS],
                 allow_credentials=True,
                 allow_methods=["*"],
                 allow_headers=["*"],
