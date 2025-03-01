@@ -98,95 +98,117 @@ def get_average_values_from_tasks(task, all_records):
     return average_values
 
 
-def get_dynamic_values_from_tasks(task, list_ids_tasks, all_records, user, variable_basic_points):
+def get_dynamic_values_from_tasks(
+    task,
+    list_ids_tasks,
+    all_records,
+    user,
+    variable_basic_points,
+    variable_lbe_multiplier
+):
     """
     Calculates dynamic values based on user participation in tasks.
 
     Args:
         task (object): The task object.
-        list_ids_tasks (list): A list of task IDs.
-        all_records (list): A list of all task records.
-        user (object): The user object.
+        list_ids_tasks (list): A list of task IDs with externalTaskId references.
+        all_records (list): A list of all task participation records.
+        user (object): The user object participating in tasks.
         variable_basic_points (int): The base points per participation.
+        variable_lbe_multiplier (float): The location-based equity multiplier.
 
     Returns:
-        dict: A dictionary containing calculated values for each dimension.
+        dict: A dictionary containing calculated values for each dimension:
+            - "DIM_BP": Base points adjusted for task uniqueness.
+            - "DIM_LBE": Points adjusted for location-based equity.
+            - "DIM_TD": Points based on temporal distribution of participation.
+            - "DIM_PP": Points adjusted for participation periodicity.
+            - "DIM_S": Streak-based points for continuous participation.
     """
+    all_records = all_records.all()
+    poi_external_id = task.externalTaskId.split("_")[1]
+    user_id = user.id
 
-    """
-    task = Tasks(id=81ba53f3-7130-40ef-89bc-23dbb65b59d7, created_at=2025-02-25 13:57:00.197095+00:00, updated_at=2025-02-25 13:57:00.197095+00:00, externalTaskId=POI_a5bca879-3b11-4fc6-880b-b3d8b8aba839_Task_1111b063-5e3d-48c5-9532-259aaba7d03a, gameId=1f2f0e61-19f5-4e05-a8f7-f3f51fa46989, strategyId=greencrowdStrategy, status=open)
-    _________________________________________________________
-    list_ids_tasks = [{'id': UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), 'externalTaskId': 'POI_6623df1a-2486-40af-90f7-96b6bccde472_Task_20fcb063-5e3d-48c5-9532-259aaba7d03a'}, {'id': UUID('a7938e5c-80a7-4603-b325-da1a773b44c1'), 'externalTaskId': 'POI_d8fd6554-a140-42ff-8d73-fa314c0358bd_Task_30fcb063-5e3d-48c5-9532-259aaba7d03a'}, {'id': UUID('e321fbbb-6c78-4b10-a1e1-fe9e6d2b9e66'), 'externalTaskId': 'POI_3e134cfc-75a2-4e21-85e9-89983d98a819_Task_40fcb063-5e3d-48c5-9532-259aaba7d03a'}, {'id': UUID('3497366d-1fba-46d9-bc7b-9936a997daf4'), 'externalTaskId': 'POI_a908261b-2a21-41ef-a1f1-eb4e3eccde15_Task_50fcb063-5e3d-48c5-9532-259aaba7d03a'}, {'id': UUID('5e8c1e3a-0b8b-4ae1-a6a9-a479000a6b4b'), 'externalTaskId': 'POI_867a3095-e40c-4fdd-93f1-99f94596e9ab_Task_60fcb063-5e3d-48c5-9532-259aaba7d03a'}, {'id': UUID('9e66ea4f-da99-45c3-85da-d27501aa5c9c'), 'externalTaskId': 'POI_db490f8d-961e-4781-a201-44ad1e844bfa_Task_70fcb063-5e3d-48c5-9532-259aaba7d03a'}, {'id': UUID('d2ff40d6-02c0-448f-a970-49332bcc7217'), 'externalTaskId': 'POI_239b1cd2-4d6b-4e3e-980c-3f1c98b2838d_Task_80fcb063-5e3d-48c5-9532-259aaba7d03a'}, {'id': UUID('91ba53f3-7130-40ef-89bc-23dbb65b59d7'), 'externalTaskId': 'POI_a5bca879-3b11-4fc6-880b-b3d8b8aba839_Task_90fcb063-5e3d-48c5-9532-259aaba7d03a'}, {'id': UUID('81ba53f3-7130-40ef-89bc-23dbb65b59d7'), 'externalTaskId': 'POI_a5bca879-3b11-4fc6-880b-b3d8b8aba839_Task_1111b063-5e3d-48c5-9532-259aaba7d03a'}]
-    _________________________________________________________
-  all_records = [(UUID('21cd0e6d-fc4f-4e7a-8d1b-4f4c0eda643d'), datetime.datetime(2025, 2, 27, 11, 2, 57, 459658, tzinfo=datetime.timezone.utc), datetime.datetime(2025, 2, 27, 11, 2, 57, 459658, tzinfo=datetime.timezone.utc), 1, 'Valid Simulation', 'Points assigned by GAME', UUID('7f406292-88b8-404d-b6fa-46da221f008f'), UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), None), (UUID('ad526ada-04c8-4c38-a2d6-d858a756051a'), datetime.datetime(2025, 2, 27, 11, 3, 4, 845762, tzinfo=datetime.timezone.utc), datetime.datetime(2025, 2, 27, 11, 3, 4, 845762, tzinfo=datetime.timezone.utc), 1, 'Valid Simulation', 'Points assigned by GAME', UUID('7f406292-88b8-404d-b6fa-46da221f008f'), UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), None), (UUID('209a4813-066b-4d75-abce-8f925de3c946'), datetime.datetime(2025, 2, 27, 11, 23, 3, 377387, tzinfo=datetime.timezone.utc), datetime.datetime(2025, 2, 27, 11, 23, 3, 377387, tzinfo=datetime.timezone.utc), 1, 'Valid Simulation', 'Points assigned by GAME', UUID('7f406292-88b8-404d-b6fa-46da221f008f'), UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), None), (UUID('da71acc6-19ff-4187-ac82-febc68117611'), datetime.datetime(2025, 2, 27, 13, 12, 49, 264394, tzinfo=datetime.timezone.utc), datetime.datetime(2025, 2, 27, 13, 12, 49, 264394, tzinfo=datetime.timezone.utc), 1, 'Valid Simulation', 'Points assigned by GAME', UUID('7f406292-88b8-404d-b6fa-46da221f008f'), UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), None), (UUID('ddb8e98c-e84a-41ab-9762-5663d2000feb'), datetime.datetime(2025, 2, 27, 13, 19, 36, 777447, tzinfo=datetime.timezone.utc), datetime.datetime(2025, 2, 27, 13, 19, 36, 777447, tzinfo=datetime.timezone.utc), 1, 'Valid Simulation - Origin: Used simulation', 'Points assigned by GAME', UUID('7f406292-88b8-404d-b6fa-46da221f008f'), UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), None), (UUID('98410976-b318-4644-89b9-40e9f4203297'), datetime.datetime(2025, 2, 27, 13, 34, 58, 361496, tzinfo=datetime.timezone.utc), datetime.datetime(2025, 2, 27, 13, 34, 58, 361496, tzinfo=datetime.timezone.utc), 1, 'Valid Simulation - Origin: Used simulation', 'Points assigned by GAME', UUID('7f406292-88b8-404d-b6fa-46da221f008f'), UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), None), (UUID('07e154bb-66ed-48b0-99c5-10e977a7786b'), datetime.datetime(2025, 2, 27, 13, 44, 40, 350427, tzinfo=datetime.timezone.utc), datetime.datetime(2025, 2, 27, 13, 44, 40, 350427, tzinfo=datetime.timezone.utc), 1, 'Valid Simulation', 'Points assigned by GAME', UUID('7f406292-88b8-404d-b6fa-46da221f008f'), UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), None), (UUID('6489692b-af57-484b-b544-95071dfb89b0'), datetime.datetime(2025, 2, 27, 13, 44, 48, 893151, tzinfo=datetime.timezone.utc), datetime.datetime(2025, 2, 27, 13, 44, 48, 893151, tzinfo=datetime.timezone.utc), 1, 'Valid Simulation - Origin: Used simulation', 'Points assigned by GAME', UUID('7f406292-88b8-404d-b6fa-46da221f008f'), UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), None), (UUID('8511a173-35e3-440c-b3de-3676df563eaf'), datetime.datetime(2025, 2, 27, 13, 48, 45, 338685, tzinfo=datetime.timezone.utc), datetime.datetime(2025, 2, 27, 13, 48, 45, 338685, tzinfo=datetime.timezone.utc), 26, 'Valid Simulation - Origin: Used simulation', 'Points assigned by GAME', UUID('7f406292-88b8-404d-b6fa-46da221f008f'), UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), None), (UUID('59bdef62-72df-4b83-9ef6-a3f24e3ccb6a'), datetime.datetime(2025, 2, 27, 13, 50, 48, 976234, tzinfo=datetime.timezone.utc), datetime.datetime(2025, 2, 27, 13, 50, 48, 976234, tzinfo=datetime.timezone.utc), 1, 'Valid Simulation - Origin: Used simulation', 'Points assigned by GAME', UUID('7f406292-88b8-404d-b6fa-46da221f008f'), UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), None)]
-    _________________________________________________________
+    dim_bp_value = dim_lbe_value = dim_td_value = dim_pp_value = dim_s_value = 0
 
+    #
+    poi_task_map = defaultdict(set)
+    for t in list_ids_tasks:
+        poi_id = t["externalTaskId"].split("_")[1]
+        poi_task_map[poi_id].add(t["id"])
 
-    """
-    task_id = str(task.id)
-    task_externalTaskId_internal = str(task.externalTaskId)
+    count_total_task_in_poi = len(poi_task_map.get(poi_external_id, []))
+    count_unique_task_in_poi = len(
+        {r.taskId for r in all_records if r.taskId in poi_task_map[
+            poi_external_id]})
 
-    parts = task_externalTaskId_internal.split("_")
-    poi_external_id = parts[1]
-    task_external_id = parts[3]
-    user_externalUserId = user.externalUserId
+    if count_total_task_in_poi > 0:
+        dim_bp_value = variable_basic_points - \
+            int(round(variable_basic_points *
+                (count_unique_task_in_poi / count_total_task_in_poi)))
 
-    # get count of tasks by poi_external_id using list_ids_tasks
-    total_task_in_poi = []
-    for task_in_list in list_ids_tasks:
-        if task_external_id in task_in_list.get("externalTaskId"):
-            total_task_in_poi.append(task_in_list)
-    count_total_task_in_poi = len(total_task_in_poi)
-    # calculate DIM_BP
-    dim_bp_value = 0
-    if (count_total_task_in_poi > 0):
-        # 7 f572f877-8eba-486a-b93c-948c9d85bcfb
-        count_unique_task_in_poi = 0
-        # for total_task_in_poi
-        for task_in_poi in total_task_in_poi:
-            # task_in_poi = {'id': UUID('f572f877-8eba-486a-b93c-948c9d85bcfb'), 'externalTaskId': 'POI_6623df1a-2486-40af-90f7-96b6bccde472_Task_20fcb063-5e3d-48c5-9532-259aaba7d03a'}, {'id': UUID('a7938e5c-80a7-4603-b325-da1a773b44c1'), 'externalTaskId': 'POI_d8fd6554-a140-42ff-8d73-fa314c0358bd_Task_30fcb063-5e3d-48c5-9532-259aaba7d03a'}
-            # check if task_in_poi is in all_records
-            for record in all_records:
-                if str(record.taskId) == str(task_in_poi.get("id")):
-                    count_unique_task_in_poi += 1
+    #  DIM_LBE
+    count_POI_records = sum(1 for r in all_records if r.taskId == task.id)
+    avg_POI = len(all_records) / max(len(poi_task_map), 1)
+    dim_lbe_value = round(
+        variable_basic_points * variable_lbe_multiplier
+    ) if avg_POI > 0 and count_POI_records < avg_POI else 0
+
+    #  DIM_TD
+    time_slots = {"Late Night": (0, 6), "Morning": (
+        6, 12), "Afternoon": (12, 18), "Evening": (18, 24)}
+    slot_counts = defaultdict(int)
+
+    for r in all_records:
+        if r.taskId == task.id:
+            record_hour = r.created_at.hour
+            for slot, (start, end) in time_slots.items():
+                if start <= record_hour < end:
+                    slot_counts[slot] += 1
                     break
-            print('888888888888888888888888888888888888888888888888888888')
 
-    print('0000000000000000000000.... ')
-    print('0000000000000000000000.... ')
-    print('0000000000000000000000.... ')
-    print('0000000000000000000000.... ')
-    print('0000000000000000000000.... ')
-    print('0000000000000000000000.... ')
-    print('0000000000000000000000.... ')
-    print('0000000000000000000000.... ')
-    print(count_unique_task_in_poi)
-    print(count_total_task_in_poi)
-    print(' ')
-    print(' ')
-    print(' ')
-    print(' ')
-    print(' ')
-    dim_bp_value = int(
-        round(variable_basic_points *
-              (count_unique_task_in_poi / count_total_task_in_poi))
-    )
-    print(dim_bp_value)
+    current_slot = next(slot for slot, (start, end) in time_slots.items(
+    ) if start <= datetime.datetime.utcnow().hour < end)
+    total_other_slots = sum(slot_counts.values()) - slot_counts[current_slot]
+    dim_td_value = round((1 - (slot_counts[current_slot] / total_other_slots))
+                         * variable_basic_points
+                         ) if total_other_slots > 0 else variable_basic_points
 
-    """
-   user_task_participation=  defaultdict(<class 'set'>, {'6623df1a-2486-40af-90f7-96b6bccde472': {UUID('f572f877-8eba-486a-b93c-948c9d85bcfb')}, 'a5bca879-3b11-4fc6-880b-b3d8b8aba839': {UUID('91ba53f3-7130-40ef-89bc-23dbb65b59d7')}})
-poi_tasks_map = defaultdict(<class 'list'>, {'6623df1a-2486-40af-90f7-96b6bccde472': [{'taskId': 'f572f877-8eba-486a-b93c-948c9d85bcfb', 'POITaskId': 'POI_6623df1a-2486-40af-90f7-96b6bccde472_Task_20fcb063-5e3d-48c5-9532-259aaba7d03a', 'externalTaskId': '20fcb063-5e3d-48c5-9532-259aaba7d03a'}], 'd8fd6554-a140-42ff-8d73-fa314c0358bd': [{'taskId': 'a7938e5c-80a7-4603-b325-da1a773b44c1', 'POITaskId': 'POI_d8fd6554-a140-42ff-8d73-fa314c0358bd_Task_30fcb063-5e3d-48c5-9532-259aaba7d03a', 'externalTaskId': '30fcb063-5e3d-48c5-9532-259aaba7d03a'}], '3e134cfc-75a2-4e21-85e9-89983d98a819': [{'taskId': 'e321fbbb-6c78-4b10-a1e1-fe9e6d2b9e66', 'POITaskId': 'POI_3e134cfc-75a2-4e21-85e9-89983d98a819_Task_40fcb063-5e3d-48c5-9532-259aaba7d03a', 'externalTaskId': '40fcb063-5e3d-48c5-9532-259aaba7d03a'}], 'a908261b-2a21-41ef-a1f1-eb4e3eccde15': [{'taskId': '3497366d-1fba-46d9-bc7b-9936a997daf4', 'POITaskId': 'POI_a908261b-2a21-41ef-a1f1-eb4e3eccde15_Task_50fcb063-5e3d-48c5-9532-259aaba7d03a', 'externalTaskId': '50fcb063-5e3d-48c5-9532-259aaba7d03a'}], '867a3095-e40c-4fdd-93f1-99f94596e9ab': [{'taskId': '5e8c1e3a-0b8b-4ae1-a6a9-a479000a6b4b', 'POITaskId': 'POI_867a3095-e40c-4fdd-93f1-99f94596e9ab_Task_60fcb063-5e3d-48c5-9532-259aaba7d03a', 'externalTaskId': '60fcb063-5e3d-48c5-9532-259aaba7d03a'}], 'db490f8d-961e-4781-a201-44ad1e844bfa': [{'taskId': '9e66ea4f-da99-45c3-85da-d27501aa5c9c', 'POITaskId': 'POI_db490f8d-961e-4781-a201-44ad1e844bfa_Task_70fcb063-5e3d-48c5-9532-259aaba7d03a', 'externalTaskId': '70fcb063-5e3d-48c5-9532-259aaba7d03a'}], '239b1cd2-4d6b-4e3e-980c-3f1c98b2838d': [{'taskId': 'd2ff40d6-02c0-448f-a970-49332bcc7217', 'POITaskId': 'POI_239b1cd2-4d6b-4e3e-980c-3f1c98b2838d_Task_80fcb063-5e3d-48c5-9532-259aaba7d03a', 'externalTaskId': '80fcb063-5e3d-48c5-9532-259aaba7d03a'}], 'a5bca879-3b11-4fc6-880b-b3d8b8aba839': [{'taskId': '91ba53f3-7130-40ef-89bc-23dbb65b59d7', 'POITaskId': 'POI_a5bca879-3b11-4fc6-880b-b3d8b8aba839_Task_90fcb063-5e3d-48c5-9532-259aaba7d03a', 'externalTaskId': '90fcb063-5e3d-48c5-9532-259aaba7d03a'}, {'taskId': '81ba53f3-7130-40ef-89bc-23dbb65b59d7', 'POITaskId': 'POI_a5bca879-3b11-4fc6-880b-b3d8b8aba839_Task_80fcb063-5e3d-48c5-9532-259aaba7d03a', 'externalTaskId': '80fcb063-5e3d-48c5-9532-259aaba7d03a'}]})
-    """
+    #  DIM_PP
+    user_records = sorted(
+        [r.created_at for r in all_records if r.userId == user_id])
+    time_diffs = [(user_records[i] - user_records[i-1]
+                   ).total_seconds() / 60 for i in range(1, len(user_records))]
 
-    response = {
+    avg_time_window = np.mean(time_diffs) if time_diffs else 0
+    last_time_window = (datetime.datetime.utcnow().replace(
+        tzinfo=datetime.timezone.utc) - user_records[-1]).total_seconds(
+
+    ) / 60 if user_records else 0
+
+    alpha = min(0.5, max(0.1, 1 - (last_time_window / avg_time_window))
+                ) if avg_time_window > 0 else 0.3
+    smoothed_factor = alpha * (avg_time_window - last_time_window) + \
+        (1 - alpha) * avg_time_window if avg_time_window > 0 else 0
+    dim_pp_value = int(round((max(0, smoothed_factor / avg_time_window)
+                       * variable_basic_points) if avg_time_window > 0 else 0))
+
+    #  DIM_S
+    unique_days = sorted({r.created_at.date()
+                         for r in all_records if r.userId == user_id})
+    consecutive_days = sum(1 for i in range(len(unique_days) - 1, -1, -1)
+                           if unique_days[i] >= (datetime.datetime.utcnow(
+
+                           ).date() - datetime.timedelta(days=i)))
+    dim_s_value = round(variable_basic_points * (2 ** (consecutive_days / 5)))
+
+    return {
         "DIM_BP": dim_bp_value,
-        "DIM_LBE": 0,
-        "DIM_TD": 0,
-        "DIM_PP": 0,
-        "DIM_S": 0,
+        "DIM_LBE": dim_lbe_value,
+        "DIM_TD": dim_td_value,
+        "DIM_PP": dim_pp_value,
+        "DIM_S": dim_s_value
     }
-
-    return response
 
 
 def assign_random_scores(min_value: int, max_value: int):
@@ -217,6 +239,7 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         self.service_log = Container.logs_service()
 
         self.variable_basic_points = 10
+        self.variable_lbe_multiplier = 0.5
         self.variable_simulation_valid_until = 15
         self.time_slots = [(0, 6), (6, 12), (12, 18), (18, 24)]
 
@@ -339,11 +362,11 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             ]
         """
 
-        task = data_to_simulate.get("task")
+        task_to_simulate = data_to_simulate.get("task")
         allTasks = data_to_simulate.get("allTasks")
         external_user_id = data_to_simulate.get("externalUserId")
 
-        if not task or not allTasks or not external_user_id:
+        if not task_to_simulate or not allTasks or not external_user_id:
             return InternalServerError("Missing data to simulate the strategy")
 
         total_simulated_points = 0
@@ -398,11 +421,13 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             user = self.user_service.get_user_by_externalUserId(
                 external_user_id)
             dynamic_calculated = get_dynamic_values_from_tasks(
-                task,
+                task_to_simulate,
                 list_ids_tasks,
                 all_records,
                 user,
-                self.variable_basic_points)
+                self.variable_basic_points,
+                self.variable_lbe_multiplier
+            )
             DIM_BP = dynamic_calculated.get("DIM_BP")
             DIM_LBE = dynamic_calculated.get("DIM_LBE")
             DIM_TD = dynamic_calculated.get("DIM_TD")
@@ -416,10 +441,10 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             minutes=self.variable_simulation_valid_until)
         expiration_date = expiration_date.replace(tzinfo=datetime.timezone.utc)
 
-        externalTaskId = task.externalTaskId
+        externalTaskId_simulate = task_to_simulate.externalTaskId
         return SimulatedTaskPoints(
             externalUserId=external_user_id,
-            externalTaskId=str(task.externalTaskId),
+            externalTaskId=str(externalTaskId_simulate),
             userGroup=userGroup,
             dimensions=[
                 {"DIM_BP": DIM_BP},
