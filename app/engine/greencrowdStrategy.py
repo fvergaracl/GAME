@@ -434,7 +434,6 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             DIM_PP = dynamic_calculated.get("DIM_PP")
             DIM_S = dynamic_calculated.get("DIM_S")
         # END DYNAMIC_CALCULATION ########################################################
-        ###########################################################################################################################
         total_simulated_points = DIM_BP + DIM_LBE + DIM_TD + DIM_PP + DIM_S
 
         expiration_date = datetime.datetime.now() + datetime.timedelta(
