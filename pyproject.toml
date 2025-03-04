@@ -87,6 +87,7 @@ freezegun = "^1.5.1"
 graphviz = "^0.20.3"
 pyjwt = "^2.10.1"
 numpy = "^2.2.3"
+sentry-sdk = {extras = ["fastapi"], version = "^2.22.0"}
 
 
 [tool.poetry.group.dev.dependencies]

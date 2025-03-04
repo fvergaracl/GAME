@@ -42,7 +42,8 @@ async def create_api_key(
     schema: ApiKeyPostBody = Body(...),
     service: ApiKeyService = Depends(Provide[Container.apikey_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(
+        Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -129,7 +130,8 @@ async def create_api_key(
         )
         raise ForbiddenError("You do not have permission to create an API key")
     apiKey = await service.generate_api_key_service()
-    apikeyBody = ApiKeyCreate(**schema.dict(), createdBy=oauth_user_id, apiKey=apiKey)
+    apikeyBody = ApiKeyCreate(
+        **schema.dict(), createdBy=oauth_user_id, apiKey=apiKey)
     try:
         response = await service.create_api_key(apikeyBody)
         await add_log(
@@ -145,7 +147,8 @@ async def create_api_key(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
-        return ApiKeyCreated(**response.dict(), message="API Key created successfully")
+        return ApiKeyCreated(**response.dict(),
+                             message="API Key created successfully")
     except Exception as e:
         await add_log(
             "api_key",
@@ -184,7 +187,8 @@ description_get_all_api_keys = """
 async def get_all_api_keys(
     service: ApiKeyService = Depends(Provide[Container.apikey_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(
+        Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):

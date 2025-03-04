@@ -51,6 +51,10 @@ class Configs(BaseSettings):
         "GAMIFICATIONENGINE_VERSION_APP", "No_version"
     )
 
+    SENTRY_DSN: str = os.getenv("SENTRY_DSN", None)
+    SENTRY_ENVIRONMENT: str = os.getenv("SENTRY_ENVIRONMENT", "dev")
+    SENTRY_RELEASE: str = os.getenv("SENTRY_RELEASE", "0.0.0")
+
     EXTRA_SERVER_URL: str = os.getenv("EXTRA_SERVER_URL", None)
     EXTRA_SERVER_DESCRIPTION: str = os.getenv("EXTRA_SERVER_DESCRIPTION", None)
 

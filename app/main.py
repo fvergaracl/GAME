@@ -10,6 +10,7 @@ from app.api.v1.routes import routers as v1_routers
 from app.core.config import configs
 from app.core.container import Container
 from app.util.class_object import singleton
+import sentry_sdk
 
 
 def get_project_data():
@@ -89,6 +90,19 @@ class AppCreator:
     """
 
     def __init__(self):
+
+        if configs.SENTRY_DSN:
+            sentry_sdk.init(
+                dsn=configs.SENTRY_DSN,
+                environment=configs.SENTRY_ENVIRONMENT,
+                release=configs.SENTRY_RELEASE,
+                send_default_pii=True,
+                traces_sample_rate=1.0,
+                _experiments={
+                    "continuous_profiling_auto_start": True,
+                },
+            )
+
         self.app = FastAPI(
             root_path=configs.ROOT_PATH,
             title=project_data["name"],
@@ -103,6 +117,7 @@ class AppCreator:
             docs_url="/docs",
             servers=[{"url": configs.API_V1_STR, "description": "Local"}],
         )
+
         self.app.openapi = custom_openapi
 
         self.container = Container()
