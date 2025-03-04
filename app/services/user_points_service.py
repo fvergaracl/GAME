@@ -336,13 +336,6 @@ class UserPointsService(BaseService):
             )
 
             points, case_name, callbackData = (result_calculated_points + (None,))[:3]
-            print(f"points: {points} | case_name: {case_name}")
-            print(f"points: {points} | case_name: {case_name}")
-            print(f"points: {points} | case_name: {case_name}")
-            print(f"points: {points} | case_name: {case_name}")
-            print(f"points: {points} | case_name: {case_name}")
-            print(f"points: {points} | case_name: {case_name}")
-            print(f"points: {points} | case_name: {case_name}")
             if callbackData is not None:
                 data_to_add["callbackData"] = callbackData
 
