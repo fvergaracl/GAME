@@ -7,11 +7,11 @@ from sqlalchemy.orm import Session, joinedload
 from app.core.config import configs
 from app.core.exceptions import DuplicatedError, NotFoundError
 from app.model.game_params import GamesParams
-from app.model.task_params import TasksParams
 from app.model.games import Games
+from app.model.task_params import TasksParams
 from app.model.tasks import Tasks
-from app.model.user_points import UserPoints
 from app.model.user_actions import UserActions
+from app.model.user_points import UserPoints
 from app.repository.base_repository import BaseRepository
 from app.schema.games_schema import BaseGameResult, FindGameResult
 from app.util.query_builder import dict_to_sqlalchemy_filter_options

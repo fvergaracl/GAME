@@ -1,4 +1,5 @@
 import unittest
+
 from app.util.class_object import singleton
 
 
@@ -39,6 +40,7 @@ class TestSingleton(unittest.TestCase):
         Test that the singleton pattern does not persist across different
           tests.
         """
+
         @singleton
         class AnotherSingletonClass:
             def __init__(self, value):
@@ -57,6 +59,7 @@ class TestSingleton(unittest.TestCase):
         """
         Test that singleton works independently for multiple classes.
         """
+
         @singleton
         class SingletonA:
             def __init__(self, value):

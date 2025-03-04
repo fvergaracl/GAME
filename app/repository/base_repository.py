@@ -1,6 +1,7 @@
 from contextlib import AbstractContextManager
 from typing import Callable
 
+from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
@@ -240,3 +241,41 @@ class BaseRepository:
                 raise NotFoundError(detail=f"Not found id : {id}")
             session.delete(query)
             session.commit()
+
+    def read_by_columns(
+        self, filters: dict, eager=False, only_one=True, not_found_raise_exception=True
+    ):
+        """
+        Reads records based on multiple column filters.
+
+        Args:
+            filters (dict): Dictionary where keys are column names and values are filter values.
+            eager (bool): Whether to use eager loading.
+            only_one (bool): Whether to return only one record.
+            not_found_raise_exception (bool): Whether to raise an exception if the record is not found.
+
+        Returns:
+            object or list: The record(s) if found, otherwise None or raises an exception.
+        """
+        with self.session_factory() as session:
+            query = session.query(self.model)
+
+            # Aplicar cargas ansiosas si están definidas en el modelo
+            if eager:
+                for eager_field in getattr(self.model, "eagers", []):
+                    query = query.options(joinedload(getattr(self.model, eager_field)))
+
+            # Construir el filtro dinámicamente
+            filter_conditions = [
+                getattr(self.model, col) == val for col, val in filters.items()
+            ]
+            query = query.filter(and_(*filter_conditions))
+
+            # Retornar un solo resultado o una lista de resultados
+            if only_one:
+                result = query.first()
+                if not result and not_found_raise_exception:
+                    raise NotFoundError(detail=f"Not found for filters: {filters}")
+                return result
+            else:
+                return query.all()

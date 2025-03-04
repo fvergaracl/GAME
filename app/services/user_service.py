@@ -8,12 +8,9 @@ from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.schema.task_schema import TaskPointsResponseByUser
 from app.schema.user_points_schema import BaseUserPointsBaseModel, UserPointsAssigned
-from app.schema.user_schema import (
-    PostPointsConversionRequest,
-    ResponsePointsConversion,
-    UserPointsTasks,
-    UserWallet,
-)
+from app.schema.user_schema import (PostPointsConversionRequest,
+                                    ResponsePointsConversion, UserPointsTasks,
+                                    UserWallet)
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
@@ -367,6 +364,21 @@ class UserService(BaseService):
         )
 
         return response
+
+    def get_user_by_externalUserId(self, externalUserId):
+        """
+        Retrieves a user by their external user ID.
+
+        Args:
+            externalUserId (str): The external user ID.
+
+        Returns:
+            object: The user details.
+        """
+        user = self.user_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=False
+        )
+        return user
 
     def get_wallet_by_externalUserId(self, externalUserId):
         """

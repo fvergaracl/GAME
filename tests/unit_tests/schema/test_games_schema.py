@@ -2,12 +2,11 @@ from datetime import datetime
 from uuid import uuid4
 
 from app.schema.base_schema import SearchOptions
-from app.schema.games_params_schema import (BaseFindGameParams,
-                                            CreateGameParams, UpdateGameParams)
+from app.schema.games_params_schema import (BaseFindGameParams, CreateGameParams,
+                                            UpdateGameParams)
 from app.schema.games_schema import (BaseGame, BaseGameResult, FindGameById,
-                                     FindGameResult, GameCreated,
-                                     ListTasksWithUsers, PatchGame,
-                                     PostCreateGame, PostFindGame,
+                                     FindGameResult, GameCreated, ListTasksWithUsers,
+                                     PatchGame, PostCreateGame, PostFindGame,
                                      ResponsePatchGame)
 from app.schema.task_schema import TasksWithUsers
 

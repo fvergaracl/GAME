@@ -1,5 +1,6 @@
 import hashlib
 import inspect
+
 from graphviz import Digraph
 
 
@@ -223,6 +224,15 @@ class BaseStrategy:
             int: The basic points variable.
         """
         return self.get_variable_basic_points()
+
+    def simulate_strategy(self, data=None):
+        """
+        Simulates the strategy for testing purposes.
+
+        Returns:
+            dict: A dictionary containing the simulated points.
+        """
+        return None
 
     def generate_logic_graph(self, format="png"):
         """

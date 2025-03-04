@@ -4,21 +4,16 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Body, Depends
 
 from app.core.container import Container
+from app.core.exceptions import ForbiddenError
 from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
-from app.schema.apikey_schema import (
-    ApiKeyCreate,
-    ApiKeyCreated,
-    ApiKeyCreatedUnitList,
-    ApiKeyPostBody,
-)
-
+from app.schema.apikey_schema import (ApiKeyCreate, ApiKeyCreated,
+                                      ApiKeyCreatedUnitList, ApiKeyPostBody)
+from app.schema.oauth_users_schema import CreateOAuthUser
 from app.services.apikey_service import ApiKeyService
 from app.services.logs_service import LogsService
 from app.services.oauth_users_service import OAuthUsersService
-from app.schema.oauth_users_schema import CreateOAuthUser
-from app.util.check_role import check_role
-from app.core.exceptions import ForbiddenError
 from app.util.add_log import add_log
+from app.util.check_role import check_role
 
 router = APIRouter(
     prefix="/apikey",

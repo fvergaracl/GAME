@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Dict, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -10,14 +10,15 @@ class BaseUserGameConfig(BaseModel):
     Base model for user-specific game configurations.
 
     Attributes:
-        userId (UUID): The ID of the user.
-        gameId (UUID): The ID of the game.
+        userId (str): The ID of the user (UUID)
+        gameId (str): The ID of the game (UUID)
         experimentGroup (str): A/B testing group ('A' or 'B').
-        configData (Optional[dict]): Custom configurations for the user in this game.
+        configData (Optional[dict]): Custom configurations for the user in
+          this game.
     """
 
-    userId: UUID
-    gameId: UUID
+    userId: str
+    gameId: str
     experimentGroup: str
     configData: Optional[Dict] = None
 
@@ -26,6 +27,7 @@ class CreateUserGameConfig(BaseUserGameConfig):
     """
     Schema for creating a new user game configuration.
     """
+
     pass
 
 

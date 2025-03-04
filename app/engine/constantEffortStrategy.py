@@ -28,7 +28,7 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
         self.variable_max_points = 100
 
     def calculate_points(
-            self, externalGameId, externalTaskId, externalUserId, data=None
+        self, externalGameId, externalTaskId, externalUserId, data=None
     ):
         task_measurements_count = (
             self.user_points_service.get_user_task_measurements_count_the_last_seconds(
@@ -46,6 +46,5 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
         return 1, "BasicReward"
 
     def _calculate_points_from_consistency(self, consistent_effort_count):
-        normalized_points = (consistent_effort_count /
-                             self.variable_max_points) * 100
+        normalized_points = (consistent_effort_count / self.variable_max_points) * 100
         return min(max(int(normalized_points), 1), self.variable_max_points)

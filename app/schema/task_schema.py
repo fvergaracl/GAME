@@ -3,12 +3,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from app.schema.base_schema import (
-    FindBase,
-    ModelBaseInfo,
-    SearchOptions,
-    SuccesfullyCreated,
-)
+from app.schema.base_schema import (FindBase, ModelBaseInfo, SearchOptions,
+                                    SuccesfullyCreated)
 from app.schema.games_params_schema import CreateGameParams
 from app.schema.strategy_schema import Strategy
 from app.schema.tasks_params_schema import CreateTaskParams
@@ -39,6 +35,7 @@ class AsignPointsToExternalUserId(BaseModel):
 
     externalUserId: str
     data: Optional[dict]
+    isSimulated: Optional[bool] = False
 
 
 class CreateTaskPost(BaseModel):
@@ -246,25 +243,39 @@ class AssignedPointsToExternalUserId(BaseModel):
     created_at: str
 
 
+class SimulatedTaskPoints(BaseModel):
+    """
+    Model for simulated task points
+
+
+    Attributes:
+        externalUserId (str): External user ID
+        taksexternalTaskIdId (str): External task ID
+        dimensions (List[dict]): Dimensions
+        totalSimulatedPoints (int): Total simulated points
+        expirationDate (str): Expiration date
+    """
+
+    externalUserId: str
+    externalTaskId: str
+    userGroup: Optional[str]
+    dimensions: List[dict]
+    totalSimulatedPoints: int
+    expirationDate: str
+
+
 class SimulatedPointsAssignedToUser(BaseModel):
     """
     Model for simulated points
 
     Attributes:
-        externalUserId (str): External user ID
-        simulatedPoints (dict): Simulated points
-        externalTaskId (str): External task ID
-        gameId (UUID): Game ID
-        expirationDate (str): Expiration date
         simulationHash (str): Simulation hash
+        simulationExpirationDate (str): Simulation expiration date and time
+        tasks (List[SimulatedTaskPoints]): List of simulated task points
     """
 
-    externalUserId: str
-    simulatedPoints: dict
-    externalTaskId: str
-    gameId: UUID
-    expirationDate: str
     simulationHash: str
+    tasks: List[SimulatedTaskPoints]
 
 
 class TaskPointsResponseByUser(BaseTask):

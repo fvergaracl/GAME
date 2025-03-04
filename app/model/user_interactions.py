@@ -1,8 +1,7 @@
 from sqlalchemy.dialects.postgresql import UUID
+from sqlmodel import Column, Field, ForeignKey, Integer, String
+
 from app.model.base_model import BaseModel
-from sqlmodel import (
-    Column, Field, String, Integer, ForeignKey
-)
 
 
 class UserInteractions(BaseModel, table=True):
@@ -18,10 +17,12 @@ class UserInteractions(BaseModel, table=True):
           task completed, achievement unlocked).
     """
 
-    userId: str = Field(sa_column=Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=True))
-    taskId: str = Field(sa_column=Column(
-        UUID(as_uuid=True), ForeignKey("tasks.id"), nullable=True))
+    userId: str = Field(
+        sa_column=Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    )
+    taskId: str = Field(
+        sa_column=Column(UUID(as_uuid=True), ForeignKey("tasks.id"), nullable=True)
+    )
     interactionType: str = Field(sa_column=Column(String))
     interactionDetail: str = Field(sa_column=Column(String))
 

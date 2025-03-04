@@ -1,14 +1,16 @@
 from contextlib import AbstractContextManager
-from typing import Callable, List, Dict, Union
-from sqlalchemy import func, case, String
+from typing import Callable, Dict, List, Union
+
+from sqlalchemy import String, case, func
 from sqlalchemy.orm import Session
+
 from app.core.exceptions import BadRequestError
 from app.model.games import Games
-from app.model.tasks import Tasks
-from app.model.users import Users
 from app.model.logs import Logs
-from app.model.user_points import UserPoints
+from app.model.tasks import Tasks
 from app.model.user_actions import UserActions
+from app.model.user_points import UserPoints
+from app.model.users import Users
 from app.repository.base_repository import BaseRepository
 
 

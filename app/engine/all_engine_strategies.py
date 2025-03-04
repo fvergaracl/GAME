@@ -1,8 +1,7 @@
 import importlib
 import os
 
-from app.engine.check_base_strategy_class import \
-    check_class_methods_and_variables
+from app.engine.check_base_strategy_class import check_class_methods_and_variables
 
 
 def all_engine_strategies() -> list:

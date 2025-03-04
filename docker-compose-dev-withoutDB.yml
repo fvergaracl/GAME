@@ -16,9 +16,7 @@ services:
       - PORT=8000
       - LOG_LEVEL=debug
     networks:
-      - backend
-    depends_on:
-      - postgrespostgres
+      - greencrowd
     volumes:
       - ./app:/app/app
       - ./migrations:/app/migrations
@@ -32,24 +30,6 @@ services:
         env: "ENV,DEBUG"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
-  postgrespostgres:
-    container_name: "postgrespostgres"
-    image: postgres:16.0
-    hostname: postgres
-    ports:
-      - "5432:5432"
-    env_file:
-      - .env
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    networks:
-      backend:
-        aliases:
-          - localhost
-    volumes:
-      - postgrespostgres-data:/var/lib/postgresql/data
 
   keycloakGame:
     container_name: "keycloakGame"
@@ -63,7 +43,7 @@ services:
       - keycloak-data:/opt/keycloak/data
     command: ["start-dev"]
     networks:
-      backend:
+      greencrowd:
         aliases:
           - localhost
 
@@ -76,16 +56,15 @@ services:
       DB_HOST: "postgrespostgres"
       API_URL_KPI: "http://api:8000/api/v1/kpi"
     depends_on:
-      - postgrespostgres
       - api
     networks:
-      - backend
-
-networks:
-  backend:
-    driver: "bridge"
+      - greencrowd
 
 volumes:
   postgrespostgres-data:
   keycloak-data:
   game-logs:
+
+networks:
+  greencrowd:
+    external: true

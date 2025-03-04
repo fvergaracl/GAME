@@ -1,6 +1,5 @@
-from sqlmodel import (
-    Column, Field, String, Integer
-)
+from sqlmodel import Column, Field, Integer, String
+
 from app.model.base_model import BaseModel
 
 

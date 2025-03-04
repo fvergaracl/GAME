@@ -2,11 +2,9 @@ from typing import Optional
 from uuid import UUID
 
 from app.repository.user_game_config_repository import UserGameConfigRepository
-from app.schema.user_game_config_schema import (
-    CreateUserGameConfig,
-    UpdateUserGameConfig,
-    UserGameConfigResponse,
-)
+from app.schema.user_game_config_schema import (CreateUserGameConfig,
+                                                UpdateUserGameConfig,
+                                                UserGameConfigResponse)
 
 
 class UserGameConfigService:
@@ -59,10 +57,7 @@ class UserGameConfigService:
             UserGameConfigResponse: The created user-game configuration.
         """
         config = self.repository.create_or_update(
-            schema.userId,
-            schema.gameId,
-            schema.experimentGroup,
-            schema.configData
+            schema.userId, schema.gameId, schema.experimentGroup, schema.configData
         )
         return UserGameConfigResponse.from_orm(config)
 
@@ -82,8 +77,7 @@ class UserGameConfigService:
             Optional[UserGameConfigResponse]: The updated configuration if it
               exists, otherwise None.
         """
-        existing_config = self.repository.get_by_user_and_game(
-            user_id, game_id)
+        existing_config = self.repository.get_by_user_and_game(user_id, game_id)
         if not existing_config:
             return None
 

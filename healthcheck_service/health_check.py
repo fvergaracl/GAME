@@ -1,9 +1,10 @@
-import psycopg2
-import requests
-import time
 import os
+import time
 import uuid
 from datetime import datetime
+
+import psycopg2
+import requests
 
 DB_ENGINE = os.getenv("DB_ENGINE", "postgresql")
 DB_HOST = os.getenv("DB_HOST", "localhost")
@@ -15,22 +16,20 @@ API_URL_KPI = os.getenv("API_URL_KPI", "http://localhost:8000/api/v1/kpi")
 
 
 conn = psycopg2.connect(
-    dbname=DB_NAME,
-    user=DB_USER,
-    password=DB_PASSWORD,
-    host=DB_HOST,
-    port=DB_PORT
+    dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT
 )
 
 
 def check_if_table_exists():
     with conn.cursor() as cur:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT EXISTS (
                 SELECT FROM information_schema.tables
                 WHERE table_name = 'uptimelogs'
             )
-        """)
+        """
+        )
         return cur.fetchone()[0]
 
 
@@ -50,10 +49,13 @@ def save_health_check(status):
     created_at = datetime.utcnow()
 
     with conn.cursor() as cur:
-        cur.execute("""
+        cur.execute(
+            """
             INSERT INTO uptimelogs (id, status, created_at, updated_at)
             VALUES (%s, %s, %s, %s)
-        """, (unique_id, status, created_at, created_at))
+        """,
+            (unique_id, status, created_at, created_at),
+        )
         conn.commit()
 
 

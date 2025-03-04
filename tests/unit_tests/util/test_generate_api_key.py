@@ -1,6 +1,7 @@
-import unittest
-from app.util.generate_api_key import generate_api_key
 import string
+import unittest
+
+from app.util.generate_api_key import generate_api_key
 
 
 class TestGenerateApiKey(unittest.TestCase):

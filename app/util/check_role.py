@@ -1,4 +1,3 @@
-
 def check_role(token_decoded, role) -> bool:
     """
     Check if the user has the required role.

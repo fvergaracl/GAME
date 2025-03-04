@@ -5,11 +5,8 @@ from app.repository.task_params_repository import TaskParamsRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
-from app.schema.task_schema import (
-    CreateTask,
-    CreateTaskPostSuccesfullyCreated,
-    FindTask,
-)
+from app.schema.task_schema import (CreateTask, CreateTaskPostSuccesfullyCreated,
+                                    FindTask)
 from app.schema.tasks_params_schema import InsertTaskParams
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
@@ -291,7 +288,7 @@ class TaskService(BaseService):
 
         return self.create_task_by_game_id(game.id, externalGameId, create_query)
 
-    def create_task_by_game_id(self, gameId, create_query, api_key: str = None):
+    async def create_task_by_game_id(self, gameId, create_query, api_key: str = None):
         """
         Creates a task for a game by its game ID.
 
@@ -341,7 +338,7 @@ class TaskService(BaseService):
             new_task_dict["apiKey_used"] = api_key
         new_task = CreateTask(**new_task_dict)
 
-        created_task = self.task_repository.create(new_task)
+        created_task = await self.task_repository.create(new_task)
         created_params = []
         params = create_query.params
         if params:
@@ -354,7 +351,9 @@ class TaskService(BaseService):
                 if api_key:
                     params_dict["apiKey_used"] = api_key
                 params_to_insert = InsertTaskParams(**params_dict)
-                created_param = self.task_params_repository.create(params_to_insert)
+                created_param = await self.task_params_repository.create(
+                    params_to_insert
+                )
                 created_params.append(created_param)
 
         game_params = self.game_params_repository.read_by_column(

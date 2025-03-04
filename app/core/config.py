@@ -24,6 +24,8 @@ class Configs(BaseSettings):
           names.
         DEFAULT_CONVERTION_RATE_POINTS_TO_COIN (int): The default conversion
           rate from points to coins.
+        SECRET_KEY (str): The secret key for the application . Important to
+          simulate points
         BACKEND_CORS_ORIGINS (List[str]): A list of allowed CORS origins.
         KEYCLOAK_REALM (str): The Keycloak realm.
         KEYCLOAK_CLIENT_ID (str): The Keycloak client ID.
@@ -49,6 +51,10 @@ class Configs(BaseSettings):
         "GAMIFICATIONENGINE_VERSION_APP", "No_version"
     )
 
+    SENTRY_DSN: str = os.getenv("SENTRY_DSN", None)
+    SENTRY_ENVIRONMENT: str = os.getenv("SENTRY_ENVIRONMENT", "dev")
+    SENTRY_RELEASE: str = os.getenv("SENTRY_RELEASE", "0.0.0")
+
     EXTRA_SERVER_URL: str = os.getenv("EXTRA_SERVER_URL", None)
     EXTRA_SERVER_DESCRIPTION: str = os.getenv("EXTRA_SERVER_DESCRIPTION", None)
 
@@ -61,6 +67,8 @@ class Configs(BaseSettings):
     DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
         "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100
     )
+
+    SECRET_KEY: str = os.getenv("SECRET_KEY", None)
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 

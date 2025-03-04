@@ -1,7 +1,8 @@
 from contextlib import AbstractContextManager
-from typing import Callable, Optional, List
-from sqlalchemy.orm import Session
+from typing import Callable, List, Optional
+
 from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm import Session
 
 from app.model.user_game_config import UserGameConfig
 from app.repository.base_repository import BaseRepository
@@ -28,3 +29,16 @@ class UserGameConfigRepository(BaseRepository):
               The session factory.
         """
         super().__init__(session_factory, UserGameConfig)
+
+    def get_all_users_by_gameId(self, gameId: str) -> List[UserGameConfig]:
+        """
+        Get all users by gameId.
+
+        Args:
+            gameId: The gameId of the users to get.
+
+        Returns:
+            List of users with the provided gameId.
+        """
+        with self.session_factory() as session:
+            return session.query(self.model).filter_by(gameId=gameId).all()

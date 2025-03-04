@@ -5,14 +5,10 @@ from app.engine.all_engine_strategies import all_engine_strategies
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
+from app.repository.user_points_repository import UserPointsRepository
 from app.schema.games_params_schema import InsertGameParams
-from app.schema.games_schema import (
-    BaseGameResult,
-    GameCreated,
-    PatchGame,
-    PostCreateGame,
-    ResponsePatchGame,
-)
+from app.schema.games_schema import (BaseGameResult, GameCreated, PatchGame,
+                                     PostCreateGame, ResponsePatchGame)
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
 from app.util.are_variables_matching import are_variables_matching
@@ -36,6 +32,7 @@ class GameService(BaseService):
         game_repository: GameRepository,
         game_params_repository: GameParamsRepository,
         task_repository: TaskRepository,
+        user_points_repository: UserPointsRepository,
         strategy_service: StrategyService,
     ):
         """
@@ -209,8 +206,9 @@ class GameService(BaseService):
                 if oauth_user_id:
                     params_dict["oauth_user_id"] = oauth_user_id
                 params_to_insert = InsertGameParams(**params_dict)
-                created_param = self.game_params_repository.create(params_to_insert)
-
+                created_param = await self.game_params_repository.create(
+                    params_to_insert
+                )
                 created_params.append(created_param)
 
         response = GameCreated(
@@ -401,3 +399,32 @@ class GameService(BaseService):
         game_dict["tasks"] = tasks_list
 
         return game_dict
+
+    def get_game_by_external_id(
+        self, externalGameId: str, api_key: str = None, oauth_user_id=None
+    ):
+        """
+        Retrieves a game by its external game ID.
+
+        Args:
+            externalGameId (str): The external game ID.
+            api_key (str): The API key.
+            oauth_user_id (str): The OAuth user ID.
+
+        Returns:
+            dict: The game details.
+        """
+        game = self.game_repository.read_by_column(
+            "externalGameId", externalGameId, not_found_raise_exception=False
+        )
+        if not game:
+            raise NotFoundError(
+                detail=f"Game not found by externalGameId: {externalGameId}"
+            )
+
+        if api_key:
+            game.apiKey_used = api_key
+        if oauth_user_id:
+            game.oauth_user_id = oauth_user_id
+
+        return game

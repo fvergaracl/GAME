@@ -1,8 +1,9 @@
-from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
-from app.services.apikey_service import ApiKeyService
-from app.schema.oauth_users_schema import CreateOAuthUser
 from fastapi import Depends, HTTPException, status
+
 from app.core.container import Container
+from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
+from app.schema.oauth_users_schema import CreateOAuthUser
+from app.services.apikey_service import ApiKeyService
 
 
 async def auth_api_key_or_oauth2(

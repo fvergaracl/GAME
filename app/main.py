@@ -1,5 +1,6 @@
 import subprocess
 
+import sentry_sdk
 import toml
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
@@ -89,6 +90,19 @@ class AppCreator:
     """
 
     def __init__(self):
+
+        if configs.SENTRY_DSN:
+            sentry_sdk.init(
+                dsn=configs.SENTRY_DSN,
+                environment=configs.SENTRY_ENVIRONMENT,
+                release=configs.SENTRY_RELEASE,
+                send_default_pii=True,
+                traces_sample_rate=1.0,
+                _experiments={
+                    "continuous_profiling_auto_start": True,
+                },
+            )
+
         self.app = FastAPI(
             root_path=configs.ROOT_PATH,
             title=project_data["name"],
@@ -103,6 +117,7 @@ class AppCreator:
             docs_url="/docs",
             servers=[{"url": configs.API_V1_STR, "description": "Local"}],
         )
+
         self.app.openapi = custom_openapi
 
         self.container = Container()

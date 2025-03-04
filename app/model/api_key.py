@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from sqlalchemy import Boolean
 from sqlalchemy.dialects.postgresql import UUID
-from sqlmodel import Column, DateTime, Field, SQLModel, String, func, ForeignKey
+from sqlmodel import Column, DateTime, Field, ForeignKey, SQLModel, String, func
 
 
 class ApiKey(SQLModel, table=True):

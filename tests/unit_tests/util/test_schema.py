@@ -1,6 +1,8 @@
 import unittest
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+
 from app.util.schema import AllOptional
 
 
@@ -8,6 +10,7 @@ class TestModel(BaseModel, metaclass=AllOptional):
     """
     Test model with all fields optional.
     """
+
     id: int
     name: str
     is_active: bool
@@ -63,8 +66,7 @@ class TestSchemaMetaclass(unittest.TestCase):
         """
         self.assertEqual(TestModel.__annotations__["id"], Optional[int])
         self.assertEqual(TestModel.__annotations__["name"], Optional[str])
-        self.assertEqual(TestModel.__annotations__[
-                         "is_active"], Optional[bool])
+        self.assertEqual(TestModel.__annotations__["is_active"], Optional[bool])
 
 
 if __name__ == "__main__":

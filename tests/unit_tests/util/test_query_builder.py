@@ -1,8 +1,10 @@
 import unittest
-from sqlalchemy import Column, Integer, String, Boolean, create_engine
+
+from sqlalchemy import Boolean, Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.expression import and_
+
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
 
 Base = declarative_base()
@@ -12,7 +14,8 @@ class TestModel(Base):
     """
     Test model for the query builder tests.
     """
-    __tablename__ = 'test_model'
+
+    __tablename__ = "test_model"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     age = Column(Integer)
@@ -20,7 +23,7 @@ class TestModel(Base):
 
 
 # Create an in-memory SQLite database
-engine = create_engine('sqlite:///:memory:')
+engine = create_engine("sqlite:///:memory:")
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -32,8 +35,7 @@ class TestQueryBuilder(unittest.TestCase):
         Test that the function generates a basic equality filter.
         """
         filter_dict = {"age": 25}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         expected_filter = TestModel.age == 25
         self.assertEqual(str(filter_options), str(and_(True, expected_filter)))
 
@@ -42,8 +44,7 @@ class TestQueryBuilder(unittest.TestCase):
         Test that the function generates a LIKE filter for strings.
         """
         filter_dict = {"name": "John"}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         expected_filter = TestModel.name.like("%John%")
         self.assertEqual(str(filter_options), str(and_(True, expected_filter)))
 
@@ -52,8 +53,7 @@ class TestQueryBuilder(unittest.TestCase):
         Test that the function generates a filter for boolean values.
         """
         filter_dict = {"is_active": True}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         expected_filter = TestModel.is_active.is_(True)
         self.assertEqual(str(filter_options), str(and_(True, expected_filter)))
 
@@ -62,8 +62,7 @@ class TestQueryBuilder(unittest.TestCase):
         Test that the function generates an IN filter.
         """
         filter_dict = {"age__in": "25,30,35"}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         expected_filter = TestModel.age.in_([25, 30, 35])
         self.assertEqual(str(filter_options), str(and_(True, expected_filter)))
 
@@ -72,8 +71,7 @@ class TestQueryBuilder(unittest.TestCase):
         Test that the function generates comparison filters.
         """
         filter_dict = {"age__gt": 20, "age__lt": 40}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         expected_filter = and_(TestModel.age > 20, TestModel.age < 40)
         self.assertEqual(str(filter_options), str(and_(True, expected_filter)))
 
@@ -82,8 +80,7 @@ class TestQueryBuilder(unittest.TestCase):
         Test that the function generates an IS NULL filter.
         """
         filter_dict = {"age__isnull": True}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         expected_filter = TestModel.age.__eq__(None)
         self.assertEqual(str(filter_options), str(and_(True, expected_filter)))
 
@@ -96,8 +93,7 @@ class TestQueryBuilder(unittest.TestCase):
             "name": "John",
             "is_active": True,
         }
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
 
         sql_string = str(filter_options)
 
@@ -110,8 +106,7 @@ class TestQueryBuilder(unittest.TestCase):
         Test that the function generates an IN filter with an empty list.
         """
         filter_dict = {"age__in": ""}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         expected_filter = TestModel.age.in_([])
         self.assertEqual(str(filter_options), str(and_(True, expected_filter)))
 
@@ -120,8 +115,7 @@ class TestQueryBuilder(unittest.TestCase):
         Test that the function generates an IS NOT NULL filter.
         """
         filter_dict = {"age__isnull": False}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         expected_filter = TestModel.age.__ne__(None)
         self.assertEqual(str(filter_options), str(and_(True, expected_filter)))
 
@@ -130,8 +124,7 @@ class TestQueryBuilder(unittest.TestCase):
         Test that the function skips non-existent model attributes.
         """
         filter_dict = {"non_existent_attribute": "some_value"}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         self.assertEqual(str(filter_options), str(and_(True)))
 
     def test_invalid_custom_command(self):
@@ -139,8 +132,7 @@ class TestQueryBuilder(unittest.TestCase):
         Test that the function skips invalid custom commands.
         """
         filter_dict = {"age__invalid": 30}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         self.assertEqual(str(filter_options), str(and_(True)))
 
     def test_non_existent_attribute_with_custom_command(self):
@@ -149,8 +141,7 @@ class TestQueryBuilder(unittest.TestCase):
           commands.
         """
         filter_dict = {"non_existent__gt": 30}
-        filter_options = dict_to_sqlalchemy_filter_options(
-            TestModel, filter_dict)
+        filter_options = dict_to_sqlalchemy_filter_options(TestModel, filter_dict)
         self.assertEqual(str(filter_options), str(and_(True)))
 
 

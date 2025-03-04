@@ -1,6 +1,8 @@
 import unittest
+
 from fastapi.testclient import TestClient
-from app.main import app, get_git_commit_hash, get_project_data, AppCreator
+
+from app.main import AppCreator, app, get_git_commit_hash, get_project_data
 
 
 class TestMain(unittest.TestCase):
@@ -55,14 +57,15 @@ class TestMain(unittest.TestCase):
         """
         Test if CORS middleware is properly configured.
         """
-        response = self.client.options("/api/v1/some-endpoint", headers={
-            "Origin": "http://localhost",
-            "Access-Control-Request-Method": "GET"
-        })
-        assert response.status_code == 200
-        assert response.headers["access-control-allow-origin"] == (
-            "http://localhost"
+        response = self.client.options(
+            "/api/v1/some-endpoint",
+            headers={
+                "Origin": "http://localhost",
+                "Access-Control-Request-Method": "GET",
+            },
         )
+        assert response.status_code == 200
+        assert response.headers["access-control-allow-origin"] == ("http://localhost")
 
 
 if __name__ == "__main__":

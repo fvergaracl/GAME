@@ -1,36 +1,28 @@
+from collections import Counter
 from uuid import UUID
 
 from app.core.config import configs
-from app.core.exceptions import (
-    InternalServerError,
-    NotFoundError,
-    PreconditionFailedError,
-)
+from app.core.exceptions import (InternalServerError, NotFoundError,
+                                 PreconditionFailedError)
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
+from app.repository.user_game_config_repository import UserGameConfigRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.schema.games_schema import ListTasksWithUsers
-from app.schema.task_schema import (
-    AssignedPointsToExternalUserId,
-    BaseUserFirstAction,
-    TasksWithUsers,
-)
-from app.schema.user_points_schema import (
-    AllPointsByGame,
-    GameDetail,
-    PointsAssignedToUser,
-    PointsAssignedToUserDetails,
-    ResponseGetPointsByGame,
-    ResponseGetPointsByTask,
-    ResponsePointsByExternalUserId,
-    TaskDetail,
-    TaskPointsByGame,
-    UserGamePoints,
-    UserPointsAssign,
-)
+from app.schema.task_schema import (AssignedPointsToExternalUserId, BaseUserFirstAction,
+                                    TasksWithUsers)
+from app.schema.user_game_config_schema import CreateUserGameConfig
+from app.schema.user_points_schema import (AllPointsByGame, GameDetail,
+                                           PointsAssignedToUser,
+                                           PointsAssignedToUserDetails,
+                                           ResponseGetPointsByGame,
+                                           ResponseGetPointsByTask,
+                                           ResponsePointsByExternalUserId, TaskDetail,
+                                           TaskPointsByGame, UserGamePoints,
+                                           UserPointsAssign)
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
@@ -43,6 +35,7 @@ class UserPointsService(BaseService):
         self,
         user_points_repository: UserPointsRepository,
         users_repository: UserRepository,
+        users_game_config_repository: UserGameConfigRepository,
         game_repository: GameRepository,
         task_repository: TaskRepository,
         wallet_repository: WalletRepository,
@@ -50,6 +43,7 @@ class UserPointsService(BaseService):
     ):
         self.user_points_repository = user_points_repository
         self.users_repository = users_repository
+        self.users_game_config_repository = users_game_config_repository
         self.game_repository = game_repository
         self.task_repository = task_repository
         self.wallet_repository = wallet_repository
@@ -265,9 +259,29 @@ class UserPointsService(BaseService):
                         )
         return response
 
-    def assign_points_to_user(
-        self, gameId, externalTaskId, schema, api_key: str = None
+    async def assign_points_to_user(
+        self,
+        gameId,
+        externalTaskId,
+        schema,
+        isSimulated: bool = False,
+        api_key: str = None,
     ):
+        """
+        Assign points to a user.
+
+        Args:
+            gameId (UUID): The game ID.
+            externalTaskId (str): The external task ID.
+            schema (PostAssignPointsToUser): The schema with the data to
+              assign points.
+            api_key (str): The API key used.
+
+        Returns:
+            AssignedPointsToExternalUserId: The response with the points
+              assigned.
+
+        """
         externalUserId = schema.externalUserId
         is_a_created_user = False
 
@@ -314,12 +328,17 @@ class UserPointsService(BaseService):
 
             data_to_add["externalGameId"] = externalGameId
             data_to_add["externalTaskId"] = externalTaskId
-            points, case_name = strategy_instance.calculate_points(
+            result_calculated_points = await strategy_instance.calculate_points(
                 externalGameId=externalGameId,
                 externalTaskId=externalTaskId,
                 externalUserId=externalUserId,
                 data=data_to_add,
             )
+
+            points, case_name, callbackData = (result_calculated_points + (None,))[:3]
+            if callbackData is not None:
+                data_to_add["callbackData"] = callbackData
+
         except Exception as e:
             print("----------------- ERROR -----------------")
             print(e)
@@ -343,7 +362,6 @@ class UserPointsService(BaseService):
                     f"Points not calculated for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Beacuse the strategy don't have condition to calculate it or the strategy don't have a case name"  # noqa
                 )
             )
-        print(f"points: {points} | case_name: {case_name}")
 
         user_points_schema = UserPointsAssign(
             userId=str(user.id),
@@ -354,7 +372,7 @@ class UserPointsService(BaseService):
             description="Points assigned by GAME",
             apiKey_used=api_key,
         )
-        user_points = self.user_points_repository.create(user_points_schema)
+        user_points = await self.user_points_repository.create(user_points_schema)
         wallet = self.wallet_repository.read_by_column(
             "userId", user.id, not_found_raise_exception=False
         )
@@ -371,7 +389,7 @@ class UserPointsService(BaseService):
                 conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
                 apiKey_used=api_key,
             )
-            wallet = self.wallet_repository.create(new_wallet)
+            wallet = await self.wallet_repository.create(new_wallet)
 
         wallet_transaction = BaseWalletTransaction(
             transactionType="AssignPoints",
@@ -402,6 +420,125 @@ class UserPointsService(BaseService):
             created_at=str(user_points.created_at),
         )
         return response
+
+    async def get_points_simulated_of_user_in_game(
+        self,
+        gameId,
+        externalUserId,
+        oauth_user_id: str = None,
+        assign_control_group: bool = False,
+    ):
+        """
+        Simulates the assignment of points for a user without persisting the
+          changes.
+
+        Args:
+            gameId (UUID): The ID of the game.
+            externalTaskId (str): The external task ID.
+            schema: The schema containing user and action data.
+            oauth_user_id (str): The OAuth user ID.
+
+        Returns:
+            dict: Simulation result with calculated points and case name.
+        """
+        game = self.game_repository.read_by_column(
+            column="id",
+            value=gameId,
+            not_found_message=(f"Game with gameId {gameId} not found"),
+            only_one=True,
+        )
+        all_tasks = self.task_repository.read_by_column(
+            "gameId", game.id, not_found_raise_exception=False, only_one=False
+        )
+        if not all_tasks:
+            raise NotFoundError(detail=f"Tasks not found by gameId: {game.id}")
+
+        # First: Check if all strategies exist
+        strategy = None
+        for task in all_tasks:
+            strategyId = task.strategyId
+            strategy = self.strategy_service.get_strategy_by_id(strategyId)
+
+            if not strategy:
+                raise NotFoundError(
+                    f"One of the strategies not found with id: {strategyId} for task with externalTaskId: {task.externalTaskId}"  # noqa
+                )
+
+        user = self.users_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=False
+        )
+        if not user:
+            is_valid_externalUserId = is_valid_slug(externalUserId)
+            if not is_valid_externalUserId:
+                raise PreconditionFailedError(
+                    detail=(
+                        f"Invalid externalUserId: {externalUserId}. externalUserId should be a valid (Should have only alphanumeric characters and Underscore . Length should be between 3 and 50)"  # noqa
+                    )
+                )
+            user = self.users_repository.create_user_by_externalUserId(
+                externalUserId=externalUserId,
+                oauth_user_id=oauth_user_id,
+            )
+        userGroup = None
+        if assign_control_group:
+            user_config = self.users_game_config_repository.read_by_columns(
+                {"userId": user.id, "gameId": game.id},
+                only_one=True,
+                not_found_raise_exception=False,
+            )
+            if user_config:
+                userGroup = user_config.experimentGroup
+            if not userGroup:
+                group_control = ["random_range", "average_score", "dynamic_calculation"]
+                all_users = self.users_game_config_repository.get_all_users_by_gameId(
+                    game.id
+                )
+                group_counts = Counter(
+                    user_config.experimentGroup for user_config in all_users
+                )
+                min_group = min(group_control, key=lambda g: group_counts.get(g, 0))
+                userGroup = min_group
+                new_user_config = CreateUserGameConfig(
+                    userId=str(user.id),
+                    gameId=str(game.id),
+                    experimentGroup=userGroup,
+                    configData={},
+                )
+
+                user_config = await self.users_game_config_repository.create(
+                    new_user_config
+                )
+
+        grouped_by_strategyId = {}
+        for task in all_tasks:
+            strategy_id_applied = task.strategyId
+            if strategy_id_applied not in grouped_by_strategyId:
+                grouped_by_strategyId[strategy_id_applied] = []
+            grouped_by_strategyId[strategy_id_applied].append(task)
+
+        response = []
+        for strategy_id_applied, tasks in grouped_by_strategyId.items():
+            strategy_instance = self.strategy_service.get_Class_by_id(
+                strategy_id_applied
+            )
+            # check if strategy_instance have simulate_strategy
+            if not hasattr(strategy_instance, "simulate_strategy"):
+                raise NotFoundError(
+                    f"Strategy with id: {strategy_id_applied} don't have simulate_strategy method"
+                )
+            for task in tasks:
+                data_to_simulate = {
+                    "task": task,
+                    "allTasks": tasks,
+                    "externalUserId": externalUserId,
+                }
+                task_simulation = strategy_instance.simulate_strategy(
+                    data_to_simulate=data_to_simulate, userGroup=userGroup
+                )
+                response.append(task_simulation)
+
+        externalGameId = game.externalGameId
+        return response, externalGameId
 
     def get_users_points_by_externalGameId(self, externalGameId):
         game = self.game_repository.read_by_column(
@@ -681,4 +818,14 @@ class UserPointsService(BaseService):
         """
         return self.user_points_repository.get_personal_avg_by_external_game_id(
             external_game_id, externalUserId
+        )
+
+    def get_points_of_simulated_task(self, externalTaskId, simulationHash):
+        return self.user_points_repository.get_points_of_simulated_task(
+            externalTaskId, simulationHash
+        )
+
+    def get_all_point_of_tasks_list(self, list_ids_tasks, withData=False):
+        return self.user_points_repository.get_all_point_of_tasks_list(
+            list_ids_tasks, withData
         )

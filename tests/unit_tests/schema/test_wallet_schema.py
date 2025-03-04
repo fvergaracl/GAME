@@ -1,8 +1,8 @@
 from datetime import datetime
 from uuid import uuid4
 
-from app.schema.wallet_schema import (BaseWallet, BaseWalletOnlyUserId,
-                                      CreateWallet, PostPreviewConvertPoints,
+from app.schema.wallet_schema import (BaseWallet, BaseWalletOnlyUserId, CreateWallet,
+                                      PostPreviewConvertPoints,
                                       ResponsePreviewConvertPoints, Wallet,
                                       WalletWithoutUserId)
 

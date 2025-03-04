@@ -5,11 +5,8 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
-from app.schema.games_params_schema import (
-    BaseFindGameParams,
-    CreateGameParams,
-    UpdateGameParams,
-)
+from app.schema.games_params_schema import (BaseFindGameParams, CreateGameParams,
+                                            UpdateGameParams)
 from app.schema.task_schema import TasksWithUsers
 from app.util.schema import AllOptional
 

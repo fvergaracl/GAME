@@ -7,21 +7,21 @@ from sqlmodel import SQLModel
 
 from app.core.config import configs
 from app.model.api_key import ApiKey
+from app.model.api_requests import ApiRequests
 from app.model.game_params import GamesParams
 from app.model.games import Games
+from app.model.kpi_metrics import KpiMetrics
+from app.model.logs import Logs
+from app.model.oauth_users import OAuthUsers
 from app.model.task_params import TasksParams
 from app.model.tasks import Tasks
+from app.model.uptime_logs import UptimeLogs
 from app.model.user_actions import UserActions
+from app.model.user_game_config import UserGameConfig
 from app.model.user_points import UserPoints
 from app.model.users import Users
 from app.model.wallet import Wallet
 from app.model.wallet_transactions import WalletTransactions
-from app.model.api_requests import ApiRequests
-from app.model.kpi_metrics import KpiMetrics
-from app.model.uptime_logs import UptimeLogs
-from app.model.oauth_users import OAuthUsers
-from app.model.logs import Logs
-from app.model.user_game_config import UserGameConfig
 
 cmd_kwargs = context.get_x_argument(as_dictionary=True)
 if "ENV" in cmd_kwargs:

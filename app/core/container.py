@@ -2,48 +2,21 @@ from dependency_injector import containers, providers
 
 from app.core.config import configs
 from app.core.database import Database
-
 # pylint: disable=unused-wildcard-import
-from app.repository import (
-    ApiKeyRepository,
-    GameParamsRepository,
-    GameRepository,
-    TaskParamsRepository,
-    TaskRepository,
-    UserActionsRepository,
-    UserPointsRepository,
-    UserGameConfigRepository,
-    UserRepository,
-    WalletRepository,
-    WalletTransactionRepository,
-    ApiRequestsRepository,
-    KpiMetricsRepository,
-    UptimeLogsRepository,
-    UserInteractionsRepository,
-    dashboard_repository,
-    oauth_users_repository,
-    logs_repository,
-)
-from app.services import (
-    ApiKeyService,
-    GameParamsService,
-    GameService,
-    StrategyService,
-    TaskService,
-    UserActionsService,
-    UserPointsService,
-    UserGameConfigService,
-    UserService,
-    WalletService,
-    WalletTransactionService,
-    ApiRequestsService,
-    KpiMetricsService,
-    UptimeLogsService,
-    UserInteractionsService,
-    dashboard_service,
-    oauth_users_service,
-    logs_service,
-)
+from app.repository import (ApiKeyRepository, ApiRequestsRepository,
+                            GameParamsRepository, GameRepository, KpiMetricsRepository,
+                            TaskParamsRepository, TaskRepository, UptimeLogsRepository,
+                            UserActionsRepository, UserGameConfigRepository,
+                            UserInteractionsRepository, UserPointsRepository,
+                            UserRepository, WalletRepository,
+                            WalletTransactionRepository, dashboard_repository,
+                            logs_repository, oauth_users_repository)
+from app.services import (ApiKeyService, ApiRequestsService, GameParamsService,
+                          GameService, KpiMetricsService, StrategyService, TaskService,
+                          UptimeLogsService, UserActionsService, UserGameConfigService,
+                          UserInteractionsService, UserPointsService, UserService,
+                          WalletService, WalletTransactionService, dashboard_service,
+                          logs_service, oauth_users_service)
 
 
 class Container(containers.DeclarativeContainer):
@@ -224,6 +197,7 @@ class Container(containers.DeclarativeContainer):
         game_repository=game_repository,
         game_params_repository=game_params_repository,
         task_repository=task_repository,
+        user_points_repository=user_points_repository,
         strategy_service=strategy_service,
     )
 
@@ -250,6 +224,7 @@ class Container(containers.DeclarativeContainer):
         UserPointsService,
         user_points_repository=user_points_repository,
         users_repository=user_repository,
+        users_game_config_repository=user_game_config_repository,
         game_repository=game_repository,
         task_repository=task_repository,
         wallet_repository=wallet_repository,
@@ -302,8 +277,7 @@ class Container(containers.DeclarativeContainer):
     )
 
     user_game_config_service = providers.Factory(
-        UserGameConfigService,
-        user_game_config_repository=user_game_config_repository
+        UserGameConfigService, user_game_config_repository=user_game_config_repository
     )
 
     dashboard_service = providers.Factory(

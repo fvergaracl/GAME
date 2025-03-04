@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch
+
 from app.engine.check_base_strategy_class import check_class_methods_and_variables
 
 
