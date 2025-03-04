@@ -49,7 +49,8 @@ async def valid_access_token(
     except exceptions.InvalidSignatureError as e:
         print(f"Error: InvalidSignatureError - {e}")
         return Response.fail(
-            error=HTTPException(status_code=401, detail="Invalid token signature")
+            error=HTTPException(
+                status_code=401, detail="Invalid token signature")
         )
 
     except exceptions.ExpiredSignatureError as e:
@@ -70,7 +71,8 @@ async def valid_access_token(
     except exceptions.PyJWKClientError as e:
         print(f"Error: PyJWKClientError - {e}")
         return Response.fail(
-            error=HTTPException(status_code=500, detail="Internal server error")
+            error=HTTPException(
+                status_code=500, detail="Internal server error")
         )
 
 
