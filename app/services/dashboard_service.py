@@ -14,7 +14,6 @@ from app.services.base_service import BaseService
 # from app.services.user_actions_service import UserActionsService
 
 
-
 class DashboardService(BaseService):
     """
     Service class for API keys.

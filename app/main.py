@@ -1,5 +1,6 @@
 import subprocess
 
+import sentry_sdk
 import toml
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
@@ -10,7 +11,6 @@ from app.api.v1.routes import routers as v1_routers
 from app.core.config import configs
 from app.core.container import Container
 from app.util.class_object import singleton
-import sentry_sdk
 
 
 def get_project_data():
