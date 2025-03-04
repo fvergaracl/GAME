@@ -237,16 +237,18 @@
             
   <h1 id="modules-app-repository-dashboard-repository--page-root">Source code for app.repository.dashboard_repository</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AbstractContextManager</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">func</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">String</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">String</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">func</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
+
 <span class="kn">from</span> <span class="nn">app.core.exceptions</span> <span class="kn">import</span> <span class="n">BadRequestError</span>
 <span class="kn">from</span> <span class="nn">app.model.games</span> <span class="kn">import</span> <span class="n">Games</span>
-<span class="kn">from</span> <span class="nn">app.model.tasks</span> <span class="kn">import</span> <span class="n">Tasks</span>
-<span class="kn">from</span> <span class="nn">app.model.users</span> <span class="kn">import</span> <span class="n">Users</span>
 <span class="kn">from</span> <span class="nn">app.model.logs</span> <span class="kn">import</span> <span class="n">Logs</span>
-<span class="kn">from</span> <span class="nn">app.model.user_points</span> <span class="kn">import</span> <span class="n">UserPoints</span>
+<span class="kn">from</span> <span class="nn">app.model.tasks</span> <span class="kn">import</span> <span class="n">Tasks</span>
 <span class="kn">from</span> <span class="nn">app.model.user_actions</span> <span class="kn">import</span> <span class="n">UserActions</span>
+<span class="kn">from</span> <span class="nn">app.model.user_points</span> <span class="kn">import</span> <span class="n">UserPoints</span>
+<span class="kn">from</span> <span class="nn">app.model.users</span> <span class="kn">import</span> <span class="n">Users</span>
 <span class="kn">from</span> <span class="nn">app.repository.base_repository</span> <span class="kn">import</span> <span class="n">BaseRepository</span>
 
 

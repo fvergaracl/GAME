@@ -237,9 +237,10 @@
             
   <h1 id="modules-app-repository-user-game-config-repository--page-root">Source code for app.repository.user_game_config_repository</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AbstractContextManager</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
 <span class="kn">from</span> <span class="nn">sqlalchemy.exc</span> <span class="kn">import</span> <span class="n">NoResultFound</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
 
 <span class="kn">from</span> <span class="nn">app.model.user_game_config</span> <span class="kn">import</span> <span class="n">UserGameConfig</span>
 <span class="kn">from</span> <span class="nn">app.repository.base_repository</span> <span class="kn">import</span> <span class="n">BaseRepository</span>
@@ -267,7 +268,23 @@
 <span class="sd">            session_factory (Callable[..., AbstractContextManager[Session]]):</span>
 <span class="sd">              The session factory.</span>
 <span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">UserGameConfig</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">UserGameConfig</span><span class="p">)</span>
+
+<div class="viewcode-block" id="UserGameConfigRepository.get_all_users_by_gameId">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.UserGameConfigRepository.get_all_users_by_gameId">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_all_users_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UserGameConfig</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get all users by gameId.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId: The gameId of the users to get.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of users with the provided gameId.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">gameId</span><span class="o">=</span><span class="n">gameId</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+</div>
 
 </pre></div>
 
