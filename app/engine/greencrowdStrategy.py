@@ -191,7 +191,8 @@ def get_dynamic_values_from_tasks(
     )
 
     #  DIM_PP
-    user_records = sorted([r.created_at for r in all_records if r.userId == user_id])
+    user_records = sorted(
+        [r.created_at for r in all_records if r.userId == user_id])
     time_diffs = [
         (user_records[i] - user_records[i - 1]).total_seconds() / 60
         for i in range(1, len(user_records))
@@ -214,7 +215,8 @@ def get_dynamic_values_from_tasks(
         else 0.3
     )
     smoothed_factor = (
-        alpha * (avg_time_window - last_time_window) + (1 - alpha) * avg_time_window
+        alpha * (avg_time_window - last_time_window) +
+        (1 - alpha) * avg_time_window
         if avg_time_window > 0
         else 0
     )
@@ -280,7 +282,8 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         self.time_slots = [(0, 6), (6, 12), (12, 18), (18, 24)]
 
     def generate_logic_graph(self, format="png"):
-        dot = Digraph(comment="GREENCROWD Points Calculation Logic", format=format)
+        dot = Digraph(
+            comment="GREENCROWD Points Calculation Logic", format=format)
         dot.attr("node", shape="box", style="filled", fillcolor="lightgray")
         dot.attr("edge", fontsize="10")
 
@@ -478,7 +481,8 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
 
         # AVERAGE_SCORE ########################################################
         if userGroup == "average_score":
-            average_calculated = get_average_values_from_tasks(task, all_records)
+            average_calculated = get_average_values_from_tasks(
+                task, all_records)
 
             DIM_BP = average_calculated.get("DIM_BP")
             DIM_LBE = average_calculated.get("DIM_LBE")
@@ -490,7 +494,8 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
 
         # DYNAMIC_CALCULATION ########################################################
         if userGroup == "dynamic_calculation":
-            user = self.user_service.get_user_by_externalUserId(external_user_id)
+            user = self.user_service.get_user_by_externalUserId(
+                external_user_id)
             dynamic_calculated = get_dynamic_values_from_tasks(
                 task_to_simulate,
                 list_ids_tasks,
@@ -583,7 +588,8 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         isExpired = False
         # select externalTaskId from tasks where externalTaskId = taksId
         task = next(
-            (task for task in tasks if str(task.externalTaskId) == str(externalTaskId)),
+            (task for task in tasks if str(
+                task.externalTaskId) == str(externalTaskId)),
             None,
         )
 
@@ -636,7 +642,8 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             )
 
             if isExpired:
-                game = self.game_service.get_game_by_external_id(externalGameId)
+                game = self.game_service.get_game_by_external_id(
+                    externalGameId)
 
                 tasks_simulated, externalGameId = (
                     await self.user_points_service.get_points_simulated_of_user_in_game(
@@ -674,7 +681,7 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
                     "DIM_S": DIM_S,
                 }
             )
-            points = DIM_BP + DIM_LBE + DIM_TD + DIM_PP + DIM_S + 1
+            points = DIM_BP + DIM_LBE + DIM_TD + DIM_PP + DIM_S
             if case_name == "-":
                 case_name = "Valid Simulation"
 
