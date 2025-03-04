@@ -6,18 +6,18 @@ https://dreampuf.github.io/GraphvizOnline/?engine=dot#digraph%20G%7B%0A%20%20%20
 import datetime
 import hashlib
 import random
+from collections import defaultdict
+
+import numpy as np
+from graphviz import Digraph
+
 from app.core.config import configs
 from app.core.container import Container
 from app.core.exceptions import InternalServerError
 from app.engine.base_strategy import BaseStrategy
 from app.schema.task_schema import SimulatedTaskPoints
-from app.util.calculate_hash_simulated_strategy import (
-    calculate_hash_simulated_strategy
-)
-from collections import defaultdict
 from app.util.add_log import add_log
-from graphviz import Digraph
-import numpy as np
+from app.util.calculate_hash_simulated_strategy import calculate_hash_simulated_strategy
 
 
 def get_random_values_from_tasks(all_records):
@@ -91,8 +91,7 @@ def get_average_values_from_tasks(task, all_records):
                         values[dim].append(value)
 
     average_values = {
-        dim: int(round(np.mean(vals))) if vals else 5
-        for dim, vals in values.items()
+        dim: int(round(np.mean(vals))) if vals else 5 for dim, vals in values.items()
     }
 
     return average_values
@@ -104,7 +103,7 @@ def get_dynamic_values_from_tasks(
     all_records,
     user,
     variable_basic_points,
-    variable_lbe_multiplier
+    variable_lbe_multiplier,
 ):
     """
     Calculates dynamic values based on user participation in tasks.
@@ -139,24 +138,33 @@ def get_dynamic_values_from_tasks(
 
     count_total_task_in_poi = len(poi_task_map.get(poi_external_id, []))
     count_unique_task_in_poi = len(
-        {r.taskId for r in all_records if r.taskId in poi_task_map[
-            poi_external_id]})
+        {r.taskId for r in all_records if r.taskId in poi_task_map[poi_external_id]}
+    )
 
     if count_total_task_in_poi > 0:
-        dim_bp_value = variable_basic_points - \
-            int(round(variable_basic_points *
-                (count_unique_task_in_poi / count_total_task_in_poi)))
+        dim_bp_value = variable_basic_points - int(
+            round(
+                variable_basic_points
+                * (count_unique_task_in_poi / count_total_task_in_poi)
+            )
+        )
 
     #  DIM_LBE
     count_POI_records = sum(1 for r in all_records if r.taskId == task.id)
     avg_POI = len(all_records) / max(len(poi_task_map), 1)
-    dim_lbe_value = round(
-        variable_basic_points * variable_lbe_multiplier
-    ) if avg_POI > 0 and count_POI_records < avg_POI else 0
+    dim_lbe_value = (
+        round(variable_basic_points * variable_lbe_multiplier)
+        if avg_POI > 0 and count_POI_records < avg_POI
+        else 0
+    )
 
     #  DIM_TD
-    time_slots = {"Late Night": (0, 6), "Morning": (
-        6, 12), "Afternoon": (12, 18), "Evening": (18, 24)}
+    time_slots = {
+        "Late Night": (0, 6),
+        "Morning": (6, 12),
+        "Afternoon": (12, 18),
+        "Evening": (18, 24),
+    }
     slot_counts = defaultdict(int)
 
     for r in all_records:
@@ -167,39 +175,67 @@ def get_dynamic_values_from_tasks(
                     slot_counts[slot] += 1
                     break
 
-    current_slot = next(slot for slot, (start, end) in time_slots.items(
-    ) if start <= datetime.datetime.utcnow().hour < end)
+    current_slot = next(
+        slot
+        for slot, (start, end) in time_slots.items()
+        if start <= datetime.datetime.utcnow().hour < end
+    )
     total_other_slots = sum(slot_counts.values()) - slot_counts[current_slot]
-    dim_td_value = round((1 - (slot_counts[current_slot] / total_other_slots))
-                         * variable_basic_points
-                         ) if total_other_slots > 0 else variable_basic_points
+    dim_td_value = (
+        round(
+            (1 - (slot_counts[current_slot] / total_other_slots))
+            * variable_basic_points
+        )
+        if total_other_slots > 0
+        else variable_basic_points
+    )
 
     #  DIM_PP
-    user_records = sorted(
-        [r.created_at for r in all_records if r.userId == user_id])
-    time_diffs = [(user_records[i] - user_records[i-1]
-                   ).total_seconds() / 60 for i in range(1, len(user_records))]
+    user_records = sorted([r.created_at for r in all_records if r.userId == user_id])
+    time_diffs = [
+        (user_records[i] - user_records[i - 1]).total_seconds() / 60
+        for i in range(1, len(user_records))
+    ]
 
     avg_time_window = np.mean(time_diffs) if time_diffs else 0
-    last_time_window = (datetime.datetime.utcnow().replace(
-        tzinfo=datetime.timezone.utc) - user_records[-1]).total_seconds(
+    last_time_window = (
+        (
+            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
+            - user_records[-1]
+        ).total_seconds()
+        / 60
+        if user_records
+        else 0
+    )
 
-    ) / 60 if user_records else 0
-
-    alpha = min(0.5, max(0.1, 1 - (last_time_window / avg_time_window))
-                ) if avg_time_window > 0 else 0.3
-    smoothed_factor = alpha * (avg_time_window - last_time_window) + \
-        (1 - alpha) * avg_time_window if avg_time_window > 0 else 0
-    dim_pp_value = int(round((max(0, smoothed_factor / avg_time_window)
-                       * variable_basic_points) if avg_time_window > 0 else 0))
+    alpha = (
+        min(0.5, max(0.1, 1 - (last_time_window / avg_time_window)))
+        if avg_time_window > 0
+        else 0.3
+    )
+    smoothed_factor = (
+        alpha * (avg_time_window - last_time_window) + (1 - alpha) * avg_time_window
+        if avg_time_window > 0
+        else 0
+    )
+    dim_pp_value = int(
+        round(
+            (max(0, smoothed_factor / avg_time_window) * variable_basic_points)
+            if avg_time_window > 0
+            else 0
+        )
+    )
 
     #  DIM_S
-    unique_days = sorted({r.created_at.date()
-                         for r in all_records if r.userId == user_id})
-    consecutive_days = sum(1 for i in range(len(unique_days) - 1, -1, -1)
-                           if unique_days[i] >= (datetime.datetime.utcnow(
-
-                           ).date() - datetime.timedelta(days=i)))
+    unique_days = sorted(
+        {r.created_at.date() for r in all_records if r.userId == user_id}
+    )
+    consecutive_days = sum(
+        1
+        for i in range(len(unique_days) - 1, -1, -1)
+        if unique_days[i]
+        >= (datetime.datetime.utcnow().date() - datetime.timedelta(days=i))
+    )
     dim_s_value = round(variable_basic_points * (2 ** (consecutive_days / 5)))
 
     return {
@@ -207,7 +243,7 @@ def get_dynamic_values_from_tasks(
         "DIM_LBE": dim_lbe_value,
         "DIM_TD": dim_td_value,
         "DIM_PP": dim_pp_value,
-        "DIM_S": dim_s_value
+        "DIM_S": dim_s_value,
     }
 
 
@@ -244,8 +280,7 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         self.time_slots = [(0, 6), (6, 12), (12, 18), (18, 24)]
 
     def generate_logic_graph(self, format="png"):
-        dot = Digraph(
-            comment="GREENCROWD Points Calculation Logic", format=format)
+        dot = Digraph(comment="GREENCROWD Points Calculation Logic", format=format)
         dot.attr("node", shape="box", style="filled", fillcolor="lightgray")
         dot.attr("edge", fontsize="10")
 
@@ -258,33 +293,74 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
 
         # Add Nodes
         dot.node("start", "Start", shape="ellipse", fillcolor="lightgray")
-        dot.node("taskCompleted", "Task Completed?",
-                 shape="diamond", fillcolor="lightblue")
-        dot.node("assignBP", "Assign BP (DIM_BP)",
-                 shape="parallelogram", fillcolor="lightyellow")
+        dot.node(
+            "taskCompleted", "Task Completed?", shape="diamond", fillcolor="lightblue"
+        )
+        dot.node(
+            "assignBP",
+            "Assign BP (DIM_BP)",
+            shape="parallelogram",
+            fillcolor="lightyellow",
+        )
 
-        dot.node("checkLBE", "Evaluate DIM_LBE\n(Geolocation Equity)",
-                 shape="diamond", fillcolor="lightblue")
-        dot.node("assignLBE", "Assign BP * 0.5 (if POI < Avg)",
-                 shape="parallelogram", fillcolor="lightyellow")
+        dot.node(
+            "checkLBE",
+            "Evaluate DIM_LBE\n(Geolocation Equity)",
+            shape="diamond",
+            fillcolor="lightblue",
+        )
+        dot.node(
+            "assignLBE",
+            "Assign BP * 0.5 (if POI < Avg)",
+            shape="parallelogram",
+            fillcolor="lightyellow",
+        )
 
-        dot.node("checkTD", "Evaluate DIM_TD\n(Time Diversity)",
-                 shape="diamond", fillcolor="lightblue")
-        dot.node("assignTD", "Assign BP * Coe_time",
-                 shape="parallelogram", fillcolor="lightyellow")
+        dot.node(
+            "checkTD",
+            "Evaluate DIM_TD\n(Time Diversity)",
+            shape="diamond",
+            fillcolor="lightblue",
+        )
+        dot.node(
+            "assignTD",
+            "Assign BP * Coe_time",
+            shape="parallelogram",
+            fillcolor="lightyellow",
+        )
 
-        dot.node("checkPP", "Evaluate DIM_PP\n(Personal Performance)",
-                 shape="diamond", fillcolor="lightblue")
-        dot.node("assignPP", "Assign BP * (AVG_Time_Window - Last_Time_Window) / AVG_Time_Window",
-                 shape="parallelogram", fillcolor="lightyellow")
+        dot.node(
+            "checkPP",
+            "Evaluate DIM_PP\n(Personal Performance)",
+            shape="diamond",
+            fillcolor="lightblue",
+        )
+        dot.node(
+            "assignPP",
+            "Assign BP * (AVG_Time_Window - Last_Time_Window) / AVG_Time_Window",
+            shape="parallelogram",
+            fillcolor="lightyellow",
+        )
 
-        dot.node("checkStreak", "Evaluate DIM_S\n(Consistency)",
-                 shape="diamond", fillcolor="lightblue")
-        dot.node("assignStreak", "Assign BP * (2^Days_Consecutive / 7)",
-                 shape="parallelogram", fillcolor="lightyellow")
+        dot.node(
+            "checkStreak",
+            "Evaluate DIM_S\n(Consistency)",
+            shape="diamond",
+            fillcolor="lightblue",
+        )
+        dot.node(
+            "assignStreak",
+            "Assign BP * (2^Days_Consecutive / 7)",
+            shape="parallelogram",
+            fillcolor="lightyellow",
+        )
 
-        dot.node("totalPoints", "Total Reward Calculation",
-                 shape="parallelogram", fillcolor="lightyellow")
+        dot.node(
+            "totalPoints",
+            "Total Reward Calculation",
+            shape="parallelogram",
+            fillcolor="lightyellow",
+        )
 
         # Add Edges
         dot.edge("start", "taskCompleted")
@@ -315,13 +391,12 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         Generate a hash for the response to ensure integrity.
         """
         data_string = str(response_data).encode("utf-8")
-        return hashlib.sha256((configs.SECRET_KEY + str(data_string)).encode("utf-8")).hexdigest()
+        return hashlib.sha256(
+            (configs.SECRET_KEY + str(data_string)).encode("utf-8")
+        ).hexdigest()
 
     def simulate_strategy(
-            self,
-
-            data_to_simulate: dict = None,
-            userGroup: str = "dynamic"
+        self, data_to_simulate: dict = None, userGroup: str = "dynamic"
     ):
         """
         Simulates a strategy execution to estimate the points a user would
@@ -382,17 +457,16 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         list_ids_tasks_to_ask = []
         for task in allTasks:
             list_ids_tasks_to_ask.append(task.id)
-            list_ids_tasks.append({
-                "id": task.id,
-                "externalTaskId": task.externalTaskId
-            })
+            list_ids_tasks.append(
+                {"id": task.id, "externalTaskId": task.externalTaskId}
+            )
 
         all_records = self.user_points_service.get_all_point_of_tasks_list(
-            list_ids_tasks_to_ask, withData=True)
+            list_ids_tasks_to_ask, withData=True
+        )
 
-        if (userGroup == "random_range"):
-            random_calculated = get_random_values_from_tasks(
-                all_records)
+        if userGroup == "random_range":
+            random_calculated = get_random_values_from_tasks(all_records)
 
             DIM_BP = random_calculated.get("DIM_BP")
             DIM_LBE = random_calculated.get("DIM_LBE")
@@ -403,10 +477,8 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         # END RANDOM_RAGE ########################################################
 
         # AVERAGE_SCORE ########################################################
-        if (userGroup == "average_score"):
-            average_calculated = get_average_values_from_tasks(
-                task,
-                all_records)
+        if userGroup == "average_score":
+            average_calculated = get_average_values_from_tasks(task, all_records)
 
             DIM_BP = average_calculated.get("DIM_BP")
             DIM_LBE = average_calculated.get("DIM_LBE")
@@ -417,16 +489,15 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         # END AVERAGE_SCORE ########################################################
 
         # DYNAMIC_CALCULATION ########################################################
-        if (userGroup == "dynamic_calculation"):
-            user = self.user_service.get_user_by_externalUserId(
-                external_user_id)
+        if userGroup == "dynamic_calculation":
+            user = self.user_service.get_user_by_externalUserId(external_user_id)
             dynamic_calculated = get_dynamic_values_from_tasks(
                 task_to_simulate,
                 list_ids_tasks,
                 all_records,
                 user,
                 self.variable_basic_points,
-                self.variable_lbe_multiplier
+                self.variable_lbe_multiplier,
             )
             DIM_BP = dynamic_calculated.get("DIM_BP")
             DIM_LBE = dynamic_calculated.get("DIM_LBE")
@@ -437,7 +508,8 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         total_simulated_points = DIM_BP + DIM_LBE + DIM_TD + DIM_PP + DIM_S
 
         expiration_date = datetime.datetime.now() + datetime.timedelta(
-            minutes=self.variable_simulation_valid_until)
+            minutes=self.variable_simulation_valid_until
+        )
         expiration_date = expiration_date.replace(tzinfo=datetime.timezone.utc)
 
         externalTaskId_simulate = task_to_simulate.externalTaskId
@@ -464,7 +536,8 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         return expiration_date < now_utc
 
     async def calculate_points(
-            self, externalGameId, externalTaskId, externalUserId, data):
+        self, externalGameId, externalTaskId, externalUserId, data
+    ):
         """
         Calculate the points for the GREENCROWD gamification strategy.
 
@@ -490,7 +563,7 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
 
 
         """
-        case_name = '-'
+        case_name = "-"
         points = -1
 
         # destructuring data
@@ -502,15 +575,16 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             tasks_simulated.append(SimulatedTaskPoints(**task))
         tasks = tasks_simulated
         calculated_hash = calculate_hash_simulated_strategy(
-            tasks, externalGameId, externalUserId)
+            tasks, externalGameId, externalUserId
+        )
         if calculated_hash != simulationHash:
             return points, "Invalid hash"
 
         isExpired = False
         # select externalTaskId from tasks where externalTaskId = taksId
         task = next(
-            (task for task in tasks if str(task.externalTaskId)
-             == str(externalTaskId)), None
+            (task for task in tasks if str(task.externalTaskId) == str(externalTaskId)),
+            None,
         )
 
         callback_data = None
@@ -521,8 +595,10 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
 
             game = self.game_service.get_game_by_external_id(externalGameId)
 
-            tasks_simulated, externalGameId = await self.user_points_service.get_points_simulated_of_user_in_game(
-                game.id, externalUserId, assign_control_group=True
+            tasks_simulated, externalGameId = (
+                await self.user_points_service.get_points_simulated_of_user_in_game(
+                    game.id, externalUserId, assign_control_group=True
+                )
             )
             simulationHash = calculate_hash_simulated_strategy(
                 tasks_simulated, externalGameId, externalUserId
@@ -540,11 +616,15 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
                 },
                 self.service_log,
                 None,
-                None
+                None,
             )
             task = next(
-                (task for task in tasks_simulated if task.externalTaskId ==
-                 externalTaskId), None
+                (
+                    task
+                    for task in tasks_simulated
+                    if task.externalTaskId == externalTaskId
+                ),
+                None,
             )
 
             case_name = "Valid Simulation - Origin: Used simulation"
@@ -553,25 +633,29 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
                 datetime.datetime.strptime(
                     task.expirationDate, "%Y-%m-%d %H:%M:%S.%f%z"
                 )
-
             )
 
             if isExpired:
-                game = self.game_service.get_game_by_external_id(
-                    externalGameId)
+                game = self.game_service.get_game_by_external_id(externalGameId)
 
-                tasks_simulated, externalGameId = await self.user_points_service.get_points_simulated_of_user_in_game(
-                    game.id, externalUserId, assign_control_group=True
+                tasks_simulated, externalGameId = (
+                    await self.user_points_service.get_points_simulated_of_user_in_game(
+                        game.id, externalUserId, assign_control_group=True
+                    )
                 )
                 callback_data = tasks_simulated
                 simulationHash = calculate_hash_simulated_strategy(
                     tasks_simulated, externalGameId, externalUserId
                 )
                 task = next(
-                    (task for task in tasks_simulated if task.externalTaskId ==
-                     externalTaskId), None
+                    (
+                        task
+                        for task in tasks_simulated
+                        if task.externalTaskId == externalTaskId
+                    ),
+                    None,
                 )
-                if (case_name == "-"):
+                if case_name == "-":
                     case_name = "Valid Simulation - Origin: Expired simulation"
 
             points = 0
@@ -581,15 +665,17 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             DIM_PP = task.dimensions[3].get("DIM_PP")
             DIM_S = task.dimensions[4].get("DIM_S")
 
-            print({
-                "DIM_BP": DIM_BP,
-                "DIM_LBE": DIM_LBE,
-                "DIM_TD": DIM_TD,
-                "DIM_PP": DIM_PP,
-                "DIM_S": DIM_S
-            })
+            print(
+                {
+                    "DIM_BP": DIM_BP,
+                    "DIM_LBE": DIM_LBE,
+                    "DIM_TD": DIM_TD,
+                    "DIM_PP": DIM_PP,
+                    "DIM_S": DIM_S,
+                }
+            )
             points = DIM_BP + DIM_LBE + DIM_TD + DIM_PP + DIM_S + 1
-            if (case_name == "-"):
+            if case_name == "-":
                 case_name = "Valid Simulation"
 
         return points, case_name, callback_data

@@ -1,6 +1,4 @@
-from app.repository.user_interactions_repository import (
-    UserInteractionsRepository
-)
+from app.repository.user_interactions_repository import UserInteractionsRepository
 from app.services.base_service import BaseService
 
 
@@ -13,8 +11,7 @@ class UserInteractionsService(BaseService):
           instance for User Interactions.
     """
 
-    def __init__(self,
-                 user_interactions_repository: UserInteractionsRepository):
+    def __init__(self, user_interactions_repository: UserInteractionsRepository):
         """
         Initializes the UserInteractionsService with the provided repository.
 

@@ -1,28 +1,19 @@
 from datetime import datetime
 from uuid import uuid4
 
-from app.schema.user_points_schema import (
-    AllPointsByGame,
-    AllPointsByGameWithDetails,
-    GameDetail,
-    PointsAssigned,
-    PointsAssignedToUser,
-    PointsAssignedToUserDetails,
-    PointsByUserInTask,
-    PointsData,
-    PointsDetail,
-    PostAssignPointsToUser,
-    ResponseGetPointsByGame,
-    ResponseGetPointsByTask,
-    ResponsePointsByExternalUserId,
-    TaskDetail,
-    TaskPointsByGame,
-    TaskPointsByGameWithDetails,
-    UserGamePoints,
-    UserPoints,
-    UserPointsAssign,
-    UserPointsAssigned,
-)
+from app.schema.user_points_schema import (AllPointsByGame, AllPointsByGameWithDetails,
+                                           GameDetail, PointsAssigned,
+                                           PointsAssignedToUser,
+                                           PointsAssignedToUserDetails,
+                                           PointsByUserInTask, PointsData, PointsDetail,
+                                           PostAssignPointsToUser,
+                                           ResponseGetPointsByGame,
+                                           ResponseGetPointsByTask,
+                                           ResponsePointsByExternalUserId, TaskDetail,
+                                           TaskPointsByGame,
+                                           TaskPointsByGameWithDetails, UserGamePoints,
+                                           UserPoints, UserPointsAssign,
+                                           UserPointsAssigned)
 from app.schema.wallet_schema import WalletWithoutUserId
 
 

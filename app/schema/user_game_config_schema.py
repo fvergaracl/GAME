@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Dict, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -27,6 +27,7 @@ class CreateUserGameConfig(BaseUserGameConfig):
     """
     Schema for creating a new user game configuration.
     """
+
     pass
 
 

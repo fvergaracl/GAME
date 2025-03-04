@@ -33,7 +33,7 @@ class EnhancedGamificationStrategy(BaseStrategy):  # noqa
         self.variable_individual_adjustment_points = 8
 
     def calculate_points(
-            self, externalGameId, externalTaskId, externalUserId, data=None
+        self, externalGameId, externalTaskId, externalUserId, data=None
     ):
         task_measurements_count = (
             self.user_points_service.count_measurements_by_external_task_id(

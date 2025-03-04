@@ -4,9 +4,8 @@ from uuid import uuid4
 from app.schema.task_schema import TaskPointsResponseByUser
 from app.schema.user_schema import (BaseUser, PostAssignPointsToUser,
                                     PostPointsConversionRequest,
-                                    ResponseConversionPreview,
-                                    ResponsePointsConversion, UserBasicInfo,
-                                    UserPointsTasks, UserWallet)
+                                    ResponseConversionPreview, ResponsePointsConversion,
+                                    UserBasicInfo, UserPointsTasks, UserWallet)
 from app.schema.wallet_schema import WalletWithoutUserId
 from app.schema.wallet_transaction_schema import BaseWalletTransactionInfo
 

@@ -1,10 +1,11 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from app.repository.dashboard_repository import DashboardRepository
-from app.model.users import Users
+
 from app.model.games import Games
-from app.model.user_points import UserPoints
 from app.model.user_actions import UserActions
+from app.model.user_points import UserPoints
+from app.model.users import Users
+from app.repository.dashboard_repository import DashboardRepository
 
 
 class TestDashboardRepository(unittest.TestCase):

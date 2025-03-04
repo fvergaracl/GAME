@@ -11,11 +11,7 @@ class TestCheckRole(unittest.TestCase):
         Test when the role is present in the token.
         """
         token_decoded = {
-            "resource_access": {
-                "account": {
-                    "roles": ["admin", "creator", "user"]
-                }
-            }
+            "resource_access": {"account": {"roles": ["admin", "creator", "user"]}}
         }
         self.assertTrue(check_role(token_decoded, "creator"))
 
@@ -23,22 +19,14 @@ class TestCheckRole(unittest.TestCase):
         """
         Test when the role is not present in the token.
         """
-        token_decoded = {
-            "resource_access": {
-                "account": {
-                    "roles": ["admin", "user"]
-                }
-            }
-        }
+        token_decoded = {"resource_access": {"account": {"roles": ["admin", "user"]}}}
         self.assertFalse(check_role(token_decoded, "creator"))
 
     def test_no_resource_access(self):
         """
         Test when 'resource_access' is missing in the token.
         """
-        token_decoded = {
-            "some_other_key": {}
-        }
+        token_decoded = {"some_other_key": {}}
         self.assertFalse(check_role(token_decoded, "creator"))
 
     def test_no_account_in_resource_access(self):
@@ -46,11 +34,7 @@ class TestCheckRole(unittest.TestCase):
         Test when 'account' is missing in 'resource_access'.
         """
         token_decoded = {
-            "resource_access": {
-                "other_service": {
-                    "roles": ["admin", "creator"]
-                }
-            }
+            "resource_access": {"other_service": {"roles": ["admin", "creator"]}}
         }
         self.assertFalse(check_role(token_decoded, "creator"))
 
@@ -58,24 +42,14 @@ class TestCheckRole(unittest.TestCase):
         """
         Test when 'roles' is missing in 'account'.
         """
-        token_decoded = {
-            "resource_access": {
-                "account": {}
-            }
-        }
+        token_decoded = {"resource_access": {"account": {}}}
         self.assertFalse(check_role(token_decoded, "creator"))
 
     def test_role_not_in_token(self):
         """
         Test when the required role is not in the token.
         """
-        token_decoded = {
-            "resource_access": {
-                "account": {
-                    "roles": ["admin", "user"]
-                }
-            }
-        }
+        token_decoded = {"resource_access": {"account": {"roles": ["admin", "user"]}}}
         self.assertFalse(check_role(token_decoded, "creator"))
 
     def test_token_decoded_not_dict(self):
@@ -97,11 +71,7 @@ class TestCheckRole(unittest.TestCase):
         Test when the role is None.
         """
         token_decoded = {
-            "resource_access": {
-                "account": {
-                    "roles": ["admin", "creator"]
-                }
-            }
+            "resource_access": {"account": {"roles": ["admin", "creator"]}}
         }
         self.assertFalse(check_role(token_decoded, None))
 

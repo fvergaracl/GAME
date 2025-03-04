@@ -1,7 +1,6 @@
-from sqlmodel import (
-    Column, Field, String, Integer, ForeignKey
-)
 from sqlalchemy.dialects.postgresql import UUID
+from sqlmodel import Column, Field, ForeignKey, Integer, String
+
 from app.model.base_model import BaseModel
 
 
@@ -18,8 +17,7 @@ class ApiRequests(BaseModel, table=True):
 
     """
 
-    userId: str = Field(sa_column=Column(
-        UUID(as_uuid=True), ForeignKey("users.id")))
+    userId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("users.id")))
     endpoint: str = Field(sa_column=Column(String))
     statusCode: int = Field(sa_column=Column(Integer))
     responseTimeMS: int = Field(sa_column=Column(Integer))

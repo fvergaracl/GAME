@@ -1,17 +1,19 @@
 import io
 from typing import List
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
+
 from app.core.container import Container
 from app.core.exceptions import NotFoundError
-from app.schema.strategy_schema import Strategy
-from app.services.strategy_service import StrategyService
-from app.services.logs_service import LogsService
-from app.services.apikey_service import ApiKeyService
-from app.services.oauth_users_service import OAuthUsersService
-from app.schema.oauth_users_schema import CreateOAuthUser
 from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
+from app.schema.oauth_users_schema import CreateOAuthUser
+from app.schema.strategy_schema import Strategy
+from app.services.apikey_service import ApiKeyService
+from app.services.logs_service import LogsService
+from app.services.oauth_users_service import OAuthUsersService
+from app.services.strategy_service import StrategyService
 from app.util.add_log import add_log
 
 router = APIRouter(

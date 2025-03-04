@@ -1,11 +1,13 @@
 from typing import Annotated, Optional
+
 import jwt
 import requests
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from jwt import PyJWKClient, exceptions
-from app.util.response import Response
+
 from app.core.config import configs
+from app.util.response import Response
 
 
 class CustomOAuth2AuthorizationCodeBearer(OAuth2AuthorizationCodeBearer):

@@ -1,4 +1,10 @@
 from app.repository.dashboard_repository import DashboardRepository
+from app.repository.game_repository import GameRepository
+from app.repository.logs_repository import LogsRepository
+from app.repository.task_repository import TaskRepository
+from app.repository.user_actions_repository import UserActionsRepository
+from app.repository.user_points_repository import UserPointsRepository
+from app.repository.user_repository import UserRepository
 from app.services.base_service import BaseService
 
 # from app.services.game_service import GameService
@@ -7,12 +13,6 @@ from app.services.base_service import BaseService
 # from app.services.user_points_service import UserPointsService
 # from app.services.user_actions_service import UserActionsService
 
-from app.repository.game_repository import GameRepository
-from app.repository.task_repository import TaskRepository
-from app.repository.user_repository import UserRepository
-from app.repository.logs_repository import LogsRepository
-from app.repository.user_points_repository import UserPointsRepository
-from app.repository.user_actions_repository import UserActionsRepository
 
 
 class DashboardService(BaseService):

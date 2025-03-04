@@ -252,8 +252,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(
-                    UserPoints.id).label("measurement_count"))
+                session.query(func.count(UserPoints.id).label("measurement_count"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -271,8 +270,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(
-                    func.max(UserPoints.created_at).label("last_task_time"))
+                session.query(func.max(UserPoints.created_at).label("last_task_time"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -290,8 +288,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(
-                    func.avg(UserPoints.points).label("average_points"))
+                session.query(func.avg(UserPoints.points).label("average_points"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -322,8 +319,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(
-                    func.min(UserPoints.created_at).label("start_time"))
+                session.query(func.min(UserPoints.created_at).label("start_time"))
                 .filter(UserPoints.userId == userId)
                 .one()
             )
@@ -341,8 +337,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(
-                    UserPoints.taskId).label("measurement_count"))
+                session.query(func.count(UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .filter(Tasks.externalTaskId == external_task_id)
                 .one()
@@ -385,8 +380,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(
-                    UserPoints.taskId).label("measurement_count"))
+                session.query(func.count(UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
@@ -413,8 +407,7 @@ class UserPointsRepository(BaseRepository):
         """
         with self.session_factory() as session:
             query = (
-                session.query(func.count(
-                    UserPoints.taskId).label("measurement_count"))
+                session.query(func.count(UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
@@ -520,8 +513,7 @@ class UserPointsRepository(BaseRepository):
             if len(last_two_points) < 2:
                 return 0
 
-            time_diff = last_two_points[0].created_at - \
-                last_two_points[1].created_at
+            time_diff = last_two_points[0].created_at - last_two_points[1].created_at
             return time_diff.total_seconds()
 
     def get_new_last_window_time_diff(
@@ -562,8 +554,7 @@ class UserPointsRepository(BaseRepository):
                 current_time = current_time.replace(tzinfo=timezone.utc)
 
             if last_point.created_at.tzinfo is None:
-                last_created_at = last_point.created_at.replace(
-                    tzinfo=timezone.utc)
+                last_created_at = last_point.created_at.replace(tzinfo=timezone.utc)
             else:
                 last_created_at = last_point.created_at
 
@@ -616,8 +607,7 @@ class UserPointsRepository(BaseRepository):
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
                 .filter(Users.externalUserId == externalUserId)
-                .filter(UserPoints.created_at > func.now() - timedelta(
-                    minutes=minutes))
+                .filter(UserPoints.created_at > func.now() - timedelta(minutes=minutes))
                 .count()
             )
             return query > 0
@@ -637,7 +627,8 @@ class UserPointsRepository(BaseRepository):
             query = (
                 session.query(
                     func.avg(UserPoints.data["minutes"].as_float()).label(
-                        "average_minutes")
+                        "average_minutes"
+                    )
                 )
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Games, Tasks.gameId == Games.id)
@@ -664,7 +655,8 @@ class UserPointsRepository(BaseRepository):
             query = (
                 session.query(
                     func.avg(UserPoints.data["minutes"].as_float()).label(
-                        "average_minutes")
+                        "average_minutes"
+                    )
                 )
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Games, Tasks.gameId == Games.id)
@@ -696,9 +688,7 @@ class UserPointsRepository(BaseRepository):
                 session.query(UserPoints)
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
-                .filter(
-                    UserPoints.data["simulationHash"].astext == simulationHash
-                )
+                .filter(UserPoints.data["simulationHash"].astext == simulationHash)
                 .all()
             )
 
@@ -718,8 +708,7 @@ class UserPointsRepository(BaseRepository):
         """
 
         with self.session_factory() as session:
-            query = session.query(UserPoints).filter(
-                UserPoints.taskId.in_(task_list))
+            query = session.query(UserPoints).filter(UserPoints.taskId.in_(task_list))
 
             if not withData:
                 query = query.with_entities(
@@ -731,7 +720,7 @@ class UserPointsRepository(BaseRepository):
                     UserPoints.description,
                     UserPoints.userId,
                     UserPoints.taskId,
-                    UserPoints.apiKey_used
+                    UserPoints.apiKey_used,
                 )
 
             return query.yield_per(1000)

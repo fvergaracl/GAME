@@ -7,13 +7,8 @@ from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.schema.games_params_schema import InsertGameParams
-from app.schema.games_schema import (
-    BaseGameResult,
-    GameCreated,
-    PatchGame,
-    PostCreateGame,
-    ResponsePatchGame,
-)
+from app.schema.games_schema import (BaseGameResult, GameCreated, PatchGame,
+                                     PostCreateGame, ResponsePatchGame)
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
 from app.util.are_variables_matching import are_variables_matching
@@ -94,8 +89,7 @@ class GameService(BaseService):
         Raises:
             NotFoundError: If the game is not found.
         """
-        game = self.game_repository.read_by_id(
-            gameId, not_found_raise_exception=False)
+        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
 
@@ -213,7 +207,8 @@ class GameService(BaseService):
                     params_dict["oauth_user_id"] = oauth_user_id
                 params_to_insert = InsertGameParams(**params_dict)
                 created_param = await self.game_params_repository.create(
-                    params_to_insert)
+                    params_to_insert
+                )
                 created_params.append(created_param)
 
         response = GameCreated(
@@ -255,8 +250,7 @@ class GameService(BaseService):
         Returns:
             ResponsePatchGame: The updated game details.
         """
-        game = self.game_repository.read_by_id(
-            gameId, not_found_raise_exception=False)
+        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
         if schema.externalGameId and schema.externalGameId != game.externalGameId:
@@ -273,8 +267,7 @@ class GameService(BaseService):
         params_game = game.dict().get("params", None)
         params_is_matching = False
         if params_schema and params_game:
-            params_is_matching = are_variables_matching(
-                params_schema, params_game)
+            params_is_matching = are_variables_matching(params_schema, params_game)
 
         if is_matching and params_is_matching:
             raise ConflictError(
@@ -290,8 +283,7 @@ class GameService(BaseService):
                 (strategy for strategy in strategies if strategy.id == strategyId), None
             )
             if not strategy:
-                raise NotFoundError(
-                    detail=f"Strategy with id: {strategyId} not found")
+                raise NotFoundError(detail=f"Strategy with id: {strategyId} not found")
         if not strategyId:
             strategyId = game.strategyId
         if not strategyId:
@@ -303,8 +295,7 @@ class GameService(BaseService):
         updated_params = []
         if params:
             for param in params:
-                self.game_params_repository.patch_game_params_by_id(
-                    param.id, param)
+                self.game_params_repository.patch_game_params_by_id(param.id, param)
                 updated_params.append(param)
 
         game = self.game_repository.patch_game_by_id(gameId, schema)
@@ -350,8 +341,7 @@ class GameService(BaseService):
         Returns:
             dict: The strategy details.
         """
-        game = self.game_repository.read_by_id(
-            gameId, not_found_raise_exception=False)
+        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
 
@@ -376,8 +366,7 @@ class GameService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy["variables"][param.key])
+                    type_strategy_variable = type(strategy["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy["variables"][param.key] = param.value
 

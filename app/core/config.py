@@ -72,11 +72,9 @@ class Configs(BaseSettings):
     KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "master")
     KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "account")
     KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "admin-cli")
-    KEYCLOAK_CLIENT_SECRET = os.getenv(
-        "KEYCLOAK_CLIENT_SECRET", "admin-client-secret")
+    KEYCLOAK_CLIENT_SECRET = os.getenv("KEYCLOAK_CLIENT_SECRET", "admin-client-secret")
     KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
-    KEYCLOAK_URL_DOCKER = os.getenv(
-        "KEYCLOAK_URL_DOCKER", "http://keycloak:8080")
+    KEYCLOAK_URL_DOCKER = os.getenv("KEYCLOAK_URL_DOCKER", "http://keycloak:8080")
     # database
     DB_USER: str = os.getenv("DB_USER")
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")

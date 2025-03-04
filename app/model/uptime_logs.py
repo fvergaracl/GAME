@@ -1,6 +1,5 @@
-from sqlmodel import (
-    Column, Field, String
-)
+from sqlmodel import Column, Field, String
+
 from app.model.base_model import BaseModel
 
 
@@ -49,7 +48,4 @@ class UptimeLogs(BaseModel, table=True):
         Returns:
             bool: True if the objects are equal, False otherwise.
         """
-        return (
-            isinstance(other, UptimeLogs)
-            and self.status == other.status
-        )
+        return isinstance(other, UptimeLogs) and self.status == other.status

@@ -34,9 +34,7 @@ class UserRepository(BaseRepository):
         super().__init__(session_factory, model)
 
     def create_user_by_externalUserId(
-            self,
-            externalUserId: str,
-            oauth_user_id: str
+        self, externalUserId: str, oauth_user_id: str
     ) -> Users:
         """
         Creates a new user with the provided external user ID.
@@ -49,10 +47,7 @@ class UserRepository(BaseRepository):
             Users: The created user.
         """
         with self.session_factory() as session:
-            user = Users(
-                externalUserId=externalUserId,
-                oauth_user_id=oauth_user_id
-            )
+            user = Users(externalUserId=externalUserId, oauth_user_id=oauth_user_id)
             session.add(user)
             session.commit()
             session.refresh(user)

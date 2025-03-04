@@ -1,5 +1,4 @@
-from app.repository.wallet_transaction_repository import \
-    WalletTransactionRepository
+from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.services.base_service import BaseService
 
 

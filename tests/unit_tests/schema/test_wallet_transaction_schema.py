@@ -1,8 +1,8 @@
 from uuid import uuid4
 
-from app.schema.wallet_transaction_schema import (
-    BaseWalletTransaction, BaseWalletTransactionInfo,
-    BaseWalletTransactionWithoutWalletId)
+from app.schema.wallet_transaction_schema import (BaseWalletTransaction,
+                                                  BaseWalletTransactionInfo,
+                                                  BaseWalletTransactionWithoutWalletId)
 
 
 def test_base_wallet_transaction_without_wallet_id():

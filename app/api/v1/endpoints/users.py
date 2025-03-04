@@ -2,25 +2,23 @@ from typing import List
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query
-from app.services.logs_service import LogsService
-from app.services.apikey_service import ApiKeyService
-from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
-from app.util.add_log import add_log
+
 from app.core.container import Container
+from app.middlewares.authentication import auth_api_key_or_oauth2
+from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
 from app.schema.oauth_users_schema import CreateOAuthUser
+from app.schema.user_actions_schema import CreatedUserActions, CreateUserBodyActions
 from app.schema.user_points_schema import AllPointsByGame, UserGamePoints
-from app.schema.user_schema import (
-    PostPointsConversionRequest,
-    ResponseConversionPreview,
-    ResponsePointsConversion,
-    UserWallet,
-)
-from app.schema.user_actions_schema import CreateUserBodyActions, CreatedUserActions
+from app.schema.user_schema import (PostPointsConversionRequest,
+                                    ResponseConversionPreview, ResponsePointsConversion,
+                                    UserWallet)
+from app.services.apikey_service import ApiKeyService
+from app.services.logs_service import LogsService
+from app.services.oauth_users_service import OAuthUsersService
+from app.services.user_actions_service import UserActionsService
 from app.services.user_points_service import UserPointsService
 from app.services.user_service import UserService
-from app.services.user_actions_service import UserActionsService
-from app.services.oauth_users_service import OAuthUsersService
-from app.middlewares.authentication import auth_api_key_or_oauth2
+from app.util.add_log import add_log
 
 router = APIRouter(
     prefix="/users",

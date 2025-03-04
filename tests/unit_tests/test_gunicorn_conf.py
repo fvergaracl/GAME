@@ -1,23 +1,26 @@
-import unittest
 import os
+import unittest
 from unittest.mock import patch
 
 
 class TestGunicornConfig(unittest.TestCase):
-    @patch('multiprocessing.cpu_count', return_value=4)
-    @patch.dict(os.environ, {
-        "WORKERS_PER_CORE": "1",
-        "MAX_WORKERS": "8",
-        "WEB_CONCURRENCY": "4",
-        "HOST": "127.0.0.1",
-        "PORT": "8080",
-        "LOG_LEVEL": "debug",
-        "ACCESS_LOG": "/var/log/access.log",
-        "ERROR_LOG": "/var/log/error.log",
-        "GRACEFUL_TIMEOUT": "90",
-        "TIMEOUT": "100",
-        "KEEP_ALIVE": "10"
-    })
+    @patch("multiprocessing.cpu_count", return_value=4)
+    @patch.dict(
+        os.environ,
+        {
+            "WORKERS_PER_CORE": "1",
+            "MAX_WORKERS": "8",
+            "WEB_CONCURRENCY": "4",
+            "HOST": "127.0.0.1",
+            "PORT": "8080",
+            "LOG_LEVEL": "debug",
+            "ACCESS_LOG": "/var/log/access.log",
+            "ERROR_LOG": "/var/log/error.log",
+            "GRACEFUL_TIMEOUT": "90",
+            "TIMEOUT": "100",
+            "KEEP_ALIVE": "10",
+        },
+    )
     def test_gunicorn_config(self, mock_cpu_count):
         import app.gunicorn_conf as gunicorn_conf
 

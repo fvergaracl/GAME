@@ -40,12 +40,9 @@ class Tasks(BaseModel, table=True):
     """
 
     externalTaskId: str = Field(sa_column=Column(String, nullable=False))
-    gameId: str = Field(sa_column=Column(
-        UUID(as_uuid=True), ForeignKey("games.id")))
-    strategyId: str = Field(sa_column=Column(
-        String, nullable=False, default="default"))
-    status: str = Field(sa_column=Column(
-        String, nullable=False, default="open"))
+    gameId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id")))
+    strategyId: str = Field(sa_column=Column(String, nullable=False, default="default"))
+    status: str = Field(sa_column=Column(String, nullable=False, default="open"))
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
