@@ -314,7 +314,8 @@
         <span class="n">all_tasks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="n">all_externalUserId</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
             <span class="n">externalTaskId</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">externalTaskId</span>
             <span class="k">if</span> <span class="n">points</span><span class="p">:</span>
@@ -338,7 +339,8 @@
                             <span class="n">firstAction</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">first_user_point</span><span class="o">.</span><span class="n">created_at</span><span class="p">),</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-            <span class="n">all_tasks</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"externalTaskId"</span><span class="p">:</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="s2">"users"</span><span class="p">:</span> <span class="n">all_externalUserId</span><span class="p">}</span>
+            <span class="n">all_tasks</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"externalTaskId"</span><span class="p">:</span> <span class="n">externalTaskId</span><span class="p">,</span>
+                         <span class="s2">"users"</span><span class="p">:</span> <span class="n">all_externalUserId</span><span class="p">}</span>
             <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TasksWithUsers</span><span class="p">(</span><span class="o">**</span><span class="n">all_tasks</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">ListTasksWithUsers</span><span class="p">(</span><span class="n">gameId</span><span class="o">=</span><span class="n">gameId</span><span class="p">,</span> <span class="n">tasks</span><span class="o">=</span><span class="n">response</span><span class="p">)</span></div>
 
@@ -420,7 +422,8 @@
         <span class="n">game_points</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="n">user_points</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">points</span><span class="p">:</span>
 
                 <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
@@ -459,7 +462,8 @@
         <span class="n">game_points</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="n">user_points</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">points</span><span class="p">:</span>
 
                 <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
@@ -506,7 +510,8 @@
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Tasks not found by gameId: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">points</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">:</span>
@@ -559,7 +564,8 @@
             <span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">externalTaskId</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">strategyId</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">strategyId</span>
         <span class="n">strategy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span><span class="o">.</span><span class="n">get_strategy_by_id</span><span class="p">(</span><span class="n">strategyId</span><span class="p">)</span>
@@ -598,7 +604,8 @@
                 <span class="n">data</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">points</span><span class="p">,</span> <span class="n">case_name</span><span class="p">,</span> <span class="n">callbackData</span> <span class="o">=</span> <span class="p">(</span><span class="n">result_calculated_points</span> <span class="o">+</span> <span class="p">(</span><span class="kc">None</span><span class="p">,))[:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">points</span><span class="p">,</span> <span class="n">case_name</span><span class="p">,</span> <span class="n">callbackData</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">result_calculated_points</span> <span class="o">+</span> <span class="p">(</span><span class="kc">None</span><span class="p">,))[:</span><span class="mi">3</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">callbackData</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"callbackData"</span><span class="p">]</span> <span class="o">=</span> <span class="n">callbackData</span>
 
@@ -755,14 +762,16 @@
             <span class="k">if</span> <span class="n">user_config</span><span class="p">:</span>
                 <span class="n">userGroup</span> <span class="o">=</span> <span class="n">user_config</span><span class="o">.</span><span class="n">experimentGroup</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">userGroup</span><span class="p">:</span>
-                <span class="n">group_control</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"random_range"</span><span class="p">,</span> <span class="s2">"average_score"</span><span class="p">,</span> <span class="s2">"dynamic_calculation"</span><span class="p">]</span>
+                <span class="n">group_control</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"random_range"</span><span class="p">,</span>
+                                 <span class="s2">"average_score"</span><span class="p">,</span> <span class="s2">"dynamic_calculation"</span><span class="p">]</span>
                 <span class="n">all_users</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_game_config_repository</span><span class="o">.</span><span class="n">get_all_users_by_gameId</span><span class="p">(</span>
                     <span class="n">game</span><span class="o">.</span><span class="n">id</span>
                 <span class="p">)</span>
                 <span class="n">group_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span>
                     <span class="n">user_config</span><span class="o">.</span><span class="n">experimentGroup</span> <span class="k">for</span> <span class="n">user_config</span> <span class="ow">in</span> <span class="n">all_users</span>
                 <span class="p">)</span>
-                <span class="n">min_group</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">group_control</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">group_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="n">min_group</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                    <span class="n">group_control</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">group_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
                 <span class="n">userGroup</span> <span class="o">=</span> <span class="n">min_group</span>
                 <span class="n">new_user_config</span> <span class="o">=</span> <span class="n">CreateUserGameConfig</span><span class="p">(</span>
                     <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
@@ -783,6 +792,11 @@
             <span class="n">grouped_by_strategyId</span><span class="p">[</span><span class="n">strategy_id_applied</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">user_last_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_last_task_by_userId</span><span class="p">(</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">externalUserId</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">externalUserId</span>
+
         <span class="k">for</span> <span class="n">strategy_id_applied</span><span class="p">,</span> <span class="n">tasks</span> <span class="ow">in</span> <span class="n">grouped_by_strategyId</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">strategy_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span><span class="o">.</span><span class="n">get_Class_by_id</span><span class="p">(</span>
                 <span class="n">strategy_id_applied</span>
@@ -799,7 +813,7 @@
                     <span class="s2">"externalUserId"</span><span class="p">:</span> <span class="n">externalUserId</span><span class="p">,</span>
                 <span class="p">}</span>
                 <span class="n">task_simulation</span> <span class="o">=</span> <span class="n">strategy_instance</span><span class="o">.</span><span class="n">simulate_strategy</span><span class="p">(</span>
-                    <span class="n">data_to_simulate</span><span class="o">=</span><span class="n">data_to_simulate</span><span class="p">,</span> <span class="n">userGroup</span><span class="o">=</span><span class="n">userGroup</span>
+                    <span class="n">data_to_simulate</span><span class="o">=</span><span class="n">data_to_simulate</span><span class="p">,</span> <span class="n">userGroup</span><span class="o">=</span><span class="n">userGroup</span><span class="p">,</span> <span class="n">user_last_task</span><span class="o">=</span><span class="n">user_last_task</span>
                 <span class="p">)</span>
                 <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task_simulation</span><span class="p">)</span>
 
@@ -813,7 +827,8 @@
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalGameId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalGameId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Game with externalGameId </span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Game with externalGameId </span><span class="si">{</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
         <span class="p">)</span>
 
         <span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
@@ -830,7 +845,8 @@
 
         <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
+                <span class="n">task</span><span class="p">)</span>
             <span class="n">response_by_task</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="n">points</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
@@ -856,7 +872,8 @@
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalTaskId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task with externalTaskId </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Task with externalTaskId </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
         <span class="p">)</span>
 
         <span class="n">points_by_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
@@ -881,12 +898,14 @@
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalTaskId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task with externalTaskId </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Task with externalTaskId </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"User with externalUserId </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"User with externalUserId </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
         <span class="p">)</span>
 
         <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">read_by_columns</span><span class="p">(</span>
@@ -902,7 +921,8 @@
         <span class="n">user_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"User with externalUserId </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"User with externalUserId </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
             <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">user_data</span><span class="p">:</span>
@@ -914,7 +934,8 @@
                 <span class="n">userExists</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_task_by_externalUserId</span><span class="p">(</span><span class="n">externalUserId</span><span class="p">)</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_task_by_externalUserId</span><span class="p">(</span>
+            <span class="n">externalUserId</span><span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
@@ -971,10 +992,12 @@
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"User with externalUserId </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
+            <span class="n">not_found_message</span><span class="o">=</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"User with externalUserId </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_task_and_sum_points_by_userId</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_task_and_sum_points_by_userId</span><span class="p">(</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
         <span class="n">total_points</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>

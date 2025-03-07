@@ -361,6 +361,8 @@
         </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_individual_calculation" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_individual_calculation()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_last_task_by_userId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_last_task_by_userId()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_last_window_time_diff()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_new_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_new_last_window_time_diff()</span></code></a>
@@ -634,6 +636,8 @@
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_global_calculation" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_global_calculation()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_individual_calculation" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_individual_calculation()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_last_task_by_userId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_last_task_by_userId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_last_window_time_diff()</span></code></a>
         </li>
@@ -1422,6 +1426,22 @@ If withData is True, it returns the full UserPoints object; otherwise, it return
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_last_task_by_userId">
+<span class="sig-name descname"><span class="pre">get_last_task_by_userId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_last_task_by_userId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_last_task_by_userId" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the last task completed by a user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>userId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The user ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The last task completed by the user.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>UserPoints</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2814,6 +2834,22 @@ If withData is True, it returns the full UserPoints object; otherwise, it return
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.get_last_task_by_userId">
+<span class="sig-name descname"><span class="pre">get_last_task_by_userId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_last_task_by_userId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.get_last_task_by_userId" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the last task completed by a user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>userId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The user ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The last task completed by the user.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>UserPoints</p>
 </dd>
 </dl>
 </dd></dl>
