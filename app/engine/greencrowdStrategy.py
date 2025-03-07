@@ -399,7 +399,7 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         ).hexdigest()
 
     def simulate_strategy(
-        self, data_to_simulate: dict = None, userGroup: str = "dynamic"
+        self, data_to_simulate: dict = None, userGroup: str = "dynamic", user_last_task: dict = None
     ):
         """
         Simulates a strategy execution to estimate the points a user would
@@ -425,6 +425,7 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
                 }
             userGroup (str): The user group to simulate the strategy for.
               Could be ["random_range", "average_score", "dynamic_calculation"]
+            user_last_task (dict, optional): The last task of the user.
 
         Returns:
             list: A list of dictionaries containing the results of the strategy
@@ -454,6 +455,28 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         DIM_TD = 0
         DIM_PP = 0
         DIM_S = 0
+        expiration_date = datetime.datetime.now() + datetime.timedelta(
+            minutes=self.variable_simulation_valid_until
+        )
+        expiration_date = expiration_date.replace(tzinfo=datetime.timezone.utc)
+        externalTaskId_simulate = task_to_simulate.externalTaskId
+        if (user_last_task is not None and (
+            user_last_task.taskId == task_to_simulate.id
+        )):
+            return SimulatedTaskPoints(
+                externalUserId=external_user_id,
+                externalTaskId=str(externalTaskId_simulate),
+                userGroup=userGroup,
+                dimensions=[
+                    {"DIM_BP": DIM_BP},
+                    {"DIM_LBE": DIM_LBE},
+                    {"DIM_TD": DIM_TD},
+                    {"DIM_PP": DIM_PP},
+                    {"DIM_S": DIM_S},
+                ],
+                totalSimulatedPoints=total_simulated_points,
+                expirationDate=str(expiration_date),
+            )
         # RANDOM_RAGE ########################################################
 
         list_ids_tasks = []
@@ -512,12 +535,6 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         # END DYNAMIC_CALCULATION ########################################################
         total_simulated_points = DIM_BP + DIM_LBE + DIM_TD + DIM_PP + DIM_S
 
-        expiration_date = datetime.datetime.now() + datetime.timedelta(
-            minutes=self.variable_simulation_valid_until
-        )
-        expiration_date = expiration_date.replace(tzinfo=datetime.timezone.utc)
-
-        externalTaskId_simulate = task_to_simulate.externalTaskId
         return SimulatedTaskPoints(
             externalUserId=external_user_id,
             externalTaskId=str(externalTaskId_simulate),
