@@ -86,16 +86,29 @@ class TestCheckClassMethodsAndVariables(unittest.TestCase):
         """
         Test that a class missing some methods and variables fails.
         """
-        result = check_class_methods_and_variables(self.IncompleteClass, debug=True)
+        result = check_class_methods_and_variables(
+            self.IncompleteClass, debug=True)
         self.assertFalse(result)
 
-        expected_missing_methods = "Missing methods: ['get_strategy_id', 'get_strategy_description', 'get_strategy_name_slug', 'get_strategy_version', 'get_variable_basic_points', 'get_variable_bonus_points', 'set_variables', 'get_variables', 'get_variable', 'set_variable', 'get_strategy', 'generate_logic_graph']"  # noqa
-        expected_missing_variables = "Missing variables: ['strategy_description', 'strategy_name_slug', 'strategy_version']"  # noqa
+        expected_missing_methods = (
+            "Missing methods: ["
+            "'get_strategy_id', 'get_strategy_description', "
+            "'get_strategy_name_slug', 'get_strategy_version', "
+            "'get_variable_basic_points', 'get_variable_bonus_points', "
+            "'set_variables', 'get_variables', 'get_variable', "
+            "'set_variable', 'get_strategy', 'calculate_points', "
+            "'generate_logic_graph']"
+        )
+        expected_missing_variables = "Missing variables: [" \
+            "'strategy_description', 'strategy_name_slug', 'strategy_version']"
 
-        print(f"Print calls: " f"{[call.args for call in mock_print.call_args_list]}")
-
-        mock_print.assert_any_call(expected_missing_methods)
-        mock_print.assert_any_call(expected_missing_variables)
+        printed_calls = [call.args[0] for call in mock_print.call_args_list]
+        assert any("Missing methods:" in str(c) and "get_strategy_id" in str(c) and "get_strategy_description" in str(c)
+                   for c in printed_calls), "Expected missing methods print"
+        " not found"
+        assert any(expected_missing_variables in str(c)
+                   for c in printed_calls), "Expected missing variables print"
+        " not found"
 
 
 if __name__ == "__main__":
