@@ -46,7 +46,7 @@
   
   
     <title>app.repository.kpi_metrics_repository &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,18 +236,18 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-repository-kpi-metrics-repository--page-root">Source code for app.repository.kpi_metrics_repository</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AbstractContextManager</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractContextManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 
-<span class="kn">from</span> <span class="nn">app.model.kpi_metrics</span> <span class="kn">import</span> <span class="n">KpiMetrics</span>
-<span class="kn">from</span> <span class="nn">app.repository.base_repository</span> <span class="kn">import</span> <span class="n">BaseRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.kpi_metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">KpiMetrics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.base_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRepository</span>
 
 
 <div class="viewcode-block" id="KpiMetricsRepository">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.KpiMetricsRepository">[docs]</a>
-<span class="k">class</span> <span class="nc">KpiMetricsRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">KpiMetricsRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Repository class for KPI metrics.</span>
 
@@ -257,7 +257,7 @@
 <span class="sd">        model: SQLAlchemy model class for KPI metrics.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
         <span class="n">model</span><span class="o">=</span><span class="n">KpiMetrics</span><span class="p">,</span>
@@ -297,7 +297,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

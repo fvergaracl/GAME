@@ -46,7 +46,7 @@
   
   
     <title>app.services.user_points_service &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,24 +236,24 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-user-points-service--page-root">Source code for app.services.user_points_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
-<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
-<span class="kn">from</span> <span class="nn">app.core.config</span> <span class="kn">import</span> <span class="n">configs</span>
-<span class="kn">from</span> <span class="nn">app.core.exceptions</span> <span class="kn">import</span> <span class="p">(</span><span class="n">InternalServerError</span><span class="p">,</span> <span class="n">NotFoundError</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">configs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">InternalServerError</span><span class="p">,</span> <span class="n">NotFoundError</span><span class="p">,</span>
                                  <span class="n">PreconditionFailedError</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">app.repository.game_repository</span> <span class="kn">import</span> <span class="n">GameRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.task_repository</span> <span class="kn">import</span> <span class="n">TaskRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.user_game_config_repository</span> <span class="kn">import</span> <span class="n">UserGameConfigRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.user_points_repository</span> <span class="kn">import</span> <span class="n">UserPointsRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.user_repository</span> <span class="kn">import</span> <span class="n">UserRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.wallet_repository</span> <span class="kn">import</span> <span class="n">WalletRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.wallet_transaction_repository</span> <span class="kn">import</span> <span class="n">WalletTransactionRepository</span>
-<span class="kn">from</span> <span class="nn">app.schema.games_schema</span> <span class="kn">import</span> <span class="n">ListTasksWithUsers</span>
-<span class="kn">from</span> <span class="nn">app.schema.task_schema</span> <span class="kn">import</span> <span class="p">(</span><span class="n">AssignedPointsToExternalUserId</span><span class="p">,</span> <span class="n">BaseUserFirstAction</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_game_config_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserGameConfigRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_points_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserPointsRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.wallet_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.wallet_transaction_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletTransactionRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListTasksWithUsers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">AssignedPointsToExternalUserId</span><span class="p">,</span> <span class="n">BaseUserFirstAction</span><span class="p">,</span>
                                     <span class="n">TasksWithUsers</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">app.schema.user_game_config_schema</span> <span class="kn">import</span> <span class="n">CreateUserGameConfig</span>
-<span class="kn">from</span> <span class="nn">app.schema.user_points_schema</span> <span class="kn">import</span> <span class="p">(</span><span class="n">AllPointsByGame</span><span class="p">,</span> <span class="n">GameDetail</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_game_config_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateUserGameConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_points_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">AllPointsByGame</span><span class="p">,</span> <span class="n">GameDetail</span><span class="p">,</span>
                                            <span class="n">PointsAssignedToUser</span><span class="p">,</span>
                                            <span class="n">PointsAssignedToUserDetails</span><span class="p">,</span>
                                            <span class="n">ResponseGetPointsByGame</span><span class="p">,</span>
@@ -261,17 +261,17 @@
                                            <span class="n">ResponsePointsByExternalUserId</span><span class="p">,</span> <span class="n">TaskDetail</span><span class="p">,</span>
                                            <span class="n">TaskPointsByGame</span><span class="p">,</span> <span class="n">UserGamePoints</span><span class="p">,</span>
                                            <span class="n">UserPointsAssign</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">app.schema.wallet_schema</span> <span class="kn">import</span> <span class="n">CreateWallet</span>
-<span class="kn">from</span> <span class="nn">app.schema.wallet_transaction_schema</span> <span class="kn">import</span> <span class="n">BaseWalletTransaction</span>
-<span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
-<span class="kn">from</span> <span class="nn">app.services.strategy_service</span> <span class="kn">import</span> <span class="n">StrategyService</span>
-<span class="kn">from</span> <span class="nn">app.util.is_valid_slug</span> <span class="kn">import</span> <span class="n">is_valid_slug</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.wallet_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateWallet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.wallet_transaction_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseWalletTransaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.util.is_valid_slug</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_valid_slug</span>
 
 
 <div class="viewcode-block" id="UserPointsService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService">[docs]</a>
-<span class="k">class</span> <span class="nc">UserPointsService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserPointsService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">user_points_repository</span><span class="p">:</span> <span class="n">UserPointsRepository</span><span class="p">,</span>
         <span class="n">users_repository</span><span class="p">:</span> <span class="n">UserRepository</span><span class="p">,</span>
@@ -293,13 +293,13 @@
 
 <div class="viewcode-block" id="UserPointsService.query_user_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.query_user_points">[docs]</a>
-    <span class="k">def</span> <span class="nf">query_user_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_user_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">read_by_options</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UserPointsService.get_users_by_gameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_users_by_gameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_users_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_users_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">):</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"id"</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -347,7 +347,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_by_user_list">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_by_user_list">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_by_user_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users_list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_user_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users_list</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users_list</span><span class="p">:</span>
             <span class="n">user_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_points_by_externalUserId</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
@@ -360,7 +360,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_by_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_by_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"externalUserId"</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
@@ -409,7 +409,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_by_gameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_by_gameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">):</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"id"</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2"> not found"</span>
         <span class="p">)</span>
@@ -449,7 +449,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_by_gameId_with_details">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_by_gameId_with_details">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_by_gameId_with_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_gameId_with_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"id"</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2"> not found"</span>
         <span class="p">)</span>
@@ -490,7 +490,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_of_user_in_game">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_of_user_in_game">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_of_user_in_game</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_user_in_game</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"id"</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -527,7 +527,7 @@
 
 <div class="viewcode-block" id="UserPointsService.assign_points_to_user">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.assign_points_to_user">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">assign_points_to_user</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">assign_points_to_user</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gameId</span><span class="p">,</span>
         <span class="n">externalTaskId</span><span class="p">,</span>
@@ -694,7 +694,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_simulated_of_user_in_game">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_simulated_of_user_in_game">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_points_simulated_of_user_in_game</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_simulated_of_user_in_game</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gameId</span><span class="p">,</span>
         <span class="n">externalUserId</span><span class="p">,</span>
@@ -823,7 +823,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_users_points_by_externalGameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_users_points_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">):</span>
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalGameId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalGameId</span><span class="p">,</span>
@@ -868,7 +868,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_users_points_by_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_users_points_by_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalTaskId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
@@ -892,7 +892,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_users_points_by_externalTaskId_and_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_users_points_by_externalTaskId_and_externalUserId</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalTaskId_and_externalUserId</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
         <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
@@ -917,7 +917,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_all_points_by_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_all_points_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_points_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="n">user_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
@@ -988,7 +988,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_of_user">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_of_user">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_of_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
@@ -1013,7 +1013,7 @@
 
 <div class="viewcode-block" id="UserPointsService.count_measurements_by_external_task_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">count_measurements_by_external_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_task_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count_measurements_by_external_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_task_id</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">count_measurements_by_external_task_id</span><span class="p">(</span>
             <span class="n">external_task_id</span>
         <span class="p">)</span>  <span class="c1"># noqa</span></div>
@@ -1021,7 +1021,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_user_task_measurements_count">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_user_task_measurements_count">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_user_task_measurements_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_user_task_measurements_count</span><span class="p">(</span>
             <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
         <span class="p">)</span></div>
@@ -1029,7 +1029,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_user_task_measurements_count_the_last_seconds">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_user_task_measurements_count_the_last_seconds">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_user_task_measurements_count_the_last_seconds</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements_count_the_last_seconds</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">seconds</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_user_task_measurements_count_the_last_seconds</span><span class="p">(</span>
@@ -1039,7 +1039,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_avg_time_between_tasks_by_user_and_game_task">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_avg_time_between_tasks_by_user_and_game_task</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_avg_time_between_tasks_by_user_and_game_task</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_avg_time_between_tasks_by_user_and_game_task</span><span class="p">(</span>  <span class="c1"># noqa</span>
@@ -1049,7 +1049,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_avg_time_between_tasks_for_all_users">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_avg_time_between_tasks_for_all_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_avg_time_between_tasks_for_all_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_avg_time_between_tasks_for_all_users</span><span class="p">(</span>  <span class="c1"># noqa</span>
             <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span>
         <span class="p">)</span></div>
@@ -1057,7 +1057,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_last_window_time_diff">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_last_window_time_diff">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_last_window_time_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_last_window_time_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_last_window_time_diff</span><span class="p">(</span>
             <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
         <span class="p">)</span></div>
@@ -1065,7 +1065,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_new_last_window_time_diff">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_new_last_window_time_diff">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_new_last_window_time_diff</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_new_last_window_time_diff</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">externalGameId</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_new_last_window_time_diff</span><span class="p">(</span>
@@ -1075,7 +1075,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_user_task_measurements">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_user_task_measurements">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_user_task_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_user_task_measurements</span><span class="p">(</span>
             <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
         <span class="p">)</span></div>
@@ -1084,7 +1084,7 @@
     <span class="c1"># get count personal points in the game, should have "minutes" field in the data</span>
 <div class="viewcode-block" id="UserPointsService.count_personal_records_by_external_game_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.count_personal_records_by_external_game_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">count_personal_records_by_external_game_id</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count_personal_records_by_external_game_id</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">external_game_id</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -1104,7 +1104,7 @@
 
 <div class="viewcode-block" id="UserPointsService.user_has_record_before_in_externalTaskId_last_min">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.user_has_record_before_in_externalTaskId_last_min">[docs]</a>
-    <span class="k">def</span> <span class="nf">user_has_record_before_in_externalTaskId_last_min</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">user_has_record_before_in_externalTaskId_last_min</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">minutes</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -1126,7 +1126,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_global_avg_by_external_game_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_global_avg_by_external_game_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_global_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_game_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_global_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_game_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the global average time rewarded. It does not take into account</span>
 <span class="sd">          the time with 0 value (minutes)</span>
@@ -1144,7 +1144,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_personal_avg_by_external_game_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_personal_avg_by_external_game_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_personal_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_game_id</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_personal_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_game_id</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the personal average time rewarded. It does not take into account</span>
 <span class="sd">          the time with 0 value (minutes)</span>
@@ -1163,7 +1163,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_of_simulated_task">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_of_simulated_task">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_of_simulated_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">simulationHash</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_simulated_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">simulationHash</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_of_simulated_task</span><span class="p">(</span>
             <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">simulationHash</span>
         <span class="p">)</span></div>
@@ -1171,7 +1171,7 @@
 
 <div class="viewcode-block" id="UserPointsService.get_all_point_of_tasks_list">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_all_point_of_tasks_list">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_all_point_of_tasks_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_ids_tasks</span><span class="p">,</span> <span class="n">withData</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_point_of_tasks_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_ids_tasks</span><span class="p">,</span> <span class="n">withData</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_all_point_of_tasks_list</span><span class="p">(</span>
             <span class="n">list_ids_tasks</span><span class="p">,</span> <span class="n">withData</span>
         <span class="p">)</span></div>
@@ -1201,7 +1201,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

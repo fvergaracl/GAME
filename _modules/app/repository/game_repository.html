@@ -46,7 +46,7 @@
   
   
     <title>app.repository.game_repository &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,28 +236,28 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-repository-game-repository--page-root">Source code for app.repository.game_repository</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AbstractContextManager</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractContextManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">sqlalchemy.exc</span> <span class="kn">import</span> <span class="n">IntegrityError</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span><span class="p">,</span> <span class="n">joinedload</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.exc</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegrityError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span><span class="p">,</span> <span class="n">joinedload</span>
 
-<span class="kn">from</span> <span class="nn">app.core.config</span> <span class="kn">import</span> <span class="n">configs</span>
-<span class="kn">from</span> <span class="nn">app.core.exceptions</span> <span class="kn">import</span> <span class="n">DuplicatedError</span><span class="p">,</span> <span class="n">NotFoundError</span>
-<span class="kn">from</span> <span class="nn">app.model.game_params</span> <span class="kn">import</span> <span class="n">GamesParams</span>
-<span class="kn">from</span> <span class="nn">app.model.games</span> <span class="kn">import</span> <span class="n">Games</span>
-<span class="kn">from</span> <span class="nn">app.model.task_params</span> <span class="kn">import</span> <span class="n">TasksParams</span>
-<span class="kn">from</span> <span class="nn">app.model.tasks</span> <span class="kn">import</span> <span class="n">Tasks</span>
-<span class="kn">from</span> <span class="nn">app.model.user_actions</span> <span class="kn">import</span> <span class="n">UserActions</span>
-<span class="kn">from</span> <span class="nn">app.model.user_points</span> <span class="kn">import</span> <span class="n">UserPoints</span>
-<span class="kn">from</span> <span class="nn">app.repository.base_repository</span> <span class="kn">import</span> <span class="n">BaseRepository</span>
-<span class="kn">from</span> <span class="nn">app.schema.games_schema</span> <span class="kn">import</span> <span class="n">BaseGameResult</span><span class="p">,</span> <span class="n">FindGameResult</span>
-<span class="kn">from</span> <span class="nn">app.util.query_builder</span> <span class="kn">import</span> <span class="n">dict_to_sqlalchemy_filter_options</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">configs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">DuplicatedError</span><span class="p">,</span> <span class="n">NotFoundError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.game_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">GamesParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.games</span><span class="w"> </span><span class="kn">import</span> <span class="n">Games</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.task_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">TasksParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tasks</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.user_actions</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserActions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.user_points</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserPoints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.base_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseGameResult</span><span class="p">,</span> <span class="n">FindGameResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.util.query_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">dict_to_sqlalchemy_filter_options</span>
 
 
 <div class="viewcode-block" id="GameRepository">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.game_repository.GameRepository">[docs]</a>
-<span class="k">class</span> <span class="nc">GameRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GameRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Repository class for games.</span>
 
@@ -269,7 +269,7 @@
 <span class="sd">        model_game_params: SQLAlchemy model class for game parameters.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
         <span class="n">model</span><span class="o">=</span><span class="n">Games</span><span class="p">,</span>
@@ -297,7 +297,7 @@
 
 <div class="viewcode-block" id="GameRepository.get_all_games">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.game_repository.GameRepository.get_all_games">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_all_games</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_games</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves all games based on the provided schema.</span>
 
@@ -385,7 +385,7 @@
 
 <div class="viewcode-block" id="GameRepository.get_game_by_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.game_repository.GameRepository.get_game_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a game by its ID.</span>
 
@@ -421,7 +421,7 @@
 
 <div class="viewcode-block" id="GameRepository.patch_game_by_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.game_repository.GameRepository.patch_game_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">patch_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">patch_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates a game by its ID using the provided schema.</span>
 
@@ -455,7 +455,7 @@
 
 <div class="viewcode-block" id="GameRepository.delete_game_by_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.game_repository.GameRepository.delete_game_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Deletes a game by its ID , it's delete all games related with gameId in</span>
 <span class="sd">            games, game_params, tasks and tasks_params.</span>
@@ -529,7 +529,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

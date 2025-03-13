@@ -46,7 +46,7 @@
   
   
     <title>app.services.task_service &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,23 +236,23 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-task-service--page-root">Source code for app.services.task_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">app.core.exceptions</span> <span class="kn">import</span> <span class="n">ConflictError</span><span class="p">,</span> <span class="n">NotFoundError</span>
-<span class="kn">from</span> <span class="nn">app.repository.game_params_repository</span> <span class="kn">import</span> <span class="n">GameParamsRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.game_repository</span> <span class="kn">import</span> <span class="n">GameRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.task_params_repository</span> <span class="kn">import</span> <span class="n">TaskParamsRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.task_repository</span> <span class="kn">import</span> <span class="n">TaskRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.user_points_repository</span> <span class="kn">import</span> <span class="n">UserPointsRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.user_repository</span> <span class="kn">import</span> <span class="n">UserRepository</span>
-<span class="kn">from</span> <span class="nn">app.schema.task_schema</span> <span class="kn">import</span> <span class="p">(</span><span class="n">CreateTask</span><span class="p">,</span> <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">,</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConflictError</span><span class="p">,</span> <span class="n">NotFoundError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_params_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameParamsRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_params_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskParamsRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_points_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserPointsRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CreateTask</span><span class="p">,</span> <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">,</span>
                                     <span class="n">FindTask</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">app.schema.tasks_params_schema</span> <span class="kn">import</span> <span class="n">InsertTaskParams</span>
-<span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
-<span class="kn">from</span> <span class="nn">app.services.strategy_service</span> <span class="kn">import</span> <span class="n">StrategyService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.tasks_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">InsertTaskParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyService</span>
 
 
 <div class="viewcode-block" id="TaskService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService">[docs]</a>
-<span class="k">class</span> <span class="nc">TaskService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Service class for managing tasks.</span>
 
@@ -269,7 +269,7 @@
 <span class="sd">          task parameters.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">strategy_service</span><span class="p">:</span> <span class="n">StrategyService</span><span class="p">,</span>
         <span class="n">task_repository</span><span class="p">:</span> <span class="n">TaskRepository</span><span class="p">,</span>
@@ -306,7 +306,7 @@
 
 <div class="viewcode-block" id="TaskService.get_tasks_list_by_externalGameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_tasks_list_by_externalGameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_tasks_list_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">find_query</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tasks_list_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">find_query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a list of tasks associated with a game by its external game</span>
 <span class="sd">          ID.</span>
@@ -333,7 +333,7 @@
 
 <div class="viewcode-block" id="TaskService.get_tasks_list_by_gameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_tasks_list_by_gameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_tasks_list_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">find_query</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tasks_list_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">find_query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a list of tasks associated with a game by its game ID.</span>
 
@@ -421,7 +421,7 @@
 
 <div class="viewcode-block" id="TaskService.get_task_by_gameId_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_by_gameId_externalTaskId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_task_by_gameId_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_task_by_gameId_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a task by its game ID and external task ID.</span>
 
@@ -498,7 +498,7 @@
 
 <div class="viewcode-block" id="TaskService.get_task_by_externalGameId_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_task_by_externalGameId_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_task_by_externalGameId_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a task by its game ID and external task ID.</span>
 
@@ -521,7 +521,7 @@
 
 <div class="viewcode-block" id="TaskService.create_task_by_externalGameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.create_task_by_externalGameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_task_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">create_query</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_task_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">create_query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates a task for a game by its external game ID.</span>
 
@@ -545,7 +545,7 @@
 
 <div class="viewcode-block" id="TaskService.create_task_by_game_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.create_task_by_game_id">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_task_by_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">create_query</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_task_by_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">create_query</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates a task for a game by its game ID.</span>
 
@@ -662,7 +662,7 @@
 
 <div class="viewcode-block" id="TaskService.get_task_detail_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_detail_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_task_detail_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_task_detail_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves task details by its ID.</span>
 
@@ -688,7 +688,7 @@
 
 <div class="viewcode-block" id="TaskService.get_points_by_task_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_points_by_task_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points by task ID.</span>
 
@@ -724,7 +724,7 @@
 
 <div class="viewcode-block" id="TaskService.get_points_of_user_by_task_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_points_of_user_by_task_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_of_user_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_user_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points of a user by task ID.</span>
 
@@ -751,7 +751,7 @@
 
 <div class="viewcode-block" id="TaskService.get_points_by_task_id_with_details">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_points_by_task_id_with_details">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_by_task_id_with_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_task_id_with_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points by task ID with details.</span>
 
@@ -781,7 +781,7 @@
 
 <div class="viewcode-block" id="TaskService.get_task_params_by_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_params_by_externalTaskId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_task_params_by_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_task_params_by_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves task parameters by external task ID.</span>
 
@@ -835,7 +835,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

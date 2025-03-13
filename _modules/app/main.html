@@ -46,7 +46,7 @@
   
   
     <title>app.main &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../_static/material.css?v=79c92029" />
     <script src="../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,24 +236,24 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-main--page-root">Source code for app.main</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">subprocess</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 
-<span class="kn">import</span> <span class="nn">sentry_sdk</span>
-<span class="kn">import</span> <span class="nn">toml</span>
-<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
-<span class="kn">from</span> <span class="nn">fastapi.openapi.utils</span> <span class="kn">import</span> <span class="n">get_openapi</span>
-<span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">RedirectResponse</span>
-<span class="kn">from</span> <span class="nn">starlette.middleware.cors</span> <span class="kn">import</span> <span class="n">CORSMiddleware</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sentry_sdk</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">toml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.openapi.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_openapi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedirectResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">starlette.middleware.cors</span><span class="w"> </span><span class="kn">import</span> <span class="n">CORSMiddleware</span>
 
-<span class="kn">from</span> <span class="nn">app.api.v1.routes</span> <span class="kn">import</span> <span class="n">routers</span> <span class="k">as</span> <span class="n">v1_routers</span>
-<span class="kn">from</span> <span class="nn">app.core.config</span> <span class="kn">import</span> <span class="n">configs</span>
-<span class="kn">from</span> <span class="nn">app.core.container</span> <span class="kn">import</span> <span class="n">Container</span>
-<span class="kn">from</span> <span class="nn">app.util.class_object</span> <span class="kn">import</span> <span class="n">singleton</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.api.v1.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">routers</span> <span class="k">as</span> <span class="n">v1_routers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">configs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">Container</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.util.class_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">singleton</span>
 
 
 <div class="viewcode-block" id="get_project_data">
 <a class="viewcode-back" href="../../app/app.html#app.main.get_project_data">[docs]</a>
-<span class="k">def</span> <span class="nf">get_project_data</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_project_data</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Retrieves project data from the pyproject.toml file.</span>
 
@@ -272,7 +272,7 @@
 
 <div class="viewcode-block" id="custom_openapi">
 <a class="viewcode-back" href="../../app/app.html#app.main.custom_openapi">[docs]</a>
-<span class="k">def</span> <span class="nf">custom_openapi</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">custom_openapi</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Customizes the OpenAPI schema for the FastAPI application.</span>
 
@@ -310,7 +310,7 @@
 
 <div class="viewcode-block" id="get_git_commit_hash">
 <a class="viewcode-back" href="../../app/app.html#app.main.get_git_commit_hash">[docs]</a>
-<span class="k">def</span> <span class="nf">get_git_commit_hash</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_git_commit_hash</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the current git commit hash, or "unknown" if not available.</span>
 
@@ -331,12 +331,12 @@
 
 
 <span class="nd">@singleton</span>
-<span class="k">class</span> <span class="nc">AppCreator</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AppCreator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Singleton class to create and configure the FastAPI application.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_DSN</span><span class="p">:</span>
             <span class="n">sentry_sdk</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
@@ -379,7 +379,7 @@
             <span class="p">)</span>
 
         <span class="nd">@self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">include_in_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">read_root</span><span class="p">():</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">read_root</span><span class="p">():</span>
 <span class="w">            </span><span class="sd">"""</span>
 <span class="sd">            Redirect to /docs</span>
 
@@ -419,7 +419,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

@@ -46,7 +46,7 @@
   
   
     <title>app.services.user_service &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,28 +236,28 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-user-service--page-root">Source code for app.services.user_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 
-<span class="kn">from</span> <span class="nn">app.core.config</span> <span class="kn">import</span> <span class="n">configs</span>
-<span class="kn">from</span> <span class="nn">app.repository.task_repository</span> <span class="kn">import</span> <span class="n">TaskRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.user_points_repository</span> <span class="kn">import</span> <span class="n">UserPointsRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.user_repository</span> <span class="kn">import</span> <span class="n">UserRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.wallet_repository</span> <span class="kn">import</span> <span class="n">WalletRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.wallet_transaction_repository</span> <span class="kn">import</span> <span class="n">WalletTransactionRepository</span>
-<span class="kn">from</span> <span class="nn">app.schema.task_schema</span> <span class="kn">import</span> <span class="n">TaskPointsResponseByUser</span>
-<span class="kn">from</span> <span class="nn">app.schema.user_points_schema</span> <span class="kn">import</span> <span class="n">BaseUserPointsBaseModel</span><span class="p">,</span> <span class="n">UserPointsAssigned</span>
-<span class="kn">from</span> <span class="nn">app.schema.user_schema</span> <span class="kn">import</span> <span class="p">(</span><span class="n">PostPointsConversionRequest</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">configs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_points_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserPointsRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.wallet_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.wallet_transaction_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletTransactionRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskPointsResponseByUser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_points_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseUserPointsBaseModel</span><span class="p">,</span> <span class="n">UserPointsAssigned</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">PostPointsConversionRequest</span><span class="p">,</span>
                                     <span class="n">ResponsePointsConversion</span><span class="p">,</span> <span class="n">UserPointsTasks</span><span class="p">,</span>
                                     <span class="n">UserWallet</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">app.schema.wallet_schema</span> <span class="kn">import</span> <span class="n">CreateWallet</span>
-<span class="kn">from</span> <span class="nn">app.schema.wallet_transaction_schema</span> <span class="kn">import</span> <span class="n">BaseWalletTransaction</span>
-<span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
-<span class="kn">from</span> <span class="nn">app.util.serialize_wallet</span> <span class="kn">import</span> <span class="n">serialize_wallet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.wallet_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateWallet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.wallet_transaction_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseWalletTransaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.util.serialize_wallet</span><span class="w"> </span><span class="kn">import</span> <span class="n">serialize_wallet</span>
 
 
 <div class="viewcode-block" id="UserService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService">[docs]</a>
-<span class="k">class</span> <span class="nc">UserService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Service class for managing users.</span>
 
@@ -271,7 +271,7 @@
 <span class="sd">          Repository instance for wallet transactions.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">user_repository</span><span class="p">:</span> <span class="n">UserRepository</span><span class="p">,</span>
         <span class="n">user_points_repository</span><span class="p">:</span> <span class="n">UserPointsRepository</span><span class="p">,</span>
@@ -301,7 +301,7 @@
 
 <div class="viewcode-block" id="UserService.basic_engagement_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.basic_engagement_points">[docs]</a>
-    <span class="k">def</span> <span class="nf">basic_engagement_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">basic_engagement_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Provides a fixed number of points as a basic engagement reward for a</span>
 <span class="sd">          user's initial actions within the gamification system.</span>
@@ -316,7 +316,7 @@
 
 <div class="viewcode-block" id="UserService.performance_penalty_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.performance_penalty_points">[docs]</a>
-    <span class="k">def</span> <span class="nf">performance_penalty_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">performance_penalty_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Calculates the number of points to deduct as a penalty for performance</span>
 <span class="sd">          below a certain threshold.</span>
@@ -331,7 +331,7 @@
 
 <div class="viewcode-block" id="UserService.performance_bonus_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.performance_bonus_points">[docs]</a>
-    <span class="k">def</span> <span class="nf">performance_bonus_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">performance_bonus_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Calculates the number of additional points to award for performance</span>
 <span class="sd">          above a certain threshold.</span>
@@ -346,7 +346,7 @@
 
 <div class="viewcode-block" id="UserService.individual_over_global_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.individual_over_global_points">[docs]</a>
-    <span class="k">def</span> <span class="nf">individual_over_global_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">individual_over_global_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Awards additional points for users who have improved their individual</span>
 <span class="sd">          performance compared to their own history, even if below the global</span>
@@ -362,7 +362,7 @@
 
 <div class="viewcode-block" id="UserService.need_for_motivation_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.need_for_motivation_points">[docs]</a>
-    <span class="k">def</span> <span class="nf">need_for_motivation_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">need_for_motivation_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Provides a small point incentive for users who are underperforming</span>
 <span class="sd">          both individually and globally, to motivate improvement.</span>
@@ -377,7 +377,7 @@
 
 <div class="viewcode-block" id="UserService.peak_performer_bonus_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.peak_performer_bonus_points">[docs]</a>
-    <span class="k">def</span> <span class="nf">peak_performer_bonus_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">peak_performer_bonus_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Rewards users who have exceeded both their individual performance and</span>
 <span class="sd">          the global average, standing out as peak performers in the system.</span>
@@ -392,7 +392,7 @@
 
 <div class="viewcode-block" id="UserService.global_advantage_adjustment_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.global_advantage_adjustment_points">[docs]</a>
-    <span class="k">def</span> <span class="nf">global_advantage_adjustment_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">global_advantage_adjustment_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Awards additional points to users whose performance is above the</span>
 <span class="sd">          global average but have shown a decrease in their individual</span>
@@ -411,7 +411,7 @@
 
 <div class="viewcode-block" id="UserService.individual_adjustment_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.individual_adjustment_points">[docs]</a>
-    <span class="k">def</span> <span class="nf">individual_adjustment_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">individual_adjustment_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Rewards users who have improved their individual performance,</span>
 <span class="sd">          regardless of their standing against the global average. It aims to</span>
@@ -429,7 +429,7 @@
 
 <div class="viewcode-block" id="UserService.create_user">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.create_user">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates a new user using the provided schema.</span>
 
@@ -444,7 +444,7 @@
 
 <div class="viewcode-block" id="UserService.assign_points_to_user">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.assign_points_to_user">[docs]</a>
-    <span class="k">def</span> <span class="nf">assign_points_to_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">BaseUserPointsBaseModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">assign_points_to_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">BaseUserPointsBaseModel</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Assigns points to a user based on the provided schema.</span>
 
@@ -595,7 +595,7 @@
 
 <div class="viewcode-block" id="UserService.get_wallet_by_user_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.get_wallet_by_user_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_wallet_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_wallet_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the wallet associated with a user by their user ID.</span>
 
@@ -640,7 +640,7 @@
 
 <div class="viewcode-block" id="UserService.get_user_by_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.get_user_by_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_user_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a user by their external user ID.</span>
 
@@ -658,7 +658,7 @@
 
 <div class="viewcode-block" id="UserService.get_wallet_by_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.get_wallet_by_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_wallet_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_wallet_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the wallet associated with a user by their external user ID.</span>
 
@@ -677,7 +677,7 @@
 
 <div class="viewcode-block" id="UserService.get_points_by_user_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.get_points_by_user_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points associated with a user by their user ID.</span>
 
@@ -728,7 +728,7 @@
 
 <div class="viewcode-block" id="UserService.preview_points_to_coins_conversion">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.preview_points_to_coins_conversion">[docs]</a>
-    <span class="k">def</span> <span class="nf">preview_points_to_coins_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preview_points_to_coins_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Previews the conversion of points to coins for a user.</span>
 
@@ -779,7 +779,7 @@
 
 <div class="viewcode-block" id="UserService.preview_points_to_coins_conversion_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.preview_points_to_coins_conversion_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">preview_points_to_coins_conversion_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preview_points_to_coins_conversion_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Previews the conversion of points to coins for a user by their</span>
 <span class="sd">          external user ID.</span>
@@ -800,7 +800,7 @@
 
 <div class="viewcode-block" id="UserService.convert_points_to_coins">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.convert_points_to_coins">[docs]</a>
-    <span class="k">def</span> <span class="nf">convert_points_to_coins</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_points_to_coins</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostPointsConversionRequest</span><span class="p">,</span> <span class="n">api_key</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -887,7 +887,7 @@
 
 <div class="viewcode-block" id="UserService.convert_points_to_coins_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.convert_points_to_coins_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">convert_points_to_coins_externalUserId</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_points_to_coins_externalUserId</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostPointsConversionRequest</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -934,7 +934,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

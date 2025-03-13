@@ -46,7 +46,7 @@
   
   
     <title>app.services.wallet_service &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,15 +236,15 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-wallet-service--page-root">Source code for app.services.wallet_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">app.repository.user_repository</span> <span class="kn">import</span> <span class="n">UserRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.wallet_repository</span> <span class="kn">import</span> <span class="n">WalletRepository</span>
-<span class="kn">from</span> <span class="nn">app.schema.wallet_schema</span> <span class="kn">import</span> <span class="n">BaseWallet</span><span class="p">,</span> <span class="n">ResponsePreviewConvertPoints</span>
-<span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.wallet_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.wallet_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseWallet</span><span class="p">,</span> <span class="n">ResponsePreviewConvertPoints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 
 
 <div class="viewcode-block" id="WalletService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.wallet_service.WalletService">[docs]</a>
-<span class="k">class</span> <span class="nc">WalletService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WalletService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Service class for managing wallets.</span>
 
@@ -253,7 +253,7 @@
 <span class="sd">        user_repository (UserRepository): Repository instance for users.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">wallet_repository</span><span class="p">:</span> <span class="n">WalletRepository</span><span class="p">,</span> <span class="n">user_repository</span><span class="p">:</span> <span class="n">UserRepository</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -270,7 +270,7 @@
 
 <div class="viewcode-block" id="WalletService.get_wallet_by_user_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.wallet_service.WalletService.get_wallet_by_user_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_wallet_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_wallet_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the wallet associated with the given user ID.</span>
 
@@ -308,7 +308,7 @@
 
 <div class="viewcode-block" id="WalletService.preview_convert">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.wallet_service.WalletService.preview_convert">[docs]</a>
-    <span class="k">def</span> <span class="nf">preview_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preview_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Previews the conversion of points to coins for a user.</span>
 
@@ -368,7 +368,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

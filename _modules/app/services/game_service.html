@@ -46,7 +46,7 @@
   
   
     <title>app.services.game_service &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,26 +236,26 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-game-service--page-root">Source code for app.services.game_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
-<span class="kn">from</span> <span class="nn">app.core.exceptions</span> <span class="kn">import</span> <span class="n">ConflictError</span><span class="p">,</span> <span class="n">NotFoundError</span>
-<span class="kn">from</span> <span class="nn">app.engine.all_engine_strategies</span> <span class="kn">import</span> <span class="n">all_engine_strategies</span>
-<span class="kn">from</span> <span class="nn">app.repository.game_params_repository</span> <span class="kn">import</span> <span class="n">GameParamsRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.game_repository</span> <span class="kn">import</span> <span class="n">GameRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.task_repository</span> <span class="kn">import</span> <span class="n">TaskRepository</span>
-<span class="kn">from</span> <span class="nn">app.repository.user_points_repository</span> <span class="kn">import</span> <span class="n">UserPointsRepository</span>
-<span class="kn">from</span> <span class="nn">app.schema.games_params_schema</span> <span class="kn">import</span> <span class="n">InsertGameParams</span>
-<span class="kn">from</span> <span class="nn">app.schema.games_schema</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BaseGameResult</span><span class="p">,</span> <span class="n">GameCreated</span><span class="p">,</span> <span class="n">PatchGame</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConflictError</span><span class="p">,</span> <span class="n">NotFoundError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.all_engine_strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_engine_strategies</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_params_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameParamsRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_points_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserPointsRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">InsertGameParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BaseGameResult</span><span class="p">,</span> <span class="n">GameCreated</span><span class="p">,</span> <span class="n">PatchGame</span><span class="p">,</span>
                                      <span class="n">PostCreateGame</span><span class="p">,</span> <span class="n">ResponsePatchGame</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
-<span class="kn">from</span> <span class="nn">app.services.strategy_service</span> <span class="kn">import</span> <span class="n">StrategyService</span>
-<span class="kn">from</span> <span class="nn">app.util.are_variables_matching</span> <span class="kn">import</span> <span class="n">are_variables_matching</span>
-<span class="kn">from</span> <span class="nn">app.util.is_valid_slug</span> <span class="kn">import</span> <span class="n">is_valid_slug</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.util.are_variables_matching</span><span class="w"> </span><span class="kn">import</span> <span class="n">are_variables_matching</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.util.is_valid_slug</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_valid_slug</span>
 
 
 <div class="viewcode-block" id="GameService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService">[docs]</a>
-<span class="k">class</span> <span class="nc">GameService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GameService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Service class for managing games.</span>
 
@@ -267,7 +267,7 @@
 <span class="sd">        strategy_service (StrategyService): Service instance for strategies.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">game_repository</span><span class="p">:</span> <span class="n">GameRepository</span><span class="p">,</span>
         <span class="n">game_params_repository</span><span class="p">:</span> <span class="n">GameParamsRepository</span><span class="p">,</span>
@@ -294,7 +294,7 @@
 
 <div class="viewcode-block" id="GameService.get_by_gameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.get_by_gameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a game by its game ID.</span>
 
@@ -324,7 +324,7 @@
 
 <div class="viewcode-block" id="GameService.delete_game_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.delete_game_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Deletes a game by its game ID.</span>
 
@@ -355,7 +355,7 @@
 
 <div class="viewcode-block" id="GameService.get_all_games">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.get_all_games">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_all_games</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_games</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves all games based on the provided schema.</span>
 
@@ -371,7 +371,7 @@
 
 <div class="viewcode-block" id="GameService.get_by_externalId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.get_by_externalId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_by_externalId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_externalId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a game by its external game ID.</span>
 
@@ -386,7 +386,7 @@
 
 <div class="viewcode-block" id="GameService.create">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.create">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PostCreateGame</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">oauth_user_id</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -476,7 +476,7 @@
 
 <div class="viewcode-block" id="GameService.patch_game_by_externalGameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.patch_game_by_externalGameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">patch_game_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PatchGame</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">patch_game_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PatchGame</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates a game by its external game ID using the provided schema.</span>
 
@@ -499,7 +499,7 @@
 
 <div class="viewcode-block" id="GameService.patch_game_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.patch_game_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">patch_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PatchGame</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">patch_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PatchGame</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates a game by its game ID using the provided schema.</span>
 
@@ -573,7 +573,7 @@
 
 <div class="viewcode-block" id="GameService.get_strategy_by_externalGameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.get_strategy_by_externalGameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_strategy_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_strategy_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the strategy associated with a game by its external game ID.</span>
 
@@ -597,7 +597,7 @@
 
 <div class="viewcode-block" id="GameService.get_strategy_by_gameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.get_strategy_by_gameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_strategy_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_strategy_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the strategy associated with a game by its game ID.</span>
 
@@ -643,7 +643,7 @@
 
 <div class="viewcode-block" id="GameService.get_tasks_by_gameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.get_tasks_by_gameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_tasks_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_tasks_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the tasks associated with a game by its game ID.</span>
 
@@ -672,7 +672,7 @@
 
 <div class="viewcode-block" id="GameService.get_game_by_external_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.get_game_by_external_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_game_by_external_id</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_game_by_external_id</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">oauth_user_id</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -726,7 +726,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

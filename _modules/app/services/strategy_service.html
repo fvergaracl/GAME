@@ -46,7 +46,7 @@
   
   
     <title>app.services.strategy_service &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,17 +236,17 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-strategy-service--page-root">Source code for app.services.strategy_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">app.core.exceptions</span> <span class="kn">import</span> <span class="n">NotFoundError</span>
-<span class="kn">from</span> <span class="nn">app.engine.all_engine_strategies</span> <span class="kn">import</span> <span class="n">all_engine_strategies</span>
-<span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.all_engine_strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_engine_strategies</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 
 
 <div class="viewcode-block" id="StrategyService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService">[docs]</a>
-<span class="k">class</span> <span class="nc">StrategyService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StrategyService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Service class for managing strategies.</span>
 
@@ -254,7 +254,7 @@
 <span class="sd">        None</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initializes the StrategyService.</span>
 <span class="sd">        """</span>
@@ -262,7 +262,7 @@
 
 <div class="viewcode-block" id="StrategyService.list_all_strategies">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.list_all_strategies">[docs]</a>
-    <span class="k">def</span> <span class="nf">list_all_strategies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_all_strategies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Lists all available strategies.</span>
 
@@ -290,7 +290,7 @@
 
 <div class="viewcode-block" id="StrategyService.get_strategy_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.get_strategy_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_strategy_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_strategy_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a strategy by its ID.</span>
 
@@ -312,7 +312,7 @@
 
 <div class="viewcode-block" id="StrategyService.get_Class_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.get_Class_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_Class_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_Class_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the class of a strategy by its ID.</span>
 
@@ -359,7 +359,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

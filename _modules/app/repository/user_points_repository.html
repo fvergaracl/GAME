@@ -46,7 +46,7 @@
   
   
     <title>app.repository.user_points_repository &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,23 +236,23 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-repository-user-points-repository--page-root">Source code for app.repository.user_points_repository</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AbstractContextManager</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractContextManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">func</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">func</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 
-<span class="kn">from</span> <span class="nn">app.model.games</span> <span class="kn">import</span> <span class="n">Games</span>
-<span class="kn">from</span> <span class="nn">app.model.tasks</span> <span class="kn">import</span> <span class="n">Tasks</span>
-<span class="kn">from</span> <span class="nn">app.model.user_points</span> <span class="kn">import</span> <span class="n">UserPoints</span>
-<span class="kn">from</span> <span class="nn">app.model.users</span> <span class="kn">import</span> <span class="n">Users</span>
-<span class="kn">from</span> <span class="nn">app.repository.base_repository</span> <span class="kn">import</span> <span class="n">BaseRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.games</span><span class="w"> </span><span class="kn">import</span> <span class="n">Games</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tasks</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.user_points</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserPoints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.users</span><span class="w"> </span><span class="kn">import</span> <span class="n">Users</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.base_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRepository</span>
 
 
 <div class="viewcode-block" id="UserPointsRepository">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository">[docs]</a>
-<span class="k">class</span> <span class="nc">UserPointsRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserPointsRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Repository class for user points.</span>
 
@@ -264,7 +264,7 @@
 <span class="sd">        user_repository (BaseRepository): Repository instance for users.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
         <span class="n">model</span><span class="o">=</span><span class="n">UserPoints</span><span class="p">,</span>
@@ -289,7 +289,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_first_user_points_in_external_task_id_by_user_id</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_first_user_points_in_external_task_id_by_user_id</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -317,7 +317,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_all_UserPoints_by_gameId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_gameId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_all_UserPoints_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_UserPoints_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves all user points associated with a game ID.</span>
 
@@ -346,7 +346,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_all_UserPoints_by_taskId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_taskId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_all_UserPoints_by_taskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_UserPoints_by_taskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves all user points for a specific task.</span>
 
@@ -373,7 +373,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_all_UserPoints_by_taskId_with_details">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_taskId_with_details">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_all_UserPoints_by_taskId_with_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_UserPoints_by_taskId_with_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves all user points for a specific task with details.</span>
 
@@ -414,7 +414,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_points_and_users_by_taskId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_and_users_by_taskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_and_users_by_taskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points and users associated with a task ID.</span>
 
@@ -451,7 +451,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_task_by_externalUserId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_task_by_externalUserId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_task_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_task_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves tasks associated with a user by their external user ID.</span>
 
@@ -474,7 +474,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_task_and_sum_points_by_userId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_task_and_sum_points_by_userId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_task_and_sum_points_by_userId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_task_and_sum_points_by_userId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves tasks and the sum of points for a user by their user ID.</span>
 
@@ -502,7 +502,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_user_measurement_count">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_measurement_count">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_user_measurement_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_measurement_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the total number of measurements (tasks completed) by a</span>
 <span class="sd">          specific user.</span>
@@ -525,7 +525,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_time_taken_for_last_task">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_time_taken_for_last_task">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_time_taken_for_last_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_time_taken_for_last_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the time taken by a user to complete the last task.</span>
 
@@ -547,7 +547,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_individual_calculation">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_individual_calculation">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_individual_calculation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_individual_calculation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Calculates and retrieves an individual performance metric for a user.</span>
 
@@ -569,7 +569,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_global_calculation">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_global_calculation">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_global_calculation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_global_calculation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Calculates and retrieves a global performance metric.</span>
 
@@ -585,7 +585,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_start_time_for_last_task">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_start_time_for_last_task">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_start_time_for_last_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_start_time_for_last_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the start time of the last task completed by a user.</span>
 
@@ -607,7 +607,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.count_measurements_by_external_task_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.count_measurements_by_external_task_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">count_measurements_by_external_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_task_id</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count_measurements_by_external_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_task_id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the total number of measurements by external task ID.</span>
 
@@ -630,7 +630,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_user_task_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves measurements for a user and task.</span>
 
@@ -656,7 +656,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements_count">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_user_task_measurements_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the total number of measurements by user and task.</span>
 
@@ -682,7 +682,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements_count_the_last_seconds">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_user_task_measurements_count_the_last_seconds</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements_count_the_last_seconds</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">seconds</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -714,7 +714,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_avg_time_between_tasks_by_user_and_game_task</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_avg_time_between_tasks_by_user_and_game_task</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -754,7 +754,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_avg_time_between_tasks_for_all_users">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_avg_time_between_tasks_for_all_users">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_avg_time_between_tasks_for_all_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_avg_time_between_tasks_for_all_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the average time between tasks for all users for a game task.</span>
 
@@ -789,7 +789,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_last_window_time_diff">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_last_window_time_diff">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_last_window_time_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_last_window_time_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the time difference between the last two measurements by</span>
 <span class="sd">          a user for a task.</span>
@@ -823,7 +823,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_new_last_window_time_diff">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_new_last_window_time_diff">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_new_last_window_time_diff</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_new_last_window_time_diff</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">externalGameId</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -872,7 +872,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.count_personal_records_by_external_game_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.count_personal_records_by_external_game_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">count_personal_records_by_external_game_id</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count_personal_records_by_external_game_id</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -900,7 +900,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.user_has_record_before_in_externalTaskId_last_min">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min">[docs]</a>
-    <span class="k">def</span> <span class="nf">user_has_record_before_in_externalTaskId_last_min</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">user_has_record_before_in_externalTaskId_last_min</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">minutes</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -929,7 +929,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_global_avg_by_external_game_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_global_avg_by_external_game_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_global_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_global_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the global average time using data["minutes"] for a given</span>
 <span class="sd">          external game ID.</span>
@@ -959,7 +959,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_personal_avg_by_external_game_id">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_personal_avg_by_external_game_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_personal_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_personal_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the personal average time using data["minutes"] for a given</span>
 <span class="sd">          external game ID and user ID.</span>
@@ -992,7 +992,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_points_of_simulated_task">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_points_of_simulated_task">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_points_of_simulated_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">simulationHash</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_simulated_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">simulationHash</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves all simulated points associated with a specific</span>
 <span class="sd">          externalTaskId and simulationHash.</span>
@@ -1020,7 +1020,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_all_point_of_tasks_list">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_all_point_of_tasks_list">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_all_point_of_tasks_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_list</span><span class="p">,</span> <span class="n">withData</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_point_of_tasks_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_list</span><span class="p">,</span> <span class="n">withData</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves all points associated with a list of tasks IDs.</span>
 <span class="sd">        If withData is True, it returns the full UserPoints object; otherwise, it returns only selected fields.</span>
@@ -1055,7 +1055,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_last_task_by_userId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_last_task_by_userId">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_last_task_by_userId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_last_task_by_userId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the last task completed by a user.</span>
 
@@ -1099,7 +1099,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

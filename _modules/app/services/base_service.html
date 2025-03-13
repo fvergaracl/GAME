@@ -46,7 +46,7 @@
   
   
     <title>app.services.base_service &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,12 +236,12 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-base-service--page-root">Source code for app.services.base_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
 
 <div class="viewcode-block" id="BaseService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService">[docs]</a>
-<span class="k">class</span> <span class="nc">BaseService</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseService</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base service class providing common CRUD operations.</span>
 
@@ -249,7 +249,7 @@
 <span class="sd">        repository: The repository instance used for database operations.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initializes the BaseService with the provided repository.</span>
 
@@ -260,7 +260,7 @@
 
 <div class="viewcode-block" id="BaseService.get_list">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.get_list">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a list of items based on the provided schema.</span>
 
@@ -275,7 +275,7 @@
 
 <div class="viewcode-block" id="BaseService.get_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.get_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves an item by its ID.</span>
 
@@ -290,7 +290,7 @@
 
 <div class="viewcode-block" id="BaseService.add">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.add">[docs]</a>
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds a new item using the provided schema.</span>
 
@@ -305,7 +305,7 @@
 
 <div class="viewcode-block" id="BaseService.patch">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.patch">[docs]</a>
-    <span class="k">def</span> <span class="nf">patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates an item partially by its ID using the provided schema.</span>
 
@@ -321,7 +321,7 @@
 
 <div class="viewcode-block" id="BaseService.patch_attr">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.patch_attr">[docs]</a>
-    <span class="k">def</span> <span class="nf">patch_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">patch_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates a specific attribute of an item by its ID.</span>
 
@@ -338,7 +338,7 @@
 
 <div class="viewcode-block" id="BaseService.put_update">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.put_update">[docs]</a>
-    <span class="k">def</span> <span class="nf">put_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">put_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Replaces an item entirely by its ID using the provided schema.</span>
 
@@ -354,7 +354,7 @@
 
 <div class="viewcode-block" id="BaseService.remove_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.base_service.BaseService.remove_by_id">[docs]</a>
-    <span class="k">def</span> <span class="nf">remove_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Removes an item by its ID.</span>
 
@@ -391,7 +391,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>

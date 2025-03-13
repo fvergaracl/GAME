@@ -46,7 +46,7 @@
   
   
     <title>app.services.wallet_transaction_service &#8212; GAME v1.1.003 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=83e35b93" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
     <script src="../../../_static/documentation_options.js?v=299c46e2"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -236,13 +236,13 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-wallet-transaction-service--page-root">Source code for app.services.wallet_transaction_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">app.repository.wallet_transaction_repository</span> <span class="kn">import</span> <span class="n">WalletTransactionRepository</span>
-<span class="kn">from</span> <span class="nn">app.services.base_service</span> <span class="kn">import</span> <span class="n">BaseService</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.wallet_transaction_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletTransactionRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 
 
 <div class="viewcode-block" id="WalletTransactionService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.wallet_transaction_service.WalletTransactionService">[docs]</a>
-<span class="k">class</span> <span class="nc">WalletTransactionService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WalletTransactionService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Service class for wallet transactions.</span>
 
@@ -251,7 +251,7 @@
 <span class="sd">          Repository instance for wallet transactions.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wallet_transaction_repository</span><span class="p">:</span> <span class="n">WalletTransactionRepository</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wallet_transaction_repository</span><span class="p">:</span> <span class="n">WalletTransactionRepository</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initializes the WalletTransactionService with the provided repository.</span>
 
@@ -286,7 +286,7 @@
               
           </div>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>
