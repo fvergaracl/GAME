@@ -466,8 +466,9 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         if (user_last_task is not None and (
             user_last_task.taskId == task_to_simulate.id
             and (
-                datetime.datetime.now() - user_last_task.created_at
-            ).seconds > 300  # 5 minutes
+                datetime.datetime.now(datetime.timezone.utc) -
+                user_last_task.created_at
+            ).total_seconds() > 300  # 5 minutes
         )):
             return SimulatedTaskPoints(
                 externalUserId=external_user_id,
