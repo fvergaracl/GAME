@@ -469,12 +469,8 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         print(user_last_task.created_at)
         print((datetime.datetime.now(datetime.timezone.utc) -
                user_last_task.created_at).total_seconds())
-        print('----------------------------')
-        print('2')
-        print(datetime.datetime.now())
-        print(user_last_task.created_at)
-        print((datetime.datetime.now() -
-               user_last_task.created_at).total_seconds())
+        print(((datetime.datetime.now(datetime.timezone.utc) -
+                user_last_task.created_at).total_seconds()) > 300)
         print('****************************')
         if (user_last_task is not None and (
             user_last_task.taskId == task_to_simulate.id
