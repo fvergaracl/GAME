@@ -620,12 +620,6 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">points</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="p">(</span><span class="n">case_name</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">points</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span>
-                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Points not calculated for task with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> and user with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">. Please try again later or contact support"</span>  <span class="c1"># noqa</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">points</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">case_name</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InternalServerError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
