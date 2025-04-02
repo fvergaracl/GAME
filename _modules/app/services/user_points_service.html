@@ -594,21 +594,32 @@
         <span class="n">strategy_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span><span class="o">.</span><span class="n">get_Class_by_id</span><span class="p">(</span><span class="n">strategyId</span><span class="p">)</span>
         <span class="n">data_to_add</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">data</span>
         <span class="k">try</span><span class="p">:</span>
-
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'-1'</span><span class="p">)</span>
             <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"externalGameId"</span><span class="p">]</span> <span class="o">=</span> <span class="n">externalGameId</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'-2'</span><span class="p">)</span>
             <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"externalTaskId"</span><span class="p">]</span> <span class="o">=</span> <span class="n">externalTaskId</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'-3'</span><span class="p">)</span>
             <span class="n">result_calculated_points</span> <span class="o">=</span> <span class="k">await</span> <span class="n">strategy_instance</span><span class="o">.</span><span class="n">calculate_points</span><span class="p">(</span>
                 <span class="n">externalGameId</span><span class="o">=</span><span class="n">externalGameId</span><span class="p">,</span>
                 <span class="n">externalTaskId</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
                 <span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
             <span class="p">)</span>
-
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'-4'</span><span class="p">)</span>
             <span class="n">points</span><span class="p">,</span> <span class="n">case_name</span><span class="p">,</span> <span class="n">callbackData</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">result_calculated_points</span> <span class="o">+</span> <span class="p">(</span><span class="kc">None</span><span class="p">,))[:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'-5'</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s1">'points'</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span>
+                <span class="s1">' | '</span><span class="p">,</span>
+                <span class="s1">'case_name'</span><span class="p">,</span>
+                <span class="s1">' | '</span><span class="p">,</span>
+                <span class="s1">'callbackData'</span><span class="p">,</span> <span class="n">callbackData</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">callbackData</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">'-6'</span><span class="p">)</span>
                 <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"callbackData"</span><span class="p">]</span> <span class="o">=</span> <span class="n">callbackData</span>
-
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'-7'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">"----------------- ERROR -----------------"</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -620,7 +631,13 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">points</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="p">(</span><span class="n">case_name</span><span class="p">))</span>
-
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s1">'points'</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span>
+            <span class="s1">' | '</span><span class="p">,</span>
+            <span class="s1">'case_name'</span><span class="p">,</span>
+            <span class="s1">' | '</span><span class="p">,</span>
+            <span class="s1">'data_to_add'</span><span class="p">,</span> <span class="n">data_to_add</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">points</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">case_name</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InternalServerError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
