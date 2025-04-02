@@ -357,7 +357,8 @@ class UserPointsService(BaseService):
             )
         if points == -1:
             raise PreconditionFailedError(detail=(case_name))
-        if not points or not case_name:
+
+        if points is None or not case_name:
             raise InternalServerError(
                 detail=(
                     f"Points not calculated for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Beacuse the strategy don't have condition to calculate it or the strategy don't have a case name"  # noqa
