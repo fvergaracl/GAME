@@ -399,7 +399,10 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         ).hexdigest()
 
     def simulate_strategy(
-        self, data_to_simulate: dict = None, userGroup: str = "dynamic", user_last_task: dict = None
+        self,
+        data_to_simulate: dict = None,
+        userGroup: str = "dynamic",
+        user_last_task: dict = None
     ):
         """
         Simulates a strategy execution to estimate the points a user would
@@ -462,6 +465,9 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         externalTaskId_simulate = task_to_simulate.externalTaskId
         if (user_last_task is not None and (
             user_last_task.taskId == task_to_simulate.id
+            and (
+                datetime.datetime.now() - user_last_task.created_at
+            ).seconds > 300  # 5 minutes
         )):
             return SimulatedTaskPoints(
                 externalUserId=external_user_id,
