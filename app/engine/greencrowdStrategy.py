@@ -463,6 +463,19 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         )
         expiration_date = expiration_date.replace(tzinfo=datetime.timezone.utc)
         externalTaskId_simulate = task_to_simulate.externalTaskId
+        print('****************************')
+        print('1')
+        print(datetime.datetime.now(datetime.timezone.utc))
+        print(user_last_task.created_at)
+        print((datetime.datetime.now(datetime.timezone.utc) -
+               user_last_task.created_at).total_seconds())
+        print('----------------------------')
+        print('2')
+        print(datetime.datetime.now())
+        print(user_last_task.created_at)
+        print((datetime.datetime.now() -
+               user_last_task.created_at).total_seconds())
+        print('****************************')
         if (user_last_task is not None and (
             user_last_task.taskId == task_to_simulate.id
             and ((datetime.datetime.now(datetime.timezone.utc) -
