@@ -331,6 +331,8 @@ class UserPointsService(BaseService):
         strategy_instance = self.strategy_service.get_Class_by_id(strategyId)
         data_to_add = schema.data
         try:
+            if data_to_add is None:
+                data_to_add = {}
             print('-1')
             data_to_add["externalGameId"] = externalGameId
             print('-2')
