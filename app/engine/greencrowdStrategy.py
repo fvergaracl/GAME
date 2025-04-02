@@ -600,20 +600,20 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         if (tasks == []):
             game = self.game_service.get_game_by_external_id(
                 externalGameId)
-
-            tasks, externalGameId = (
+            tasks_simulated, externalGameId = (
                 await self.user_points_service.get_points_simulated_of_user_in_game(
                     game.id, externalUserId, assign_control_group=True
                 )
             )
-            callback_data = tasks
+            callback_data = tasks_simulated
             simulationHash = calculate_hash_simulated_strategy(
                 tasks, externalGameId, externalUserId
             )
             wasCalculated = True
-        tasks_simulated = []
-        for task in tasks:
-            tasks_simulated.append(SimulatedTaskPoints(**task))
+        if not wasCalculated:
+            tasks_simulated = []
+            for task in tasks:
+                tasks_simulated.append(SimulatedTaskPoints(**task))
         tasks = tasks_simulated
         calculated_hash = calculate_hash_simulated_strategy(
             tasks, externalGameId, externalUserId
@@ -622,7 +622,6 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             return points, "Invalid hash"
 
         isExpired = False
-        # select externalTaskId from tasks where externalTaskId = taksId
         task = next(
             (task for task in tasks if str(
                 task.externalTaskId) == str(externalTaskId)),
