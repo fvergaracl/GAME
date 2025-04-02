@@ -331,21 +331,32 @@ class UserPointsService(BaseService):
         strategy_instance = self.strategy_service.get_Class_by_id(strategyId)
         data_to_add = schema.data
         try:
-
+            print('-1')
             data_to_add["externalGameId"] = externalGameId
+            print('-2')
             data_to_add["externalTaskId"] = externalTaskId
+            print('-3')
             result_calculated_points = await strategy_instance.calculate_points(
                 externalGameId=externalGameId,
                 externalTaskId=externalTaskId,
                 externalUserId=externalUserId,
                 data=data_to_add,
             )
-
+            print('-4')
             points, case_name, callbackData = (
                 result_calculated_points + (None,))[:3]
+            print('-5')
+            print(
+                'points', points,
+                ' | ',
+                'case_name',
+                ' | ',
+                'callbackData', callbackData
+            )
             if callbackData is not None:
+                print('-6')
                 data_to_add["callbackData"] = callbackData
-
+            print('-7')
         except Exception as e:
             print("----------------- ERROR -----------------")
             print(e)
@@ -357,7 +368,13 @@ class UserPointsService(BaseService):
             )
         if points == -1:
             raise PreconditionFailedError(detail=(case_name))
-
+        print(
+            'points', points,
+            ' | ',
+            'case_name',
+            ' | ',
+            'data_to_add', data_to_add
+        )
         if points is None or not case_name:
             raise InternalServerError(
                 detail=(
