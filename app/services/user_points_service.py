@@ -421,7 +421,7 @@ class UserPointsService(BaseService):
             walletId=str(wallet.id),
             apiKey_used=api_key,
         )
-        wallet_transaction_repository = self.wallet_transaction_repository.create(
+        wallet_transaction_repository = await self.wallet_transaction_repository.create(
             wallet_transaction
         )
         if not wallet_transaction_repository:
