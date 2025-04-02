@@ -617,6 +617,9 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
                 ),
                 None,
             )
+            simulationHash = calculate_hash_simulated_strategy(
+                tasks_simulated, externalGameId, externalUserId
+            )
         tasks_simulated = []
         for task in tasks:
             tasks_simulated.append(SimulatedTaskPoints(**task))
