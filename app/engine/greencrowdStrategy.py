@@ -594,9 +594,29 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         points = -1
 
         # destructuring data
-        simulationHash = data.get("simulationHash")
-        tasks = data.get("tasks")
+        simulationHash = data.get("simulationHash", "")
+        tasks = data.get("tasks", [])
+        if (tasks == []):
+            game = self.game_service.get_game_by_external_id(
+                externalGameId)
 
+            tasks_simulated, externalGameId = (
+                await self.user_points_service.get_points_simulated_of_user_in_game(
+                    game.id, externalUserId, assign_control_group=True
+                )
+            )
+            callback_data = tasks_simulated
+            simulationHash = calculate_hash_simulated_strategy(
+                tasks_simulated, externalGameId, externalUserId
+            )
+            task = next(
+                (
+                    task
+                    for task in tasks_simulated
+                    if task.externalTaskId == externalTaskId
+                ),
+                None,
+            )
         tasks_simulated = []
         for task in tasks:
             tasks_simulated.append(SimulatedTaskPoints(**task))
