@@ -594,6 +594,8 @@
         <span class="n">strategy_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span><span class="o">.</span><span class="n">get_Class_by_id</span><span class="p">(</span><span class="n">strategyId</span><span class="p">)</span>
         <span class="n">data_to_add</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">data</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data_to_add</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data_to_add</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">'-1'</span><span class="p">)</span>
             <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"externalGameId"</span><span class="p">]</span> <span class="o">=</span> <span class="n">externalGameId</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">'-2'</span><span class="p">)</span>
