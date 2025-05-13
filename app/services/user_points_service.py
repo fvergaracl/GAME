@@ -298,7 +298,8 @@ class UserPointsService(BaseService):
             game.id, externalTaskId
         )
         if not task:
-            raise NotFoundError(f"Task not found with externalTaskId: {externalTaskId}")
+            raise NotFoundError(
+                f"Task not found with externalTaskId: {externalTaskId}")
 
         strategyId = task.strategyId
         strategy_instance = self.strategy_service.get_Class_by_id(strategyId)
@@ -314,13 +315,14 @@ class UserPointsService(BaseService):
                 raise PreconditionFailedError(
                     detail=f"Invalid externalUserId: {externalUserId}. Must be alphanumeric/underscore and 3–50 characters."
                 )
-            user = self.users_repository.create_user_by_externalUserId(externalUserId)
+            user = self.users_repository.create_user_by_externalUserId(
+                externalUserId)
             is_a_created_user = True
 
         data_to_add = schema.data or {}
         data_to_add["externalGameId"] = externalGameId
         data_to_add["externalTaskId"] = externalTaskId
-        points = schema.points
+        points = getattr(getattr(schema, "data", None), "points", None)
         if points is None:
             raise PreconditionFailedError(
                 detail="Points cannot be None. Please provide a valid value."

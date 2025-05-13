@@ -1407,14 +1407,18 @@ async def assign_points_to_user(
         api_key,
         oauth_user_id,
     )
+
+    points = getattr(getattr(schema, "data", None), "points", None)
+    print('**************+ points')
+    print(points)
+    print('--------------  schema ')
+    print(schema)
+    if points is not None and points >= 0:
+        return await service.assign_points_to_user_directly(
+            gameId, externalTaskId, schema, api_key  # <-- corregido
+        )
     isSimulated = schema.isSimulated if hasattr(
         schema, "isSimulated") else False
-    points = schema.data.points if hasattr(
-        schema, "data") and hasattr(schema.data, "points") else None
-    if (points is not None and points >= 0):
-        return await service.assign_points_to_user_directly(
-            gameId, externalTaskId, schema, isSimulated, api_key
-        )
     return await service.assign_points_to_user(
         gameId, externalTaskId, schema, isSimulated, api_key
     )
