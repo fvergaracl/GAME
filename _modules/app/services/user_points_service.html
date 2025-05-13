@@ -561,7 +561,8 @@
             <span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">externalTaskId</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">strategyId</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">strategyId</span>
         <span class="n">strategy_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span><span class="o">.</span><span class="n">get_Class_by_id</span><span class="p">(</span><span class="n">strategyId</span><span class="p">)</span>
@@ -577,13 +578,14 @@
                 <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span>
                     <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Invalid externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">. Must be alphanumeric/underscore and 3–50 characters."</span>
                 <span class="p">)</span>
-            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">create_user_by_externalUserId</span><span class="p">(</span><span class="n">externalUserId</span><span class="p">)</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">create_user_by_externalUserId</span><span class="p">(</span>
+                <span class="n">externalUserId</span><span class="p">)</span>
             <span class="n">is_a_created_user</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">data_to_add</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">data</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"externalGameId"</span><span class="p">]</span> <span class="o">=</span> <span class="n">externalGameId</span>
         <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"externalTaskId"</span><span class="p">]</span> <span class="o">=</span> <span class="n">externalTaskId</span>
-        <span class="n">points</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">points</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="s2">"data"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s2">"points"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="s2">"Points cannot be None. Please provide a valid value."</span>
