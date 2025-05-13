@@ -264,6 +264,121 @@ class UserPointsService(BaseService):
                         )
         return response
 
+    async def assign_points_to_user_directly(
+        self,
+        gameId,
+        externalTaskId,
+        schema,
+        api_key: str = None,
+    ):
+        """
+        Assign points to a user directly (non-simulated), using a predefined strategy.
+
+        Args:
+            gameId (UUID): ID of the game.
+            externalTaskId (str): External task identifier.
+            schema (PostAssignPointsToUser): Input data schema.
+            api_key (str, optional): API key used to register the operation.
+
+        Returns:
+            AssignedPointsToExternalUserId: Information about the assigned points.
+        """
+        externalUserId = schema.externalUserId
+        is_a_created_user = False
+
+        game = self.game_repository.read_by_column(
+            column="id",
+            value=gameId,
+            not_found_message=f"Game with gameId {gameId} not found",
+            only_one=True,
+        )
+        externalGameId = game.externalGameId
+
+        task = self.task_repository.read_by_gameId_and_externalTaskId(
+            game.id, externalTaskId
+        )
+        if not task:
+            raise NotFoundError(f"Task not found with externalTaskId: {externalTaskId}")
+
+        strategyId = task.strategyId
+        strategy_instance = self.strategy_service.get_Class_by_id(strategyId)
+
+        if not strategy_instance:
+            raise NotFoundError(f"Strategy not found with id: {strategyId}")
+
+        user = self.users_repository.read_by_column(
+            "externalUserId", externalUserId, not_found_raise_exception=False
+        )
+        if not user:
+            if not is_valid_slug(externalUserId):
+                raise PreconditionFailedError(
+                    detail=f"Invalid externalUserId: {externalUserId}. Must be alphanumeric/underscore and 3–50 characters."
+                )
+            user = self.users_repository.create_user_by_externalUserId(externalUserId)
+            is_a_created_user = True
+
+        data_to_add = schema.data or {}
+        data_to_add["externalGameId"] = externalGameId
+        data_to_add["externalTaskId"] = externalTaskId
+        points = schema.points
+        if points is None:
+            raise PreconditionFailedError(
+                detail="Points cannot be None. Please provide a valid value."
+            )
+        if points <= 0:
+            user_points_schema = UserPointsAssign(
+                userId=str(user.id),
+                taskId=str(task.id),
+                points=points,
+                caseName="External_points_assigned",
+                data=data_to_add,
+                description="Points assigned directly to GAME",
+                apiKey_used=api_key,
+            )
+            user_points = await self.user_points_repository.create(user_points_schema)
+
+            wallet = self.wallet_repository.read_by_column(
+                "userId", user.id, not_found_raise_exception=False
+            )
+            if wallet:
+                wallet.pointsBalance += points
+                self.wallet_repository.update(wallet.id, wallet)
+            else:
+                new_wallet = CreateWallet(
+                    userId=str(user.id),
+                    points=points,
+                    coinsBalance=0,
+                    pointsBalance=points,
+                    conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
+                    apiKey_used=api_key,
+                )
+                wallet = await self.wallet_repository.create(new_wallet)
+
+            wallet_transaction = BaseWalletTransaction(
+                transactionType="AssignPoints",
+                points=points,
+                coins=0,
+                data=data_to_add,
+                appliedConversionRate=0,
+                walletId=str(wallet.id),
+                apiKey_used=api_key,
+            )
+            transaction = await self.wallet_transaction_repository.create(wallet_transaction)
+            if not transaction:
+                raise InternalServerError(
+                    detail=f"Wallet transaction not created for user {externalUserId} and task {externalTaskId}"
+                )
+
+            return AssignedPointsToExternalUserId(
+                points=points,
+                externalUserId=externalUserId,
+                isACreatedUser=is_a_created_user,
+                gameId=gameId,
+                externalTaskId=externalTaskId,
+                caseName=case_name,
+                created_at=str(user_points.created_at),
+            )
+
     async def assign_points_to_user(
         self,
         gameId,
