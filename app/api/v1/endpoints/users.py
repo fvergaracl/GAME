@@ -1,17 +1,27 @@
 from typing import List
-
+from uuid import UUID
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Query
-
+from fastapi import APIRouter, Depends, Query, Body
 from app.core.container import Container
 from app.middlewares.authentication import auth_api_key_or_oauth2
-from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
+from app.middlewares.valid_access_token import (
+    oauth_2_scheme, valid_access_token
+)
 from app.schema.oauth_users_schema import CreateOAuthUser
-from app.schema.user_actions_schema import CreatedUserActions, CreateUserBodyActions
-from app.schema.user_points_schema import AllPointsByGame, UserGamePoints
-from app.schema.user_schema import (PostPointsConversionRequest,
-                                    ResponseConversionPreview, ResponsePointsConversion,
-                                    UserWallet)
+from app.schema.user_actions_schema import (
+    CreatedUserActions, CreateUserBodyActions
+)
+from app.schema.user_points_schema import (
+    AllPointsByGame,
+    UserGamePoints,
+    PostAssignPointsToUser,
+    UserPointsAssigned,
+    BaseUserPointsBaseModel
+)
+from app.schema.user_schema import (
+    PostPointsConversionRequest,
+    ResponseConversionPreview, ResponsePointsConversion,
+    UserWallet)
 from app.services.apikey_service import ApiKeyService
 from app.services.logs_service import LogsService
 from app.services.oauth_users_service import OAuthUsersService
@@ -78,7 +88,7 @@ router = APIRouter(
 summary_query_user_points = "Query User Points by External IDs"
 description_query_user_points = """
 ## Query User Points by External IDs
-### This endpoint retrieves the total points for a list of users based on their external user IDs. No user data is modified by this operation. 
+### This endpoint retrieves the total points for a list of users based on their external user IDs. No user data is modified by this operation.
 <sub>**Id_endpoint:** query_user_points</sub>
 """  # noqa
 
@@ -93,9 +103,11 @@ description_query_user_points = """
 @inject
 async def query_user_points(
     schema: List[str],
-    service: UserPointsService = Depends(Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(
+        Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(
+        Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -164,7 +176,7 @@ async def query_user_points(
 summary_get_user_points = "Retrieve User Points"
 description_get_user_points = """
 ## Retrieve User Points
-### This endpoint retrieves the points details associated with a specific user using their external user ID. 
+### This endpoint retrieves the points details associated with a specific user using their external user ID.
 <sub>**Id_endpoint:** get_user_points</sub>
 """  # noqa
 
@@ -179,9 +191,11 @@ description_get_user_points = """
 @inject
 async def get_points_by_user_id(
     externalUserId: str,
-    service: UserPointsService = Depends(Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(
+        Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(
+        Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -250,7 +264,7 @@ async def get_points_by_user_id(
 summary_get_user_wallet = "Retrieve User Wallet"
 description_get_user_wallet = """
 ## Retrieve User Wallet
-### This endpoint retrieves the wallet details associated with a specific user using their external user ID. 
+### This endpoint retrieves the wallet details associated with a specific user using their external user ID.
 <sub>**Id_endpoint:** get_user_wallet</sub>"""  # noqa
 
 
@@ -266,7 +280,8 @@ async def get_wallet_by_user_id(
     externalUserId: str,
     service: UserService = Depends(Provide[Container.user_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(
+        Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -351,33 +366,119 @@ async def get_wallet_by_user_id(
 #     return service.create_user(schema)
 
 
-# summary_assign_points_to_user = "Assign points to user"
-# description_assign_points_to_user = """
-# ## Assign points to user
-# ### Assign points to user
-# """
+summary_assign_points_by_external_id = "Assign points to user by externalUserId"
+description_assign_points_by_external_id = """
+## Assign points to user using externalUserId
+### This endpoint assigns points to a user using their `externalUserId`, without needing the internal UUID.
+<sub>**Id_endpoint:** assign_points_by_externalUserId</sub>
+"""
 
 
-# @router.post(
-#     "/{userId}/points",
-#     response_model=UserPointsAssigned,
-#     summary=summary_assign_points_to_user,
-#     description=description_assign_points_to_user,
-# )
-# @inject
-# def assign_points_to_user(
-#     userId: UUID,
-#     schema: PostAssignPointsToUser,
-#     service: UserService = Depends(Provide[Container.user_service]),
-# ):
-#     return service.assign_points_to_user(userId, schema)
+example_payload_assign_points_by_external_user_id = {
+    "taskId": "task-xyz",
+    "caseName": "field_entry",
+    "points": 80,
+    "description": "Reward for quick data input",
+    "data": {
+        "source": "mobile",
+        "note": "Completed under 2 minutes"
+    }
+}
 
 
-# summary_get_points = "Get points by user id"
-# description_get_points = """
-# ## Get points by user id
-# ### Get points by user id
-# """
+@router.post(
+    "/external/{externalUserId}/points",
+    response_model=UserPointsAssigned,
+    summary=summary_assign_points_by_external_id,
+    description=description_assign_points_by_external_id,
+    dependencies=[Depends(auth_api_key_or_oauth2)],
+)
+@inject
+async def assign_points_by_external_user_id(
+    externalUserId: str,
+    schema: PostAssignPointsToUser = Body(
+        ..., example=example_payload_assign_points_by_external_user_id,
+        description="Details of point assignment"
+    ),
+    service: UserService = Depends(Provide[Container.user_service]),
+    service_oauth: OAuthUsersService = Depends(
+        Provide[Container.oauth_users_service]),
+    service_log: LogsService = Depends(Provide[Container.logs_service]),
+    token: str = Depends(oauth_2_scheme),
+    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+):
+    """
+    Assign points to user based on externalUserId.
+
+    Args:
+        externalUserId (str): The external user ID.
+        schema (PostAssignPointsToUser): The point assignment payload.
+        service (UserService): User service to handle logic.
+        token (str): OAuth token.
+        api_key_header (str): API Key (optional).
+
+    Returns:
+        UserPointsAssigned: Information about the point assignment and wallet.
+    """
+    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    oauth_user_id = None
+
+    if token:
+        token_data = await valid_access_token(token)
+        oauth_user_id = token_data.data["sub"]
+        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+            await service_oauth.add(CreateOAuthUser(
+                provider="keycloak",
+                provider_user_id=oauth_user_id,
+                status="active",
+            ))
+
+    try:
+        await add_log(
+            "users",
+            "INFO",
+            "Assign points by externalUserId",
+            {"externalUserId": externalUserId, "schema": schema.dict()},
+            service_log,
+            api_key=api_key,
+            oauth_user_id=oauth_user_id,
+        )
+
+        user = service.user_repository.read_by_column(
+            "externalUserId",
+            externalUserId,
+            not_found_message=f"User not found with externalUserId: {externalUserId}"
+        )
+
+        schema_with_user_id = BaseUserPointsBaseModel(
+            userId=str(user.id),
+            taskId=schema.taskId,
+            points=schema.points,
+            caseName=schema.caseName,
+            description=schema.description,
+            data=schema.data or {}
+        )
+
+        return service.assign_points_to_user(user.id, schema_with_user_id)
+
+    except Exception as e:
+        await add_log(
+            "users",
+            "ERROR",
+            "Assign points by externalUserId failed",
+            {"error": str(e)},
+            service_log,
+            api_key=api_key,
+            oauth_user_id=oauth_user_id,
+        )
+        raise e
+
+
+summary_get_points = "Get points by user id"
+description_get_points = """
+## Get points by user id
+### Get points by user id
+"""
 
 
 # @router.get(
@@ -397,7 +498,7 @@ async def get_wallet_by_user_id(
 summary_preview_points = "Preview Points to Coins Conversion"
 description_preview_points = """
 ## Preview Points to Coins Conversion
-### This endpoint provides a preview of the conversion from points to coins for a specific user. 
+### This endpoint provides a preview of the conversion from points to coins for a specific user.
 <sub>**Id_endpoint:** preview_points_to_coins_conversion</sub>
 """  # noqa
 
@@ -412,10 +513,13 @@ description_preview_points = """
 @inject
 async def preview_points_to_coins_conversion(
     externalUserId: str,
-    points: int = Query(..., description="The number of points to convert to coins"),
+    points: int = Query(...,
+                        description="The number of points to convert to coins"
+                        ),
     service: UserService = Depends(Provide[Container.user_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(
+        Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -487,7 +591,7 @@ async def preview_points_to_coins_conversion(
 summary_convert_points = "Convert Points to Coins"
 description_convert_points = """
 ## Convert Points to Coins
-### This endpoint performs the actual conversion of points to coins for the specified user. 
+### This endpoint performs the actual conversion of points to coins for the specified user.
 <sub>**Id_endpoint:** convert_points_to_coins</sub>
 """  # noqa
 
@@ -505,7 +609,8 @@ async def convert_points_to_coins(
     schema: PostPointsConversionRequest,
     service: UserService = Depends(Provide[Container.user_actions_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(
+        Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -594,9 +699,11 @@ description_add_action_to_user = """
 async def add_action_to_user(
     externalUserId: str,
     schema: CreateUserBodyActions,
-    service: UserActionsService = Depends(Provide[Container.user_actions_service]),
+    service: UserActionsService = Depends(
+        Provide[Container.user_actions_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(
+        Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -649,7 +756,8 @@ async def add_action_to_user(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
-        response = service.user_add_action_default(externalUserId, schema, api_key)
+        response = service.user_add_action_default(
+            externalUserId, schema, api_key)
         return response
     except Exception as e:
         add_log(
