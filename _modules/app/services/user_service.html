@@ -245,7 +245,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.wallet_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.wallet_transaction_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletTransactionRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskPointsResponseByUser</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_points_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseUserPointsBaseModel</span><span class="p">,</span> <span class="n">UserPointsAssigned</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_points_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseUserPointsBaseModel</span><span class="p">,</span>
+    <span class="n">BaseUserPointsBaseModelWithCaseName</span><span class="p">,</span>
+    <span class="n">UserPointsAssigned</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">PostPointsConversionRequest</span><span class="p">,</span>
                                     <span class="n">ResponsePointsConversion</span><span class="p">,</span> <span class="n">UserPointsTasks</span><span class="p">,</span>
                                     <span class="n">UserWallet</span><span class="p">)</span>
@@ -444,7 +448,12 @@
 
 <div class="viewcode-block" id="UserService.assign_points_to_user">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_service.UserService.assign_points_to_user">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">assign_points_to_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">BaseUserPointsBaseModel</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">assign_points_to_user</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">userId</span><span class="p">,</span>
+            <span class="n">schema</span><span class="p">:</span> <span class="n">BaseUserPointsBaseModelWithCaseName</span><span class="p">,</span>
+            <span class="n">apiKey_used</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Assigns points to a user based on the provided schema.</span>
 
@@ -542,16 +551,17 @@
                     <span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"label_function_choose"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="s2">"individual_adjustment_points"</span>
                     <span class="p">)</span>
-
-        <span class="n">user_points_schema</span> <span class="o">=</span> <span class="n">BaseUserPointsBaseModel</span><span class="p">(</span>
+        <span class="n">caseName</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">caseName</span>
+        <span class="n">user_points_schema</span> <span class="o">=</span> <span class="n">BaseUserPointsBaseModelWithCaseName</span><span class="p">(</span>
             <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
             <span class="n">taskId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">taskId</span><span class="p">),</span>
+            <span class="n">caseName</span><span class="o">=</span><span class="n">caseName</span><span class="p">,</span>
             <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">user_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user_points_schema</span><span class="p">)</span>
+        <span class="n">user_points</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user_points_schema</span><span class="p">)</span>
 
         <span class="n">wallet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"userId"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
@@ -568,18 +578,22 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">wallet</span><span class="o">.</span><span class="n">pointsBalance</span> <span class="o">+=</span> <span class="n">points</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wallet</span><span class="p">)</span>
+        <span class="n">schema_dict</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
 
         <span class="n">wallet_transaction</span> <span class="o">=</span> <span class="n">BaseWalletTransaction</span><span class="p">(</span>
             <span class="n">transactionType</span><span class="o">=</span><span class="s2">"AssignPoints"</span><span class="p">,</span>
             <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
             <span class="n">coins</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">schema_dict</span><span class="p">,</span>
             <span class="n">appliedConversionRate</span><span class="o">=</span><span class="n">wallet</span><span class="o">.</span><span class="n">conversionRate</span><span class="p">,</span>
+            <span class="n">apiKey_used</span><span class="o">=</span><span class="n">apiKey_used</span><span class="p">,</span>
             <span class="n">walletId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">wallet_transaction</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">wallet_transaction</span><span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">UserPointsAssigned</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user_points</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="n">caseName</span><span class="o">=</span><span class="n">user_points</span><span class="o">.</span><span class="n">caseName</span><span class="p">,</span>
             <span class="n">created_at</span><span class="o">=</span><span class="n">user_points</span><span class="o">.</span><span class="n">created_at</span><span class="p">,</span>
             <span class="n">updated_at</span><span class="o">=</span><span class="n">user_points</span><span class="o">.</span><span class="n">updated_at</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="n">user_points</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>

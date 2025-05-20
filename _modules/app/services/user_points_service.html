@@ -716,21 +716,14 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">data_to_add</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">data_to_add</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">'-1'</span><span class="p">)</span>
-            <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"externalGameId"</span><span class="p">]</span> <span class="o">=</span> <span class="n">externalGameId</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">'-2'</span><span class="p">)</span>
-            <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"externalTaskId"</span><span class="p">]</span> <span class="o">=</span> <span class="n">externalTaskId</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">'-3'</span><span class="p">)</span>
             <span class="n">result_calculated_points</span> <span class="o">=</span> <span class="k">await</span> <span class="n">strategy_instance</span><span class="o">.</span><span class="n">calculate_points</span><span class="p">(</span>
                 <span class="n">externalGameId</span><span class="o">=</span><span class="n">externalGameId</span><span class="p">,</span>
                 <span class="n">externalTaskId</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
                 <span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">'-4'</span><span class="p">)</span>
             <span class="n">points</span><span class="p">,</span> <span class="n">case_name</span><span class="p">,</span> <span class="n">callbackData</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">result_calculated_points</span> <span class="o">+</span> <span class="p">(</span><span class="kc">None</span><span class="p">,))[:</span><span class="mi">3</span><span class="p">]</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">'-5'</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span>
                 <span class="s1">'points'</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span>
                 <span class="s1">' | '</span><span class="p">,</span>
@@ -739,9 +732,7 @@
                 <span class="s1">'callbackData'</span><span class="p">,</span> <span class="n">callbackData</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">callbackData</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">'-6'</span><span class="p">)</span>
                 <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"callbackData"</span><span class="p">]</span> <span class="o">=</span> <span class="n">callbackData</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">'-7'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">"----------------- ERROR -----------------"</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -766,7 +757,8 @@
                     <span class="sa">f</span><span class="s2">"Points not calculated for task with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> and user with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">. Beacuse the strategy don't have condition to calculate it or the strategy don't have a case name"</span>  <span class="c1"># noqa</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">case_name</span><span class="p">:</span>
+            <span class="n">case_name</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">caseName</span>
         <span class="n">user_points_schema</span> <span class="o">=</span> <span class="n">UserPointsAssign</span><span class="p">(</span>
             <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
             <span class="n">taskId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
@@ -804,15 +796,9 @@
             <span class="n">walletId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
             <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">wallet_transaction_repository</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">wallet_transaction</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">wallet_transaction_repository</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InternalServerError</span><span class="p">(</span>
-                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Wallet transaction not created for user with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> and task with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2">. Please try again later or contact support"</span>  <span class="c1"># noqa</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">AssignedPointsToExternalUserId</span><span class="p">(</span>
             <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
