@@ -43,6 +43,18 @@ class PostAssignPointsToUser(BaseModel):
     data: Optional[dict]
 
 
+class PostAssignPointsToUserWithCaseName(PostAssignPointsToUser):
+    """
+    Model used when assigning points to a user with a case name from outside
+    of the system
+
+    Attributes:
+        caseName (str): Case name
+    """
+    taskId: str
+    caseName: str
+
+
 class UserWallet(BaseModel):
     """
     Model for a user wallet

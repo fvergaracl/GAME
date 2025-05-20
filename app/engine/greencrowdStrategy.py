@@ -707,15 +707,6 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
             DIM_PP = task.dimensions[3].get("DIM_PP")
             DIM_S = task.dimensions[4].get("DIM_S")
 
-            print(
-                {
-                    "DIM_BP": DIM_BP,
-                    "DIM_LBE": DIM_LBE,
-                    "DIM_TD": DIM_TD,
-                    "DIM_PP": DIM_PP,
-                    "DIM_S": DIM_S,
-                }
-            )
             points = DIM_BP + DIM_LBE + DIM_TD + DIM_PP + DIM_S
             if case_name == "-":
                 case_name = "Valid Simulation"

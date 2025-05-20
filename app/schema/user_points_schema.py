@@ -159,6 +159,15 @@ class BaseUserPointsBaseModel(PostAssignPointsToUser):
     userId: str
 
 
+class BaseUserPointsBaseModelWithCaseName(BaseUserPointsBaseModel):
+    """
+    Base model for user points with case name
+    Attributes:
+        caseName: Optional[str]: Case name
+    """
+    caseName: Optional[str]
+
+
 class UserPointsAssign(BaseUserPointsBaseModel):
     """Model for user points assignment."""
 

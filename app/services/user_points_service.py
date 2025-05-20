@@ -450,21 +450,14 @@ class UserPointsService(BaseService):
         try:
             if data_to_add is None:
                 data_to_add = {}
-            print('-1')
-            data_to_add["externalGameId"] = externalGameId
-            print('-2')
-            data_to_add["externalTaskId"] = externalTaskId
-            print('-3')
             result_calculated_points = await strategy_instance.calculate_points(
                 externalGameId=externalGameId,
                 externalTaskId=externalTaskId,
                 externalUserId=externalUserId,
                 data=data_to_add,
             )
-            print('-4')
             points, case_name, callbackData = (
                 result_calculated_points + (None,))[:3]
-            print('-5')
             print(
                 'points', points,
                 ' | ',
@@ -473,9 +466,7 @@ class UserPointsService(BaseService):
                 'callbackData', callbackData
             )
             if callbackData is not None:
-                print('-6')
                 data_to_add["callbackData"] = callbackData
-            print('-7')
         except Exception as e:
             print("----------------- ERROR -----------------")
             print(e)
@@ -500,7 +491,8 @@ class UserPointsService(BaseService):
                     f"Points not calculated for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Beacuse the strategy don't have condition to calculate it or the strategy don't have a case name"  # noqa
                 )
             )
-
+        if not case_name:
+            case_name = schema.caseName
         user_points_schema = UserPointsAssign(
             userId=str(user.id),
             taskId=str(task.id),
@@ -538,15 +530,9 @@ class UserPointsService(BaseService):
             walletId=str(wallet.id),
             apiKey_used=api_key,
         )
-        wallet_transaction_repository = await self.wallet_transaction_repository.create(
+        self.wallet_transaction_repository.create(
             wallet_transaction
         )
-        if not wallet_transaction_repository:
-            raise InternalServerError(
-                detail=(
-                    f"Wallet transaction not created for user with externalUserId: {externalUserId} and task with externalTaskId: {externalTaskId}. Please try again later or contact support"  # noqa
-                )
-            )
 
         response = AssignedPointsToExternalUserId(
             points=points,

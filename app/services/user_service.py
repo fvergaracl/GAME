@@ -7,7 +7,11 @@ from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.schema.task_schema import TaskPointsResponseByUser
-from app.schema.user_points_schema import BaseUserPointsBaseModel, UserPointsAssigned
+from app.schema.user_points_schema import (
+    BaseUserPointsBaseModel,
+    BaseUserPointsBaseModelWithCaseName,
+    UserPointsAssigned
+)
 from app.schema.user_schema import (PostPointsConversionRequest,
                                     ResponsePointsConversion, UserPointsTasks,
                                     UserWallet)
@@ -175,7 +179,12 @@ class UserService(BaseService):
         """
         return self.user_repository.create(schema)
 
-    def assign_points_to_user(self, userId, schema: BaseUserPointsBaseModel):
+    async def assign_points_to_user(
+            self,
+            userId,
+            schema: BaseUserPointsBaseModelWithCaseName,
+            apiKey_used: str = None,
+    ):
         """
         Assigns points to a user based on the provided schema.
 
@@ -273,16 +282,17 @@ class UserService(BaseService):
                     schema.data["label_function_choose"] = (
                         "individual_adjustment_points"
                     )
-
-        user_points_schema = BaseUserPointsBaseModel(
+        caseName = schema.caseName
+        user_points_schema = BaseUserPointsBaseModelWithCaseName(
             userId=str(user.id),
             taskId=str(schema.taskId),
+            caseName=caseName,
             points=points,
             data=schema.data,
             description=schema.description,
         )
 
-        user_points = self.user_points_repository.create(user_points_schema)
+        user_points = await self.user_points_repository.create(user_points_schema)
 
         wallet = self.wallet_repository.read_by_column(
             "userId", str(user.id), not_found_raise_exception=False
@@ -299,18 +309,22 @@ class UserService(BaseService):
         else:
             wallet.pointsBalance += points
             self.wallet_repository.update(wallet.id, wallet)
+        schema_dict = schema.dict()
 
         wallet_transaction = BaseWalletTransaction(
             transactionType="AssignPoints",
             points=points,
             coins=0,
+            data=schema_dict,
             appliedConversionRate=wallet.conversionRate,
+            apiKey_used=apiKey_used,
             walletId=str(wallet.id),
         )
-        self.wallet_transaction_repository.create(wallet_transaction)
+        await self.wallet_transaction_repository.create(wallet_transaction)
 
         response = UserPointsAssigned(
             id=str(user_points.id),
+            caseName=user_points.caseName,
             created_at=user_points.created_at,
             updated_at=user_points.updated_at,
             description=user_points.description,

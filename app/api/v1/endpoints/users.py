@@ -1,5 +1,4 @@
 from typing import List
-from uuid import UUID
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query, Body
 from app.core.container import Container
@@ -14,13 +13,13 @@ from app.schema.user_actions_schema import (
 from app.schema.user_points_schema import (
     AllPointsByGame,
     UserGamePoints,
-    PostAssignPointsToUser,
     UserPointsAssigned,
     BaseUserPointsBaseModel
 )
 from app.schema.user_schema import (
     PostPointsConversionRequest,
     ResponseConversionPreview, ResponsePointsConversion,
+    PostAssignPointsToUserWithCaseName,
     UserWallet)
 from app.services.apikey_service import ApiKeyService
 from app.services.logs_service import LogsService
@@ -396,7 +395,7 @@ example_payload_assign_points_by_external_user_id = {
 @inject
 async def assign_points_by_external_user_id(
     externalUserId: str,
-    schema: PostAssignPointsToUser = Body(
+    schema: PostAssignPointsToUserWithCaseName = Body(
         ..., example=example_payload_assign_points_by_external_user_id,
         description="Details of point assignment"
     ),
@@ -444,6 +443,12 @@ async def assign_points_by_external_user_id(
             oauth_user_id=oauth_user_id,
         )
 
+        taskId = service.task_repository.read_by_column(
+            "externalTaskId",
+            schema.taskId,
+            not_found_message=f"Task not found with externalTaskId: {schema.taskId}"
+        )
+
         user = service.user_repository.read_by_column(
             "externalUserId",
             externalUserId,
@@ -452,14 +457,15 @@ async def assign_points_by_external_user_id(
 
         schema_with_user_id = BaseUserPointsBaseModel(
             userId=str(user.id),
-            taskId=schema.taskId,
+            taskId=str(taskId.id),
             points=schema.points,
             caseName=schema.caseName,
             description=schema.description,
             data=schema.data or {}
         )
 
-        return service.assign_points_to_user(user.id, schema_with_user_id)
+        return await service.assign_points_to_user(
+            user.id, schema_with_user_id, api_key)
 
     except Exception as e:
         await add_log(

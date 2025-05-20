@@ -40,7 +40,6 @@ def custom_openapi():
 
     extra_server_url = configs.EXTRA_SERVER_URL
     extra_server_description = configs.EXTRA_SERVER_DESCRIPTION
-    print(configs)
 
     if extra_server_url:
         servers.append(

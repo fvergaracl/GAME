@@ -47,7 +47,6 @@ timeout = int(timeout_str)
 keepalive = int(keepalive_str)
 
 
-# For debugging and testing
 log_data = {
     "loglevel": loglevel,
     "workers": workers,
@@ -63,4 +62,3 @@ log_data = {
     "host": host,
     "port": port,
 }
-print(json.dumps(log_data))

@@ -67,8 +67,6 @@ class Configs(BaseSettings):
     DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
         "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100
     )
-    print('>>>> DEBUG ')
-    print(str(os.getenv("SECRET_KEY", None)))
     SECRET_KEY: str = str(os.getenv("SECRET_KEY", None))
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
