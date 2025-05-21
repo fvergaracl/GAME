@@ -49,7 +49,7 @@ class UserActionsService(BaseService):
         self.task_repository = task_repository
         super().__init__(user_actions_repository)
 
-    def user_add_action_in_task(
+    async def user_add_action_in_task(
         # action is JSON object
         self,
         gameId: str,
@@ -91,7 +91,8 @@ class UserActionsService(BaseService):
         task = self.task_repository.read_by_column(
             "externalTaskId",
             externalTaskId,
-            not_found_message=(f"Task not found (externalTaskId) : {externalTaskId}"),
+            not_found_message=(
+                f"Task not found (externalTaskId) : {externalTaskId}"),
         )
 
         if task.status != "open":
@@ -105,7 +106,7 @@ class UserActionsService(BaseService):
             apiKey_used=api_key,
         )
 
-        created_action = self.user_actions_repository.create(new_action)
+        created_action = await self.user_actions_repository.create(new_action)
         response = ResponseAddActionDidByUserInTask(
             **created_action.dict(),
             externalUserId=str(action.externalUserId),
