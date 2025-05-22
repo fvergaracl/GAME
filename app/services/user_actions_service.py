@@ -114,7 +114,7 @@ class UserActionsService(BaseService):
         )
         return response
 
-    def user_add_action_default(
+    async def user_add_action_default(
         self,
         externalUserId: str,
         schema: CreateUserBodyActions,
@@ -131,14 +131,14 @@ class UserActionsService(BaseService):
         Returns:
             object: The added action for user.
         """
-        user = self.users_repository.read_by_column(
+        user = await self.users_repository.read_by_column(
             "externalUserId",
             externalUserId,
             not_found_raise_exception=False,
         )
         user_created = False
         if user is None:
-            user = self.users_repository.create_user_by_externalUserId(
+            user = await self.users_repository.create_user_by_externalUserId(
                 externalUserId=externalUserId
             )
             user_created = True
@@ -148,7 +148,7 @@ class UserActionsService(BaseService):
             userId=str(user.id),
         )
 
-        created_action = self.user_actions_repository.create(new_action)
+        created_action = await self.user_actions_repository.create(new_action)
 
         response = CreatedUserActions(
             typeAction=created_action.typeAction,

@@ -762,7 +762,7 @@ async def add_action_to_user(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
-        response = service.user_add_action_default(
+        response = await service.user_add_action_default(
             externalUserId, schema, api_key)
         return response
     except Exception as e:
@@ -775,4 +775,5 @@ async def add_action_to_user(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
+        print(f"Error (add_action_to_user): {e}")
         raise e

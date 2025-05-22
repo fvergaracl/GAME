@@ -33,7 +33,7 @@ class UserRepository(BaseRepository):
         """
         super().__init__(session_factory, model)
 
-    def create_user_by_externalUserId(
+    async def create_user_by_externalUserId(
         self, externalUserId: str, oauth_user_id: str
     ) -> Users:
         """
