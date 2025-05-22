@@ -1325,7 +1325,8 @@ async def user_action_in_task(
         oauth_user_id,
     )
 
-    return service.user_add_action_in_task(gameId, externalTaskId, schema, api_key)
+    return await service.user_add_action_in_task(
+        gameId, externalTaskId, schema, api_key)
 
 
 summary_assign_points_to_user = "Assign Points to User"
