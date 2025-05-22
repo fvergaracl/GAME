@@ -721,7 +721,7 @@ async def create_tasks_bulk(
 
     for task in create_query.tasks:
         try:
-            created_task = service.create_task_by_game_id(
+            created_task = await service.create_task_by_game_id(
                 gameId, task, api_key)
             succesfully_created.append(created_task)
         except Exception as e:
