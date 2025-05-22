@@ -660,7 +660,7 @@ async def convert_points_to_coins(
                 oauth_user_id=oauth_user_id,
             )
     try:
-        add_log(
+        await add_log(
             "users",
             "INFO",
             "Convert points to coins",
@@ -674,7 +674,7 @@ async def convert_points_to_coins(
         )
         return response
     except Exception as e:
-        add_log(
+        await add_log(
             "users",
             "ERROR",
             "Convert points to coins failed",
@@ -753,7 +753,7 @@ async def add_action_to_user(
                 oauth_user_id=oauth_user_id,
             )
     try:
-        add_log(
+        await add_log(
             "users",
             "INFO",
             "Add action to user",
@@ -766,7 +766,7 @@ async def add_action_to_user(
             externalUserId, schema, api_key)
         return response
     except Exception as e:
-        add_log(
+        await add_log(
             "users",
             "ERROR",
             "Add action to user failed",
