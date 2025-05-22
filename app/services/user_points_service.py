@@ -404,34 +404,38 @@ class UserPointsService(BaseService):
               assigned.
 
         """
+        print('-1')
         externalUserId = schema.externalUserId
         is_a_created_user = False
-
+        print('-2')
         game = self.game_repository.read_by_column(
             column="id",
             value=gameId,
             not_found_message=(f"Game with gameId {gameId} not found"),
             only_one=True,
         )
+        print("-3")
         externalGameId = game.externalGameId
         task = self.task_repository.read_by_gameId_and_externalTaskId(
             game.id, externalTaskId
         )
+        print("-4")
         if not task:
             raise NotFoundError(
                 f"Task not found with externalTaskId: {externalTaskId}")
-
+        print('-5')
         strategyId = task.strategyId
         strategy = self.strategy_service.get_strategy_by_id(strategyId)
-
+        print('-6')
         if not strategy:
             raise NotFoundError(
                 f"Strategy not found with id: {strategyId} for task with externalTaskId: {externalTaskId}"  # noqa
             )
-
+        print('-7')
         user = self.users_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=False
         )
+        print('-8')
         if not user:
             is_valid_externalUserId = is_valid_slug(externalUserId)
             if not is_valid_externalUserId:
@@ -444,7 +448,7 @@ class UserPointsService(BaseService):
                 externalUserId=externalUserId
             )
             is_a_created_user = True
-
+        print('-9')
         strategy_instance = self.strategy_service.get_Class_by_id(strategyId)
         data_to_add = schema.data
         try:

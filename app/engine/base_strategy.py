@@ -216,7 +216,7 @@ class BaseStrategy:
             "hash_version": self.hash_version,
         }
 
-    def calculate_points(self, data=None):
+    async def calculate_points(self, data=None):
         """
         Calculates the points for the strategy.
 

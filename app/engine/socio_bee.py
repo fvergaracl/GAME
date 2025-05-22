@@ -32,7 +32,7 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
         self.variable_global_advantage_adjustment_points = 7
         self.variable_individual_adjustment_points = 8
 
-    def calculate_points(
+    async def calculate_points(
         self, externalGameId, externalTaskId, externalUserId, data=None
     ):
         task_measurements_count = (

@@ -23,7 +23,7 @@ class OAuthUsersService(BaseService):
         self.oauth_users_repository = oauth_users_repository
         super().__init__(oauth_users_repository)
 
-    def get_user_by_sub(self, sub: str):
+    async def get_user_by_sub(self, sub: str):
         """
         Get a user by their sub.
 
@@ -33,4 +33,4 @@ class OAuthUsersService(BaseService):
         Returns:
             The user with the provided sub.
         """
-        return self.oauth_users_repository.get_user_by_sub(sub)
+        return await self.oauth_users_repository.get_user_by_sub(sub)

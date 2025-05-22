@@ -33,7 +33,7 @@ class OAuthUsersRepository(BaseRepository):
         """
         super().__init__(session_factory, model)
 
-    def get_user_by_sub(self, sub: str):
+    async def get_user_by_sub(self, sub: str):
         """
         Get a user by their sub.
 
@@ -44,4 +44,5 @@ class OAuthUsersRepository(BaseRepository):
             The user with the provided sub.
         """
         with self.session_factory() as session:
-            return session.query(self.model).filter_by(provider_user_id=sub).first()
+            return await session.query(self.model).filter_by(
+                provider_user_id=sub).first()

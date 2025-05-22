@@ -27,7 +27,7 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
         self.variable_constant_effort_interval_minutes = 5
         self.variable_max_points = 100
 
-    def calculate_points(
+    async def calculate_points(
         self, externalGameId, externalTaskId, externalUserId, data=None
     ):
         task_measurements_count = (
