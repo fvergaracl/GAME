@@ -131,14 +131,14 @@ class UserActionsService(BaseService):
         Returns:
             object: The added action for user.
         """
-        user = await self.users_repository.read_by_column(
+        user = self.users_repository.read_by_column(
             "externalUserId",
             externalUserId,
             not_found_raise_exception=False,
         )
         user_created = False
         if user is None:
-            user = await self.users_repository.create_user_by_externalUserId(
+            user = self.users_repository.create_user_by_externalUserId(
                 externalUserId=externalUserId
             )
             user_created = True
