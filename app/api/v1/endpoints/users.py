@@ -732,7 +732,9 @@ async def add_action_to_user(
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
     oauth_user_id = None
     if token:
+        print('-1')
         token_data = await valid_access_token(token)
+        print('-2')
         oauth_user_id = token_data.data["sub"]
         if service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
@@ -740,7 +742,9 @@ async def add_action_to_user(
                 provider_user_id=oauth_user_id,
                 status="active",
             )
+            print('-3')
             await service_oauth.add(create_user)
+            print('-4')
             await add_log(
                 "users",
                 "INFO",
@@ -752,7 +756,9 @@ async def add_action_to_user(
                 api_key=api_key,
                 oauth_user_id=oauth_user_id,
             )
+            print('-5')
     try:
+        print('-6')
         await add_log(
             "users",
             "INFO",
@@ -762,10 +768,12 @@ async def add_action_to_user(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
+        print('-7')
         response = await service.user_add_action_default(
             externalUserId, schema, api_key)
         return response
     except Exception as e:
+        print('-8')
         await add_log(
             "users",
             "ERROR",
@@ -775,5 +783,6 @@ async def add_action_to_user(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
+        print('-9')
         print(f"Error (add_action_to_user): {e}")
         raise e
