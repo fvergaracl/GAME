@@ -7,6 +7,10 @@
     "**/.mypy_cache": true
   },
   "editor.formatOnSave": true,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8",
+    "editor.formatOnSave": true
+  },
   "[javascript]": {
     "source.fixAll.eslint": "explicit"
   },
