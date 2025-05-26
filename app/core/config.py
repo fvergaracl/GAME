@@ -6,8 +6,6 @@ from pydantic import BaseSettings
 
 load_dotenv()
 
-ENV: str = ""
-
 
 class Configs(BaseSettings):
     """
@@ -113,14 +111,18 @@ class TestConfigs(Configs):
         ENV (str): The environment setting for test environment.
     """
 
-    ENV: str = "test"
+    ENV = "test"
+    DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test.db")
+    DB_HOST = os.getenv("TEST_DB_HOST", "localhost")
 
 
-configs = Configs()
+configs = TestConfigs() if os.getenv("ENV") == "test" else Configs()
 
-if ENV == "prod":
-    pass
-elif ENV == "stage":
-    pass
-elif ENV == "test":
-    configs = TestConfigs()
+print('Environment:', configs.ENV)
+
+if configs.ENV == "prod":
+    print("-------------- Production Environment --------------")
+elif configs.ENV == "stage":
+    print("-------------- Staging Environment --------------")
+elif configs.ENV == "test":
+    print("-------------- Test Environment --------------")

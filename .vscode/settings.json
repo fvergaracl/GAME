@@ -19,5 +19,7 @@
   },
   "editor.minimap.enabled": false,
   "editor.selectionClipboard": false,
-  "files.autoSave": "afterDelay"
+  "files.autoSave": "afterDelay",
+  "coverage-gutters.coverageFileNames": ["coverage.xml"],
+  "coverage-gutters.showLineCoverage": true
 }
