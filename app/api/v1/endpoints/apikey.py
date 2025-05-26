@@ -23,7 +23,7 @@ router = APIRouter(
 summary_create_api_key = "Create an API key"
 description_create_api_key = """
 ## Create an API key
-### This endpoint allows you to create an API key. You must be authenticated to create an API key. 
+### This endpoint allows you to create an API key. You must be authenticated to create an API key.
 <sub>**Id_endpoint:** create_api_key</sub>
 """  # noqa
 
@@ -81,7 +81,8 @@ async def create_api_key(
         raise token_decoded.error
     if token_decoded.data:
         oauth_user_id = token_decoded.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        existing_user = await service_oauth.get_user_by_sub(oauth_user_id)
+        if existing_user is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
