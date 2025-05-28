@@ -315,7 +315,7 @@ class UserPointsService(BaseService):
                 raise PreconditionFailedError(
                     detail=f"Invalid externalUserId: {externalUserId}. Must be alphanumeric/underscore and 3–50 characters."
                 )
-            user = self.users_repository.create_user_by_externalUserId(
+            user = await self.users_repository.create_user_by_externalUserId(
                 externalUserId)
             is_a_created_user = True
 
@@ -444,7 +444,7 @@ class UserPointsService(BaseService):
                         f"Invalid externalUserId: {externalUserId}. externalUserId should be a valid (Should have only alphanumeric characters and Underscore . Length should be between 3 and 50)"  # noqa
                     )
                 )
-            user = self.users_repository.create_user_by_externalUserId(
+            user = await self.users_repository.create_user_by_externalUserId(
                 externalUserId=externalUserId
             )
             is_a_created_user = True
@@ -603,7 +603,7 @@ class UserPointsService(BaseService):
                         f"Invalid externalUserId: {externalUserId}. externalUserId should be a valid (Should have only alphanumeric characters and Underscore . Length should be between 3 and 50)"  # noqa
                     )
                 )
-            user = self.users_repository.create_user_by_externalUserId(
+            user = await self.users_repository.create_user_by_externalUserId(
                 externalUserId=externalUserId,
                 oauth_user_id=oauth_user_id,
             )

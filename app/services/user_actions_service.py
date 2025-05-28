@@ -85,7 +85,7 @@ class UserActionsService(BaseService):
             not_found_message=f"Game not found by gameId: {gameId}",
         )
         if user is None:
-            user = self.users_repository.create_user_by_externalUserId(
+            user = await self.users_repository.create_user_by_externalUserId(
                 externalUserId=action.externalUserId
             )
         task = self.task_repository.read_by_column(
@@ -138,7 +138,7 @@ class UserActionsService(BaseService):
         )
         user_created = False
         if user is None:
-            user = self.users_repository.create_user_by_externalUserId(
+            user = await self.users_repository.create_user_by_externalUserId(
                 externalUserId=externalUserId
             )
             user_created = True
