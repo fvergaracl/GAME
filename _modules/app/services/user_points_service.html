@@ -578,7 +578,7 @@
                 <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span>
                     <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Invalid externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">. Must be alphanumeric/underscore and 3–50 characters."</span>
                 <span class="p">)</span>
-            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">create_user_by_externalUserId</span><span class="p">(</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">create_user_by_externalUserId</span><span class="p">(</span>
                 <span class="n">externalUserId</span><span class="p">)</span>
             <span class="n">is_a_created_user</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -710,7 +710,7 @@
                         <span class="sa">f</span><span class="s2">"Invalid externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">. externalUserId should be a valid (Should have only alphanumeric characters and Underscore . Length should be between 3 and 50)"</span>  <span class="c1"># noqa</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
-            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">create_user_by_externalUserId</span><span class="p">(</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">create_user_by_externalUserId</span><span class="p">(</span>
                 <span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span>
             <span class="p">)</span>
             <span class="n">is_a_created_user</span> <span class="o">=</span> <span class="kc">True</span>
@@ -872,7 +872,7 @@
                         <span class="sa">f</span><span class="s2">"Invalid externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">. externalUserId should be a valid (Should have only alphanumeric characters and Underscore . Length should be between 3 and 50)"</span>  <span class="c1"># noqa</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
-            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">create_user_by_externalUserId</span><span class="p">(</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">create_user_by_externalUserId</span><span class="p">(</span>
                 <span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
                 <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
             <span class="p">)</span>
