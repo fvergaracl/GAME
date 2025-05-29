@@ -1,7 +1,9 @@
 from fastapi import Depends, HTTPException, status
 
 from app.core.container import Container
-from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
+from app.middlewares.valid_access_token import (
+    oauth_2_scheme, valid_access_token, decode_token_without_exp_check
+)
 from app.schema.oauth_users_schema import CreateOAuthUser
 from app.services.apikey_service import ApiKeyService
 
@@ -75,6 +77,24 @@ async def auth_oauth2(
             await oauth_user_service.add(create_user)
         return True
     except HTTPException as e:
+
+        if e.status_code == 401 and "Token has expired" in str(e.detail):
+            try:
+                decoded_token = decode_token_without_exp_check(oauth_2_scheme)
+                user = oauth_user_service.get_user_by_sub(
+                    decoded_token.data["sub"])
+                if not user:
+                    create_user = CreateOAuthUser(
+                        provider="keycloak",
+                        provider_user_id=decoded_token.data["sub"],
+                        status="active",
+                    )
+                    await oauth_user_service.add(create_user)
+                return True
+            except Exception as inner_error:
+                print("Validation without expiration check failed")
+                print(inner_error)
+
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",

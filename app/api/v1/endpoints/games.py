@@ -83,7 +83,8 @@ async def get_games_list(
     oauth_user_id = None
     if token:
         token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
+        token_data = token_data.data
+        oauth_user_id = token_data["sub"]
         if service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -1184,9 +1185,9 @@ async def get_points_simulated_of_user_in_game(
         raise InternalServerError(
             detail="SECRET_KEY is not set. Please set the SECRET_KEY in the environment variables"
         )
-
     token_data = await valid_access_token(token)
-    oauth_user_id = token_data.data["sub"]
+    token_data = token_data.data
+    oauth_user_id = token_data["sub"]
     is_admin = check_role(token_data, "AdministratorGAME")
     if is_admin and (not (oauth_user_id == externalUserId)):
         raise ForbiddenError(

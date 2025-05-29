@@ -41,8 +41,10 @@ async def valid_access_token(
             key=signing_key.key,
             algorithms=["RS256"],
             issuer=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}",
-            audience=configs.KEYCLOAK_AUDIENCE,
-            options={"verify_exp": True, "verify_aud": False},
+            options={
+                "verify_exp": True,
+                "verify_aud": False,
+            },
         )
         return Response.ok(data)
 
@@ -54,6 +56,11 @@ async def valid_access_token(
         )
 
     except exceptions.ExpiredSignatureError as e:
+        # try with decode_token_without_exp_check
+        print("Token has expired, trying to decode without expiration check")
+        decoded_response = decode_token_without_exp_check(access_token)
+        if decoded_response.ok:
+            return decoded_response
         print(f"Error: ExpiredSignatureError - {e}")
         return Response.fail(
             error=HTTPException(status_code=401, detail="Token has expired")
@@ -73,6 +80,13 @@ async def valid_access_token(
         return Response.fail(
             error=HTTPException(
                 status_code=500, detail="Internal server error")
+        )
+    except jwt.PyJWTError as e:
+        print(f"Error: PyJWTError - {e}")
+        return Response.fail(
+            error=HTTPException(
+                status_code=401, detail=f"Invalid token: {str(e)}"
+            )
         )
 
 
@@ -107,4 +121,40 @@ def refresh_access_token(refresh_token: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Internal server error: {err}",
+        )
+
+
+def decode_token_without_exp_check(token: str) -> Response:
+    """
+    Decodes a JWT token without verifying expiration.
+
+    Args:
+        token (str): The JWT access token.
+
+    Returns:
+        dict: The decoded payload of the token.
+    """
+    url = f"{configs.KEYCLOAK_URL_DOCKER}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/certs"
+    optional_custom_headers = {"User-agent": "fastapi-jwt-auth/0.1.0 ( GAME )"}
+    jwks_client = PyJWKClient(url, headers=optional_custom_headers)
+
+    try:
+        signing_key = jwks_client.get_signing_key_from_jwt(token)
+        decoded = jwt.decode(
+            token,
+            key=signing_key.key,
+            algorithms=["RS256"],
+            issuer=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}",
+            audience=configs.KEYCLOAK_AUDIENCE,
+            options={
+                "verify_exp": False,
+                "verify_aud": False,
+            },
+        )
+        return Response.ok(decoded)
+    except jwt.PyJWTError as e:
+        return Response.fail(
+            error=HTTPException(
+                status_code=401, detail=f"Invalid token: {str(e)}"
+            )
         )
