@@ -607,7 +607,7 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">wallet</span><span class="p">:</span>
                 <span class="n">wallet</span><span class="o">.</span><span class="n">pointsBalance</span> <span class="o">+=</span> <span class="n">points</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wallet</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wallet</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">new_wallet</span> <span class="o">=</span> <span class="n">CreateWallet</span><span class="p">(</span>
                     <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
@@ -778,7 +778,7 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">wallet</span><span class="p">:</span>
             <span class="n">wallet</span><span class="o">.</span><span class="n">pointsBalance</span> <span class="o">+=</span> <span class="n">points</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wallet</span><span class="p">)</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wallet</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">wallet</span><span class="p">:</span>
             <span class="n">new_wallet</span> <span class="o">=</span> <span class="n">CreateWallet</span><span class="p">(</span>
