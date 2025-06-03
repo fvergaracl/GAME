@@ -294,7 +294,7 @@ class UserService(BaseService):
 
         user_points = await self.user_points_repository.create(user_points_schema)
 
-        wallet = self.wallet_repository.read_by_column(
+        wallet = await self.wallet_repository.read_by_column(
             "userId", str(user.id), not_found_raise_exception=False
         )
         if not wallet:
@@ -305,10 +305,10 @@ class UserService(BaseService):
                 userId=str(user.id),
             )
 
-            wallet = self.wallet_repository.create(new_wallet)
+            wallet = await self.wallet_repository.create(new_wallet)
         else:
             wallet.pointsBalance += points
-            self.wallet_repository.update(wallet.id, wallet)
+            await self.wallet_repository.update(wallet.id, wallet)
         schema_dict = schema.dict()
 
         wallet_transaction = BaseWalletTransaction(
@@ -337,7 +337,7 @@ class UserService(BaseService):
 
         return response
 
-    def get_wallet_by_user_id(self, userId):
+    async def get_wallet_by_user_id(self, userId):
         """
         Retrieves the wallet associated with a user by their user ID.
 
@@ -361,7 +361,7 @@ class UserService(BaseService):
                 userId=str(user.id),
             )
 
-            wallet = self.wallet_repository.create(new_wallet)
+            wallet = await self.wallet_repository.create(new_wallet)
 
         wallet_transactions = (
             self.wallet_transaction_repository.read_by_column(  # noqa: E501
@@ -394,7 +394,7 @@ class UserService(BaseService):
         )
         return user
 
-    def get_wallet_by_externalUserId(self, externalUserId):
+    async def get_wallet_by_externalUserId(self, externalUserId):
         """
         Retrieves the wallet associated with a user by their external user ID.
 
@@ -407,7 +407,7 @@ class UserService(BaseService):
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
-        response = self.get_wallet_by_user_id(str(user.id))
+        response = await self.get_wallet_by_user_id(str(user.id))
         return response
 
     def get_points_by_user_id(self, userId):
@@ -525,7 +525,7 @@ class UserService(BaseService):
             str(user.id), points)
         return response
 
-    def convert_points_to_coins(
+    async def convert_points_to_coins(
         self, userId, schema: PostPointsConversionRequest, api_key
     ):
         """
@@ -550,7 +550,7 @@ class UserService(BaseService):
         user = self.user_repository.read_by_id(
             userId, not_found_message=f"User not found with userId: {userId}"
         )
-        wallet = self.wallet_repository.read_by_column(
+        wallet = await self.wallet_repository.read_by_column(
             "userId", str(user.id), not_found_raise_exception=False
         )
         if not wallet:
@@ -562,7 +562,7 @@ class UserService(BaseService):
                 apiKey_used=api_key,
             )
 
-            wallet = self.wallet_repository.create(new_wallet)
+            wallet = await self.wallet_repository.create(new_wallet)
 
         wallet_before = copy.deepcopy(wallet)
 
@@ -577,7 +577,7 @@ class UserService(BaseService):
 
         wallet.pointsBalance -= points
         wallet.coinsBalance += coins
-        self.wallet_repository.update(wallet.id, wallet)
+        await self.wallet_repository.update(wallet.id, wallet)
 
         wallet_before_serializable = serialize_wallet(wallet_before)
         wallet_serializable = serialize_wallet(wallet)
@@ -610,7 +610,7 @@ class UserService(BaseService):
         response = ResponsePointsConversion(**response)
         return response
 
-    def convert_points_to_coins_externalUserId(
+    async def convert_points_to_coins_externalUserId(
         self, externalUserId, schema: PostPointsConversionRequest, api_key: str = None
     ):
         """
@@ -629,5 +629,5 @@ class UserService(BaseService):
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
-        response = self.convert_points_to_coins(str(user.id), schema, api_key)
+        response = await self.convert_points_to_coins(str(user.id), schema, api_key)
         return response

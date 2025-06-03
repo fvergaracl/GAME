@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "GAME"
-version = "1.2.044"
+version = "1.2.045"
 description = "GAME (Goals And Motivation Engine)"
 authors = ["fvergaracl <fvergaracl@gmail.com>"]
 license = "Apache-2.0"
@@ -77,7 +77,7 @@ zipp = "3.17.0"
 vulture = "^2.11"
 toml = "^0.10.2"
 eralchemy = "^1.2.10"
-sphinx-material = {git = "https://github.com/bashtage/sphinx-material.git"}
+sphinx-material = { git = "https://github.com/bashtage/sphinx-material.git" }
 uvicorn = "^0.30.1"
 prettytable = "^3.11.0"
 fastapi = "^0.114.2"
@@ -87,7 +87,7 @@ freezegun = "^1.5.1"
 graphviz = "^0.20.3"
 pyjwt = "^2.10.1"
 numpy = "^2.2.3"
-sentry-sdk = {extras = ["fastapi"], version = "^2.22.0"}
+sentry-sdk = { extras = ["fastapi"], version = "^2.22.0" }
 
 
 [tool.poetry.group.dev.dependencies]
