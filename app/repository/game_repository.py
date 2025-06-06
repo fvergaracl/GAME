@@ -60,11 +60,10 @@ class GameRepository(BaseRepository):
         Retrieves all games based on the provided schema.
 
         Args:
-            schema: The schema for filtering the games.
+            schema: The schema for filtering the games. Supports filtering by externalGameId, strategyId, platform, etc.
 
         Returns:
-            FindGameResult: A result set containing the games and search
-              options.
+            FindGameResult: A result set containing the games and search options.
         """
         with self.session_factory() as session:
             schema_as_dict = schema.dict(exclude_none=True)
@@ -76,9 +75,10 @@ class GameRepository(BaseRepository):
             )
             page = schema_as_dict.get("page", configs.PAGE)
             page_size = schema_as_dict.get("page_size", configs.PAGE_SIZE)
+
+            # ✅ Esto incluirá el filtro por externalGameId si viene en el schema
             filter_options = dict_to_sqlalchemy_filter_options(
-                self.model, schema_as_dict
-            )
+                self.model, schema_as_dict)
 
             query = session.query(
                 Games.id.label("id"),
@@ -89,6 +89,7 @@ class GameRepository(BaseRepository):
                 Games.externalGameId.label("externalGameId"),
                 GamesParams,
             )
+
             eager_loading = schema_as_dict.get("eager", False)
             if eager_loading:
                 for relation in getattr(self.model, "eagers", []):
@@ -96,17 +97,19 @@ class GameRepository(BaseRepository):
 
             filtered_query = query.filter(filter_options)
             query = filtered_query.order_by(order_query)
+            query = query.outerjoin(
+                GamesParams, Games.id == GamesParams.gameId)
 
-            query = query.outerjoin(GamesParams, Games.id == GamesParams.gameId)
             if api_key:
                 query = query.filter(Games.apiKey_used == api_key)
+
             if page_size == "all":
                 games = query.all()
             else:
-                games = query.limit(page_size).offset((page - 1) * page_size).all()
+                games = query.limit(page_size).offset(
+                    (page - 1) * page_size).all()
 
             game_results = {}
-
             for game in games:
                 game_id = game.id
                 if game_id not in game_results:
@@ -128,7 +131,7 @@ class GameRepository(BaseRepository):
                         }
                     )
 
-            total_count = list(game_results.values()).__len__()
+            total_count = len(game_results)
 
             return FindGameResult(
                 items=list(game_results.values()),
@@ -151,7 +154,8 @@ class GameRepository(BaseRepository):
             BaseGameResult: The game details.
         """
         with self.session_factory() as session:
-            game = session.query(self.model).filter(self.model.id == id).first()
+            game = session.query(self.model).filter(
+                self.model.id == id).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {id}")
             params = (
@@ -189,7 +193,8 @@ class GameRepository(BaseRepository):
             DuplicatedError: If a duplicated error occurs during update.
         """
         with self.session_factory() as session:
-            game = session.query(self.model).filter(self.model.id == gameId).first()
+            game = session.query(self.model).filter(
+                self.model.id == gameId).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {gameId}")
 
@@ -218,7 +223,8 @@ class GameRepository(BaseRepository):
         try:
             with self.session_factory() as session:
                 game = (
-                    session.query(self.model).filter(self.model.id == game_id).first()
+                    session.query(self.model).filter(
+                        self.model.id == game_id).first()
                 )
                 if not game:
                     raise NotFoundError(detail=f"Not found id : {game_id}")

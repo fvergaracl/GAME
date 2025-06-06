@@ -139,7 +139,7 @@ class PostFindGame(FindBase, BaseGame, metaclass=AllOptional):
     Inherits attributes from FindBase and BaseGame.
     """
 
-    ...
+    externalGameId: Optional[str]
 
 
 class FindGameResult(BaseModel):
