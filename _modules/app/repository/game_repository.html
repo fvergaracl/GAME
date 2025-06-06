@@ -302,11 +302,10 @@
 <span class="sd">        Retrieves all games based on the provided schema.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            schema: The schema for filtering the games.</span>
+<span class="sd">            schema: The schema for filtering the games. Supports filtering by externalGameId, strategyId, platform, etc.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            FindGameResult: A result set containing the games and search</span>
-<span class="sd">              options.</span>
+<span class="sd">            FindGameResult: A result set containing the games and search options.</span>
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">schema_as_dict</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -318,9 +317,10 @@
             <span class="p">)</span>
             <span class="n">page</span> <span class="o">=</span> <span class="n">schema_as_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"page"</span><span class="p">,</span> <span class="n">configs</span><span class="o">.</span><span class="n">PAGE</span><span class="p">)</span>
             <span class="n">page_size</span> <span class="o">=</span> <span class="n">schema_as_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"page_size"</span><span class="p">,</span> <span class="n">configs</span><span class="o">.</span><span class="n">PAGE_SIZE</span><span class="p">)</span>
+
+            <span class="c1"># ✅ Esto incluirá el filtro por externalGameId si viene en el schema</span>
             <span class="n">filter_options</span> <span class="o">=</span> <span class="n">dict_to_sqlalchemy_filter_options</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">schema_as_dict</span>
-            <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">schema_as_dict</span><span class="p">)</span>
 
             <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
                 <span class="n">Games</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"id"</span><span class="p">),</span>
@@ -331,6 +331,7 @@
                 <span class="n">Games</span><span class="o">.</span><span class="n">externalGameId</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"externalGameId"</span><span class="p">),</span>
                 <span class="n">GamesParams</span><span class="p">,</span>
             <span class="p">)</span>
+
             <span class="n">eager_loading</span> <span class="o">=</span> <span class="n">schema_as_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"eager"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">eager_loading</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">relation</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">"eagers"</span><span class="p">,</span> <span class="p">[]):</span>
@@ -338,17 +339,19 @@
 
             <span class="n">filtered_query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_options</span><span class="p">)</span>
             <span class="n">query</span> <span class="o">=</span> <span class="n">filtered_query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">order_query</span><span class="p">)</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">outerjoin</span><span class="p">(</span>
+                <span class="n">GamesParams</span><span class="p">,</span> <span class="n">Games</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">GamesParams</span><span class="o">.</span><span class="n">gameId</span><span class="p">)</span>
 
-            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">outerjoin</span><span class="p">(</span><span class="n">GamesParams</span><span class="p">,</span> <span class="n">Games</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">GamesParams</span><span class="o">.</span><span class="n">gameId</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">api_key</span><span class="p">:</span>
                 <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Games</span><span class="o">.</span><span class="n">apiKey_used</span> <span class="o">==</span> <span class="n">api_key</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="n">page_size</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
                 <span class="n">games</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">games</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">((</span><span class="n">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="n">games</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
             <span class="n">game_results</span> <span class="o">=</span> <span class="p">{}</span>
-
             <span class="k">for</span> <span class="n">game</span> <span class="ow">in</span> <span class="n">games</span><span class="p">:</span>
                 <span class="n">game_id</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">id</span>
                 <span class="k">if</span> <span class="n">game_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">game_results</span><span class="p">:</span>
@@ -370,7 +373,7 @@
                         <span class="p">}</span>
                     <span class="p">)</span>
 
-            <span class="n">total_count</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">game_results</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+            <span class="n">total_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">game_results</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">FindGameResult</span><span class="p">(</span>
                 <span class="n">items</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">game_results</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
@@ -396,7 +399,8 @@
 <span class="sd">            BaseGameResult: The game details.</span>
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">game</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Not found id : </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">params</span> <span class="o">=</span> <span class="p">(</span>
@@ -437,7 +441,8 @@
 <span class="sd">            DuplicatedError: If a duplicated error occurs during update.</span>
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">game</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">gameId</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">gameId</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Not found id : </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
@@ -469,7 +474,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
                 <span class="n">game</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">game_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">game_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Not found id : </span><span class="si">{</span><span class="n">game_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
