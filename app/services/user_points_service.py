@@ -344,7 +344,7 @@ class UserPointsService(BaseService):
             )
             if wallet:
                 wallet.pointsBalance += points
-                self.wallet_repository.update(wallet.id, wallet)
+                await self.wallet_repository.update(wallet.id, wallet)
             else:
                 new_wallet = CreateWallet(
                     userId=str(user.id),
@@ -512,7 +512,7 @@ class UserPointsService(BaseService):
         )
         if wallet:
             wallet.pointsBalance += points
-            self.wallet_repository.update(wallet.id, wallet)
+            await self.wallet_repository.update(wallet.id, wallet)
 
         if not wallet:
             new_wallet = CreateWallet(

@@ -332,7 +332,7 @@ async def get_wallet_by_user_id(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
-        response = service.get_wallet_by_externalUserId(externalUserId)
+        response = await service.get_wallet_by_externalUserId(externalUserId)
         return response
     except Exception as e:
         await add_log(
@@ -669,7 +669,7 @@ async def convert_points_to_coins(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
-        response = service.convert_points_to_coins_externalUserId(
+        response = await service.convert_points_to_coins_externalUserId(
             externalUserId, schema, api_key
         )
         return response
