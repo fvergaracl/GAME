@@ -778,7 +778,7 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">wallet</span><span class="p">:</span>
             <span class="n">wallet</span><span class="o">.</span><span class="n">pointsBalance</span> <span class="o">+=</span> <span class="n">points</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wallet</span><span class="p">)</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wallet</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">wallet</span><span class="p">:</span>
             <span class="n">new_wallet</span> <span class="o">=</span> <span class="n">CreateWallet</span><span class="p">(</span>
@@ -936,12 +936,20 @@
                     <span class="s2">"allTasks"</span><span class="p">:</span> <span class="n">tasks</span><span class="p">,</span>
                     <span class="s2">"externalUserId"</span><span class="p">:</span> <span class="n">externalUserId</span><span class="p">,</span>
                 <span class="p">}</span>
-                <span class="n">task_simulation</span> <span class="o">=</span> <span class="n">strategy_instance</span><span class="o">.</span><span class="n">simulate_strategy</span><span class="p">(</span>
-                    <span class="n">data_to_simulate</span><span class="o">=</span><span class="n">data_to_simulate</span><span class="p">,</span>
-                    <span class="n">userGroup</span><span class="o">=</span><span class="n">userGroup</span><span class="p">,</span>
-                    <span class="n">user_last_task</span><span class="o">=</span><span class="n">user_last_task</span>
-                <span class="p">)</span>
-                <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task_simulation</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">task_simulation</span> <span class="o">=</span> <span class="n">strategy_instance</span><span class="o">.</span><span class="n">simulate_strategy</span><span class="p">(</span>
+                        <span class="n">data_to_simulate</span><span class="o">=</span><span class="n">data_to_simulate</span><span class="p">,</span>
+                        <span class="n">userGroup</span><span class="o">=</span><span class="n">userGroup</span><span class="p">,</span>
+                        <span class="n">user_last_task</span><span class="o">=</span><span class="n">user_last_task</span>
+                    <span class="p">)</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task_simulation</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"----------------- ERROR -----------------"</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">strategy_instance</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">gameId</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">externalUserId</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"----------------- ERROR -----------------"</span><span class="p">)</span>
 
         <span class="n">externalGameId</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">externalGameId</span>
         <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="n">externalGameId</span></div>
