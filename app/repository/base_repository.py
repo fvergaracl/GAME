@@ -178,7 +178,7 @@ class BaseRepository:
                 raise DuplicatedError(detail=str(e.orig))
             return query
 
-    def update(self, id: int, schema):
+    async def update(self, id: int, schema):
         """
         Updates a record by its ID.
 

@@ -294,7 +294,7 @@ class UserService(BaseService):
 
         user_points = await self.user_points_repository.create(user_points_schema)
 
-        wallet = await self.wallet_repository.read_by_column(
+        wallet = self.wallet_repository.read_by_column(
             "userId", str(user.id), not_found_raise_exception=False
         )
         if not wallet:
