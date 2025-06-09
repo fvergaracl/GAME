@@ -125,7 +125,17 @@ def get_dynamic_values_from_tasks(
             - "DIM_S": Streak-based points for continuous participation.
     """
     all_records = all_records.all()
-    poi_external_id = task.externalTaskId.split("_")[1]
+    try:
+        poi_external_id = task.externalTaskId.split("_")[1]
+    except Exception as e:
+        print(f">Error extracting POI ID from task {task.externalTaskId}: {e}")
+        return {
+            "DIM_BP": 0,
+            "DIM_LBE": 0,
+            "DIM_TD": 0,
+            "DIM_PP": 0,
+            "DIM_S": 0,
+        }
     user_id = user.id
 
     dim_bp_value = dim_lbe_value = dim_td_value = dim_pp_value = dim_s_value = 0
@@ -133,8 +143,11 @@ def get_dynamic_values_from_tasks(
     #
     poi_task_map = defaultdict(set)
     for t in list_ids_tasks:
-        poi_id = t["externalTaskId"].split("_")[1]
-        poi_task_map[poi_id].add(t["id"])
+        try:
+            poi_id = t["externalTaskId"].split("_")[1]
+            poi_task_map[poi_id].add(t["id"])
+        except Exception as e:
+            print(f">Error processing task {t['externalTaskId']}: {e}")
 
     count_total_task_in_poi = len(poi_task_map.get(poi_external_id, []))
     count_unique_task_in_poi = len(

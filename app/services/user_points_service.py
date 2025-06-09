@@ -512,7 +512,7 @@ class UserPointsService(BaseService):
         )
         if wallet:
             wallet.pointsBalance += points
-            await self.wallet_repository.update(wallet.id, wallet)
+            self.wallet_repository.update(wallet.id, wallet)
 
         if not wallet:
             new_wallet = CreateWallet(
@@ -668,7 +668,9 @@ class UserPointsService(BaseService):
                     "externalUserId": externalUserId,
                 }
                 task_simulation = strategy_instance.simulate_strategy(
-                    data_to_simulate=data_to_simulate, userGroup=userGroup, user_last_task=user_last_task
+                    data_to_simulate=data_to_simulate,
+                    userGroup=userGroup,
+                    user_last_task=user_last_task
                 )
                 response.append(task_simulation)
 
