@@ -1,6 +1,6 @@
-from sqlmodel import Column, Field, String
+from sqlmodel import Column, Field, String, ForeignKey
 
-from app.model.base_model import BaseModel, ForeignKey
+from app.model.base_model import BaseModel
 
 
 class Games(BaseModel, table=True):

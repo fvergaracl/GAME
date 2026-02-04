@@ -8,14 +8,13 @@
 
 </p>
 
-
 <p align="center">
   <img src="GAME_logo.png" alt="GAME Logo">
 </p>
 
 ## Welcome to GAME! 🏆
 
-**GAME** (Goals And Motivation Engine) is an open-source system designed to help individuals and organizations achieve their goals through gamification. This project aims to enhance motivation and engagement by introducing game-like mechanics in non-game contexts. 
+**GAME** (Goals And Motivation Engine) is an open-source system designed to help individuals and organizations achieve their goals through gamification. This project aims to enhance motivation and engagement by introducing game-like mechanics in non-game contexts.
 
 Built with **FastAPI** (Python) and utilizing **PostgreSQL** as the database, the project is managed with **Poetry** for dependency management. Docker and Kubernetes configurations are provided to simplify deployment and scaling.
 
@@ -43,6 +42,7 @@ cd GAME
 Make sure you have Poetry installed, then run:
 
 ```bash
+poetry env use python3
 poetry install
 ```
 
@@ -90,13 +90,11 @@ The GAME project follows a clean and modular structure to ensure maintainability
 
 For a more detailed explanation of the project structure, check out the [SETUP.md](SETUP.md) file.
 
-
 ## Want to Contribute? 💡
 
 We welcome contributions of all kinds! Whether you want to fix a bug, improve the documentation, or add a new feature, we encourage you to join the project.
 
 Check out the [CONTRIBUTING.md](CONTRIBUTING.md) guide for more details on how to contribute.
-
 
 ## Running Tests 🧪
 
@@ -114,7 +112,6 @@ poetry run pytest --cov=app --cov-report=term-missing
 
 You can find more detailed information on testing in the [TESTING.md](TESTING.md) file.
 
-
 ## Deployment 🚀
 
 ### Docker
@@ -131,12 +128,9 @@ For more details, refer to the [DOCKER_SETUP.md](DOCKER_SETUP.md) file.
 
 The project is ready to be deployed to Kubernetes. You can find the configuration files in the `kubernetes/` directory. Follow the steps in the [KUBERNETES_SETUP.md](KUBERNETES_SETUP.md) for detailed instructions.
 
-
-
 ## License 📜
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 
 ## Contact
 
