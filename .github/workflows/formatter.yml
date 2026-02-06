@@ -4,17 +4,21 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   format:
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name != 'main' && github.actor != 'dependabot[bot]' }}
+    if: ${{ github.ref_name != 'main' && github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, 'Automated Black') }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.8"
 
@@ -25,7 +29,6 @@ jobs:
           isort .
 
       - name: Check for modified files
-        id: git-check
         run: echo "modified=$(if git diff --quiet; then echo 'false'; else echo 'true'; fi)" >> $GITHUB_ENV
 
       - name: Push changes
@@ -35,4 +38,4 @@ jobs:
           git config --global user.email 'noreply@github.com'
           git add .
           git commit -m "Automated Black & Isort formatting"
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}
