@@ -78,7 +78,8 @@ class GameRepository(BaseRepository):
 
             # ✅ Esto incluirá el filtro por externalGameId si viene en el schema
             filter_options = dict_to_sqlalchemy_filter_options(
-                self.model, schema_as_dict)
+                self.model, schema_as_dict
+            )
 
             query = session.query(
                 Games.id.label("id"),
@@ -97,8 +98,7 @@ class GameRepository(BaseRepository):
 
             filtered_query = query.filter(filter_options)
             query = filtered_query.order_by(order_query)
-            query = query.outerjoin(
-                GamesParams, Games.id == GamesParams.gameId)
+            query = query.outerjoin(GamesParams, Games.id == GamesParams.gameId)
 
             if api_key:
                 query = query.filter(Games.apiKey_used == api_key)
@@ -106,8 +106,7 @@ class GameRepository(BaseRepository):
             if page_size == "all":
                 games = query.all()
             else:
-                games = query.limit(page_size).offset(
-                    (page - 1) * page_size).all()
+                games = query.limit(page_size).offset((page - 1) * page_size).all()
 
             game_results = {}
             for game in games:
@@ -154,8 +153,7 @@ class GameRepository(BaseRepository):
             BaseGameResult: The game details.
         """
         with self.session_factory() as session:
-            game = session.query(self.model).filter(
-                self.model.id == id).first()
+            game = session.query(self.model).filter(self.model.id == id).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {id}")
             params = (
@@ -193,8 +191,7 @@ class GameRepository(BaseRepository):
             DuplicatedError: If a duplicated error occurs during update.
         """
         with self.session_factory() as session:
-            game = session.query(self.model).filter(
-                self.model.id == gameId).first()
+            game = session.query(self.model).filter(self.model.id == gameId).first()
             if not game:
                 raise NotFoundError(detail=f"Not found id : {gameId}")
 
@@ -223,8 +220,7 @@ class GameRepository(BaseRepository):
         try:
             with self.session_factory() as session:
                 game = (
-                    session.query(self.model).filter(
-                        self.model.id == game_id).first()
+                    session.query(self.model).filter(self.model.id == game_id).first()
                 )
                 if not game:
                     raise NotFoundError(detail=f"Not found id : {game_id}")

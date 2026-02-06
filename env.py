@@ -1,6 +1,7 @@
 import os
-from sqlalchemy import engine_from_config, pool
+
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 # Cargar la URL de la base de datos desde variables de entorno
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")

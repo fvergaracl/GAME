@@ -30,9 +30,7 @@ def check_role(
     realm_access = token_decoded.get("realm_access")
     if isinstance(realm_access, Mapping):
         realm_roles = realm_access.get("roles")
-        if isinstance(
-            realm_roles, (list, tuple, set)
-        ) and required_role in realm_roles:
+        if isinstance(realm_roles, (list, tuple, set)) and required_role in realm_roles:
             return True
 
     roles = token_decoded.get("roles")
@@ -48,9 +46,7 @@ def check_role(
         return False
 
     account_roles = account.get("roles")
-    if isinstance(
-        account_roles, (list, tuple, set)
-    ) and required_role in account_roles:
+    if isinstance(account_roles, (list, tuple, set)) and required_role in account_roles:
         return True
 
     return False

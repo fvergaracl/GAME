@@ -1,4 +1,4 @@
-from sqlmodel import Column, Field, String, ForeignKey
+from sqlmodel import Column, Field, ForeignKey, String
 
 from app.model.base_model import BaseModel
 

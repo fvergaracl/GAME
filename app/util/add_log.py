@@ -1,11 +1,10 @@
-from app.schema.logs_schema import CreateLogs
 from app.core.container import Container
+from app.schema.logs_schema import CreateLogs
 from app.schema.oauth_users_schema import CreateOAuthUser
 
 
 async def add_log(
-    module, log_level, message, details, service_log, api_key=None,
-    oauth_user_id=None
+    module, log_level, message, details, service_log, api_key=None, oauth_user_id=None
 ):
     """
     Helper to add a log entry with apiKey or oauth_user_id if available.
@@ -35,11 +34,14 @@ async def add_log(
             provider_user_id=oauth_user_id,
             status="active",
         )
-        await oauthusers_service.add(
-            create_user
-        )
+        await oauthusers_service.add(create_user)
 
         return add_log(
-            module, log_level, message, details, service_log,
-            api_key=api_key, oauth_user_id=oauth_user_id
+            module,
+            log_level,
+            message,
+            details,
+            service_log,
+            api_key=api_key,
+            oauth_user_id=oauth_user_id,
         )

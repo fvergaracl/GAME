@@ -59,8 +59,7 @@ async def get_games_list(
     schema: PostFindGame = Depends(),
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -136,8 +135,7 @@ async def get_game_by_id(
     gameId: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -209,8 +207,7 @@ async def delete_game_by_id(
     gameId: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -305,8 +302,7 @@ async def create_game(
     schema: PostCreateGame = Body(..., example=PostCreateGame.example()),
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -400,8 +396,7 @@ async def patch_game(
     schema: PatchGame,
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -496,8 +491,7 @@ async def get_strategy_by_gameId(
     gameId: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -569,8 +563,7 @@ async def create_task(
     create_query: CreateTaskPost = Body(..., example=CreateTaskPost.example()),
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -662,12 +655,10 @@ description_create_tasks_bulk = """
 @inject
 async def create_tasks_bulk(
     gameId: UUID,
-    create_query: CreateTasksPost = Body(...,
-                                         example=CreateTasksPost.example()),
+    create_query: CreateTasksPost = Body(..., example=CreateTasksPost.example()),
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -722,8 +713,7 @@ async def create_tasks_bulk(
 
     for task in create_query.tasks:
         try:
-            created_task = await service.create_task_by_game_id(
-                gameId, task, api_key)
+            created_task = await service.create_task_by_game_id(gameId, task, api_key)
             succesfully_created.append(created_task)
         except Exception as e:
             failed_to_create.append({"task": task, "error": str(e)})
@@ -782,8 +772,7 @@ async def get_task_list(
     find_query: PostFindTask = Depends(),
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -857,8 +846,7 @@ async def get_task_by_gameId_taskId(
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -931,11 +919,9 @@ description_get_points_by_gameId = """
 @inject
 async def get_points_by_gameId(
     gameId: UUID,
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1004,11 +990,9 @@ description_get_points_by_gameId_with_details = """
 @inject
 async def get_points_by_gameId_with_details(
     gameId: UUID,
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1079,11 +1063,9 @@ description_get_points_of_user_in_game = """
 async def get_points_of_user_in_game(
     gameId: UUID,
     externalUserId: str,
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1155,12 +1137,10 @@ description_get_points_simulated_of_user_in_game = """
 async def get_points_simulated_of_user_in_game(
     gameId: UUID,
     externalUserId: str,
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_user: UserService = Depends(Provide[Container.user_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
 ):
     """
@@ -1190,8 +1170,7 @@ async def get_points_simulated_of_user_in_game(
     oauth_user_id = token_data["sub"]
     is_admin = check_role(token_data, "AdministratorGAME")
     if is_admin and (not (oauth_user_id == externalUserId)):
-        raise ForbiddenError(
-            detail="You are not authorized to access this resource.")
+        raise ForbiddenError(detail="You are not authorized to access this resource.")
 
     if service_oauth.get_user_by_sub(oauth_user_id) is None:
         create_user = CreateOAuthUser(
@@ -1265,11 +1244,9 @@ async def user_action_in_task(
     gameId: UUID,
     externalTaskId: str,
     schema: AddActionDidByUserInTask = Body(...),
-    service: UserActionsService = Depends(
-        Provide[Container.user_actions_service]),
+    service: UserActionsService = Depends(Provide[Container.user_actions_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1327,7 +1304,8 @@ async def user_action_in_task(
     )
 
     return await service.user_add_action_in_task(
-        gameId, externalTaskId, schema, api_key)
+        gameId, externalTaskId, schema, api_key
+    )
 
 
 summary_assign_points_to_user = "Assign Points to User"
@@ -1350,11 +1328,9 @@ async def assign_points_to_user(
     gameId: UUID,
     externalTaskId: str,
     schema: AsignPointsToExternalUserId = Body(...),
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1408,8 +1384,7 @@ async def assign_points_to_user(
         api_key,
         oauth_user_id,
     )
-    isSimulated = schema.isSimulated if hasattr(
-        schema, "isSimulated") else False
+    isSimulated = schema.isSimulated if hasattr(schema, "isSimulated") else False
     return await service.assign_points_to_user(
         gameId, externalTaskId, schema, isSimulated, api_key
     )
@@ -1435,8 +1410,7 @@ async def get_points_by_task_id(
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1509,8 +1483,7 @@ async def get_points_of_user_by_task_id(
     externalUserId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1591,8 +1564,7 @@ async def get_points_by_task_id_with_details(
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):
@@ -1662,11 +1634,9 @@ description_get_users_by_gameId = """
 @inject
 async def get_users_by_gameId(
     gameId: UUID,
-    service: UserPointsService = Depends(
-        Provide[Container.user_points_service]),
+    service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]),
+    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
     api_key_header: str = Depends(ApiKeyService.get_api_key_header),
 ):

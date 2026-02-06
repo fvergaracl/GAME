@@ -165,6 +165,7 @@ class BaseUserPointsBaseModelWithCaseName(BaseUserPointsBaseModel):
     Attributes:
         caseName: Optional[str]: Case name
     """
+
     caseName: Optional[str]
 
 

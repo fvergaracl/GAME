@@ -21,7 +21,9 @@ async def test_calculate_points_default(strategy):
         0
     )
 
-    points, reward_type = await strategy.calculate_points("game_id", "task_id", "user_id")
+    points, reward_type = await strategy.calculate_points(
+        "game_id", "task_id", "user_id"
+    )
 
     assert points == 1
     assert reward_type == "BasicReward"
@@ -48,15 +50,15 @@ async def test_calculate_points_no_measurements(strategy):
     )
 
     points, reward_type = await strategy.calculate_points(
-        "game_id", "task_id", "user_id")
+        "game_id", "task_id", "user_id"
+    )
 
     assert points == 1
     assert reward_type == "BasicReward"
 
 
 def test_calculate_points_from_consistency(strategy):
-    effort_interval = strategy.get_variable(
-        "variable_constant_effort_interval_minutes")
+    effort_interval = strategy.get_variable("variable_constant_effort_interval_minutes")
     if effort_interval == 100:
         points = strategy._calculate_points_from_consistency(100)
         assert points == 100
