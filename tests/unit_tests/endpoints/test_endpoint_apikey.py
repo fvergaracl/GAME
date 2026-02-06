@@ -1,7 +1,8 @@
-import pytest
-from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock
+
+import pytest
 from dependency_injector import providers
+from fastapi.testclient import TestClient
 
 from app.main import app, container  # ✅ usa container real (instancia)
 
@@ -44,14 +45,14 @@ def override_di(monkeypatch):
         AsyncMock(return_value=mock_token),
     )
     monkeypatch.setattr(
-        "app.api.v1.endpoints.apikey.check_role", lambda token, role: True)
+        "app.api.v1.endpoints.apikey.check_role", lambda token, role: True
+    )
     monkeypatch.setattr("app.api.v1.endpoints.apikey.add_log", AsyncMock())
 
     # ✅ override providers on the *real container instance*
     container.apikey_service.override(providers.Object(mock_service))
     container.logs_service.override(providers.Object(mock_logs_service))
-    container.oauth_users_service.override(
-        providers.Object(mock_oauth_service))
+    container.oauth_users_service.override(providers.Object(mock_oauth_service))
 
     yield
 

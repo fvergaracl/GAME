@@ -9,9 +9,9 @@ class GetisOrdStrategy:
 
     def __init__(
         self,
-        strategy_name=  "GeoEquityGamificationModel",
+        strategy_name="GeoEquityGamificationModel",
         strategy_description="GeoEquity Gamification Model - Based on Getis-Ord Gi*"
-            "statistic to identify hotspots in spatial data.",
+        "statistic to identify hotspots in spatial data.",
         strategy_name_slug="geo_equity_gamification_model",
         strategy_version="0.0.1",
         variable_basic_points=10,

@@ -7,11 +7,9 @@ from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.schema.task_schema import TaskPointsResponseByUser
-from app.schema.user_points_schema import (
-    BaseUserPointsBaseModel,
-    BaseUserPointsBaseModelWithCaseName,
-    UserPointsAssigned
-)
+from app.schema.user_points_schema import (BaseUserPointsBaseModel,
+                                           BaseUserPointsBaseModelWithCaseName,
+                                           UserPointsAssigned)
 from app.schema.user_schema import (PostPointsConversionRequest,
                                     ResponsePointsConversion, UserPointsTasks,
                                     UserWallet)
@@ -180,10 +178,10 @@ class UserService(BaseService):
         return self.user_repository.create(schema)
 
     async def assign_points_to_user(
-            self,
-            userId,
-            schema: BaseUserPointsBaseModelWithCaseName,
-            apiKey_used: str = None,
+        self,
+        userId,
+        schema: BaseUserPointsBaseModelWithCaseName,
+        apiKey_used: str = None,
     ):
         """
         Assigns points to a user based on the provided schema.
@@ -521,8 +519,7 @@ class UserService(BaseService):
         user = self.user_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
-        response = self.preview_points_to_coins_conversion(
-            str(user.id), points)
+        response = self.preview_points_to_coins_conversion(str(user.id), points)
         return response
 
     async def convert_points_to_coins(
@@ -595,8 +592,7 @@ class UserService(BaseService):
             apiKey_used=api_key,
         )
 
-        transaction = self.wallet_transaction_repository.create(
-            wallet_transaction)
+        transaction = self.wallet_transaction_repository.create(wallet_transaction)
 
         response = {
             "transactionId": str(transaction.id),

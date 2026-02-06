@@ -51,6 +51,7 @@ class PostAssignPointsToUserWithCaseName(PostAssignPointsToUser):
     Attributes:
         caseName (str): Case name
     """
+
     taskId: str
     caseName: str
 

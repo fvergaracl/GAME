@@ -86,21 +86,25 @@ class TestCheckClassMethodsAndVariables(unittest.TestCase):
         """
         Test that a class missing some methods and variables fails.
         """
-        result = check_class_methods_and_variables(
-            self.IncompleteClass, debug=True)
+        result = check_class_methods_and_variables(self.IncompleteClass, debug=True)
         self.assertFalse(result)
 
-        expected_missing_variables = "Missing variables: [" \
+        expected_missing_variables = (
+            "Missing variables: ["
             "'strategy_description', 'strategy_name_slug', 'strategy_version']"
+        )
 
         printed_calls = [call.args[0] for call in mock_print.call_args_list]
-        assert any("Missing methods:" in str(c) and
-                   "get_strategy_id" in str(
-                       c) and "get_strategy_description" in str(c)
-                   for c in printed_calls), "Expected missing methods print"
+        assert any(
+            "Missing methods:" in str(c)
+            and "get_strategy_id" in str(c)
+            and "get_strategy_description" in str(c)
+            for c in printed_calls
+        ), "Expected missing methods print"
         " not found"
-        assert any(expected_missing_variables in str(c)
-                   for c in printed_calls), "Expected missing variables print"
+        assert any(
+            expected_missing_variables in str(c) for c in printed_calls
+        ), "Expected missing variables print"
         " not found"
 
 

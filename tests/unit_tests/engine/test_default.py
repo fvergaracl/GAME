@@ -22,7 +22,9 @@ class TestEnhancedGamificationStrategy(unittest.TestCase):
         self.strategy.user_points_service.count_measurements_by_external_task_id.return_value = (
             1
         )
-        points, status = await self.strategy.calculate_points("game_id", "task_id", "user_id")
+        points, status = await self.strategy.calculate_points(
+            "game_id", "task_id", "user_id"
+        )
 
         self.assertEqual(points, 1)
         self.assertEqual(status, "BasicEngagement")
@@ -45,7 +47,8 @@ class TestEnhancedGamificationStrategy(unittest.TestCase):
         )
 
         points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id")
+            "game_id", "task_id", "user_id"
+        )
 
         self.assertEqual(points, 11)
         self.assertEqual(status, "PerformanceBonus")
@@ -70,7 +73,8 @@ class TestEnhancedGamificationStrategy(unittest.TestCase):
         self.strategy.user_points_service.get_new_last_window_time_diff.return_value = 5
 
         points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id")
+            "game_id", "task_id", "user_id"
+        )
 
         self.assertEqual(points, 3)
         self.assertEqual(status, "IndividualOverGlobal")
@@ -95,7 +99,8 @@ class TestEnhancedGamificationStrategy(unittest.TestCase):
         self.strategy.user_points_service.get_new_last_window_time_diff.return_value = 7
 
         points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id")
+            "game_id", "task_id", "user_id"
+        )
 
         self.assertEqual(status, "PeakPerformerBonus")
         self.assertEqual(points, 15)
@@ -122,7 +127,8 @@ class TestEnhancedGamificationStrategy(unittest.TestCase):
         )
 
         points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id")
+            "game_id", "task_id", "user_id"
+        )
 
         self.assertEqual(status, "GlobalAdvantageAdjustment")
         self.assertEqual(points, 7)
@@ -147,7 +153,8 @@ class TestEnhancedGamificationStrategy(unittest.TestCase):
         self.strategy.user_points_service.get_new_last_window_time_diff.return_value = 3
 
         points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id")
+            "game_id", "task_id", "user_id"
+        )
 
         self.assertEqual(points, 8)
         self.assertEqual(status, "IndividualAdjustment")
@@ -164,7 +171,8 @@ class TestEnhancedGamificationStrategy(unittest.TestCase):
         )
 
         points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id")
+            "game_id", "task_id", "user_id"
+        )
 
         self.assertEqual(points, 1)
         self.assertEqual(status, "default")

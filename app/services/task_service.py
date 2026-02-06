@@ -84,8 +84,7 @@ class TaskService(BaseService):
         )
 
         if not game:
-            raise NotFoundError(
-                f"Game not found with externalGameId: {externalGameId}")
+            raise NotFoundError(f"Game not found with externalGameId: {externalGameId}")
 
         return self.get_tasks_list_by_gameId(game.id, find_query)
 
@@ -100,18 +99,15 @@ class TaskService(BaseService):
         Returns:
             list: A list of tasks associated with the game.
         """
-        game = self.game_repository.read_by_id(
-            gameId, not_found_raise_exception=False)
+        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
 
         if not game:
             raise NotFoundError(f"Game not found with gameId: {gameId}")
 
-        find_task_query = FindTask(
-            gameId=game.id, **find_query.dict(exclude_none=True))
+        find_task_query = FindTask(gameId=game.id, **find_query.dict(exclude_none=True))
         all_tasks = self.task_repository.read_by_gameId(find_task_query)
 
-        strategy_data = self.strategy_service.get_strategy_by_id(
-            game.strategyId)
+        strategy_data = self.strategy_service.get_strategy_by_id(game.strategyId)
         game_params = self.game_params_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
         )
@@ -126,14 +122,12 @@ class TaskService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy_data["variables"][param.key])
+                    type_strategy_variable = type(strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
         cleaned_tasks = []
         for task in all_tasks["items"]:
-            strategy_data = self.strategy_service.get_strategy_by_id(
-                task.strategyId)
+            strategy_data = self.strategy_service.get_strategy_by_id(task.strategyId)
             task_params = self.task_params_repository.read_by_column(
                 "taskId", task.id, not_found_raise_exception=False, only_one=False
             )
@@ -190,8 +184,7 @@ class TaskService(BaseService):
         Returns:
             CreateTaskPostSuccesfullyCreated: The task details.
         """
-        game = self.game_repository.read_by_id(
-            gameId, not_found_raise_exception=False)
+        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
         if not game:
             raise NotFoundError(f"Game not found with gameId: {gameId}")
 
@@ -204,8 +197,7 @@ class TaskService(BaseService):
                 f"gameId: {gameId}"
             )
 
-        strategy_data = self.strategy_service.get_strategy_by_id(
-            task.strategyId)
+        strategy_data = self.strategy_service.get_strategy_by_id(task.strategyId)
 
         game_params = self.game_params_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
@@ -221,8 +213,7 @@ class TaskService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy_data["variables"][param.key])
+                    type_strategy_variable = type(strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
 
@@ -240,8 +231,7 @@ class TaskService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy_data["variables"][param.key])
+                    type_strategy_variable = type(strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
 
@@ -328,8 +318,7 @@ class TaskService(BaseService):
 
         strategy_data = None
         if strategy_id:
-            strategy_data = self.strategy_service.get_strategy_by_id(
-                strategy_id)
+            strategy_data = self.strategy_service.get_strategy_by_id(strategy_id)
             if not strategy_data:
                 raise NotFoundError(
                     f"Strategy not found with strategyId: {strategy_id}"
@@ -382,8 +371,7 @@ class TaskService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy_data["variables"][param.key])
+                    type_strategy_variable = type(strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
 
@@ -398,8 +386,7 @@ class TaskService(BaseService):
                         except ValueError:
                             pass
                     type_param = type(param.value)
-                    type_strategy_variable = type(
-                        strategy_data["variables"][param.key])
+                    type_strategy_variable = type(strategy_data["variables"][param.key])
                     if type_param == type_strategy_variable:
                         strategy_data["variables"][param.key] = param.value
         externalGameId = game_data.externalGameId
@@ -467,8 +454,7 @@ class TaskService(BaseService):
 
         task_id = task.id
 
-        user_points = self.user_points_repository.get_all_UserPoints_by_taskId(
-            task_id)
+        user_points = self.user_points_repository.get_all_UserPoints_by_taskId(task_id)
 
         return user_points
 
@@ -484,8 +470,7 @@ class TaskService(BaseService):
         Returns:
             dict: The user's points details.
         """
-        points_task = self.get_points_by_task_id_with_details(
-            gameId, externalTaskId)
+        points_task = self.get_points_by_task_id_with_details(gameId, externalTaskId)
         user_points = list(
             filter(lambda x: x.externalUserId == externalUserId, points_task)
         )

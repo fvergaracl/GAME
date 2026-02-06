@@ -62,15 +62,13 @@ class BaseRepository:
             query = session.query(self.model)
             if eager:
                 for eager in getattr(self.model, "eagers", []):
-                    query = query.options(
-                        joinedload(getattr(self.model, eager)))
+                    query = query.options(joinedload(getattr(self.model, eager)))
             filtered_query = query.filter(filter_options)
             query = filtered_query.order_by(order_query)
             if page_size == "all":
                 query = query.all()
             else:
-                query = query.limit(page_size).offset(
-                    (page - 1) * page_size).all()
+                query = query.limit(page_size).offset((page - 1) * page_size).all()
             total_count = filtered_query.count()
             return {
                 "items": query,
@@ -106,8 +104,7 @@ class BaseRepository:
             query = session.query(self.model)
             if eager:
                 for eager in getattr(self.model, "eagers", []):
-                    query = query.options(
-                        joinedload(getattr(self.model, eager)))
+                    query = query.options(joinedload(getattr(self.model, eager)))
             query = query.filter(self.model.id == id).first()
             if not query and not_found_raise_exception:
                 raise NotFoundError(detail=not_found_message.format(id=id))
@@ -144,15 +141,12 @@ class BaseRepository:
             query = session.query(self.model)
             if eager:
                 for eager in getattr(self.model, "eagers", []):
-                    query = query.options(
-                        joinedload(getattr(self.model, eager)))
+                    query = query.options(joinedload(getattr(self.model, eager)))
             if only_one:
-                query = query.filter(
-                    getattr(self.model, column) == value).first()
+                query = query.filter(getattr(self.model, column) == value).first()
                 if not query and not_found_raise_exception:
                     raise NotFoundError(
-                        detail=not_found_message.format(
-                            column=column, value=value)
+                        detail=not_found_message.format(column=column, value=value)
                     )
                 return query
             query = query.filter(getattr(self.model, column) == value).all()
@@ -227,8 +221,7 @@ class BaseRepository:
             object: The updated record.
         """
         with self.session_factory() as session:
-            session.query(self.model).filter(
-                self.model.id == id).update(schema.dict())
+            session.query(self.model).filter(self.model.id == id).update(schema.dict())
             session.commit()
             return self.read_by_id(id)
 
@@ -243,8 +236,7 @@ class BaseRepository:
             None
         """
         with self.session_factory() as session:
-            query = session.query(self.model).filter(
-                self.model.id == id).first()
+            query = session.query(self.model).filter(self.model.id == id).first()
             if not query:
                 raise NotFoundError(detail=f"Not found id : {id}")
             session.delete(query)
@@ -271,8 +263,7 @@ class BaseRepository:
             # Aplicar cargas ansiosas si están definidas en el modelo
             if eager:
                 for eager_field in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(
-                        getattr(self.model, eager_field)))
+                    query = query.options(joinedload(getattr(self.model, eager_field)))
 
             # Construir el filtro dinámicamente
             filter_conditions = [
@@ -284,8 +275,7 @@ class BaseRepository:
             if only_one:
                 result = query.first()
                 if not result and not_found_raise_exception:
-                    raise NotFoundError(
-                        detail=f"Not found for filters: {filters}")
+                    raise NotFoundError(detail=f"Not found for filters: {filters}")
                 return result
             else:
                 return query.all()

@@ -35,7 +35,8 @@ config = context.config
 db_url = os.getenv("ALEMBIC_DATABASE_URL") or configs.DATABASE_URI
 if not db_url:
     raise RuntimeError(
-        "No DB URL found. Set ALEMBIC_DATABASE_URL or configs.DATABASE_URI")
+        "No DB URL found. Set ALEMBIC_DATABASE_URL or configs.DATABASE_URI"
+    )
 
 config.set_main_option("sqlalchemy.url", db_url)
 
