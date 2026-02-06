@@ -1,37 +1,60 @@
-def check_role(token_decoded: dict, required_role: str) -> bool:
+from typing import Any, Mapping
+
+
+def check_role(
+    token_decoded: Mapping[str, Any] | None, required_role: str | None
+) -> bool:
     """
-    Check if the given decoded JWT token contains the required role.
+    Determine whether a decoded JWT contains the required role.
 
-    This function verifies whether a specific role is present in the decoded token,
-    checking both the top-level `roles` claim (commonly used when roles are mapped directly)
-    and within the `resource_access` section (when roles are assigned per client).
+    Semantics (aligned with strict Keycloak usage + defensive safety):
 
-    Args:
-        token_decoded (dict): The decoded JWT token as a dictionary.
-        required_role (str): The role to verify against the token.
+    - Accepts only dict-like tokens; anything else -> False
+    - Empty / None role -> False
+    - Checks in order:
+        1) realm_access.roles (Keycloak global roles)
+        2) top-level "roles" (custom mapped tokens)
+        3) resource_access["account"].roles (client roles ONLY for 'account')
+    - Ignores roles from other clients (prevents privilege bleed)
 
-    Returns:
-        bool: True if the required role is present, False otherwise.
-
-    Example:
-        >>> check_role(token, "AdministratorGAME")
-        True
+    This function is idempotent, side-effect free, and safe against malformed
+      tokens.
     """
 
-    # Check direct roles field (custom mapped in token)
-    roles = token_decoded.get("roles", [])
-    if isinstance(roles, list) and required_role in roles:
+    if not isinstance(token_decoded, Mapping):
+        return False
+
+    if not isinstance(required_role, str) or not required_role.strip():
+        return False
+
+    realm_access = token_decoded.get("realm_access")
+    if isinstance(realm_access, Mapping):
+        realm_roles = realm_access.get("roles")
+        if isinstance(
+            realm_roles, (list, tuple, set)
+        ) and required_role in realm_roles:
+            return True
+
+    roles = token_decoded.get("roles")
+    if isinstance(roles, (list, tuple, set)) and required_role in roles:
         return True
 
-    # Check client-specific roles under resource_access
-    resource_access = token_decoded.get("resource_access", {})
-    if isinstance(resource_access, dict):
-        for client, access in resource_access.items():
-            client_roles = access.get("roles", [])
-            if isinstance(client_roles, list) and required_role in client_roles:
-                return True
+    resource_access = token_decoded.get("resource_access")
+    if not isinstance(resource_access, Mapping):
+        return False
+
+    account = resource_access.get("account")
+    if not isinstance(account, Mapping):
+        return False
+
+    account_roles = account.get("roles")
+    if isinstance(
+        account_roles, (list, tuple, set)
+    ) and required_role in account_roles:
+        return True
 
     return False
+
 
 # Example usage:
 # token_decoded = {

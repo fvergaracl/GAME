@@ -75,7 +75,7 @@ async def test_update(repository):
     schema = ModelSchema(name="test_update", value="value")
     created = await repository.create(schema)
     update_schema = ModelSchema(name="test_update", value="new_value")
-    updated = repository.update(created.id, update_schema)
+    updated = await repository.update(created.id, update_schema)
     assert updated.value == "new_value"
 
 

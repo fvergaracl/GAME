@@ -3,11 +3,11 @@
   "enabled": true,
   "clients": [
     {
-      "clientId": "${env.KEYCLOAK_CLIENT_ID}",
+      "clientId": "${KEYCLOAK_CLIENT_ID}",
       "name": "GAME API",
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
-      "secret": "${env.KEYCLOAK_CLIENT_SECRET}",
+      "secret": "${KEYCLOAK_CLIENT_SECRET}",
       "protocol": "openid-connect",
       "publicClient": false,
       "bearerOnly": false,
@@ -27,14 +27,6 @@
         "https://localhost:8000",
         "https://localhost"
       ],
-      "attributes": {
-        "post.logout.redirect.uris": "http://localhost:8000/*##http://localhost/*##https://localhost:8000/*##https://localhost/*",
-        "oauth2.device.authorization.grant.enabled": "false",
-        "oidc.ciba.grant.enabled": "false",
-        "backchannel.logout.session.required": "true",
-        "backchannel.logout.revoke.offline.tokens": "false",
-        "use.jwks.url": "false"
-      },
       "defaultClientScopes": [
         "profile",
         "email",
@@ -45,6 +37,49 @@
         "address",
         "phone",
         "microprofile-jwt"
+      ]
+    }
+  ],
+  "roles": {
+    "client": {
+      "${KEYCLOAK_CLIENT_ID}": [
+        {
+          "name": "AdministratorGAME",
+          "description": "Can create resources in GAME API"
+        }
+      ]
+    }
+  },
+  "users": [
+    {
+      "username": "game_admin",
+      "email": "game_admin@example.com",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${KEYCLOAK_USER_WITH_ROLE_PASSWORD}",
+          "temporary": false
+        }
+      ],
+      "clientRoles": {
+        "${KEYCLOAK_CLIENT_ID}": [
+          "AdministratorGAME"
+        ]
+      }
+    },
+    {
+      "username": "game_user",
+      "email": "game_user@example.com",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${KEYCLOAK_USER_NO_ROLE_PASSWORD}",
+          "temporary": false
+        }
       ]
     }
   ]
