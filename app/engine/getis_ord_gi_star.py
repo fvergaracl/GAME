@@ -1,8 +1,81 @@
 # Gamification strategy using Getis-Ord Gi* statistic to identify hotspots in spatial
 import hashlib
 import inspect
+from typing import Iterable
 
+import numpy as np
 from graphviz import Digraph
+
+
+def _build_rook_weights(rows: int, cols: int) -> np.ndarray:
+    """
+    Build a rook-contiguity weights matrix (including self-neighbors).
+
+    Each cell is connected to itself and to direct neighbors
+    (up, down, left, right) when they exist.
+    """
+    n = rows * cols
+    weights = np.zeros((n, n), dtype=float)
+
+    def idx(r: int, c: int) -> int:
+        return r * cols + c
+
+    for r in range(rows):
+        for c in range(cols):
+            i = idx(r, c)
+            weights[i, i] = 1.0
+            for nr, nc in ((r - 1, c), (r + 1, c), (r, c - 1), (r, c + 1)):
+                if 0 <= nr < rows and 0 <= nc < cols:
+                    weights[i, idx(nr, nc)] = 1.0
+    return weights
+
+
+def compute_getis_ord_gi_star(grid: Iterable[Iterable[float]]) -> np.ndarray:
+    """
+    Compute Getis-Ord Gi* z-scores for a 2D numeric grid.
+
+    This implementation uses rook adjacency and includes the focal cell in the
+    local neighborhood. It returns a matrix with one Gi* score per cell.
+    """
+    array = np.asarray(grid, dtype=float)
+    if array.ndim != 2:
+        raise ValueError("grid must be a 2D structure")
+
+    rows, cols = array.shape
+    x = array.reshape(-1)
+    n = x.size
+    if n < 2:
+        return np.zeros_like(array, dtype=float)
+
+    mean_x = np.mean(x)
+    # Population standard deviation term used in classical Gi* implementation.
+    std_x = np.sqrt((np.sum(x * x) / n) - (mean_x**2))
+    if std_x == 0:
+        return np.zeros_like(array, dtype=float)
+
+    weights = _build_rook_weights(rows, cols)
+    scores = np.zeros(n, dtype=float)
+
+    for i in range(n):
+        w_i = weights[i]
+        sum_w = np.sum(w_i)
+        sum_w_sq = np.sum(w_i * w_i)
+        numerator = np.sum(w_i * x) - (mean_x * sum_w)
+        denom_term = ((n * sum_w_sq) - (sum_w**2)) / (n - 1)
+        denominator = std_x * np.sqrt(max(denom_term, 0.0))
+        scores[i] = 0.0 if denominator == 0 else numerator / denominator
+
+    return scores.reshape(rows, cols)
+
+
+def rank_hotspots(grid: Iterable[Iterable[float]]) -> list[tuple[tuple[int, int], float]]:
+    """
+    Rank cells by Gi* score from strongest hotspot to weakest.
+    """
+    scores = compute_getis_ord_gi_star(grid)
+    ranked = [((r, c), float(scores[r, c])) for r in range(scores.shape[0]) for c in range(scores.shape[1])]
+    ranked.sort(key=lambda item: item[1], reverse=True)
+    return ranked
 
 
 class GetisOrdStrategy:

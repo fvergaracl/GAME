@@ -109,3 +109,18 @@ def test_wallet_transaction_hash():
         )
     )
     assert hash(transaction) == expected_hash
+
+
+def test_wallet_transaction_make_hashable_with_nested_list_structure():
+    """
+    Ensure nested lists/tuples are converted to hashable tuples recursively.
+    """
+    transaction = create_wallet_transaction_instance()
+
+    raw_data = [{"k": [1, 2]}, ("a", "b")]
+    converted = transaction.make_hashable(raw_data)
+
+    assert isinstance(converted, tuple)
+    assert converted[0][0][0] == "k"
+    assert converted[0][0][1] == (1, 2)
+    assert converted[1] == ("a", "b")

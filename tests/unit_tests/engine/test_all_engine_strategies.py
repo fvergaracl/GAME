@@ -119,6 +119,33 @@ class TestAllEngineStrategies(unittest.TestCase):
             self.assertEqual(mock_check_class.call_count, 1)
             mock_check_class.assert_called_once_with(AInvalidStrategy)
 
+    def test_greengage_strategy_is_reachable_via_dynamic_discovery(self):
+        strategy_files = ["greengageStrategy.py"]
+
+        class GREENGAGEGamificationStrategy:
+            __module__ = "app.engine.greengageStrategy"
+
+            def get_strategy_id(self):
+                return "GREENGAGEGamificationStrategy"
+
+        module_greengage = ModuleType("app.engine.greengageStrategy")
+        module_greengage.GREENGAGEGamificationStrategy = GREENGAGEGamificationStrategy
+
+        with patch.object(
+            all_engine_strategies_module.os, "listdir", return_value=strategy_files
+        ), patch.object(
+            all_engine_strategies_module, "check_class_methods_and_variables", return_value=True
+        ), patch.object(
+            all_engine_strategies_module, "importlib"
+        ) as mock_importlib:
+            mock_importlib.import_module.return_value = module_greengage
+
+            result = all_engine_strategies_module.all_engine_strategies()
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].id, "greengageStrategy")
+        self.assertEqual(result[0].get_strategy_id(), "GREENGAGEGamificationStrategy")
+
 
 if __name__ == "__main__":
     unittest.main()

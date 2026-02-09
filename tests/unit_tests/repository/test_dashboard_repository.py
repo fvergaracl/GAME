@@ -1,6 +1,8 @@
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
+from app.core.exceptions import BadRequestError
 from app.model.games import Games
 from app.model.user_actions import UserActions
 from app.model.user_points import UserPoints
@@ -146,6 +148,121 @@ class TestDashboardRepository(unittest.TestCase):
 
         self.assertEqual(result, expected_result)
         self.assertEqual(mock_execute_query.call_count, 4)
+
+    def test_process_query_applies_start_end_and_group_by(self):
+        class DummyCreatedAt:
+            def __ge__(self, other):
+                return ("ge", other)
+
+            def __le__(self, other):
+                return ("le", other)
+
+        self.repository.model_users = SimpleNamespace(created_at=DummyCreatedAt())
+        query = MagicMock()
+        query.filter.return_value = query
+        query.group_by.return_value = query
+
+        result = self.repository.process_query(
+            query,
+            start_date="2026-01-01",
+            end_date="2026-01-31",
+            group_by_column="group_col",
+        )
+
+        self.assertIs(result, query)
+        query.filter.assert_any_call(("ge", "2026-01-01"))
+        query.filter.assert_any_call(("le", "2026-01-31"))
+        query.group_by.assert_called_once_with("group_col")
+
+    def test_process_query_without_filters_returns_same_query(self):
+        query = MagicMock()
+
+        result = self.repository.process_query(query)
+
+        self.assertIs(result, query)
+        query.filter.assert_not_called()
+        query.group_by.assert_not_called()
+
+    def test_get_group_by_column_invalid_value_raises_bad_request(self):
+        with self.assertRaises(BadRequestError) as exc_info:
+            self.repository._get_group_by_column(self.repository.model_users, "year")
+
+        self.assertIn("Invalid group_by value", str(exc_info.exception.detail))
+
+    def test_execute_query_formats_results(self):
+        class FakeRow:
+            def __init__(self, label, count):
+                self._label = label
+                self.count = count
+
+            def __getitem__(self, index):
+                if index == 0:
+                    return self._label
+                raise IndexError(index)
+
+        session = MagicMock()
+        context_manager = MagicMock()
+        context_manager.__enter__.return_value = session
+        context_manager.__exit__.return_value = False
+        self.session_factory.return_value = context_manager
+
+        base_query = MagicMock()
+        processed_query = MagicMock()
+        processed_query.all.return_value = [
+            FakeRow("2026-01-01", 2),
+            FakeRow("2026-01-02", 4),
+        ]
+        session.query.return_value = base_query
+
+        aggregation_field = MagicMock()
+        labeled_aggregation = MagicMock(name="count_expr")
+        aggregation_field.label.return_value = labeled_aggregation
+
+        with patch.object(
+            self.repository, "process_query", return_value=processed_query
+        ) as mock_process_query:
+            result = self.repository._execute_query(
+                model=self.repository.model_users,
+                group_by_column="group_col",
+                start_date="2026-01-01",
+                end_date="2026-01-31",
+                aggregation_field=aggregation_field,
+            )
+
+        aggregation_field.label.assert_called_once_with("count")
+        session.query.assert_called_once_with("group_col", labeled_aggregation)
+        mock_process_query.assert_called_once_with(
+            base_query, "2026-01-01", "2026-01-31", "group_col"
+        )
+        self.assertEqual(
+            result,
+            [
+                {"label": "2026-01-01", "count": 2},
+                {"label": "2026-01-02", "count": 4},
+            ],
+        )
+
+    @patch.object(DashboardRepository, "_execute_query")
+    def test_get_dashboard_summary_logs(self, mock_execute_query):
+        mock_execute_query.side_effect = [
+            [{"label": "2026-01-01", "count": 10}],
+            [{"label": "2026-01-01", "count": 7}],
+            [{"label": "2026-01-01", "count": 2}],
+        ]
+
+        result = self.repository.get_dashboard_summary_logs(
+            "2026-01-01", "2026-01-31", "day"
+        )
+
+        self.assertEqual(
+            result,
+            {
+                "info": [{"label": "2026-01-01", "count": 10}],
+                "success": [{"label": "2026-01-01", "count": 7}],
+                "error": [{"label": "2026-01-01", "count": 2}],
+            },
+        )
+        self.assertEqual(mock_execute_query.call_count, 3)
 
 
 if __name__ == "__main__":
