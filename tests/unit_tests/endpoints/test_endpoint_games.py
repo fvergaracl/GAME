@@ -646,6 +646,499 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
         self.assertIn("tasks", result)
 
+    async def test_token_absent_paths_cover_non_oauth_branches(self):
+        game_id = uuid4()
+        api_key_header = self._api_key_header("k-no-token")
+        oauth_service = self._oauth_service(user_exists=True, async_add=True)
+
+        get_by_id_service = MagicMock()
+        get_by_id_service.get_by_gameId.return_value = {"id": str(game_id)}
+        result = await games.get_game_by_id(
+            gameId=game_id,
+            service=get_by_id_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result["id"], str(game_id))
+
+        strategy_service = MagicMock()
+        strategy_service.get_strategy_by_gameId.return_value = {"id": "default"}
+        result = await games.get_strategy_by_gameId(
+            gameId=game_id,
+            service=strategy_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, {"id": "default"})
+
+        bulk_service = MagicMock()
+        bulk_service.create_task_by_game_id = AsyncMock(
+            side_effect=[{"task": "a"}, {"task": "b"}]
+        )
+        bulk_query = CreateTasksPost(
+            tasks=[
+                CreateTaskPost(externalTaskId="task-a", strategyId="default", params=None),
+                CreateTaskPost(externalTaskId="task-b", strategyId="default", params=None),
+            ]
+        )
+        result = await games.create_tasks_bulk(
+            gameId=game_id,
+            create_query=bulk_query,
+            service=bulk_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result["failed_to_create"], [])
+        self.assertEqual(len(result["succesfully_created"]), 2)
+
+        list_service = MagicMock()
+        list_service.get_tasks_list_by_gameId.return_value = {"items": []}
+        result = await games.get_task_list(
+            gameId=game_id,
+            find_query=PostFindTask(ordering="-created_at", page=1, page_size=10),
+            service=list_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, {"items": []})
+
+        task_service = MagicMock()
+        task_service.get_task_by_externalGameId_externalTaskId.return_value = {"task": "one"}
+        result = await games.get_task_by_gameId_taskId(
+            gameId=game_id,
+            externalTaskId="task-1",
+            service=task_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, {"task": "one"})
+
+        points_service = MagicMock()
+        points_service.get_points_by_gameId.return_value = {"game": "points"}
+        result = await games.get_points_by_gameId(
+            gameId=game_id,
+            service=points_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, {"game": "points"})
+
+        points_details_service = MagicMock()
+        points_details_service.get_points_by_gameId_with_details.return_value = {
+            "game": "details"
+        }
+        result = await games.get_points_by_gameId_with_details(
+            gameId=game_id,
+            service=points_details_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, {"game": "details"})
+
+        user_points_service = MagicMock()
+        user_points_service.get_points_of_user_in_game.return_value = [{"externalUserId": "u1"}]
+        result = await games.get_points_of_user_in_game(
+            gameId=game_id,
+            externalUserId="u1",
+            service=user_points_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, [{"externalUserId": "u1"}])
+
+        user_action_service = MagicMock()
+        user_action_service.user_add_action_in_task = AsyncMock(return_value={"ok": True})
+        action_schema = AddActionDidByUserInTask(
+            typeAction="click",
+            data={"x": 1},
+            description="desc",
+            externalUserId="u1",
+        )
+        result = await games.user_action_in_task(
+            gameId=game_id,
+            externalTaskId="task-1",
+            schema=action_schema,
+            service=user_action_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, {"ok": True})
+
+        points_by_task_service = MagicMock()
+        points_by_task_service.get_points_by_task_id.return_value = [{"externalUserId": "u1"}]
+        result = await games.get_points_by_task_id(
+            gameId=game_id,
+            externalTaskId="task-1",
+            service=points_by_task_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, [{"externalUserId": "u1"}])
+
+        user_points_by_task_service = MagicMock()
+        user_points_by_task_service.get_points_of_user_by_task_id.return_value = {
+            "externalUserId": "u1"
+        }
+        result = await games.get_points_of_user_by_task_id(
+            gameId=game_id,
+            externalTaskId="task-1",
+            externalUserId="u1",
+            service=user_points_by_task_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, {"externalUserId": "u1"})
+
+        points_task_details_service = MagicMock()
+        points_task_details_service.get_points_by_task_id_with_details.return_value = [
+            {"details": True}
+        ]
+        result = await games.get_points_by_task_id_with_details(
+            gameId=game_id,
+            externalTaskId="task-1",
+            service=points_task_details_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, [{"details": True}])
+
+        users_by_game_service = MagicMock()
+        users_by_game_service.get_users_by_gameId.return_value = {"gameId": str(game_id), "tasks": []}
+        result = await games.get_users_by_gameId(
+            gameId=game_id,
+            service=users_by_game_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=None,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result["gameId"], str(game_id))
+
+    async def test_existing_oauth_user_paths_skip_creation_and_cover_non_happy_branches(self):
+        game_id = uuid4()
+        api_key_header = self._api_key_header("k-existing")
+        token = "Bearer existing-user"
+        oauth_service = self._oauth_service(user_exists=True, async_add=True)
+
+        schema = PostFindGame(ordering="-created_at", page=1, page_size=10)
+        games_list_service = MagicMock()
+        games_list_service.get_all_games.return_value = {"items": ["filtered"]}
+        result = await games.get_games_list(
+            schema=schema,
+            service=games_list_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(result, {"items": ["filtered"]})
+        games_list_service.get_all_games.assert_called_once_with(schema, "k-existing")
+
+        get_by_id_service = MagicMock()
+        get_by_id_service.get_by_gameId.return_value = {"id": str(game_id)}
+        await games.get_game_by_id(
+            gameId=game_id,
+            service=get_by_id_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        delete_service = MagicMock()
+        delete_service.delete_game_by_id.return_value = {"gameId": str(game_id)}
+        await games.delete_game_by_id(
+            gameId=game_id,
+            service=delete_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        create_service = MagicMock()
+        create_service.create = AsyncMock(return_value=SimpleNamespace(gameId=uuid4()))
+        await games.create_game(
+            schema=PostCreateGame(
+                externalGameId="game_existing_user",
+                platform="web",
+                strategyId="default",
+                params=[],
+                apiKey_used=None,
+                oauth_user_id=None,
+            ),
+            service=create_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        patch_service = MagicMock()
+        patch_service.patch_game_by_id = AsyncMock(return_value={"ok": True})
+        await games.patch_game(
+            gameId=game_id,
+            schema=PatchGame(externalGameId="slug", strategyId="default", platform="web"),
+            service=patch_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        strategy_service = MagicMock()
+        strategy_service.get_strategy_by_gameId.return_value = {"id": "default"}
+        await games.get_strategy_by_gameId(
+            gameId=game_id,
+            service=strategy_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        create_task_service = MagicMock()
+        create_task_service.create_task_by_game_id = AsyncMock(return_value={"task": "created"})
+        await games.create_task(
+            gameId=game_id,
+            create_query=CreateTaskPost(
+                externalTaskId="task-existing-user",
+                strategyId="default",
+                params=[CreateTaskParams(key="k", value=1)],
+            ),
+            service=create_task_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        bulk_fail_service = MagicMock()
+        bulk_fail_service.create_task_by_game_id = AsyncMock(
+            side_effect=[RuntimeError("fail-1"), RuntimeError("fail-2")]
+        )
+        bulk_result = await games.create_tasks_bulk(
+            gameId=game_id,
+            create_query=CreateTasksPost(
+                tasks=[
+                    CreateTaskPost(
+                        externalTaskId="task-fail-1", strategyId="default", params=None
+                    ),
+                    CreateTaskPost(
+                        externalTaskId="task-fail-2", strategyId="default", params=None
+                    ),
+                ]
+            ),
+            service=bulk_fail_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+        self.assertEqual(len(bulk_result["succesfully_created"]), 0)
+        self.assertEqual(len(bulk_result["failed_to_create"]), 2)
+
+        list_service = MagicMock()
+        list_service.get_tasks_list_by_gameId.return_value = {"items": []}
+        await games.get_task_list(
+            gameId=game_id,
+            find_query=PostFindTask(ordering="-created_at", page=1, page_size=10),
+            service=list_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        task_service = MagicMock()
+        task_service.get_task_by_externalGameId_externalTaskId.return_value = {"task": "one"}
+        await games.get_task_by_gameId_taskId(
+            gameId=game_id,
+            externalTaskId="task-1",
+            service=task_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        points_service = MagicMock()
+        points_service.get_points_by_gameId.return_value = {"game": "points"}
+        await games.get_points_by_gameId(
+            gameId=game_id,
+            service=points_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        points_details_service = MagicMock()
+        points_details_service.get_points_by_gameId_with_details.return_value = {
+            "game": "details"
+        }
+        await games.get_points_by_gameId_with_details(
+            gameId=game_id,
+            service=points_details_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        user_points_service = MagicMock()
+        user_points_service.get_points_of_user_in_game.return_value = [{"externalUserId": "u1"}]
+        await games.get_points_of_user_in_game(
+            gameId=game_id,
+            externalUserId="u1",
+            service=user_points_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        simulated_tasks = [
+            {
+                "externalUserId": "oauth-user-1",
+                "externalTaskId": "task-1",
+                "userGroup": "random_range",
+                "dimensions": [],
+                "totalSimulatedPoints": 10,
+                "expirationDate": "2026-02-10T00:00:00",
+            }
+        ]
+        simulated_service = MagicMock()
+        simulated_service.get_points_simulated_of_user_in_game = AsyncMock(
+            return_value=(simulated_tasks, "external-game-1")
+        )
+        result = await games.get_points_simulated_of_user_in_game(
+            gameId=game_id,
+            externalUserId="oauth-user-1",
+            service=simulated_service,
+            service_log=MagicMock(),
+            service_user=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+        )
+        self.assertEqual(result.simulationHash, "sim-hash-1")
+
+        user_action_service = MagicMock()
+        user_action_service.user_add_action_in_task = AsyncMock(return_value={"ok": True})
+        await games.user_action_in_task(
+            gameId=game_id,
+            externalTaskId="task-1",
+            schema=AddActionDidByUserInTask(
+                typeAction="click",
+                data={"x": 1},
+                description="desc",
+                externalUserId="u1",
+            ),
+            service=user_action_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        assign_points_service = MagicMock()
+        assign_points_service.assign_points_to_user = AsyncMock(return_value={"points": 1})
+        await games.assign_points_to_user(
+            gameId=game_id,
+            externalTaskId="task-1",
+            schema=AsignPointsToExternalUserId(
+                externalUserId="u1",
+                data={"points": 1},
+                isSimulated=False,
+            ),
+            service=assign_points_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        points_by_task_service = MagicMock()
+        points_by_task_service.get_points_by_task_id.return_value = [{"externalUserId": "u1"}]
+        await games.get_points_by_task_id(
+            gameId=game_id,
+            externalTaskId="task-1",
+            service=points_by_task_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        user_points_by_task_service = MagicMock()
+        user_points_by_task_service.get_points_of_user_by_task_id.return_value = {
+            "externalUserId": "u1"
+        }
+        await games.get_points_of_user_by_task_id(
+            gameId=game_id,
+            externalTaskId="task-1",
+            externalUserId="u1",
+            service=user_points_by_task_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        points_task_details_service = MagicMock()
+        points_task_details_service.get_points_by_task_id_with_details.return_value = [
+            {"details": True}
+        ]
+        await games.get_points_by_task_id_with_details(
+            gameId=game_id,
+            externalTaskId="task-1",
+            service=points_task_details_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        users_by_game_service = MagicMock()
+        users_by_game_service.get_users_by_gameId.return_value = {
+            "gameId": str(game_id),
+            "tasks": [],
+        }
+        await games.get_users_by_gameId(
+            gameId=game_id,
+            service=users_by_game_service,
+            service_log=MagicMock(),
+            service_oauth=oauth_service,
+            token=token,
+            api_key_header=api_key_header,
+        )
+
+        oauth_service.add.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

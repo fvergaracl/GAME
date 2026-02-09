@@ -1,139 +1,459 @@
-# GAME (Goals And Motivation Engine) 🎮
+# GAME (Goals And Motivation Engine)
 
 <p align="center">
-  <img src="https://codecov.io/gh/fvergaracl/GAME/branch/main/graph/badge.svg?token=R0MGAOMUBU" alt="codecov">
+  <img src="https://codecov.io/gh/fvergaracl/GAME/branch/main/graph/badge.svg?token=R0MGAOMUBU" alt="Codecov">
   <img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License Apache 2.0">
   <img src="https://img.shields.io/github/stars/fvergaracl/GAME" alt="GitHub Repo stars">
-  <img src="https://img.shields.io/github/v/tag/fvergaracl/game?color=green" alt="Last TAG">
-
+  <img src="https://img.shields.io/github/v/tag/fvergaracl/game?color=green" alt="Last tag">
 </p>
 
 <p align="center">
   <img src="GAME_logo.png" alt="GAME Logo">
 </p>
 
-## Welcome to GAME! 🏆
+GAME is an **adaptive gamification engine** designed to dynamically shape participation, incentives, and behavioral outcomes through programmable scoring strategies. It exposes APIs to manage games, tasks, point assignment, wallets, and strategy-driven scoring behavior.
 
-**GAME** (Goals And Motivation Engine) is an open-source system designed to help individuals and organizations achieve their goals through gamification. This project aims to enhance motivation and engagement by introducing game-like mechanics in non-game contexts.
+---
 
-Built with **FastAPI** (Python) and utilizing **PostgreSQL** as the database, the project is managed with **Poetry** for dependency management. Docker and Kubernetes configurations are provided to simplify deployment and scaling.
+# What problem does GAME solve
 
-## Key Features ✨
+Most gamification systems are **static**: rules and rewards are fixed, producing predictable engagement patterns and often reinforcing participation inequality.
 
-- 🚀 **FastAPI-based**: High-performance API with Python’s FastAPI framework.
-- 🛠️ **Modular Design**: Clean architecture, easily extendable.
-- 🐋 **Docker Support**: Ready-to-use Docker and Docker Compose setups.
-- ☸️ **Kubernetes Ready**: Configuration provided for Kubernetes deployment.
-- ✅ **Comprehensive Testing**: Fully integrated testing suite with `pytest` and Codecov for coverage tracking.
+GAME introduces **adaptive gamification**, enabling:
 
-## Quick Start ⚡
+- **Adaptive vs static gamification**: scoring rules can react to behavior, context, or system state.
+- **Behavioral redistribution**: incentives can shift participation toward under-engaged users, tasks, or areas.
+- **Spatial / incentive shaping**: strategies can modify rewards dynamically based on distribution, performance, or context.
+- **Equity / participation optimization**: reward structures can balance participation instead of amplifying inequality.
 
-To get started quickly, follow these steps to set up the project locally.
+GAME is designed as a **programmable incentive engine**, not just a points API.
 
-### 1. Clone the repository
+---
+
+# Architecture Overview
+
+```
+
+Request → Endpoint → Service → Strategy Engine → Repository → Database
+
+```
+
+**Responsibilities**
+
+- **Endpoints**: HTTP interface, validation, authentication, orchestration.
+- **Services**: business logic, transactional behavior, domain rules.
+- **Strategy Engine (`app/engine/`)**: adaptive scoring logic and behavioral rules.
+- **Repositories**: persistence abstraction (SQLModel / SQLAlchemy).
+- **Database**: PostgreSQL storage layer.
+
+This layered design allows **pluggable strategies, deterministic services, and reproducible behavior**.
+
+---
+
+# Strategy Model (Core Feature)
+
+Strategies define how points and incentives are computed.
+
+### Types
+
+- **Deterministic strategies**: fixed rule-based scoring.
+- **Adaptive strategies**: dynamic scoring based on context, distribution, or system state.
+
+### Characteristics
+
+- Strategies live in `app/engine/`.
+- Strategies are **pluggable** and selected via `strategyId`.
+- A **game defines a base strategy**, tasks may override it.
+- Strategies can use inputs such as:
+  - task parameters
+  - historical behavior
+  - distribution state
+  - contextual metadata
+
+### Adding a new strategy (minimal steps)
+
+1. Create a new class in `app/engine/` inheriting from `BaseStrategy`.
+2. Implement required scoring methods.
+3. Register strategy in the strategy registry.
+4. Use its `strategyId` in a game or task.
+
+---
+
+# Integration Pattern
+
+GAME can operate in two modes:
+
+### 1. Full backend gamification platform
+
+Use GAME as a complete gamification backend:
+
+- manage games
+- manage tasks
+- assign points
+- track wallets
+- apply adaptive strategies
+
+### 2. Scoring microservice
+
+Use GAME only as an **incentive / scoring engine**:
+
+- external system calls GAME to compute points
+- GAME returns scoring outcome
+- external system manages application logic
+
+---
+
+# Production Considerations
+
+- Use `ENV=prod` with secure secrets and externalized configuration.
+- Run Alembic migrations in CI/CD before deployment.
+- Enable structured logging for observability.
+- Use connection pooling for PostgreSQL.
+- GAME is stateless → supports horizontal scaling behind a load balancer.
+- Manage secrets via environment variables or secret manager (not `.env` in prod).
+
+---
+
+# Failure Modes & Reliability
+
+GAME is designed to behave safely under failure scenarios:
+
+- **Idempotent operations** where applicable.
+- Safe under **concurrent requests** with transactional DB behavior.
+- Supports **retry-safe patterns**.
+- Handles **partial failures** (service / DB exceptions).
+- Authentication failure produces deterministic response (no silent fallback).
+- Consistency model: **strong within transaction, eventual across distributed calls**.
+
+---
+
+# Python Compatibility
+
+- Poetry constraint: `python = "^3.10"` (effective range: `>=3.10,<4.0`)
+- CI currently runs Python `3.12.3`
+- Recommended local version: **Python 3.12.x**
+
+---
+
+# Stack
+
+- Python ≥ 3.10
+- FastAPI + Starlette
+- SQLModel + SQLAlchemy
+- PostgreSQL
+- Poetry
+- Docker / Docker Compose
+- Kubernetes (`kubernetes/`)
+- Keycloak OAuth2 / OpenID Connect
+
+---
+
+# Quick Start (Local)
+
+## Prerequisites
+
+- Python + Poetry installed
+- PostgreSQL running
+- Keycloak (optional, required for protected endpoints)
+
+## Clone
 
 ```bash
 git clone https://github.com/fvergaracl/GAME.git
 cd GAME
 ```
 
-### 2. Install dependencies with Poetry
-
-Make sure you have Poetry installed, then run:
+## Install
 
 ```bash
-poetry env use python3
 poetry install
 ```
 
-### 3. Setup environment variables
-
-Copy the sample environment variables file and configure it as needed:
+## Configure
 
 ```bash
 cp .env.sample .env
 ```
 
-### 4. Run the application
+Minimal `.env`:
 
-Start the FastAPI development server:
+```env
+ENV=dev
+SECRET_KEY=change-me
+
+DATABASE_URL=postgresql+psycopg2://root:example@localhost:5432/game_dev_db
+ALEMBIC_DATABASE_URL=postgresql+psycopg2://root:example@localhost:5432/game_dev_db
+
+KEYCLOAK_URL=http://localhost:8080
+KEYCLOAK_REALM=game
+KEYCLOAK_CLIENT_ID=game-api
+KEYCLOAK_CLIENT_SECRET=change-me
+```
+
+## Migrate DB
+
+```bash
+poetry run alembic upgrade head
+```
+
+## Run API
 
 ```bash
 poetry run uvicorn app.main:app --reload
 ```
 
-You can access the application at `http://localhost:8000`.
+Docs:
 
-### 5. Access the API documentation
+- Swagger → [http://localhost:8000/docs](http://localhost:8000/docs)
+- ReDoc → [http://localhost:8000/redocs](http://localhost:8000/redocs)
 
-Swagger UI is available at `http://localhost:8000/docs` for easy API interaction and testing.
+---
 
-## Project Structure 📂
+# Keycloak OAuth (Dev)
 
-The GAME project follows a clean and modular structure to ensure maintainability and scalability. Below is an overview of the main components:
+Start infra:
 
-```
-.
-├── app                             # Main application directory
-│   ├── api                         # API route definitions
-│   ├── core                        # Core configurations and utilities
-│   ├── models                      # Database models
-│   ├── schemas                     # Pydantic schemas for validation
-│   ├── services                    # Business logic and service layer
-│   └── tests                       # Unit and integration tests
-├── docker                          # Docker-related files
-├── k8s                             # Kubernetes configuration files
-├── migrations                      # Alembic migrations
-├── pyproject.toml                  # Poetry configuration file
-└── README.md                       # Project documentation
+```bash
+docker-compose -f docker-compose-dev.yml up -d postgrespostgres keycloakgame
 ```
 
-For a more detailed explanation of the project structure, check out the [SETUP.md](SETUP.md) file.
+Get token:
 
-## Want to Contribute? 💡
+```bash
+TOKEN=$(curl -s -X POST "$KEYCLOAK_URL/realms/$KEYCLOAK_REALM/protocol/openid-connect/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_id=$KEYCLOAK_CLIENT_ID" \
+  -d "client_secret=$KEYCLOAK_CLIENT_SECRET" \
+  -d "grant_type=password" \
+  -d "username=game_admin" \
+  -d "password=$KEYCLOAK_USER_WITH_ROLE_PASSWORD" | jq -r '.access_token')
+```
 
-We welcome contributions of all kinds! Whether you want to fix a bug, improve the documentation, or add a new feature, we encourage you to join the project.
+Create API key:
 
-Check out the [CONTRIBUTING.md](CONTRIBUTING.md) guide for more details on how to contribute.
+```bash
+API_KEY=$(curl -s -X POST "http://localhost:8000/api/v1/apikey/create" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"client":"local-dev"}' | jq -r '.apiKey')
+```
 
-## Running Tests 🧪
+---
 
-The project includes a suite of unit and integration tests to ensure code quality. To run the tests, use:
+# API Example (End-to-End)
+
+Create game → create task → assign points → read user score.
+
+```bash
+# Create game
+GAME_ID=$(curl -s -X POST "http://localhost:8000/api/v1/games" \
+  -H "X-API-Key: $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"externalGameId":"game-001","platform":"web","strategyId":"default"}' \
+  | jq -r '.gameId')
+
+# Create task
+curl -s -X POST "http://localhost:8000/api/v1/games/$GAME_ID/tasks" \
+  -H "X-API-Key: $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"externalTaskId":"task-login"}'
+
+# Assign points
+curl -s -X POST "http://localhost:8000/api/v1/games/$GAME_ID/tasks/task-login/points" \
+  -H "X-API-Key: $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"externalUserId":"user-123"}'
+
+# Read points
+curl -s "http://localhost:8000/api/v1/users/user-123/points" \
+  -H "X-API-Key: $API_KEY"
+```
+
+---
+
+# Docker
+
+```bash
+docker-compose -f docker-compose-dev.yml up --build
+docker-compose -f docker-compose-dev.yml down --remove-orphans
+```
+
+Integrated:
+
+```bash
+make integrated
+make down
+```
+
+---
+
+# Tests & Coverage
 
 ```bash
 poetry run pytest
+poetry run pytest --cov=app --cov-branch
 ```
-
-For coverage reporting, use:
-
-```bash
-poetry run pytest --cov=app --cov-report=term-missing
-```
-
-You can find more detailed information on testing in the [TESTING.md](TESTING.md) file.
-
-## Deployment 🚀
-
-### Docker
-
-For local development and production environments, you can use Docker. To bring up the application with Docker Compose, run:
-
-```bash
-docker-compose up --build
-```
-
-For more details, refer to the [DOCKER_SETUP.md](DOCKER_SETUP.md) file.
-
-### Kubernetes
-
-The project is ready to be deployed to Kubernetes. You can find the configuration files in the `kubernetes/` directory. Follow the steps in the [KUBERNETES_SETUP.md](KUBERNETES_SETUP.md) for detailed instructions.
-
-## License 📜
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For any questions or feedback, feel free to open an issue or start a discussion in the [GitHub Issues](https://github.com/fvergaracl/GAME/issues) section. You can also check out our official documentation: [GAME Docs](https://fvergaracl.github.io/GAME).
 
 ---
+
+# Project Structure
+
+```
+app/
+ ├── api/          HTTP endpoints
+ ├── core/         config, DI, DB
+ ├── engine/       adaptive strategies
+ ├── repository/   persistence layer
+ ├── services/     business logic
+ ├── model/        domain models
+ └── util/         utilities
+```
+
+---
+
+# Documentation
+
+- SETUP.md
+- TESTING.md
+- DEPLOYMENT.md
+- KUBERNETES_SETUP.md
+- strategies.md
+- troubleshooting.md
+- CONTRIBUTING.md
+
+---
+
+## Reproducibility & Determinism
+
+GAME is designed to support **scientific reproducibility and deterministic evaluation** of adaptive strategies.
+
+To guarantee reproducible behavior:
+
+- **Deterministic execution** — Given the same inputs (tasks, parameters, timestamps, and configuration), strategies produce identical outputs.
+- **Explicit parameterization** — All scoring behavior is driven by explicit strategy parameters stored in the database, avoiding hidden state.
+- **Simulation mode** — The engine supports simulation runs (`isSimulated=true`) to evaluate strategies without affecting production data.
+- **Seeded stochastic components** — Any stochastic behavior (if used) should be seeded to allow repeatable experiments.
+- **Stable time reference** — Strategies relying on time use controlled timestamps, enabling replay of historical scenarios.
+- **Versionable strategies** — Strategy logic can be versioned, allowing comparison across experimental conditions.
+- **Traceable execution** — Logs and scoring outputs allow reconstruction of scoring decisions for auditing and research validation.
+
+These properties allow GAME to be used not only as an operational system, but also as a **reproducible experimental platform** for studying adaptive incentive mechanisms.
+
+---
+
+## Strategy Evaluation & Metrics
+
+GAME enables systematic evaluation of adaptive gamification strategies through measurable outcomes.
+
+Typical evaluation dimensions include:
+
+### Participation Dynamics
+
+- User participation rate
+- Task completion distribution
+- Retention and re-engagement patterns
+
+### Incentive Redistribution
+
+- Shift in activity across users or tasks
+- Load balancing and participation equity
+- Concentration vs dispersion metrics
+
+### Behavioral Impact
+
+- Response to adaptive incentives
+- Performance improvement over baseline strategies
+- Stability under changing participation conditions
+
+### Spatial / Contextual Effects _(when applicable)_
+
+- Redistribution across regions, zones, or task clusters
+- Detection of hotspots and incentive-driven movement
+
+### System Metrics
+
+- Points issued over time
+- Wallet balance evolution
+- Strategy execution consistency
+
+GAME can be used to compare:
+
+- static vs adaptive strategies
+- deterministic vs dynamic scoring
+- baseline vs experimental incentive models
+
+These evaluation capabilities make GAME suitable for **experimental research, adaptive systems validation, and real-world behavioral optimization studies**.
+
+## Research & Publications
+
+GAME has been used and referenced in multiple research works on adaptive gamification, citizen science, and spatial crowdsourcing.
+
+### Papers
+
+**Enhancing Citizen Science Engagement Through Gamification: A Case Study of the SOCIO-BEE Project**  
+Vergara, F., Olivares-Rodríguez, C., Guenaga, M., López-De-Ipiña, D., Puerta-Beldarrain, M., Sánchez-Corcuera, R.  
+_9th International Conference on Smart and Sustainable Technologies (SpliTech), IEEE, 2024_  
+Focus: Gamification-driven engagement mechanisms in citizen science using adaptive incentive structures.
+
+```bibtex
+@inproceedings{vergara2024enhancing,
+  title={Enhancing Citizen Science Engagement Through Gamification: A Case Study of the SOCIO-BEE Project},
+  author={Vergara, Felipe and Olivares-Rodr{\'\i}guez, Cristian and Guenaga, Mariluz and L{\'o}pez-De-Ipi{\~n}a, Diego and Puerta-Beldarrain, Maite and S{\'a}nchez-Corcuera, Rub{\'e}n},
+  booktitle={2024 9th International Conference on Smart and Sustainable Technologies (SpliTech)},
+  pages={1--7},
+  year={2024},
+  organization={IEEE}
+}
+```
+
+---
+
+**Gamifying Engagement in Spatial Crowdsourcing: An Exploratory Mixed-Methods Study on Gamification Impact among University Students**
+Vergara-Borge, F., López-de-Ipiña, D., Emaldi, M., Olivares-Rodríguez, C., Khan, Z., Soomro, K.
+_Systems, MDPI, 2025_
+Focus: Behavioral and participation effects of gamification in spatial crowdsourcing environments.
+
+```bibtex
+@article{vergara2025gamifying,
+  title={Gamifying Engagement in Spatial Crowdsourcing: An Exploratory Mixed-Methods Study on Gamification Impact among University Students},
+  author={Vergara-Borge, Felipe and L{\'o}pez-de-Ipi{\~n}a, Diego and Emaldi, Mikel and Olivares-Rodr{\'\i}guez, Cristian and Khan, Zaheer and Soomro, Kamran},
+  journal={Systems},
+  volume={13},
+  number={7},
+  pages={519},
+  year={2025},
+  publisher={MDPI}
+}
+```
+
+---
+
+**Stress-Testing Citizen Science at Scale: Performance Insights from the GREENCROWD Platform**
+Borge, F. V., López-de-Ipiña, D., Emaldi, M., Olivares-Rodríguez, C., Wolosiuk, D., Vuckovic, M.
+_10th International Conference on Smart and Sustainable Technologies (SpliTech), IEEE, 2025_
+Focus: Scalability, system performance, and large-scale participation behavior in adaptive citizen science platforms.
+
+```bibtex
+@inproceedings{borge2025stress,
+  title={Stress-Testing Citizen Science at Scale: Performance Insights from the GREENCROWD Platform},
+  author={Borge, Felipe Vergara and L{\'o}pez-de-Ipi{\~n}a, Diego and Manrique, Mikel Emaldi and Olivares-Rodr{\'\i}guez, Cristian and Wolosiuk, Dawid and Vuckovic, Milena},
+  booktitle={2025 10th International Conference on Smart and Sustainable Technologies (SpliTech)},
+  pages={1--8},
+  year={2025},
+  organization={IEEE}
+}
+```
+
+---
+
+These works demonstrate the use of GAME in **adaptive gamification, behavioral incentive shaping, spatial crowdsourcing, and citizen science systems**, supporting both experimental research and real-world deployments.
+
+# License
+
+Apache 2.0
+
+---
+
+# Contact
+
+Open an issue: [https://github.com/fvergaracl/GAME/issues](https://github.com/fvergaracl/GAME/issues)

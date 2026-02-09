@@ -52,6 +52,15 @@ def test_get_git_commit_hash_returns_unknown_on_failure():
     assert result == "unknown"
 
 
+def test_root_route_endpoint_returns_redirect_response():
+    root_route = next(route for route in main_module.app.routes if route.path == "/")
+
+    response = root_route.endpoint()
+
+    assert response.status_code == 307
+    assert response.headers["location"] == "/docs"
+
+
 def test_app_creator_initializes_sentry_when_dsn_is_set(monkeypatch):
     monkeypatch.setattr(main_module.configs, "SENTRY_DSN", "https://dsn.example")
     monkeypatch.setattr(main_module.configs, "SENTRY_ENVIRONMENT", "test")
