@@ -1,4 +1,7 @@
 import pytest
+from types import SimpleNamespace
+from unittest.mock import MagicMock
+
 from dependency_injector import containers, providers
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, create_engine
@@ -33,6 +36,26 @@ class Container(containers.DeclarativeContainer):
     test_repository = providers.Factory(
         BaseRepository, session_factory=session_factory, model=Model
     )
+
+
+class DummySchema:
+    def __init__(self, payload):
+        self.payload = payload
+
+    def dict(self, exclude_none=False):
+        if exclude_none:
+            return {k: v for k, v in self.payload.items() if v is not None}
+        return dict(self.payload)
+
+
+def build_mocked_repository():
+    mock_session = MagicMock()
+    context_manager = MagicMock()
+    context_manager.__enter__.return_value = mock_session
+    context_manager.__exit__.return_value = False
+    session_factory = MagicMock(return_value=context_manager)
+    repository = BaseRepository(session_factory=session_factory, model=Model)
+    return repository, mock_session
 
 
 @pytest.fixture(scope="module")
@@ -129,3 +152,170 @@ async def test_whole_update(repository):
     updated = repository.whole_update(created.id, update_schema)
     assert updated.name == "updated_name"
     assert updated.value == "updated_value"
+
+
+def test_read_by_options_with_page_size_all_and_eager(monkeypatch):
+    repository, mock_session = build_mocked_repository()
+    monkeypatch.setattr("app.repository.base_repository.joinedload", lambda relation: relation)
+    monkeypatch.setattr(
+        "app.repository.base_repository.dict_to_sqlalchemy_filter_options",
+        lambda model, schema: True,
+    )
+    monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
+
+    schema = DummySchema({"ordering": "name", "page": 1, "page_size": "all"})
+    base_query = MagicMock()
+    filtered_query = MagicMock()
+    ordered_query = MagicMock()
+    mock_session.query.return_value = base_query
+    base_query.options.return_value = base_query
+    base_query.filter.return_value = filtered_query
+    filtered_query.order_by.return_value = ordered_query
+    ordered_query.all.return_value = ["item-a", "item-b"]
+    filtered_query.count.return_value = 2
+
+    result = repository.read_by_options(schema, eager=True)
+
+    assert result["items"] == ["item-a", "item-b"]
+    assert result["search_options"]["page_size"] == "all"
+    assert result["search_options"]["total_count"] == 2
+    assert base_query.options.called
+
+
+def test_read_by_options_with_pagination(monkeypatch):
+    repository, mock_session = build_mocked_repository()
+    monkeypatch.setattr(
+        "app.repository.base_repository.dict_to_sqlalchemy_filter_options",
+        lambda model, schema: True,
+    )
+
+    schema = DummySchema({"ordering": "-name", "page": 2, "page_size": 3})
+    base_query = MagicMock()
+    filtered_query = MagicMock()
+    ordered_query = MagicMock()
+    limited_query = MagicMock()
+    offset_query = MagicMock()
+    mock_session.query.return_value = base_query
+    base_query.filter.return_value = filtered_query
+    filtered_query.order_by.return_value = ordered_query
+    ordered_query.limit.return_value = limited_query
+    limited_query.offset.return_value = offset_query
+    offset_query.all.return_value = ["item-paged"]
+    filtered_query.count.return_value = 11
+
+    result = repository.read_by_options(schema)
+
+    assert result["items"] == ["item-paged"]
+    assert result["search_options"]["page"] == 2
+    assert result["search_options"]["page_size"] == 3
+    ordered_query.limit.assert_called_once_with(3)
+    limited_query.offset.assert_called_once_with(3)
+
+
+def test_read_by_id_with_eager_and_not_found_returns_none(monkeypatch):
+    repository, mock_session = build_mocked_repository()
+    monkeypatch.setattr("app.repository.base_repository.joinedload", lambda relation: relation)
+    monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
+
+    base_query = MagicMock()
+    filtered_query = MagicMock()
+    mock_session.query.return_value = base_query
+    base_query.options.return_value = base_query
+    base_query.filter.return_value = filtered_query
+    filtered_query.first.return_value = None
+
+    result = repository.read_by_id(999, eager=True, not_found_raise_exception=False)
+
+    assert result is None
+    assert base_query.options.called
+
+
+def test_read_by_column_with_eager_raises_not_found(monkeypatch):
+    repository, mock_session = build_mocked_repository()
+    monkeypatch.setattr("app.repository.base_repository.joinedload", lambda relation: relation)
+    monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
+
+    base_query = MagicMock()
+    filtered_query = MagicMock()
+    mock_session.query.return_value = base_query
+    base_query.options.return_value = base_query
+    base_query.filter.return_value = filtered_query
+    filtered_query.first.return_value = None
+
+    with pytest.raises(NotFoundError):
+        repository.read_by_column("name", "missing", eager=True)
+
+
+def test_read_by_column_returns_list_when_only_one_false():
+    repository, mock_session = build_mocked_repository()
+
+    base_query = MagicMock()
+    filtered_query = MagicMock()
+    mock_session.query.return_value = base_query
+    base_query.filter.return_value = filtered_query
+    filtered_query.all.return_value = ["row-1", "row-2"]
+
+    result = repository.read_by_column(
+        "name", "value", only_one=False, not_found_raise_exception=False
+    )
+
+    assert result == ["row-1", "row-2"]
+
+
+def test_delete_by_id_raises_not_found_for_missing_record():
+    repository, mock_session = build_mocked_repository()
+
+    base_query = MagicMock()
+    filtered_query = MagicMock()
+    mock_session.query.return_value = base_query
+    base_query.filter.return_value = filtered_query
+    filtered_query.first.return_value = None
+
+    with pytest.raises(NotFoundError):
+        repository.delete_by_id(404)
+
+
+def test_read_by_columns_returns_first_with_eager(monkeypatch):
+    repository, mock_session = build_mocked_repository()
+    monkeypatch.setattr("app.repository.base_repository.joinedload", lambda relation: relation)
+    monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
+
+    base_query = MagicMock()
+    filtered_query = MagicMock()
+    expected = SimpleNamespace(id=1, name="first")
+    mock_session.query.return_value = base_query
+    base_query.options.return_value = base_query
+    base_query.filter.return_value = filtered_query
+    filtered_query.first.return_value = expected
+
+    result = repository.read_by_columns({"name": "first"}, eager=True, only_one=True)
+
+    assert result == expected
+
+
+def test_read_by_columns_raises_not_found_when_missing():
+    repository, mock_session = build_mocked_repository()
+
+    base_query = MagicMock()
+    filtered_query = MagicMock()
+    mock_session.query.return_value = base_query
+    base_query.filter.return_value = filtered_query
+    filtered_query.first.return_value = None
+
+    with pytest.raises(NotFoundError):
+        repository.read_by_columns({"name": "missing"})
+
+
+def test_read_by_columns_returns_all_when_only_one_false():
+    repository, mock_session = build_mocked_repository()
+
+    base_query = MagicMock()
+    filtered_query = MagicMock()
+    expected = [SimpleNamespace(id=1), SimpleNamespace(id=2)]
+    mock_session.query.return_value = base_query
+    base_query.filter.return_value = filtered_query
+    filtered_query.all.return_value = expected
+
+    result = repository.read_by_columns({"name": "any"}, only_one=False)
+
+    assert result == expected

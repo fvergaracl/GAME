@@ -1,182 +1,118 @@
-import unittest
 from unittest.mock import MagicMock
+
+import pytest
 
 from app.engine.default import EnhancedGamificationStrategy
 
 
-class TestEnhancedGamificationStrategy(unittest.TestCase):
-    def setUp(self):
-        """
-        Set up the EnhancedGamificationStrategy with mocked dependencies.
-        """
-        self.strategy = EnhancedGamificationStrategy()
-
-        # Mocking task_service and user_points_service
-        self.strategy.task_service = MagicMock()
-        self.strategy.user_points_service = MagicMock()
-
-    async def test_basic_engagement(self):
-        """
-        Test Case 1: If task_measurements_count < 2, it returns BasicEngagement.
-        """
-        self.strategy.user_points_service.count_measurements_by_external_task_id.return_value = (
-            1
-        )
-        points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id"
-        )
-
-        self.assertEqual(points, 1)
-        self.assertEqual(status, "BasicEngagement")
-
-    async def test_performance_bonus(self):
-        """
-        Test Case 2.1: If user_avg_time_taken < all_avg_time_taken, it returns PerformanceBonus.
-        """
-        self.strategy.user_points_service.count_measurements_by_external_task_id.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_user_task_measurements_count.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_avg_time_between_tasks_by_user_and_game_task.return_value = (
-            5
-        )
-        self.strategy.user_points_service.get_avg_time_between_tasks_for_all_users.return_value = (
-            10
-        )
-
-        points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id"
-        )
-
-        self.assertEqual(points, 11)
-        self.assertEqual(status, "PerformanceBonus")
-
-    async def test_individual_over_global(self):
-        """
-        Test Case 4.1: If user_diff_time < all_avg_time_taken, it returns IndividualOverGlobal.
-        """
-        self.strategy.user_points_service.count_measurements_by_external_task_id.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_user_task_measurements_count.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_avg_time_between_tasks_by_user_and_game_task.return_value = (
-            10
-        )
-        self.strategy.user_points_service.get_avg_time_between_tasks_for_all_users.return_value = (
-            5
-        )
-        self.strategy.user_points_service.get_last_window_time_diff.return_value = 3
-        self.strategy.user_points_service.get_new_last_window_time_diff.return_value = 5
-
-        points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id"
-        )
-
-        self.assertEqual(points, 3)
-        self.assertEqual(status, "IndividualOverGlobal")
-
-    async def test_peak_performer_bonus(self):
-        """
-        Test Case 4.2: If user_diff_time < user_avg_time_taken, it returns PeakPerformerBonus.
-        """
-        self.strategy.user_points_service.count_measurements_by_external_task_id.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_user_task_measurements_count.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_avg_time_between_tasks_by_user_and_game_task.return_value = (
-            10
-        )
-        self.strategy.user_points_service.get_avg_time_between_tasks_for_all_users.return_value = (
-            5
-        )
-        self.strategy.user_points_service.get_last_window_time_diff.return_value = 2
-        self.strategy.user_points_service.get_new_last_window_time_diff.return_value = 7
-
-        points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id"
-        )
-
-        self.assertEqual(status, "PeakPerformerBonus")
-        self.assertEqual(points, 15)
-
-    async def test_global_advantage_adjustment(self):
-        """
-        Test Case 4.3: If user_diff_time > user_avg_time_taken, it returns GlobalAdvantageAdjustment.
-        """
-        self.strategy.user_points_service.count_measurements_by_external_task_id.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_user_task_measurements_count.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_avg_time_between_tasks_by_user_and_game_task.return_value = (
-            10
-        )
-        self.strategy.user_points_service.get_avg_time_between_tasks_for_all_users.return_value = (
-            7
-        )
-        self.strategy.user_points_service.get_last_window_time_diff.return_value = 1
-        self.strategy.user_points_service.get_new_last_window_time_diff.return_value = (
-            12
-        )
-
-        points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id"
-        )
-
-        self.assertEqual(status, "GlobalAdvantageAdjustment")
-        self.assertEqual(points, 7)
-
-    async def test_individual_adjustment(self):
-        """
-        Test Case 4.4: If user_diff_time < 0, it returns IndividualAdjustment.
-        """
-        self.strategy.user_points_service.count_measurements_by_external_task_id.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_user_task_measurements_count.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_avg_time_between_tasks_by_user_and_game_task.return_value = (
-            10
-        )
-        self.strategy.user_points_service.get_avg_time_between_tasks_for_all_users.return_value = (
-            5
-        )
-        self.strategy.user_points_service.get_last_window_time_diff.return_value = 5
-        self.strategy.user_points_service.get_new_last_window_time_diff.return_value = 3
-
-        points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id"
-        )
-
-        self.assertEqual(points, 8)
-        self.assertEqual(status, "IndividualAdjustment")
-
-    async def test_default_case(self):
-        """
-        Test Default Case: If none of the conditions are met, it returns the default points.
-        """
-        self.strategy.user_points_service.count_measurements_by_external_task_id.return_value = (
-            3
-        )
-        self.strategy.user_points_service.get_user_task_measurements_count.return_value = (
-            2
-        )
-
-        points, status = await self.strategy.calculate_points(
-            "game_id", "task_id", "user_id"
-        )
-
-        self.assertEqual(points, 1)
-        self.assertEqual(status, "default")
+@pytest.fixture
+def strategy():
+    instance = EnhancedGamificationStrategy()
+    instance.debug = False
+    instance.task_service = MagicMock()
+    instance.user_points_service = MagicMock()
+    return instance
 
 
-if __name__ == "__main__":
-    unittest.main()
+def _set_shared_values(strategy, *, task_count=3, user_count=3, user_avg=10, all_avg=5):
+    service = strategy.user_points_service
+    service.count_measurements_by_external_task_id.return_value = task_count
+    service.get_user_task_measurements_count.return_value = user_count
+    service.get_avg_time_between_tasks_by_user_and_game_task.return_value = user_avg
+    service.get_avg_time_between_tasks_for_all_users.return_value = all_avg
+
+
+@pytest.mark.asyncio
+async def test_calculate_points_returns_basic_engagement_when_task_count_is_less_than_two(
+    strategy,
+):
+    strategy.user_points_service.count_measurements_by_external_task_id.return_value = 1
+
+    points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
+
+    assert points == strategy.variable_basic_points
+    assert status == "BasicEngagement"
+    strategy.user_points_service.get_user_task_measurements_count.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_calculate_points_returns_default_when_user_measurements_are_two_or_less(
+    strategy,
+):
+    _set_shared_values(strategy, task_count=3, user_count=2)
+
+    points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
+
+    assert points == strategy.default_points_task_campaign
+    assert status == "default"
+
+
+@pytest.mark.asyncio
+async def test_calculate_points_returns_performance_bonus_when_user_avg_is_better(strategy):
+    _set_shared_values(strategy, user_avg=5, all_avg=10)
+
+    points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
+
+    assert points == strategy.variable_basic_points + strategy.variable_bonus_points
+    assert status == "PerformanceBonus"
+    strategy.user_points_service.get_last_window_time_diff.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_calculate_points_returns_individual_over_global(strategy):
+    _set_shared_values(strategy, user_avg=10, all_avg=5)
+    strategy.user_points_service.get_last_window_time_diff.return_value = 3
+    strategy.user_points_service.get_new_last_window_time_diff.return_value = 5
+
+    points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
+
+    assert points == strategy.variable_individual_over_global_points
+    assert status == "IndividualOverGlobal"
+
+
+@pytest.mark.asyncio
+async def test_calculate_points_returns_peak_performer_bonus(strategy):
+    _set_shared_values(strategy, user_avg=10, all_avg=5)
+    strategy.user_points_service.get_last_window_time_diff.return_value = 2
+    strategy.user_points_service.get_new_last_window_time_diff.return_value = 9
+
+    points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
+
+    assert points == strategy.variable_peak_performer_bonus_points
+    assert status == "PeakPerformerBonus"
+
+
+@pytest.mark.asyncio
+async def test_calculate_points_returns_global_advantage_adjustment(strategy):
+    _set_shared_values(strategy, user_avg=10, all_avg=7)
+    strategy.user_points_service.get_last_window_time_diff.return_value = 1
+    strategy.user_points_service.get_new_last_window_time_diff.return_value = 13
+
+    points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
+
+    assert points == strategy.variable_global_advantage_adjustment_points
+    assert status == "GlobalAdvantageAdjustment"
+
+
+@pytest.mark.asyncio
+async def test_calculate_points_returns_individual_adjustment_for_negative_diff(strategy):
+    _set_shared_values(strategy, user_avg=10, all_avg=5)
+    strategy.user_points_service.get_last_window_time_diff.return_value = 5
+    strategy.user_points_service.get_new_last_window_time_diff.return_value = 3
+
+    points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
+
+    assert points == strategy.variable_individual_adjustment_points
+    assert status == "IndividualAdjustment"
+
+
+@pytest.mark.asyncio
+async def test_calculate_points_returns_default_when_diff_is_zero(strategy):
+    _set_shared_values(strategy, user_avg=10, all_avg=5)
+    strategy.user_points_service.get_last_window_time_diff.return_value = 5
+    strategy.user_points_service.get_new_last_window_time_diff.return_value = 5
+
+    points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
+
+    assert points == strategy.default_points_task_campaign
+    assert status == "default"
