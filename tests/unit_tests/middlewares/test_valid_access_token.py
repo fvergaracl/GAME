@@ -56,7 +56,9 @@ def _mock_jwks_client(monkeypatch, signing_key="public-key", side_effect=None):
     if side_effect is not None:
         jwks_client.get_signing_key_from_jwt.side_effect = side_effect
     else:
-        jwks_client.get_signing_key_from_jwt.return_value = SimpleNamespace(key=signing_key)
+        jwks_client.get_signing_key_from_jwt.return_value = SimpleNamespace(
+            key=signing_key
+        )
 
     monkeypatch.setattr(
         access_token_middleware, "PyJWKClient", MagicMock(return_value=jwks_client)
@@ -79,7 +81,9 @@ async def test_valid_access_token_returns_ok_response_on_success(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_valid_access_token_returns_fail_response_for_invalid_signature(monkeypatch):
+async def test_valid_access_token_returns_fail_response_for_invalid_signature(
+    monkeypatch,
+):
     _mock_jwks_client(monkeypatch)
     monkeypatch.setattr(
         access_token_middleware.jwt,
@@ -95,7 +99,9 @@ async def test_valid_access_token_returns_fail_response_for_invalid_signature(mo
 
 
 @pytest.mark.asyncio
-async def test_valid_access_token_uses_decode_without_exp_check_when_expired(monkeypatch):
+async def test_valid_access_token_uses_decode_without_exp_check_when_expired(
+    monkeypatch,
+):
     _mock_jwks_client(monkeypatch)
     monkeypatch.setattr(
         access_token_middleware.jwt,
@@ -140,7 +146,9 @@ async def test_valid_access_token_returns_expired_error_when_decode_without_exp_
 
 
 @pytest.mark.asyncio
-async def test_valid_access_token_returns_fail_response_for_invalid_audience(monkeypatch):
+async def test_valid_access_token_returns_fail_response_for_invalid_audience(
+    monkeypatch,
+):
     _mock_jwks_client(monkeypatch)
     monkeypatch.setattr(
         access_token_middleware.jwt,
@@ -172,7 +180,9 @@ async def test_valid_access_token_returns_fail_response_for_invalid_token(monkey
 
 
 @pytest.mark.asyncio
-async def test_valid_access_token_returns_fail_response_for_pyjwk_client_error(monkeypatch):
+async def test_valid_access_token_returns_fail_response_for_pyjwk_client_error(
+    monkeypatch,
+):
     _mock_jwks_client(monkeypatch, side_effect=exceptions.PyJWKClientError("jwks down"))
 
     result = await access_token_middleware.valid_access_token("token")
@@ -183,7 +193,9 @@ async def test_valid_access_token_returns_fail_response_for_pyjwk_client_error(m
 
 
 @pytest.mark.asyncio
-async def test_valid_access_token_returns_fail_response_for_generic_pyjwt_error(monkeypatch):
+async def test_valid_access_token_returns_fail_response_for_generic_pyjwt_error(
+    monkeypatch,
+):
     _mock_jwks_client(monkeypatch)
     monkeypatch.setattr(
         access_token_middleware.jwt,
@@ -252,7 +264,9 @@ def test_decode_token_without_exp_check_returns_ok_response(monkeypatch):
     assert result.error is None
 
 
-def test_decode_token_without_exp_check_returns_fail_response_on_pyjwt_error(monkeypatch):
+def test_decode_token_without_exp_check_returns_fail_response_on_pyjwt_error(
+    monkeypatch,
+):
     _mock_jwks_client(monkeypatch, signing_key="decode-key")
     monkeypatch.setattr(
         access_token_middleware.jwt,

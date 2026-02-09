@@ -1,7 +1,7 @@
-import pytest
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
+import pytest
 from dependency_injector import containers, providers
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, create_engine
@@ -156,7 +156,9 @@ async def test_whole_update(repository):
 
 def test_read_by_options_with_page_size_all_and_eager(monkeypatch):
     repository, mock_session = build_mocked_repository()
-    monkeypatch.setattr("app.repository.base_repository.joinedload", lambda relation: relation)
+    monkeypatch.setattr(
+        "app.repository.base_repository.joinedload", lambda relation: relation
+    )
     monkeypatch.setattr(
         "app.repository.base_repository.dict_to_sqlalchemy_filter_options",
         lambda model, schema: True,
@@ -214,7 +216,9 @@ def test_read_by_options_with_pagination(monkeypatch):
 
 def test_read_by_id_with_eager_and_not_found_returns_none(monkeypatch):
     repository, mock_session = build_mocked_repository()
-    monkeypatch.setattr("app.repository.base_repository.joinedload", lambda relation: relation)
+    monkeypatch.setattr(
+        "app.repository.base_repository.joinedload", lambda relation: relation
+    )
     monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
 
     base_query = MagicMock()
@@ -232,7 +236,9 @@ def test_read_by_id_with_eager_and_not_found_returns_none(monkeypatch):
 
 def test_read_by_column_with_eager_raises_not_found(monkeypatch):
     repository, mock_session = build_mocked_repository()
-    monkeypatch.setattr("app.repository.base_repository.joinedload", lambda relation: relation)
+    monkeypatch.setattr(
+        "app.repository.base_repository.joinedload", lambda relation: relation
+    )
     monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
 
     base_query = MagicMock()
@@ -277,7 +283,9 @@ def test_delete_by_id_raises_not_found_for_missing_record():
 
 def test_read_by_columns_returns_first_with_eager(monkeypatch):
     repository, mock_session = build_mocked_repository()
-    monkeypatch.setattr("app.repository.base_repository.joinedload", lambda relation: relation)
+    monkeypatch.setattr(
+        "app.repository.base_repository.joinedload", lambda relation: relation
+    )
     monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
 
     base_query = MagicMock()

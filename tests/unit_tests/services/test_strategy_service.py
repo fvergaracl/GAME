@@ -54,7 +54,10 @@ class TestStrategyService(unittest.TestCase):
     def test_init_sets_base_repository_as_none(self):
         self.assertIsNone(self.service._repository)
 
-    @patch("app.services.strategy_service.inspect.getfile", side_effect=fake_getfile_for_strategy)
+    @patch(
+        "app.services.strategy_service.inspect.getfile",
+        side_effect=fake_getfile_for_strategy,
+    )
     @patch(
         "app.services.strategy_service.all_engine_strategies",
         return_value=[FakeStrategyDefault(), FakeStrategySocioBee()],
@@ -92,9 +95,14 @@ class TestStrategyService(unittest.TestCase):
         with self.assertRaises(NotFoundError) as context:
             self.service.get_strategy_by_id("missing")
 
-        self.assertEqual(context.exception.detail, "Strategy not found with id: missing")
+        self.assertEqual(
+            context.exception.detail, "Strategy not found with id: missing"
+        )
 
-    @patch("app.services.strategy_service.inspect.getfile", side_effect=fake_getfile_for_strategy)
+    @patch(
+        "app.services.strategy_service.inspect.getfile",
+        side_effect=fake_getfile_for_strategy,
+    )
     @patch(
         "app.services.strategy_service.all_engine_strategies",
         return_value=[FakeStrategyDefault(), FakeStrategySocioBee()],
@@ -108,7 +116,10 @@ class TestStrategyService(unittest.TestCase):
 
         self.assertIsInstance(result, FakeStrategySocioBee)
 
-    @patch("app.services.strategy_service.inspect.getfile", side_effect=fake_getfile_for_strategy)
+    @patch(
+        "app.services.strategy_service.inspect.getfile",
+        side_effect=fake_getfile_for_strategy,
+    )
     @patch(
         "app.services.strategy_service.all_engine_strategies",
         return_value=[FakeStrategyDefault()],
@@ -121,7 +132,9 @@ class TestStrategyService(unittest.TestCase):
         with self.assertRaises(NotFoundError) as context:
             self.service.get_Class_by_id("missing")
 
-        self.assertEqual(context.exception.detail, "Strategy not found with id: missing")
+        self.assertEqual(
+            context.exception.detail, "Strategy not found with id: missing"
+        )
 
 
 if __name__ == "__main__":

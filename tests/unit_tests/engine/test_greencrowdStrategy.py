@@ -34,9 +34,9 @@ def _build_sim_task_dict(
     expiration_date=None,
 ):
     if expiration_date is None:
-        expiration_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
-            minutes=10
-        )
+        expiration_date = datetime.datetime.now(
+            datetime.timezone.utc
+        ) + datetime.timedelta(minutes=10)
     return {
         "externalUserId": external_user_id,
         "externalTaskId": external_task_id,
@@ -103,14 +103,18 @@ def test_get_random_values_from_tasks_uses_callback_data():
         )
     ]
 
-    with patch("app.engine.greencrowdStrategy.random.randint", side_effect=[1, 2, 3, 4, 5]):
+    with patch(
+        "app.engine.greencrowdStrategy.random.randint", side_effect=[1, 2, 3, 4, 5]
+    ):
         result = get_random_values_from_tasks(records)
 
     assert result == {"DIM_BP": 1, "DIM_LBE": 2, "DIM_TD": 3, "DIM_PP": 4, "DIM_S": 5}
 
 
 def test_get_random_values_from_tasks_with_empty_records_uses_default_range():
-    with patch("app.engine.greencrowdStrategy.random.randint", side_effect=lambda a, b: a + b):
+    with patch(
+        "app.engine.greencrowdStrategy.random.randint", side_effect=lambda a, b: a + b
+    ):
         result = get_random_values_from_tasks([])
 
     assert result == {
@@ -163,9 +167,21 @@ def test_get_dynamic_values_from_tasks_calculates_dimensions_and_handles_bad_tas
     task = SimpleNamespace(id="task-a", externalTaskId="poi_1")
     user = SimpleNamespace(id="user-1")
     records = [
-        SimpleNamespace(taskId="task-a", userId="user-1", created_at=now_utc - datetime.timedelta(hours=8)),
-        SimpleNamespace(taskId="task-a", userId="user-1", created_at=now_utc - datetime.timedelta(hours=4)),
-        SimpleNamespace(taskId="task-b", userId="user-2", created_at=now_utc - datetime.timedelta(hours=1)),
+        SimpleNamespace(
+            taskId="task-a",
+            userId="user-1",
+            created_at=now_utc - datetime.timedelta(hours=8),
+        ),
+        SimpleNamespace(
+            taskId="task-a",
+            userId="user-1",
+            created_at=now_utc - datetime.timedelta(hours=4),
+        ),
+        SimpleNamespace(
+            taskId="task-b",
+            userId="user-2",
+            created_at=now_utc - datetime.timedelta(hours=1),
+        ),
     ]
 
     result = get_dynamic_values_from_tasks(
@@ -185,7 +201,9 @@ def test_get_dynamic_values_from_tasks_calculates_dimensions_and_handles_bad_tas
 
 
 def test_assign_random_scores_returns_all_dimensions():
-    with patch("app.engine.greencrowdStrategy.random.randint", side_effect=[3, 4, 5, 6, 7]):
+    with patch(
+        "app.engine.greencrowdStrategy.random.randint", side_effect=[3, 4, 5, 6, 7]
+    ):
         result = assign_random_scores(1, 10)
 
     assert result == {"DIM_BP": 3, "DIM_TD": 4, "DIM_LBE": 5, "DIM_PP": 6, "DIM_S": 7}
@@ -227,7 +245,8 @@ def test_simulate_strategy_returns_zero_points_when_last_task_is_old():
     task = SimpleNamespace(id="task-1", externalTaskId="poi_1")
     old_point = SimpleNamespace(
         taskId="task-1",
-        created_at=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(seconds=400),
+        created_at=datetime.datetime.now(datetime.timezone.utc)
+        - datetime.timedelta(seconds=400),
     )
 
     result = strategy.simulate_strategy(
@@ -264,7 +283,9 @@ def test_simulate_strategy_random_range_branch():
         )
     ]
 
-    with patch("app.engine.greencrowdStrategy.random.randint", side_effect=[1, 2, 3, 4, 5]):
+    with patch(
+        "app.engine.greencrowdStrategy.random.randint", side_effect=[1, 2, 3, 4, 5]
+    ):
         result = strategy.simulate_strategy(
             data_to_simulate={
                 "task": task,
@@ -317,14 +338,30 @@ def test_simulate_strategy_dynamic_calculation_branch():
     strategy = _build_strategy_with_mocked_container()
     now_utc = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
     task = SimpleNamespace(id="task-1", externalTaskId="poi_1")
-    strategy.user_points_service.get_all_point_of_tasks_list.return_value = QueryRecords(
-        [
-            SimpleNamespace(taskId="task-1", userId="user-1", created_at=now_utc - datetime.timedelta(hours=6)),
-            SimpleNamespace(taskId="task-1", userId="user-1", created_at=now_utc - datetime.timedelta(hours=3)),
-            SimpleNamespace(taskId="task-2", userId="user-2", created_at=now_utc - datetime.timedelta(hours=1)),
-        ]
+    strategy.user_points_service.get_all_point_of_tasks_list.return_value = (
+        QueryRecords(
+            [
+                SimpleNamespace(
+                    taskId="task-1",
+                    userId="user-1",
+                    created_at=now_utc - datetime.timedelta(hours=6),
+                ),
+                SimpleNamespace(
+                    taskId="task-1",
+                    userId="user-1",
+                    created_at=now_utc - datetime.timedelta(hours=3),
+                ),
+                SimpleNamespace(
+                    taskId="task-2",
+                    userId="user-2",
+                    created_at=now_utc - datetime.timedelta(hours=1),
+                ),
+            ]
+        )
     )
-    strategy.user_service.get_user_by_externalUserId.return_value = SimpleNamespace(id="user-1")
+    strategy.user_service.get_user_by_externalUserId.return_value = SimpleNamespace(
+        id="user-1"
+    )
     second_task = SimpleNamespace(id="task-2", externalTaskId="poi_2")
 
     result = strategy.simulate_strategy(
@@ -344,7 +381,9 @@ def test_simulate_strategy_dynamic_calculation_branch():
 def test_check_is_expired():
     strategy = _build_strategy_with_mocked_container()
     past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=1)
-    future = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=1)
+    future = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+        minutes=1
+    )
 
     assert strategy.checkISExpired(past) is True
     assert strategy.checkISExpired(future) is False
@@ -371,7 +410,9 @@ async def test_calculate_points_returns_invalid_hash_when_not_was_calculated():
 async def test_calculate_points_with_empty_tasks_generates_valid_simulation():
     strategy = _build_strategy_with_mocked_container()
     simulated_task = SimulatedTaskPoints(**_build_sim_task_dict("poi_1"))
-    strategy.game_service.get_game_by_external_id.return_value = SimpleNamespace(id=str(uuid4()))
+    strategy.game_service.get_game_by_external_id.return_value = SimpleNamespace(
+        id=str(uuid4())
+    )
     strategy.user_points_service.get_points_simulated_of_user_in_game = AsyncMock(
         return_value=([simulated_task], "game-1")
     )
@@ -396,10 +437,16 @@ async def test_calculate_points_uses_previous_points_branch():
     strategy = _build_strategy_with_mocked_container()
     original_task = _build_sim_task_dict("poi_1")
     resimulated_task = SimulatedTaskPoints(
-        **_build_sim_task_dict("poi_1", dim_bp=2, dim_lbe=2, dim_td=2, dim_pp=2, dim_s=2)
+        **_build_sim_task_dict(
+            "poi_1", dim_bp=2, dim_lbe=2, dim_td=2, dim_pp=2, dim_s=2
+        )
     )
-    strategy.user_points_service.get_points_of_simulated_task.return_value = [SimpleNamespace(id=1)]
-    strategy.game_service.get_game_by_external_id.return_value = SimpleNamespace(id=str(uuid4()))
+    strategy.user_points_service.get_points_of_simulated_task.return_value = [
+        SimpleNamespace(id=1)
+    ]
+    strategy.game_service.get_game_by_external_id.return_value = SimpleNamespace(
+        id=str(uuid4())
+    )
     strategy.user_points_service.get_points_simulated_of_user_in_game = AsyncMock(
         return_value=([resimulated_task], "game-1")
     )
@@ -423,13 +470,19 @@ async def test_calculate_points_uses_previous_points_branch():
 @pytest.mark.asyncio
 async def test_calculate_points_handles_expired_simulation():
     strategy = _build_strategy_with_mocked_container()
-    expired = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=1)
+    expired = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
+        minutes=1
+    )
     original_task = _build_sim_task_dict("poi_1", expiration_date=expired)
     renewed_task = SimulatedTaskPoints(
-        **_build_sim_task_dict("poi_1", dim_bp=3, dim_lbe=3, dim_td=3, dim_pp=3, dim_s=3)
+        **_build_sim_task_dict(
+            "poi_1", dim_bp=3, dim_lbe=3, dim_td=3, dim_pp=3, dim_s=3
+        )
     )
     strategy.user_points_service.get_points_of_simulated_task.return_value = []
-    strategy.game_service.get_game_by_external_id.return_value = SimpleNamespace(id=str(uuid4()))
+    strategy.game_service.get_game_by_external_id.return_value = SimpleNamespace(
+        id=str(uuid4())
+    )
     strategy.user_points_service.get_points_simulated_of_user_in_game = AsyncMock(
         return_value=([renewed_task], "game-1")
     )

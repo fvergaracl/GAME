@@ -109,7 +109,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
 
         result = self.service.delete_game_by_id(game_id)
 
-        self.assertEqual(result, {"message": f"Game with gameId: {game_id} not deleted"})
+        self.assertEqual(
+            result, {"message": f"Game with gameId: {game_id} not deleted"}
+        )
 
     def test_get_all_games_delegates_to_repository(self):
         schema = SimpleNamespace(ordering="-created_at")
@@ -217,7 +219,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self, _mock_strategies
     ):
         game_id = uuid4()
-        created_game = self._build_game(game_id, external_game_id="new_game_with_params")
+        created_game = self._build_game(
+            game_id, external_game_id="new_game_with_params"
+        )
         created_param = SimpleNamespace(id=uuid4(), key="weight", value=5)
         self.game_repository.read_by_column.return_value = None
         self.game_repository.create = AsyncMock(return_value=created_game)
@@ -285,7 +289,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
 
     def test_patch_game_by_id_raises_when_external_game_id_is_duplicated(self):
         game_id = uuid4()
-        game = self._build_game(game_id, external_game_id="old_external", include_params=True)
+        game = self._build_game(
+            game_id, external_game_id="old_external", include_params=True
+        )
         schema = PatchGame(
             externalGameId="new_external",
             strategyId=None,
@@ -324,7 +330,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.assertIn("same data", context.exception.detail)
 
     @patch("app.services.game_service.are_variables_matching", return_value=False)
-    def test_patch_game_by_id_raises_when_schema_dict_equals_game_dict(self, _mock_match):
+    def test_patch_game_by_id_raises_when_schema_dict_equals_game_dict(
+        self, _mock_match
+    ):
         game_id = uuid4()
         param_id = uuid4()
         same_dict = {
@@ -333,7 +341,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
             "platform": "web",
             "params": [{"id": param_id, "key": "k", "value": "v"}],
         }
-        game = self._build_game(game_id, external_game_id="same_game", include_params=True)
+        game = self._build_game(
+            game_id, external_game_id="same_game", include_params=True
+        )
         game.dict = lambda: same_dict
         schema = PatchGame(
             externalGameId="same_game",
@@ -396,7 +406,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         game_id = uuid4()
         param_id = uuid4()
         update_param = UpdateGameParams(id=param_id, key="threshold", value=3)
-        game = self._build_game(game_id, strategy_id="strategy_from_game", include_params=True)
+        game = self._build_game(
+            game_id, strategy_id="strategy_from_game", include_params=True
+        )
         schema = PatchGame(
             externalGameId="new_slug_game",
             strategyId=None,
@@ -505,7 +517,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         game = self._build_game(game_id)
         self.game_repository.read_by_id.return_value = game
         self.task_repository.read_by_column.return_value = [
-            SimpleNamespace(dict=lambda: {"id": str(uuid4()), "externalTaskId": "task-1"})
+            SimpleNamespace(
+                dict=lambda: {"id": str(uuid4()), "externalTaskId": "task-1"}
+            )
         ]
 
         result = self.service.get_tasks_by_gameId(game_id)

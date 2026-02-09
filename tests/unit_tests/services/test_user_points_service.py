@@ -45,7 +45,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = (
             SimpleNamespace(id="task-1", strategyId="default")
         )
-        self.service.strategy_service.get_Class_by_id = MagicMock(return_value=object())
+        self.service.strategy_service.get_Class_by_id = MagicMock(
+            return_value=object())
         self.users_repository.read_by_column.return_value = SimpleNamespace(
             id="user-1", externalUserId="user_1"
         )
@@ -101,7 +102,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             )
 
     def test_get_users_points_by_external_game_id_uses_task_identifier(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.task_repository.read_by_column.return_value = [
             SimpleNamespace(id="task-id-1", externalTaskId="task-external-1"),
             SimpleNamespace(id="task-id-2", externalTaskId="task-external-2"),
@@ -111,14 +113,16 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             [SimpleNamespace(externalUserId="user_2", points=20)],
         ]
 
-        result = self.service.get_users_points_by_externalGameId("external-game-1")
+        result = self.service.get_users_points_by_externalGameId(
+            "external-game-1")
 
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0].externalTaskId, "task-external-1")
         self.assertEqual(result[1].externalTaskId, "task-external-2")
 
     def test_get_all_points_by_external_user_id_aggregates_all_games(self):
-        self.users_repository.read_by_column.return_value = SimpleNamespace(id="user-1")
+        self.users_repository.read_by_column.return_value = SimpleNamespace(
+            id="user-1")
         self.user_points_repository.get_task_by_externalUserId.return_value = [
             SimpleNamespace(gameId="game-1"),
             SimpleNamespace(gameId="game-2"),
@@ -196,7 +200,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         result = self.service.query_user_points(schema)
 
         self.assertEqual(result, expected)
-        self.user_points_repository.read_by_options.assert_called_once_with(schema)
+        self.user_points_repository.read_by_options.assert_called_once_with(
+            schema)
 
     def test_get_users_by_game_id_raises_when_game_not_found(self):
         self.game_repository.read_by_column.return_value = None
@@ -205,14 +210,16 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             self.service.get_users_by_gameId("missing-game")
 
     def test_get_users_by_game_id_raises_when_tasks_not_found(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.task_repository.read_by_column.return_value = []
 
         with self.assertRaises(NotFoundError):
             self.service.get_users_by_gameId("game-1")
 
     def test_get_users_by_game_id_returns_task_users_and_first_action(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.task_repository.read_by_column.return_value = [
             SimpleNamespace(id="task-1", externalTaskId="task-ext-1")
         ]
@@ -231,15 +238,18 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(str(result.gameId), self.GAME_UUID)
         self.assertEqual(result.tasks[0].externalTaskId, "task-ext-1")
         self.assertEqual(result.tasks[0].users[0].externalUserId, "user_1")
-        self.assertEqual(result.tasks[0].users[0].firstAction, "2026-01-02T00:00:00")
+        self.assertEqual(
+            result.tasks[0].users[0].firstAction, "2026-01-02T00:00:00")
 
     def test_get_users_by_game_id_raises_when_point_user_lookup_returns_none(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.task_repository.read_by_column.return_value = [
             SimpleNamespace(id="task-1", externalTaskId="task-ext-1")
         ]
         self.user_points_repository.get_points_and_users_by_taskId.return_value = [
-            SimpleNamespace(externalUserId="missing_user", userId="user-id-404")
+            SimpleNamespace(externalUserId="missing_user",
+                            userId="user-id-404")
         ]
         self.users_repository.read_by_column.return_value = None
 
@@ -272,7 +282,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.user_points_repository.get_task_by_externalUserId.return_value = [
             SimpleNamespace(gameId="game-1")
         ]
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.service.get_points_by_gameId_with_details = MagicMock(
             return_value=SimpleNamespace(
                 externalGameId="external-game-1",
@@ -314,7 +325,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result[0].task[0].points[0].points, 11)
 
     def test_get_points_by_game_id_raises_when_tasks_not_found(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.task_repository.read_by_column.return_value = []
 
         with self.assertRaises(NotFoundError):
@@ -367,10 +379,12 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         result = self.service.get_points_by_gameId_with_details("game-1")
 
         self.assertEqual(result.externalGameId, "external-game-1")
-        self.assertEqual(result.task[0].points[0].pointsData[0].caseName, "caseA")
+        self.assertEqual(
+            result.task[0].points[0].pointsData[0].caseName, "caseA")
 
     def test_get_points_by_game_id_with_details_raises_when_tasks_not_found(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.task_repository.read_by_column.return_value = []
 
         with self.assertRaises(NotFoundError):
@@ -383,14 +397,16 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             self.service.get_points_of_user_in_game("missing-game", "user_1")
 
     def test_get_points_of_user_in_game_raises_when_user_not_found(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.users_repository.read_by_column.return_value = None
 
         with self.assertRaises(NotFoundError):
             self.service.get_points_of_user_in_game("game-1", "missing-user")
 
     def test_get_points_of_user_in_game_returns_only_target_user_points(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.users_repository.read_by_column.return_value = SimpleNamespace(
             id="user-id-1", externalUserId="user_1"
         )
@@ -399,7 +415,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         ]
         self.user_points_repository.get_points_and_users_by_taskId.return_value = [
             SimpleNamespace(externalUserId="user_1", points=7, timesAwarded=2),
-            SimpleNamespace(externalUserId="user_2", points=100, timesAwarded=10),
+            SimpleNamespace(externalUserId="user_2",
+                            points=100, timesAwarded=10),
         ]
 
         result = self.service.get_points_of_user_in_game("game-1", "user_1")
@@ -409,7 +426,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result[0].points, 7)
 
     def test_get_points_of_user_in_game_raises_when_tasks_not_found(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.users_repository.read_by_column.return_value = SimpleNamespace(
             id="user-id-1", externalUserId="user_1"
         )
@@ -420,10 +438,12 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
 
     async def test_assign_points_to_user_directly_creates_user_and_wallet(self):
         self._setup_default_game_task_for_assignment()
-        self.service.strategy_service.get_Class_by_id = MagicMock(return_value=object())
+        self.service.strategy_service.get_Class_by_id = MagicMock(
+            return_value=object())
         self.users_repository.read_by_column.return_value = None
         self.users_repository.create_user_by_externalUserId = AsyncMock(
-            return_value=SimpleNamespace(id="new-user-id", externalUserId="new_user")
+            return_value=SimpleNamespace(
+                id="new-user-id", externalUserId="new_user")
         )
         self.user_points_repository.create = AsyncMock(
             return_value=SimpleNamespace(created_at="2026-02-09T00:00:00")
@@ -462,7 +482,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
 
     async def test_assign_points_to_user_directly_raises_when_strategy_not_found(self):
         self._setup_default_game_task_for_assignment()
-        self.service.strategy_service.get_Class_by_id = MagicMock(return_value=None)
+        self.service.strategy_service.get_Class_by_id = MagicMock(
+            return_value=None)
         schema = SimpleNamespace(externalUserId="user_1", data={"points": 1})
 
         with self.assertRaises(NotFoundError):
@@ -472,9 +493,11 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
 
     async def test_assign_points_to_user_directly_raises_on_invalid_external_user(self):
         self._setup_default_game_task_for_assignment()
-        self.service.strategy_service.get_Class_by_id = MagicMock(return_value=object())
+        self.service.strategy_service.get_Class_by_id = MagicMock(
+            return_value=object())
         self.users_repository.read_by_column.return_value = None
-        schema = SimpleNamespace(externalUserId="invalid-user!", data={"points": 1})
+        schema = SimpleNamespace(
+            externalUserId="invalid-user!", data={"points": 1})
 
         with self.assertRaises(PreconditionFailedError):
             await self.service.assign_points_to_user_directly(
@@ -483,7 +506,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
 
     async def test_assign_points_to_user_directly_raises_when_points_missing(self):
         self._setup_default_game_task_for_assignment()
-        self.service.strategy_service.get_Class_by_id = MagicMock(return_value=object())
+        self.service.strategy_service.get_Class_by_id = MagicMock(
+            return_value=object())
         self.users_repository.read_by_column.return_value = SimpleNamespace(
             id="user-id-1", externalUserId="user_1"
         )
@@ -496,7 +520,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
 
     async def test_assign_points_to_user_directly_raises_when_transaction_missing(self):
         self._setup_default_game_task_for_assignment()
-        self.service.strategy_service.get_Class_by_id = MagicMock(return_value=object())
+        self.service.strategy_service.get_Class_by_id = MagicMock(
+            return_value=object())
         self.users_repository.read_by_column.return_value = SimpleNamespace(
             id="user-id-1", externalUserId="user_1"
         )
@@ -506,7 +531,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         wallet = SimpleNamespace(id="wallet-1", pointsBalance=10)
         self.wallet_repository.read_by_column.return_value = wallet
         self.wallet_repository.update = AsyncMock(return_value=wallet)
-        self.wallet_transaction_repository.create = AsyncMock(return_value=None)
+        self.wallet_transaction_repository.create = AsyncMock(
+            return_value=None)
         schema = SimpleNamespace(externalUserId="user_1", data={"points": 2})
 
         with self.assertRaises(InternalServerError):
@@ -541,7 +567,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.wallet_transaction_repository.create = AsyncMock(
             return_value=SimpleNamespace(id="txn-1")
         )
-        schema = SimpleNamespace(externalUserId="user_1", data={}, caseName="fallback")
+        schema = SimpleNamespace(
+            externalUserId="user_1", data={}, caseName="fallback")
 
         result = await self.service.assign_points_to_user(
             self.GAME_UUID, "task-external-1", schema, False, "api-key"
@@ -595,7 +622,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         )
         self.users_repository.read_by_column.return_value = None
         self.users_repository.create_user_by_externalUserId = AsyncMock(
-            return_value=SimpleNamespace(id="user-new-id", externalUserId="valid_user_1")
+            return_value=SimpleNamespace(
+                id="user-new-id", externalUserId="valid_user_1")
         )
         self.user_points_repository.create = AsyncMock(
             return_value=SimpleNamespace(created_at="2026-02-09T00:00:00")
@@ -618,7 +646,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.users_repository.create_user_by_externalUserId.assert_awaited_once_with(
             externalUserId="valid_user_1"
         )
-        self.wallet_repository.update.assert_awaited_once_with("wallet-1", wallet)
+        self.wallet_repository.update.assert_awaited_once_with(
+            "wallet-1", wallet)
 
     async def test_assign_points_to_user_raises_when_wallet_transaction_missing(self):
         class StrategyWithCaseName:
@@ -643,7 +672,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         wallet = SimpleNamespace(id="wallet-1", pointsBalance=5)
         self.wallet_repository.read_by_column.return_value = wallet
         self.wallet_repository.update = AsyncMock(return_value=wallet)
-        self.wallet_transaction_repository.create = AsyncMock(return_value=None)
+        self.wallet_transaction_repository.create = AsyncMock(
+            return_value=None)
         schema = SimpleNamespace(externalUserId="user_1", data={})
 
         with self.assertRaises(InternalServerError):
@@ -653,7 +683,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
 
     async def test_assign_points_to_user_raises_when_strategy_metadata_missing(self):
         self._setup_default_game_task_for_assignment()
-        self.service.strategy_service.get_strategy_by_id = MagicMock(return_value=None)
+        self.service.strategy_service.get_strategy_by_id = MagicMock(
+            return_value=None)
         schema = SimpleNamespace(externalUserId="user_1", data={})
 
         with self.assertRaises(NotFoundError):
@@ -733,31 +764,41 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
                 self.GAME_UUID, "task-external-1", schema
             )
 
-    async def test_get_points_simulated_of_user_in_game_raises_when_tasks_not_found(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+    async def test_get_points_simulated_of_user_in_game_raises_when_tasks_not_found(
+        self,
+    ):
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.task_repository.read_by_column.return_value = []
 
         with self.assertRaises(NotFoundError):
             await self.service.get_points_simulated_of_user_in_game("game-1", "user_1")
 
-    async def test_get_points_simulated_of_user_in_game_raises_when_strategy_missing(self):
+    async def test_get_points_simulated_of_user_in_game_raises_when_strategy_missing(
+        self,
+    ):
         self.game_repository.read_by_column.return_value = SimpleNamespace(
             id="game-1", externalGameId="external-game-1"
         )
         self.task_repository.read_by_column.return_value = [
-            SimpleNamespace(id="task-1", strategyId="strategy-1", externalTaskId="t-1")
+            SimpleNamespace(id="task-1", strategyId="strategy-1",
+                            externalTaskId="t-1")
         ]
-        self.service.strategy_service.get_strategy_by_id = MagicMock(return_value=None)
+        self.service.strategy_service.get_strategy_by_id = MagicMock(
+            return_value=None)
 
         with self.assertRaises(NotFoundError):
             await self.service.get_points_simulated_of_user_in_game("game-1", "user_1")
 
-    async def test_get_points_simulated_of_user_in_game_raises_for_invalid_user_slug(self):
+    async def test_get_points_simulated_of_user_in_game_raises_for_invalid_user_slug(
+        self,
+    ):
         self.game_repository.read_by_column.return_value = SimpleNamespace(
             id="game-1", externalGameId="external-game-1"
         )
         self.task_repository.read_by_column.return_value = [
-            SimpleNamespace(id="task-1", strategyId="strategy-1", externalTaskId="t-1")
+            SimpleNamespace(id="task-1", strategyId="strategy-1",
+                            externalTaskId="t-1")
         ]
         self.service.strategy_service.get_strategy_by_id = MagicMock(
             return_value=object()
@@ -782,8 +823,10 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             id="game-1", externalGameId="external-game-1"
         )
         self.task_repository.read_by_column.return_value = [
-            SimpleNamespace(id="task-1", strategyId="strategy-1", externalTaskId="t-1"),
-            SimpleNamespace(id="task-2", strategyId="strategy-1", externalTaskId="t-2"),
+            SimpleNamespace(id="task-1", strategyId="strategy-1",
+                            externalTaskId="t-1"),
+            SimpleNamespace(id="task-2", strategyId="strategy-1",
+                            externalTaskId="t-2"),
         ]
         self.service.strategy_service.get_strategy_by_id = MagicMock(
             return_value=object()
@@ -806,10 +849,12 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             return_value=SimStrategy()
         )
 
-        result, external_game_id = await self.service.get_points_simulated_of_user_in_game(
-            "game-1",
-            "user_1",
-            assign_control_group=True,
+        result, external_game_id = (
+            await self.service.get_points_simulated_of_user_in_game(
+                "game-1",
+                "user_1",
+                assign_control_group=True,
+            )
         )
 
         self.assertEqual(external_game_id, "external-game-1")
@@ -817,93 +862,15 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result[0]["group"], "dynamic_calculation")
         self.users_game_config_repository.create.assert_awaited_once()
 
-    async def test_get_points_simulated_of_user_in_game_creates_missing_user_when_valid_slug(
+    async def test_get_points_simulated_of_user_in_game_raises_when_simulate_missing(
         self,
     ):
-        class SimStrategy:
-            def simulate_strategy(self, data_to_simulate, userGroup, user_last_task):
-                return {
-                    "externalTaskId": data_to_simulate["task"].externalTaskId,
-                    "group": userGroup,
-                }
-
         self.game_repository.read_by_column.return_value = SimpleNamespace(
             id="game-1", externalGameId="external-game-1"
         )
         self.task_repository.read_by_column.return_value = [
-            SimpleNamespace(id="task-1", strategyId="strategy-1", externalTaskId="t-1")
-        ]
-        self.service.strategy_service.get_strategy_by_id = MagicMock(
-            return_value=object()
-        )
-        self.users_repository.read_by_column.return_value = None
-        self.users_repository.create_user_by_externalUserId = AsyncMock(
-            return_value=SimpleNamespace(id="new-user-id", externalUserId="valid_user_1")
-        )
-        self.user_points_repository.get_last_task_by_userId.return_value = None
-        self.service.strategy_service.get_Class_by_id = MagicMock(
-            return_value=SimStrategy()
-        )
-
-        result, external_game_id = await self.service.get_points_simulated_of_user_in_game(
-            "game-1",
-            "valid_user_1",
-            oauth_user_id="oauth-1",
-        )
-
-        self.assertEqual(external_game_id, "external-game-1")
-        self.assertEqual(len(result), 1)
-        self.users_repository.create_user_by_externalUserId.assert_awaited_once_with(
-            externalUserId="valid_user_1",
-            oauth_user_id="oauth-1",
-        )
-
-    async def test_get_points_simulated_of_user_in_game_uses_existing_user_group_config(
-        self,
-    ):
-        class SimStrategy:
-            def simulate_strategy(self, data_to_simulate, userGroup, user_last_task):
-                return {
-                    "externalTaskId": data_to_simulate["task"].externalTaskId,
-                    "group": userGroup,
-                }
-
-        self.game_repository.read_by_column.return_value = SimpleNamespace(
-            id="game-1", externalGameId="external-game-1"
-        )
-        self.task_repository.read_by_column.return_value = [
-            SimpleNamespace(id="task-1", strategyId="strategy-1", externalTaskId="t-1")
-        ]
-        self.service.strategy_service.get_strategy_by_id = MagicMock(
-            return_value=object()
-        )
-        self.users_repository.read_by_column.return_value = SimpleNamespace(
-            id="user-id-1", externalUserId="user_1"
-        )
-        self.users_game_config_repository.read_by_columns.return_value = SimpleNamespace(
-            experimentGroup="average_score"
-        )
-        self.users_game_config_repository.create = AsyncMock()
-        self.user_points_repository.get_last_task_by_userId.return_value = None
-        self.service.strategy_service.get_Class_by_id = MagicMock(
-            return_value=SimStrategy()
-        )
-
-        result, _ = await self.service.get_points_simulated_of_user_in_game(
-            "game-1",
-            "user_1",
-            assign_control_group=True,
-        )
-
-        self.assertEqual(result[0]["group"], "average_score")
-        self.users_game_config_repository.create.assert_not_awaited()
-
-    async def test_get_points_simulated_of_user_in_game_raises_when_simulate_missing(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(
-            id="game-1", externalGameId="external-game-1"
-        )
-        self.task_repository.read_by_column.return_value = [
-            SimpleNamespace(id="task-1", strategyId="strategy-1", externalTaskId="t-1")
+            SimpleNamespace(id="task-1", strategyId="strategy-1",
+                            externalTaskId="t-1")
         ]
         self.service.strategy_service.get_strategy_by_id = MagicMock(
             return_value=object()
@@ -912,7 +879,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             id="user-id-1", externalUserId="user_1"
         )
         self.user_points_repository.get_last_task_by_userId.return_value = None
-        self.service.strategy_service.get_Class_by_id = MagicMock(return_value=object())
+        self.service.strategy_service.get_Class_by_id = MagicMock(
+            return_value=object())
 
         with self.assertRaises(NotFoundError):
             await self.service.get_points_simulated_of_user_in_game("game-1", "user_1")
@@ -928,7 +896,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             id="game-1", externalGameId="external-game-1"
         )
         self.task_repository.read_by_column.return_value = [
-            SimpleNamespace(id="task-1", strategyId="strategy-1", externalTaskId="t-1")
+            SimpleNamespace(id="task-1", strategyId="strategy-1",
+                            externalTaskId="t-1")
         ]
         self.service.strategy_service.get_strategy_by_id = MagicMock(
             return_value=object()
@@ -941,23 +910,27 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             return_value=FailingSimulationStrategy()
         )
 
-        result, external_game_id = await self.service.get_points_simulated_of_user_in_game(
-            "game-1",
-            "user_1",
+        result, external_game_id = (
+            await self.service.get_points_simulated_of_user_in_game(
+                "game-1",
+                "user_1",
+            )
         )
 
         self.assertEqual(result, [])
         self.assertEqual(external_game_id, "external-game-1")
 
     def test_get_users_points_by_external_game_id_raises_when_game_has_no_tasks(self):
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1")
         self.task_repository.read_by_column.return_value = []
 
         with self.assertRaises(NotFoundError):
             self.service.get_users_points_by_externalGameId("external-game-1")
 
     def test_get_users_points_by_external_task_id_returns_points(self):
-        self.task_repository.read_by_column.return_value = SimpleNamespace(id="task-1")
+        self.task_repository.read_by_column.return_value = SimpleNamespace(
+            id="task-1")
         self.user_points_repository.get_points_and_users_by_taskId.return_value = [
             SimpleNamespace(externalUserId="user_1", points=1),
             SimpleNamespace(externalUserId="user_2", points=2),
@@ -970,8 +943,11 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result[1].points, 2)
 
     def test_get_users_points_by_external_task_id_and_user_id_delegates(self):
-        self.task_repository.read_by_column.return_value = SimpleNamespace(id="task-1")
-        self.users_repository.read_by_column.return_value = SimpleNamespace(id="user-id-1")
+        self.task_repository.read_by_column.return_value = SimpleNamespace(
+            id="task-1")
+        self.users_repository.read_by_column.return_value = SimpleNamespace(
+            id="user-id-1"
+        )
         expected = [SimpleNamespace(points=5)]
         self.user_points_repository.read_by_columns.return_value = expected
 
@@ -996,7 +972,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(result.userExists)
 
     def test_get_points_of_user_sums_points(self):
-        self.users_repository.read_by_column.return_value = SimpleNamespace(id="user-id-1")
+        self.users_repository.read_by_column.return_value = SimpleNamespace(
+            id="user-id-1"
+        )
         self.user_points_repository.get_task_and_sum_points_by_userId.return_value = [
             PointsByUserInTask(externalTaskId="task-ext-1", points=4),
             PointsByUserInTask(externalTaskId="task-ext-2", points=6),
@@ -1009,7 +987,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(result.points_by_task), 2)
 
     def test_repository_passthrough_methods_delegate_and_return(self):
-        self.user_points_repository.count_measurements_by_external_task_id.return_value = 5
+        self.user_points_repository.count_measurements_by_external_task_id.return_value = (
+            5
+        )
         self.user_points_repository.get_user_task_measurements_count.return_value = 2
         self.user_points_repository.get_user_task_measurements_count_the_last_seconds.return_value = (  # noqa
             1
@@ -1031,7 +1011,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.user_points_repository.user_has_record_before_in_externalTaskId_last_min.return_value = (  # noqa
             True
         )
-        self.user_points_repository.get_global_avg_by_external_game_id.return_value = 12.3
+        self.user_points_repository.get_global_avg_by_external_game_id.return_value = (
+            12.3
+        )
         self.user_points_repository.get_personal_avg_by_external_game_id.return_value = (
             9.9
         )
@@ -1042,7 +1024,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             {"taskId": "task-1"}
         ]
 
-        self.assertEqual(self.service.count_measurements_by_external_task_id("task"), 5)
+        self.assertEqual(
+            self.service.count_measurements_by_external_task_id("task"), 5)
         self.assertEqual(
             self.service.get_user_task_measurements_count("task", "user"),
             2,
@@ -1060,10 +1043,12 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             10.5,
         )
         self.assertEqual(
-            self.service.get_avg_time_between_tasks_for_all_users("game", "task"),
+            self.service.get_avg_time_between_tasks_for_all_users(
+                "game", "task"),
             8.2,
         )
-        self.assertEqual(self.service.get_last_window_time_diff("task", "user"), 4)
+        self.assertEqual(
+            self.service.get_last_window_time_diff("task", "user"), 4)
         self.assertEqual(
             self.service.get_new_last_window_time_diff("task", "user", "game"),
             6,
@@ -1073,7 +1058,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             [{"minutes": 5}],
         )
         self.assertEqual(
-            self.service.count_personal_records_by_external_game_id("game", "user"),
+            self.service.count_personal_records_by_external_game_id(
+                "game", "user"),
             7,
         )
         self.assertTrue(
@@ -1083,16 +1069,19 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
                 5,
             )
         )
-        self.assertEqual(self.service.get_global_avg_by_external_game_id("game"), 12.3)
         self.assertEqual(
-            self.service.get_personal_avg_by_external_game_id("game", "user"), 9.9
+            self.service.get_global_avg_by_external_game_id("game"), 12.3)
+        self.assertEqual(
+            self.service.get_personal_avg_by_external_game_id(
+                "game", "user"), 9.9
         )
         self.assertEqual(
             self.service.get_points_of_simulated_task("task", "hash"),
             [{"points": 1}],
         )
         self.assertEqual(
-            self.service.get_all_point_of_tasks_list(["task-1"], withData=True),
+            self.service.get_all_point_of_tasks_list(
+                ["task-1"], withData=True),
             [{"taskId": "task-1"}],
         )
 

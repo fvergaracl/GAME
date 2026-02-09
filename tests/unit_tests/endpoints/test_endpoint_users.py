@@ -40,7 +40,9 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_query_user_points_success_with_token_and_new_oauth_user(self):
         service = MagicMock()
-        expected = [{"externalUserId": "u1", "points": 10, "timesAwarded": 1, "games": []}]
+        expected = [
+            {"externalUserId": "u1", "points": 10, "timesAwarded": 1, "games": []}
+        ]
         service.get_points_by_user_list.return_value = expected
         service_oauth = self._oauth_service(user_exists=False)
 
@@ -93,7 +95,9 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_points_by_user_id_error_logs_and_raises(self):
         service = MagicMock()
-        service.get_points_by_externalUserId.side_effect = RuntimeError("get points failed")
+        service.get_points_by_externalUserId.side_effect = RuntimeError(
+            "get points failed"
+        )
 
         with self.assertRaises(RuntimeError):
             await users.get_points_by_user_id(
@@ -151,8 +155,12 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
         service = MagicMock()
         service.task_repository = MagicMock()
         service.user_repository = MagicMock()
-        service.task_repository.read_by_column.return_value = SimpleNamespace(id="task-id-1")
-        service.user_repository.read_by_column.return_value = SimpleNamespace(id="user-id-1")
+        service.task_repository.read_by_column.return_value = SimpleNamespace(
+            id="task-id-1"
+        )
+        service.user_repository.read_by_column.return_value = SimpleNamespace(
+            id="user-id-1"
+        )
         service.assign_points_to_user = AsyncMock(return_value={"ok": True})
         service_oauth = self._oauth_service(user_exists=False)
 
@@ -189,7 +197,9 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
         service = MagicMock()
         service.task_repository = MagicMock()
         service.user_repository = MagicMock()
-        service.task_repository.read_by_column.side_effect = RuntimeError("task not found")
+        service.task_repository.read_by_column.side_effect = RuntimeError(
+            "task not found"
+        )
         service.assign_points_to_user = AsyncMock()
 
         with self.assertRaises(RuntimeError):
@@ -213,7 +223,9 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
             "convertedCurrency": "coin",
             "haveEnoughPoints": True,
         }
-        service.preview_points_to_coins_conversion_externalUserId.return_value = expected
+        service.preview_points_to_coins_conversion_externalUserId.return_value = (
+            expected
+        )
         service_oauth = self._oauth_service(user_exists=False)
 
         result = await users.preview_points_to_coins_conversion(
@@ -234,8 +246,8 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_preview_points_to_coins_conversion_error_logs_and_raises(self):
         service = MagicMock()
-        service.preview_points_to_coins_conversion_externalUserId.side_effect = RuntimeError(
-            "preview failed"
+        service.preview_points_to_coins_conversion_externalUserId.side_effect = (
+            RuntimeError("preview failed")
         )
 
         with self.assertRaises(RuntimeError):
@@ -261,7 +273,9 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
             "convertedCurrency": "coin",
             "haveEnoughPoints": True,
         }
-        service.convert_points_to_coins_externalUserId = AsyncMock(return_value=expected)
+        service.convert_points_to_coins_externalUserId = AsyncMock(
+            return_value=expected
+        )
         service_oauth = self._oauth_service(user_exists=False)
 
         result = await users.convert_points_to_coins(
@@ -338,7 +352,9 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
             apiKey_used=None,
         )
         service = MagicMock()
-        service.user_add_action_default = AsyncMock(side_effect=RuntimeError("action failed"))
+        service.user_add_action_default = AsyncMock(
+            side_effect=RuntimeError("action failed")
+        )
 
         with self.assertRaises(RuntimeError):
             await users.add_action_to_user(
