@@ -116,10 +116,14 @@ async def test_calculate_points_case_1_1_and_maps_task_params(strategy_bundle):
 
 
 @pytest.mark.asyncio
-async def test_calculate_points_case_1_2_when_user_has_previous_recent_record(strategy_bundle):
+async def test_calculate_points_case_1_2_when_user_has_previous_recent_record(
+    strategy_bundle,
+):
     strategy, task_service, user_points_service = strategy_bundle
     task_service.get_task_params_by_externalTaskId.return_value = []
-    user_points_service.user_has_record_before_in_externalTaskId_last_min.return_value = True
+    user_points_service.user_has_record_before_in_externalTaskId_last_min.return_value = (
+        True
+    )
 
     result = await strategy.calculate_points(
         "game-1", "task-1", "user-1", data={"minutes": 0}
@@ -129,7 +133,9 @@ async def test_calculate_points_case_1_2_when_user_has_previous_recent_record(st
 
 
 @pytest.mark.asyncio
-async def test_calculate_points_case_2_when_personal_records_are_less_than_two(strategy_bundle):
+async def test_calculate_points_case_2_when_personal_records_are_less_than_two(
+    strategy_bundle,
+):
     strategy, task_service, user_points_service = strategy_bundle
     task_service.get_task_params_by_externalTaskId.return_value = None
     strategy.variable_dimension_complexity = {
@@ -155,7 +161,9 @@ async def test_calculate_points_case_2_when_personal_records_are_less_than_two(s
 
 
 @pytest.mark.asyncio
-async def test_calculate_points_case_3_when_minutes_are_above_global_average(strategy_bundle):
+async def test_calculate_points_case_3_when_minutes_are_above_global_average(
+    strategy_bundle,
+):
     strategy, task_service, user_points_service = strategy_bundle
     task_service.get_task_params_by_externalTaskId.return_value = []
     user_points_service.user_has_record_before_in_externalTaskId_last_min.return_value = (
@@ -173,7 +181,9 @@ async def test_calculate_points_case_3_when_minutes_are_above_global_average(str
 
 
 @pytest.mark.asyncio
-async def test_calculate_points_case_4_1_when_minutes_are_above_personal_average(strategy_bundle):
+async def test_calculate_points_case_4_1_when_minutes_are_above_personal_average(
+    strategy_bundle,
+):
     strategy, task_service, user_points_service = strategy_bundle
     task_service.get_task_params_by_externalTaskId.return_value = []
     user_points_service.user_has_record_before_in_externalTaskId_last_min.return_value = (

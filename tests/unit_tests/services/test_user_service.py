@@ -106,7 +106,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
         self.user_points_repository.get_individual_calculation.return_value = (
             individual_calculation
         )
-        self.user_points_repository.get_global_calculation.return_value = global_calculation
+        self.user_points_repository.get_global_calculation.return_value = (
+            global_calculation
+        )
         self.user_points_repository.create = AsyncMock(
             side_effect=lambda user_points_schema: SimpleNamespace(
                 id=uuid4(),
@@ -129,7 +131,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
         )
         self.wallet_repository.read_by_column.return_value = wallet
         self.wallet_repository.update = AsyncMock(return_value=wallet)
-        self.wallet_transaction_repository.create = AsyncMock(return_value=SimpleNamespace())
+        self.wallet_transaction_repository.create = AsyncMock(
+            return_value=SimpleNamespace()
+        )
 
     def test_helper_points_methods_and_create_user(self):
         self.assertEqual(self.service.basic_engagement_points(), 1)
@@ -177,7 +181,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
             updated_at=datetime(2026, 1, 1, 10, 2, 0),
         )
         self.wallet_repository.create = AsyncMock(return_value=new_wallet)
-        self.wallet_transaction_repository.create = AsyncMock(return_value=SimpleNamespace())
+        self.wallet_transaction_repository.create = AsyncMock(
+            return_value=SimpleNamespace()
+        )
 
         schema = BaseUserPointsBaseModelWithCaseName(
             userId=str(user.id),
@@ -187,16 +193,22 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
             description="desc",
             data={},
         )
-        response = await self.service.assign_points_to_user(str(user.id), schema, "api-key")
+        response = await self.service.assign_points_to_user(
+            str(user.id), schema, "api-key"
+        )
 
         self.assertEqual(response.points, 1)
         self.assertEqual(response.caseName, "CaseA")
         self.assertEqual(response.wallet.pointsBalance, 1)
-        self.assertEqual(schema.data["label_function_choose"], "basic_engagement_points")
+        self.assertEqual(
+            schema.data["label_function_choose"], "basic_engagement_points"
+        )
         self.wallet_repository.create.assert_awaited_once()
         self.wallet_transaction_repository.create.assert_awaited_once()
 
-    async def test_assign_points_to_user_updates_existing_wallet_when_points_present(self):
+    async def test_assign_points_to_user_updates_existing_wallet_when_points_present(
+        self,
+    ):
         user = SimpleNamespace(id=uuid4())
         self.user_repository.read_by_id.return_value = user
         self.user_points_repository.get_user_measurement_count.return_value = 10
@@ -225,7 +237,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
         )
         self.wallet_repository.read_by_column.return_value = wallet
         self.wallet_repository.update = AsyncMock(return_value=wallet)
-        self.wallet_transaction_repository.create = AsyncMock(return_value=SimpleNamespace())
+        self.wallet_transaction_repository.create = AsyncMock(
+            return_value=SimpleNamespace()
+        )
 
         schema = BaseUserPointsBaseModelWithCaseName(
             userId=str(user.id),
@@ -235,7 +249,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
             description="desc",
             data={},
         )
-        response = await self.service.assign_points_to_user(str(user.id), schema, "api-key")
+        response = await self.service.assign_points_to_user(
+            str(user.id), schema, "api-key"
+        )
 
         self.assertEqual(response.points, 5)
         self.assertEqual(response.wallet.pointsBalance, 15)
@@ -274,7 +290,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
         )
         self.wallet_repository.read_by_column.return_value = wallet
         self.wallet_repository.update = AsyncMock(return_value=wallet)
-        self.wallet_transaction_repository.create = AsyncMock(return_value=SimpleNamespace())
+        self.wallet_transaction_repository.create = AsyncMock(
+            return_value=SimpleNamespace()
+        )
 
         schema = BaseUserPointsBaseModelWithCaseName(
             userId=str(user.id),
@@ -286,7 +304,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
         )
         await self.service.assign_points_to_user(str(user.id), schema, "api-key")
 
-        self.assertEqual(schema.data["label_function_choose"], "need_for_motivation_points")
+        self.assertEqual(
+            schema.data["label_function_choose"], "need_for_motivation_points"
+        )
 
     async def test_assign_points_to_user_individual_adjustment_branch(self):
         user = SimpleNamespace(id=uuid4())
@@ -319,7 +339,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
         )
         self.wallet_repository.read_by_column.return_value = wallet
         self.wallet_repository.update = AsyncMock(return_value=wallet)
-        self.wallet_transaction_repository.create = AsyncMock(return_value=SimpleNamespace())
+        self.wallet_transaction_repository.create = AsyncMock(
+            return_value=SimpleNamespace()
+        )
 
         schema = BaseUserPointsBaseModelWithCaseName(
             userId=str(user.id),
@@ -331,7 +353,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
         )
         await self.service.assign_points_to_user(str(user.id), schema, "api-key")
 
-        self.assertEqual(schema.data["label_function_choose"], "individual_adjustment_points")
+        self.assertEqual(
+            schema.data["label_function_choose"], "individual_adjustment_points"
+        )
 
     async def test_assign_points_to_user_performance_penalty_branch(self):
         user = SimpleNamespace(id=uuid4())
@@ -354,10 +378,14 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
             data={},
         )
 
-        response = await self.service.assign_points_to_user(str(user.id), schema, "api-key")
+        response = await self.service.assign_points_to_user(
+            str(user.id), schema, "api-key"
+        )
 
         self.assertEqual(response.points, -5)
-        self.assertEqual(schema.data["label_function_choose"], "performance_penalty_points")
+        self.assertEqual(
+            schema.data["label_function_choose"], "performance_penalty_points"
+        )
 
     async def test_assign_points_to_user_performance_bonus_branch(self):
         user = SimpleNamespace(id=uuid4())
@@ -380,14 +408,22 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
             data={},
         )
 
-        response = await self.service.assign_points_to_user(str(user.id), schema, "api-key")
+        response = await self.service.assign_points_to_user(
+            str(user.id), schema, "api-key"
+        )
 
         self.assertEqual(response.points, 10)
-        self.assertEqual(schema.data["label_function_choose"], "performance_bonus_points")
+        self.assertEqual(
+            schema.data["label_function_choose"], "performance_bonus_points"
+        )
 
-    async def test_assign_points_to_user_individual_over_global_unreachable_branch(self):
+    async def test_assign_points_to_user_individual_over_global_unreachable_branch(
+        self,
+    ):
         user = SimpleNamespace(id=uuid4())
-        comparable_duration = ComparableDuration(ge_value=True, lt_value=True, gt_value=True)
+        comparable_duration = ComparableDuration(
+            ge_value=True, lt_value=True, gt_value=True
+        )
         self._setup_assign_points_default_mocks(
             user=user,
             measurement_count=3,
@@ -405,7 +441,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
             data={},
         )
 
-        response = await self.service.assign_points_to_user(str(user.id), schema, "api-key")
+        response = await self.service.assign_points_to_user(
+            str(user.id), schema, "api-key"
+        )
 
         self.assertEqual(response.points, 5)
         self.assertEqual(
@@ -414,7 +452,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
 
     async def test_assign_points_to_user_peak_performer_unreachable_branch(self):
         user = SimpleNamespace(id=uuid4())
-        comparable_duration = ComparableDuration(ge_value=True, lt_value=True, gt_value=False)
+        comparable_duration = ComparableDuration(
+            ge_value=True, lt_value=True, gt_value=False
+        )
         self._setup_assign_points_default_mocks(
             user=user,
             measurement_count=3,
@@ -432,14 +472,20 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
             data={},
         )
 
-        response = await self.service.assign_points_to_user(str(user.id), schema, "api-key")
+        response = await self.service.assign_points_to_user(
+            str(user.id), schema, "api-key"
+        )
 
         self.assertEqual(response.points, 15)
-        self.assertEqual(schema.data["label_function_choose"], "peak_performer_bonus_points")
+        self.assertEqual(
+            schema.data["label_function_choose"], "peak_performer_bonus_points"
+        )
 
     async def test_assign_points_to_user_global_advantage_adjustment_else_branch(self):
         user = SimpleNamespace(id=uuid4())
-        comparable_duration = ComparableDuration(ge_value=True, lt_value=False, gt_value=False)
+        comparable_duration = ComparableDuration(
+            ge_value=True, lt_value=False, gt_value=False
+        )
         self._setup_assign_points_default_mocks(
             user=user,
             measurement_count=3,
@@ -457,7 +503,9 @@ class TestUserService(unittest.IsolatedAsyncioTestCase):
             data={},
         )
 
-        response = await self.service.assign_points_to_user(str(user.id), schema, "api-key")
+        response = await self.service.assign_points_to_user(
+            str(user.id), schema, "api-key"
+        )
 
         self.assertEqual(response.points, 7)
         self.assertEqual(

@@ -604,14 +604,18 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
                 self.GAME_UUID, "task-external-1", schema
             )
 
-    async def test_get_points_simulated_of_user_in_game_raises_when_tasks_not_found(self):
+    async def test_get_points_simulated_of_user_in_game_raises_when_tasks_not_found(
+        self,
+    ):
         self.game_repository.read_by_column.return_value = SimpleNamespace(id="game-1")
         self.task_repository.read_by_column.return_value = []
 
         with self.assertRaises(NotFoundError):
             await self.service.get_points_simulated_of_user_in_game("game-1", "user_1")
 
-    async def test_get_points_simulated_of_user_in_game_raises_when_strategy_missing(self):
+    async def test_get_points_simulated_of_user_in_game_raises_when_strategy_missing(
+        self,
+    ):
         self.game_repository.read_by_column.return_value = SimpleNamespace(
             id="game-1", externalGameId="external-game-1"
         )
@@ -623,7 +627,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(NotFoundError):
             await self.service.get_points_simulated_of_user_in_game("game-1", "user_1")
 
-    async def test_get_points_simulated_of_user_in_game_raises_for_invalid_user_slug(self):
+    async def test_get_points_simulated_of_user_in_game_raises_for_invalid_user_slug(
+        self,
+    ):
         self.game_repository.read_by_column.return_value = SimpleNamespace(
             id="game-1", externalGameId="external-game-1"
         )
@@ -677,10 +683,12 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             return_value=SimStrategy()
         )
 
-        result, external_game_id = await self.service.get_points_simulated_of_user_in_game(
-            "game-1",
-            "user_1",
-            assign_control_group=True,
+        result, external_game_id = (
+            await self.service.get_points_simulated_of_user_in_game(
+                "game-1",
+                "user_1",
+                assign_control_group=True,
+            )
         )
 
         self.assertEqual(external_game_id, "external-game-1")
@@ -688,7 +696,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result[0]["group"], "dynamic_calculation")
         self.users_game_config_repository.create.assert_awaited_once()
 
-    async def test_get_points_simulated_of_user_in_game_raises_when_simulate_missing(self):
+    async def test_get_points_simulated_of_user_in_game_raises_when_simulate_missing(
+        self,
+    ):
         self.game_repository.read_by_column.return_value = SimpleNamespace(
             id="game-1", externalGameId="external-game-1"
         )
@@ -731,9 +741,11 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             return_value=FailingSimulationStrategy()
         )
 
-        result, external_game_id = await self.service.get_points_simulated_of_user_in_game(
-            "game-1",
-            "user_1",
+        result, external_game_id = (
+            await self.service.get_points_simulated_of_user_in_game(
+                "game-1",
+                "user_1",
+            )
         )
 
         self.assertEqual(result, [])
@@ -761,7 +773,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
 
     def test_get_users_points_by_external_task_id_and_user_id_delegates(self):
         self.task_repository.read_by_column.return_value = SimpleNamespace(id="task-1")
-        self.users_repository.read_by_column.return_value = SimpleNamespace(id="user-id-1")
+        self.users_repository.read_by_column.return_value = SimpleNamespace(
+            id="user-id-1"
+        )
         expected = [SimpleNamespace(points=5)]
         self.user_points_repository.read_by_columns.return_value = expected
 
@@ -786,7 +800,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(result.userExists)
 
     def test_get_points_of_user_sums_points(self):
-        self.users_repository.read_by_column.return_value = SimpleNamespace(id="user-id-1")
+        self.users_repository.read_by_column.return_value = SimpleNamespace(
+            id="user-id-1"
+        )
         self.user_points_repository.get_task_and_sum_points_by_userId.return_value = [
             PointsByUserInTask(externalTaskId="task-ext-1", points=4),
             PointsByUserInTask(externalTaskId="task-ext-2", points=6),
@@ -799,7 +815,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(result.points_by_task), 2)
 
     def test_repository_passthrough_methods_delegate_and_return(self):
-        self.user_points_repository.count_measurements_by_external_task_id.return_value = 5
+        self.user_points_repository.count_measurements_by_external_task_id.return_value = (
+            5
+        )
         self.user_points_repository.get_user_task_measurements_count.return_value = 2
         self.user_points_repository.get_user_task_measurements_count_the_last_seconds.return_value = (  # noqa
             1
@@ -821,7 +839,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.user_points_repository.user_has_record_before_in_externalTaskId_last_min.return_value = (  # noqa
             True
         )
-        self.user_points_repository.get_global_avg_by_external_game_id.return_value = 12.3
+        self.user_points_repository.get_global_avg_by_external_game_id.return_value = (
+            12.3
+        )
         self.user_points_repository.get_personal_avg_by_external_game_id.return_value = (
             9.9
         )

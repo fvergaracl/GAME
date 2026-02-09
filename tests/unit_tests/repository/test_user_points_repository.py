@@ -90,7 +90,9 @@ class TestUserPointsRepository(unittest.TestCase):
 
     def test_get_all_user_points_by_task_id_with_details(self):
         expected = [
-            SimpleNamespace(externalUserId="user-1", points=5, pointsData=[{"points": 5}])
+            SimpleNamespace(
+                externalUserId="user-1", points=5, pointsData=[{"points": 5}]
+            )
         ]
         query = self._build_query(all_result=expected)
         repository, _ = self._build_repo(query)
@@ -203,7 +205,9 @@ class TestUserPointsRepository(unittest.TestCase):
 
         self.assertEqual(result, 2)
 
-    def test_get_avg_time_between_tasks_by_user_and_game_task_returns_minus_one_when_insufficient(self):
+    def test_get_avg_time_between_tasks_by_user_and_game_task_returns_minus_one_when_insufficient(
+        self,
+    ):
         query = self._build_query(all_result=[(datetime(2026, 2, 10, 10, 0, 0),)])
         repository, _ = self._build_repo(query)
 
@@ -226,7 +230,9 @@ class TestUserPointsRepository(unittest.TestCase):
 
         self.assertEqual(result, 25.0)
 
-    def test_get_avg_time_between_tasks_for_all_users_returns_minus_one_when_insufficient(self):
+    def test_get_avg_time_between_tasks_for_all_users_returns_minus_one_when_insufficient(
+        self,
+    ):
         query = self._build_query(all_result=[(datetime(2026, 2, 10, 10, 0, 0),)])
         repository, _ = self._build_repo(query)
 
@@ -246,7 +252,9 @@ class TestUserPointsRepository(unittest.TestCase):
         self.assertEqual(result, 20.0)
 
     def test_get_last_window_time_diff_returns_zero_when_insufficient_points(self):
-        query = self._build_query(all_result=[SimpleNamespace(created_at=datetime.now())])
+        query = self._build_query(
+            all_result=[SimpleNamespace(created_at=datetime.now())]
+        )
         repository, _ = self._build_repo(query)
 
         result = repository.get_last_window_time_diff("task-1", "user-1")
@@ -308,7 +316,9 @@ class TestUserPointsRepository(unittest.TestCase):
         query = self._build_query(one_result=SimpleNamespace(record_count=11))
         repository, _ = self._build_repo(query)
 
-        result = repository.count_personal_records_by_external_game_id("game-1", "user-1")
+        result = repository.count_personal_records_by_external_game_id(
+            "game-1", "user-1"
+        )
 
         self.assertEqual(result, 11)
 
@@ -378,7 +388,9 @@ class TestUserPointsRepository(unittest.TestCase):
         query = self._build_query(yield_result=expected)
         repository, _ = self._build_repo(query)
 
-        result = repository.get_all_point_of_tasks_list(["task-1", "task-2"], withData=False)
+        result = repository.get_all_point_of_tasks_list(
+            ["task-1", "task-2"], withData=False
+        )
 
         self.assertEqual(result, expected)
         query.with_entities.assert_called_once()

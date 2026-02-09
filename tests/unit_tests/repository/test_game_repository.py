@@ -50,7 +50,9 @@ def test_get_all_games_with_eager_api_key_and_page_size_all(monkeypatch):
         "app.repository.game_repository.dict_to_sqlalchemy_filter_options",
         lambda model, schema: True,
     )
-    monkeypatch.setattr("app.repository.game_repository.joinedload", lambda relation: relation)
+    monkeypatch.setattr(
+        "app.repository.game_repository.joinedload", lambda relation: relation
+    )
     monkeypatch.setattr(repository.model, "eagers", ["params"], raising=False)
 
     base_query = build_query()
@@ -267,7 +269,9 @@ def test_patch_game_by_id_raises_duplicated_error_on_integrity_error():
     game_id = uuid4()
     game_query = build_query(first_result=SimpleNamespace(id=game_id, platform="web"))
     session.query.return_value = game_query
-    session.commit.side_effect = IntegrityError("stmt", {}, Exception("duplicated game"))
+    session.commit.side_effect = IntegrityError(
+        "stmt", {}, Exception("duplicated game")
+    )
 
     with pytest.raises(DuplicatedError) as exc_info:
         repository.patch_game_by_id(game_id, DummySchema({"platform": "mobile"}))
@@ -351,7 +355,9 @@ def test_delete_game_by_id_raises_duplicated_error_on_integrity_error():
         user_points_query,
         tasks_delete_query,
     ]
-    session.commit.side_effect = IntegrityError("stmt", {}, Exception("delete duplicated"))
+    session.commit.side_effect = IntegrityError(
+        "stmt", {}, Exception("delete duplicated")
+    )
 
     with pytest.raises(DuplicatedError) as exc_info:
         repository.delete_game_by_id(game_id)

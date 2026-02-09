@@ -29,9 +29,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self._patch_valid_access_token = patch(
             "app.api.v1.endpoints.games.valid_access_token",
-            new=AsyncMock(
-                return_value=SimpleNamespace(data={"sub": "oauth-user-1"})
-            ),
+            new=AsyncMock(return_value=SimpleNamespace(data={"sub": "oauth-user-1"})),
         )
         self._patch_check_role = patch(
             "app.api.v1.endpoints.games.check_role",
@@ -287,9 +285,13 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_create_task_error_logs_and_raises(self):
         game_id = uuid4()
-        create_query = CreateTaskPost(externalTaskId="task-2", strategyId=None, params=None)
+        create_query = CreateTaskPost(
+            externalTaskId="task-2", strategyId=None, params=None
+        )
         service = MagicMock()
-        service.create_task_by_game_id = AsyncMock(side_effect=RuntimeError("task failed"))
+        service.create_task_by_game_id = AsyncMock(
+            side_effect=RuntimeError("task failed")
+        )
 
         with self.assertRaises(RuntimeError):
             await games.create_task(
@@ -306,8 +308,12 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         game_id = uuid4()
         bulk_query = CreateTasksPost(
             tasks=[
-                CreateTaskPost(externalTaskId="task-1", strategyId="default", params=None),
-                CreateTaskPost(externalTaskId="task-2", strategyId="default", params=None),
+                CreateTaskPost(
+                    externalTaskId="task-1", strategyId="default", params=None
+                ),
+                CreateTaskPost(
+                    externalTaskId="task-2", strategyId="default", params=None
+                ),
             ]
         )
         service = MagicMock()
@@ -436,7 +442,9 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
                     token="Bearer any",
                 )
 
-    async def test_get_points_simulated_raises_forbidden_when_admin_and_other_user(self):
+    async def test_get_points_simulated_raises_forbidden_when_admin_and_other_user(
+        self,
+    ):
         self.mock_check_role.return_value = True
         self.mock_valid_access_token.return_value = SimpleNamespace(
             data={"sub": "oauth-user-1"}

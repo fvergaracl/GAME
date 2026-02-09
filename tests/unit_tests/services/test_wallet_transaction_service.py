@@ -13,7 +13,8 @@ class TestWalletTransactionService(unittest.IsolatedAsyncioTestCase):
 
     def test_init_sets_repositories(self):
         self.assertIs(
-            self.service.wallet_transaction_repository, self.wallet_transaction_repository
+            self.service.wallet_transaction_repository,
+            self.wallet_transaction_repository,
         )
         self.assertIs(self.service._repository, self.wallet_transaction_repository)
 
@@ -24,7 +25,9 @@ class TestWalletTransactionService(unittest.IsolatedAsyncioTestCase):
 
         result = self.service.get_list(schema)
 
-        self.wallet_transaction_repository.read_by_options.assert_called_once_with(schema)
+        self.wallet_transaction_repository.read_by_options.assert_called_once_with(
+            schema
+        )
         self.assertEqual(result, expected)
 
     def test_get_by_id_delegates_to_repository(self):
@@ -55,7 +58,9 @@ class TestWalletTransactionService(unittest.IsolatedAsyncioTestCase):
 
         result = await self.service.patch(item_id, schema)
 
-        self.wallet_transaction_repository.update.assert_awaited_once_with(item_id, schema)
+        self.wallet_transaction_repository.update.assert_awaited_once_with(
+            item_id, schema
+        )
         self.assertEqual(result, expected)
 
     def test_patch_attr_delegates_to_repository_update_attr(self):

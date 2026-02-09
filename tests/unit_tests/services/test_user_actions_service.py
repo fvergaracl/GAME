@@ -29,7 +29,9 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         )
 
     def test_init_sets_repositories(self):
-        self.assertIs(self.service.user_actions_repository, self.user_actions_repository)
+        self.assertIs(
+            self.service.user_actions_repository, self.user_actions_repository
+        )
         self.assertIs(self.service.users_repository, self.users_repository)
         self.assertIs(self.service.game_repository, self.game_repository)
         self.assertIs(self.service.task_repository, self.task_repository)
@@ -44,7 +46,9 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         self.users_repository.create_user_by_externalUserId = AsyncMock(
             return_value=SimpleNamespace(id=user_id, externalUserId="new_user")
         )
-        self.task_repository.read_by_column.return_value = SimpleNamespace(status="open")
+        self.task_repository.read_by_column.return_value = SimpleNamespace(
+            status="open"
+        )
 
         created_action_data = {
             "id": action_id,
@@ -89,7 +93,9 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         self.users_repository.read_by_column.return_value = existing_user
         self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
         self.users_repository.create_user_by_externalUserId = AsyncMock()
-        self.task_repository.read_by_column.return_value = SimpleNamespace(status="open")
+        self.task_repository.read_by_column.return_value = SimpleNamespace(
+            status="open"
+        )
         self.user_actions_repository.create = AsyncMock(
             return_value=SimpleNamespace(
                 dict=lambda: {
@@ -124,7 +130,9 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         user_id = uuid4()
         self.users_repository.read_by_column.return_value = SimpleNamespace(id=user_id)
         self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
-        self.task_repository.read_by_column.return_value = SimpleNamespace(status="closed")
+        self.task_repository.read_by_column.return_value = SimpleNamespace(
+            status="closed"
+        )
         action = AddActionDidByUserInTask(
             typeAction="click",
             data={"k": 2},
