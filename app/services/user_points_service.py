@@ -1,3 +1,4 @@
+import logging
 from collections import Counter
 from uuid import UUID
 
@@ -29,6 +30,8 @@ from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
 from app.util.is_valid_slug import is_valid_slug
 
+logger = logging.getLogger(__name__)
+
 
 class UserPointsService(BaseService):
     def __init__(
@@ -50,6 +53,12 @@ class UserPointsService(BaseService):
         self.wallet_transaction_repository = wallet_transaction_repository
         self.strategy_service = StrategyService()
         super().__init__(user_points_repository)
+
+    @staticmethod
+    def _extract_points(data):
+        if isinstance(data, dict):
+            return data.get("points")
+        return getattr(data, "points", None)
 
     def query_user_points(self, schema):
         return self.user_points_repository.read_by_options(schema)
@@ -103,9 +112,6 @@ class UserPointsService(BaseService):
             user_points = self.get_all_points_by_externalUserId(user)
             response.append(user_points)
         return response
-
-        # pass}
-        return True
 
     def get_points_by_externalUserId(self, externalUserId):
         user = self.users_repository.read_by_column(
@@ -317,66 +323,64 @@ class UserPointsService(BaseService):
         data_to_add = schema.data or {}
         data_to_add["externalGameId"] = externalGameId
         data_to_add["externalTaskId"] = externalTaskId
-        points = getattr(getattr(schema, "data", None), "points", None)
+        points = self._extract_points(data_to_add)
         if points is None:
             raise PreconditionFailedError(
                 detail="Points cannot be None. Please provide a valid value."
             )
-        if points <= 0:
-            user_points_schema = UserPointsAssign(
+        direct_case_name = "External_points_assigned"
+        user_points_schema = UserPointsAssign(
+            userId=str(user.id),
+            taskId=str(task.id),
+            points=points,
+            caseName=direct_case_name,
+            data=data_to_add,
+            description="Points assigned directly to GAME",
+            apiKey_used=api_key,
+        )
+        user_points = await self.user_points_repository.create(user_points_schema)
+
+        wallet = self.wallet_repository.read_by_column(
+            "userId", user.id, not_found_raise_exception=False
+        )
+        if wallet:
+            wallet.pointsBalance += points
+            await self.wallet_repository.update(wallet.id, wallet)
+        else:
+            new_wallet = CreateWallet(
                 userId=str(user.id),
-                taskId=str(task.id),
                 points=points,
-                caseName="External_points_assigned",
-                data=data_to_add,
-                description="Points assigned directly to GAME",
+                coinsBalance=0,
+                pointsBalance=points,
+                conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
                 apiKey_used=api_key,
             )
-            user_points = await self.user_points_repository.create(user_points_schema)
+            wallet = await self.wallet_repository.create(new_wallet)
 
-            wallet = self.wallet_repository.read_by_column(
-                "userId", user.id, not_found_raise_exception=False
+        wallet_transaction = BaseWalletTransaction(
+            transactionType="AssignPoints",
+            points=points,
+            coins=0,
+            data=data_to_add,
+            appliedConversionRate=0,
+            walletId=str(wallet.id),
+            apiKey_used=api_key,
+        )
+        transaction = await self.wallet_transaction_repository.create(wallet_transaction)
+        if not transaction:
+            raise InternalServerError(
+                detail=f"Wallet transaction not created for user {externalUserId} and task {externalTaskId}"  # noqa
             )
-            if wallet:
-                wallet.pointsBalance += points
-                await self.wallet_repository.update(wallet.id, wallet)
-            else:
-                new_wallet = CreateWallet(
-                    userId=str(user.id),
-                    points=points,
-                    coinsBalance=0,
-                    pointsBalance=points,
-                    conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
-                    apiKey_used=api_key,
-                )
-                wallet = await self.wallet_repository.create(new_wallet)
 
-            wallet_transaction = BaseWalletTransaction(
-                transactionType="AssignPoints",
-                points=points,
-                coins=0,
-                data=data_to_add,
-                appliedConversionRate=0,
-                walletId=str(wallet.id),
-                apiKey_used=api_key,
-            )
-            transaction = await self.wallet_transaction_repository.create(
-                wallet_transaction
-            )
-            if not transaction:
-                raise InternalServerError(
-                    detail=f"Wallet transaction not created for user {externalUserId} and task {externalTaskId}"
-                )
-
-            return AssignedPointsToExternalUserId(
-                points=points,
-                externalUserId=externalUserId,
-                isACreatedUser=is_a_created_user,
-                gameId=gameId,
-                externalTaskId=externalTaskId,
-                caseName=case_name,
-                created_at=str(user_points.created_at),
-            )
+        return AssignedPointsToExternalUserId(
+            points=points,
+            externalUserId=externalUserId,
+            isACreatedUser=is_a_created_user,
+            gameId=gameId,
+            externalTaskId=externalTaskId,
+            caseName=direct_case_name,
+            created_at=str(user_points.created_at),
+        )
 
     async def assign_points_to_user(
         self,
@@ -401,37 +405,29 @@ class UserPointsService(BaseService):
               assigned.
 
         """
-        print("-1")
         externalUserId = schema.externalUserId
         is_a_created_user = False
-        print("-2")
         game = self.game_repository.read_by_column(
             column="id",
             value=gameId,
             not_found_message=(f"Game with gameId {gameId} not found"),
             only_one=True,
         )
-        print("-3")
         externalGameId = game.externalGameId
         task = self.task_repository.read_by_gameId_and_externalTaskId(
             game.id, externalTaskId
         )
-        print("-4")
         if not task:
             raise NotFoundError(f"Task not found with externalTaskId: {externalTaskId}")
-        print("-5")
         strategyId = task.strategyId
         strategy = self.strategy_service.get_strategy_by_id(strategyId)
-        print("-6")
         if not strategy:
             raise NotFoundError(
                 f"Strategy not found with id: {strategyId} for task with externalTaskId: {externalTaskId}"  # noqa
             )
-        print("-7")
         user = self.users_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=False
         )
-        print("-8")
         if not user:
             is_valid_externalUserId = is_valid_slug(externalUserId)
             if not is_valid_externalUserId:
@@ -444,7 +440,6 @@ class UserPointsService(BaseService):
                 externalUserId=externalUserId
             )
             is_a_created_user = True
-        print("-9")
         strategy_instance = self.strategy_service.get_Class_by_id(strategyId)
         data_to_add = schema.data
         try:
@@ -457,21 +452,20 @@ class UserPointsService(BaseService):
                 data=data_to_add,
             )
             points, case_name, callbackData = (result_calculated_points + (None,))[:3]
-            print(
-                "points",
+            logger.debug(
+                "Calculated points result: points=%s case_name=%s callbackData_present=%s",
                 points,
-                " | ",
-                "case_name",
-                " | ",
-                "callbackData",
-                callbackData,
+                case_name,
+                callbackData is not None,
             )
             if callbackData is not None:
                 data_to_add["callbackData"] = callbackData
-        except Exception as e:
-            print("----------------- ERROR -----------------")
-            print(e)
-            print("----------------- ERROR -----------------")
+        except Exception:
+            logger.exception(
+                "Error calculating points for externalTaskId=%s externalUserId=%s",
+                externalTaskId,
+                externalUserId,
+            )
             raise InternalServerError(
                 detail=(
                     f"Error in calculate points for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Please try again later or contact support"  # noqa
@@ -479,15 +473,20 @@ class UserPointsService(BaseService):
             )
         if points == -1:
             raise PreconditionFailedError(detail=(case_name))
-        print("points", points, " | ", "case_name", " | ", "data_to_add", data_to_add)
-        if points is None or not case_name:
+        if points is None:
             raise InternalServerError(
                 detail=(
                     f"Points not calculated for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}. Beacuse the strategy don't have condition to calculate it or the strategy don't have a case name"  # noqa
                 )
             )
         if not case_name:
-            case_name = schema.caseName
+            case_name = getattr(schema, "caseName", None)
+        if not case_name:
+            raise InternalServerError(
+                detail=(
+                    f"Case name not resolved for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}"  # noqa
+                )
+            )
         user_points_schema = UserPointsAssign(
             userId=str(user.id),
             taskId=str(task.id),
@@ -525,7 +524,11 @@ class UserPointsService(BaseService):
             walletId=str(wallet.id),
             apiKey_used=api_key,
         )
-        self.wallet_transaction_repository.create(wallet_transaction)
+        transaction = await self.wallet_transaction_repository.create(wallet_transaction)
+        if not transaction:
+            raise InternalServerError(
+                detail=f"Wallet transaction not created for user {externalUserId} and task {externalTaskId}"  # noqa
+            )
 
         response = AssignedPointsToExternalUserId(
             points=points,
@@ -660,13 +663,14 @@ class UserPointsService(BaseService):
                         user_last_task=user_last_task,
                     )
                     response.append(task_simulation)
-                except Exception as e:
-                    print("----------------- ERROR -----------------")
-                    print(e)
-                    print(strategy_instance)
-                    print(gameId)
-                    print(externalUserId)
-                    print("----------------- ERROR -----------------")
+                except Exception:
+                    logger.exception(
+                        "Error simulating strategy=%s for gameId=%s externalUserId=%s taskId=%s",  # noqa
+                        strategy_id_applied,
+                        gameId,
+                        externalUserId,
+                        task.externalTaskId,
+                    )
 
         externalGameId = game.externalGameId
         return response, externalGameId
@@ -682,9 +686,6 @@ class UserPointsService(BaseService):
             "gameId", game.id, only_one=False, not_found_raise_exception=False
         )
 
-        if tasks:
-            tasks = [task.id for task in tasks]
-
         if not tasks:
             raise NotFoundError(
                 f"The game with externalGameId {externalGameId} has no tasks"
@@ -692,7 +693,7 @@ class UserPointsService(BaseService):
 
         response = []
         for task in tasks:
-            points = self.user_points_repository.get_points_and_users_by_taskId(task)
+            points = self.user_points_repository.get_points_and_users_by_taskId(task.id)
             response_by_task = []
             if points:
                 for point in points:
@@ -705,7 +706,7 @@ class UserPointsService(BaseService):
             if response_by_task:
                 response.append(
                     ResponseGetPointsByGame(
-                        externalTaskId=point.externalTaskId, points=response_by_task
+                        externalTaskId=task.externalTaskId, points=response_by_task
                     )
                 )
 
@@ -776,46 +777,42 @@ class UserPointsService(BaseService):
             )
             response.append(self.get_points_by_gameId_with_details(game.id))
 
+        total_points = 0
+        total_times_awarded = 0
+        games = []
         for game in response:
-            # UserGamePoints
-            points = 0
-            times_awarded = 0
-            games = []
             for task in game.task:
-                # GameDetail
                 task_points = 0
                 task_times_awarded = 0
-                tasks = []
+                task_details = []
                 for point in task.points:
                     if point.externalUserId == externalUserId:
                         task_points += point.points
                         task_times_awarded += point.timesAwarded
                         if point.points > 0:
-                            tasks.append(
+                            task_details.append(
                                 TaskDetail(
                                     externalTaskId=task.externalTaskId,
                                     pointsData=point.pointsData,
                                 )
                             )
-                points += task_points
-                times_awarded += task_times_awarded
-                if points > 0 and len(tasks) > 0:
+                total_points += task_points
+                total_times_awarded += task_times_awarded
+                if task_points > 0 and len(task_details) > 0:
                     games.append(
                         GameDetail(
                             externalGameId=game.externalGameId,
                             points=task_points,
                             timesAwarded=task_times_awarded,
-                            tasks=tasks,
+                            tasks=task_details,
                         )
                     )
-            return UserGamePoints(
-                externalUserId=externalUserId,
-                points=points,
-                timesAwarded=times_awarded,
-                games=games,
-            )
-
-        return None
+        return UserGamePoints(
+            externalUserId=externalUserId,
+            points=total_points,
+            timesAwarded=total_times_awarded,
+            games=games,
+        )
 
     def get_points_of_user(self, externalUserId):
         user = self.users_repository.read_by_column(
