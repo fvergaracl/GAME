@@ -1,8 +1,6 @@
 import unittest
 
-from app.util.calculate_hash_simulated_strategy import (
-    calculate_hash_simulated_strategy,
-)
+from app.util.calculate_hash_simulated_strategy import calculate_hash_simulated_strategy
 
 
 class TestCalculateHashSimulatedStrategy(unittest.TestCase):
