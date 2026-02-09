@@ -75,6 +75,20 @@ class TestCheckRole(unittest.TestCase):
         }
         self.assertFalse(check_role(token_decoded, None))
 
+    def test_role_present_in_realm_access(self):
+        """
+        Test when the role is present in realm_access.roles.
+        """
+        token_decoded = {"realm_access": {"roles": ["admin", "creator"]}}
+        self.assertTrue(check_role(token_decoded, "creator"))
+
+    def test_role_present_in_top_level_roles(self):
+        """
+        Test when the role is present in top-level roles.
+        """
+        token_decoded = {"roles": ["admin", "creator"]}
+        self.assertTrue(check_role(token_decoded, "creator"))
+
 
 if __name__ == "__main__":
     unittest.main()
