@@ -31,7 +31,9 @@ class TestDashboardService(unittest.TestCase):
         self.assertIs(self.service.user_repository, self.user_repository)
         self.assertIs(self.service.logs_repository, self.logs_repository)
         self.assertIs(self.service.user_points_repository, self.user_points_repository)
-        self.assertIs(self.service.user_actions_repository, self.user_actions_repository)
+        self.assertIs(
+            self.service.user_actions_repository, self.user_actions_repository
+        )
         self.assertIs(self.service._repository, self.dashboard_repository)
 
     def test_get_dashboard_summary_delegates_to_repository(self):

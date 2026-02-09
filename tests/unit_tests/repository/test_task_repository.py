@@ -33,7 +33,9 @@ def test_read_by_game_id_with_eager_and_page_size_all(monkeypatch):
         "app.repository.task_repository.dict_to_sqlalchemy_filter_options",
         lambda model, schema: True,
     )
-    monkeypatch.setattr("app.repository.task_repository.joinedload", lambda relation: relation)
+    monkeypatch.setattr(
+        "app.repository.task_repository.joinedload", lambda relation: relation
+    )
     monkeypatch.setattr(repository.model, "eagers", ["strategyId"], raising=False)
 
     base_query = MagicMock()

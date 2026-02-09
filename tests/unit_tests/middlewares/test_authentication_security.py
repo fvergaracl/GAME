@@ -19,7 +19,9 @@ def _mock_oauth_user_service(existing_user=True):
 
 @pytest.mark.asyncio
 async def test_auth_api_key_or_oauth2_accepts_valid_api_key_without_oauth():
-    with patch("app.middlewares.authentication.auth_oauth2", new=AsyncMock()) as auth_oauth2:
+    with patch(
+        "app.middlewares.authentication.auth_oauth2", new=AsyncMock()
+    ) as auth_oauth2:
         result = await authentication.auth_api_key_or_oauth2(
             api_key=SimpleNamespace(data=SimpleNamespace(apiKey="k-1")),
             oauth_2_scheme="Bearer token",

@@ -16,7 +16,9 @@ class _DummyRepository:
 
 
 class InMemoryUserRepository:
-    def __init__(self, user_id: str = "user-1", external_user_id: str = "external-user-1"):
+    def __init__(
+        self, user_id: str = "user-1", external_user_id: str = "external-user-1"
+    ):
         self.user = SimpleNamespace(id=user_id, externalUserId=external_user_id)
 
     def read_by_id(self, user_id, **_kwargs):
@@ -30,7 +32,13 @@ class InMemoryUserRepository:
 
 
 class InMemoryWalletRepository:
-    def __init__(self, user_id: str, points_balance: int, coins_balance: float, conversion_rate: int):
+    def __init__(
+        self,
+        user_id: str,
+        points_balance: int,
+        coins_balance: float,
+        conversion_rate: int,
+    ):
         self.wallet = SimpleNamespace(
             id=str(uuid4()),
             userId=user_id,
@@ -75,7 +83,9 @@ class InMemoryWalletTransactionRepository:
         return transaction
 
 
-def _build_user_service(initial_points: int, conversion_rate: int, initial_coins: float = 0.0):
+def _build_user_service(
+    initial_points: int, conversion_rate: int, initial_coins: float = 0.0
+):
     user_repo = InMemoryUserRepository()
     wallet_repo = InMemoryWalletRepository(
         user_id=user_repo.user.id,
@@ -130,7 +140,9 @@ def test_property_wallet_conversion_preserves_value_and_non_negative_balances(
     assert response.points == request_points
     assert after_points == before_points - request_points
     assert after_points >= 0
-    assert after_coins == pytest.approx(before_coins + (request_points / conversion_rate))
+    assert after_coins == pytest.approx(
+        before_coins + (request_points / conversion_rate)
+    )
     assert after_equivalent_points == pytest.approx(before_equivalent_points)
     assert len(wallet_tx_repo.transactions) == 1
 

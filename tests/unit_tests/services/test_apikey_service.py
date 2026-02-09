@@ -71,7 +71,9 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         repository = MagicMock()
         repository.read_by_column.return_value = None
 
-        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
+        with patch.object(
+            Container, "apikey_repository", MagicMock(return_value=repository)
+        ):
             with self.assertRaises(ForbiddenError) as exc_info:
                 ApiKeyService.get_api_key_header("missing-key")
 
@@ -94,7 +96,9 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         repository = MagicMock()
         repository.read_by_column.return_value = MagicMock(active=False)
 
-        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
+        with patch.object(
+            Container, "apikey_repository", MagicMock(return_value=repository)
+        ):
             with self.assertRaises(ForbiddenError) as exc_info:
                 ApiKeyService.get_api_key_header("inactive-key")
 
@@ -111,7 +115,9 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         repository = MagicMock()
         repository.read_by_column.return_value = api_key_in_db
 
-        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
+        with patch.object(
+            Container, "apikey_repository", MagicMock(return_value=repository)
+        ):
             response = ApiKeyService.get_api_key_header("valid-key")
 
         repository.read_by_column.assert_called_once_with(

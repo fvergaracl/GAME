@@ -68,12 +68,18 @@ def compute_getis_ord_gi_star(grid: Iterable[Iterable[float]]) -> np.ndarray:
     return scores.reshape(rows, cols)
 
 
-def rank_hotspots(grid: Iterable[Iterable[float]]) -> list[tuple[tuple[int, int], float]]:
+def rank_hotspots(
+    grid: Iterable[Iterable[float]],
+) -> list[tuple[tuple[int, int], float]]:
     """
     Rank cells by Gi* score from strongest hotspot to weakest.
     """
     scores = compute_getis_ord_gi_star(grid)
-    ranked = [((r, c), float(scores[r, c])) for r in range(scores.shape[0]) for c in range(scores.shape[1])]
+    ranked = [
+        ((r, c), float(scores[r, c]))
+        for r in range(scores.shape[0])
+        for c in range(scores.shape[1])
+    ]
     ranked.sort(key=lambda item: item[1], reverse=True)
     return ranked
 

@@ -43,7 +43,10 @@ def test_light_services_set_expected_repository_attributes():
     assert logs_service._repository is logs_repository
     assert uptime_logs_service.uptime_logs_repository is uptime_logs_repository
     assert uptime_logs_service._repository is uptime_logs_repository
-    assert user_interactions_service.user_interactions_repository is user_interactions_repository
+    assert (
+        user_interactions_service.user_interactions_repository
+        is user_interactions_repository
+    )
     assert user_interactions_service._repository is user_interactions_repository
 
 

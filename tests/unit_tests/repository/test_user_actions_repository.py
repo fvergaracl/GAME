@@ -48,4 +48,3 @@ class TestUserActionsRepository(unittest.TestCase):
         session.add.assert_called_once_with(persisted_action)
         session.commit.assert_called_once()
         self.assertIs(result, persisted_action)
-

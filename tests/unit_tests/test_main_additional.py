@@ -16,7 +16,9 @@ def test_custom_openapi_adds_extra_server_and_rewrites_v1_paths(monkeypatch):
         }
 
     monkeypatch.setattr(main_module, "get_openapi", fake_get_openapi)
-    monkeypatch.setattr(main_module.configs, "EXTRA_SERVER_URL", "https://extra.example")
+    monkeypatch.setattr(
+        main_module.configs, "EXTRA_SERVER_URL", "https://extra.example"
+    )
     monkeypatch.setattr(main_module.configs, "EXTRA_SERVER_DESCRIPTION", "Extra server")
     main_module.app.openapi_schema = None
 

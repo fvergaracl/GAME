@@ -19,7 +19,9 @@ def build_repository():
 async def test_create_user_by_external_user_id_persists_and_returns_user():
     repository, session = build_repository()
 
-    result = await repository.create_user_by_externalUserId("external-user-1", "oauth-user-1")
+    result = await repository.create_user_by_externalUserId(
+        "external-user-1", "oauth-user-1"
+    )
 
     session.add.assert_called_once()
     added_user = session.add.call_args.args[0]

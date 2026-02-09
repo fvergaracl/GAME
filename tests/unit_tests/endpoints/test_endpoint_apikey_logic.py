@@ -31,7 +31,9 @@ async def test_create_api_key_raises_when_token_validation_fails():
 
     with patch(
         "app.api.v1.endpoints.apikey.valid_access_token",
-        new=AsyncMock(return_value=SimpleNamespace(error=RuntimeError("bad-token"), data=None)),
+        new=AsyncMock(
+            return_value=SimpleNamespace(error=RuntimeError("bad-token"), data=None)
+        ),
     ), patch("app.api.v1.endpoints.apikey.add_log", new=AsyncMock()) as mock_add_log:
         with pytest.raises(RuntimeError, match="bad-token"):
             await apikey_endpoint.create_api_key(
@@ -51,11 +53,15 @@ async def test_create_api_key_raises_forbidden_when_role_is_missing():
     service = MagicMock()
     service_log = MagicMock()
     service_oauth = MagicMock()
-    service_oauth.get_user_by_sub = AsyncMock(return_value=SimpleNamespace(id="oauth-user-1"))
+    service_oauth.get_user_by_sub = AsyncMock(
+        return_value=SimpleNamespace(id="oauth-user-1")
+    )
 
     with patch(
         "app.api.v1.endpoints.apikey.valid_access_token",
-        new=AsyncMock(return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-1"})),
+        new=AsyncMock(
+            return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-1"})
+        ),
     ), patch("app.api.v1.endpoints.apikey.check_role", return_value=False), patch(
         "app.api.v1.endpoints.apikey.add_log", new=AsyncMock()
     ) as mock_add_log:
@@ -79,11 +85,15 @@ async def test_create_api_key_logs_and_raises_when_create_fails():
     service.create_api_key = AsyncMock(side_effect=RuntimeError("db-failure"))
     service_log = MagicMock()
     service_oauth = MagicMock()
-    service_oauth.get_user_by_sub = AsyncMock(return_value=SimpleNamespace(id="oauth-user-1"))
+    service_oauth.get_user_by_sub = AsyncMock(
+        return_value=SimpleNamespace(id="oauth-user-1")
+    )
 
     with patch(
         "app.api.v1.endpoints.apikey.valid_access_token",
-        new=AsyncMock(return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-1"})),
+        new=AsyncMock(
+            return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-1"})
+        ),
     ), patch("app.api.v1.endpoints.apikey.check_role", return_value=True), patch(
         "app.api.v1.endpoints.apikey.add_log", new=AsyncMock()
     ) as mock_add_log:
@@ -108,7 +118,9 @@ async def test_get_all_api_keys_raises_when_token_validation_fails():
 
     with patch(
         "app.api.v1.endpoints.apikey.valid_access_token",
-        new=AsyncMock(return_value=SimpleNamespace(error=RuntimeError("bad-token"), data=None)),
+        new=AsyncMock(
+            return_value=SimpleNamespace(error=RuntimeError("bad-token"), data=None)
+        ),
     ), patch("app.api.v1.endpoints.apikey.add_log", new=AsyncMock()) as mock_add_log:
         with pytest.raises(RuntimeError, match="bad-token"):
             await apikey_endpoint.get_all_api_keys(
@@ -127,12 +139,16 @@ async def test_get_all_api_keys_raises_forbidden_when_role_is_missing():
     service = MagicMock()
     service_log = MagicMock()
     service_oauth = MagicMock()
-    service_oauth.get_user_by_sub = MagicMock(return_value=SimpleNamespace(id="oauth-user-1"))
+    service_oauth.get_user_by_sub = MagicMock(
+        return_value=SimpleNamespace(id="oauth-user-1")
+    )
     service_oauth.add = AsyncMock()
 
     with patch(
         "app.api.v1.endpoints.apikey.valid_access_token",
-        new=AsyncMock(return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-1"})),
+        new=AsyncMock(
+            return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-1"})
+        ),
     ), patch("app.api.v1.endpoints.apikey.check_role", return_value=False), patch(
         "app.api.v1.endpoints.apikey.add_log", new=AsyncMock()
     ) as mock_add_log:
@@ -160,7 +176,9 @@ async def test_get_all_api_keys_success_creates_missing_user_and_returns_data():
 
     with patch(
         "app.api.v1.endpoints.apikey.valid_access_token",
-        new=AsyncMock(return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-2"})),
+        new=AsyncMock(
+            return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-2"})
+        ),
     ), patch("app.api.v1.endpoints.apikey.check_role", return_value=True), patch(
         "app.api.v1.endpoints.apikey.add_log", new=AsyncMock()
     ) as mock_add_log:
@@ -190,7 +208,9 @@ async def test_create_api_key_success_creates_missing_user_and_returns_response_
 
     with patch(
         "app.api.v1.endpoints.apikey.valid_access_token",
-        new=AsyncMock(return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-1"})),
+        new=AsyncMock(
+            return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-1"})
+        ),
     ), patch("app.api.v1.endpoints.apikey.check_role", return_value=True), patch(
         "app.api.v1.endpoints.apikey.add_log", new=AsyncMock()
     ) as mock_add_log:

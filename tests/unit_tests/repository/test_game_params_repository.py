@@ -63,4 +63,3 @@ def test_patch_game_params_by_id_raises_not_found_when_id_does_not_exist():
 
     session.commit.assert_not_called()
     assert exc_info.value.detail == "GameParams not found (id) : missing-id"
-

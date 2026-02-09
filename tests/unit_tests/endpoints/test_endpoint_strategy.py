@@ -51,7 +51,9 @@ async def test_get_strategy_list_logs_error_and_raises_when_service_fails():
     service = MagicMock()
     service.list_all_strategies.side_effect = RuntimeError("list failed")
 
-    with patch("app.api.v1.endpoints.strategy.add_log", new=AsyncMock()) as mock_add_log:
+    with patch(
+        "app.api.v1.endpoints.strategy.add_log", new=AsyncMock()
+    ) as mock_add_log:
         with pytest.raises(RuntimeError, match="list failed"):
             await strategy_endpoint.get_strategy_list(
                 service=service,
@@ -95,7 +97,9 @@ async def test_get_strategy_by_id_raises_not_found_and_logs_error():
     service = MagicMock()
     service.list_all_strategies.return_value = [{"id": "other"}]
 
-    with patch("app.api.v1.endpoints.strategy.add_log", new=AsyncMock()) as mock_add_log:
+    with patch(
+        "app.api.v1.endpoints.strategy.add_log", new=AsyncMock()
+    ) as mock_add_log:
         with pytest.raises(NotFoundError, match="Strategy not found with id: missing"):
             await strategy_endpoint.get_strategy_by_id(
                 id="missing",
@@ -148,7 +152,9 @@ async def test_get_strategy_graph_by_id_raises_when_strategy_not_found():
     service = MagicMock()
     service.get_strategy_by_id.return_value = None
 
-    with patch("app.api.v1.endpoints.strategy.add_log", new=AsyncMock()) as mock_add_log:
+    with patch(
+        "app.api.v1.endpoints.strategy.add_log", new=AsyncMock()
+    ) as mock_add_log:
         with pytest.raises(NotFoundError, match="Strategy not found with id: missing"):
             await strategy_endpoint.get_strategy_graph_by_id(
                 id="missing",
@@ -168,7 +174,9 @@ async def test_get_strategy_graph_by_id_raises_when_class_not_found():
     service.get_strategy_by_id.return_value = {"id": "default"}
     service.get_Class_by_id.return_value = None
 
-    with patch("app.api.v1.endpoints.strategy.add_log", new=AsyncMock()) as mock_add_log:
+    with patch(
+        "app.api.v1.endpoints.strategy.add_log", new=AsyncMock()
+    ) as mock_add_log:
         with pytest.raises(
             NotFoundError, match="No class found for strategy with id: default"
         ):

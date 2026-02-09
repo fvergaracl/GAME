@@ -134,7 +134,9 @@ class TestAllEngineStrategies(unittest.TestCase):
         with patch.object(
             all_engine_strategies_module.os, "listdir", return_value=strategy_files
         ), patch.object(
-            all_engine_strategies_module, "check_class_methods_and_variables", return_value=True
+            all_engine_strategies_module,
+            "check_class_methods_and_variables",
+            return_value=True,
         ), patch.object(
             all_engine_strategies_module, "importlib"
         ) as mock_importlib:

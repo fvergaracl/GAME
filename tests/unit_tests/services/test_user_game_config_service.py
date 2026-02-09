@@ -47,7 +47,9 @@ def test_get_user_config_returns_response_when_config_exists():
     assert result.gameId == config.gameId
     assert result.experimentGroup == config.experimentGroup
     assert result.configData == config.configData
-    repository.get_by_user_and_game.assert_called_once_with(config.userId, config.gameId)
+    repository.get_by_user_and_game.assert_called_once_with(
+        config.userId, config.gameId
+    )
 
 
 def test_get_user_config_returns_none_when_missing():

@@ -76,7 +76,9 @@ class TestTaskParamsService(unittest.IsolatedAsyncioTestCase):
 
         result = self.service.put_update(item_id, schema)
 
-        self.task_params_repository.whole_update.assert_called_once_with(item_id, schema)
+        self.task_params_repository.whole_update.assert_called_once_with(
+            item_id, schema
+        )
         self.assertEqual(result, expected)
 
     def test_remove_by_id_delegates_to_repository_delete_by_id(self):
