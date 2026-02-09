@@ -63,7 +63,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self,
     ):
         class StrategyWithoutCaseName:
-            async def calculate_points(self, externalGameId, externalTaskId, externalUserId, data):  # noqa
+            async def calculate_points(
+                self, externalGameId, externalTaskId, externalUserId, data
+            ):  # noqa
                 return (5, None, None)
 
         self.game_repository.read_by_column.return_value = SimpleNamespace(
@@ -72,7 +74,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = (
             SimpleNamespace(id="task-1", strategyId="default")
         )
-        self.service.strategy_service.get_strategy_by_id = MagicMock(return_value=object())
+        self.service.strategy_service.get_strategy_by_id = MagicMock(
+            return_value=object()
+        )
         self.service.strategy_service.get_Class_by_id = MagicMock(
             return_value=StrategyWithoutCaseName()
         )
