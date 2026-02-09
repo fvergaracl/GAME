@@ -29,6 +29,21 @@ def get_project_data():
 project_data = get_project_data()
 
 
+def get_swagger_oauth_config() -> dict:
+    """
+    Builds Swagger UI OAuth init configuration from environment-based settings.
+
+    Returns:
+        dict: Swagger OAuth init configuration.
+    """
+    oauth_config = {}
+    if configs.KEYCLOAK_CLIENT_ID:
+        oauth_config["clientId"] = configs.KEYCLOAK_CLIENT_ID
+    if configs.KEYCLOAK_CLIENT_SECRET:
+        oauth_config["clientSecret"] = configs.KEYCLOAK_CLIENT_SECRET
+    return oauth_config
+
+
 def custom_openapi():
     """
     Customizes the OpenAPI schema for the FastAPI application.
@@ -115,6 +130,7 @@ class AppCreator:
             redoc_url="/redocs",
             docs_url="/docs",
             servers=[{"url": configs.API_V1_STR, "description": "Local"}],
+            swagger_ui_init_oauth=get_swagger_oauth_config(),
         )
 
         self.app.openapi = custom_openapi

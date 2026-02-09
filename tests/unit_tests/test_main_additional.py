@@ -32,6 +32,25 @@ def test_custom_openapi_adds_extra_server_and_rewrites_v1_paths(monkeypatch):
     assert "/api/v1/health" not in schema["paths"]
 
 
+def test_get_swagger_oauth_config_uses_keycloak_client_values(monkeypatch):
+    monkeypatch.setattr(main_module.configs, "KEYCLOAK_CLIENT_ID", "swagger-client")
+    monkeypatch.setattr(main_module.configs, "KEYCLOAK_CLIENT_SECRET", "swagger-secret")
+
+    result = main_module.get_swagger_oauth_config()
+
+    assert result["clientId"] == "swagger-client"
+    assert result["clientSecret"] == "swagger-secret"
+
+
+def test_get_swagger_oauth_config_omits_empty_values(monkeypatch):
+    monkeypatch.setattr(main_module.configs, "KEYCLOAK_CLIENT_ID", "")
+    monkeypatch.setattr(main_module.configs, "KEYCLOAK_CLIENT_SECRET", "")
+
+    result = main_module.get_swagger_oauth_config()
+
+    assert result == {}
+
+
 def test_custom_openapi_returns_cached_schema_when_available():
     previous_openapi_schema = main_module.app.openapi_schema
     cached_schema = {"cached": True}
