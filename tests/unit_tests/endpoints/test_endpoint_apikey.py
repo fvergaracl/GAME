@@ -1,12 +1,10 @@
-import os
-import pytest
-from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock
-from app.main import app
-from app.api.v1.endpoints.apikey import create_api_key
 
+import pytest
+from dependency_injector import providers
+from fastapi.testclient import TestClient
 
-BASE_URL = os.getenv("TEST_API_URL_DOCKER", "http://localhost:8000")
+from app.main import app, container  # ✅ usa container real (instancia)
 
 
 @pytest.fixture
@@ -14,18 +12,25 @@ def test_client():
     return TestClient(app)
 
 
+class FakeResponse:
+    def dict(self):
+        return {
+            "client": "test-client",
+            "description": "desc",
+            "apiKey": "mocked-api-key",
+            "createdBy": "user123",
+        }
+
+
 @pytest.fixture(autouse=True)
-def override_dependencies(monkeypatch):
+def override_di(monkeypatch):
+    # --- mocks ---
     mock_service = AsyncMock()
     mock_service.generate_api_key_service.return_value = "mocked-api-key"
-    mock_service.create_api_key.return_value.dict.return_value = {
-        "client": "test-client",
-        "description": "desc",
-        "apiKey": "mocked-api-key",
-        "createdBy": "user123"
-    }
+    mock_service.create_api_key = AsyncMock(return_value=FakeResponse())
 
     mock_logs_service = AsyncMock()
+
     mock_oauth_service = AsyncMock()
     mock_oauth_service.get_user_by_sub.return_value = None
     mock_oauth_service.add = AsyncMock()
@@ -34,33 +39,36 @@ def override_dependencies(monkeypatch):
     mock_token.data = {"sub": "user123"}
     mock_token.error = None
 
-    monkeypatch.setattr("app.api.v1.endpoints.apikey.valid_access_token", AsyncMock(
-        return_value=mock_token))
+    # --- patch helpers inside endpoint module ---
     monkeypatch.setattr(
-        "app.api.v1.endpoints.apikey.check_role", lambda token, role: True)
+        "app.api.v1.endpoints.apikey.valid_access_token",
+        AsyncMock(return_value=mock_token),
+    )
+    monkeypatch.setattr(
+        "app.api.v1.endpoints.apikey.check_role", lambda token, role: True
+    )
     monkeypatch.setattr("app.api.v1.endpoints.apikey.add_log", AsyncMock())
 
-    app.dependency_overrides = {
-        "app.api.v1.endpoints.apikey.oauth_2_scheme": lambda: "Bearer mocked_token",
-        "app.api.v1.endpoints.apikey.ApiKeyService": lambda: mock_service,
-        "app.api.v1.endpoints.apikey.LogsService": lambda: mock_logs_service,
-        "app.api.v1.endpoints.apikey.OAuthUsersService": lambda: mock_oauth_service,
-    }
+    # ✅ override providers on the *real container instance*
+    container.apikey_service.override(providers.Object(mock_service))
+    container.logs_service.override(providers.Object(mock_logs_service))
+    container.oauth_users_service.override(providers.Object(mock_oauth_service))
 
     yield
 
-    app.dependency_overrides = {}  # Limpieza después de cada test
+    container.apikey_service.reset_override()
+    container.logs_service.reset_override()
+    container.oauth_users_service.reset_override()
 
 
 def test_create_api_key_success(test_client):
-    payload = {
-        "client": "test-client",
-        "description": "desc"
-    }
+    payload = {"client": "test-client", "description": "desc"}
 
     response = test_client.post(
-        f"{BASE_URL}/apikey/create", json=payload,
-        headers={"Authorization": "Bearer mocked_token"})
+        "/api/v1/apikey/create",
+        json=payload,
+        headers={"Authorization": "Bearer mocked_token"},
+    )
 
     assert response.status_code == 201
     data = response.json()

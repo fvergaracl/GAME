@@ -91,8 +91,7 @@ class UserActionsService(BaseService):
         task = self.task_repository.read_by_column(
             "externalTaskId",
             externalTaskId,
-            not_found_message=(
-                f"Task not found (externalTaskId) : {externalTaskId}"),
+            not_found_message=(f"Task not found (externalTaskId) : {externalTaskId}"),
         )
 
         if task.status != "open":

@@ -169,7 +169,9 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
 
         return dot
 
-    async def calculate_points(self, externalGameId, externalTaskId, externalUserId, data):
+    async def calculate_points(
+        self, externalGameId, externalTaskId, externalUserId, data
+    ):
         minutes = data.get("minutes", None)
         if minutes is None:
             return (-1, 'The "minutes" field is required into the data')

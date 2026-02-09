@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
+from app.core.container import Container
+from app.core.exceptions import ForbiddenError
 from app.repository.apikey_repository import ApiKeyRepository
 from app.services.apikey_service import ApiKeyService
 
@@ -64,6 +66,59 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         self.apikey_repository.read_all.assert_called_once()
 
         self.assertEqual(retrieved_api_keys, api_keys)
+
+    def test_get_api_key_header_raises_when_api_key_does_not_exist(self):
+        repository = MagicMock()
+        repository.read_by_column.return_value = None
+
+        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
+            with self.assertRaises(ForbiddenError) as exc_info:
+                ApiKeyService.get_api_key_header("missing-key")
+
+        repository.read_by_column.assert_called_once_with(
+            "apiKey", "missing-key", not_found_raise_exception=False
+        )
+        self.assertEqual(
+            exc_info.exception.detail,
+            "API key is invalid or does not exist.",
+        )
+
+    def test_get_api_key_header_returns_fail_response_when_api_key_is_none(self):
+        response = ApiKeyService.get_api_key_header(None)
+
+        self.assertFalse(response.sucess)
+        self.assertIsInstance(response.error, ForbiddenError)
+        self.assertEqual(response.error.detail, "API key not provided.")
+
+    def test_get_api_key_header_raises_when_api_key_is_inactive(self):
+        repository = MagicMock()
+        repository.read_by_column.return_value = MagicMock(active=False)
+
+        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
+            with self.assertRaises(ForbiddenError) as exc_info:
+                ApiKeyService.get_api_key_header("inactive-key")
+
+        repository.read_by_column.assert_called_once_with(
+            "apiKey", "inactive-key", not_found_raise_exception=False
+        )
+        self.assertEqual(
+            exc_info.exception.detail,
+            "API key is inactive. Please contact an admin.",
+        )
+
+    def test_get_api_key_header_returns_ok_response_when_api_key_is_active(self):
+        api_key_in_db = MagicMock(active=True)
+        repository = MagicMock()
+        repository.read_by_column.return_value = api_key_in_db
+
+        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
+            response = ApiKeyService.get_api_key_header("valid-key")
+
+        repository.read_by_column.assert_called_once_with(
+            "apiKey", "valid-key", not_found_raise_exception=False
+        )
+        self.assertTrue(response.sucess)
+        self.assertEqual(response.data, api_key_in_db)
 
 
 if __name__ == "__main__":

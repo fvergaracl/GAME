@@ -44,5 +44,4 @@ class OAuthUsersRepository(BaseRepository):
             The user with the provided sub.
         """
         with self.session_factory() as session:
-            return  session.query(self.model).filter_by(
-                provider_user_id=sub).first()
+            return session.query(self.model).filter_by(provider_user_id=sub).first()

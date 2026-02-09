@@ -8,7 +8,8 @@ from sqlmodel import Column, DateTime, Field, ForeignKey, SQLModel, String, func
 
 class ApiKey(SQLModel, table=True):
     """
-    Represents an API key.
+    Represents an API key used for authenticating and authorizing access
+    to the system.
 
     Attributes:
         key (str): The API key.
@@ -16,9 +17,16 @@ class ApiKey(SQLModel, table=True):
         active (bool): A flag indicating whether the API key is active.
         createdBy (str): The ID (userId Keycloak) of the user who created
           the API key. This is used to track the creator of the key.
+
+    Methods:
+        __str__: Returns a string representation of the ApiKey instance.
+        __repr__: Returns a detailed string representation of the ApiKey instance.
+        __eq__: Compares two ApiKey instances for equality based on their attributes.
+
+
+
     """
 
-    # Field definitions
     id: str = Field(
         default_factory=uuid4,
         primary_key=True,
@@ -58,7 +66,7 @@ class ApiKey(SQLModel, table=True):
     def __repr__(self):
         return (
             f"ApiKey: (id={self.id}, created_at={self.created_at}, "
-            f"updated_at={self.updated_at}, apiKey={self.apikey}, "
+            f"updated_at={self.updated_at}, apiKey={self.apiKey}, "
             f"description={self.description}, active={self.active}, "
             f"createdBy={self.createdBy})"
         )

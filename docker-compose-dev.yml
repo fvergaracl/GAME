@@ -50,21 +50,24 @@ services:
     volumes:
       - postgrespostgres-data:/var/lib/postgresql/data
 
-  keycloakGame:
-    container_name: "keycloakGame"
-    image: keycloak/keycloak:25.0
-    hostname: keycloak
+  keycloakgame:
+    container_name: keycloakgame
+    image: keycloak/keycloak:26.5
     ports:
       - "8080:8080"
     env_file:
       - .env
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     volumes:
       - keycloak-data:/opt/keycloak/data
-    command: ["start-dev"]
+      - ./keycloak/realm-template.json:/opt/keycloak/data/import/realm.json:ro
+    command:
+      - start-dev
+      - --import-realm
     networks:
-      backend:
-        aliases:
-          - localhost
+      - backend
 
   healthcheck_service:
     build: ./healthcheck_service
