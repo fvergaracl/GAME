@@ -94,6 +94,7 @@ class WalletService(BaseService):
             conversionRate=wallet.conversionRate,
             afterConversionPoints=wallet.pointsBalance - schema.points,
             afterConversionCoins=wallet.coinsBalance + points_converted,
+            externalUserId=schema.externalUserId,
         )
 
         return response
