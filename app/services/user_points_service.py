@@ -366,7 +366,9 @@ class UserPointsService(BaseService):
             walletId=str(wallet.id),
             apiKey_used=api_key,
         )
-        transaction = await self.wallet_transaction_repository.create(wallet_transaction)
+        transaction = await self.wallet_transaction_repository.create(
+            wallet_transaction
+        )
         if not transaction:
             raise InternalServerError(
                 detail=f"Wallet transaction not created for user {externalUserId} and task {externalTaskId}"  # noqa
@@ -524,7 +526,9 @@ class UserPointsService(BaseService):
             walletId=str(wallet.id),
             apiKey_used=api_key,
         )
-        transaction = await self.wallet_transaction_repository.create(wallet_transaction)
+        transaction = await self.wallet_transaction_repository.create(
+            wallet_transaction
+        )
         if not transaction:
             raise InternalServerError(
                 detail=f"Wallet transaction not created for user {externalUserId} and task {externalTaskId}"  # noqa
