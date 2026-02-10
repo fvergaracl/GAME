@@ -20,11 +20,71 @@ router = APIRouter(
     tags=["API Key"],
 )
 
-summary_create_api_key = "Create an API key"
+summary_create_api_key = "Create API Key (Admin)"
+request_example_create_api_key = {
+    "client": "analytics-service",
+    "description": "API key for analytics ingestion worker",
+}
+
+response_example_create_api_key = {
+    "apiKey": "gk_6f7ca7f8b0e9499ea8fa6d8f6e8d2f35",
+    "client": "analytics-service",
+    "description": "API key for analytics ingestion worker",
+    "createdBy": "11111111-2222-3333-4444-555555555555",
+    "message": "API Key created successfully",
+}
+
+responses_create_api_key = {
+    201: {
+        "description": "API key created successfully",
+        "content": {"application/json": {"example": response_example_create_api_key}},
+    },
+    401: {
+        "description": "Unauthorized: missing, invalid, or expired bearer token",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Invalid authentication credentials"}
+            }
+        },
+    },
+    403: {
+        "description": "Forbidden: token is valid but user lacks `AdministratorGAME` role",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "You do not have permission to create an API key"
+                }
+            }
+        },
+    },
+    422: {
+        "description": "Validation error in request body",
+    },
+    500: {
+        "description": "Internal server error while creating API key",
+    },
+}
+
 description_create_api_key = """
-## Create an API key
-### This endpoint allows you to create an API key. You must be authenticated to create an API key.
-<sub>**Id_endpoint:** create_api_key</sub>
+Creates a new API key for a client integration.
+
+### Authorization
+- Requires `Authorization: Bearer <access_token>`.
+- Caller must have role `AdministratorGAME` (checked from JWT roles).
+
+### Request Body
+- `client` (`string`): Identifier of the consuming client/service.
+- `description` (`string`): Human-readable purpose for traceability.
+
+### Success (201)
+Returns the generated API key and metadata (`client`, `description`, `createdBy`).
+
+### Error Cases
+- `401`: missing/invalid/expired token
+- `403`: authenticated user without admin role
+- `422`: invalid request payload
+
+<sub>**Id_endpoint:** `create_api_key`</sub>
 """  # noqa
 
 
@@ -35,11 +95,12 @@ description_create_api_key = """
     response_description="API Key created successfully",
     response_model=ApiKeyCreated,
     status_code=201,
+    responses=responses_create_api_key,
     dependencies=[Depends(oauth_2_scheme)],
 )
 @inject
 async def create_api_key(
-    schema: ApiKeyPostBody = Body(...),
+    schema: ApiKeyPostBody = Body(..., example=request_example_create_api_key),
     service: ApiKeyService = Depends(Provide[Container.apikey_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
@@ -164,11 +225,72 @@ async def create_api_key(
         raise e
 
 
-summary_get_all_api_keys = "Get all API keys"
+summary_get_all_api_keys = "List API Keys (Admin)"
+response_example_get_all_api_keys = [
+    {
+        "apiKey": "gk_6f7ca7f8b0e9499ea8fa6d8f6e8d2f35",
+        "client": "analytics-service",
+        "description": "API key for analytics ingestion worker",
+        "createdBy": "11111111-2222-3333-4444-555555555555",
+        "created_at": "2026-02-10T12:00:00Z",
+    },
+    {
+        "apiKey": "gk_90d4f6bd39b141eb9a4e3ca33211e2d7",
+        "client": "mobile-app-backend",
+        "description": "Key used by mobile backend services",
+        "createdBy": "99999999-aaaa-bbbb-cccc-dddddddddddd",
+        "created_at": "2026-02-09T09:30:00Z",
+    },
+]
+
+responses_get_all_api_keys = {
+    200: {
+        "description": "List of API keys retrieved successfully",
+        "content": {"application/json": {"example": response_example_get_all_api_keys}},
+    },
+    401: {
+        "description": "Unauthorized: missing, invalid, or expired bearer token",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Invalid authentication credentials"}
+            }
+        },
+    },
+    403: {
+        "description": "Forbidden: token is valid but user lacks `AdministratorGAME` role",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "You do not have permission to get all API keys"
+                }
+            }
+        },
+    },
+    500: {
+        "description": "Internal server error while retrieving API keys",
+    },
+}
+
 description_get_all_api_keys = """
-## Get all API keys
-### This endpoint allows you to get all API keys. You must be authenticated to get all API keys.
-<sub>**Id_endpoint:** get_all_api_keys</sub>
+Returns the full list of API keys registered in the system.
+
+### Authorization
+- Requires `Authorization: Bearer <access_token>`.
+- Caller must have role `AdministratorGAME`.
+
+### Success (200)
+Returns an array of API keys with metadata:
+- `apiKey`
+- `client`
+- `description`
+- `createdBy`
+- `created_at`
+
+### Error Cases
+- `401`: missing/invalid/expired token
+- `403`: authenticated user without admin role
+
+<sub>**Id_endpoint:** `get_all_api_keys`</sub>
 """  # noqa
 
 
@@ -179,6 +301,7 @@ description_get_all_api_keys = """
     response_description="API Keys retrieved successfully",
     response_model=List[ApiKeyCreatedUnitList],
     status_code=200,
+    responses=responses_get_all_api_keys,
     dependencies=[Depends(oauth_2_scheme)],
 )
 @inject

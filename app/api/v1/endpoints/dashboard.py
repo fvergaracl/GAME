@@ -19,13 +19,89 @@ router = APIRouter(
 
 
 summary_get_dashboard_summary = "Get dashboard summary"
-description_get_dashboard_summary = """
-## Get dashboard summary
-### Get dashboard summary
+response_example_get_dashboard_summary = {
+    "new_users": [
+        {"label": "2026-02-08", "count": 5},
+        {"label": "2026-02-09", "count": 7},
+        {"label": "2026-02-10", "count": 4},
+    ],
+    "games_opened": [
+        {"label": "2026-02-08", "count": 12},
+        {"label": "2026-02-09", "count": 18},
+        {"label": "2026-02-10", "count": 11},
+    ],
+    "points_earned": [
+        {"label": "2026-02-08", "count": 940},
+        {"label": "2026-02-09", "count": 1280},
+        {"label": "2026-02-10", "count": 870},
+    ],
+    "actions_performed": [
+        {"label": "2026-02-08", "count": 37},
+        {"label": "2026-02-09", "count": 49},
+        {"label": "2026-02-10", "count": 33},
+    ],
+}
 
-This endpoint returns the summary of the dashboard as New Users, Games Opened,
- Points Earned, and Actions Performed. 
-<sub>**Id_endpoint:** get_dashboard_summary</sub>
+responses_get_dashboard_summary = {
+    200: {
+        "description": "Dashboard summary retrieved successfully",
+        "content": {
+            "application/json": {"example": response_example_get_dashboard_summary}
+        },
+    },
+    401: {
+        "description": "Unauthorized: missing/invalid credentials",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Invalid authentication credentials"}
+            }
+        },
+    },
+    403: {
+        "description": "Forbidden: invalid or inactive API key",
+        "content": {
+            "application/json": {
+                "example": {"detail": "API key is invalid or does not exist."}
+            }
+        },
+    },
+    422: {
+        "description": "Validation error in query parameters",
+    },
+    500: {
+        "description": "Internal server error while retrieving dashboard summary",
+    },
+}
+
+description_get_dashboard_summary = """
+Returns aggregated KPI metrics for the dashboard within an optional date window.
+
+### Authentication
+- Requires either `X-API-Key` or `Authorization: Bearer <access_token>`.
+
+### Query Parameters
+- `start_date` (`string`, optional): Start of the reporting range.
+- `end_date` (`string`, optional): End of the reporting range.
+- `group_by` (`string`, optional): Aggregation granularity (`day`, `week`, `month`).
+
+### Success (200)
+Returns time-series aggregates for:
+- `new_users`
+- `games_opened`
+- `points_earned`
+- `actions_performed`
+
+Each series item contains:
+- `label` (time bucket label)
+- `count` (numeric aggregate)
+
+### Error Cases
+- `401`: missing or invalid auth credentials
+- `403`: API key rejected or inactive
+- `422`: invalid query parameters
+- `500`: summary calculation failure
+
+<sub>**Id_endpoint:** `get_dashboard_summary`</sub>
 """
 
 
@@ -34,6 +110,7 @@ This endpoint returns the summary of the dashboard as New Users, Games Opened,
     summary=summary_get_dashboard_summary,
     description=description_get_dashboard_summary,
     response_model=DashboardSummary,
+    responses=responses_get_dashboard_summary,
     dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject
@@ -113,12 +190,83 @@ async def get_dashboard_summary(
 
 
 summary_get_dashboard_summary_logs = "Get dashboard summary logs"
-description_get_dashboard_summary_logs = """
-## Get dashboard summary logs
-### Get dashboard summary logs
+response_example_get_dashboard_summary_logs = {
+    "info": [
+        {"label": "2026-02-08", "count": 124},
+        {"label": "2026-02-09", "count": 137},
+        {"label": "2026-02-10", "count": 118},
+    ],
+    "success": [
+        {"label": "2026-02-08", "count": 96},
+        {"label": "2026-02-09", "count": 112},
+        {"label": "2026-02-10", "count": 91},
+    ],
+    "error": [
+        {"label": "2026-02-08", "count": 3},
+        {"label": "2026-02-09", "count": 5},
+        {"label": "2026-02-10", "count": 2},
+    ],
+}
 
-This endpoint returns the logs of the dashboard summary as INFO, SUCESS, ERROR.
-<sub>**Id_endpoint:** get_dashboard_summary_logs</sub>
+responses_get_dashboard_summary_logs = {
+    200: {
+        "description": "Dashboard summary logs retrieved successfully",
+        "content": {
+            "application/json": {"example": response_example_get_dashboard_summary_logs}
+        },
+    },
+    401: {
+        "description": "Unauthorized: missing/invalid credentials",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Invalid authentication credentials"}
+            }
+        },
+    },
+    403: {
+        "description": "Forbidden: invalid or inactive API key",
+        "content": {
+            "application/json": {
+                "example": {"detail": "API key is invalid or does not exist."}
+            }
+        },
+    },
+    422: {
+        "description": "Validation error in query parameters",
+    },
+    500: {
+        "description": "Internal server error while retrieving dashboard summary logs",
+    },
+}
+
+description_get_dashboard_summary_logs = """
+Returns aggregated dashboard log counters grouped by severity within an optional date window.
+
+### Authentication
+- Requires either `X-API-Key` or `Authorization: Bearer <access_token>`.
+
+### Query Parameters
+- `start_date` (`string`, optional): Start of the reporting range.
+- `end_date` (`string`, optional): End of the reporting range.
+- `group_by` (`string`, optional): Aggregation granularity (`day`, `week`, `month`).
+
+### Success (200)
+Returns time-series aggregates for:
+- `info`
+- `success`
+- `error`
+
+Each series item contains:
+- `label` (time bucket label)
+- `count` (numeric aggregate)
+
+### Error Cases
+- `401`: missing or invalid auth credentials
+- `403`: API key rejected or inactive
+- `422`: invalid query parameters
+- `500`: summary-log calculation failure
+
+<sub>**Id_endpoint:** `get_dashboard_summary_logs`</sub>
 """
 
 
@@ -127,6 +275,7 @@ This endpoint returns the logs of the dashboard summary as INFO, SUCESS, ERROR.
     summary=summary_get_dashboard_summary_logs,
     description=description_get_dashboard_summary_logs,
     response_model=DashboardSummaryLogs,
+    responses=responses_get_dashboard_summary_logs,
     dependencies=[Depends(auth_api_key_or_oauth2)],
 )
 @inject

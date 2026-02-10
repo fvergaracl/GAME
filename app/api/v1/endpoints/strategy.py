@@ -22,10 +22,72 @@ router = APIRouter(
 )
 
 summary_get_strategies_list = "Retrieve Strategies List"
+response_example_get_strategies_list = [
+    {
+        "id": "default",
+        "name": "Default Strategy",
+        "description": "Baseline adaptive scoring strategy.",
+        "version": "1.0.0",
+        "variables": {
+            "variable_basic_points": 10,
+            "bonus_multiplier": 1.2,
+        },
+        "hash_version": "9e6c5ce8f3fcb2a4f6b5b2f1c1d2a9f7",
+    },
+    {
+        "id": "constantEffortStrategy",
+        "name": "Constant Effort",
+        "description": "Awards stable points for repeated behavior.",
+        "version": "1.0.0",
+        "variables": {
+            "variable_basic_points": 5,
+        },
+        "hash_version": "f1a2c3d4e5f60987654321aabbccdde0",
+    },
+]
+
+responses_get_strategies_list = {
+    200: {
+        "description": "Strategies retrieved successfully",
+        "content": {
+            "application/json": {"example": response_example_get_strategies_list}
+        },
+    },
+    401: {
+        "description": "Unauthorized: invalid bearer token when provided",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Invalid authentication credentials"}
+            }
+        },
+    },
+    500: {
+        "description": "Internal server error while listing strategies",
+    },
+}
+
 description_get_strategies_list = """
-## Retrieve Strategies List
-### This endpoint retrieves a list of all available strategies.
-<sub>**Id_endpoint:** get_strategy_list</sub>"""
+Returns all scoring strategies available in the engine.
+
+### Authentication
+- Supports `Authorization: Bearer <access_token>` and `X-API-Key`.
+- Authentication is optional for read-only listing; when provided, user context is logged.
+
+### Success (200)
+Returns a list of strategies with:
+- `id`
+- `name`
+- `description`
+- `version`
+- `variables`
+- `hash_version`
+
+### Error Cases
+- `401`: invalid bearer token (when token is sent)
+- `500`: strategy retrieval failure
+
+<sub>**Id_endpoint:** `get_strategy_list`</sub>
+"""  # noqa
 
 
 @router.get(
@@ -33,6 +95,7 @@ description_get_strategies_list = """
     response_model=List[Strategy],
     summary=summary_get_strategies_list,
     description=description_get_strategies_list,
+    responses=responses_get_strategies_list,
 )
 @inject
 async def get_strategy_list(
@@ -104,10 +167,70 @@ async def get_strategy_list(
 
 
 summary_get_strategy_by_id = "Retrieve Strategy by ID"
+response_example_get_strategy_by_id = {
+    "id": "default",
+    "name": "Default Strategy",
+    "description": "Baseline adaptive scoring strategy.",
+    "version": "1.0.0",
+    "variables": {
+        "variable_basic_points": 10,
+        "bonus_multiplier": 1.2,
+    },
+    "hash_version": "9e6c5ce8f3fcb2a4f6b5b2f1c1d2a9f7",
+}
+
+responses_get_strategy_by_id = {
+    200: {
+        "description": "Strategy retrieved successfully",
+        "content": {"application/json": {"example": response_example_get_strategy_by_id}},
+    },
+    401: {
+        "description": "Unauthorized: invalid bearer token when provided",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Invalid authentication credentials"}
+            }
+        },
+    },
+    404: {
+        "description": "Strategy not found for the provided id",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Strategy not found with id: default-v2"}
+            }
+        },
+    },
+    500: {
+        "description": "Internal server error while retrieving strategy",
+    },
+}
+
 description_get_strategy_by_id = """
-## Retrieve Strategy by ID
-### This endpoint retrieves the details of a strategy using its unique ID. 
-<sub>**Id_endpoint:** get_strategy_by_id</sub>"""
+Returns one strategy by its identifier.
+
+### Path Parameter
+- `id` (`string`): Unique strategy id (for example: `default`, `constantEffortStrategy`).
+
+### Authentication
+- Supports `Authorization: Bearer <access_token>` and `X-API-Key`.
+- Authentication is optional for read-only retrieval; when provided, user context is logged.
+
+### Success (200)
+Returns the strategy object with:
+- `id`
+- `name`
+- `description`
+- `version`
+- `variables`
+- `hash_version`
+
+### Error Cases
+- `401`: invalid bearer token (when token is sent)
+- `404`: no strategy found with the provided `id`
+- `500`: strategy retrieval failure
+
+<sub>**Id_endpoint:** `get_strategy_by_id`</sub>
+"""  # noqa
 
 
 @router.get(
@@ -115,6 +238,7 @@ description_get_strategy_by_id = """
     response_model=Strategy,
     summary=summary_get_strategy_by_id,
     description=description_get_strategy_by_id,
+    responses=responses_get_strategy_by_id,
 )
 @inject
 async def get_strategy_by_id(
@@ -191,16 +315,68 @@ async def get_strategy_by_id(
 
 
 summary_get_strategy_graph_by_id = "Retrieve Strategy Graph by ID"
+responses_get_strategy_graph_by_id = {
+    200: {
+        "description": "Strategy logic graph rendered as PNG image",
+        "content": {
+            "image/png": {
+                "schema": {
+                    "type": "string",
+                    "format": "binary",
+                }
+            }
+        },
+    },
+    401: {
+        "description": "Unauthorized: invalid bearer token when provided",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Invalid authentication credentials"}
+            }
+        },
+    },
+    404: {
+        "description": "Strategy id not found or graph class unavailable",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Strategy not found with id: default-v2"}
+            }
+        },
+    },
+    500: {
+        "description": "Internal server error while generating strategy graph",
+    },
+}
+
 description_get_strategy_graph_by_id = """
-## Retrieve Strategy Graph by ID
-### This endpoint retrieves the logic graph of a strategy using its unique ID.
-<sub>**Id_endpoint:** get_strategy_graph_by_id</sub>"""
+Returns a visual representation of a strategy logic graph as a PNG image.
+
+### Path Parameter
+- `id` (`string`): Strategy identifier (for example: `default`).
+
+### Authentication
+- Supports `Authorization: Bearer <access_token>` and `X-API-Key`.
+- Authentication is optional for read-only retrieval; when provided, user context is logged.
+
+### Success (200)
+- Content-Type: `image/png`
+- Body: binary PNG payload with the generated strategy graph.
+
+### Error Cases
+- `401`: invalid bearer token (when token is sent)
+- `404`: strategy not found or missing graph-capable class
+- `500`: graph generation failure
+
+<sub>**Id_endpoint:** `get_strategy_graph_by_id`</sub>
+"""  # noqa
 
 
 @router.get(
     "/{id}/graph",
     summary=summary_get_strategy_graph_by_id,
     description=description_get_strategy_graph_by_id,
+    response_class=StreamingResponse,
+    responses=responses_get_strategy_graph_by_id,
 )
 @inject
 async def get_strategy_graph_by_id(
