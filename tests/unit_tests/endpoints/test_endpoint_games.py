@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 from app.api.v1.endpoints import games
-from app.core.exceptions import ForbiddenError, InternalServerError
+from app.core.exceptions import ForbiddenError, InternalServerError, TooManyRequestsError
 from app.schema.games_schema import PatchGame, PostCreateGame, PostFindGame
 from app.schema.task_schema import (AddActionDidByUserInTask,
                                     AsignPointsToExternalUserId, CreateTaskPost,
@@ -62,6 +62,20 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         service_oauth.add = AsyncMock() if async_add else MagicMock()
         return service_oauth
+
+    @staticmethod
+    def _request(host="198.51.100.1", forwarded_for=None):
+        headers = {}
+        if forwarded_for:
+            headers["X-Forwarded-For"] = forwarded_for
+        return SimpleNamespace(headers=headers, client=SimpleNamespace(host=host))
+
+    @staticmethod
+    def _abuse_service(ip="198.51.100.1", enforce_side_effect=None):
+        service = MagicMock()
+        service.extract_client_ip.return_value = ip
+        service.enforce_task_mutation_limits.side_effect = enforce_side_effect
+        return service
 
     async def test_get_games_list_without_token_uses_api_key_filter(self):
         schema = PostFindGame(ordering="-created_at", page=1, page_size=10)
@@ -510,7 +524,9 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             gameId=game_id,
             externalTaskId="task-1",
             schema=schema,
+            request=self._request(),
             service=service,
+            abuse_prevention_service=self._abuse_service(),
             service_log=MagicMock(),
             service_oauth=service_oauth,
             token="Bearer any",
@@ -537,7 +553,9 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             gameId=game_id,
             externalTaskId="task-1",
             schema=schema,
+            request=self._request(),
             service=service,
+            abuse_prevention_service=self._abuse_service(),
             service_log=MagicMock(),
             service_oauth=service_oauth,
             token="Bearer any",
@@ -559,7 +577,9 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             gameId=game_id,
             externalTaskId="task-2",
             schema=schema,
+            request=self._request(),
             service=service,
+            abuse_prevention_service=self._abuse_service(),
             service_log=MagicMock(),
             service_oauth=self._oauth_service(),
             token=None,
@@ -570,6 +590,69 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         service.assign_points_to_user.assert_awaited_once_with(
             game_id, "task-2", schema, False, "api-key-1"
         )
+
+    async def test_user_action_in_task_calls_abuse_prevention_service(self):
+        game_id = uuid4()
+        request = self._request(host="203.0.113.10")
+        abuse_service = self._abuse_service(ip="203.0.113.10")
+        schema = AddActionDidByUserInTask(
+            typeAction="click",
+            data={"x": 1},
+            description="desc",
+            externalUserId="u1",
+        )
+        service = MagicMock()
+        service.user_add_action_in_task = AsyncMock(return_value={"ok": True})
+
+        await games.user_action_in_task(
+            gameId=game_id,
+            externalTaskId="task-1",
+            schema=schema,
+            request=request,
+            service=service,
+            abuse_prevention_service=abuse_service,
+            service_log=MagicMock(),
+            service_oauth=self._oauth_service(),
+            token=None,
+            api_key_header=self._api_key_header("api-key-abuse"),
+        )
+
+        abuse_service.extract_client_ip.assert_called_once_with(request)
+        abuse_service.enforce_task_mutation_limits.assert_called_once_with(
+            api_key="api-key-abuse",
+            client_ip="203.0.113.10",
+            external_user_id="u1",
+        )
+
+    async def test_assign_points_to_user_raises_too_many_requests(self):
+        game_id = uuid4()
+        request = self._request(host="203.0.113.20")
+        abuse_service = self._abuse_service(
+            enforce_side_effect=TooManyRequestsError(detail="blocked")
+        )
+        schema = AsignPointsToExternalUserId(
+            externalUserId="u1",
+            data={"points": 1},
+            isSimulated=False,
+        )
+        service = MagicMock()
+        service.assign_points_to_user = AsyncMock(return_value={"points": 99})
+
+        with self.assertRaises(TooManyRequestsError):
+            await games.assign_points_to_user(
+                gameId=game_id,
+                externalTaskId="task-1",
+                schema=schema,
+                request=request,
+                service=service,
+                abuse_prevention_service=abuse_service,
+                service_log=MagicMock(),
+                service_oauth=self._oauth_service(),
+                token=None,
+                api_key_header=self._api_key_header("api-key-abuse"),
+            )
+
+        service.assign_points_to_user.assert_not_called()
 
     async def test_get_points_by_task_id(self):
         service = MagicMock()
@@ -774,7 +857,9 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             gameId=game_id,
             externalTaskId="task-1",
             schema=action_schema,
+            request=self._request(),
             service=user_action_service,
+            abuse_prevention_service=self._abuse_service(),
             service_log=MagicMock(),
             service_oauth=oauth_service,
             token=None,
@@ -1058,7 +1143,9 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
                 description="desc",
                 externalUserId="u1",
             ),
+            request=self._request(),
             service=user_action_service,
+            abuse_prevention_service=self._abuse_service(),
             service_log=MagicMock(),
             service_oauth=oauth_service,
             token=token,
@@ -1075,7 +1162,9 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
                 data={"points": 1},
                 isSimulated=False,
             ),
+            request=self._request(),
             service=assign_points_service,
+            abuse_prevention_service=self._abuse_service(),
             service_log=MagicMock(),
             service_oauth=oauth_service,
             token=token,

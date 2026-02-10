@@ -171,6 +171,30 @@ class ForbiddenError(HTTPException):
         super().__init__(status.HTTP_403_FORBIDDEN, detail, headers)
 
 
+class TooManyRequestsError(HTTPException):
+    """
+    Exception raised for rate-limit and abuse-prevention violations.
+
+    Attributes:
+        detail (Any): The detail message for the exception.
+        headers (Optional[Dict[str, Any]]): The headers for the exception
+          response.
+    """
+
+    def __init__(
+        self, detail: Any = None, headers: Optional[Dict[str, Any]] = None
+    ) -> None:
+        """
+        Initializes the TooManyRequestsError with the provided details.
+
+        Args:
+            detail (Any, optional): The detail message for the exception.
+            headers (Optional[Dict[str, Any]], optional): The headers for the
+              exception response.
+        """
+        super().__init__(status.HTTP_429_TOO_MANY_REQUESTS, detail, headers)
+
+
 # HTTP_400_BAD_REQUEST
 
 

@@ -1,3 +1,4 @@
+from app.services.abuse_prevention_service import AbusePreventionService
 from app.services.api_requests_service import ApiRequestsService
 from app.services.apikey_service import ApiKeyService
 from app.services.base_service import BaseService

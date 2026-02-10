@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
+from app.model.abuse_limit_counter import AbuseLimitCounter
 from app.model.api_key import ApiKey
 from app.model.api_requests import ApiRequests
 from app.model.kpi_metrics import KpiMetrics
@@ -20,6 +21,19 @@ def _api_key():
         description="desc",
         active=True,
         createdBy="creator",
+    )
+
+
+def _abuse_limit_counter():
+    return AbuseLimitCounter(
+        id=str(uuid4()),
+        created_at=datetime.now(),
+        updated_at=datetime.now(),
+        scopeType="api_key",
+        scopeValue="k-1",
+        windowName="task_mutation_short_60s",
+        windowStart=datetime.now(),
+        counter=3,
     )
 
 
@@ -106,6 +120,20 @@ def test_api_key_str_repr_and_eq():
 
     assert "ApiKey: (id=" in str(model)
     assert "ApiKey: (id=" in repr(model)
+    assert model == model_copy
+
+
+def test_abuse_limit_counter_str_repr_and_eq():
+    model = _abuse_limit_counter()
+    model_copy = _abuse_limit_counter()
+    model_copy.scopeType = model.scopeType
+    model_copy.scopeValue = model.scopeValue
+    model_copy.windowName = model.windowName
+    model_copy.windowStart = model.windowStart
+    model_copy.counter = model.counter
+
+    assert "AbuseLimitCounter: (id=" in str(model)
+    assert repr(model) == str(model)
     assert model == model_copy
 
 

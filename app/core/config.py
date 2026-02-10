@@ -7,6 +7,23 @@ from pydantic import BaseSettings
 load_dotenv()
 
 
+def _env_to_bool(key: str, default: bool) -> bool:
+    value = os.getenv(key)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_to_int(key: str, default: int) -> int:
+    value = os.getenv(key)
+    if value is None:
+        return default
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+
 class Configs(BaseSettings):
     """
     Configuration class for loading environment variables and application
@@ -39,6 +56,19 @@ class Configs(BaseSettings):
         PAGE (int): The default page number for queries.
         PAGE_SIZE (int): The default page size for queries.
         ORDERING (str): The default ordering for queries.
+
+        ABUSE_PREVENTION_ENABLED (bool): Enables abuse prevention checks for
+          sensitive endpoints.
+        ABUSE_RATE_LIMIT_WINDOW_SECONDS (int): Time window in seconds for
+          short-window rate limiting.
+        ABUSE_RATE_LIMIT_PER_API_KEY (int): Max requests allowed per API key
+          inside the short window.
+        ABUSE_RATE_LIMIT_PER_IP (int): Max requests allowed per source IP
+          inside the short window.
+        ABUSE_RATE_LIMIT_PER_EXTERNAL_USER (int): Max requests allowed per
+          external user id inside the short window.
+        ABUSE_DAILY_QUOTA_PER_API_KEY (int): Daily quota for sensitive
+          operations per API key.
     """
 
     ENV: str = os.getenv("ENV", "dev")
@@ -98,6 +128,23 @@ class Configs(BaseSettings):
     PAGE = 1
     PAGE_SIZE = 10
     ORDERING = "-id"
+
+    ABUSE_PREVENTION_ENABLED: bool = _env_to_bool(
+        "ABUSE_PREVENTION_ENABLED", True
+    )
+    ABUSE_RATE_LIMIT_WINDOW_SECONDS: int = _env_to_int(
+        "ABUSE_RATE_LIMIT_WINDOW_SECONDS", 60
+    )
+    ABUSE_RATE_LIMIT_PER_API_KEY: int = _env_to_int(
+        "ABUSE_RATE_LIMIT_PER_API_KEY", 120
+    )
+    ABUSE_RATE_LIMIT_PER_IP: int = _env_to_int("ABUSE_RATE_LIMIT_PER_IP", 240)
+    ABUSE_RATE_LIMIT_PER_EXTERNAL_USER: int = _env_to_int(
+        "ABUSE_RATE_LIMIT_PER_EXTERNAL_USER", 60
+    )
+    ABUSE_DAILY_QUOTA_PER_API_KEY: int = _env_to_int(
+        "ABUSE_DAILY_QUOTA_PER_API_KEY", 10000
+    )
 
 
 class TestConfigs(Configs):

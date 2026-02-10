@@ -2,7 +2,7 @@ from typing import List
 from uuid import UUID
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, Request
 
 from app.core.config import configs
 from app.core.container import Container
@@ -24,6 +24,7 @@ from app.schema.task_schema import (AddActionDidByUserInTask,
 from app.schema.user_points_schema import (AllPointsByGame, AllPointsByGameWithDetails,
                                            PointsAssignedToUser)
 from app.services.apikey_service import ApiKeyService
+from app.services.abuse_prevention_service import AbusePreventionService
 from app.services.game_service import GameService
 from app.services.logs_service import LogsService
 from app.services.oauth_users_service import OAuthUsersService
@@ -2589,6 +2590,16 @@ responses_user_action = {
             }
         },
     },
+    429: {
+        "description": "Too many requests: rate limit exceeded",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "API key rate limit exceeded for sensitive task operations."
+                }
+            }
+        },
+    },
     500: {
         "description": "Internal server error while registering user action",
         "content": {
@@ -2646,7 +2657,11 @@ async def user_action_in_task(
     gameId: UUID,
     externalTaskId: str,
     schema: AddActionDidByUserInTask = Body(..., example=request_example_user_action),
+    request: Request = None,
     service: UserActionsService = Depends(Provide[Container.user_actions_service]),
+    abuse_prevention_service: AbusePreventionService = Depends(
+        Provide[Container.abuse_prevention_service]
+    ),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
@@ -2691,6 +2706,12 @@ async def user_action_in_task(
                 api_key,
                 oauth_user_id,
             )
+    client_ip = abuse_prevention_service.extract_client_ip(request)
+    abuse_prevention_service.enforce_task_mutation_limits(
+        api_key=api_key,
+        client_ip=client_ip,
+        external_user_id=schema.externalUserId,
+    )
     await add_log(
         "game",
         "INFO",
@@ -2778,6 +2799,16 @@ responses_assign_points_to_user = {
             }
         },
     },
+    429: {
+        "description": "Too many requests: rate limit exceeded",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "Daily API key quota exceeded for sensitive task operations."
+                }
+            }
+        },
+    },
     500: {
         "description": "Internal server error while assigning points",
         "content": {
@@ -2840,7 +2871,11 @@ async def assign_points_to_user(
     schema: AsignPointsToExternalUserId = Body(
         ..., example=request_example_assign_points_to_user
     ),
+    request: Request = None,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
+    abuse_prevention_service: AbusePreventionService = Depends(
+        Provide[Container.abuse_prevention_service]
+    ),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
     token: str = Depends(oauth_2_scheme),
@@ -2883,6 +2918,12 @@ async def assign_points_to_user(
                 api_key,
                 oauth_user_id,
             )
+    client_ip = abuse_prevention_service.extract_client_ip(request)
+    abuse_prevention_service.enforce_task_mutation_limits(
+        api_key=api_key,
+        client_ip=client_ip,
+        external_user_id=schema.externalUserId,
+    )
     await add_log(
         "game",
         "INFO",

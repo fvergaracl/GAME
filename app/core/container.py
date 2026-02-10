@@ -3,7 +3,7 @@ from dependency_injector import containers, providers
 from app.core.config import configs
 from app.core.database import Database
 # pylint: disable=unused-wildcard-import
-from app.repository import (ApiKeyRepository, ApiRequestsRepository,
+from app.repository import (AbuseLimitCounterRepository, ApiKeyRepository, ApiRequestsRepository,
                             GameParamsRepository, GameRepository, KpiMetricsRepository,
                             TaskParamsRepository, TaskRepository, UptimeLogsRepository,
                             UserActionsRepository, UserGameConfigRepository,
@@ -11,7 +11,7 @@ from app.repository import (ApiKeyRepository, ApiRequestsRepository,
                             UserRepository, WalletRepository,
                             WalletTransactionRepository, dashboard_repository,
                             logs_repository, oauth_users_repository)
-from app.services import (ApiKeyService, ApiRequestsService, GameParamsService,
+from app.services import (AbusePreventionService, ApiKeyService, ApiRequestsService, GameParamsService,
                           GameService, KpiMetricsService, StrategyService, TaskService,
                           UptimeLogsService, UserActionsService, UserGameConfigService,
                           UserInteractionsService, UserPointsService, UserService,
@@ -49,6 +49,8 @@ class Container(containers.DeclarativeContainer):
           ApiKeyRepository.
         api_requests_repository (providers.Factory): Factory provider for
           ApiRequestsRepository.
+        abuse_limit_counter_repository (providers.Factory): Factory provider
+          for AbuseLimitCounterRepository.
         kpi_metrics_repository (providers.Factory): Factory provider for
           KpiMetricsRepository.
         uptime_logs_repository (providers.Factory): Factory provider for
@@ -79,6 +81,8 @@ class Container(containers.DeclarativeContainer):
           ApiKeyService.
         api_requests_service (providers.Factory): Factory provider for
           ApiRequestsService.
+        abuse_prevention_service (providers.Factory): Factory provider for
+          AbusePreventionService.
         kpi_metrics_service (providers.Factory): Factory provider for
           KpiMetricsService.
         uptime_logs_service (providers.Factory): Factory provider for
@@ -152,6 +156,10 @@ class Container(containers.DeclarativeContainer):
 
     api_requests_repository = providers.Factory(
         ApiRequestsRepository, session_factory=db.provided.session
+    )
+
+    abuse_limit_counter_repository = providers.Factory(
+        AbuseLimitCounterRepository, session_factory=db.provided.session
     )
 
     kpi_metrics_repository = providers.Factory(
@@ -259,6 +267,11 @@ class Container(containers.DeclarativeContainer):
     api_requests_service = providers.Factory(
         ApiRequestsService,
         api_requests_repository=api_requests_repository,
+    )
+
+    abuse_prevention_service = providers.Factory(
+        AbusePreventionService,
+        abuse_limit_counter_repository=abuse_limit_counter_repository,
     )
 
     kpi_metrics_service = providers.Factory(

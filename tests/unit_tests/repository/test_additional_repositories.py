@@ -4,12 +4,14 @@ import pytest
 
 from app.model.api_key import ApiKey
 from app.model.api_requests import ApiRequests
+from app.model.abuse_limit_counter import AbuseLimitCounter
 from app.model.kpi_metrics import KpiMetrics
 from app.model.logs import Logs
 from app.model.oauth_users import OAuthUsers
 from app.model.uptime_logs import UptimeLogs
 from app.model.user_interactions import UserInteractions
 from app.repository.api_requests_repository import ApiRequestsRepository
+from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
 from app.repository.apikey_repository import ApiKeyRepository
 from app.repository.kpi_metrics_repository import KpiMetricsRepository
 from app.repository.logs_repository import LogsRepository
@@ -31,6 +33,10 @@ def _build_session_factory():
 def test_light_repositories_set_expected_default_models():
     session_factory, _ = _build_session_factory()
 
+    assert (
+        AbuseLimitCounterRepository(session_factory=session_factory).model
+        is AbuseLimitCounter
+    )
     assert ApiRequestsRepository(session_factory=session_factory).model is ApiRequests
     assert ApiKeyRepository(session_factory=session_factory).model is ApiKey
     assert KpiMetricsRepository(session_factory=session_factory).model is KpiMetrics

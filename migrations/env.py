@@ -6,6 +6,7 @@ from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
 from app.core.config import configs
+from app.model.abuse_limit_counter import AbuseLimitCounter
 from app.model.api_key import ApiKey
 from app.model.api_requests import ApiRequests
 from app.model.game_params import GamesParams

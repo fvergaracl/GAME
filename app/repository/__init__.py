@@ -1,3 +1,4 @@
+from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
 from app.repository.api_requests_repository import ApiRequestsRepository
 from app.repository.apikey_repository import ApiKeyRepository
 from app.repository.base_repository import BaseRepository
@@ -20,6 +21,7 @@ from app.repository.wallet_transaction_repository import WalletTransactionReposi
 
 __all__ = [
     "BaseRepository",
+    "AbuseLimitCounterRepository",
     "GameRepository",
     "TaskParamsRepository",
     "TaskRepository",
