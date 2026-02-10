@@ -435,6 +435,12 @@
         </li>
         <li class="md-nav__item"><a href="#module-app.repository" class="md-nav__link">Module contents</a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.AbuseLimitCounterRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">AbuseLimitCounterRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.AbuseLimitCounterRepository.increment_and_get" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">AbuseLimitCounterRepository.increment_and_get()</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.ApiKeyRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyRepository</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.repository.ApiKeyRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyRepository.session_factory</span></code></a>
@@ -1818,6 +1824,21 @@ data.</p></li>
 </section>
 <section id="module-app.repository">
 <span id="module-contents"></span><h2 id="module-app.repository">Module contents<a class="headerlink" href="#module-app.repository" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.repository.AbuseLimitCounterRepository">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">AbuseLimitCounterRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.abuse_limit_counter.AbuseLimitCounter'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/abuse_limit_counter_repository.html#AbuseLimitCounterRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.AbuseLimitCounterRepository" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
+<p>Repository for abuse prevention counters.</p>
+<p>The increment operation is implemented to be safe under concurrent writes:
+- update existing bucket atomically (<cite>counter = counter + 1</cite>)
+- if bucket does not exist, insert
+- if concurrent insert collides, retry update</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.AbuseLimitCounterRepository.increment_and_get">
+<span class="sig-name descname"><span class="pre">increment_and_get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/app/repository/abuse_limit_counter_repository.html#AbuseLimitCounterRepository.increment_and_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.AbuseLimitCounterRepository.increment_and_get" title="Link to this definition">¶</a></dt>
+<dd><p>Increments a counter bucket and returns the resulting value.</p>
+</dd></dl>
+</dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.repository.ApiKeyRepository">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">ApiKeyRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractContextManager[~sqlalchemy.orm.session.Session]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.api_key.ApiKey'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/apikey_repository.html#ApiKeyRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.ApiKeyRepository" title="Link to this definition">¶</a></dt>
