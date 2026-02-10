@@ -1,4 +1,6 @@
+import os
 from datetime import datetime
+from typing import Optional
 from uuid import uuid4
 
 from sqlalchemy import Boolean
@@ -78,4 +80,45 @@ class ApiKey(SQLModel, table=True):
             and self.description == other.description
             and self.active == other.active
             and self.createdBy == other.createdBy
+        )
+
+    @staticmethod
+    def get_e2e_seed_api_key() -> Optional[str]:
+        """
+        Returns the E2E seed API key from environment variable
+        `E2E_API_KEY_GAME`, or None when missing/empty.
+        """
+        seed_value = os.getenv("E2E_API_KEY_GAME")
+        if seed_value is None:
+            return None
+        normalized_seed = seed_value.strip()
+        if not normalized_seed:
+            return None
+        return normalized_seed
+
+    @classmethod
+    def build_e2e_seed(
+        cls,
+        *,
+        created_by: str,
+        client: str = "e2e-seeded-client",
+        description: str = "Seeded API key from E2E_API_KEY_GAME",
+        oauth_user_id: Optional[str] = None,
+    ) -> Optional["ApiKey"]:
+        """
+        Builds an ApiKey model instance from `E2E_API_KEY_GAME`.
+
+        Returns None when the env variable is not configured.
+        """
+        seed_api_key = cls.get_e2e_seed_api_key()
+        if seed_api_key is None:
+            return None
+
+        return cls(
+            apiKey=seed_api_key,
+            client=client,
+            description=description,
+            active=True,
+            createdBy=created_by,
+            oauth_user_id=oauth_user_id,
         )

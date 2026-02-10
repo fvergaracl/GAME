@@ -3,6 +3,8 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
+import jwt
+
 from app.api.v1.endpoints import games
 from app.core.exceptions import ForbiddenError, InternalServerError, TooManyRequestsError
 from app.schema.games_schema import PatchGame, PostCreateGame, PostFindGame
@@ -49,6 +51,17 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     def tearDown(self):
         patch.stopall()
+
+    def test_extract_oauth_user_id_from_token_returns_sub(self):
+        token = jwt.encode(
+            {"sub": "oauth-user-1"},
+            "unit-test-secret-key-with-32-chars",
+            algorithm="HS256",
+        )
+        self.assertEqual(games._extract_oauth_user_id_from_token(token), "oauth-user-1")
+
+    def test_extract_oauth_user_id_from_token_returns_none_for_invalid_token(self):
+        self.assertIsNone(games._extract_oauth_user_id_from_token("not-a-jwt"))
 
     @staticmethod
     def _api_key_header(api_key="api-key-1"):
@@ -538,6 +551,35 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             game_id, "task-1", schema, "api-key-1"
         )
 
+    async def test_user_action_in_task_with_invalid_bearer_does_not_crash_when_api_key_is_valid(
+        self,
+    ):
+        game_id = uuid4()
+        schema = AddActionDidByUserInTask(
+            typeAction="click",
+            data={"x": 1},
+            description="desc",
+            externalUserId="u1",
+        )
+        service = MagicMock()
+        service.user_add_action_in_task = AsyncMock(return_value={"ok": True})
+
+        result = await games.user_action_in_task(
+            gameId=game_id,
+            externalTaskId="task-1",
+            schema=schema,
+            request=self._request(),
+            service=service,
+            abuse_prevention_service=self._abuse_service(),
+            service_log=MagicMock(),
+            service_oauth=self._oauth_service(user_exists=False, async_add=True),
+            token="malformed.jwt.token",
+            api_key_header=self._api_key_header("api-key-valid"),
+        )
+
+        self.assertEqual(result, {"ok": True})
+        self.mock_valid_access_token.assert_not_called()
+
     async def test_assign_points_to_user_with_simulated_flag(self):
         game_id = uuid4()
         schema = AsignPointsToExternalUserId(
@@ -566,6 +608,34 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         service.assign_points_to_user.assert_awaited_once_with(
             game_id, "task-1", schema, True, "api-key-1"
         )
+
+    async def test_assign_points_to_user_with_invalid_bearer_does_not_crash_when_api_key_is_valid(
+        self,
+    ):
+        game_id = uuid4()
+        schema = AsignPointsToExternalUserId(
+            externalUserId="u1",
+            data={"points": 1},
+            isSimulated=False,
+        )
+        service = MagicMock()
+        service.assign_points_to_user = AsyncMock(return_value={"points": 1})
+
+        result = await games.assign_points_to_user(
+            gameId=game_id,
+            externalTaskId="task-1",
+            schema=schema,
+            request=self._request(),
+            service=service,
+            abuse_prevention_service=self._abuse_service(),
+            service_log=MagicMock(),
+            service_oauth=self._oauth_service(user_exists=False, async_add=True),
+            token="malformed.jwt.token",
+            api_key_header=self._api_key_header("api-key-valid"),
+        )
+
+        self.assertEqual(result, {"points": 1})
+        self.mock_valid_access_token.assert_not_called()
 
     async def test_assign_points_to_user_defaults_simulated_flag_to_false(self):
         game_id = uuid4()

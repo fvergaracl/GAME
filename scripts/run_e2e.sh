@@ -43,6 +43,10 @@ debug() {
   fi
 }
 
+warn() {
+  printf '[E2E][warn] %s\n' "$*" >&2
+}
+
 fail() {
   printf '[E2E][error] %s\n' "$*" >&2
   exit 1
@@ -67,9 +71,17 @@ load_env_file() {
   local path="$1"
   [[ -f "$path" ]] || fail "Env file not found: $path"
   log "Loading environment from $path"
+
+  local -r valid_env_pattern='^[[:space:]]*(#|$|export[[:space:]]+[A-Za-z_][A-Za-z0-9_]*=|[A-Za-z_][A-Za-z0-9_]*=)'
+  local invalid_count
+  invalid_count="$(grep -Evc "$valid_env_pattern" "$path" || true)"
+  if [[ "${invalid_count:-0}" != "0" ]]; then
+    warn "Ignoring $invalid_count invalid env line(s) in $path (example: variable names with '-')."
+  fi
+
   set -a
-  # shellcheck source=/dev/null
-  source "$path"
+  # shellcheck disable=SC1090
+  source <(grep -E "$valid_env_pattern" "$path")
   set +a
 }
 

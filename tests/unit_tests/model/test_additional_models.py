@@ -123,6 +123,45 @@ def test_api_key_str_repr_and_eq():
     assert model == model_copy
 
 
+def test_api_key_get_e2e_seed_api_key_returns_none_when_env_is_missing(monkeypatch):
+    monkeypatch.delenv("E2E_API_KEY_GAME", raising=False)
+
+    assert ApiKey.get_e2e_seed_api_key() is None
+
+
+def test_api_key_get_e2e_seed_api_key_returns_trimmed_value(monkeypatch):
+    monkeypatch.setenv("E2E_API_KEY_GAME", "  seeded-key-123  ")
+
+    assert ApiKey.get_e2e_seed_api_key() == "seeded-key-123"
+
+
+def test_api_key_build_e2e_seed_returns_none_when_seed_is_not_configured(monkeypatch):
+    monkeypatch.delenv("E2E_API_KEY_GAME", raising=False)
+
+    seeded = ApiKey.build_e2e_seed(created_by="seed-creator")
+
+    assert seeded is None
+
+
+def test_api_key_build_e2e_seed_builds_model_from_env(monkeypatch):
+    monkeypatch.setenv("E2E_API_KEY_GAME", "seeded-key-456")
+
+    seeded = ApiKey.build_e2e_seed(
+        created_by="seed-creator",
+        client="seed-client",
+        description="seed-desc",
+        oauth_user_id="oauth-seed-user",
+    )
+
+    assert seeded is not None
+    assert seeded.apiKey == "seeded-key-456"
+    assert seeded.client == "seed-client"
+    assert seeded.description == "seed-desc"
+    assert seeded.active is True
+    assert seeded.createdBy == "seed-creator"
+    assert seeded.oauth_user_id == "oauth-seed-user"
+
+
 def test_abuse_limit_counter_str_repr_and_eq():
     model = _abuse_limit_counter()
     model_copy = _abuse_limit_counter()

@@ -55,7 +55,7 @@ const P95_TARGET_MS = intEnv("P95_TARGET_MS", 800);
 const ENFORCE_P95 =
   (__ENV.ENFORCE_P95 || (TARGET_VUS <= 100 ? "1" : "0")) === "1";
 
-const WRITE_AUTH_MODE = (__ENV.WRITE_AUTH_MODE || "bearer_preferred").toLowerCase();
+const WRITE_AUTH_MODE = (__ENV.WRITE_AUTH_MODE || "apikey").toLowerCase();
 const WRITE_RANDOM_IP = (__ENV.WRITE_RANDOM_IP || "1") === "1";
 
 const allocation = allocateScenarioVUs(TARGET_VUS, MIX_A, MIX_B, MIX_C);

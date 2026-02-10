@@ -382,6 +382,7 @@ poetry run pytest tests/e2e -q --e2e-keep-db
 Notes:
 - Script: `tests/load/game_api_loadtest.js`
 - Runner: `scripts/run_load_test.sh`
+- Default write auth mode is `apikey` (set `--write-auth-mode bearer` to stress bearer path).
 - Setup creates one game + 2 tasks + user pool, and teardown deletes the created game.
 - If setup creates an API key, current API has no revoke/delete endpoint, so that key cannot be automatically removed.
 

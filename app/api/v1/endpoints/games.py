@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
+import jwt
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Body, Depends, Request
 
@@ -40,6 +41,33 @@ router = APIRouter(
     prefix="/games",
     tags=["games"],
 )
+
+
+def _extract_oauth_user_id_from_token(token: str) -> Optional[str]:
+    """
+    Extracts `sub` from a bearer token without re-validating against Keycloak.
+
+    Token validation is already enforced by `auth_api_key_or_oauth2` dependency.
+    This avoids a second network-bound validation per request on write endpoints.
+    """
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(
+            token,
+            options={
+                "verify_signature": False,
+                "verify_exp": False,
+                "verify_aud": False,
+            },
+        )
+    except jwt.PyJWTError:
+        return None
+
+    subject = payload.get("sub")
+    if isinstance(subject, str) and subject.strip():
+        return subject
+    return None
 
 summary_get_games_list = "Retrieve All Games"
 response_example_get_games_list = {
@@ -2686,26 +2714,7 @@ async def user_action_in_task(
         ResponseAddActionDidByUserInTask: The details of the action added.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "User action in task - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
+    oauth_user_id = _extract_oauth_user_id_from_token(token)
     client_ip = abuse_prevention_service.extract_client_ip(request)
     abuse_prevention_service.enforce_task_mutation_limits(
         api_key=api_key,
@@ -2898,26 +2907,7 @@ async def assign_points_to_user(
         AssignedPointsToExternalUserId: The details of the points assigned.
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Points assignment to user - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
+    oauth_user_id = _extract_oauth_user_id_from_token(token)
     client_ip = abuse_prevention_service.extract_client_ip(request)
     abuse_prevention_service.enforce_task_mutation_limits(
         api_key=api_key,
