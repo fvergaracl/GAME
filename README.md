@@ -294,6 +294,16 @@ poetry run pytest
 poetry run pytest --cov=app --cov-branch
 ```
 
+### E2E tests
+
+```bash
+# Run all E2E tests
+env SENTRY_DSN='' poetry run pytest tests/e2e -q
+
+# Run a specific E2E test file
+env SENTRY_DSN='' poetry run pytest tests/e2e/test_app_smoke_e2e.py -q
+```
+
 ---
 
 # Project Structure
