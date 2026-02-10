@@ -2,6 +2,7 @@ from contextlib import AbstractContextManager, contextmanager
 from typing import Any, Callable
 
 from sqlalchemy import create_engine, orm
+from sqlalchemy.engine import make_url
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import Session
 
@@ -39,14 +40,37 @@ class Database:
         _session_factory: SQLAlchemy session factory.
     """
 
-    def __init__(self, db_url: str) -> None:
+    def __init__(
+        self,
+        db_url: str,
+        *,
+        echo: bool = False,
+        pool_pre_ping: bool = True,
+        pool_size: int = 20,
+        max_overflow: int = 40,
+        pool_timeout_seconds: int = 30,
+        pool_recycle_seconds: int = 1800,
+    ) -> None:
         """
         Initializes the Database with the provided database URL.
 
         Args:
             db_url (str): The database URL.
         """
-        self._engine = create_engine(db_url, echo=True)
+        engine_kwargs = {"echo": echo}
+        dialect_name = make_url(db_url).get_backend_name()
+        if dialect_name != "sqlite":
+            engine_kwargs.update(
+                {
+                    "pool_pre_ping": pool_pre_ping,
+                    "pool_size": max(1, int(pool_size)),
+                    "max_overflow": max(0, int(max_overflow)),
+                    "pool_timeout": max(1, int(pool_timeout_seconds)),
+                    "pool_recycle": max(30, int(pool_recycle_seconds)),
+                }
+            )
+
+        self._engine = create_engine(db_url, **engine_kwargs)
         self._session_factory = orm.scoped_session(
             orm.sessionmaker(
                 autocommit=False,

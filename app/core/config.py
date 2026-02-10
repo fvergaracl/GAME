@@ -69,6 +69,14 @@ class Configs(BaseSettings):
           external user id inside the short window.
         ABUSE_DAILY_QUOTA_PER_API_KEY (int): Daily quota for sensitive
           operations per API key.
+
+        SQLALCHEMY_ECHO (bool): Enables SQLAlchemy SQL logging.
+        DB_POOL_PRE_PING (bool): Enables connection health-check before use.
+        DB_POOL_SIZE (int): Persistent DB connections maintained in pool.
+        DB_MAX_OVERFLOW (int): Extra connections allowed above pool size.
+        DB_POOL_TIMEOUT_SECONDS (int): Seconds to wait for a free pool connection.
+        DB_POOL_RECYCLE_SECONDS (int): Lifetime before recycling pooled
+          connections.
     """
 
     ENV: str = os.getenv("ENV", "dev")
@@ -145,6 +153,13 @@ class Configs(BaseSettings):
     ABUSE_DAILY_QUOTA_PER_API_KEY: int = _env_to_int(
         "ABUSE_DAILY_QUOTA_PER_API_KEY", 10000
     )
+
+    SQLALCHEMY_ECHO: bool = _env_to_bool("SQLALCHEMY_ECHO", False)
+    DB_POOL_PRE_PING: bool = _env_to_bool("DB_POOL_PRE_PING", True)
+    DB_POOL_SIZE: int = _env_to_int("DB_POOL_SIZE", 20)
+    DB_MAX_OVERFLOW: int = _env_to_int("DB_MAX_OVERFLOW", 40)
+    DB_POOL_TIMEOUT_SECONDS: int = _env_to_int("DB_POOL_TIMEOUT_SECONDS", 30)
+    DB_POOL_RECYCLE_SECONDS: int = _env_to_int("DB_POOL_RECYCLE_SECONDS", 1800)
 
 
 class TestConfigs(Configs):

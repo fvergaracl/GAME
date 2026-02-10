@@ -188,6 +188,14 @@ KEYCLOAK_URL=http://localhost:8080
 KEYCLOAK_REALM=game
 KEYCLOAK_CLIENT_ID=game-api
 KEYCLOAK_CLIENT_SECRET=change-me
+
+# DB pool tuning (recommended for concurrent load)
+SQLALCHEMY_ECHO=false
+DB_POOL_PRE_PING=true
+DB_POOL_SIZE=20
+DB_MAX_OVERFLOW=40
+DB_POOL_TIMEOUT_SECONDS=30
+DB_POOL_RECYCLE_SECONDS=1800
 ```
 
 ## Migrate DB

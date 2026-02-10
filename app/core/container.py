@@ -112,7 +112,16 @@ class Container(containers.DeclarativeContainer):
         ]
     )
 
-    db = providers.Singleton(Database, db_url=configs.DATABASE_URI)
+    db = providers.Singleton(
+        Database,
+        db_url=configs.DATABASE_URI,
+        echo=configs.SQLALCHEMY_ECHO,
+        pool_pre_ping=configs.DB_POOL_PRE_PING,
+        pool_size=configs.DB_POOL_SIZE,
+        max_overflow=configs.DB_MAX_OVERFLOW,
+        pool_timeout_seconds=configs.DB_POOL_TIMEOUT_SECONDS,
+        pool_recycle_seconds=configs.DB_POOL_RECYCLE_SECONDS,
+    )
 
     # Repository (Add in here)
 
