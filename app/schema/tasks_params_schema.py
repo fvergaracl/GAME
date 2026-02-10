@@ -1,26 +1,37 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class BaseTaskParams(BaseModel):
     """
-    Base model for task parameters
+    Base schema for task-level strategy parameters.
 
     Attributes:
-        key (str): Parameter key
-        value (str | int | float | bool): Parameter value
+        key (str): Parameter key consumed by the task strategy logic.
+        value (str | int | float | bool | dict): Parameter value associated
+          with `key`.
     """
 
-    key: str
-    value: str | int | float | bool | dict
+    key: str = Field(
+        ...,
+        description="Task parameter key.",
+        example="variable_bonus_points",
+    )
+    value: str | int | float | bool | dict = Field(
+        ...,
+        description="Task parameter value (supports scalar values and objects).",
+        example=20,
+    )
 
     class Config:
         orm_mode = True
 
 
 class CreateTaskParams(BaseTaskParams):
-    """Model for creating task parameters."""
+    """
+    Public payload schema for creating task parameters.
+    """
 
     ...
 
@@ -30,11 +41,20 @@ class CreateTaskParams(BaseTaskParams):
 
 class InsertTaskParams(BaseTaskParams):
     """
-    Model for inserting task parameters
+    Internal schema used to persist task parameters.
 
     Attributes:
-        taskId (str): Task ID
+        taskId (str): Internal task identifier.
+        apiKey_used (Optional[str]): API key used in the originating request.
     """
 
-    taskId: str
-    apiKey_used: Optional[str]
+    taskId: str = Field(
+        ...,
+        description="Internal UUID of the task (serialized as string).",
+        example="2a18d9a9-8eb5-4d33-a7bd-9590ea7ea41e",
+    )
+    apiKey_used: Optional[str] = Field(
+        default=None,
+        description="API key used to create this task parameter.",
+        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+    )
