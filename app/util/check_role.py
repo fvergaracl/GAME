@@ -1,3 +1,4 @@
+import os
 from typing import Any, Mapping
 
 
@@ -14,8 +15,9 @@ def check_role(
     - Checks in order:
         1) realm_access.roles (Keycloak global roles)
         2) top-level "roles" (custom mapped tokens)
-        3) resource_access["account"].roles (client roles ONLY for 'account')
-    - Ignores roles from other clients (prevents privilege bleed)
+        3) resource_access[KEYCLOAK_CLIENT_ID].roles (client roles)
+        4) resource_access["account"].roles (compatibility fallback)
+    - Ignores roles from unrelated clients (prevents privilege bleed)
 
     This function is idempotent, side-effect free, and safe against malformed
       tokens.
@@ -41,13 +43,19 @@ def check_role(
     if not isinstance(resource_access, Mapping):
         return False
 
-    account = resource_access.get("account")
-    if not isinstance(account, Mapping):
-        return False
+    client_id = os.getenv("KEYCLOAK_CLIENT_ID", "").strip()
+    if client_id:
+        client_access = resource_access.get(client_id)
+        if isinstance(client_access, Mapping):
+            client_roles = client_access.get("roles")
+            if isinstance(client_roles, (list, tuple, set)) and required_role in client_roles:
+                return True
 
-    account_roles = account.get("roles")
-    if isinstance(account_roles, (list, tuple, set)) and required_role in account_roles:
-        return True
+    account = resource_access.get("account")
+    if isinstance(account, Mapping):
+        account_roles = account.get("roles")
+        if isinstance(account_roles, (list, tuple, set)) and required_role in account_roles:
+            return True
 
     return False
 

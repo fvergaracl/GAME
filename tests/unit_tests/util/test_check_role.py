@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 
 # Assuming the check_role function is defined here
 from app.util.check_role import check_role
@@ -88,6 +89,31 @@ class TestCheckRole(unittest.TestCase):
         """
         token_decoded = {"roles": ["admin", "creator"]}
         self.assertTrue(check_role(token_decoded, "creator"))
+
+    def test_role_present_in_resource_access_client_id(self):
+        """
+        Test when the role is present in resource_access[KEYCLOAK_CLIENT_ID].roles.
+        """
+        token_decoded = {
+            "resource_access": {
+                "game-backend": {"roles": ["AdministratorGAME", "user"]},
+                "other-client": {"roles": ["user"]},
+            }
+        }
+        with patch.dict("os.environ", {"KEYCLOAK_CLIENT_ID": "game-backend"}):
+            self.assertTrue(check_role(token_decoded, "AdministratorGAME"))
+
+    def test_role_not_taken_from_other_clients(self):
+        """
+        Test that roles in non-configured clients are ignored.
+        """
+        token_decoded = {
+            "resource_access": {
+                "other-client": {"roles": ["AdministratorGAME"]},
+            }
+        }
+        with patch.dict("os.environ", {"KEYCLOAK_CLIENT_ID": "game-backend"}):
+            self.assertFalse(check_role(token_decoded, "AdministratorGAME"))
 
 
 if __name__ == "__main__":

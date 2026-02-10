@@ -1,6 +1,8 @@
 {
   "realm": "${KEYCLOAK_REALM}",
   "enabled": true,
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
   "clients": [
     {
       "clientId": "${KEYCLOAK_CLIENT_ID}",
@@ -52,7 +54,7 @@
   },
   "users": [
     {
-      "username": "game_admin",
+      "username": "game_admin@example.com",
       "email": "game_admin@example.com",
       "enabled": true,
       "emailVerified": true,
@@ -70,7 +72,7 @@
       }
     },
     {
-      "username": "game_user",
+      "username": "game_user@example.com",
       "email": "game_user@example.com",
       "enabled": true,
       "emailVerified": true,
