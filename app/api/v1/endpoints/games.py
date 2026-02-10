@@ -2656,8 +2656,8 @@ Returns the persisted action event:
 async def user_action_in_task(
     gameId: UUID,
     externalTaskId: str,
+    request: Request,
     schema: AddActionDidByUserInTask = Body(..., example=request_example_user_action),
-    request: Request = None,
     service: UserActionsService = Depends(Provide[Container.user_actions_service]),
     abuse_prevention_service: AbusePreventionService = Depends(
         Provide[Container.abuse_prevention_service]
@@ -2868,10 +2868,10 @@ Returns the assigned points event:
 async def assign_points_to_user(
     gameId: UUID,
     externalTaskId: str,
+    request: Request,
     schema: AsignPointsToExternalUserId = Body(
         ..., example=request_example_assign_points_to_user
     ),
-    request: Request = None,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
     abuse_prevention_service: AbusePreventionService = Depends(
         Provide[Container.abuse_prevention_service]
