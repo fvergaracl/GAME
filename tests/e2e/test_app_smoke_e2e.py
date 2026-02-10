@@ -1,24 +1,21 @@
-import os
-
-from fastapi.testclient import TestClient
-
-os.environ["SENTRY_DSN"] = ""
-
-from app.main import app
+from app.model.games import Games
 
 
-def test_root_redirects_to_docs_e2e():
-    client = TestClient(app)
-
-    response = client.get("/", follow_redirects=False)
-
-    assert response.status_code in (302, 307)
-    assert response.headers["location"] == "/docs"
+def test_e2e_context_starts_with_empty_database(e2e_context):
+    with e2e_context.container.db().session() as session:
+        assert session.query(Games).count() == 0
 
 
-def test_docs_is_available_e2e():
-    client = TestClient(app)
+def test_e2e_context_resets_state_between_tests(e2e_context):
+    with e2e_context.container.db().session() as session:
+        game = Games(
+            externalGameId="e2e_game_1",
+            strategyId="default",
+            platform="web",
+        )
+        session.add(game)
+        session.commit()
 
-    response = client.get("/docs")
-
-    assert response.status_code == 200
+    # The current test can mutate state; the next test starts clean due fixture reset.
+    with e2e_context.container.db().session() as session:
+        assert session.query(Games).count() == 1

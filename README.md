@@ -297,11 +297,17 @@ poetry run pytest --cov=app --cov-branch
 ### E2E tests
 
 ```bash
-# Run all E2E tests
-env SENTRY_DSN='' poetry run pytest tests/e2e -q
+# Run all E2E tests (controlled environment, clean DB per test)
+poetry run pytest tests/e2e -q
 
 # Run a specific E2E test file
-env SENTRY_DSN='' poetry run pytest tests/e2e/test_app_smoke_e2e.py -q
+poetry run pytest tests/e2e/test_app_smoke_e2e.py -q
+
+# Start E2E tests from a specific SQLite snapshot
+poetry run pytest tests/e2e -q --e2e-base-snapshot /absolute/path/to/base_snapshot.sqlite
+
+# Keep generated SQLite files for debugging
+poetry run pytest tests/e2e -q --e2e-keep-db
 ```
 
 ---
