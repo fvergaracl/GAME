@@ -217,7 +217,20 @@ Start infra:
 docker-compose -f docker-compose-dev.yml up -d postgrespostgres keycloakgame
 ```
 
-Get token:
+Run E2E in one command (loads `.env`, prepares auth when needed, runs pytest):
+
+```bash
+# Controlled E2E (isolated sqlite, deterministic, no real infra calls)
+./scripts/run_e2e.sh
+
+# Controlled + real-infrastructure E2E (real HTTP + PostgreSQL)
+./scripts/run_e2e.sh --real
+
+# Use a different env file (for example integrated environment)
+./scripts/run_e2e.sh --env-file .env.integrated --real
+```
+
+Manual token/API key flow (optional):
 
 ```bash
 TOKEN=$(curl -s -X POST "$KEYCLOAK_URL/realms/$KEYCLOAK_REALM/protocol/openid-connect/token" \
@@ -294,11 +307,39 @@ poetry run pytest
 poetry run pytest --cov=app --cov-branch
 ```
 
+### Unit tests
+
+```bash
+# Recommended: one-command unit test runner
+./scripts/run_unit_tests.sh
+
+# Stop on first failure
+./scripts/run_unit_tests.sh --fail-fast
+
+# Coverage (branch + html report)
+./scripts/run_unit_tests.sh --cov --cov-branch --cov-report html
+
+# Run specific unit file
+./scripts/run_unit_tests.sh --file tests/unit_tests/services/test_user_points_service.py
+
+# Show all options
+./scripts/run_unit_tests.sh --help
+```
+
 ### E2E tests
 
 ```bash
-# Run all E2E tests (controlled environment, clean DB per test)
-poetry run pytest tests/e2e -q
+# Recommended: one-command E2E runner (loads .env automatically)
+./scripts/run_e2e.sh
+
+# Include real-infrastructure E2E (requires API + PostgreSQL + Keycloak running)
+./scripts/run_e2e.sh --real
+
+# Same as above, but using .env.integrated
+./scripts/run_e2e.sh --env-file .env.integrated --real
+
+# Optional: direct pytest command for controlled E2E only
+poetry run pytest tests/e2e -q -m "not e2e_real_http"
 
 # Run a specific E2E test file
 poetry run pytest tests/e2e/test_app_smoke_e2e.py -q
@@ -309,39 +350,38 @@ poetry run pytest tests/e2e -q --e2e-base-snapshot /absolute/path/to/base_snapsh
 # Keep generated SQLite files for debugging
 poetry run pytest tests/e2e -q --e2e-keep-db
 
-# Run real-infrastructure E2E for POST /apikey/create
-# Uses values from .env (E2E_* + Keycloak + DB).
-set -a && source .env && set +a
-RUN_REAL_E2E=1 poetry run pytest tests/e2e/test_apikey_create_flow_e2e.py -q
+# Run only real-infrastructure E2E for POST /apikey/create
+./scripts/run_e2e.sh --real -- tests/e2e/test_apikey_create_flow_e2e.py -q
 ```
 
 ### Load tests (k6)
 
 ```bash
-# 100 VUs (default mode), warm-up 30s, hold 2m, ramp down 30s
-set -a && source .env && set +a
-k6 run tests/load/game_api_loadtest.js
+# Recommended: one-command load runner (loads .env automatically)
+./scripts/run_load_test.sh
 
-# 1000 VUs mode
-set -a && source .env && set +a
-LOAD_MODE=1000 \
-k6 run tests/load/game_api_loadtest.js
+# Preset: 1000 VUs mode
+./scripts/run_load_test.sh --mode 1000
 
-# Custom N VUs + custom scenario mix (A/B/C) + custom durations
-set -a && source .env && set +a
-TARGET_VUS=300 \
-MIX_A=60 MIX_B=30 MIX_C=10 \
-WARMUP_DURATION=20s HOLD_DURATION=2m RAMP_DOWN_DURATION=20s \
-k6 run tests/load/game_api_loadtest.js
+# Custom N VUs + custom scenario mix (A/B/C) + durations
+./scripts/run_load_test.sh \
+  --vus 300 \
+  --mix-a 60 --mix-b 30 --mix-c 10 \
+  --warmup 20s --hold 2m --ramp-down 20s
 
-# Reuse existing API key (skips API key creation in setup)
-set -a && source .env && set +a
-# set X_API_KEY in .env (or EXISTING_API_KEY / BOOTSTRAP_X_API_KEY)
-k6 run tests/load/game_api_loadtest.js
+# Use integrated env file
+./scripts/run_load_test.sh --env-file .env.integrated --mode 100
+
+# Show all options
+./scripts/run_load_test.sh --help
+
+# Pass extra native k6 args after '--'
+./scripts/run_load_test.sh --mode 100 -- --http-debug=full
 ```
 
 Notes:
 - Script: `tests/load/game_api_loadtest.js`
+- Runner: `scripts/run_load_test.sh`
 - Setup creates one game + 2 tasks + user pool, and teardown deletes the created game.
 - If setup creates an API key, current API has no revoke/delete endpoint, so that key cannot be automatically removed.
 
