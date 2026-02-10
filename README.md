@@ -308,7 +308,42 @@ poetry run pytest tests/e2e -q --e2e-base-snapshot /absolute/path/to/base_snapsh
 
 # Keep generated SQLite files for debugging
 poetry run pytest tests/e2e -q --e2e-keep-db
+
+# Run real-infrastructure E2E for POST /apikey/create
+# Uses values from .env (E2E_* + Keycloak + DB).
+set -a && source .env && set +a
+RUN_REAL_E2E=1 poetry run pytest tests/e2e/test_apikey_create_flow_e2e.py -q
 ```
+
+### Load tests (k6)
+
+```bash
+# 100 VUs (default mode), warm-up 30s, hold 2m, ramp down 30s
+set -a && source .env && set +a
+k6 run tests/load/game_api_loadtest.js
+
+# 1000 VUs mode
+set -a && source .env && set +a
+LOAD_MODE=1000 \
+k6 run tests/load/game_api_loadtest.js
+
+# Custom N VUs + custom scenario mix (A/B/C) + custom durations
+set -a && source .env && set +a
+TARGET_VUS=300 \
+MIX_A=60 MIX_B=30 MIX_C=10 \
+WARMUP_DURATION=20s HOLD_DURATION=2m RAMP_DOWN_DURATION=20s \
+k6 run tests/load/game_api_loadtest.js
+
+# Reuse existing API key (skips API key creation in setup)
+set -a && source .env && set +a
+# set X_API_KEY in .env (or EXISTING_API_KEY / BOOTSTRAP_X_API_KEY)
+k6 run tests/load/game_api_loadtest.js
+```
+
+Notes:
+- Script: `tests/load/game_api_loadtest.js`
+- Setup creates one game + 2 tasks + user pool, and teardown deletes the created game.
+- If setup creates an API key, current API has no revoke/delete endpoint, so that key cannot be automatically removed.
 
 ---
 
