@@ -237,8 +237,9 @@
             
   <h1 id="modules-app-repository-user-repository--page-root">Source code for app.repository.user_repository</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractContextManager</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.exc</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegrityError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.model.users</span><span class="w"> </span><span class="kn">import</span> <span class="n">Users</span>
@@ -276,24 +277,41 @@
 <div class="viewcode-block" id="UserRepository.create_user_by_externalUserId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_repository.UserRepository.create_user_by_externalUserId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user_by_externalUserId</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">externalUserId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Users</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates a new user with the provided external user ID.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            externalUserId (str): The external user ID.</span>
-<span class="sd">            oauth_user_id (str): The OAuth user ID.</span>
+<span class="sd">            oauth_user_id (Optional[str]): The OAuth user ID.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Users: The created user.</span>
+<span class="sd">            Users: The created user or the already-existing user when a</span>
+<span class="sd">              concurrent insert race happens.</span>
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">user</span> <span class="o">=</span> <span class="n">Users</span><span class="p">(</span><span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span> <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">)</span>
             <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-            <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">user</span></div>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">user</span>
+            <span class="k">except</span> <span class="n">IntegrityError</span><span class="p">:</span>
+                <span class="c1"># Concurrency-safe behavior for unique externalUserId:</span>
+                <span class="c1"># if another transaction created the same user first,</span>
+                <span class="c1"># return that row instead of bubbling a 500.</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+                <span class="n">existing_user</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">first</span><span class="p">()</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">existing_user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">existing_user</span>
+                <span class="k">raise</span></div>
 </div>
 
 </pre></div>

@@ -1755,17 +1755,21 @@ data.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.repository.user_repository.UserRepository.create_user_by_externalUserId">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_user_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Users</span></span></span><a class="reference internal" href="../_modules/app/repository/user_repository.html#UserRepository.create_user_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_repository.UserRepository.create_user_by_externalUserId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_user_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Users</span></span></span><a class="reference internal" href="../_modules/app/repository/user_repository.html#UserRepository.create_user_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_repository.UserRepository.create_user_by_externalUserId" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a new user with the provided external user ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The external user ID.</p></li>
-<li><p><strong>oauth_user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The OAuth user ID.</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – The OAuth user ID.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The created user.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>The created user or the already-existing user when a</dt><dd><p>concurrent insert race happens.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Users</p>
@@ -3171,17 +3175,21 @@ data.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.repository.UserRepository.create_user_by_externalUserId">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_user_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Users</span></span></span><a class="reference internal" href="../_modules/app/repository/user_repository.html#UserRepository.create_user_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserRepository.create_user_by_externalUserId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_user_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Users</span></span></span><a class="reference internal" href="../_modules/app/repository/user_repository.html#UserRepository.create_user_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserRepository.create_user_by_externalUserId" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a new user with the provided external user ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The external user ID.</p></li>
-<li><p><strong>oauth_user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The OAuth user ID.</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – The OAuth user ID.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The created user.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>The created user or the already-existing user when a</dt><dd><p>concurrent insert race happens.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Users</p>
