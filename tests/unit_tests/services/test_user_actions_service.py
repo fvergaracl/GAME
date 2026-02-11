@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
-from app.core.exceptions import GoneError
+from app.core.exceptions import GoneError, NotFoundError
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_actions_repository import UserActionsRepository
@@ -46,7 +46,7 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         self.users_repository.create_user_by_externalUserId = AsyncMock(
             return_value=SimpleNamespace(id=user_id, externalUserId="new_user")
         )
-        self.task_repository.read_by_column.return_value = SimpleNamespace(
+        self.task_repository.read_by_gameId_and_externalTaskId.return_value = SimpleNamespace(
             status="open"
         )
 
@@ -93,7 +93,7 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         self.users_repository.read_by_column.return_value = existing_user
         self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
         self.users_repository.create_user_by_externalUserId = AsyncMock()
-        self.task_repository.read_by_column.return_value = SimpleNamespace(
+        self.task_repository.read_by_gameId_and_externalTaskId.return_value = SimpleNamespace(
             status="open"
         )
         self.user_actions_repository.create = AsyncMock(
@@ -130,7 +130,7 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         user_id = uuid4()
         self.users_repository.read_by_column.return_value = SimpleNamespace(id=user_id)
         self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
-        self.task_repository.read_by_column.return_value = SimpleNamespace(
+        self.task_repository.read_by_gameId_and_externalTaskId.return_value = SimpleNamespace(
             status="closed"
         )
         action = AddActionDidByUserInTask(
@@ -143,6 +143,26 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(GoneError):
             await self.service.user_add_action_in_task(
                 str(game_id), "task-ext-3", action
+            )
+
+        self.user_actions_repository.create.assert_not_called()
+
+    async def test_user_add_action_in_task_raises_when_task_is_missing(self):
+        game_id = uuid4()
+        user_id = uuid4()
+        self.users_repository.read_by_column.return_value = SimpleNamespace(id=user_id)
+        self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
+        self.task_repository.read_by_gameId_and_externalTaskId.return_value = None
+        action = AddActionDidByUserInTask(
+            typeAction="click",
+            data={"k": 2},
+            description="missing task action",
+            externalUserId="user_missing_task",
+        )
+
+        with self.assertRaises(NotFoundError):
+            await self.service.user_add_action_in_task(
+                str(game_id), "task-missing", action
             )
 
         self.user_actions_repository.create.assert_not_called()

@@ -130,6 +130,32 @@ async def test_duplicate_error(repository):
         await repository.create(schema2)
 
 
+@pytest.mark.asyncio
+async def test_create_with_external_session_and_no_auto_commit_flushes_only():
+    repository, mock_session = build_mocked_repository()
+    schema = DummySchema({"name": "external-session", "value": "v"})
+
+    created = await repository.create(
+        schema,
+        session=mock_session,
+        auto_commit=False,
+    )
+
+    mock_session.add.assert_called_once_with(created)
+    mock_session.flush.assert_called_once()
+    mock_session.commit.assert_not_called()
+    mock_session.refresh.assert_called_once_with(created)
+
+
+@pytest.mark.asyncio
+async def test_create_without_external_session_rejects_auto_commit_false():
+    repository, _ = build_mocked_repository()
+    schema = DummySchema({"name": "invalid-auto-commit", "value": "v"})
+
+    with pytest.raises(ValueError):
+        await repository.create(schema, auto_commit=False)
+
+
 def test_not_found_error(repository):
     with pytest.raises(NotFoundError):
         repository.read_by_id(999)

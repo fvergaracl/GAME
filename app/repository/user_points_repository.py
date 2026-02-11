@@ -1,6 +1,6 @@
 from contextlib import AbstractContextManager
 from datetime import timedelta, timezone
-from typing import Callable
+from typing import Callable, Optional
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -71,6 +71,38 @@ class UserPointsRepository(BaseRepository):
                 .first()
             )
             return query
+
+    def read_by_user_task_and_idempotency(
+        self,
+        user_id,
+        task_id,
+        idempotency_key: str,
+        session: Optional[Session] = None,
+    ):
+        """
+        Returns a previously persisted user-points row for the same
+        (userId, taskId, idempotencyKey), if it exists.
+        """
+        if not idempotency_key:
+            return None
+        if session is None:
+            with self.session_factory() as managed_session:
+                return self.read_by_user_task_and_idempotency(
+                    user_id=user_id,
+                    task_id=task_id,
+                    idempotency_key=idempotency_key,
+                    session=managed_session,
+                )
+
+        return (
+            session.query(self.model)
+            .filter(
+                self.model.userId == user_id,
+                self.model.taskId == task_id,
+                self.model.idempotencyKey == idempotency_key,
+            )
+            .first()
+        )
 
     def get_all_UserPoints_by_gameId(self, gameId):
         """

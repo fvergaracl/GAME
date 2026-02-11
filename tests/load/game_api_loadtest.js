@@ -44,7 +44,7 @@ const MAX_ATTEMPTS = intEnv("MAX_ATTEMPTS", 3);
 const BACKOFF_MS = intEnv("BACKOFF_MS", 120);
 const BACKOFF_FACTOR = floatEnv("BACKOFF_FACTOR", 2);
 const RETRYABLE_STATUS_CODES = parseStatusCodes(
-  __ENV.RETRYABLE_STATUS_CODES || "408,429,502,503,504"
+  __ENV.RETRYABLE_STATUS_CODES || "408,502,503,504"
 );
 
 const ERROR_RATE_THRESHOLD = floatEnv(
@@ -57,6 +57,16 @@ const ENFORCE_P95 =
 
 const WRITE_AUTH_MODE = (__ENV.WRITE_AUTH_MODE || "apikey").toLowerCase();
 const WRITE_RANDOM_IP = (__ENV.WRITE_RANDOM_IP || "1") === "1";
+const UNIQUE_WRITE_USERS = (__ENV.UNIQUE_WRITE_USERS || "0") === "1";
+
+const ENDPOINT_TASK_ACTION = "task_action";
+const ENDPOINT_TASK_POINTS = "task_points";
+
+const SCENARIO_B_ERROR_RATE_THRESHOLD = floatEnv("SCENARIO_B_ERROR_RATE_THRESHOLD", 0.01);
+const SCENARIO_B_P95_TARGET_MS = intEnv("SCENARIO_B_P95_TARGET_MS", 800);
+const SCENARIO_B_P99_TARGET_MS = intEnv("SCENARIO_B_P99_TARGET_MS", 1500);
+const SCENARIO_B_ERROR_SAMPLE_LIMIT = intEnv("SCENARIO_B_ERROR_SAMPLE_LIMIT", 20);
+const SCENARIO_B_ERROR_SAMPLE_VU = intEnv("SCENARIO_B_ERROR_SAMPLE_VU", 1);
 
 const allocation = allocateScenarioVUs(TARGET_VUS, MIX_A, MIX_B, MIX_C);
 
@@ -70,9 +80,21 @@ const scenarioASuccess = new Rate("scenario_a_success_rate");
 const scenarioBStatus2xx = new Counter("scenario_b_status_2xx");
 const scenarioBStatus4xx = new Counter("scenario_b_status_4xx");
 const scenarioBStatus5xx = new Counter("scenario_b_status_5xx");
+const scenarioBStatus400 = new Counter("scenario_b_status_400");
+const scenarioBStatus401 = new Counter("scenario_b_status_401");
+const scenarioBStatus403 = new Counter("scenario_b_status_403");
+const scenarioBStatus404 = new Counter("scenario_b_status_404");
+const scenarioBStatus409 = new Counter("scenario_b_status_409");
+const scenarioBStatus422 = new Counter("scenario_b_status_422");
+const scenarioBStatus429 = new Counter("scenario_b_status_429");
+const scenarioBStatus500 = new Counter("scenario_b_status_500");
+const scenarioBStatus503 = new Counter("scenario_b_status_503");
 const scenarioBRequests = new Counter("scenario_b_requests_total");
 const scenarioBLatency = new Trend("scenario_b_req_duration_ms", true);
 const scenarioBSuccess = new Rate("scenario_b_success_rate");
+const scenarioBEndpointLatency = new Trend("scenario_b_endpoint_req_duration_ms", true);
+const scenarioBEndpointSuccess = new Rate("scenario_b_endpoint_success_rate");
+const scenarioBEndpointErrorRate = new Rate("scenario_b_endpoint_error_rate");
 
 const scenarioCStatus2xx = new Counter("scenario_c_status_2xx");
 const scenarioCStatus4xx = new Counter("scenario_c_status_4xx");
@@ -83,6 +105,20 @@ const scenarioCSuccess = new Rate("scenario_c_success_rate");
 
 const thresholds = {
   http_req_failed: [`rate<${ERROR_RATE_THRESHOLD}`],
+  [`scenario_b_endpoint_error_rate{endpoint:${ENDPOINT_TASK_ACTION}}`]: [
+    `rate<${SCENARIO_B_ERROR_RATE_THRESHOLD}`,
+  ],
+  [`scenario_b_endpoint_error_rate{endpoint:${ENDPOINT_TASK_POINTS}}`]: [
+    `rate<${SCENARIO_B_ERROR_RATE_THRESHOLD}`,
+  ],
+  [`scenario_b_endpoint_req_duration_ms{endpoint:${ENDPOINT_TASK_ACTION}}`]: [
+    `p(95)<${SCENARIO_B_P95_TARGET_MS}`,
+    `p(99)<${SCENARIO_B_P99_TARGET_MS}`,
+  ],
+  [`scenario_b_endpoint_req_duration_ms{endpoint:${ENDPOINT_TASK_POINTS}}`]: [
+    `p(95)<${SCENARIO_B_P95_TARGET_MS}`,
+    `p(99)<${SCENARIO_B_P99_TARGET_MS}`,
+  ],
 };
 if (ENFORCE_P95) {
   thresholds.http_req_duration = [`p(95)<${P95_TARGET_MS}`];
@@ -93,6 +129,8 @@ export const options = {
   thresholds: thresholds,
   scenarios: buildScenarios(allocation),
 };
+
+let scenarioBErrorSampleCount = 0;
 
 function buildScenarios(vusByScenario) {
   const scenarios = {};
@@ -304,9 +342,22 @@ export function scenarioBWriteHeavy(data) {
   const taskIndex = (__ITER + __VU) % data.taskExternalIds.length;
   const taskExternalId = data.taskExternalIds[taskIndex];
   const userIndex = (__VU * 131 + __ITER * 17) % data.userPool.length;
-  const externalUserId = data.userPool[userIndex];
+  const externalUserId = UNIQUE_WRITE_USERS
+    ? uniqueWriteExternalUserId(data.runId)
+    : data.userPool[userIndex];
 
   const writeHeaders = authHeadersForWrites(data, userIndex);
+  const actionCorrelationId = correlationIdForWrite(data.runId, "action");
+  const pointsCorrelationId = correlationIdForWrite(data.runId, "points");
+  const actionHeaders = mergeHeaders(writeHeaders, {
+    "Content-Type": "application/json",
+    "X-Correlation-ID": actionCorrelationId,
+  });
+  const pointsHeaders = mergeHeaders(writeHeaders, {
+    "Content-Type": "application/json",
+    "X-Correlation-ID": pointsCorrelationId,
+    "Idempotency-Key": pointsCorrelationId,
+  });
 
   const actionPayload = {
     typeAction: "TASK_COMPLETED",
@@ -315,6 +366,8 @@ export function scenarioBWriteHeavy(data) {
       runId: data.runId,
       vu: __VU,
       iter: __ITER,
+      correlationId: actionCorrelationId,
+      eventId: actionCorrelationId,
     },
     description: "k6 action event",
     externalUserId: externalUserId,
@@ -325,12 +378,18 @@ export function scenarioBWriteHeavy(data) {
     `${BASE_URL}/games/${data.gameId}/tasks/${taskExternalId}/action`,
     actionPayload,
     {
-      headers: mergeHeaders(writeHeaders, { "Content-Type": "application/json" }),
-      tags: { endpoint: "task_action", scenario: "B" },
+      headers: actionHeaders,
+      tags: { endpoint: ENDPOINT_TASK_ACTION, scenario: "B" },
       timeout: REQUEST_TIMEOUT,
     }
   );
   recordScenarioMetrics("B", actionRes);
+  recordScenarioBDiagnostics(
+    ENDPOINT_TASK_ACTION,
+    actionRes,
+    actionPayload,
+    actionCorrelationId
+  );
   check(actionRes, {
     "B task action returns 2xx": (r) => is2xx(r),
   });
@@ -343,6 +402,8 @@ export function scenarioBWriteHeavy(data) {
       runId: data.runId,
       vu: __VU,
       iter: __ITER,
+      correlationId: pointsCorrelationId,
+      eventId: pointsCorrelationId,
     },
     isSimulated: false,
   };
@@ -352,12 +413,18 @@ export function scenarioBWriteHeavy(data) {
     `${BASE_URL}/games/${data.gameId}/tasks/${taskExternalId}/points`,
     pointsPayload,
     {
-      headers: mergeHeaders(writeHeaders, { "Content-Type": "application/json" }),
-      tags: { endpoint: "task_points", scenario: "B" },
+      headers: pointsHeaders,
+      tags: { endpoint: ENDPOINT_TASK_POINTS, scenario: "B" },
       timeout: REQUEST_TIMEOUT,
     }
   );
   recordScenarioMetrics("B", pointsRes);
+  recordScenarioBDiagnostics(
+    ENDPOINT_TASK_POINTS,
+    pointsRes,
+    pointsPayload,
+    pointsCorrelationId
+  );
   check(pointsRes, {
     "B task points returns 2xx": (r) => is2xx(r),
   });
@@ -444,6 +511,36 @@ export function handleSummary(data) {
   const p90 = metric(data, "http_req_duration", "p(90)");
   const p95 = metric(data, "http_req_duration", "p(95)");
   const p99 = metric(data, "http_req_duration", "p(99)");
+  const actionP95 = metric(
+    data,
+    `scenario_b_endpoint_req_duration_ms{endpoint:${ENDPOINT_TASK_ACTION}}`,
+    "p(95)"
+  );
+  const actionP99 = metric(
+    data,
+    `scenario_b_endpoint_req_duration_ms{endpoint:${ENDPOINT_TASK_ACTION}}`,
+    "p(99)"
+  );
+  const pointsP95 = metric(
+    data,
+    `scenario_b_endpoint_req_duration_ms{endpoint:${ENDPOINT_TASK_POINTS}}`,
+    "p(95)"
+  );
+  const pointsP99 = metric(
+    data,
+    `scenario_b_endpoint_req_duration_ms{endpoint:${ENDPOINT_TASK_POINTS}}`,
+    "p(99)"
+  );
+  const actionErrorRate = metric(
+    data,
+    `scenario_b_endpoint_error_rate{endpoint:${ENDPOINT_TASK_ACTION}}`,
+    "rate"
+  );
+  const pointsErrorRate = metric(
+    data,
+    `scenario_b_endpoint_error_rate{endpoint:${ENDPOINT_TASK_POINTS}}`,
+    "rate"
+  );
 
   const lines = [];
   lines.push("=== GAME API k6 Load Summary ===");
@@ -467,8 +564,46 @@ export function handleSummary(data) {
   lines.push(formatScenarioStatusLine(data, "B"));
   lines.push(formatScenarioStatusLine(data, "C"));
   lines.push("");
+  lines.push("Scenario B endpoint metrics:");
+  lines.push(
+    `- ${ENDPOINT_TASK_ACTION}: error_rate=${(actionErrorRate * 100).toFixed(2)}% p95=${fmt(
+      actionP95
+    )}ms p99=${fmt(actionP99)}ms`
+  );
+  lines.push(
+    `- ${ENDPOINT_TASK_POINTS}: error_rate=${(pointsErrorRate * 100).toFixed(2)}% p95=${fmt(
+      pointsP95
+    )}ms p99=${fmt(pointsP99)}ms`
+  );
+  lines.push("");
+  lines.push("Scenario B status breakdown (counts):");
+  lines.push(
+    `- 400=${Math.round(metric(data, "scenario_b_status_400", "count"))} 401=${Math.round(
+      metric(data, "scenario_b_status_401", "count")
+    )} 403=${Math.round(metric(data, "scenario_b_status_403", "count"))} 404=${Math.round(
+      metric(data, "scenario_b_status_404", "count")
+    )}`
+  );
+  lines.push(
+    `- 409=${Math.round(metric(data, "scenario_b_status_409", "count"))} 422=${Math.round(
+      metric(data, "scenario_b_status_422", "count")
+    )} 429=${Math.round(metric(data, "scenario_b_status_429", "count"))} 500=${Math.round(
+      metric(data, "scenario_b_status_500", "count")
+    )} 503=${Math.round(metric(data, "scenario_b_status_503", "count"))}`
+  );
+  lines.push("");
   lines.push("Thresholds:");
   lines.push(`- http_req_failed < ${(ERROR_RATE_THRESHOLD * 100).toFixed(2)}%`);
+  lines.push(
+    `- ${ENDPOINT_TASK_ACTION}: error_rate < ${(SCENARIO_B_ERROR_RATE_THRESHOLD * 100).toFixed(
+      2
+    )}% | p95 < ${SCENARIO_B_P95_TARGET_MS}ms | p99 < ${SCENARIO_B_P99_TARGET_MS}ms`
+  );
+  lines.push(
+    `- ${ENDPOINT_TASK_POINTS}: error_rate < ${(SCENARIO_B_ERROR_RATE_THRESHOLD * 100).toFixed(
+      2
+    )}% | p95 < ${SCENARIO_B_P95_TARGET_MS}ms | p99 < ${SCENARIO_B_P99_TARGET_MS}ms`
+  );
   if (ENFORCE_P95) {
     lines.push(`- http_req_duration p(95) < ${P95_TARGET_MS} ms`);
   } else {
@@ -676,6 +811,86 @@ function recordScenarioMetrics(scenario, res) {
   addStatusClassCounters(status, scenarioCStatus2xx, scenarioCStatus4xx, scenarioCStatus5xx);
 }
 
+function recordScenarioBDiagnostics(endpoint, res, payload, correlationId) {
+  const status = res ? res.status : 0;
+  const duration = res && res.timings ? res.timings.duration : 0;
+  const success = status >= 200 && status < 300;
+
+  scenarioBEndpointLatency.add(duration, { endpoint: endpoint });
+  scenarioBEndpointSuccess.add(success, { endpoint: endpoint });
+  scenarioBEndpointErrorRate.add(!success, { endpoint: endpoint });
+
+  addScenarioBStatusBreakdown(status, endpoint);
+  maybeSampleScenarioBError(endpoint, res, payload, correlationId);
+}
+
+function addScenarioBStatusBreakdown(status, endpoint) {
+  const tags = { endpoint: endpoint };
+  if (status === 400) {
+    scenarioBStatus400.add(1, tags);
+    return;
+  }
+  if (status === 401) {
+    scenarioBStatus401.add(1, tags);
+    return;
+  }
+  if (status === 403) {
+    scenarioBStatus403.add(1, tags);
+    return;
+  }
+  if (status === 404) {
+    scenarioBStatus404.add(1, tags);
+    return;
+  }
+  if (status === 409) {
+    scenarioBStatus409.add(1, tags);
+    return;
+  }
+  if (status === 422) {
+    scenarioBStatus422.add(1, tags);
+    return;
+  }
+  if (status === 429) {
+    scenarioBStatus429.add(1, tags);
+    return;
+  }
+  if (status === 500) {
+    scenarioBStatus500.add(1, tags);
+    return;
+  }
+  if (status === 503) {
+    scenarioBStatus503.add(1, tags);
+  }
+}
+
+function maybeSampleScenarioBError(endpoint, res, payload, correlationId) {
+  if (!res) {
+    return;
+  }
+  if (res.status < 400) {
+    return;
+  }
+  if (__VU !== SCENARIO_B_ERROR_SAMPLE_VU) {
+    return;
+  }
+  if (scenarioBErrorSampleCount >= SCENARIO_B_ERROR_SAMPLE_LIMIT) {
+    return;
+  }
+
+  scenarioBErrorSampleCount += 1;
+  const sample = {
+    sampleNo: scenarioBErrorSampleCount,
+    endpoint: endpoint,
+    status: res.status,
+    vu: __VU,
+    iter: __ITER,
+    correlationId: correlationId,
+    requestPayload: payload || null,
+    responseBody: truncate(safeBody(res), 3000),
+  };
+  console.error(`[B_ERROR_SAMPLE] ${JSON.stringify(sample)}`);
+}
+
 function addStatusClassCounters(status, c2xx, c4xx, c5xx) {
   if (status >= 200 && status < 300) {
     c2xx.add(1);
@@ -829,6 +1044,14 @@ function uniqueRunId() {
   return `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
 }
 
+function correlationIdForWrite(runId, phase) {
+  return `k6-${runId}-${phase}-vu${__VU}-iter${__ITER}`;
+}
+
+function uniqueWriteExternalUserId(runId) {
+  return `k6-user-${runId}-vu${pad(__VU, 4)}-iter${pad(__ITER, 8)}`;
+}
+
 function syntheticIp(seed) {
   const s = seed + __VU + __ITER;
   const o2 = (s % 250) + 1;
@@ -884,4 +1107,12 @@ function pad(num, size) {
 
 function fmt(value) {
   return Number(value || 0).toFixed(2);
+}
+
+function truncate(value, maxChars) {
+  const text = String(value || "");
+  if (text.length <= maxChars) {
+    return text;
+  }
+  return `${text.slice(0, maxChars)}...[truncated]`;
 }

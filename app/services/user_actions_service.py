@@ -1,4 +1,4 @@
-from app.core.exceptions import GoneError
+from app.core.exceptions import GoneError, NotFoundError
 from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_actions_repository import UserActionsRepository
@@ -88,11 +88,12 @@ class UserActionsService(BaseService):
             user = await self.users_repository.create_user_by_externalUserId(
                 externalUserId=action.externalUserId
             )
-        task = self.task_repository.read_by_column(
-            "externalTaskId",
+        task = self.task_repository.read_by_gameId_and_externalTaskId(
+            gameId,
             externalTaskId,
-            not_found_message=(f"Task not found (externalTaskId) : {externalTaskId}"),
         )
+        if not task:
+            raise NotFoundError(f"Task not found (externalTaskId) : {externalTaskId}")
 
         if task.status != "open":
             raise GoneError("Task is not active")

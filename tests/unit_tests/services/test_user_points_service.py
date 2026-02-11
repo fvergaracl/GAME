@@ -19,6 +19,19 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.task_repository = MagicMock()
         self.wallet_repository = MagicMock()
         self.wallet_transaction_repository = MagicMock()
+        self._db_session = MagicMock()
+        self._session_context = MagicMock()
+        self._session_context.__enter__.return_value = self._db_session
+        self._session_context.__exit__.return_value = False
+        self.user_points_repository.session_factory = MagicMock(
+            return_value=self._session_context
+        )
+        self.user_points_repository.read_by_user_task_and_idempotency = MagicMock(
+            return_value=None
+        )
+        self.wallet_repository.upsert_points_balance = MagicMock(
+            return_value=SimpleNamespace(id="wallet-1", pointsBalance=10)
+        )
 
         self.service = UserPointsService(
             user_points_repository=self.user_points_repository,
@@ -54,8 +67,7 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             return_value=SimpleNamespace(created_at="2026-02-09T00:00:00")
         )
         wallet = SimpleNamespace(id="wallet-1", pointsBalance=10)
-        self.wallet_repository.read_by_column.return_value = wallet
-        self.wallet_repository.update = AsyncMock(return_value=wallet)
+        self.wallet_repository.upsert_points_balance.return_value = wallet
         self.wallet_transaction_repository.create = AsyncMock(
             return_value=SimpleNamespace(id="txn-1")
         )
@@ -67,7 +79,7 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(response.points, 5)
         self.assertEqual(response.caseName, "External_points_assigned")
-        self.wallet_repository.update.assert_awaited_once()
+        self.wallet_repository.upsert_points_balance.assert_called_once()
         self.wallet_transaction_repository.create.assert_awaited_once()
 
     async def test_assign_points_to_user_raises_internal_error_when_case_name_missing(
@@ -448,9 +460,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.user_points_repository.create = AsyncMock(
             return_value=SimpleNamespace(created_at="2026-02-09T00:00:00")
         )
-        self.wallet_repository.read_by_column.return_value = None
-        self.wallet_repository.create = AsyncMock(
-            return_value=SimpleNamespace(id="wallet-1", pointsBalance=3)
+        self.wallet_repository.upsert_points_balance.return_value = SimpleNamespace(
+            id="wallet-1", pointsBalance=3
         )
         self.wallet_transaction_repository.create = AsyncMock(
             return_value=SimpleNamespace(id="txn-1")
@@ -466,7 +477,7 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
 
         self.assertTrue(result.isACreatedUser)
         self.assertEqual(result.points, 3)
-        self.wallet_repository.create.assert_awaited_once()
+        self.wallet_repository.upsert_points_balance.assert_called_once()
 
     async def test_assign_points_to_user_directly_raises_when_task_not_found(self):
         self.game_repository.read_by_column.return_value = SimpleNamespace(
@@ -528,9 +539,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.user_points_repository.create = AsyncMock(
             return_value=SimpleNamespace(created_at="2026-02-09T00:00:00")
         )
-        wallet = SimpleNamespace(id="wallet-1", pointsBalance=10)
-        self.wallet_repository.read_by_column.return_value = wallet
-        self.wallet_repository.update = AsyncMock(return_value=wallet)
+        self.wallet_repository.upsert_points_balance.return_value = SimpleNamespace(
+            id="wallet-1", pointsBalance=10
+        )
         self.wallet_transaction_repository.create = AsyncMock(
             return_value=None)
         schema = SimpleNamespace(externalUserId="user_1", data={"points": 2})
@@ -560,9 +571,8 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.user_points_repository.create = AsyncMock(
             return_value=SimpleNamespace(created_at="2026-02-09T00:00:00")
         )
-        self.wallet_repository.read_by_column.return_value = None
-        self.wallet_repository.create = AsyncMock(
-            return_value=SimpleNamespace(id="wallet-1", pointsBalance=9)
+        self.wallet_repository.upsert_points_balance.return_value = SimpleNamespace(
+            id="wallet-1", pointsBalance=9
         )
         self.wallet_transaction_repository.create = AsyncMock(
             return_value=SimpleNamespace(id="txn-1")
@@ -577,7 +587,7 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.points, 9)
         self.assertEqual(result.caseName, "fallback")
         self.assertIn("callbackData", schema.data)
-        self.wallet_repository.create.assert_awaited_once()
+        self.wallet_repository.upsert_points_balance.assert_called_once()
 
     async def test_assign_points_to_user_raises_when_task_not_found(self):
         self.game_repository.read_by_column.return_value = SimpleNamespace(
@@ -628,9 +638,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.user_points_repository.create = AsyncMock(
             return_value=SimpleNamespace(created_at="2026-02-09T00:00:00")
         )
-        wallet = SimpleNamespace(id="wallet-1", pointsBalance=6)
-        self.wallet_repository.read_by_column.return_value = wallet
-        self.wallet_repository.update = AsyncMock(return_value=wallet)
+        self.wallet_repository.upsert_points_balance.return_value = SimpleNamespace(
+            id="wallet-1", pointsBalance=10
+        )
         self.wallet_transaction_repository.create = AsyncMock(
             return_value=SimpleNamespace(id="txn-1")
         )
@@ -642,12 +652,16 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
 
         self.assertTrue(result.isACreatedUser)
         self.assertEqual(result.points, 4)
-        self.assertEqual(wallet.pointsBalance, 10)
         self.users_repository.create_user_by_externalUserId.assert_awaited_once_with(
             externalUserId="valid_user_1"
         )
-        self.wallet_repository.update.assert_awaited_once_with(
-            "wallet-1", wallet)
+        self.wallet_repository.upsert_points_balance.assert_called_once_with(
+            user_id="user-new-id",
+            points_delta=4,
+            api_key=None,
+            session=self._db_session,
+            auto_commit=False,
+        )
 
     async def test_assign_points_to_user_raises_when_wallet_transaction_missing(self):
         class StrategyWithCaseName:
@@ -669,9 +683,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.user_points_repository.create = AsyncMock(
             return_value=SimpleNamespace(created_at="2026-02-09T00:00:00")
         )
-        wallet = SimpleNamespace(id="wallet-1", pointsBalance=5)
-        self.wallet_repository.read_by_column.return_value = wallet
-        self.wallet_repository.update = AsyncMock(return_value=wallet)
+        self.wallet_repository.upsert_points_balance.return_value = SimpleNamespace(
+            id="wallet-1", pointsBalance=5
+        )
         self.wallet_transaction_repository.create = AsyncMock(
             return_value=None)
         schema = SimpleNamespace(externalUserId="user_1", data={})
@@ -680,6 +694,46 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             await self.service.assign_points_to_user(
                 self.GAME_UUID, "task-external-1", schema
             )
+
+    async def test_assign_points_to_user_idempotent_retry_skips_duplicate_writes(self):
+        class StrategyWithCaseName:
+            async def calculate_points(
+                self, externalGameId, externalTaskId, externalUserId, data
+            ):  # noqa
+                return (2, "CaseOk", None)
+
+        self._setup_default_game_task_for_assignment()
+        self.service.strategy_service.get_strategy_by_id = MagicMock(
+            return_value=object()
+        )
+        self.service.strategy_service.get_Class_by_id = MagicMock(
+            return_value=StrategyWithCaseName()
+        )
+        self.users_repository.read_by_column.return_value = SimpleNamespace(
+            id="user-id-1", externalUserId="user_1"
+        )
+        self.user_points_repository.read_by_user_task_and_idempotency.return_value = (
+            SimpleNamespace(created_at="2026-02-10T00:00:00")
+        )
+        self.user_points_repository.create = AsyncMock(
+            return_value=SimpleNamespace(created_at="2026-02-09T00:00:00")
+        )
+        self.wallet_transaction_repository.create = AsyncMock(
+            return_value=SimpleNamespace(id="txn-1")
+        )
+        schema = SimpleNamespace(
+            externalUserId="user_1",
+            data={"eventId": "evt-123"},
+        )
+
+        result = await self.service.assign_points_to_user(
+            self.GAME_UUID, "task-external-1", schema
+        )
+
+        self.assertEqual(result.points, 2)
+        self.user_points_repository.create.assert_not_called()
+        self.wallet_repository.upsert_points_balance.assert_not_called()
+        self.wallet_transaction_repository.create.assert_not_called()
 
     async def test_assign_points_to_user_raises_when_strategy_metadata_missing(self):
         self._setup_default_game_task_for_assignment()

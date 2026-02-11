@@ -297,7 +297,15 @@ parse_args() {
 
 apply_overrides() {
   if [[ -n "$OPT_MODE" ]]; then
-    validate_mode "$OPT_MODE"
+    export LOAD_MODE="$OPT_MODE"
+  fi
+
+  if [[ "${LOAD_MODE:-}" == "100" ]]; then
+    : "${MAX_ATTEMPTS:=1}"
+    : "${RETRYABLE_STATUS_CODES:=500,503}"
+  elif [[ "${LOAD_MODE:-}" == "1000" ]]; then
+    : "${MAX_ATTEMPTS:=2}"
+    : "${RETRYABLE_STATUS_CODES:=500,503}"
   fi
 
   # Convenient fallback: reuse E2E_BASE_URL if BASE_URL is not defined.
@@ -340,6 +348,14 @@ print_effective_config() {
   log "Mode: $effective_mode, TARGET_VUS: $effective_vus"
   log "Durations: warmup=${WARMUP_DURATION:-30s}, hold=${HOLD_DURATION:-2m}, rampDown=${RAMP_DOWN_DURATION:-30s}"
   log "Mix A/B/C: ${MIX_A:-70}/${MIX_B:-25}/${MIX_C:-5}"
+  log "Write auth mode: ${WRITE_AUTH_MODE:-apikey}"
+  log "Write random IP: ${WRITE_RANDOM_IP:-0}"
+  log "User pool size: ${USER_POOL_SIZE:-1000}"
+  log "Request timeout: ${REQUEST_TIMEOUT:-30s}"
+  log "Retries: max_attempts=${MAX_ATTEMPTS:-1} backoff_ms=${BACKOFF_MS:-0} backoff_factor=${BACKOFF_FACTOR:-1}"
+  log "Retryable statuses: ${RETRYABLE_STATUS_CODES:-}"
+  log "Thresholds: enforce_p95=${ENFORCE_P95:-1} p95_target_ms=${P95_TARGET_MS:-800} error_rate_threshold=${ERROR_RATE_THRESHOLD:-0.01}"
+
 
   if [[ -n "${X_API_KEY:-}" ]]; then
     log "Auth X_API_KEY: $(mask_secret "$X_API_KEY")"

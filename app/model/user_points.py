@@ -1,3 +1,4 @@
+from sqlalchemy import Index, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlmodel import Column, Field, ForeignKey, Integer, String
 
@@ -17,8 +18,24 @@ class UserPoints(BaseModel, table=True):
         taskId (str): The ID of the task associated with the points.
     """
 
+    __table_args__ = (
+        UniqueConstraint(
+            "userId",
+            "taskId",
+            "idempotencyKey",
+            name="uq_user_points_user_task_idempotency",
+        ),
+        Index(
+            "ix_user_points_task_user_created",
+            "taskId",
+            "userId",
+            "created_at",
+        ),
+    )
+
     points: int = Field(sa_column=Column(Integer))
     caseName: str = Field(sa_column=Column(String), nullable=True)
+    idempotencyKey: str = Field(sa_column=Column(String), nullable=True)
     data: dict = Field(sa_column=Column(JSONB), nullable=True)
     description: str = Field(sa_column=Column(String), nullable=True)
     userId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("users.id")))
@@ -34,7 +51,7 @@ class UserPoints(BaseModel, table=True):
         return (
             f"UserPoints (id={self.id}, created_at={self.created_at},"
             f" updated_at={self.updated_at}, points={self.points}, "
-            f"caseName={self.caseName}, data={self.data}, "
+            f"caseName={self.caseName}, idempotencyKey={self.idempotencyKey}, data={self.data}, "  # noqa
             f"description={self.description}, userId={self.userId}, "
             f"taskId={self.taskId})"
         )
@@ -43,7 +60,7 @@ class UserPoints(BaseModel, table=True):
         return (
             f"UserPoints (id={self.id}, created_at={self.created_at}, "
             f"updated_at={self.updated_at}, points={self.points}, "
-            f"caseName={self.caseName}, data={self.data}, "
+            f"caseName={self.caseName}, idempotencyKey={self.idempotencyKey}, data={self.data}, "  # noqa
             f"description={self.description}, userId={self.userId}, "
             f"taskId={self.taskId})"
         )
@@ -54,6 +71,7 @@ class UserPoints(BaseModel, table=True):
             and self.id == other.id
             and self.points == other.points
             and self.caseName == other.caseName
+            and self.idempotencyKey == other.idempotencyKey
             and self.data == other.data
             and self.description == other.description
             and self.userId == other.userId
@@ -74,6 +92,7 @@ class UserPoints(BaseModel, table=True):
             (
                 self.points,
                 self.caseName,
+                self.idempotencyKey,
                 data_as_hashable,
                 self.description,
                 self.userId,

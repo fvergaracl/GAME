@@ -2,7 +2,6 @@ import logging
 from collections import Counter
 from uuid import UUID
 
-from app.core.config import configs
 from app.core.exceptions import (InternalServerError, NotFoundError,
                                  PreconditionFailedError)
 from app.repository.game_repository import GameRepository
@@ -24,7 +23,6 @@ from app.schema.user_points_schema import (AllPointsByGame, GameDetail,
                                            ResponsePointsByExternalUserId, TaskDetail,
                                            TaskPointsByGame, UserGamePoints,
                                            UserPointsAssign)
-from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
@@ -59,6 +57,96 @@ class UserPointsService(BaseService):
         if isinstance(data, dict):
             return data.get("points")
         return getattr(data, "points", None)
+
+    @staticmethod
+    def _extract_idempotency_key(data):
+        if not isinstance(data, dict):
+            return None
+        for key in ("eventId", "idempotencyKey", "correlationId"):
+            value = data.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+        return None
+
+    async def _persist_points_wallet_and_transaction(
+        self,
+        *,
+        user_id,
+        task_id,
+        points: int,
+        case_name: str,
+        data_to_add: dict,
+        description: str,
+        api_key: str,
+        external_user_id: str,
+        external_task_id: str,
+        idempotency_key: str = None,
+    ):
+        """
+        Persists points assignment, wallet increment and wallet transaction in
+        one database transaction.
+        """
+        with self.user_points_repository.session_factory() as session:
+            if idempotency_key:
+                existing_points = (
+                    self.user_points_repository.read_by_user_task_and_idempotency(
+                        user_id=user_id,
+                        task_id=task_id,
+                        idempotency_key=idempotency_key,
+                        session=session,
+                    )
+                )
+                if existing_points is not None:
+                    return existing_points, None, None
+
+            user_points_schema = UserPointsAssign(
+                userId=str(user_id),
+                taskId=str(task_id),
+                points=points,
+                caseName=case_name,
+                data=data_to_add,
+                description=description,
+                apiKey_used=api_key,
+                idempotencyKey=idempotency_key,
+            )
+            user_points = await self.user_points_repository.create(
+                user_points_schema,
+                session=session,
+                auto_commit=False,
+            )
+
+            wallet = self.wallet_repository.upsert_points_balance(
+                user_id=user_id,
+                points_delta=points,
+                api_key=api_key,
+                session=session,
+                auto_commit=False,
+            )
+
+            wallet_transaction = BaseWalletTransaction(
+                transactionType="AssignPoints",
+                points=points,
+                coins=0,
+                data=data_to_add,
+                appliedConversionRate=0,
+                walletId=str(wallet.id),
+                apiKey_used=api_key,
+            )
+            transaction = await self.wallet_transaction_repository.create(
+                wallet_transaction,
+                session=session,
+                auto_commit=False,
+            )
+            if not transaction:
+                raise InternalServerError(
+                    detail=(
+                        f"Wallet transaction not created for user {external_user_id} "
+                        f"and task {external_task_id}"
+                    )
+                )
+
+            session.commit()
+            return user_points, wallet, transaction
 
     def query_user_points(self, schema):
         return self.user_points_repository.read_by_options(schema)
@@ -328,51 +416,20 @@ class UserPointsService(BaseService):
             raise PreconditionFailedError(
                 detail="Points cannot be None. Please provide a valid value."
             )
+        idempotency_key = self._extract_idempotency_key(data_to_add)
         direct_case_name = "External_points_assigned"
-        user_points_schema = UserPointsAssign(
-            userId=str(user.id),
-            taskId=str(task.id),
+        user_points, _, _ = await self._persist_points_wallet_and_transaction(
+            user_id=user.id,
+            task_id=task.id,
             points=points,
-            caseName=direct_case_name,
-            data=data_to_add,
+            case_name=direct_case_name,
+            data_to_add=data_to_add,
             description="Points assigned directly to GAME",
-            apiKey_used=api_key,
+            api_key=api_key,
+            external_user_id=externalUserId,
+            external_task_id=externalTaskId,
+            idempotency_key=idempotency_key,
         )
-        user_points = await self.user_points_repository.create(user_points_schema)
-
-        wallet = self.wallet_repository.read_by_column(
-            "userId", user.id, not_found_raise_exception=False
-        )
-        if wallet:
-            wallet.pointsBalance += points
-            await self.wallet_repository.update(wallet.id, wallet)
-        else:
-            new_wallet = CreateWallet(
-                userId=str(user.id),
-                points=points,
-                coinsBalance=0,
-                pointsBalance=points,
-                conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
-                apiKey_used=api_key,
-            )
-            wallet = await self.wallet_repository.create(new_wallet)
-
-        wallet_transaction = BaseWalletTransaction(
-            transactionType="AssignPoints",
-            points=points,
-            coins=0,
-            data=data_to_add,
-            appliedConversionRate=0,
-            walletId=str(wallet.id),
-            apiKey_used=api_key,
-        )
-        transaction = await self.wallet_transaction_repository.create(
-            wallet_transaction
-        )
-        if not transaction:
-            raise InternalServerError(
-                detail=f"Wallet transaction not created for user {externalUserId} and task {externalTaskId}"  # noqa
-            )
 
         return AssignedPointsToExternalUserId(
             points=points,
@@ -489,50 +546,19 @@ class UserPointsService(BaseService):
                     f"Case name not resolved for task with externalTaskId: {externalTaskId} and user with externalUserId: {externalUserId}"  # noqa
                 )
             )
-        user_points_schema = UserPointsAssign(
-            userId=str(user.id),
-            taskId=str(task.id),
+        idempotency_key = self._extract_idempotency_key(data_to_add)
+        user_points, _, _ = await self._persist_points_wallet_and_transaction(
+            user_id=user.id,
+            task_id=task.id,
             points=points,
-            caseName=case_name,
-            data=data_to_add,
+            case_name=case_name,
+            data_to_add=data_to_add,
             description="Points assigned by GAME",
-            apiKey_used=api_key,
+            api_key=api_key,
+            external_user_id=externalUserId,
+            external_task_id=externalTaskId,
+            idempotency_key=idempotency_key,
         )
-        user_points = await self.user_points_repository.create(user_points_schema)
-        wallet = self.wallet_repository.read_by_column(
-            "userId", user.id, not_found_raise_exception=False
-        )
-        if wallet:
-            wallet.pointsBalance += points
-            await self.wallet_repository.update(wallet.id, wallet)
-
-        if not wallet:
-            new_wallet = CreateWallet(
-                userId=str(user.id),
-                points=points,
-                coinsBalance=0,
-                pointsBalance=points,
-                conversionRate=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
-                apiKey_used=api_key,
-            )
-            wallet = await self.wallet_repository.create(new_wallet)
-
-        wallet_transaction = BaseWalletTransaction(
-            transactionType="AssignPoints",
-            points=points,
-            coins=0,
-            data=data_to_add,
-            appliedConversionRate=0,
-            walletId=str(wallet.id),
-            apiKey_used=api_key,
-        )
-        transaction = await self.wallet_transaction_repository.create(
-            wallet_transaction
-        )
-        if not transaction:
-            raise InternalServerError(
-                detail=f"Wallet transaction not created for user {externalUserId} and task {externalTaskId}"  # noqa
-            )
 
         response = AssignedPointsToExternalUserId(
             points=points,

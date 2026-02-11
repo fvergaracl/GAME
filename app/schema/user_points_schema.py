@@ -304,6 +304,11 @@ class UserPointsAssign(BaseUserPointsBaseModel):
         description="API key used for the request (when API-key auth is used).",
         example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
     )
+    idempotencyKey: Optional[str] = Field(
+        default=None,
+        description="Optional idempotency key to deduplicate retries safely.",
+        example="k6-1739301225000-points-vu1-iter10",
+    )
 
     @staticmethod
     def example() -> dict:
@@ -318,6 +323,7 @@ class UserPointsAssign(BaseUserPointsBaseModel):
             "description": "User completed task before deadline.",
             "data": {"source": "mobile-app", "attempt": 1},
             "apiKey_used": "gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+            "idempotencyKey": "k6-1739301225000-points-vu1-iter10",
         }
 
 

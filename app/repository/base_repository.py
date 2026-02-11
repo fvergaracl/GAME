@@ -1,5 +1,5 @@
 from contextlib import AbstractContextManager
-from typing import Callable
+from typing import Callable, Optional
 
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
@@ -152,25 +152,51 @@ class BaseRepository:
             query = query.filter(getattr(self.model, column) == value).all()
             return query
 
-    async def create(self, schema):
+    async def create(
+        self,
+        schema,
+        session: Optional[Session] = None,
+        auto_commit: bool = True,
+    ):
         """
         Creates a new record.
 
         Args:
             schema: The schema containing the record data.
+            session (Optional[Session]): Existing SQLAlchemy session. When not
+              provided, a new managed session is created.
+            auto_commit (bool): Controls whether this method commits the
+              transaction. Set to False to compose multiple repository writes
+              in one outer transaction.
 
         Returns:
             object: The created record.
         """
-        with self.session_factory() as session:
-            query = self.model(**schema.dict())
-            try:
-                session.add(query)
+        if session is None and not auto_commit:
+            raise ValueError(
+                "auto_commit=False requires an external session managed by the caller."
+            )
+        if session is None:
+            with self.session_factory() as managed_session:
+                return await self.create(
+                    schema,
+                    session=managed_session,
+                    auto_commit=auto_commit,
+                )
+
+        query = self.model(**schema.dict())
+        try:
+            session.add(query)
+            if auto_commit:
                 session.commit()
-                session.refresh(query)
-            except IntegrityError as e:
-                raise DuplicatedError(detail=str(e.orig))
-            return query
+            else:
+                session.flush()
+            session.refresh(query)
+        except IntegrityError as e:
+            if auto_commit:
+                session.rollback()
+            raise DuplicatedError(detail=str(e.orig))
+        return query
 
     async def update(self, id: int, schema):
         """

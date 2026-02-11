@@ -1,5 +1,5 @@
 from typing import List, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import jwt
 from dependency_injector.wiring import Provide, inject
@@ -67,6 +67,33 @@ def _extract_oauth_user_id_from_token(token: str) -> Optional[str]:
     subject = payload.get("sub")
     if isinstance(subject, str) and subject.strip():
         return subject
+    return None
+
+
+def _resolve_correlation_id(request: Request) -> str:
+    """
+    Resolves correlation id from headers or creates one when missing.
+    """
+    if request is not None:
+        header_value = request.headers.get("X-Correlation-ID") or request.headers.get(
+            "x-correlation-id"
+        )
+        if header_value and header_value.strip():
+            return header_value.strip()
+    return f"srv-{uuid4()}"
+
+
+def _resolve_idempotency_key(request: Request) -> Optional[str]:
+    """
+    Resolves idempotency key from common headers.
+    """
+    if request is None:
+        return None
+    key = request.headers.get("Idempotency-Key") or request.headers.get(
+        "X-Idempotency-Key"
+    )
+    if key and key.strip():
+        return key.strip()
     return None
 
 summary_get_games_list = "Retrieve All Games"
@@ -2715,6 +2742,10 @@ async def user_action_in_task(
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
     oauth_user_id = _extract_oauth_user_id_from_token(token)
+    correlation_id = _resolve_correlation_id(request)
+    if isinstance(schema.data, dict):
+        schema.data.setdefault("correlationId", correlation_id)
+        schema.data.setdefault("eventId", correlation_id)
     client_ip = abuse_prevention_service.extract_client_ip(request)
     abuse_prevention_service.enforce_task_mutation_limits(
         api_key=api_key,
@@ -2728,6 +2759,7 @@ async def user_action_in_task(
         {
             "gameId": str(gameId),
             "externalTaskId": externalTaskId,
+            "correlationId": correlation_id,
             "body": schema.dict(),
         },
         service_log,
@@ -2908,6 +2940,14 @@ async def assign_points_to_user(
     """
     api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
     oauth_user_id = _extract_oauth_user_id_from_token(token)
+    correlation_id = _resolve_correlation_id(request)
+    idempotency_key = _resolve_idempotency_key(request)
+    if schema.data is None:
+        schema.data = {}
+    if isinstance(schema.data, dict):
+        schema.data.setdefault("correlationId", correlation_id)
+        if idempotency_key:
+            schema.data.setdefault("eventId", idempotency_key)
     client_ip = abuse_prevention_service.extract_client_ip(request)
     abuse_prevention_service.enforce_task_mutation_limits(
         api_key=api_key,
@@ -2921,6 +2961,8 @@ async def assign_points_to_user(
         {
             "gameId": str(gameId),
             "externalTaskId": externalTaskId,
+            "correlationId": correlation_id,
+            "idempotencyKey": idempotency_key,
             "body": schema.dict(),
         },
         service_log,

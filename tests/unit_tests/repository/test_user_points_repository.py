@@ -70,6 +70,36 @@ class TestUserPointsRepository(unittest.TestCase):
 
         self.assertEqual(result, expected)
 
+    def test_read_by_user_task_and_idempotency_with_external_session(self):
+        expected = SimpleNamespace(id="up-1")
+        query = self._build_query(first_result=expected)
+        repository, _ = self._build_repo(query)
+        external_session = MagicMock()
+        external_query = self._build_query(first_result=expected)
+        external_session.query.return_value = external_query
+
+        result = repository.read_by_user_task_and_idempotency(
+            user_id="user-1",
+            task_id="task-1",
+            idempotency_key="evt-1",
+            session=external_session,
+        )
+
+        self.assertEqual(result, expected)
+        external_session.query.assert_called_once_with(repository.model)
+
+    def test_read_by_user_task_and_idempotency_returns_none_when_key_missing(self):
+        query = self._build_query(first_result=SimpleNamespace(id="up-1"))
+        repository, _ = self._build_repo(query)
+
+        result = repository.read_by_user_task_and_idempotency(
+            user_id="user-1",
+            task_id="task-1",
+            idempotency_key="",
+        )
+
+        self.assertIsNone(result)
+
     def test_get_all_user_points_by_game_id(self):
         expected = [SimpleNamespace(externalTaskId="task-1", points=10)]
         query = self._build_query(all_result=expected)

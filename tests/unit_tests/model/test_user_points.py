@@ -11,6 +11,7 @@ def create_user_points_instance():
         updated_at=datetime.now(),
         points=100,
         caseName="Test Case",
+        idempotencyKey="evt-1",
         data={"key1": "value1", "key2": "value2"},
         description="Test description",
         userId=str(uuid4()),
@@ -29,6 +30,7 @@ def test_user_points_creation():
     assert isinstance(user_points.updated_at, datetime)
     assert user_points.points == 100
     assert user_points.caseName == "Test Case"
+    assert user_points.idempotencyKey == "evt-1"
     assert user_points.data == {"key1": "value1", "key2": "value2"}
     assert user_points.description == "Test description"
     assert isinstance(user_points.userId, str)
@@ -43,7 +45,7 @@ def test_user_points_str():
     expected_str = (
         f"UserPoints (id={user_points.id}, created_at={user_points.created_at}"
         f", updated_at={user_points.updated_at}, points={user_points.points}, "
-        f"caseName={user_points.caseName}, data={user_points.data}, "
+        f"caseName={user_points.caseName}, idempotencyKey={user_points.idempotencyKey}, data={user_points.data}, "  # noqa
         f"description={user_points.description}, userId={user_points.userId}, "
         f"taskId={user_points.taskId})"
     )
@@ -58,7 +60,7 @@ def test_user_points_repr():
     expected_repr = (
         f"UserPoints (id={user_points.id}, created_at={user_points.created_at}"
         f", updated_at={user_points.updated_at}, points={user_points.points}, "
-        f"caseName={user_points.caseName}, data={user_points.data}, "
+        f"caseName={user_points.caseName}, idempotencyKey={user_points.idempotencyKey}, data={user_points.data}, "  # noqa
         f"description={user_points.description}, userId={user_points.userId}, "
         f"taskId={user_points.taskId})"
     )
@@ -75,6 +77,7 @@ def test_user_points_equality():
     user_points2.id = user_points1.id
     user_points2.points = user_points1.points
     user_points2.caseName = user_points1.caseName
+    user_points2.idempotencyKey = user_points1.idempotencyKey
     user_points2.data = user_points1.data
     user_points2.description = user_points1.description
     user_points2.userId = user_points1.userId
@@ -91,6 +94,7 @@ def test_user_points_hash():
         (
             user_points.points,
             user_points.caseName,
+            user_points.idempotencyKey,
             user_points.make_hashable(user_points.data),
             user_points.description,
             user_points.userId,
