@@ -368,6 +368,7 @@
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count_the_last_seconds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository.read_by_user_task_and_idempotency"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.read_by_user_task_and_idempotency()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.user_points_repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.user_has_record_before_in_externalTaskId_last_min()</span></code></a></li>
 </ul>
 </li>
@@ -378,6 +379,7 @@
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository.session_factory"><code class="docutils literal notranslate"><span class="pre">UserRepository.session_factory</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository.model"><code class="docutils literal notranslate"><span class="pre">UserRepository.model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository.create_user_by_externalUserId"><code class="docutils literal notranslate"><span class="pre">UserRepository.create_user_by_externalUserId()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository.get_or_create_by_externalUserId"><code class="docutils literal notranslate"><span class="pre">UserRepository.get_or_create_by_externalUserId()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -386,6 +388,7 @@
 <li class="toctree-l3"><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository"><code class="docutils literal notranslate"><span class="pre">WalletRepository</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository.session_factory"><code class="docutils literal notranslate"><span class="pre">WalletRepository.session_factory</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository.model"><code class="docutils literal notranslate"><span class="pre">WalletRepository.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository.upsert_points_balance"><code class="docutils literal notranslate"><span class="pre">WalletRepository.upsert_points_balance()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -533,6 +536,7 @@
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.UserPointsRepository.get_user_task_measurements"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.UserPointsRepository.get_user_task_measurements_count"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count_the_last_seconds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.UserPointsRepository.read_by_user_task_and_idempotency"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.read_by_user_task_and_idempotency()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.user_has_record_before_in_externalTaskId_last_min()</span></code></a></li>
 </ul>
 </li>
@@ -540,11 +544,13 @@
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.UserRepository.session_factory"><code class="docutils literal notranslate"><span class="pre">UserRepository.session_factory</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.UserRepository.model"><code class="docutils literal notranslate"><span class="pre">UserRepository.model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.UserRepository.create_user_by_externalUserId"><code class="docutils literal notranslate"><span class="pre">UserRepository.create_user_by_externalUserId()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.UserRepository.get_or_create_by_externalUserId"><code class="docutils literal notranslate"><span class="pre">UserRepository.get_or_create_by_externalUserId()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="app.repository.html#app.repository.WalletRepository"><code class="docutils literal notranslate"><span class="pre">WalletRepository</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.WalletRepository.session_factory"><code class="docutils literal notranslate"><span class="pre">WalletRepository.session_factory</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.WalletRepository.model"><code class="docutils literal notranslate"><span class="pre">WalletRepository.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.repository.html#app.repository.WalletRepository.upsert_points_balance"><code class="docutils literal notranslate"><span class="pre">WalletRepository.upsert_points_balance()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="app.repository.html#app.repository.WalletTransactionRepository"><code class="docutils literal notranslate"><span class="pre">WalletTransactionRepository</span></code></a><ul>

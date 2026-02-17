@@ -240,7 +240,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">configs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.exc</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataError</span><span class="p">,</span> <span class="n">IntegrityError</span><span class="p">,</span> <span class="n">ProgrammingError</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">InternalServerError</span><span class="p">,</span> <span class="n">NotFoundError</span><span class="p">,</span>
                                  <span class="n">PreconditionFailedError</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameRepository</span>
@@ -262,7 +263,6 @@
                                            <span class="n">ResponsePointsByExternalUserId</span><span class="p">,</span> <span class="n">TaskDetail</span><span class="p">,</span>
                                            <span class="n">TaskPointsByGame</span><span class="p">,</span> <span class="n">UserGamePoints</span><span class="p">,</span>
                                            <span class="n">UserPointsAssign</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.wallet_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateWallet</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.wallet_transaction_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseWalletTransaction</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyService</span>
@@ -299,6 +299,103 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"points"</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">"points"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_idempotency_key</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"eventId"</span><span class="p">,</span> <span class="s2">"idempotencyKey"</span><span class="p">,</span> <span class="s2">"correlationId"</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_persist_points_wallet_and_transaction</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">user_id</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">,</span>
+        <span class="n">points</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">case_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data_to_add</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">external_user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">external_task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">idempotency_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Persists points assignment, wallet increment and wallet transaction in</span>
+<span class="sd">        one database transaction.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">idempotency_key</span><span class="p">:</span>
+                    <span class="n">existing_points</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">read_by_user_task_and_idempotency</span><span class="p">(</span>
+                            <span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span>
+                            <span class="n">task_id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
+                            <span class="n">idempotency_key</span><span class="o">=</span><span class="n">idempotency_key</span><span class="p">,</span>
+                            <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">existing_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">existing_points</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+                <span class="n">user_points_schema</span> <span class="o">=</span> <span class="n">UserPointsAssign</span><span class="p">(</span>
+                    <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user_id</span><span class="p">),</span>
+                    <span class="n">taskId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">task_id</span><span class="p">),</span>
+                    <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+                    <span class="n">caseName</span><span class="o">=</span><span class="n">case_name</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
+                    <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+                    <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                    <span class="n">idempotencyKey</span><span class="o">=</span><span class="n">idempotency_key</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">user_points</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                    <span class="n">user_points_schema</span><span class="p">,</span>
+                    <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                    <span class="n">auto_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">wallet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">upsert_points_balance</span><span class="p">(</span>
+                    <span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span>
+                    <span class="n">points_delta</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+                    <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                    <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                    <span class="n">auto_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">wallet_transaction</span> <span class="o">=</span> <span class="n">BaseWalletTransaction</span><span class="p">(</span>
+                    <span class="n">transactionType</span><span class="o">=</span><span class="s2">"AssignPoints"</span><span class="p">,</span>
+                    <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+                    <span class="n">coins</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
+                    <span class="n">appliedConversionRate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">walletId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                    <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">transaction</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                    <span class="n">wallet_transaction</span><span class="p">,</span>
+                    <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                    <span class="n">auto_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">transaction</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InternalServerError</span><span class="p">(</span>
+                        <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">"Wallet transaction not created for user </span><span class="si">{</span><span class="n">external_user_id</span><span class="si">}</span><span class="s2"> "</span>
+                            <span class="sa">f</span><span class="s2">"and task </span><span class="si">{</span><span class="n">external_task_id</span><span class="si">}</span><span class="s2">"</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+                <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">user_points</span><span class="p">,</span> <span class="n">wallet</span><span class="p">,</span> <span class="n">transaction</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">IntegrityError</span><span class="p">,</span> <span class="n">DataError</span><span class="p">,</span> <span class="n">ProgrammingError</span><span class="p">):</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+                <span class="k">raise</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+                <span class="k">raise</span>
 
 <div class="viewcode-block" id="UserPointsService.query_user_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.query_user_points">[docs]</a>
@@ -591,51 +688,20 @@
             <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="s2">"Points cannot be None. Please provide a valid value."</span>
             <span class="p">)</span>
+        <span class="n">idempotency_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_idempotency_key</span><span class="p">(</span><span class="n">data_to_add</span><span class="p">)</span>
         <span class="n">direct_case_name</span> <span class="o">=</span> <span class="s2">"External_points_assigned"</span>
-        <span class="n">user_points_schema</span> <span class="o">=</span> <span class="n">UserPointsAssign</span><span class="p">(</span>
-            <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
-            <span class="n">taskId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+        <span class="n">user_points</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persist_points_wallet_and_transaction</span><span class="p">(</span>
+            <span class="n">user_id</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
-            <span class="n">caseName</span><span class="o">=</span><span class="n">direct_case_name</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
+            <span class="n">case_name</span><span class="o">=</span><span class="n">direct_case_name</span><span class="p">,</span>
+            <span class="n">data_to_add</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s2">"Points assigned directly to GAME"</span><span class="p">,</span>
-            <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">external_user_id</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
+            <span class="n">external_task_id</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
+            <span class="n">idempotency_key</span><span class="o">=</span><span class="n">idempotency_key</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">user_points</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user_points_schema</span><span class="p">)</span>
-
-        <span class="n">wallet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
-            <span class="s2">"userId"</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">wallet</span><span class="p">:</span>
-            <span class="n">wallet</span><span class="o">.</span><span class="n">pointsBalance</span> <span class="o">+=</span> <span class="n">points</span>
-            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wallet</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_wallet</span> <span class="o">=</span> <span class="n">CreateWallet</span><span class="p">(</span>
-                <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
-                <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
-                <span class="n">coinsBalance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">pointsBalance</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
-                <span class="n">conversionRate</span><span class="o">=</span><span class="n">configs</span><span class="o">.</span><span class="n">DEFAULT_CONVERTION_RATE_POINTS_TO_COIN</span><span class="p">,</span>
-                <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">wallet</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">new_wallet</span><span class="p">)</span>
-
-        <span class="n">wallet_transaction</span> <span class="o">=</span> <span class="n">BaseWalletTransaction</span><span class="p">(</span>
-            <span class="n">transactionType</span><span class="o">=</span><span class="s2">"AssignPoints"</span><span class="p">,</span>
-            <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
-            <span class="n">coins</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
-            <span class="n">appliedConversionRate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-            <span class="n">walletId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
-            <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">transaction</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="n">wallet_transaction</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">transaction</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InternalServerError</span><span class="p">(</span>
-                <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Wallet transaction not created for user </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> and task </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># noqa</span>
-            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">AssignedPointsToExternalUserId</span><span class="p">(</span>
             <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
@@ -728,6 +794,20 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">callbackData</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">data_to_add</span><span class="p">[</span><span class="s2">"callbackData"</span><span class="p">]</span> <span class="o">=</span> <span class="n">callbackData</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">"Invalid scoring payload for externalTaskId=</span><span class="si">%s</span><span class="s2"> externalUserId=</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">externalTaskId</span><span class="p">,</span>
+                <span class="n">externalUserId</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span>
+                <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">PreconditionFailedError</span><span class="p">(</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">"Invalid scoring payload for strategy execution. "</span>
+                    <span class="s2">"Verify required fields and data types."</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
                 <span class="s2">"Error calculating points for externalTaskId=</span><span class="si">%s</span><span class="s2"> externalUserId=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
@@ -755,50 +835,19 @@
                     <span class="sa">f</span><span class="s2">"Case name not resolved for task with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2"> and user with externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># noqa</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-        <span class="n">user_points_schema</span> <span class="o">=</span> <span class="n">UserPointsAssign</span><span class="p">(</span>
-            <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
-            <span class="n">taskId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+        <span class="n">idempotency_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_idempotency_key</span><span class="p">(</span><span class="n">data_to_add</span><span class="p">)</span>
+        <span class="n">user_points</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persist_points_wallet_and_transaction</span><span class="p">(</span>
+            <span class="n">user_id</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
-            <span class="n">caseName</span><span class="o">=</span><span class="n">case_name</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
+            <span class="n">case_name</span><span class="o">=</span><span class="n">case_name</span><span class="p">,</span>
+            <span class="n">data_to_add</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s2">"Points assigned by GAME"</span><span class="p">,</span>
-            <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">external_user_id</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
+            <span class="n">external_task_id</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
+            <span class="n">idempotency_key</span><span class="o">=</span><span class="n">idempotency_key</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">user_points</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">user_points_schema</span><span class="p">)</span>
-        <span class="n">wallet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
-            <span class="s2">"userId"</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">wallet</span><span class="p">:</span>
-            <span class="n">wallet</span><span class="o">.</span><span class="n">pointsBalance</span> <span class="o">+=</span> <span class="n">points</span>
-            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">wallet</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">wallet</span><span class="p">:</span>
-            <span class="n">new_wallet</span> <span class="o">=</span> <span class="n">CreateWallet</span><span class="p">(</span>
-                <span class="n">userId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
-                <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
-                <span class="n">coinsBalance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">pointsBalance</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
-                <span class="n">conversionRate</span><span class="o">=</span><span class="n">configs</span><span class="o">.</span><span class="n">DEFAULT_CONVERTION_RATE_POINTS_TO_COIN</span><span class="p">,</span>
-                <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">wallet</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">new_wallet</span><span class="p">)</span>
-
-        <span class="n">wallet_transaction</span> <span class="o">=</span> <span class="n">BaseWalletTransaction</span><span class="p">(</span>
-            <span class="n">transactionType</span><span class="o">=</span><span class="s2">"AssignPoints"</span><span class="p">,</span>
-            <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
-            <span class="n">coins</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">data_to_add</span><span class="p">,</span>
-            <span class="n">appliedConversionRate</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-            <span class="n">walletId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">wallet</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
-            <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">transaction</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">wallet_transaction_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-            <span class="n">wallet_transaction</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">transaction</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InternalServerError</span><span class="p">(</span>
-                <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Wallet transaction not created for user </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2"> and task </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># noqa</span>
-            <span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">AssignedPointsToExternalUserId</span><span class="p">(</span>
             <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>

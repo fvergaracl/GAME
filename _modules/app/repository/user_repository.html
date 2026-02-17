@@ -239,9 +239,12 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractContextManager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">func</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.dialects.postgresql</span><span class="w"> </span><span class="kn">import</span> <span class="n">insert</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.exc</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegrityError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.model.users</span><span class="w"> </span><span class="kn">import</span> <span class="n">Users</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.base_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRepository</span>
 
@@ -312,6 +315,64 @@
                 <span class="k">if</span> <span class="n">existing_user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">existing_user</span>
                 <span class="k">raise</span></div>
+
+
+<div class="viewcode-block" id="UserRepository.get_or_create_by_externalUserId">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_repository.UserRepository.get_or_create_by_externalUserId">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_or_create_by_externalUserId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">externalUserId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">auto_commit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Users</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Returns an existing user by externalUserId or creates it atomically.</span>
+
+<span class="sd">        Uses PostgreSQL ON CONFLICT to avoid read-then-create races and reduce</span>
+<span class="sd">        roundtrips on hot write endpoints.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">auto_commit</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"auto_commit=False requires an external session managed by the caller."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">managed_session</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_or_create_by_externalUserId</span><span class="p">(</span>
+                    <span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
+                    <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+                    <span class="n">session</span><span class="o">=</span><span class="n">managed_session</span><span class="p">,</span>
+                    <span class="n">auto_commit</span><span class="o">=</span><span class="n">auto_commit</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">users_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__table__</span>
+        <span class="n">insert_values</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"externalUserId"</span><span class="p">:</span> <span class="n">externalUserId</span><span class="p">,</span>
+            <span class="s2">"oauth_user_id"</span><span class="p">:</span> <span class="n">oauth_user_id</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">insert_stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">users_table</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="o">**</span><span class="n">insert_values</span><span class="p">)</span>
+
+        <span class="n">update_values</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"updated_at"</span><span class="p">:</span> <span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">()}</span>
+        <span class="k">if</span> <span class="n">oauth_user_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">update_values</span><span class="p">[</span><span class="s2">"oauth_user_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">oauth_user_id</span>
+
+        <span class="n">upsert_stmt</span> <span class="o">=</span> <span class="n">insert_stmt</span><span class="o">.</span><span class="n">on_conflict_do_update</span><span class="p">(</span>
+            <span class="n">index_elements</span><span class="o">=</span><span class="p">[</span><span class="n">users_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">externalUserId</span><span class="p">],</span>
+            <span class="n">set_</span><span class="o">=</span><span class="n">update_values</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">returning</span><span class="p">(</span><span class="n">users_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">upsert_stmt</span><span class="p">)</span><span class="o">.</span><span class="n">scalar_one</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">auto_commit</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="n">user</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
+                <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"User not found after upsert by externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">user</span></div>
 </div>
 
 </pre></div>

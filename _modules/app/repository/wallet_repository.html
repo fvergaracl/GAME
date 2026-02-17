@@ -237,10 +237,14 @@
             
   <h1 id="modules-app-repository-wallet-repository--page-root">Source code for app.repository.wallet_repository</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractContextManager</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">func</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.dialects.postgresql</span><span class="w"> </span><span class="kn">import</span> <span class="n">insert</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">configs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.model.wallet</span><span class="w"> </span><span class="kn">import</span> <span class="n">Wallet</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.base_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRepository</span>
 
@@ -271,7 +275,75 @@
 <span class="sd">              The session factory.</span>
 <span class="sd">            model: The SQLAlchemy model class for wallets.</span>
 <span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WalletRepository.upsert_points_balance">
+<a class="viewcode-back" href="../../../app/app.repository.html#app.repository.wallet_repository.WalletRepository.upsert_points_balance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">upsert_points_balance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">user_id</span><span class="p">,</span>
+        <span class="n">points_delta</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">auto_commit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Wallet</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Atomically increments a user's wallet points balance.</span>
+
+<span class="sd">        If no wallet exists for the user, it is created first. This method is</span>
+<span class="sd">        safe under concurrent writes thanks to `ON CONFLICT ... DO UPDATE`.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">auto_commit</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"auto_commit=False requires an external session managed by the caller."</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">managed_session</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsert_points_balance</span><span class="p">(</span>
+                    <span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span>
+                    <span class="n">points_delta</span><span class="o">=</span><span class="n">points_delta</span><span class="p">,</span>
+                    <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                    <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+                    <span class="n">session</span><span class="o">=</span><span class="n">managed_session</span><span class="p">,</span>
+                    <span class="n">auto_commit</span><span class="o">=</span><span class="n">auto_commit</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">wallet_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">__table__</span>
+        <span class="n">insert_stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">wallet_table</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span>
+            <span class="n">userId</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span>
+            <span class="n">coinsBalance</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">pointsBalance</span><span class="o">=</span><span class="n">points_delta</span><span class="p">,</span>
+            <span class="n">conversionRate</span><span class="o">=</span><span class="n">configs</span><span class="o">.</span><span class="n">DEFAULT_CONVERTION_RATE_POINTS_TO_COIN</span><span class="p">,</span>
+            <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">on_conflict_updates</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"pointsBalance"</span><span class="p">:</span> <span class="n">wallet_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">pointsBalance</span> <span class="o">+</span> <span class="n">points_delta</span><span class="p">,</span>
+            <span class="s2">"updated_at"</span><span class="p">:</span> <span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">api_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">on_conflict_updates</span><span class="p">[</span><span class="s2">"apiKey_used"</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="k">if</span> <span class="n">oauth_user_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">on_conflict_updates</span><span class="p">[</span><span class="s2">"oauth_user_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">oauth_user_id</span>
+
+        <span class="n">upsert_stmt</span> <span class="o">=</span> <span class="n">insert_stmt</span><span class="o">.</span><span class="n">on_conflict_do_update</span><span class="p">(</span>
+            <span class="n">index_elements</span><span class="o">=</span><span class="p">[</span><span class="n">wallet_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">userId</span><span class="p">],</span>
+            <span class="n">set_</span><span class="o">=</span><span class="n">on_conflict_updates</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">returning</span><span class="p">(</span><span class="n">wallet_table</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="n">wallet_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">upsert_stmt</span><span class="p">)</span><span class="o">.</span><span class="n">scalar_one</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">auto_commit</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="n">wallet</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">wallet_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">wallet</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Wallet not found by id: </span><span class="si">{</span><span class="n">wallet_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">wallet</span></div>
+</div>
 
 </pre></div>
 

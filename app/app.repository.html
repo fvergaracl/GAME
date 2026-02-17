@@ -389,6 +389,8 @@
         </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count_the_last_seconds()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.read_by_user_task_and_idempotency" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.read_by_user_task_and_idempotency()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.user_has_record_before_in_externalTaskId_last_min()</span></code></a>
         </li></ul>
             </nav>
@@ -404,6 +406,8 @@
         <li class="md-nav__item"><a href="#app.repository.user_repository.UserRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserRepository.model</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.user_repository.UserRepository.create_user_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserRepository.create_user_by_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.user_repository.UserRepository.get_or_create_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserRepository.get_or_create_by_externalUserId()</span></code></a>
         </li></ul>
             </nav>
         </li></ul>
@@ -416,6 +420,8 @@
         <li class="md-nav__item"><a href="#app.repository.wallet_repository.WalletRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletRepository.session_factory</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.wallet_repository.WalletRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletRepository.model</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.wallet_repository.WalletRepository.upsert_points_balance" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletRepository.upsert_points_balance()</span></code></a>
         </li></ul>
             </nav>
         </li></ul>
@@ -671,6 +677,8 @@
         </li>
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_user_task_measurements_count_the_last_seconds()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.read_by_user_task_and_idempotency" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.read_by_user_task_and_idempotency()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.user_has_record_before_in_externalTaskId_last_min()</span></code></a>
         </li></ul>
             </nav>
@@ -682,6 +690,8 @@
         <li class="md-nav__item"><a href="#app.repository.UserRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserRepository.model</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.UserRepository.create_user_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserRepository.create_user_by_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.UserRepository.get_or_create_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserRepository.get_or_create_by_externalUserId()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -690,6 +700,8 @@
         <li class="md-nav__item"><a href="#app.repository.WalletRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletRepository.session_factory</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.WalletRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletRepository.model</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.WalletRepository.upsert_points_balance" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletRepository.upsert_points_balance()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -748,11 +760,18 @@
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.create">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.create" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Session</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.create" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a new record.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – The schema containing the record data.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schema</strong> – The schema containing the record data.</p></li>
+<li><p><strong>session</strong> (<em>Optional</em><em>[</em><em>Session</em><em>]</em>) – Existing SQLAlchemy session. When not
+provided, a new managed session is created.</p></li>
+<li><p><strong>auto_commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Controls whether this method commits the
+transaction. Set to False to compose multiple repository writes
+in one outer transaction.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The created record.</p>
@@ -1710,6 +1729,12 @@ data.</p></li>
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.read_by_user_task_and_idempotency">
+<span class="sig-name descname"><span class="pre">read_by_user_task_and_idempotency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idempotency_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Session</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.read_by_user_task_and_idempotency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.read_by_user_task_and_idempotency" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a previously persisted user-points row for the same
+(userId, taskId, idempotencyKey), if it exists.</p>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min">
 <span class="sig-name descname"><span class="pre">user_has_record_before_in_externalTaskId_last_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.user_has_record_before_in_externalTaskId_last_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min" title="Link to this definition">¶</a></dt>
 <dd><p>Checks if a user has at least one record before in an external task.</p>
@@ -1776,6 +1801,13 @@ data.</p></li>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_repository.UserRepository.get_or_create_by_externalUserId">
+<span class="sig-name descname"><span class="pre">get_or_create_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Session</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Users</span></span></span><a class="reference internal" href="../_modules/app/repository/user_repository.html#UserRepository.get_or_create_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_repository.UserRepository.get_or_create_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an existing user by externalUserId or creates it atomically.</p>
+<p>Uses PostgreSQL ON CONFLICT to avoid read-then-create races and reduce
+roundtrips on hot write endpoints.</p>
+</dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.repository.wallet_repository">
@@ -1799,6 +1831,13 @@ data.</p></li>
 <dt class="sig sig-object py" id="app.repository.wallet_repository.WalletRepository.model">
 <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#app.repository.wallet_repository.WalletRepository.model" title="Link to this definition">¶</a></dt>
 <dd><p>SQLAlchemy model class for wallets.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.wallet_repository.WalletRepository.upsert_points_balance">
+<span class="sig-name descname"><span class="pre">upsert_points_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points_delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Session</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Wallet</span></span></span><a class="reference internal" href="../_modules/app/repository/wallet_repository.html#WalletRepository.upsert_points_balance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.wallet_repository.WalletRepository.upsert_points_balance" title="Link to this definition">¶</a></dt>
+<dd><p>Atomically increments a user’s wallet points balance.</p>
+<p>If no wallet exists for the user, it is created first. This method is
+safe under concurrent writes thanks to <cite>ON CONFLICT … DO UPDATE</cite>.</p>
 </dd></dl>
 </dd></dl>
 </section>
@@ -1926,11 +1965,18 @@ data.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.repository.BaseRepository.create">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository.create" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Session</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.BaseRepository.create" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a new record.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – The schema containing the record data.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schema</strong> – The schema containing the record data.</p></li>
+<li><p><strong>session</strong> (<em>Optional</em><em>[</em><em>Session</em><em>]</em>) – Existing SQLAlchemy session. When not
+provided, a new managed session is created.</p></li>
+<li><p><strong>auto_commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Controls whether this method commits the
+transaction. Set to False to compose multiple repository writes
+in one outer transaction.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The created record.</p>
@@ -3133,6 +3179,12 @@ data.</p></li>
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserPointsRepository.read_by_user_task_and_idempotency">
+<span class="sig-name descname"><span class="pre">read_by_user_task_and_idempotency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idempotency_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Session</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.read_by_user_task_and_idempotency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.read_by_user_task_and_idempotency" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a previously persisted user-points row for the same
+(userId, taskId, idempotencyKey), if it exists.</p>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="app.repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min">
 <span class="sig-name descname"><span class="pre">user_has_record_before_in_externalTaskId_last_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.user_has_record_before_in_externalTaskId_last_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min" title="Link to this definition">¶</a></dt>
 <dd><p>Checks if a user has at least one record before in an external task.</p>
@@ -3196,6 +3248,13 @@ data.</p></li>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.UserRepository.get_or_create_by_externalUserId">
+<span class="sig-name descname"><span class="pre">get_or_create_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Session</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Users</span></span></span><a class="reference internal" href="../_modules/app/repository/user_repository.html#UserRepository.get_or_create_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.UserRepository.get_or_create_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an existing user by externalUserId or creates it atomically.</p>
+<p>Uses PostgreSQL ON CONFLICT to avoid read-then-create races and reduce
+roundtrips on hot write endpoints.</p>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.repository.WalletRepository">
@@ -3216,6 +3275,13 @@ data.</p></li>
 <dt class="sig sig-object py" id="app.repository.WalletRepository.model">
 <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#app.repository.WalletRepository.model" title="Link to this definition">¶</a></dt>
 <dd><p>SQLAlchemy model class for wallets.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.WalletRepository.upsert_points_balance">
+<span class="sig-name descname"><span class="pre">upsert_points_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points_delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Session</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="app.services.html#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_commit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Wallet</span></span></span><a class="reference internal" href="../_modules/app/repository/wallet_repository.html#WalletRepository.upsert_points_balance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.WalletRepository.upsert_points_balance" title="Link to this definition">¶</a></dt>
+<dd><p>Atomically increments a user’s wallet points balance.</p>
+<p>If no wallet exists for the user, it is created first. This method is
+safe under concurrent writes thanks to <cite>ON CONFLICT … DO UPDATE</cite>.</p>
 </dd></dl>
 </dd></dl>
 <dl class="py class">
