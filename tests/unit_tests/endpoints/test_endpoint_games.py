@@ -4,9 +4,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 import jwt
+from fastapi import HTTPException
 
 from app.api.v1.endpoints import games
-from app.core.exceptions import ForbiddenError, InternalServerError, TooManyRequestsError
+from app.core.exceptions import (DuplicatedError, ForbiddenError, InternalServerError,
+                                 PreconditionFailedError, TooManyRequestsError)
 from app.schema.games_schema import PatchGame, PostCreateGame, PostFindGame
 from app.schema.task_schema import (AddActionDidByUserInTask,
                                     AsignPointsToExternalUserId, CreateTaskPost,
@@ -723,6 +725,62 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             )
 
         service.assign_points_to_user.assert_not_called()
+
+    async def test_assign_points_to_user_maps_precondition_failed_to_422(self):
+        game_id = uuid4()
+        schema = AsignPointsToExternalUserId(
+            externalUserId="u1",
+            data={"points": 1},
+            isSimulated=False,
+        )
+        service = MagicMock()
+        service.assign_points_to_user = AsyncMock(
+            side_effect=PreconditionFailedError(detail="invalid scoring payload")
+        )
+
+        with self.assertRaises(HTTPException) as exc_info:
+            await games.assign_points_to_user(
+                gameId=game_id,
+                externalTaskId="task-1",
+                schema=schema,
+                request=self._request(),
+                service=service,
+                abuse_prevention_service=self._abuse_service(),
+                service_log=MagicMock(),
+                service_oauth=self._oauth_service(),
+                token=None,
+                api_key_header=self._api_key_header(),
+            )
+
+        self.assertEqual(exc_info.exception.status_code, 422)
+
+    async def test_assign_points_to_user_maps_duplicated_error_to_409(self):
+        game_id = uuid4()
+        schema = AsignPointsToExternalUserId(
+            externalUserId="u1",
+            data={"points": 1},
+            isSimulated=False,
+        )
+        service = MagicMock()
+        service.assign_points_to_user = AsyncMock(
+            side_effect=DuplicatedError(detail="duplicate key")
+        )
+
+        with self.assertRaises(HTTPException) as exc_info:
+            await games.assign_points_to_user(
+                gameId=game_id,
+                externalTaskId="task-1",
+                schema=schema,
+                request=self._request(),
+                service=service,
+                abuse_prevention_service=self._abuse_service(),
+                service_log=MagicMock(),
+                service_oauth=self._oauth_service(),
+                token=None,
+                api_key_header=self._api_key_header(),
+            )
+
+        self.assertEqual(exc_info.exception.status_code, 409)
 
     async def test_get_points_by_task_id(self):
         service = MagicMock()

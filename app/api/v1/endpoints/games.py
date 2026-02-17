@@ -1,13 +1,18 @@
+import logging
+import traceback
 from typing import List, Optional
 from uuid import UUID, uuid4
 
 import jwt
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Body, Depends, Request
+from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
+from sqlalchemy.exc import DataError, IntegrityError, ProgrammingError
 
 from app.core.config import configs
 from app.core.container import Container
-from app.core.exceptions import ForbiddenError, InternalServerError
+from app.core.exceptions import (ConflictError, DuplicatedError, ForbiddenError,
+                                 InternalServerError, NotFoundError,
+                                 PreconditionFailedError)
 from app.middlewares.authentication import auth_api_key_or_oauth2, auth_oauth2
 from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
 from app.schema.games_schema import (BaseGameResult, FindGameResult, GameCreated,
@@ -41,6 +46,8 @@ router = APIRouter(
     prefix="/games",
     tags=["games"],
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _extract_oauth_user_id_from_token(token: str) -> Optional[str]:
@@ -95,6 +102,70 @@ def _resolve_idempotency_key(request: Request) -> Optional[str]:
     if key and key.strip():
         return key.strip()
     return None
+
+
+def _extract_db_error_code(exc: Exception) -> Optional[str]:
+    orig = getattr(exc, "orig", None)
+    if orig is None:
+        return None
+    pgcode = getattr(orig, "pgcode", None)
+    if pgcode:
+        return str(pgcode)
+    return None
+
+
+def _map_write_exception(
+    exc: Exception,
+    *,
+    correlation_id: str,
+):
+    if isinstance(exc, NotFoundError):
+        return exc
+    if isinstance(exc, ConflictError):
+        return exc
+    if isinstance(exc, DuplicatedError):
+        return ConflictError(
+            detail="Duplicate write detected for this resource. Use a new idempotency key."
+        )
+    if isinstance(exc, PreconditionFailedError):
+        return HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=exc.detail,
+        )
+    if isinstance(exc, HTTPException):
+        return exc
+    if isinstance(exc, (KeyError, TypeError, ValueError, DataError)):
+        return HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid request data for this operation.",
+        )
+    if isinstance(exc, IntegrityError):
+        pgcode = _extract_db_error_code(exc)
+        if pgcode == "23503":
+            return NotFoundError(
+                detail="Referenced resource not found for write operation."
+            )
+        if pgcode == "23505":
+            return ConflictError(detail="Concurrent write conflict detected.")
+        if pgcode in {"22P02", "22001", "22003"}:
+            return HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid value provided for write operation.",
+            )
+        return ConflictError(detail="Write conflict detected.")
+    if isinstance(exc, ProgrammingError):
+        return ConflictError(
+            detail=(
+                "Database schema mismatch detected in write path. "
+                "Run migrations and retry."
+            )
+        )
+    return InternalServerError(
+        detail=(
+            "Internal error in write operation. "
+            f"Please retry with correlationId={correlation_id}"
+        )
+    )
 
 summary_get_games_list = "Retrieve All Games"
 response_example_get_games_list = {
@@ -2766,10 +2837,35 @@ async def user_action_in_task(
         api_key,
         oauth_user_id,
     )
-
-    return await service.user_add_action_in_task(
-        gameId, externalTaskId, schema, api_key
-    )
+    try:
+        return await service.user_add_action_in_task(
+            gameId, externalTaskId, schema, api_key
+        )
+    except Exception as exc:
+        mapped_exc = _map_write_exception(exc, correlation_id=correlation_id)
+        error_payload = {
+            "gameId": str(gameId),
+            "externalTaskId": externalTaskId,
+            "externalUserId": schema.externalUserId,
+            "correlationId": correlation_id,
+            "errorType": type(exc).__name__,
+            "error": str(exc),
+            "traceback": traceback.format_exc(),
+        }
+        logger.exception(
+            "user_action_in_task failed",
+            extra=error_payload,
+        )
+        await add_log(
+            "game",
+            "ERROR",
+            "User action in task failed",
+            error_payload,
+            service_log,
+            api_key,
+            oauth_user_id,
+        )
+        raise mapped_exc
 
 
 summary_assign_points_to_user = "Assign Points to User"
@@ -2970,9 +3066,36 @@ async def assign_points_to_user(
         oauth_user_id,
     )
     isSimulated = schema.isSimulated if hasattr(schema, "isSimulated") else False
-    return await service.assign_points_to_user(
-        gameId, externalTaskId, schema, isSimulated, api_key
-    )
+    try:
+        return await service.assign_points_to_user(
+            gameId, externalTaskId, schema, isSimulated, api_key
+        )
+    except Exception as exc:
+        mapped_exc = _map_write_exception(exc, correlation_id=correlation_id)
+        error_payload = {
+            "gameId": str(gameId),
+            "externalTaskId": externalTaskId,
+            "externalUserId": schema.externalUserId,
+            "correlationId": correlation_id,
+            "idempotencyKey": idempotency_key,
+            "errorType": type(exc).__name__,
+            "error": str(exc),
+            "traceback": traceback.format_exc(),
+        }
+        logger.exception(
+            "assign_points_to_user failed",
+            extra=error_payload,
+        )
+        await add_log(
+            "game",
+            "ERROR",
+            "Points assignment to user failed",
+            error_payload,
+            service_log,
+            api_key,
+            oauth_user_id,
+        )
+        raise mapped_exc
 
 
 summary_get_points_by_task_id = "Retrieve Points by Task ID"

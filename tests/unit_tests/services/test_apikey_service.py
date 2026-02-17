@@ -12,6 +12,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         """
         Set up the test with a mock ApiKeyRepository instance.
         """
+        ApiKeyService.clear_header_cache()
         self.apikey_repository = MagicMock(spec=ApiKeyRepository)
         self.api_key_service = ApiKeyService(self.apikey_repository)
 
@@ -68,6 +69,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(retrieved_api_keys, api_keys)
 
     def test_get_api_key_header_raises_when_api_key_does_not_exist(self):
+        ApiKeyService.clear_header_cache()
         repository = MagicMock()
         repository.read_by_column.return_value = None
 
@@ -84,6 +86,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         )
 
     def test_get_api_key_header_returns_fail_response_when_api_key_is_none(self):
+        ApiKeyService.clear_header_cache()
         response = ApiKeyService.get_api_key_header(None)
 
         self.assertFalse(response.sucess)
@@ -91,6 +94,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.error.detail, "API key not provided.")
 
     def test_get_api_key_header_raises_when_api_key_is_inactive(self):
+        ApiKeyService.clear_header_cache()
         repository = MagicMock()
         repository.read_by_column.return_value = MagicMock(active=False)
 
@@ -107,7 +111,9 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         )
 
     def test_get_api_key_header_returns_ok_response_when_api_key_is_active(self):
+        ApiKeyService.clear_header_cache()
         api_key_in_db = MagicMock(active=True)
+        api_key_in_db.apiKey = "valid-key"
         repository = MagicMock()
         repository.read_by_column.return_value = api_key_in_db
 
@@ -118,7 +124,25 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
             "apiKey", "valid-key", not_found_raise_exception=False
         )
         self.assertTrue(response.sucess)
-        self.assertEqual(response.data, api_key_in_db)
+        self.assertEqual(response.data.apiKey, "valid-key")
+        self.assertTrue(response.data.active)
+
+    def test_get_api_key_header_uses_cache_for_repeated_requests(self):
+        ApiKeyService.clear_header_cache()
+        api_key_in_db = MagicMock(active=True)
+        api_key_in_db.apiKey = "cached-key"
+        repository = MagicMock()
+        repository.read_by_column.return_value = api_key_in_db
+
+        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
+            first = ApiKeyService.get_api_key_header("cached-key")
+            second = ApiKeyService.get_api_key_header("cached-key")
+
+        self.assertTrue(first.sucess)
+        self.assertTrue(second.sucess)
+        repository.read_by_column.assert_called_once_with(
+            "apiKey", "cached-key", not_found_raise_exception=False
+        )
 
 
 if __name__ == "__main__":

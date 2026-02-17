@@ -25,6 +25,10 @@ OPT_P95_TARGET_MS=""
 OPT_ERROR_RATE_THRESHOLD=""
 OPT_WRITE_AUTH_MODE=""
 OPT_WRITE_RANDOM_IP=""
+OPT_WRITE_CONNECTION_CLOSE=""
+OPT_NO_VU_CONNECTION_REUSE=""
+OPT_NO_CONNECTION_REUSE=""
+OPT_RETRY_TRANSPORT_ERRORS=""
 OPT_USER_POOL_SIZE=""
 OPT_REQUEST_TIMEOUT=""
 OPT_MAX_ATTEMPTS=""
@@ -60,6 +64,10 @@ Options:
   --error-rate-threshold <rate> Error rate threshold (0.01 = 1%)
   --write-auth-mode <mode>      apikey|bearer_preferred|bearer (default: apikey)
   --write-random-ip <0|1>       Randomize IP headers for write requests
+  --write-connection-close <0|1> Send Connection: close for write requests
+  --no-vu-connection-reuse <0|1> Force fresh TCP connection per VU iteration
+  --no-connection-reuse <0|1>   Disable keep-alive globally
+  --retry-transport-errors <0|1> Retry transport errors (EOF/status=0)
   --user-pool-size <N>          Number of externalUserIds in pool
   --request-timeout <dur>       HTTP request timeout (e.g. 30s)
   --max-attempts <N>            Retry attempts
@@ -225,6 +233,26 @@ parse_args() {
         [[ "${1:-}" != "" ]] || fail "--write-random-ip requires a value"
         OPT_WRITE_RANDOM_IP="$1"
         ;;
+      --write-connection-close)
+        shift
+        [[ "${1:-}" != "" ]] || fail "--write-connection-close requires a value"
+        OPT_WRITE_CONNECTION_CLOSE="$1"
+        ;;
+      --no-vu-connection-reuse)
+        shift
+        [[ "${1:-}" != "" ]] || fail "--no-vu-connection-reuse requires a value"
+        OPT_NO_VU_CONNECTION_REUSE="$1"
+        ;;
+      --no-connection-reuse)
+        shift
+        [[ "${1:-}" != "" ]] || fail "--no-connection-reuse requires a value"
+        OPT_NO_CONNECTION_REUSE="$1"
+        ;;
+      --retry-transport-errors)
+        shift
+        [[ "${1:-}" != "" ]] || fail "--retry-transport-errors requires a value"
+        OPT_RETRY_TRANSPORT_ERRORS="$1"
+        ;;
       --user-pool-size)
         shift
         [[ "${1:-}" != "" ]] || fail "--user-pool-size requires a value"
@@ -327,6 +355,10 @@ apply_overrides() {
   export_if_set "ERROR_RATE_THRESHOLD" "$OPT_ERROR_RATE_THRESHOLD"
   export_if_set "WRITE_AUTH_MODE" "$OPT_WRITE_AUTH_MODE"
   export_if_set "WRITE_RANDOM_IP" "$OPT_WRITE_RANDOM_IP"
+  export_if_set "WRITE_CONNECTION_CLOSE" "$OPT_WRITE_CONNECTION_CLOSE"
+  export_if_set "NO_VU_CONNECTION_REUSE" "$OPT_NO_VU_CONNECTION_REUSE"
+  export_if_set "NO_CONNECTION_REUSE" "$OPT_NO_CONNECTION_REUSE"
+  export_if_set "RETRY_TRANSPORT_ERRORS" "$OPT_RETRY_TRANSPORT_ERRORS"
   export_if_set "USER_POOL_SIZE" "$OPT_USER_POOL_SIZE"
   export_if_set "REQUEST_TIMEOUT" "$OPT_REQUEST_TIMEOUT"
   export_if_set "MAX_ATTEMPTS" "$OPT_MAX_ATTEMPTS"
@@ -350,6 +382,10 @@ print_effective_config() {
   log "Mix A/B/C: ${MIX_A:-70}/${MIX_B:-25}/${MIX_C:-5}"
   log "Write auth mode: ${WRITE_AUTH_MODE:-apikey}"
   log "Write random IP: ${WRITE_RANDOM_IP:-0}"
+  log "Write connection close: ${WRITE_CONNECTION_CLOSE:-0}"
+  log "no_vu_connection_reuse: ${NO_VU_CONNECTION_REUSE:-auto}"
+  log "no_connection_reuse: ${NO_CONNECTION_REUSE:-0}"
+  log "retry_transport_errors: ${RETRY_TRANSPORT_ERRORS:-1}"
   log "User pool size: ${USER_POOL_SIZE:-1000}"
   log "Request timeout: ${REQUEST_TIMEOUT:-30s}"
   log "Retries: max_attempts=${MAX_ATTEMPTS:-1} backoff_ms=${BACKOFF_MS:-0} backoff_factor=${BACKOFF_FACTOR:-1}"

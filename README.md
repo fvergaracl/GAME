@@ -385,6 +385,9 @@ poetry run pytest tests/e2e -q --e2e-keep-db
 
 # Pass extra native k6 args after '--'
 ./scripts/run_load_test.sh --mode 100 -- --http-debug=full
+
+# Mitigate local EOF transport failures (stale keep-alive sockets)
+./scripts/run_load_test.sh --mode 100 --no-vu-connection-reuse 1 --retry-transport-errors 1
 ```
 
 Notes:

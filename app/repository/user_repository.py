@@ -1,9 +1,12 @@
 from contextlib import AbstractContextManager
 from typing import Callable, Optional
 
+from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.core.exceptions import NotFoundError
 from app.model.users import Users
 from app.repository.base_repository import BaseRepository
 
@@ -70,3 +73,58 @@ class UserRepository(BaseRepository):
                 if existing_user is not None:
                     return existing_user
                 raise
+
+    def get_or_create_by_externalUserId(
+        self,
+        externalUserId: str,
+        oauth_user_id: Optional[str] = None,
+        session: Optional[Session] = None,
+        auto_commit: bool = True,
+    ) -> Users:
+        """
+        Returns an existing user by externalUserId or creates it atomically.
+
+        Uses PostgreSQL ON CONFLICT to avoid read-then-create races and reduce
+        roundtrips on hot write endpoints.
+        """
+        if session is None and not auto_commit:
+            raise ValueError(
+                "auto_commit=False requires an external session managed by the caller."
+            )
+        if session is None:
+            with self.session_factory() as managed_session:
+                return self.get_or_create_by_externalUserId(
+                    externalUserId=externalUserId,
+                    oauth_user_id=oauth_user_id,
+                    session=managed_session,
+                    auto_commit=auto_commit,
+                )
+
+        users_table = self.model.__table__
+        insert_values = {
+            "externalUserId": externalUserId,
+            "oauth_user_id": oauth_user_id,
+        }
+        insert_stmt = insert(users_table).values(**insert_values)
+
+        update_values = {"updated_at": func.now()}
+        if oauth_user_id is not None:
+            update_values["oauth_user_id"] = oauth_user_id
+
+        upsert_stmt = insert_stmt.on_conflict_do_update(
+            index_elements=[users_table.c.externalUserId],
+            set_=update_values,
+        ).returning(users_table.c.id)
+
+        user_id = session.execute(upsert_stmt).scalar_one()
+        if auto_commit:
+            session.commit()
+        else:
+            session.flush()
+
+        user = session.query(self.model).filter(self.model.id == user_id).first()
+        if user is None:
+            raise NotFoundError(
+                detail=f"User not found after upsert by externalUserId: {externalUserId}"
+            )
+        return user

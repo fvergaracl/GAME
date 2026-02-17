@@ -41,10 +41,8 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         game_id = uuid4()
         user_id = uuid4()
         action_id = uuid4()
-        self.users_repository.read_by_column.return_value = None
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
-        self.users_repository.create_user_by_externalUserId = AsyncMock(
-            return_value=SimpleNamespace(id=user_id, externalUserId="new_user")
+        self.users_repository.get_or_create_by_externalUserId.return_value = (
+            SimpleNamespace(id=user_id, externalUserId="new_user")
         )
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = SimpleNamespace(
             status="open"
@@ -78,7 +76,7 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.externalUserId, "new_user")
         self.assertEqual(result.typeAction, "click")
         self.assertEqual(result.message, "Action added successfully")
-        self.users_repository.create_user_by_externalUserId.assert_awaited_once_with(
+        self.users_repository.get_or_create_by_externalUserId.assert_called_once_with(
             externalUserId="new_user"
         )
         created_payload = self.user_actions_repository.create.await_args.args[0]
@@ -89,10 +87,9 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         game_id = uuid4()
         user_id = uuid4()
         action_id = uuid4()
-        existing_user = SimpleNamespace(id=user_id, externalUserId="existing_user")
-        self.users_repository.read_by_column.return_value = existing_user
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
-        self.users_repository.create_user_by_externalUserId = AsyncMock()
+        self.users_repository.get_or_create_by_externalUserId.return_value = (
+            SimpleNamespace(id=user_id, externalUserId="existing_user")
+        )
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = SimpleNamespace(
             status="open"
         )
@@ -120,7 +117,9 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result.externalUserId, "existing_user")
-        self.users_repository.create_user_by_externalUserId.assert_not_called()
+        self.users_repository.get_or_create_by_externalUserId.assert_called_once_with(
+            externalUserId="existing_user"
+        )
         created_payload = self.user_actions_repository.create.await_args.args[0]
         self.assertEqual(created_payload.userId, str(user_id))
         self.assertIsNone(created_payload.apiKey_used)
@@ -128,8 +127,9 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
     async def test_user_add_action_in_task_raises_when_task_is_not_open(self):
         game_id = uuid4()
         user_id = uuid4()
-        self.users_repository.read_by_column.return_value = SimpleNamespace(id=user_id)
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
+        self.users_repository.get_or_create_by_externalUserId.return_value = (
+            SimpleNamespace(id=user_id)
+        )
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = SimpleNamespace(
             status="closed"
         )
@@ -150,8 +150,9 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
     async def test_user_add_action_in_task_raises_when_task_is_missing(self):
         game_id = uuid4()
         user_id = uuid4()
-        self.users_repository.read_by_column.return_value = SimpleNamespace(id=user_id)
-        self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
+        self.users_repository.get_or_create_by_externalUserId.return_value = (
+            SimpleNamespace(id=user_id)
+        )
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = None
         action = AddActionDidByUserInTask(
             typeAction="click",

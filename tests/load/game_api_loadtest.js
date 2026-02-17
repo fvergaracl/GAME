@@ -35,6 +35,10 @@ const HOLD_DURATION = __ENV.HOLD_DURATION || "2m";
 const RAMP_DOWN_DURATION = __ENV.RAMP_DOWN_DURATION || "30s";
 const REQUEST_TIMEOUT = __ENV.REQUEST_TIMEOUT || "30s";
 const USER_POOL_SIZE = intEnv("USER_POOL_SIZE", 200);
+const NO_VU_CONNECTION_REUSE = (
+  __ENV.NO_VU_CONNECTION_REUSE || (TARGET_VUS >= 100 ? "1" : "0")
+) === "1";
+const NO_CONNECTION_REUSE = (__ENV.NO_CONNECTION_REUSE || "0") === "1";
 
 const MIX_A = floatEnv("MIX_A", 70);
 const MIX_B = floatEnv("MIX_B", 25);
@@ -43,6 +47,7 @@ const MIX_C = floatEnv("MIX_C", 5);
 const MAX_ATTEMPTS = intEnv("MAX_ATTEMPTS", 3);
 const BACKOFF_MS = intEnv("BACKOFF_MS", 120);
 const BACKOFF_FACTOR = floatEnv("BACKOFF_FACTOR", 2);
+const RETRY_TRANSPORT_ERRORS = (__ENV.RETRY_TRANSPORT_ERRORS || "1") === "1";
 const RETRYABLE_STATUS_CODES = parseStatusCodes(
   __ENV.RETRYABLE_STATUS_CODES || "408,502,503,504"
 );
@@ -57,6 +62,7 @@ const ENFORCE_P95 =
 
 const WRITE_AUTH_MODE = (__ENV.WRITE_AUTH_MODE || "apikey").toLowerCase();
 const WRITE_RANDOM_IP = (__ENV.WRITE_RANDOM_IP || "1") === "1";
+const WRITE_CONNECTION_CLOSE = (__ENV.WRITE_CONNECTION_CLOSE || "0") === "1";
 const UNIQUE_WRITE_USERS = (__ENV.UNIQUE_WRITE_USERS || "0") === "1";
 
 const ENDPOINT_TASK_ACTION = "task_action";
@@ -95,6 +101,8 @@ const scenarioBSuccess = new Rate("scenario_b_success_rate");
 const scenarioBEndpointLatency = new Trend("scenario_b_endpoint_req_duration_ms", true);
 const scenarioBEndpointSuccess = new Rate("scenario_b_endpoint_success_rate");
 const scenarioBEndpointErrorRate = new Rate("scenario_b_endpoint_error_rate");
+const scenarioBTransportErrors = new Counter("scenario_b_transport_errors");
+const scenarioBTransportEofErrors = new Counter("scenario_b_transport_eof_errors");
 
 const scenarioCStatus2xx = new Counter("scenario_c_status_2xx");
 const scenarioCStatus4xx = new Counter("scenario_c_status_4xx");
@@ -128,6 +136,8 @@ export const options = {
   summaryTrendStats: ["avg", "min", "med", "max", "p(50)", "p(90)", "p(95)", "p(99)"],
   thresholds: thresholds,
   scenarios: buildScenarios(allocation),
+  noVUConnectionReuse: NO_VU_CONNECTION_REUSE,
+  noConnectionReuse: NO_CONNECTION_REUSE,
 };
 
 let scenarioBErrorSampleCount = 0;
@@ -552,6 +562,9 @@ export function handleSummary(data) {
   lines.push(
     `Durations: warmup=${WARMUP_DURATION}, hold=${HOLD_DURATION}, rampDown=${RAMP_DOWN_DURATION}`
   );
+  lines.push(
+    `Connection mode: noVUConnectionReuse=${NO_VU_CONNECTION_REUSE} noConnectionReuse=${NO_CONNECTION_REUSE} writeConnectionClose=${WRITE_CONNECTION_CLOSE}`
+  );
   lines.push("");
   lines.push("Global metrics:");
   lines.push(`- http_req_failed: ${(httpFailedRate * 100).toFixed(2)}%`);
@@ -590,6 +603,11 @@ export function handleSummary(data) {
     )} 429=${Math.round(metric(data, "scenario_b_status_429", "count"))} 500=${Math.round(
       metric(data, "scenario_b_status_500", "count")
     )} 503=${Math.round(metric(data, "scenario_b_status_503", "count"))}`
+  );
+  lines.push(
+    `- transport_errors=${Math.round(metric(data, "scenario_b_transport_errors", "count"))} eof_errors=${Math.round(
+      metric(data, "scenario_b_transport_eof_errors", "count")
+    )}`
   );
   lines.push("");
   lines.push("Thresholds:");
@@ -715,12 +733,18 @@ function createApiKeyForRun(runId, accessToken) {
 function requestWithRetry(method, url, body, params) {
   let attempt = 1;
   let response = null;
+  let requestParams = params;
 
   while (attempt <= MAX_ATTEMPTS) {
-    response = doHttpRequest(method, url, body, params);
+    response = doHttpRequest(method, url, body, requestParams);
     const shouldRetryNow = shouldRetryResponse(response);
     if (!shouldRetryNow || attempt === MAX_ATTEMPTS) {
       return response;
+    }
+
+    if (isTransportError(response)) {
+      // Force a fresh socket on transport retries (EOF/stale keep-alive).
+      requestParams = withConnectionClose(requestParams);
     }
 
     const backoffMs = BACKOFF_MS * Math.pow(BACKOFF_FACTOR, attempt - 1);
@@ -746,10 +770,10 @@ function doHttpRequest(method, url, body, params) {
 
 function shouldRetryResponse(res) {
   if (!res) {
-    return true;
+    return RETRY_TRANSPORT_ERRORS;
   }
-  if (res.status === 0) {
-    return true;
+  if (isTransportError(res)) {
+    return RETRY_TRANSPORT_ERRORS;
   }
   return RETRYABLE_STATUS_CODES[res.status] === true;
 }
@@ -783,6 +807,9 @@ function authHeadersForWrites(data, userIndex) {
     headers["X-Forwarded-For"] = ip;
     headers["X-Real-IP"] = ip;
   }
+  if (WRITE_CONNECTION_CLOSE) {
+    headers.Connection = "close";
+  }
   return headers;
 }
 
@@ -815,10 +842,17 @@ function recordScenarioBDiagnostics(endpoint, res, payload, correlationId) {
   const status = res ? res.status : 0;
   const duration = res && res.timings ? res.timings.duration : 0;
   const success = status >= 200 && status < 300;
+  const transportError = isTransportError(res);
 
   scenarioBEndpointLatency.add(duration, { endpoint: endpoint });
   scenarioBEndpointSuccess.add(success, { endpoint: endpoint });
   scenarioBEndpointErrorRate.add(!success, { endpoint: endpoint });
+  if (transportError) {
+    scenarioBTransportErrors.add(1, { endpoint: endpoint });
+    if (responseErrorContains(res, "eof")) {
+      scenarioBTransportEofErrors.add(1, { endpoint: endpoint });
+    }
+  }
 
   addScenarioBStatusBreakdown(status, endpoint);
   maybeSampleScenarioBError(endpoint, res, payload, correlationId);
@@ -867,7 +901,7 @@ function maybeSampleScenarioBError(endpoint, res, payload, correlationId) {
   if (!res) {
     return;
   }
-  if (res.status < 400) {
+  if (res.status < 400 && !isTransportError(res)) {
     return;
   }
   if (__VU !== SCENARIO_B_ERROR_SAMPLE_VU) {
@@ -882,6 +916,8 @@ function maybeSampleScenarioBError(endpoint, res, payload, correlationId) {
     sampleNo: scenarioBErrorSampleCount,
     endpoint: endpoint,
     status: res.status,
+    error: safeError(res),
+    errorCode: safeErrorCode(res),
     vu: __VU,
     iter: __ITER,
     correlationId: correlationId,
@@ -947,6 +983,16 @@ function mergeHeaders(a, b) {
     out[k2] = second[k2];
   }
   return out;
+}
+
+function withConnectionClose(params) {
+  const current = params || {};
+  const cloned = {};
+  for (const key in current) {
+    cloned[key] = current[key];
+  }
+  cloned.headers = mergeHeaders(current.headers || {}, { Connection: "close" });
+  return cloned;
 }
 
 function parseStatusCodes(csv) {
@@ -1091,6 +1137,35 @@ function safeBody(response) {
     return "<empty-body>";
   }
   return String(response.body);
+}
+
+function safeError(response) {
+  if (!response) {
+    return "";
+  }
+  if (response.error === undefined || response.error === null) {
+    return "";
+  }
+  return String(response.error);
+}
+
+function safeErrorCode(response) {
+  if (!response) {
+    return "";
+  }
+  if (response.error_code === undefined || response.error_code === null) {
+    return "";
+  }
+  return String(response.error_code);
+}
+
+function responseErrorContains(response, expected) {
+  const text = safeError(response).toLowerCase();
+  return text.includes(String(expected || "").toLowerCase());
+}
+
+function isTransportError(response) {
+  return Boolean(response && response.status === 0);
 }
 
 function is2xx(response) {

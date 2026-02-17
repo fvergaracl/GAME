@@ -2,6 +2,8 @@ import logging
 from collections import Counter
 from uuid import UUID
 
+from sqlalchemy.exc import DataError, IntegrityError, ProgrammingError
+
 from app.core.exceptions import (InternalServerError, NotFoundError,
                                  PreconditionFailedError)
 from app.repository.game_repository import GameRepository
@@ -87,66 +89,73 @@ class UserPointsService(BaseService):
         one database transaction.
         """
         with self.user_points_repository.session_factory() as session:
-            if idempotency_key:
-                existing_points = (
-                    self.user_points_repository.read_by_user_task_and_idempotency(
-                        user_id=user_id,
-                        task_id=task_id,
-                        idempotency_key=idempotency_key,
-                        session=session,
+            try:
+                if idempotency_key:
+                    existing_points = (
+                        self.user_points_repository.read_by_user_task_and_idempotency(
+                            user_id=user_id,
+                            task_id=task_id,
+                            idempotency_key=idempotency_key,
+                            session=session,
+                        )
                     )
+                    if existing_points is not None:
+                        return existing_points, None, None
+
+                user_points_schema = UserPointsAssign(
+                    userId=str(user_id),
+                    taskId=str(task_id),
+                    points=points,
+                    caseName=case_name,
+                    data=data_to_add,
+                    description=description,
+                    apiKey_used=api_key,
+                    idempotencyKey=idempotency_key,
                 )
-                if existing_points is not None:
-                    return existing_points, None, None
-
-            user_points_schema = UserPointsAssign(
-                userId=str(user_id),
-                taskId=str(task_id),
-                points=points,
-                caseName=case_name,
-                data=data_to_add,
-                description=description,
-                apiKey_used=api_key,
-                idempotencyKey=idempotency_key,
-            )
-            user_points = await self.user_points_repository.create(
-                user_points_schema,
-                session=session,
-                auto_commit=False,
-            )
-
-            wallet = self.wallet_repository.upsert_points_balance(
-                user_id=user_id,
-                points_delta=points,
-                api_key=api_key,
-                session=session,
-                auto_commit=False,
-            )
-
-            wallet_transaction = BaseWalletTransaction(
-                transactionType="AssignPoints",
-                points=points,
-                coins=0,
-                data=data_to_add,
-                appliedConversionRate=0,
-                walletId=str(wallet.id),
-                apiKey_used=api_key,
-            )
-            transaction = await self.wallet_transaction_repository.create(
-                wallet_transaction,
-                session=session,
-                auto_commit=False,
-            )
-            if not transaction:
-                raise InternalServerError(
-                    detail=(
-                        f"Wallet transaction not created for user {external_user_id} "
-                        f"and task {external_task_id}"
-                    )
+                user_points = await self.user_points_repository.create(
+                    user_points_schema,
+                    session=session,
+                    auto_commit=False,
                 )
 
-            session.commit()
-            return user_points, wallet, transaction
+                wallet = self.wallet_repository.upsert_points_balance(
+                    user_id=user_id,
+                    points_delta=points,
+                    api_key=api_key,
+                    session=session,
+                    auto_commit=False,
+                )
+
+                wallet_transaction = BaseWalletTransaction(
+                    transactionType="AssignPoints",
+                    points=points,
+                    coins=0,
+                    data=data_to_add,
+                    appliedConversionRate=0,
+                    walletId=str(wallet.id),
+                    apiKey_used=api_key,
+                )
+                transaction = await self.wallet_transaction_repository.create(
+                    wallet_transaction,
+                    session=session,
+                    auto_commit=False,
+                )
+                if not transaction:
+                    raise InternalServerError(
+                        detail=(
+                            f"Wallet transaction not created for user {external_user_id} "
+                            f"and task {external_task_id}"
+                        )
+                    )
+
+                session.commit()
+                return user_points, wallet, transaction
+            except (IntegrityError, DataError, ProgrammingError):
+                session.rollback()
+                raise
+            except Exception:
+                session.rollback()
+                raise
 
     def query_user_points(self, schema):
         return self.user_points_repository.read_by_options(schema)
@@ -519,6 +528,20 @@ class UserPointsService(BaseService):
             )
             if callbackData is not None:
                 data_to_add["callbackData"] = callbackData
+        except (KeyError, TypeError, ValueError) as exc:
+            logger.warning(
+                "Invalid scoring payload for externalTaskId=%s externalUserId=%s: %s",
+                externalTaskId,
+                externalUserId,
+                str(exc),
+                exc_info=True,
+            )
+            raise PreconditionFailedError(
+                detail=(
+                    "Invalid scoring payload for strategy execution. "
+                    "Verify required fields and data types."
+                )
+            )
         except Exception:
             logger.exception(
                 "Error calculating points for externalTaskId=%s externalUserId=%s",

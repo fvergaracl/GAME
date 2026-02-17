@@ -160,6 +160,9 @@ class Configs(BaseSettings):
     DB_MAX_OVERFLOW: int = _env_to_int("DB_MAX_OVERFLOW", 40)
     DB_POOL_TIMEOUT_SECONDS: int = _env_to_int("DB_POOL_TIMEOUT_SECONDS", 30)
     DB_POOL_RECYCLE_SECONDS: int = _env_to_int("DB_POOL_RECYCLE_SECONDS", 1800)
+    API_KEY_HEADER_CACHE_TTL_SECONDS: int = _env_to_int(
+        "API_KEY_HEADER_CACHE_TTL_SECONDS", 5
+    )
 
 
 class TestConfigs(Configs):
