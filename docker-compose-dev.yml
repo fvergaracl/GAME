@@ -25,7 +25,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "50m"
+        max-size: "20m"
         max-file: "10"
         labels: "app=high_logging"
         env: "ENV,DEBUG"
@@ -49,6 +49,14 @@ services:
           - localhost
     volumes:
       - postgrespostgres-data:/var/lib/postgresql/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+        labels: "app=high_logging"
+        env: "ENV,DEBUG"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
   keycloakgame:
     container_name: keycloakgame
@@ -68,6 +76,51 @@ services:
       - --import-realm
     networks:
       - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+        labels: "app=high_logging"
+        env: "ENV,DEBUG"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+
+
+  dashboard_game:
+    container_name: "dashboard_game"
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "300"
+      VITE_GAME_API_URL: "http://localhost:8000/api/v1"
+      VITE_KEYCLOAK_URL: "http://localhost:8080"
+      VITE_KEYCLOAK_REALM: "${KEYCLOAK_REALM}"
+      VITE_KEYCLOAK_CLIENT_ID: "${KEYCLOAK_CLIENT_ID}"
+    command: ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "3000"]
+    depends_on:
+      - api
+      - keycloakgame
+    networks:
+      - backend
+    volumes:
+      - ./dashboard:/app
+      - dashboard-node-modules:/app/node_modules
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+        labels: "app=high_logging"
+        env: "ENV,DEBUG"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
   healthcheck_service:
     build: ./healthcheck_service
@@ -82,6 +135,14 @@ services:
       - api
     networks:
       - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+        labels: "app=high_logging"
+        env: "ENV,DEBUG"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
 networks:
   backend:
@@ -91,3 +152,4 @@ volumes:
   postgrespostgres-data:
   keycloak-data:
   game-logs:
+  dashboard-node-modules:
