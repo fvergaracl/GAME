@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated, Any, Optional
 
 import jwt
 import requests
@@ -10,12 +10,27 @@ from app.core.config import configs
 from app.util.response import Response
 
 
+OIDC_SCOPES = {
+    "openid": "OpenID Connect scope required for subject claims.",
+    "profile": "Basic profile claims.",
+    "email": "Email claims.",
+    "greencrowd-roles": "GreenCrowd role claims.",
+}
+
+SUBJECT_FALLBACK_CLAIMS = (
+    "sub",
+    "preferred_username",
+    "email",
+    "client_id",
+    "azp",
+)
+
+
 class CustomOAuth2AuthorizationCodeBearer(OAuth2AuthorizationCodeBearer):
     async def __call__(self, request: Request) -> Optional[str]:
         try:
             token = await super().__call__(request)
-        except HTTPException as e:
-            token = None
+        except HTTPException:
             return False
         return token
 
@@ -24,7 +39,29 @@ oauth_2_scheme = CustomOAuth2AuthorizationCodeBearer(
     tokenUrl=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/token",
     authorizationUrl=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/auth",
     refreshUrl=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/token",
+    scopes=OIDC_SCOPES,
 )
+
+
+def _normalize_subject_claim(payload: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(payload)
+    for claim_name in SUBJECT_FALLBACK_CLAIMS:
+        claim_value = normalized.get(claim_name)
+        if isinstance(claim_value, str) and claim_value.strip():
+            normalized["sub"] = claim_value.strip()
+            break
+    return normalized
+
+
+def _build_token_response(payload: dict[str, Any]) -> Response:
+    normalized = _normalize_subject_claim(payload)
+    subject = normalized.get("sub")
+    if not isinstance(subject, str) or not subject.strip():
+        return Response.fail(
+            error=HTTPException(
+                status_code=401, detail="Token subject not found")
+        )
+    return Response.ok(normalized)
 
 
 async def valid_access_token(
@@ -46,16 +83,16 @@ async def valid_access_token(
                 "verify_aud": False,
             },
         )
-        return Response.ok(data)
+        return _build_token_response(data)
 
     except exceptions.InvalidSignatureError as e:
         print(f"Error: InvalidSignatureError - {e}")
         return Response.fail(
-            error=HTTPException(status_code=401, detail="Invalid token signature")
+            error=HTTPException(
+                status_code=401, detail="Invalid token signature")
         )
 
     except exceptions.ExpiredSignatureError as e:
-        # try with decode_token_without_exp_check
         print("Token has expired, trying to decode without expiration check")
         decoded_response = decode_token_without_exp_check(access_token)
         if decoded_response.ok:
@@ -77,12 +114,14 @@ async def valid_access_token(
     except exceptions.PyJWKClientError as e:
         print(f"Error: PyJWKClientError - {e}")
         return Response.fail(
-            error=HTTPException(status_code=500, detail="Internal server error")
+            error=HTTPException(
+                status_code=500, detail="Internal server error")
         )
     except jwt.PyJWTError as e:
         print(f"Error: PyJWTError - {e}")
         return Response.fail(
-            error=HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+            error=HTTPException(
+                status_code=401, detail=f"Invalid token: {str(e)}")
         )
 
 
@@ -147,8 +186,9 @@ def decode_token_without_exp_check(token: str) -> Response:
                 "verify_aud": False,
             },
         )
-        return Response.ok(decoded)
+        return _build_token_response(decoded)
     except jwt.PyJWTError as e:
         return Response.fail(
-            error=HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+            error=HTTPException(
+                status_code=401, detail=f"Invalid token: {str(e)}")
         )

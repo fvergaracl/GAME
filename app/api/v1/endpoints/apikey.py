@@ -1,3 +1,4 @@
+import inspect
 from typing import List
 
 from dependency_injector.wiring import Provide, inject
@@ -19,6 +20,12 @@ router = APIRouter(
     prefix="/apikey",
     tags=["API Key"],
 )
+
+
+async def _await_if_needed(value):
+    if inspect.isawaitable(value):
+        return await value
+    return value
 
 summary_create_api_key = "Create API Key (Admin)"
 request_example_create_api_key = {
@@ -142,7 +149,9 @@ async def create_api_key(
         raise token_decoded.error
     if token_decoded.data:
         oauth_user_id = token_decoded.data["sub"]
-        existing_user = await service_oauth.get_user_by_sub(oauth_user_id)
+        existing_user = await _await_if_needed(
+            service_oauth.get_user_by_sub(oauth_user_id)
+        )
         if existing_user is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -345,7 +354,9 @@ async def get_all_api_keys(
     token_decoded_data = token_decoded.data
     if token_decoded_data:
         oauth_user_id = token_decoded_data["sub"]
-        existing_user = await service_oauth.get_user_by_sub(oauth_user_id)
+        existing_user = await _await_if_needed(
+            service_oauth.get_user_by_sub(oauth_user_id)
+        )
         if existing_user is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -384,4 +395,4 @@ async def get_all_api_keys(
         api_key=api_key,
         oauth_user_id=oauth_user_id,
     )
-    return [ApiKeyCreatedUnitList(**k.dict()) for k in service.get_all_api_keys()]
+    return service.get_all_api_keys()
