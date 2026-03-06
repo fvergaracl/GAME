@@ -92,8 +92,8 @@ class ApiKeyCreateBase(ApikeyBase):
         description="Client identifier associated with this API key.",
         example="dashboard-service",
     )
-    description: str = Field(
-        ...,
+    description: Optional[str] = Field(
+        None,
         description="Human-readable description of API key usage.",
         example="Read-only access for internal analytics dashboard",
     )

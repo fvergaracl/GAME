@@ -345,7 +345,8 @@ async def get_all_api_keys(
     token_decoded_data = token_decoded.data
     if token_decoded_data:
         oauth_user_id = token_decoded_data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        existing_user = await service_oauth.get_user_by_sub(oauth_user_id)
+        if existing_user is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -383,4 +384,4 @@ async def get_all_api_keys(
         api_key=api_key,
         oauth_user_id=oauth_user_id,
     )
-    return service.get_all_api_keys()
+    return [ApiKeyCreatedUnitList(**k.dict()) for k in service.get_all_api_keys()]
