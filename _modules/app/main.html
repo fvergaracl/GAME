@@ -236,10 +236,14 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-main--page-root">Source code for app.main</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">sentry_sdk</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">toml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic</span><span class="w"> </span><span class="kn">import</span> <span class="n">command</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.openapi.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_openapi</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedirectResponse</span>
@@ -249,6 +253,35 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">configs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">Container</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.util.class_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">singleton</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="run_migrations">
+<a class="viewcode-back" href="../../app/app.html#app.main.run_migrations">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_migrations</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Run alembic upgrade head on startup.</span>
+
+<span class="sd">    Creates all tables if the DB is fresh, or upgrades to the latest</span>
+<span class="sd">    migration if the DB is behind. Safe to call multiple times (idempotent).</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">alembic_cfg</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="s2">"alembic.ini"</span><span class="p">)</span>
+        <span class="n">command</span><span class="o">.</span><span class="n">upgrade</span><span class="p">(</span><span class="n">alembic_cfg</span><span class="p">,</span> <span class="s2">"head"</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Alembic migrations applied successfully."</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Alembic migration failed: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">raise</span></div>
+
+
+
+<div class="viewcode-block" id="lifespan">
+<a class="viewcode-back" href="../../app/app.html#app.main.lifespan">[docs]</a>
+<span class="nd">@asynccontextmanager</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>
+    <span class="n">run_migrations</span><span class="p">()</span>
+    <span class="k">yield</span></div>
+
 
 
 <div class="viewcode-block" id="get_project_data">
@@ -368,6 +401,7 @@
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
+            <span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">,</span>
             <span class="n">root_path</span><span class="o">=</span><span class="n">configs</span><span class="o">.</span><span class="n">ROOT_PATH</span><span class="p">,</span>
             <span class="n">title</span><span class="o">=</span><span class="n">project_data</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span>
             <span class="n">version</span><span class="o">=</span><span class="n">project_data</span><span class="p">[</span><span class="s2">"version"</span><span class="p">],</span>
