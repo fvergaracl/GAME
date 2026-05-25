@@ -2,9 +2,10 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from app.core.container import Container
-from app.core.exceptions import ForbiddenError
+from app.core.exceptions import ForbiddenError, NotFoundError
 from app.repository.apikey_repository import ApiKeyRepository
 from app.services.apikey_service import ApiKeyService
+from app.util.generate_api_key import GeneratedApiKey, hash_api_key
 
 
 class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
@@ -17,75 +18,129 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         self.api_key_service = ApiKeyService(self.apikey_repository)
 
     @patch("app.services.apikey_service.generate_api_key")
-    async def test_generate_api_key_creates_unique_key(self, mock_generate_api_key):
+    async def test_generate_api_key_returns_unique_triple(
+        self, mock_generate_api_key
+    ):
         """
-        Test that the generate_api_key_service method generates a unique API
-          key.
+        The service skips colliding hashes/prefixes and returns a
+        plaintext/prefix/hash triple that does not exist in the DB.
         """
-        mock_generate_api_key.side_effect = ["key_1", "key_2"]
-        self.apikey_repository.read_by_column.side_effect = [True, None]
+        first = GeneratedApiKey(
+            plaintext="plain-1", prefix="prefix-1", key_hash="hash-1"
+        )
+        second = GeneratedApiKey(
+            plaintext="plain-2", prefix="prefix-2", key_hash="hash-2"
+        )
+        mock_generate_api_key.side_effect = [first, second]
+        # First lookup by hash returns a row (collision), second returns
+        # None, then prefix lookup also returns None.
+        self.apikey_repository.read_by_column.side_effect = [
+            MagicMock(),  # hash collision on first
+            None,         # hash miss on second
+            None,         # prefix miss on second
+        ]
 
-        generated_api_key = await self.api_key_service.generate_api_key_service()
+        generated = await self.api_key_service.generate_api_key_service()
 
-        self.assertEqual(mock_generate_api_key.call_count, 2)
-        self.assertEqual(generated_api_key, "key_2")
-
+        self.assertEqual(generated, second)
         self.apikey_repository.read_by_column.assert_any_call(
-            "apiKey", "key_1", not_found_raise_exception=False
+            "apiKeyHash", "hash-1", not_found_raise_exception=False
         )
         self.apikey_repository.read_by_column.assert_any_call(
-            "apiKey", "key_2", not_found_raise_exception=False
+            "apiKeyHash", "hash-2", not_found_raise_exception=False
+        )
+        self.apikey_repository.read_by_column.assert_any_call(
+            "apiKey", "prefix-2", not_found_raise_exception=False
         )
 
     async def test_create_api_key_successfully(self):
         """
-        Test that the create_api_key method successfully creates a new API key.
+        Test that the create_api_key method delegates to the repository.
         """
-        api_key_data = {"apiKey": "new_api_key", "description": "Test API key"}
+        api_key_data = {
+            "apiKey": "gme_live_abcdefgh",
+            "apiKeyHash": "abc",
+            "description": "Test API key",
+        }
 
         self.apikey_repository.create.return_value = api_key_data
 
-        created_api_key = await self.api_key_service.create_api_key(api_key_data)
+        created_api_key = await self.api_key_service.create_api_key(
+            api_key_data
+        )
 
         self.apikey_repository.create.assert_called_once_with(api_key_data)
-
         self.assertEqual(created_api_key, api_key_data)
 
     def test_get_all_api_keys_successfully(self):
-        """
-        Test that the get_all_api_keys method retrieves all API keys correctly.
-        """
         api_keys = [
-            {"apiKey": "api_key_1", "description": "Test API key 1"},
-            {"apiKey": "api_key_2", "description": "Test API key 2"},
+            {"apiKey": "gme_live_aaaaaaaa", "description": "Test API key 1"},
+            {"apiKey": "gme_live_bbbbbbbb", "description": "Test API key 2"},
         ]
-
         self.apikey_repository.read_all.return_value = api_keys
 
         retrieved_api_keys = self.api_key_service.get_all_api_keys()
 
         self.apikey_repository.read_all.assert_called_once()
-
         self.assertEqual(retrieved_api_keys, api_keys)
+
+    def test_revoke_api_key_by_prefix_deactivates_row(self):
+        row = MagicMock(id="row-1", active=True)
+        self.apikey_repository.read_by_column.return_value = row
+        self.apikey_repository.update_attr.return_value = MagicMock(
+            id="row-1", active=False, apiKey="gme_live_abcdefgh"
+        )
+
+        result = self.api_key_service.revoke_api_key_by_prefix(
+            "gme_live_abcdefgh"
+        )
+
+        self.apikey_repository.read_by_column.assert_called_once_with(
+            "apiKey",
+            "gme_live_abcdefgh",
+            not_found_raise_exception=False,
+        )
+        self.apikey_repository.update_attr.assert_called_once_with(
+            "row-1", "active", False
+        )
+        self.assertFalse(result.active)
+
+    def test_revoke_api_key_by_prefix_raises_when_missing(self):
+        self.apikey_repository.read_by_column.return_value = None
+
+        with self.assertRaises(NotFoundError):
+            self.api_key_service.revoke_api_key_by_prefix(
+                "gme_live_missing0"
+            )
+
+        self.apikey_repository.update_attr.assert_not_called()
 
     def test_get_api_key_header_raises_when_api_key_does_not_exist(self):
         ApiKeyService.clear_header_cache()
         repository = MagicMock()
         repository.read_by_column.return_value = None
+        missing_plaintext = "missing-key"
+        expected_hash = hash_api_key(missing_plaintext)
 
-        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
+        with patch.object(
+            Container,
+            "apikey_repository",
+            MagicMock(return_value=repository),
+        ):
             with self.assertRaises(ForbiddenError) as exc_info:
-                ApiKeyService.get_api_key_header("missing-key")
+                ApiKeyService.get_api_key_header(missing_plaintext)
 
         repository.read_by_column.assert_called_once_with(
-            "apiKey", "missing-key", not_found_raise_exception=False
+            "apiKeyHash", expected_hash, not_found_raise_exception=False
         )
         self.assertEqual(
             exc_info.exception.detail,
             "API key is invalid or does not exist.",
         )
 
-    def test_get_api_key_header_returns_fail_response_when_api_key_is_none(self):
+    def test_get_api_key_header_returns_fail_response_when_api_key_is_none(
+        self,
+    ):
         ApiKeyService.clear_header_cache()
         response = ApiKeyService.get_api_key_header(None)
 
@@ -98,51 +153,74 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         repository = MagicMock()
         repository.read_by_column.return_value = MagicMock(active=False)
 
-        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
+        with patch.object(
+            Container,
+            "apikey_repository",
+            MagicMock(return_value=repository),
+        ):
             with self.assertRaises(ForbiddenError) as exc_info:
                 ApiKeyService.get_api_key_header("inactive-key")
 
         repository.read_by_column.assert_called_once_with(
-            "apiKey", "inactive-key", not_found_raise_exception=False
+            "apiKeyHash",
+            hash_api_key("inactive-key"),
+            not_found_raise_exception=False,
         )
         self.assertEqual(
             exc_info.exception.detail,
             "API key is inactive. Please contact an admin.",
         )
 
-    def test_get_api_key_header_returns_ok_response_when_api_key_is_active(self):
+    def test_get_api_key_header_returns_ok_with_prefix_only(self):
         ApiKeyService.clear_header_cache()
         api_key_in_db = MagicMock(active=True)
-        api_key_in_db.apiKey = "valid-key"
+        api_key_in_db.apiKey = "gme_live_abcdefgh"
         repository = MagicMock()
         repository.read_by_column.return_value = api_key_in_db
 
-        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
-            response = ApiKeyService.get_api_key_header("valid-key")
+        with patch.object(
+            Container,
+            "apikey_repository",
+            MagicMock(return_value=repository),
+        ):
+            response = ApiKeyService.get_api_key_header(
+                "gme_live_abcdefgh.SECRET-SECRET-SECRET-SECRET-SECRE"
+            )
 
         repository.read_by_column.assert_called_once_with(
-            "apiKey", "valid-key", not_found_raise_exception=False
+            "apiKeyHash",
+            hash_api_key(
+                "gme_live_abcdefgh.SECRET-SECRET-SECRET-SECRET-SECRE"
+            ),
+            not_found_raise_exception=False,
         )
         self.assertTrue(response.sucess)
-        self.assertEqual(response.data.apiKey, "valid-key")
+        # Only the public prefix is propagated -- never the secret.
+        self.assertEqual(response.data.apiKey, "gme_live_abcdefgh")
         self.assertTrue(response.data.active)
 
     def test_get_api_key_header_uses_cache_for_repeated_requests(self):
         ApiKeyService.clear_header_cache()
         api_key_in_db = MagicMock(active=True)
-        api_key_in_db.apiKey = "cached-key"
+        api_key_in_db.apiKey = "gme_live_cachedkk"
         repository = MagicMock()
         repository.read_by_column.return_value = api_key_in_db
 
-        with patch.object(Container, "apikey_repository", MagicMock(return_value=repository)):
-            first = ApiKeyService.get_api_key_header("cached-key")
-            second = ApiKeyService.get_api_key_header("cached-key")
+        with patch.object(
+            Container,
+            "apikey_repository",
+            MagicMock(return_value=repository),
+        ):
+            first = ApiKeyService.get_api_key_header(
+                "gme_live_cachedkk.payload-payload-payload-payload-pa"
+            )
+            second = ApiKeyService.get_api_key_header(
+                "gme_live_cachedkk.payload-payload-payload-payload-pa"
+            )
 
         self.assertTrue(first.sucess)
         self.assertTrue(second.sucess)
-        repository.read_by_column.assert_called_once_with(
-            "apiKey", "cached-key", not_found_raise_exception=False
-        )
+        repository.read_by_column.assert_called_once()
 
 
 if __name__ == "__main__":

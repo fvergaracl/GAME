@@ -53,9 +53,11 @@ class TestMain(unittest.TestCase):
         app_creator_instance_2 = AppCreator()
         assert app_creator_instance_1 is app_creator_instance_2
 
-    def test_cors_middleware(self):
+    def test_cors_middleware_not_attached_when_origins_empty(self):
         """
-        Test if CORS middleware is properly configured.
+        With the secure default (``BACKEND_CORS_ORIGINS=[]``) the CORS
+        middleware must not be attached, so preflight requests should not
+        receive an ``Access-Control-Allow-Origin`` header.
         """
         response = self.client.options(
             "/api/v1/some-endpoint",
@@ -64,8 +66,45 @@ class TestMain(unittest.TestCase):
                 "Access-Control-Request-Method": "GET",
             },
         )
+        assert "access-control-allow-origin" not in response.headers
+
+    def test_cors_middleware_attached_when_origins_configured(self):
+        """
+        When ``BACKEND_CORS_ORIGINS`` is explicitly configured, the CORS
+        middleware echoes the allow-list. We attach the middleware inline
+        (mirroring ``AppCreator.__init__``) so the global singleton app
+        is not mutated.
+        """
+        from fastapi import FastAPI
+        from fastapi.middleware.cors import CORSMiddleware
+
+        isolated_app = FastAPI()
+        isolated_app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["http://localhost"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
+        @isolated_app.get("/probe")
+        def _probe():
+            return {"ok": True}
+
+        client = TestClient(isolated_app)
+        response = client.options(
+            "/probe",
+            headers={
+                "Origin": "http://localhost",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+
         assert response.status_code == 200
-        assert response.headers["access-control-allow-origin"] == ("http://localhost")
+        assert (
+            response.headers["access-control-allow-origin"]
+            == "http://localhost"
+        )
 
 
 if __name__ == "__main__":

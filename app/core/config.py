@@ -24,6 +24,32 @@ def _env_to_int(key: str, default: int) -> int:
         return default
 
 
+def _parse_cors_origins(raw_value: str) -> List[str]:
+    """
+    Parse a comma-separated CORS origin list. Whitespace-only entries are
+    dropped; an empty/whitespace-only string resolves to ``[]``.
+    """
+    return [
+        origin.strip() for origin in raw_value.split(",") if origin.strip()
+    ]
+
+
+def _validate_cors_origins(env: str, origins: List[str]) -> None:
+    """
+    Fail fast when the API is started in a protected environment with a
+    wildcard CORS allow-list -- a misconfiguration that, paired with a
+    future toggle of ``allow_credentials=False``, would let any site issue
+    authenticated requests on behalf of the user.
+    """
+    if env in {"prod", "stage"} and "*" in origins:
+        raise ValueError(
+            f"BACKEND_CORS_ORIGINS=['*'] is not allowed when ENV={env!r}. "
+            "Set BACKEND_CORS_ORIGINS to an explicit comma-separated list "
+            "of allowed origins (e.g. 'https://app.example.com,"
+            "https://admin.example.com')."
+        )
+
+
 class Configs(BaseSettings):
     """
     Configuration class for loading environment variables and application
@@ -104,8 +130,12 @@ class Configs(BaseSettings):
         "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100
     )
     SECRET_KEY: str = str(os.getenv("SECRET_KEY", None))
-    # CORS
-    BACKEND_CORS_ORIGINS: List[str] = ["*"]
+    # CORS -- comma-separated allow-list from BACKEND_CORS_ORIGINS env var
+    # (see Config.parse_env_var below). Defaults to ``[]`` (no origins) so
+    # the middleware is only attached when explicit origins are configured.
+    # ``"*"`` is rejected outright in ``prod``/``stage`` to avoid a misconfig
+    # granting authenticated cross-site access.
+    BACKEND_CORS_ORIGINS: List[str] = []
 
     # keycloak
     KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "master")
@@ -164,6 +194,16 @@ class Configs(BaseSettings):
         "API_KEY_HEADER_CACHE_TTL_SECONDS", 5
     )
 
+    class Config:
+        @classmethod
+        def parse_env_var(cls, field_name: str, raw_val: str):
+            # Treat BACKEND_CORS_ORIGINS as a plain comma-separated list
+            # instead of JSON, so operators can write
+            # ``BACKEND_CORS_ORIGINS=https://a.example,https://b.example``.
+            if field_name == "BACKEND_CORS_ORIGINS":
+                return _parse_cors_origins(raw_val)
+            return cls.json_loads(raw_val)
+
 
 class TestConfigs(Configs):
     """
@@ -180,6 +220,8 @@ class TestConfigs(Configs):
 
 
 configs = TestConfigs() if os.getenv("ENV") == "test" else Configs()
+
+_validate_cors_origins(configs.ENV, configs.BACKEND_CORS_ORIGINS)
 
 print("Environment:", configs.ENV)
 

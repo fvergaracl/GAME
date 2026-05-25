@@ -6,16 +6,16 @@ from pydantic import BaseModel, Field
 
 class ApikeyBase(BaseModel):
     """
-    Base schema containing an API key value.
+    Base schema containing the public API key prefix.
 
     Attributes:
-        apiKey (str): Opaque API key token used to authorize requests.
+        apiKey (str): Public key prefix (``gme_live_<8chars>``). Safe to log.
     """
 
     apiKey: str = Field(
         ...,
-        description="Opaque API key token used for API authentication.",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        description="Public API key prefix (safe to log/audit).",
+        example="gme_live_3f6a9e0f",
     )
 
 
@@ -24,8 +24,8 @@ class ApiKeyPostBody(BaseModel):
     Request body schema for API key creation.
 
     Attributes:
-        client (str): Consumer/client identifier that will own the API key.
-        description (str): Human-readable description of the API key purpose.
+        client (str): Consumer/client identifier that will own the key.
+        description (str): Human-readable description of the key purpose.
     """
 
     client: str = Field(
@@ -52,11 +52,13 @@ class ApiKeyPostBody(BaseModel):
 
 class ApiKeyCreate(ApiKeyPostBody):
     """
-    Internal schema used when creating an API key record.
+    Internal schema used when persisting an API key record. Never carries
+    the plaintext: only the public prefix and the canonical sha256 hash.
 
     Attributes:
         createdBy (str): Identifier of the actor who created the key.
-        apiKey (str): Generated API key value.
+        apiKey (str): Public prefix persisted in the DB.
+        apiKeyHash (str): sha256(plaintext) used as the auth lookup key.
     """
 
     createdBy: str = Field(
@@ -66,17 +68,22 @@ class ApiKeyCreate(ApiKeyPostBody):
     )
     apiKey: str = Field(
         ...,
-        description="Generated API key token.",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        description="Public prefix persisted in the DB.",
+        example="gme_live_3f6a9e0f",
+    )
+    apiKeyHash: str = Field(
+        ...,
+        description="sha256(plaintext) hex digest used for auth lookups.",
+        example="0c3a8d9b...e6f4",
     )
 
 
 class ApiKeyCreateBase(ApikeyBase):
     """
-    Canonical API key resource representation.
+    Canonical API key resource representation (no plaintext, no hash).
 
     Attributes:
-        apiKey (str): API key token.
+        apiKey (str): Public prefix.
         client (str): Client identifier that owns the key.
         description (str): Key purpose/usage description.
         createdBy (str): Actor that created the key.
@@ -84,8 +91,8 @@ class ApiKeyCreateBase(ApikeyBase):
 
     apiKey: str = Field(
         ...,
-        description="API key token.",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        description="Public API key prefix.",
+        example="gme_live_3f6a9e0f",
     )
     client: str = Field(
         ...,
@@ -110,6 +117,7 @@ class ApiKeyCreatedUnitList(ApiKeyCreateBase):
 
     Attributes:
         created_at (datetime): UTC timestamp when the key was created.
+        active (bool): Whether the key is still usable.
     """
 
     created_at: datetime = Field(
@@ -117,18 +125,60 @@ class ApiKeyCreatedUnitList(ApiKeyCreateBase):
         description="UTC timestamp when the API key was created.",
         example="2026-02-10T18:45:00Z",
     )
+    active: Optional[bool] = Field(
+        True,
+        description="Whether this API key is currently active.",
+        example=True,
+    )
 
 
 class ApiKeyCreated(ApiKeyCreateBase):
     """
-    Response schema for API key creation operations.
+    Response schema for API key creation. The plaintext is exposed here
+    exactly once; subsequent endpoints will only ever return ``apiKey``
+    (the public prefix).
 
     Attributes:
+        plaintext (str): Full key value shown to the caller exactly once.
+        apiKey (str): Public prefix; will continue to be visible after this
+            response (e.g. in the listing endpoint).
         message (Optional[str]): Operation result message.
     """
 
+    plaintext: str = Field(
+        ...,
+        description=(
+            "Full API key value. Returned **only** at creation time; the "
+            "server does not store it and cannot retrieve it again."
+        ),
+        example=(
+            "gme_live_3f6a9e0f.AbCdEfGhIjKlMnOpQrStUvWxYzAbCdEf"
+        ),
+    )
     message: Optional[str] = Field(
         default="Successfully created",
         description="Human-readable operation result message.",
         example="Successfully created",
+    )
+
+
+class ApiKeyRevoked(BaseModel):
+    """
+    Response schema returned by the revoke endpoint.
+    """
+
+    apiKey: str = Field(
+        ...,
+        description="Public prefix of the revoked key.",
+        example="gme_live_3f6a9e0f",
+    )
+    active: bool = Field(
+        False,
+        description="Whether the key is active after revocation.",
+        example=False,
+    )
+    message: str = Field(
+        "API key revoked successfully.",
+        description="Human-readable operation result message.",
+        example="API key revoked successfully.",
     )

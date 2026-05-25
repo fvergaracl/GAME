@@ -5,28 +5,30 @@ from uuid import uuid4
 
 from sqlalchemy import Boolean
 from sqlalchemy.dialects.postgresql import UUID
-from sqlmodel import Column, DateTime, Field, ForeignKey, SQLModel, String, func
+from sqlmodel import (Column, DateTime, Field, ForeignKey, SQLModel,
+                      String, func)
+
+from app.util.generate_api_key import extract_prefix, hash_api_key
 
 
 class ApiKey(SQLModel, table=True):
     """
-    Represents an API key used for authenticating and authorizing access
-    to the system.
+    Represents an API key used for authenticating and authorizing access to
+    the system.
+
+    Plaintext keys are never persisted. Each row stores:
+      * ``apiKey`` -- the public prefix (e.g. ``gme_live_abc12345``).
+        Safe to log and referenced by ``apiKey_used`` FK columns across
+        the schema.
+      * ``apiKeyHash`` -- ``sha256(plaintext)`` hex digest, used to
+        authenticate requests in O(1) without ever storing the secret.
 
     Attributes:
-        key (str): The API key.
+        apiKey (str): Public key prefix.
+        apiKeyHash (str): sha256 hex digest of the key plaintext.
         description (str) (optional): A description of the API key.
-        active (bool): A flag indicating whether the API key is active.
-        createdBy (str): The ID (userId Keycloak) of the user who created
-          the API key. This is used to track the creator of the key.
-
-    Methods:
-        __str__: Returns a string representation of the ApiKey instance.
-        __repr__: Returns a detailed string representation of the ApiKey instance.
-        __eq__: Compares two ApiKey instances for equality based on their attributes.
-
-
-
+        active (bool): Flag indicating whether the API key is active.
+        createdBy (str): Keycloak userId of the creator.
     """
 
     id: str = Field(
@@ -43,7 +45,8 @@ class ApiKey(SQLModel, table=True):
             DateTime(timezone=True), default=func.now(), onupdate=func.now()
         )
     )
-    apiKey: str = Field(sa_column=Column(String, unique=True))
+    apiKey: str = Field(sa_column=Column(String, unique=True, index=True))
+    apiKeyHash: str = Field(sa_column=Column(String, unique=True, index=True))
     client: str = Field(sa_column=Column(String))
     description: str = Field(sa_column=Column(String), nullable=True)
     active: bool = Field(sa_column=Column(Boolean), default=True)
@@ -85,7 +88,7 @@ class ApiKey(SQLModel, table=True):
     @staticmethod
     def get_e2e_seed_api_key() -> Optional[str]:
         """
-        Returns the E2E seed API key from environment variable
+        Returns the E2E seed API key plaintext from environment variable
         `E2E_API_KEY_GAME`, or None when missing/empty.
         """
         seed_value = os.getenv("E2E_API_KEY_GAME")
@@ -106,16 +109,19 @@ class ApiKey(SQLModel, table=True):
         oauth_user_id: Optional[str] = None,
     ) -> Optional["ApiKey"]:
         """
-        Builds an ApiKey model instance from `E2E_API_KEY_GAME`.
+        Builds an ApiKey row from the plaintext stored in
+        ``E2E_API_KEY_GAME``. The row only carries the derived prefix and
+        hash; the plaintext is not persisted.
 
         Returns None when the env variable is not configured.
         """
-        seed_api_key = cls.get_e2e_seed_api_key()
-        if seed_api_key is None:
+        seed_plaintext = cls.get_e2e_seed_api_key()
+        if seed_plaintext is None:
             return None
 
         return cls(
-            apiKey=seed_api_key,
+            apiKey=extract_prefix(seed_plaintext),
+            apiKeyHash=hash_api_key(seed_plaintext),
             client=client,
             description=description,
             active=True,

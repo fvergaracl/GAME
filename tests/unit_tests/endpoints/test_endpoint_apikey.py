@@ -5,6 +5,7 @@ from dependency_injector import providers
 from fastapi.testclient import TestClient
 
 from app.main import app, container  # ✅ usa container real (instancia)
+from app.util.generate_api_key import GeneratedApiKey
 
 
 @pytest.fixture
@@ -17,16 +18,24 @@ class FakeResponse:
         return {
             "client": "test-client",
             "description": "desc",
-            "apiKey": "mocked-api-key",
+            "apiKey": "gme_live_mockedp",
+            "apiKeyHash": "deadbeef",
             "createdBy": "user123",
         }
+
+
+MOCK_GENERATED = GeneratedApiKey(
+    plaintext="gme_live_mockedp.payload-payload-payload-payload-pad",
+    prefix="gme_live_mockedp",
+    key_hash="deadbeef",
+)
 
 
 @pytest.fixture(autouse=True)
 def override_di(monkeypatch):
     # --- mocks ---
     mock_service = AsyncMock()
-    mock_service.generate_api_key_service.return_value = "mocked-api-key"
+    mock_service.generate_api_key_service.return_value = MOCK_GENERATED
     mock_service.create_api_key = AsyncMock(return_value=FakeResponse())
 
     mock_logs_service = AsyncMock()
@@ -73,4 +82,7 @@ def test_create_api_key_success(test_client):
     assert response.status_code == 201
     data = response.json()
     assert data["message"] == "API Key created successfully"
-    assert data["apiKey"] == "mocked-api-key"
+    # The public prefix is stable and returned on every read.
+    assert data["apiKey"] == "gme_live_mockedp"
+    # The plaintext is included exactly once at creation.
+    assert data["plaintext"] == MOCK_GENERATED.plaintext

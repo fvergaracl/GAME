@@ -16,7 +16,8 @@ def _api_key():
         id=str(uuid4()),
         created_at=datetime.now(),
         updated_at=datetime.now(),
-        apiKey="api-key",
+        apiKey="gme_live_factor1",
+        apiKeyHash="deadbeef" * 8,
         client="client-a",
         description="desc",
         active=True,
@@ -144,7 +145,10 @@ def test_api_key_build_e2e_seed_returns_none_when_seed_is_not_configured(monkeyp
 
 
 def test_api_key_build_e2e_seed_builds_model_from_env(monkeypatch):
-    monkeypatch.setenv("E2E_API_KEY_GAME", "seeded-key-456")
+    from app.util.generate_api_key import extract_prefix, hash_api_key
+
+    seed_plaintext = "gme_live_seededkk.seed-secret-seed-secret-seed-se"
+    monkeypatch.setenv("E2E_API_KEY_GAME", seed_plaintext)
 
     seeded = ApiKey.build_e2e_seed(
         created_by="seed-creator",
@@ -154,7 +158,9 @@ def test_api_key_build_e2e_seed_builds_model_from_env(monkeypatch):
     )
 
     assert seeded is not None
-    assert seeded.apiKey == "seeded-key-456"
+    # The plaintext is never persisted -- only the derived prefix + hash.
+    assert seeded.apiKey == extract_prefix(seed_plaintext)
+    assert seeded.apiKeyHash == hash_api_key(seed_plaintext)
     assert seeded.client == "seed-client"
     assert seeded.description == "seed-desc"
     assert seeded.active is True

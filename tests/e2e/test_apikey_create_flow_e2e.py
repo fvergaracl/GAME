@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from app.model.api_key import ApiKey
 from app.model.logs import Logs
 from app.model.oauth_users import OAuthUsers
+from app.util.generate_api_key import extract_prefix, hash_api_key
 
 
 pytestmark = [
@@ -220,7 +221,11 @@ def apikey_create_context(
 
     run_id = uuid.uuid4().hex
     client_prefix = f"e2e-apikey-create-{run_id}"
-    bootstrap_api_key = f"bootstrap-{run_id}-{uuid.uuid4().hex}"
+    bootstrap_api_key = (
+        f"gme_live_{run_id[:8]}.bootstrap-{run_id}-{uuid.uuid4().hex}"
+    )
+    bootstrap_prefix = extract_prefix(bootstrap_api_key)
+    bootstrap_hash = hash_api_key(bootstrap_api_key)
     bootstrap_client = f"{client_prefix}-bootstrap"
 
     created_oauth_user = False
@@ -243,7 +248,8 @@ def apikey_create_context(
 
         session.add(
             ApiKey(
-                apiKey=bootstrap_api_key,
+                apiKey=bootstrap_prefix,
+                apiKeyHash=bootstrap_hash,
                 client=bootstrap_client,
                 description="Bootstrap API key for /apikey/create E2E tests",
                 active=True,
@@ -265,7 +271,7 @@ def apikey_create_context(
     finally:
         with Session(postgres_engine) as session:
             session.query(Logs).filter(
-                Logs.apiKey_used == bootstrap_api_key
+                Logs.apiKey_used == bootstrap_prefix
             ).delete(synchronize_session=False)
             session.query(ApiKey).filter(
                 ApiKey.client.like(f"{client_prefix}%")
@@ -328,19 +334,27 @@ def test_apikey_create_happy_path(
     assert body["createdBy"] == apikey_create_context.admin_subject
     assert body["message"] == "API Key created successfully"
     assert isinstance(body["apiKey"], str) and body["apiKey"].strip() != ""
+    # `apiKey` is the public prefix; `plaintext` is the full secret returned
+    # exactly once.
+    assert isinstance(body["plaintext"], str)
+    assert body["plaintext"].startswith(body["apiKey"] + ".")
 
     with Session(postgres_engine) as session:
         after_count = _count_apikeys_by_client(session, payload["client"])
         assert after_count == before_count + 1
 
         created = (
-            session.query(ApiKey).filter(ApiKey.apiKey == body["apiKey"]).one_or_none()
+            session.query(ApiKey)
+            .filter(ApiKey.apiKey == body["apiKey"])
+            .one_or_none()
         )
         assert created is not None
         assert created.client == payload["client"]
         assert created.description == payload["description"]
         assert created.createdBy == apikey_create_context.admin_subject
         assert created.active is True
+        # The secret is never persisted; only the sha256 hash is stored.
+        assert created.apiKeyHash == hash_api_key(body["plaintext"])
 
 
 def test_apikey_create_invalid_input_does_not_change_state(
