@@ -314,7 +314,7 @@ async def get_games_list(
         "game",
         "INFO",
         "Game list retrieval",
-        schema.dict(),
+        schema.model_dump(),
         service_log,
         api_key,
         oauth_user_id,
@@ -744,7 +744,7 @@ Returns the created game metadata and persisted parameters.
 )
 @inject
 async def create_game(
-    schema: PostCreateGame = Body(..., example=request_example_create_game),
+    schema: PostCreateGame = Body(..., examples=[request_example_create_game]),
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
@@ -790,14 +790,14 @@ async def create_game(
         "game",
         "INFO",
         "Game creation",
-        schema.dict(),
+        schema.model_dump(),
         service_log,
         api_key,
         oauth_user_id,
     )
     try:
         response = await service.create(schema, api_key, oauth_user_id)
-        data_to_log = {"body": schema.dict(), "gameId": str(response.gameId)}
+        data_to_log = {"body": schema.model_dump(), "gameId": str(response.gameId)}
         await add_log(
             "game",
             "SUCCESS",
@@ -929,7 +929,7 @@ Returns the updated game fields plus `message`.
 @inject
 async def patch_game(
     gameId: UUID,
-    schema: PatchGame = Body(..., example=request_example_patch_game),
+    schema: PatchGame = Body(..., examples=[request_example_patch_game]),
     service: GameService = Depends(Provide[Container.game_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
@@ -976,7 +976,7 @@ async def patch_game(
         "game",
         "INFO",
         "Game update by ID",
-        {"gameId": str(gameId), "body": schema.dict()},
+        {"gameId": str(gameId), "body": schema.model_dump()},
         service_log,
         api_key,
         oauth_user_id,
@@ -984,7 +984,7 @@ async def patch_game(
 
     try:
         response = await service.patch_game_by_id(gameId, schema)
-        data_to_log = {"gameId": str(gameId), "body": schema.dict()}
+        data_to_log = {"gameId": str(gameId), "body": schema.model_dump()}
         await add_log(
             "game",
             "SUCCESS",
@@ -1278,7 +1278,7 @@ Returns created task metadata with inherited game params, task params, and effec
 @inject
 async def create_task(
     gameId: UUID,
-    create_query: CreateTaskPost = Body(..., example=request_example_create_task),
+    create_query: CreateTaskPost = Body(..., examples=[request_example_create_task]),
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
@@ -1325,14 +1325,14 @@ async def create_task(
         "game",
         "INFO",
         "Task creation",
-        {"gameId": str(gameId), "body": create_query.dict()},
+        {"gameId": str(gameId), "body": create_query.model_dump()},
         service_log,
         api_key,
         oauth_user_id,
     )
     try:
         response = await service.create_task_by_game_id(gameId, create_query, api_key)
-        data_to_log = {"gameId": str(gameId), "body": create_query.dict()}
+        data_to_log = {"gameId": str(gameId), "body": create_query.model_dump()}
         await add_log(
             "game",
             "SUCCESS",
@@ -1515,7 +1515,7 @@ Returns a mixed outcome payload:
 @inject
 async def create_tasks_bulk(
     gameId: UUID,
-    create_query: CreateTasksPost = Body(..., example=request_example_create_tasks_bulk),
+    create_query: CreateTasksPost = Body(..., examples=[request_example_create_tasks_bulk]),
     service: TaskService = Depends(Provide[Container.task_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
@@ -1565,7 +1565,7 @@ async def create_tasks_bulk(
         "game",
         "INFO",
         "Bulk task creation",
-        {"gameId": str(gameId), "body": create_query.dict()},
+        {"gameId": str(gameId), "body": create_query.model_dump()},
         service_log,
         api_key,
         oauth_user_id,
@@ -1584,7 +1584,7 @@ async def create_tasks_bulk(
             "Bulk task creation failed",
             {
                 "gameId": str(gameId),
-                "body": create_query.dict(),
+                "body": create_query.model_dump(),
                 "failed_tasks": failed_to_create,
             },
             service_log,
@@ -1598,7 +1598,7 @@ async def create_tasks_bulk(
             "Bulk task creation successful",
             {
                 "gameId": str(gameId),
-                "body": create_query.dict(),
+                "body": create_query.model_dump(),
                 "succesfully_created": succesfully_created,
             },
             service_log,
@@ -1780,7 +1780,7 @@ async def get_task_list(
         "game",
         "INFO",
         "Task list retrieval",
-        {"gameId": str(gameId), "body": find_query.dict()},
+        {"gameId": str(gameId), "body": find_query.model_dump()},
         service_log,
         api_key,
         oauth_user_id,
@@ -2633,7 +2633,7 @@ async def get_points_simulated_of_user_in_game(
         {
             "gameId": str(gameId),
             "externalUserId": externalUserId,
-            "response": response.dict(),
+            "response": response.model_dump(),
         },
         service_log,
         None,
@@ -2783,7 +2783,7 @@ async def user_action_in_task(
     gameId: UUID,
     externalTaskId: str,
     request: Request,
-    schema: AddActionDidByUserInTask = Body(..., example=request_example_user_action),
+    schema: AddActionDidByUserInTask = Body(..., examples=[request_example_user_action]),
     service: UserActionsService = Depends(Provide[Container.user_actions_service]),
     abuse_prevention_service: AbusePreventionService = Depends(
         Provide[Container.abuse_prevention_service]
@@ -2831,7 +2831,7 @@ async def user_action_in_task(
             "gameId": str(gameId),
             "externalTaskId": externalTaskId,
             "correlationId": correlation_id,
-            "body": schema.dict(),
+            "body": schema.model_dump(),
         },
         service_log,
         api_key,
@@ -3007,7 +3007,7 @@ async def assign_points_to_user(
     externalTaskId: str,
     request: Request,
     schema: AsignPointsToExternalUserId = Body(
-        ..., example=request_example_assign_points_to_user
+        ..., examples=[request_example_assign_points_to_user]
     ),
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
     abuse_prevention_service: AbusePreventionService = Depends(
@@ -3059,7 +3059,7 @@ async def assign_points_to_user(
             "externalTaskId": externalTaskId,
             "correlationId": correlation_id,
             "idempotencyKey": idempotency_key,
-            "body": schema.dict(),
+            "body": schema.model_dump(),
         },
         service_log,
         api_key,

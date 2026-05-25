@@ -5,6 +5,7 @@ from uuid import uuid4
 
 from sqlalchemy import Boolean
 from sqlalchemy.dialects.postgresql import UUID
+from pydantic import ConfigDict
 from sqlmodel import (Column, DateTime, Field, ForeignKey, SQLModel,
                       String, func)
 
@@ -33,8 +34,6 @@ class ApiKey(SQLModel, table=True):
 
     id: str = Field(
         default_factory=uuid4,
-        primary_key=True,
-        index=True,
         sa_column=Column(UUID(as_uuid=True), primary_key=True, index=True),
     )
     created_at: datetime = Field(
@@ -48,8 +47,8 @@ class ApiKey(SQLModel, table=True):
     apiKey: str = Field(sa_column=Column(String, unique=True, index=True))
     apiKeyHash: str = Field(sa_column=Column(String, unique=True, index=True))
     client: str = Field(sa_column=Column(String))
-    description: str = Field(sa_column=Column(String), nullable=True)
-    active: bool = Field(sa_column=Column(Boolean), default=True)
+    description: str = Field(sa_column=Column(String, nullable=True))
+    active: bool = Field(sa_column=Column(Boolean, default=True))
     createdBy: str = Field(sa_column=Column(String))
     oauth_user_id: str = Field(
         sa_column=Column(
@@ -57,8 +56,7 @@ class ApiKey(SQLModel, table=True):
         )
     )
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

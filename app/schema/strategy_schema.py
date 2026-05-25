@@ -21,32 +21,32 @@ class Strategy(BaseModel):
     id: str = Field(
         ...,
         description="Unique strategy identifier.",
-        example="default",
+        examples=["default"],
     )
     name: Optional[str] = Field(
         default=None,
         description="Human-readable strategy name.",
-        example="Default Adaptive Strategy",
+        examples=["Default Adaptive Strategy"],
     )
     description: Optional[str] = Field(
         default=None,
         description="Business and scoring intent of the strategy.",
-        example="Balanced adaptive scoring based on engagement and performance.",
+        examples=["Balanced adaptive scoring based on engagement and performance."],
     )
     version: str = Field(
         ...,
         description="Version string of the strategy definition.",
-        example="1.0.0",
+        examples=["1.0.0"],
     )
     variables: Dict[str, Any] = Field(
         ...,
         description="Configurable variables used by the strategy engine.",
-        example={"variable_basic_points": 10, "bonus_factor": 1.2},
+        examples=[{"variable_basic_points": 10, "bonus_factor": 1.2}],
     )
     hash_version: Optional[str] = Field(
         default=None,
         description="Hash or fingerprint representing strategy content/version.",
-        example="9bcf1a8f3b2d4e5c7a8f9e0d1b2c3d4e",
+        examples=["9bcf1a8f3b2d4e5c7a8f9e0d1b2c3d4e"],
     )
 
 
@@ -65,27 +65,27 @@ class RuleBase(BaseModel):
     name: str = Field(
         ...,
         description="Rule name.",
-        example="Performance Bonus",
+        examples=["Performance Bonus"],
     )
     description: str = Field(
         ...,
         description="Description of the rule behavior.",
-        example="Awards bonus points when completion time is below threshold.",
+        examples=["Awards bonus points when completion time is below threshold."],
     )
     conditions: List[str] = Field(
         ...,
         description="List of condition expressions evaluated for this rule.",
-        example=["duration_minutes < 5", "task_completed == true"],
+        examples=[["duration_minutes < 5", "task_completed == true"]],
     )
     reward: str = Field(
         ...,
         description="Reward action applied when all conditions match.",
-        example="add_bonus_points",
+        examples=["add_bonus_points"],
     )
     priority: int = Field(
         ...,
         description="Execution priority. Lower value means higher priority.",
-        example=1,
+        examples=[1],
     )
 
 
@@ -101,12 +101,12 @@ class StaticVariables(BaseModel):
     BASIC_POINTS: int = Field(
         ...,
         description="Base points awarded for standard qualifying actions.",
-        example=10,
+        examples=[10],
     )
     BONUS_FACTOR: float = Field(
         ...,
         description="Multiplier applied when bonus conditions are satisfied.",
-        example=1.5,
+        examples=[1.5],
     )
 
 
@@ -125,17 +125,17 @@ class DataStrategy(BaseModel):
     label: str = Field(
         ...,
         description="Short strategy label.",
-        example="default_adaptive",
+        examples=["default_adaptive"],
     )
     description: str = Field(
         ...,
         description="Detailed strategy description.",
-        example="Adaptive strategy balancing consistency and performance metrics.",
+        examples=["Adaptive strategy balancing consistency and performance metrics."],
     )
     tags: List[str] = Field(
         ...,
         description="Tags used for strategy categorization and filtering.",
-        example=["adaptive", "engagement", "baseline"],
+        examples=[["adaptive", "engagement", "baseline"]],
     )
     static_variables: StaticVariables = Field(
         ...,
@@ -159,7 +159,7 @@ class BaseStrategy(ModelBaseInfo):
     strategyName: str = Field(
         ...,
         description="Name of the persisted strategy entity.",
-        example="Default Strategy",
+        examples=["Default Strategy"],
     )
     data: DataStrategy = Field(
         ...,

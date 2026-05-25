@@ -57,7 +57,7 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
             "description": "action-desc",
         }
         self.user_actions_repository.create = AsyncMock(
-            return_value=SimpleNamespace(dict=lambda: created_action_data)
+            return_value=SimpleNamespace(model_dump=lambda: created_action_data)
         )
 
         action = AddActionDidByUserInTask(
@@ -95,7 +95,7 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         )
         self.user_actions_repository.create = AsyncMock(
             return_value=SimpleNamespace(
-                dict=lambda: {
+                model_dump=lambda: {
                     "id": action_id,
                     "created_at": datetime(2026, 2, 2, 10, 0, 0),
                     "updated_at": datetime(2026, 2, 2, 10, 5, 0),

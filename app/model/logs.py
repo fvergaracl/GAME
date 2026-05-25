@@ -1,6 +1,7 @@
 from sqlmodel import JSON, Column, Field, ForeignKey, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class Logs(BaseModel, table=True):
@@ -25,8 +26,8 @@ class Logs(BaseModel, table=True):
 
     log_level: str = Field(sa_column=Column(String))
     message: str = Field(sa_column=Column(String))
-    module: str = Field(sa_column=Column(String), nullable=True)
-    details: dict = Field(sa_column=Column(JSON), nullable=True)
+    module: str = Field(sa_column=Column(String, nullable=True))
+    details: dict = Field(sa_column=Column(JSON, nullable=True))
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
@@ -36,8 +37,7 @@ class Logs(BaseModel, table=True):
         )
     )
 
-    class Config:  # noqa
-        orm_mode = True  # noqa
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

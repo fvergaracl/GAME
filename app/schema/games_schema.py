@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
 from app.schema.games_params_schema import (BaseFindGameParams, CreateGameParams,
@@ -23,11 +23,10 @@ class BaseGame(BaseModel):
     platform: str = Field(
         ...,
         description="Platform where the game is configured to run.",
-        example="web",
+        examples=["web"],
     )
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BaseGameResult(BaseModel):
@@ -47,40 +46,39 @@ class BaseGameResult(BaseModel):
     gameId: UUID = Field(
         ...,
         description="Internal UUID of the game.",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     created_at: Optional[datetime] = Field(
         default=None,
         description="UTC timestamp when the game was created.",
-        example="2026-02-10T12:15:00Z",
+        examples=["2026-02-10T12:15:00Z"],
     )
     updated_at: Optional[datetime] = Field(
         default=None,
         description="UTC timestamp when the game was last updated.",
-        example="2026-02-10T12:45:00Z",
+        examples=["2026-02-10T12:45:00Z"],
     )
     externalGameId: Optional[str] = Field(
         default=None,
         description="External identifier provided by the client system.",
-        example="game-readme-001",
+        examples=["game-readme-001"],
     )
     strategyId: Optional[str] = Field(
         default=None,
         description="Strategy id assigned to this game.",
-        example="default",
+        examples=["default"],
     )
     platform: Optional[str] = Field(
         default=None,
         description="Target platform for the game.",
-        example="web",
+        examples=["web"],
     )
     params: Optional[List[BaseFindGameParams]] = Field(
         default=None,
         description="Resolved game-level strategy parameters.",
     )
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PostCreateGame(BaseModel):
@@ -99,32 +97,32 @@ class PostCreateGame(BaseModel):
     externalGameId: str = Field(
         ...,
         description="External identifier of the game.",
-        example="game-readme-001",
+        examples=["game-readme-001"],
     )
     platform: str = Field(
         ...,
         description="Platform where the game operates.",
-        example="web",
+        examples=["web"],
     )
     strategyId: Optional[str] = Field(
         default="default",
         description="Strategy identifier for scoring behavior.",
-        example="default",
+        examples=["default"],
     )
     params: Optional[List[CreateGameParams]] = Field(
         default=None,
         description="Initial strategy/game parameters.",
-        example=[CreateGameParams.example()],
+        examples=[[CreateGameParams.example()]],
     )
     apiKey_used: Optional[str] = Field(
         default=None,
         description="API key used by the caller when request is API-key based.",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        examples=["gk_live_3f6a9e0f1a2b4c5d6e7f8a9b"],
     )
     oauth_user_id: Optional[str] = Field(
         default=None,
         description="OAuth user subject that initiated the operation.",
-        example="3c95c2d7-1ce8-4ea0-b35f-6dfd19127f35",
+        examples=["3c95c2d7-1ce8-4ea0-b35f-6dfd19127f35"],
     )
 
     def example():
@@ -150,17 +148,17 @@ class PatchGame(BaseModel):
     externalGameId: Optional[str] = Field(
         default=None,
         description="External identifier of the game.",
-        example="game-readme-001-updated",
+        examples=["game-readme-001-updated"],
     )
     strategyId: Optional[str] = Field(
         default=None,
         description="Updated strategy id.",
-        example="default",
+        examples=["default"],
     )
     platform: Optional[str] = Field(
         default=None,
         description="Updated platform value.",
-        example="mobile",
+        examples=["mobile"],
     )
     params: Optional[List[UpdateGameParams]] = Field(
         default=None,
@@ -179,7 +177,7 @@ class GameCreated(BaseGameResult):
     message: Optional[str] = Field(
         default="Successfully created",
         description="Human-readable operation result message.",
-        example="Successfully created",
+        examples=["Successfully created"],
     )
 
 
@@ -194,7 +192,7 @@ class ResponsePatchGame(PatchGame):
     message: Optional[str] = Field(
         default="Successfully updated",
         description="Human-readable operation result message.",
-        example="Successfully updated",
+        examples=["Successfully updated"],
     )
 
 
@@ -211,12 +209,12 @@ class FindGameById(ModelBaseInfo):
     externalGameId: Optional[str] = Field(
         default=None,
         description="External game identifier.",
-        example="game-readme-001",
+        examples=["game-readme-001"],
     )
     platform: Optional[str] = Field(
         default=None,
         description="Platform associated with the game.",
-        example="web",
+        examples=["web"],
     )
     params: Optional[List[UpdateGameParams]] = Field(
         default=None,
@@ -236,7 +234,7 @@ class PostFindGame(FindBase, BaseGame, metaclass=AllOptional):
     externalGameId: Optional[str] = Field(
         default=None,
         description="Optional external game identifier filter.",
-        example="game-readme-001",
+        examples=["game-readme-001"],
     )
 
 
@@ -271,7 +269,7 @@ class ListTasksWithUsers(BaseModel):
     gameId: UUID = Field(
         ...,
         description="Internal UUID of the game.",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     tasks: List[TasksWithUsers] = Field(
         ...,

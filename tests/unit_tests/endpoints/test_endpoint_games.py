@@ -21,7 +21,7 @@ class _SchemaWithoutSimulated:
         self.externalUserId = external_user_id
         self.data = {"points": 1}
 
-    def dict(self):
+    def model_dump(self):
         return {"externalUserId": self.externalUserId, "data": self.data}
 
 

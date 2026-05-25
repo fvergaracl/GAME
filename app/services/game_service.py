@@ -72,7 +72,7 @@ class GameService(BaseService):
         params = self.game_params_repository.read_by_column(
             "gameId", response.id, not_found_raise_exception=False, only_one=False
         )
-        response_dict = response.dict()
+        response_dict = response.model_dump()
         response_dict["params"] = params
 
         response = BaseGameResult(**response_dict, gameId=gameId)
@@ -199,7 +199,7 @@ class GameService(BaseService):
             del schema.params
 
             for param in params:
-                params_dict = param.dict()
+                params_dict = param.model_dump()
                 params_dict["gameId"] = str(game.id)
                 if api_key:
                     params_dict["apiKey_used"] = api_key
@@ -212,7 +212,7 @@ class GameService(BaseService):
                 created_params.append(created_param)
 
         response = GameCreated(
-            **game.dict(),
+            **game.model_dump(),
             params=created_params,
             gameId=game.id,
             message=f"Game with gameId: {game.id} created successfully",
@@ -262,9 +262,9 @@ class GameService(BaseService):
                     detail=f"Game already exists with externalGameId: "
                     f"{schema.externalGameId} . Cannot update externalGameId"
                 )
-        is_matching = are_variables_matching(schema.dict(), game.dict())
-        params_schema = schema.dict().get("params", None)
-        params_game = game.dict().get("params", None)
+        is_matching = are_variables_matching(schema.model_dump(), game.model_dump())
+        params_schema = schema.model_dump().get("params", None)
+        params_game = game.model_dump().get("params", None)
         params_is_matching = False
         if params_schema and params_game:
             params_is_matching = are_variables_matching(params_schema, params_game)
@@ -273,7 +273,7 @@ class GameService(BaseService):
             raise ConflictError(
                 detail=("It is not possible to update the game with the same data")
             )
-        if schema.dict() == game.dict():
+        if schema.model_dump() == game.model_dump():
             raise ConflictError(detail="No difference between schema and game")
 
         strategyId = schema.strategyId
@@ -299,7 +299,7 @@ class GameService(BaseService):
                 updated_params.append(param)
 
         game = self.game_repository.patch_game_by_id(gameId, schema)
-        game_dict = game.dict()
+        game_dict = game.model_dump()
         response = ResponsePatchGame(
             externalGameId=game_dict["externalGameId"],
             strategyId=strategyId,
@@ -394,8 +394,8 @@ class GameService(BaseService):
         tasks_list = []
         if tasks:
             for task in tasks:
-                tasks_list.append(task.dict())
-        game_dict = game.dict()
+                tasks_list.append(task.model_dump())
+        game_dict = game.model_dump()
         game_dict["tasks"] = tasks_list
 
         return game_dict

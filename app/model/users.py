@@ -1,6 +1,7 @@
 from sqlmodel import Column, Field, ForeignKey, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class Users(BaseModel, table=True):
@@ -17,8 +18,7 @@ class Users(BaseModel, table=True):
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
-    class Config:  # noqa
-        orm_mode = True  # noqa
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

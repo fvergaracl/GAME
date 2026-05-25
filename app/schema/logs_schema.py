@@ -25,32 +25,32 @@ class LogsBase(BaseModel):
     log_level: str = Field(
         ...,
         description="Severity level of the log event.",
-        example="INFO",
+        examples=["INFO"],
     )
     message: str = Field(
         ...,
         description="Human-readable log message.",
-        example="Get dashboard summary",
+        examples=["Get dashboard summary"],
     )
     module: str = Field(
         ...,
         description="Module or bounded context that generated the log.",
-        example="dashboard",
+        examples=["dashboard"],
     )
     details: dict = Field(
         ...,
         description="Structured metadata associated with the event.",
-        example={"group_by": "day", "start_date": "2026-02-01", "end_date": "2026-02-10"},
+        examples=[{"group_by": "day", "start_date": "2026-02-01", "end_date": "2026-02-10"}],
     )
     apiKey_used: Optional[str] = Field(
         default=None,
         description="API key used in the request context, if any.",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        examples=["gk_live_3f6a9e0f1a2b4c5d6e7f8a9b"],
     )
     oauth_user_id: Optional[str] = Field(
         default=None,
         description="OAuth user subject associated with the request, if any.",
-        example="3c95c2d7-1ce8-4ea0-b35f-6dfd19127f35",
+        examples=["3c95c2d7-1ce8-4ea0-b35f-6dfd19127f35"],
     )
 
     @staticmethod

@@ -69,7 +69,7 @@ def test_create_task_post():
     assert create_task.externalTaskId == data["externalTaskId"]
     assert create_task.strategyId == data["strategyId"]
     assert create_task.params[0].key == data["params"][0]["key"]
-    assert create_task.params[0].value == data["params"][0]["value"].__str__()
+    assert create_task.params[0].value == data["params"][0]["value"]
 
 
 def test_post_find_task():

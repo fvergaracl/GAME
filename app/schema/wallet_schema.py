@@ -21,17 +21,17 @@ class WalletWithoutUserId(BaseModel):
     coinsBalance: Optional[float] = Field(
         default=None,
         description="Current coin or currency balance.",
-        example=100.0,
+        examples=[100.0],
     )
     pointsBalance: Optional[float] = Field(
         default=None,
         description="Current points balance.",
-        example=200.0,
+        examples=[200.0],
     )
     conversionRate: Optional[float] = Field(
         default=None,
         description="Current conversion rate used to transform points into coins.",
-        example=1.5,
+        examples=[1.5],
     )
 
 
@@ -46,7 +46,7 @@ class Wallet(WalletWithoutUserId):
     userId: Optional[str] = Field(
         default=None,
         description="Internal UUID of the wallet owner (serialized as string).",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
 
 
@@ -64,22 +64,22 @@ class BaseWallet(ModelBaseInfo):
     coinsBalance: Optional[float] = Field(
         default=None,
         description="Current coin or currency balance.",
-        example=100.0,
+        examples=[100.0],
     )
     pointsBalance: Optional[float] = Field(
         default=None,
         description="Current points balance.",
-        example=200.0,
+        examples=[200.0],
     )
     conversionRate: Optional[float] = Field(
         default=None,
         description="Current conversion rate applied for points conversion.",
-        example=1.5,
+        examples=[1.5],
     )
     userId: Optional[int] = Field(
         default=None,
         description="Internal numeric identifier of the wallet owner.",
-        example=123,
+        examples=[123],
     )
 
 
@@ -95,12 +95,12 @@ class BaseWalletOnlyUserId(BaseModel):
     userId: int = Field(
         ...,
         description="Internal numeric identifier of the user.",
-        example=123,
+        examples=[123],
     )
     pointsBalance: Optional[float] = Field(
         default=None,
         description="Current points balance for the user.",
-        example=200.0,
+        examples=[200.0],
     )
 
 
@@ -116,12 +116,12 @@ class PostPreviewConvertPoints(BaseModel):
     points: float = Field(
         ...,
         description="Number of points to preview for conversion.",
-        example=100.0,
+        examples=[100.0],
     )
     externalUserId: str = Field(
         ...,
         description="External user identifier from the client platform.",
-        example="user-12345",
+        examples=["user-12345"],
     )
 
     @staticmethod
@@ -148,32 +148,32 @@ class ResponsePreviewConvertPoints(BaseModel):
     coins: float = Field(
         ...,
         description="Estimated coins/currency resulting from conversion.",
-        example=50.0,
+        examples=[50.0],
     )
     points_converted: float = Field(
         ...,
         description="Points that would be converted.",
-        example=100.0,
+        examples=[100.0],
     )
     conversionRate: float = Field(
         ...,
         description="Conversion rate used for preview calculation.",
-        example=1.5,
+        examples=[1.5],
     )
     afterConversionPoints: float = Field(
         ...,
         description="Projected points balance after conversion.",
-        example=200.0,
+        examples=[200.0],
     )
     afterConversionCoins: float = Field(
         ...,
         description="Projected coins/currency balance after conversion.",
-        example=75.0,
+        examples=[75.0],
     )
     externalUserId: str = Field(
         ...,
         description="External user identifier for whom conversion is previewed.",
-        example="user-12345",
+        examples=["user-12345"],
     )
 
 
@@ -188,7 +188,7 @@ class CreateWallet(Wallet):
     apiKey_used: Optional[str] = Field(
         default=None,
         description="API key used to create the wallet when API-key auth is used.",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        examples=["gk_live_3f6a9e0f1a2b4c5d6e7f8a9b"],
     )
 
     @staticmethod

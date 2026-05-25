@@ -2,6 +2,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import JSON, Column, Field, ForeignKey, SQLModel, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class UserGameConfig(BaseModel, table=True):
@@ -17,11 +18,10 @@ class UserGameConfig(BaseModel, table=True):
 
     userId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("users.id")))
     gameId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("games.id")))
-    experimentGroup: str = Field(sa_column=Column(String), nullable=False)
-    configData: dict = Field(sa_column=Column(JSON), nullable=True)
+    experimentGroup: str = Field(sa_column=Column(String, nullable=False))
+    configData: dict = Field(sa_column=Column(JSON, nullable=True))
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

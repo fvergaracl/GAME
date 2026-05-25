@@ -1,6 +1,7 @@
 from sqlmodel import Column, Field, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class UptimeLogs(BaseModel, table=True):
@@ -14,8 +15,7 @@ class UptimeLogs(BaseModel, table=True):
 
     status: str = Field(sa_column=Column(String))
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         """

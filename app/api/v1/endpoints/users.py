@@ -208,7 +208,7 @@ Returns one `UserGamePoints` item per requested external user id:
 )
 @inject
 async def query_user_points(
-    schema: List[str] = Body(..., example=request_example_query_user_points),
+    schema: List[str] = Body(..., examples=[request_example_query_user_points]),
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
@@ -792,7 +792,7 @@ async def assign_points_by_external_user_id(
     externalUserId: str,
     schema: PostAssignPointsToUserWithCaseName = Body(
         ...,
-        example=example_payload_assign_points_by_external_user_id,
+        examples=[example_payload_assign_points_by_external_user_id],
         description="Details of point assignment",
     ),
     service: UserService = Depends(Provide[Container.user_service]),
@@ -834,7 +834,7 @@ async def assign_points_by_external_user_id(
             "users",
             "INFO",
             "Assign points by externalUserId",
-            {"externalUserId": externalUserId, "schema": schema.dict()},
+            {"externalUserId": externalUserId, "schema": schema.model_dump()},
             service_log,
             api_key=api_key,
             oauth_user_id=oauth_user_id,
@@ -1204,7 +1204,7 @@ Returns the conversion transaction result:
 @inject
 async def convert_points_to_coins(
     externalUserId: str,
-    schema: PostPointsConversionRequest = Body(..., example=request_example_convert_points),
+    schema: PostPointsConversionRequest = Body(..., examples=[request_example_convert_points]),
     service: UserService = Depends(Provide[Container.user_actions_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
@@ -1390,7 +1390,7 @@ Returns:
 @inject
 async def add_action_to_user(
     externalUserId: str,
-    schema: CreateUserBodyActions = Body(..., example=request_example_add_action_to_user),
+    schema: CreateUserBodyActions = Body(..., examples=[request_example_add_action_to_user]),
     service: UserActionsService = Depends(Provide[Container.user_actions_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),

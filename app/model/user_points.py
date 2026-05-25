@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlmodel import Column, Field, ForeignKey, Integer, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class UserPoints(BaseModel, table=True):
@@ -34,18 +35,17 @@ class UserPoints(BaseModel, table=True):
     )
 
     points: int = Field(sa_column=Column(Integer))
-    caseName: str = Field(sa_column=Column(String), nullable=True)
-    idempotencyKey: str = Field(sa_column=Column(String), nullable=True)
-    data: dict = Field(sa_column=Column(JSONB), nullable=True)
-    description: str = Field(sa_column=Column(String), nullable=True)
+    caseName: str = Field(sa_column=Column(String, nullable=True))
+    idempotencyKey: str = Field(sa_column=Column(String, nullable=True))
+    data: dict = Field(sa_column=Column(JSONB, nullable=True))
+    description: str = Field(sa_column=Column(String, nullable=True))
     userId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("users.id")))
     taskId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("tasks.id")))
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
-    class Config:  # noqa
-        orm_mode = True  # noqa
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

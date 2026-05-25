@@ -1,12 +1,12 @@
 from types import SimpleNamespace
+from typing import Optional
 from unittest.mock import MagicMock
 
 import pytest
 from dependency_injector import containers, providers
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import Column, Integer, String, create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 from app.core.exceptions import DuplicatedError, NotFoundError
 from app.repository.base_repository import BaseRepository
@@ -23,10 +23,9 @@ class Model(Base):
 
 class ModelSchema(BaseModel):
     name: str
-    value: str = None
+    value: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Container(containers.DeclarativeContainer):
@@ -42,7 +41,7 @@ class DummySchema:
     def __init__(self, payload):
         self.payload = payload
 
-    def dict(self, exclude_none=False):
+    def model_dump(self, exclude_none=False):
         if exclude_none:
             return {k: v for k, v in self.payload.items() if v is not None}
         return dict(self.payload)

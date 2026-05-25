@@ -20,17 +20,17 @@ class UserActions(BaseModel):
     userId: str = Field(
         ...,
         description="Internal UUID of the user (serialized as string).",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
     action: str = Field(
         ...,
         description="Action type/event key.",
-        example="TASK_COMPLETED",
+        examples=["TASK_COMPLETED"],
     )
     data: Optional[dict] = Field(
         ...,
         description="Additional JSON metadata for the action.",
-        example={"source": "mobile-app", "durationSeconds": 84},
+        examples=[{"source": "mobile-app", "durationSeconds": 84}],
     )
 
 
@@ -48,22 +48,22 @@ class CreateUserBodyActions(BaseModel):
     typeAction: str = Field(
         ...,
         description="Action type/event identifier.",
-        example="LOGIN",
+        examples=["LOGIN"],
     )
     data: Optional[dict] = Field(
         ...,
         description="Action metadata payload.",
-        example={"source": "mobile-app", "ip": "203.0.113.10"},
+        examples=[{"source": "mobile-app", "ip": "203.0.113.10"}],
     )
     description: Optional[str] = Field(
         ...,
         description="Human-readable description of the action.",
-        example="User logged in from mobile app",
+        examples=["User logged in from mobile app"],
     )
     apiKey_used: Optional[str] = Field(
         ...,
         description="API key used to issue the request (if API-key based).",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        examples=["gk_live_3f6a9e0f1a2b4c5d6e7f8a9b"],
     )
 
     @staticmethod
@@ -89,7 +89,7 @@ class CreateUserActions(CreateUserBodyActions):
     userId: str = Field(
         ...,
         description="Internal UUID of the user linked to this action.",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
 
 
@@ -109,25 +109,25 @@ class CreatedUserActions(BaseModel):
     typeAction: str = Field(
         ...,
         description="Action type stored in the system.",
-        example="LOGIN",
+        examples=["LOGIN"],
     )
     description: Optional[str] = Field(
         ...,
         description="Human-readable description of the stored action.",
-        example="User logged in from mobile app",
+        examples=["User logged in from mobile app"],
     )
     userId: str = Field(
         ...,
         description="Internal UUID of the affected user.",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
     is_user_created: Optional[bool] = Field(
         ...,
         description="True if user was auto-created before action insertion.",
-        example=False,
+        examples=[False],
     )
     message: str = Field(
         ...,
         description="Operation outcome message.",
-        example="Action added successfully",
+        examples=["Action added successfully"],
     )

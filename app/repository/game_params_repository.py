@@ -54,7 +54,7 @@ class GameParamsRepository(BaseRepository):
             )
 
             if game_params_model:
-                for key, value in schema.dict(exclude_none=True).items():
+                for key, value in schema.model_dump(exclude_none=True).items():
                     setattr(game_params_model, key, value)
 
                 session.commit()

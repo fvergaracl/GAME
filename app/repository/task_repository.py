@@ -48,7 +48,7 @@ class TaskRepository(BaseRepository):
             dict: Query results and search options.
         """
         with self.session_factory() as session:
-            schema_as_dict = schema.dict(exclude_none=True)
+            schema_as_dict = schema.model_dump(exclude_none=True)
             ordering = schema_as_dict.get("ordering", configs.ORDERING)
             order_query = (
                 getattr(self.model, ordering[1:]).desc()
@@ -58,7 +58,7 @@ class TaskRepository(BaseRepository):
             page = schema_as_dict.get("page", configs.PAGE)
             page_size = schema_as_dict.get("page_size", configs.PAGE_SIZE)
             filter_options = dict_to_sqlalchemy_filter_options(
-                self.model, schema.dict(exclude_none=True)
+                self.model, schema.model_dump(exclude_none=True)
             )
             query = session.query(self.model)
             if eager:

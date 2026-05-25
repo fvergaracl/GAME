@@ -59,7 +59,7 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         }
         if include_params:
             payload["params"] = []
-        game.dict = lambda: payload
+        game.model_dump = lambda: payload
         return game
 
     def test_init_sets_dependencies(self):
@@ -310,7 +310,7 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         param_id = uuid4()
         existing_param = SimpleNamespace(id=param_id, key="k", value="v")
         game = self._build_game(game_id, include_params=True)
-        game.dict = lambda: {
+        game.model_dump = lambda: {
             "externalGameId": "game_slug_1",
             "strategyId": "default",
             "platform": "web",
@@ -344,7 +344,7 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         game = self._build_game(
             game_id, external_game_id="same_game", include_params=True
         )
-        game.dict = lambda: same_dict
+        game.model_dump = lambda: same_dict
         schema = PatchGame(
             externalGameId="same_game",
             strategyId="default",
@@ -518,7 +518,7 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.game_repository.read_by_id.return_value = game
         self.task_repository.read_by_column.return_value = [
             SimpleNamespace(
-                dict=lambda: {"id": str(uuid4()), "externalTaskId": "task-1"}
+                model_dump=lambda: {"id": str(uuid4()), "externalTaskId": "task-1"}
             )
         ]
 

@@ -70,7 +70,7 @@ class InMemoryWalletTransactionRepository:
         self.transactions = []
 
     def create(self, schema):
-        transaction = SimpleNamespace(id=str(uuid4()), **schema.dict())
+        transaction = SimpleNamespace(id=str(uuid4()), **schema.model_dump())
         self.transactions.append(transaction)
         return transaction
 

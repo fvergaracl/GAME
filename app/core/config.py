@@ -1,8 +1,10 @@
 import os
-from typing import List
+from typing import List, Optional, Union
 
 from dotenv import load_dotenv
-from pydantic import BaseSettings
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, NoDecode
+from typing_extensions import Annotated
 
 load_dotenv()
 
@@ -113,12 +115,14 @@ class Configs(BaseSettings):
         "GAMIFICATIONENGINE_VERSION_APP", "No_version"
     )
 
-    SENTRY_DSN: str = os.getenv("SENTRY_DSN", None)
+    SENTRY_DSN: Optional[str] = os.getenv("SENTRY_DSN", None)
     SENTRY_ENVIRONMENT: str = os.getenv("SENTRY_ENVIRONMENT", "dev")
     SENTRY_RELEASE: str = os.getenv("SENTRY_RELEASE", "0.0.0")
 
-    EXTRA_SERVER_URL: str = os.getenv("EXTRA_SERVER_URL", None)
-    EXTRA_SERVER_DESCRIPTION: str = os.getenv("EXTRA_SERVER_DESCRIPTION", None)
+    EXTRA_SERVER_URL: Optional[str] = os.getenv("EXTRA_SERVER_URL", None)
+    EXTRA_SERVER_DESCRIPTION: Optional[str] = os.getenv(
+        "EXTRA_SERVER_DESCRIPTION", None
+    )
 
     ENV_DATABASE_MAPPER: dict = {
         "prod": "game_dev_db",
@@ -135,23 +139,27 @@ class Configs(BaseSettings):
     # the middleware is only attached when explicit origins are configured.
     # ``"*"`` is rejected outright in ``prod``/``stage`` to avoid a misconfig
     # granting authenticated cross-site access.
-    BACKEND_CORS_ORIGINS: List[str] = []
+    BACKEND_CORS_ORIGINS: Annotated[List[str], NoDecode] = []
 
     # keycloak
-    KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "master")
-    KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "account")
-    KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "admin-cli")
-    KEYCLOAK_CLIENT_SECRET = os.getenv("KEYCLOAK_CLIENT_SECRET", "admin-client-secret")
-    KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
-    KEYCLOAK_URL_DOCKER = os.getenv("KEYCLOAK_URL_DOCKER", "http://keycloak:8080")
+    KEYCLOAK_REALM: str = os.getenv("KEYCLOAK_REALM", "master")
+    KEYCLOAK_AUDIENCE: str = os.getenv("KEYCLOAK_AUDIENCE", "account")
+    KEYCLOAK_CLIENT_ID: str = os.getenv("KEYCLOAK_CLIENT_ID", "admin-cli")
+    KEYCLOAK_CLIENT_SECRET: str = os.getenv(
+        "KEYCLOAK_CLIENT_SECRET", "admin-client-secret"
+    )
+    KEYCLOAK_URL: str = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
+    KEYCLOAK_URL_DOCKER: str = os.getenv(
+        "KEYCLOAK_URL_DOCKER", "http://keycloak:8080"
+    )
     # database
-    DB_USER: str = os.getenv("DB_USER")
-    DB_PASSWORD: str = os.getenv("DB_PASSWORD")
-    DB_HOST: str = os.getenv("DB_HOST")
+    DB_USER: Optional[str] = os.getenv("DB_USER")
+    DB_PASSWORD: Optional[str] = os.getenv("DB_PASSWORD")
+    DB_HOST: Optional[str] = os.getenv("DB_HOST")
     DB_PORT: str = os.getenv("DB_PORT", "3306")
     DB_ENGINE: str = os.getenv("DB_ENGINE", "postgresql")
 
-    DATABASE_URI = (
+    DATABASE_URI: str = (
         "{db_engine}://{user}:{password}@{host}:{port}/{database}".format(  # noqa: E501
             db_engine=DB_ENGINE,
             user=DB_USER,
@@ -163,9 +171,9 @@ class Configs(BaseSettings):
     )
 
     # find query
-    PAGE = 1
-    PAGE_SIZE = 10
-    ORDERING = "-id"
+    PAGE: int = 1
+    PAGE_SIZE: int = 10
+    ORDERING: str = "-id"
 
     ABUSE_PREVENTION_ENABLED: bool = _env_to_bool(
         "ABUSE_PREVENTION_ENABLED", True
@@ -194,15 +202,19 @@ class Configs(BaseSettings):
         "API_KEY_HEADER_CACHE_TTL_SECONDS", 5
     )
 
-    class Config:
-        @classmethod
-        def parse_env_var(cls, field_name: str, raw_val: str):
-            # Treat BACKEND_CORS_ORIGINS as a plain comma-separated list
-            # instead of JSON, so operators can write
-            # ``BACKEND_CORS_ORIGINS=https://a.example,https://b.example``.
-            if field_name == "BACKEND_CORS_ORIGINS":
-                return _parse_cors_origins(raw_val)
-            return cls.json_loads(raw_val)
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @classmethod
+    def _coerce_cors_origins(
+        cls, value: Union[str, List[str], None]
+    ) -> List[str]:
+        # Treat BACKEND_CORS_ORIGINS as a plain comma-separated list instead
+        # of JSON, so operators can write
+        # ``BACKEND_CORS_ORIGINS=https://a.example,https://b.example``.
+        if value is None:
+            return []
+        if isinstance(value, str):
+            return _parse_cors_origins(value)
+        return value
 
 
 class TestConfigs(Configs):
@@ -214,9 +226,9 @@ class TestConfigs(Configs):
         ENV (str): The environment setting for test environment.
     """
 
-    ENV = "test"
-    DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///./test.db")
-    DB_HOST = os.getenv("TEST_DB_HOST", "localhost")
+    ENV: str = "test"
+    DATABASE_URL: str = os.getenv("TEST_DATABASE_URL", "sqlite:///./test.db")
+    DB_HOST: Optional[str] = os.getenv("TEST_DB_HOST", "localhost")
 
 
 configs = TestConfigs() if os.getenv("ENV") == "test" else Configs()

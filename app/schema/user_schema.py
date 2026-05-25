@@ -21,7 +21,7 @@ class BaseUser(BaseModel):
     externalUserId: str = Field(
         ...,
         description="External identifier of the user in the client platform.",
-        example="user-12345",
+        examples=["user-12345"],
     )
 
 
@@ -47,22 +47,22 @@ class PostAssignPointsToUser(BaseModel):
     taskId: UUID = Field(
         ...,
         description="Internal UUID of the target task.",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     points: Optional[int] = Field(
         default=None,
         description="Points to assign for this operation.",
-        example=100,
+        examples=[100],
     )
     description: Optional[str] = Field(
         default=None,
         description="Human-readable reason for awarding points.",
-        example="Good job",
+        examples=["Good job"],
     )
     data: Optional[dict] = Field(
         default=None,
         description="Additional metadata related to this assignment.",
-        example={"extra": "value"},
+        examples=[{"extra": "value"}],
     )
 
     @staticmethod
@@ -90,12 +90,12 @@ class PostAssignPointsToUserWithCaseName(PostAssignPointsToUser):
     taskId: str = Field(
         ...,
         description="External task identifier from the client system.",
-        example="task-eco-action-01",
+        examples=["task-eco-action-01"],
     )
     caseName: str = Field(
         ...,
         description="Case label used by scoring/adaptive strategy rules.",
-        example="TASK_COMPLETION",
+        examples=["TASK_COMPLETION"],
     )
 
     @staticmethod
@@ -126,7 +126,7 @@ class UserWallet(BaseModel):
     userId: str = Field(
         ...,
         description="Internal UUID of the user (serialized as string).",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
     wallet: Optional[WalletWithoutUserId] = Field(
         default=None,
@@ -150,7 +150,7 @@ class UserPointsTasks(BaseModel):
     id: UUID = Field(
         ...,
         description="Internal UUID of the user.",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
     tasks: list[TaskPointsResponseByUser] = Field(
         ...,
@@ -174,32 +174,32 @@ class ResponseConversionPreview(BaseModel):
     points: int = Field(
         ...,
         description="Requested number of points for preview conversion.",
-        example=100,
+        examples=[100],
     )
     conversionRate: float = Field(
         ...,
         description="Conversion rate applied to the request.",
-        example=1.5,
+        examples=[1.5],
     )
     conversionRateDate: str = Field(
         ...,
         description="Date when the conversion rate became effective.",
-        example="2026-02-10",
+        examples=["2026-02-10"],
     )
     convertedAmount: float = Field(
         ...,
         description="Estimated converted amount (coins/currency).",
-        example=150.0,
+        examples=[150.0],
     )
     convertedCurrency: str = Field(
         ...,
         description="Currency or coin unit for converted amount.",
-        example="USD",
+        examples=["USD"],
     )
     haveEnoughPoints: bool = Field(
         ...,
         description="True when the user has enough points to convert.",
-        example=True,
+        examples=[True],
     )
 
 
@@ -214,7 +214,7 @@ class PostPointsConversionRequest(BaseModel):
     points: int = Field(
         ...,
         description="Number of points to convert.",
-        example=100,
+        examples=[100],
     )
 
     @staticmethod
@@ -242,35 +242,35 @@ class ResponsePointsConversion(BaseModel):
     transactionId: str = Field(
         ...,
         description="Unique identifier of the conversion transaction.",
-        example="txn_018f59df7a7e",
+        examples=["txn_018f59df7a7e"],
     )
     points: int = Field(
         ...,
         description="Points converted in the transaction.",
-        example=100,
+        examples=[100],
     )
     conversionRate: float = Field(
         ...,
         description="Conversion rate applied to the transaction.",
-        example=1.5,
+        examples=[1.5],
     )
     conversionRateDate: str = Field(
         ...,
         description="Date when the applied conversion rate is valid.",
-        example="2026-02-10",
+        examples=["2026-02-10"],
     )
     convertedAmount: float = Field(
         ...,
         description="Amount obtained after conversion.",
-        example=150.0,
+        examples=[150.0],
     )
     convertedCurrency: str = Field(
         ...,
         description="Currency or coin unit for the converted amount.",
-        example="USD",
+        examples=["USD"],
     )
     haveEnoughPoints: bool = Field(
         ...,
         description="True when conversion was allowed by balance checks.",
-        example=True,
+        examples=[True],
     )

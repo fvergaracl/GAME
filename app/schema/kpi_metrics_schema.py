@@ -19,42 +19,42 @@ class KpiMetricsBase(BaseModel):
     day: str = Field(
         ...,
         description="Reporting day (ISO date or bucket label).",
-        example="2026-02-10",
+        examples=["2026-02-10"],
     )
     totalRequests: int = Field(
         ...,
         description="Total number of requests received/processed during the day.",
-        example=1520,
+        examples=[1520],
     )
     successRate: float = Field(
         ...,
         description="Successful request ratio expressed as percentage.",
-        example=98.7,
+        examples=[98.7],
     )
     avgLatencyMS: float = Field(
         ...,
         description="Average end-to-end request latency in milliseconds.",
-        example=84.6,
+        examples=[84.6],
     )
     errorRate: float = Field(
         ...,
         description="Failed request ratio expressed as percentage.",
-        example=1.3,
+        examples=[1.3],
     )
     activeUsers: int = Field(
         ...,
         description="Number of unique users with activity in the period.",
-        example=245,
+        examples=[245],
     )
     retentionRate: float = Field(
         ...,
         description="Retention rate percentage for the tracked cohort.",
-        example=62.4,
+        examples=[62.4],
     )
     avgInteractionsPerUser: float = Field(
         ...,
         description="Average number of interactions performed per active user.",
-        example=6.8,
+        examples=[6.8],
     )
 
     @staticmethod

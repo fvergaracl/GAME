@@ -307,7 +307,7 @@ class UserService(BaseService):
         else:
             wallet.pointsBalance += points
             await self.wallet_repository.update(wallet.id, wallet)
-        schema_dict = schema.dict()
+        schema_dict = schema.model_dump()
 
         wallet_transaction = BaseWalletTransaction(
             transactionType="AssignPoints",

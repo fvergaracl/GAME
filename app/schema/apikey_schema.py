@@ -15,7 +15,7 @@ class ApikeyBase(BaseModel):
     apiKey: str = Field(
         ...,
         description="Public API key prefix (safe to log/audit).",
-        example="gme_live_3f6a9e0f",
+        examples=["gme_live_3f6a9e0f"],
     )
 
 
@@ -31,12 +31,12 @@ class ApiKeyPostBody(BaseModel):
     client: str = Field(
         ...,
         description="Client identifier that will own the API key.",
-        example="dashboard-service",
+        examples=["dashboard-service"],
     )
     description: str = Field(
         ...,
         description="Human-readable purpose of this API key.",
-        example="Read-only access for internal analytics dashboard",
+        examples=["Read-only access for internal analytics dashboard"],
     )
 
     @staticmethod
@@ -64,17 +64,17 @@ class ApiKeyCreate(ApiKeyPostBody):
     createdBy: str = Field(
         ...,
         description="Identifier of the user/system that created the key.",
-        example="admin@game.local",
+        examples=["admin@game.local"],
     )
     apiKey: str = Field(
         ...,
         description="Public prefix persisted in the DB.",
-        example="gme_live_3f6a9e0f",
+        examples=["gme_live_3f6a9e0f"],
     )
     apiKeyHash: str = Field(
         ...,
         description="sha256(plaintext) hex digest used for auth lookups.",
-        example="0c3a8d9b...e6f4",
+        examples=["0c3a8d9b...e6f4"],
     )
 
 
@@ -92,22 +92,22 @@ class ApiKeyCreateBase(ApikeyBase):
     apiKey: str = Field(
         ...,
         description="Public API key prefix.",
-        example="gme_live_3f6a9e0f",
+        examples=["gme_live_3f6a9e0f"],
     )
     client: str = Field(
         ...,
         description="Client identifier associated with this API key.",
-        example="dashboard-service",
+        examples=["dashboard-service"],
     )
     description: Optional[str] = Field(
         None,
         description="Human-readable description of API key usage.",
-        example="Read-only access for internal analytics dashboard",
+        examples=["Read-only access for internal analytics dashboard"],
     )
     createdBy: str = Field(
         ...,
         description="Identifier of the creator.",
-        example="admin@game.local",
+        examples=["admin@game.local"],
     )
 
 
@@ -123,12 +123,12 @@ class ApiKeyCreatedUnitList(ApiKeyCreateBase):
     created_at: datetime = Field(
         ...,
         description="UTC timestamp when the API key was created.",
-        example="2026-02-10T18:45:00Z",
+        examples=["2026-02-10T18:45:00Z"],
     )
     active: Optional[bool] = Field(
         True,
         description="Whether this API key is currently active.",
-        example=True,
+        examples=[True],
     )
 
 
@@ -151,14 +151,14 @@ class ApiKeyCreated(ApiKeyCreateBase):
             "Full API key value. Returned **only** at creation time; the "
             "server does not store it and cannot retrieve it again."
         ),
-        example=(
+        examples=[(
             "gme_live_3f6a9e0f.AbCdEfGhIjKlMnOpQrStUvWxYzAbCdEf"
-        ),
+        )],
     )
     message: Optional[str] = Field(
         default="Successfully created",
         description="Human-readable operation result message.",
-        example="Successfully created",
+        examples=["Successfully created"],
     )
 
 
@@ -170,15 +170,15 @@ class ApiKeyRevoked(BaseModel):
     apiKey: str = Field(
         ...,
         description="Public prefix of the revoked key.",
-        example="gme_live_3f6a9e0f",
+        examples=["gme_live_3f6a9e0f"],
     )
     active: bool = Field(
         False,
         description="Whether the key is active after revocation.",
-        example=False,
+        examples=[False],
     )
     message: str = Field(
         "API key revoked successfully.",
         description="Human-readable operation result message.",
-        example="API key revoked successfully.",
+        examples=["API key revoked successfully."],
     )

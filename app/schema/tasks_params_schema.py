@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BaseTaskParams(BaseModel):
@@ -16,16 +16,15 @@ class BaseTaskParams(BaseModel):
     key: str = Field(
         ...,
         description="Task parameter key.",
-        example="variable_bonus_points",
+        examples=["variable_bonus_points"],
     )
     value: str | int | float | bool | dict = Field(
         ...,
         description="Task parameter value (supports scalar values and objects).",
-        example=20,
+        examples=[20],
     )
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CreateTaskParams(BaseTaskParams):
@@ -51,10 +50,10 @@ class InsertTaskParams(BaseTaskParams):
     taskId: str = Field(
         ...,
         description="Internal UUID of the task (serialized as string).",
-        example="2a18d9a9-8eb5-4d33-a7bd-9590ea7ea41e",
+        examples=["2a18d9a9-8eb5-4d33-a7bd-9590ea7ea41e"],
     )
     apiKey_used: Optional[str] = Field(
         default=None,
         description="API key used to create this task parameter.",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        examples=["gk_live_3f6a9e0f1a2b4c5d6e7f8a9b"],
     )

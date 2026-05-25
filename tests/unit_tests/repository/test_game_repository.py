@@ -14,7 +14,7 @@ class DummySchema:
     def __init__(self, payload):
         self.payload = payload
 
-    def dict(self, exclude_none=False):
+    def model_dump(self, exclude_none=False):
         if exclude_none:
             return {k: v for k, v in self.payload.items() if v is not None}
         return dict(self.payload)

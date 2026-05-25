@@ -1,6 +1,7 @@
 from sqlmodel import Column, Field, Integer, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class KpiMetrics(BaseModel, table=True):
@@ -28,8 +29,7 @@ class KpiMetrics(BaseModel, table=True):
     retentionRate: float = Field(sa_column=Column(Integer))
     avgInteractionsPerUser: float = Field(sa_column=Column(Integer))
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         """

@@ -2,6 +2,7 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlmodel import Column, Field, ForeignKey, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class UserActions(BaseModel, table=True):
@@ -16,16 +17,15 @@ class UserActions(BaseModel, table=True):
         userId (str): The ID of the user associated with the action.
     """
 
-    typeAction: str = Field(sa_column=Column(String), nullable=True)
-    data: dict = Field(sa_column=Column(JSONB), nullable=True)
-    description: str = Field(sa_column=Column(String), nullable=True)
+    typeAction: str = Field(sa_column=Column(String, nullable=True))
+    data: dict = Field(sa_column=Column(JSONB, nullable=True))
+    description: str = Field(sa_column=Column(String, nullable=True))
     userId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("users.id")))
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
-    class Config:  # noqa
-        orm_mode = True  # noqa
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

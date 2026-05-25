@@ -2,6 +2,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import Column, Field, ForeignKey, Integer, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class ApiRequests(BaseModel, table=True):
@@ -23,8 +24,7 @@ class ApiRequests(BaseModel, table=True):
     responseTimeMS: int = Field(sa_column=Column(Integer))
     requestType: str = Field(sa_column=Column(String))
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         """

@@ -1,8 +1,10 @@
 from datetime import datetime
+from typing import Optional
 from uuid import uuid4
 
+from pydantic import ConfigDict
 from sqlalchemy.dialects.postgresql import UUID
-from sqlmodel import Column, DateTime, Field, ForeignKey, SQLModel, String, func
+from sqlmodel import DateTime, Field, SQLModel, func
 
 
 class BaseModel(SQLModel):
@@ -34,30 +36,35 @@ class BaseModel(SQLModel):
 
     id: str = Field(
         default_factory=uuid4,
-        primary_key=True,
-        index=True,
-        sa_column=Column(UUID(as_uuid=True), primary_key=True, index=True),
+        sa_type=UUID(as_uuid=True),
+        sa_column_kwargs={"primary_key": True, "index": True},
     )
     created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), default=func.now())
+        default=None,
+        sa_type=DateTime(timezone=True),
+        sa_column_kwargs={"server_default": func.now()},
     )
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), default=func.now(), onupdate=func.now()
-        )
+        default=None,
+        sa_type=DateTime(timezone=True),
+        sa_column_kwargs={
+            "server_default": func.now(),
+            "onupdate": func.now(),
+        },
     )
-    apiKey_used: str = Field(
-        sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
+    apiKey_used: Optional[str] = Field(
+        default=None,
+        foreign_key="apikey.apiKey",
+        nullable=True,
     )
 
-    oauth_user_id: str = Field(
-        sa_column=Column(
-            String, ForeignKey("oauthusers.provider_user_id"), nullable=True
-        )
+    oauth_user_id: Optional[str] = Field(
+        default=None,
+        foreign_key="oauthusers.provider_user_id",
+        nullable=True,
     )
 
-    class Config:  # noqa
-        orm_mode = True  # noqa
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

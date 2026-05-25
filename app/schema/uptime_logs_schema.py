@@ -13,7 +13,7 @@ class UptimeLogsBase(BaseModel):
     status: str = Field(
         ...,
         description="Health status value emitted by uptime checks.",
-        example="up",
+        examples=["up"],
     )
 
     @staticmethod

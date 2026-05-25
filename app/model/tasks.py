@@ -2,6 +2,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import Column, Field, ForeignKey, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class Tasks(BaseModel, table=True):
@@ -47,8 +48,7 @@ class Tasks(BaseModel, table=True):
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
-    class Config:
-        orm_mode = True  # Enable ORM mode
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

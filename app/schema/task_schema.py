@@ -23,12 +23,12 @@ class BaseTask(BaseModel):
     externalTaskId: str = Field(
         ...,
         description="External identifier of the task.",
-        example="task-login",
+        examples=["task-login"],
     )
     gameId: UUID = Field(
         ...,
         description="Internal UUID of the game.",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
 
 
@@ -45,17 +45,17 @@ class AsignPointsToExternalUserId(BaseModel):
     externalUserId: str = Field(
         ...,
         description="External user identifier.",
-        example="user-123",
+        examples=["user-123"],
     )
     data: Optional[dict] = Field(
         default=None,
         description="Context payload for scoring strategy evaluation.",
-        example={"event": "task_completed", "source": "mobile-app"},
+        examples=[{"event": "task_completed", "source": "mobile-app"}],
     )
     isSimulated: Optional[bool] = Field(
         default=False,
         description="If true, executes simulation logic when available.",
-        example=False,
+        examples=[False],
     )
 
 
@@ -72,17 +72,17 @@ class CreateTaskPost(BaseModel):
     externalTaskId: str = Field(
         ...,
         description="External identifier of the task.",
-        example="task-login",
+        examples=["task-login"],
     )
     strategyId: Optional[str] = Field(
         default=None,
         description="Optional strategy id for this specific task.",
-        example="default",
+        examples=["default"],
     )
     params: Optional[List[CreateTaskParams]] = Field(
         default=None,
         description="Task-specific parameters that override/extend game settings.",
-        example=[CreateTaskParams.example()],
+        examples=[[CreateTaskParams.example()]],
     )
 
     def example():
@@ -138,7 +138,7 @@ class FoundTask(ModelBaseInfo):
     externalTaskId: str = Field(
         ...,
         description="External task identifier.",
-        example="task-login",
+        examples=["task-login"],
     )
     gameParams: Optional[List[CreateGameParams]] = Field(
         default=None,
@@ -212,12 +212,12 @@ class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
     externalTaskId: str = Field(
         ...,
         description="External identifier of the created task.",
-        example="task-login",
+        examples=["task-login"],
     )
     externalGameId: str = Field(
         ...,
         description="External identifier of the owning game.",
-        example="game-readme-001",
+        examples=["game-readme-001"],
     )
     gameParams: Optional[List[CreateGameParams]] = Field(
         default=None,
@@ -249,7 +249,7 @@ class CreateTaskPostError(BaseModel):
     error: str = Field(
         ...,
         description="Failure reason for this task creation attempt.",
-        example="Task already exists with externalTaskId: task-login",
+        examples=["Task already exists with externalTaskId: task-login"],
     )
 
 
@@ -298,22 +298,22 @@ class AddActionDidByUserInTask(BaseModel):
     typeAction: str = Field(
         ...,
         description="Canonical action/event identifier.",
-        example="TASK_COMPLETED",
+        examples=["TASK_COMPLETED"],
     )
     data: dict = Field(
         ...,
         description="Action metadata payload (JSON object).",
-        example={"source": "mobile-app", "durationSeconds": 84},
+        examples=[{"source": "mobile-app", "durationSeconds": 84}],
     )
     description: str = Field(
         ...,
         description="Human-readable description of the action.",
-        example="User completed the task from the mobile app.",
+        examples=["User completed the task from the mobile app."],
     )
     externalUserId: str = Field(
         ...,
         description="External user identifier that triggered the action.",
-        example="user-123",
+        examples=["user-123"],
     )
 
     def example():
@@ -336,7 +336,7 @@ class ResponseAddActionDidByUserInTask(ModelBaseInfo, AddActionDidByUserInTask):
     message: Optional[str] = Field(
         default=None,
         description="Operation result message.",
-        example="Action added successfully",
+        examples=["Action added successfully"],
     )
     ...
 
@@ -357,32 +357,32 @@ class AssignedPointsToExternalUserId(BaseModel):
     points: int = Field(
         ...,
         description="Points assigned to the user for the task event.",
-        example=20,
+        examples=[20],
     )
     caseName: str = Field(
         ...,
         description="Strategy case/rule name applied to compute points.",
-        example="variable_basic_points",
+        examples=["variable_basic_points"],
     )
     isACreatedUser: bool = Field(
         ...,
         description="Whether the target user was auto-created during assignment.",
-        example=False,
+        examples=[False],
     )
     gameId: UUID = Field(
         ...,
         description="Internal UUID of the game.",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     externalTaskId: str = Field(
         ...,
         description="External identifier of the task.",
-        example="task-login",
+        examples=["task-login"],
     )
     created_at: str = Field(
         ...,
         description="UTC timestamp when the points record was created.",
-        example="2026-02-10T12:30:00Z",
+        examples=["2026-02-10T12:30:00Z"],
     )
 
 
@@ -402,32 +402,32 @@ class SimulatedTaskPoints(BaseModel):
     externalUserId: str = Field(
         ...,
         description="External identifier of the simulated user.",
-        example="user-123",
+        examples=["user-123"],
     )
     externalTaskId: str = Field(
         ...,
         description="External identifier of the simulated task.",
-        example="task-login",
+        examples=["task-login"],
     )
     userGroup: Optional[str] = Field(
         default=None,
         description="Assigned group for simulation/control logic.",
-        example="control",
+        examples=["control"],
     )
     dimensions: List[dict] = Field(
         ...,
         description="Dimension-level breakdown used in simulation calculation.",
-        example=[{"name": "engagement", "value": 0.74}],
+        examples=[[{"name": "engagement", "value": 0.74}]],
     )
     totalSimulatedPoints: int = Field(
         ...,
         description="Total simulated points for this task.",
-        example=42,
+        examples=[42],
     )
     expirationDate: str = Field(
         ...,
         description="UTC expiration timestamp of the simulation payload.",
-        example="2026-02-10T18:30:00Z",
+        examples=["2026-02-10T18:30:00Z"],
     )
 
 
@@ -443,7 +443,7 @@ class SimulatedPointsAssignedToUser(BaseModel):
     simulationHash: str = Field(
         ...,
         description="Hash that uniquely identifies the simulation payload.",
-        example="8e9fc0f2ef79ed3fca6053a5932f7a6d8f3f3f77b2437d2b7d8ea59e21a4fd4e",
+        examples=["8e9fc0f2ef79ed3fca6053a5932f7a6d8f3f3f77b2437d2b7d8ea59e21a4fd4e"],
     )
     tasks: List[SimulatedTaskPoints] = Field(
         ...,
@@ -465,22 +465,22 @@ class TaskPointsResponseByUser(BaseTask):
     taskId: str = Field(
         ...,
         description="Internal UUID of the task (serialized as string).",
-        example="2a18d9a9-8eb5-4d33-a7bd-9590ea7ea41e",
+        examples=["2a18d9a9-8eb5-4d33-a7bd-9590ea7ea41e"],
     )
     externalTaskId: str = Field(
         ...,
         description="External task identifier.",
-        example="task-login",
+        examples=["task-login"],
     )
     gameId: str = Field(
         ...,
         description="Internal UUID of the game (serialized as string).",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     points: Optional[int] = Field(
         default=None,
         description="Total points associated with this user-task relation.",
-        example=120,
+        examples=[120],
     )
 
 
@@ -496,12 +496,12 @@ class BaseUser(BaseModel):
     externalUserId: str = Field(
         ...,
         description="External identifier of the user.",
-        example="user-123",
+        examples=["user-123"],
     )
     created_at: Optional[str] = Field(
         default=None,
         description="UTC timestamp when the user was created.",
-        example="2026-02-10T12:20:00Z",
+        examples=["2026-02-10T12:20:00Z"],
     )
 
 
@@ -516,7 +516,7 @@ class BaseUserFirstAction(BaseUser):
     firstAction: Optional[str] = Field(
         default=None,
         description="UTC timestamp of the user's first action in the task context.",
-        example="2026-02-10T12:30:00Z",
+        examples=["2026-02-10T12:30:00Z"],
     )
 
 
@@ -532,7 +532,7 @@ class TasksWithUsers(BaseModel):
     externalTaskId: str = Field(
         ...,
         description="External identifier of the task.",
-        example="task-login",
+        examples=["task-login"],
     )
     users: List[BaseUserFirstAction] = Field(
         ...,

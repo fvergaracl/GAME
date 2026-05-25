@@ -121,7 +121,7 @@ public prefix, which is what appears in audit logs.
 )
 @inject
 async def create_api_key(
-    schema: ApiKeyPostBody = Body(..., example=request_example_create_api_key),
+    schema: ApiKeyPostBody = Body(..., examples=[request_example_create_api_key]),
     service: ApiKeyService = Depends(Provide[Container.apikey_service]),
     service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_oauth: OAuthUsersService = Depends(
@@ -223,7 +223,7 @@ async def create_api_key(
         )
     generated = await service.generate_api_key_service()
     apikeyBody = ApiKeyCreate(
-        **schema.dict(),
+        **schema.model_dump(),
         createdBy=oauth_user_id,
         apiKey=generated.prefix,
         apiKeyHash=generated.key_hash,
@@ -243,7 +243,7 @@ async def create_api_key(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
-        response_dict = response.dict()
+        response_dict = response.model_dump()
         response_dict.pop("apiKeyHash", None)
         return ApiKeyCreated(
             **response_dict,

@@ -82,28 +82,26 @@ class DashboardRepository(BaseRepository):
             return func.date_trunc("day", model.created_at).label("date")
         elif group_by == "week":
             return case(
-                [
-                    (
-                        func.extract("day", model.created_at).between(1, 7),
-                        func.concat("week_1_", func.extract("month", model.created_at)),
-                    ),
-                    (
-                        func.extract("day", model.created_at).between(8, 14),
-                        func.concat("week_2_", func.extract("month", model.created_at)),
-                    ),
-                    (
-                        func.extract("day", model.created_at).between(15, 21),
-                        func.concat("week_3_", func.extract("month", model.created_at)),
-                    ),
-                    (
-                        func.extract("day", model.created_at).between(22, 28),
-                        func.concat("week_4_", func.extract("month", model.created_at)),
-                    ),
-                    (
-                        func.extract("day", model.created_at) >= 29,
-                        func.concat("week_5_", func.extract("month", model.created_at)),
-                    ),
-                ],
+                (
+                    func.extract("day", model.created_at).between(1, 7),
+                    func.concat("week_1_", func.extract("month", model.created_at)),
+                ),
+                (
+                    func.extract("day", model.created_at).between(8, 14),
+                    func.concat("week_2_", func.extract("month", model.created_at)),
+                ),
+                (
+                    func.extract("day", model.created_at).between(15, 21),
+                    func.concat("week_3_", func.extract("month", model.created_at)),
+                ),
+                (
+                    func.extract("day", model.created_at).between(22, 28),
+                    func.concat("week_4_", func.extract("month", model.created_at)),
+                ),
+                (
+                    func.extract("day", model.created_at) >= 29,
+                    func.concat("week_5_", func.extract("month", model.created_at)),
+                ),
                 else_="unknown_week",
             ).label("week")
         elif group_by == "month":
@@ -206,7 +204,7 @@ class DashboardRepository(BaseRepository):
             group_by_column,
             start_date,
             end_date,
-            func.count(case([(self.model_logs.log_level == "INFO", 1)])),
+            func.count(case((self.model_logs.log_level == "INFO", 1))),
         )
 
         success = self._execute_query(
@@ -214,7 +212,7 @@ class DashboardRepository(BaseRepository):
             group_by_column,
             start_date,
             end_date,
-            func.count(case([(self.model_logs.log_level == "SUCCESS", 1)])),
+            func.count(case((self.model_logs.log_level == "SUCCESS", 1))),
         )
 
         error = self._execute_query(
@@ -222,7 +220,7 @@ class DashboardRepository(BaseRepository):
             group_by_column,
             start_date,
             end_date,
-            func.count(case([(self.model_logs.log_level == "ERROR", 1)])),
+            func.count(case((self.model_logs.log_level == "ERROR", 1))),
         )
 
         return {

@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BaseGameParams(BaseModel):
@@ -17,16 +17,15 @@ class BaseGameParams(BaseModel):
     key: str = Field(
         ...,
         description="Parameter key used by the game strategy.",
-        example="variable_basic_points",
+        examples=["variable_basic_points"],
     )
     value: str | int | float | bool = Field(
         ...,
         description="Parameter value associated with the provided key.",
-        example=10,
+        examples=[10],
     )
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BaseCreateGameParams(BaseGameParams):
@@ -50,17 +49,17 @@ class InsertGameParams(BaseGameParams):
     gameId: str = Field(
         ...,
         description="Internal game identifier (UUID serialized as string).",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     apiKey_used: Optional[str] = Field(
         default=None,
         description="API key used during creation, when request is API-key based.",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        examples=["gk_live_3f6a9e0f1a2b4c5d6e7f8a9b"],
     )
     oauth_user_id: Optional[str] = Field(
         default=None,
         description="OAuth user subject that initiated the operation.",
-        example="3c95c2d7-1ce8-4ea0-b35f-6dfd19127f35",
+        examples=["3c95c2d7-1ce8-4ea0-b35f-6dfd19127f35"],
     )
 
 
@@ -90,7 +89,7 @@ class BaseFindGameParams(BaseGameParams):
     id: UUID = Field(
         ...,
         description="Unique identifier of the game parameter record.",
-        example="fd8551f4-7cf0-4f8b-b372-a269541db5a5",
+        examples=["fd8551f4-7cf0-4f8b-b372-a269541db5a5"],
     )
 
 
@@ -107,15 +106,15 @@ class UpdateGameParams(CreateGameParams):
     id: UUID = Field(
         ...,
         description="Identifier of the parameter record to update.",
-        example="fd8551f4-7cf0-4f8b-b372-a269541db5a5",
+        examples=["fd8551f4-7cf0-4f8b-b372-a269541db5a5"],
     )
     key: str = Field(
         ...,
         description="Parameter key.",
-        example="variable_basic_points",
+        examples=["variable_basic_points"],
     )
     value: str | int | float | bool = Field(
         ...,
         description="New value for the parameter key.",
-        example=15,
+        examples=[15],
     )

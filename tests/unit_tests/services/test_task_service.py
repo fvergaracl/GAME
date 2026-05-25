@@ -66,7 +66,7 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
             externalTaskId=external_task_id,
             strategyId=strategy_id,
         )
-        task.dict = lambda: {
+        task.model_dump = lambda: {
             "id": task_id,
             "externalTaskId": external_task_id,
             "strategyId": strategy_id,

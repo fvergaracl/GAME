@@ -1,6 +1,7 @@
 from sqlmodel import Column, Field, ForeignKey, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class Games(BaseModel, table=True):
@@ -31,14 +32,13 @@ class Games(BaseModel, table=True):
     """
 
     externalGameId: str = Field(sa_column=Column(String, unique=True))
-    strategyId: str = Field(sa_column=Column(String), nullable=False, default="default")
-    platform: str = Field(sa_column=Column(String), nullable=False)
+    strategyId: str = Field(sa_column=Column(String, nullable=False, default="default"))
+    platform: str = Field(sa_column=Column(String, nullable=False))
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

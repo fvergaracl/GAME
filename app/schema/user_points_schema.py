@@ -22,27 +22,27 @@ class PostAssignPointsToUser(BaseModel):
     taskId: str = Field(
         ...,
         description="Internal UUID of the task that generated this points assignment.",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     caseName: Optional[str] = Field(
         default=None,
         description="Scoring case/category used by the strategy engine.",
-        example="TASK_COMPLETION",
+        examples=["TASK_COMPLETION"],
     )
     points: Optional[int] = Field(
         default=None,
         description="Points to assign. Use positive values for rewards and negative values only if allowed by business rules.",
-        example=25,
+        examples=[25],
     )
     description: Optional[str] = Field(
         default=None,
         description="Human-readable explanation of why the points were assigned.",
-        example="User completed task before deadline.",
+        examples=["User completed task before deadline."],
     )
     data: Optional[dict] = Field(
         default=None,
         description="Arbitrary metadata attached to the assignment for diagnostics and analytics.",
-        example={"source": "mobile-app", "attempt": 1},
+        examples=[{"source": "mobile-app", "attempt": 1}],
     )
 
     @staticmethod
@@ -71,12 +71,12 @@ class PointsAssigned(BaseModel):
     points: int = Field(
         ...,
         description="Total points assigned in the current aggregation scope.",
-        example=120,
+        examples=[120],
     )
     timesAwarded: int = Field(
         ...,
         description="Number of times points were awarded.",
-        example=6,
+        examples=[6],
     )
 
 
@@ -93,17 +93,17 @@ class PointsData(BaseModel):
     points: int = Field(
         ...,
         description="Points assigned in this single event.",
-        example=15,
+        examples=[15],
     )
     caseName: str = Field(
         ...,
         description="Case/category associated with this assignment event.",
-        example="TASK_COMPLETION",
+        examples=["TASK_COMPLETION"],
     )
     created_at: str = Field(
         ...,
         description="Timestamp when points were created (ISO-8601 UTC string).",
-        example="2026-02-10T12:20:00Z",
+        examples=["2026-02-10T12:20:00Z"],
     )
 
 
@@ -118,7 +118,7 @@ class PointsAssignedToUser(PointsAssigned):
     externalUserId: str = Field(
         ...,
         description="External user identifier associated with the awarded points.",
-        example="user-12345",
+        examples=["user-12345"],
     )
 
 
@@ -133,13 +133,13 @@ class PointsAssignedToUserDetails(PointsAssignedToUser):
     pointsData: Optional[List[PointsData]] = Field(
         default=None,
         description="Detailed list of assignment events for this user and scope.",
-        example=[
+        examples=[[
             {
                 "points": 15,
                 "caseName": "TASK_COMPLETION",
                 "created_at": "2026-02-10T12:20:00Z",
             }
-        ],
+        ]],
     )
 
 
@@ -155,7 +155,7 @@ class TaskPointsByGame(BaseModel):
     externalTaskId: str = Field(
         ...,
         description="External identifier of the task.",
-        example="task-daily-walk",
+        examples=["task-daily-walk"],
     )
     points: List[PointsAssignedToUser] = Field(
         ...,
@@ -175,7 +175,7 @@ class TaskPointsByGameWithDetails(BaseModel):
     externalTaskId: str = Field(
         ...,
         description="External identifier of the task.",
-        example="task-daily-walk",
+        examples=["task-daily-walk"],
     )
     points: List[PointsAssignedToUserDetails] = Field(
         ...,
@@ -196,12 +196,12 @@ class AllPointsByGame(BaseModel):
     externalGameId: str = Field(
         ...,
         description="External identifier of the game.",
-        example="game-city-mobility",
+        examples=["game-city-mobility"],
     )
     created_at: str = Field(
         ...,
         description="Timestamp when this points snapshot was produced.",
-        example="2026-02-10T12:20:00Z",
+        examples=["2026-02-10T12:20:00Z"],
     )
     task: List[TaskPointsByGame] = Field(
         ...,
@@ -222,12 +222,12 @@ class AllPointsByGameWithDetails(BaseModel):
     externalGameId: str = Field(
         ...,
         description="External identifier of the game.",
-        example="game-city-mobility",
+        examples=["game-city-mobility"],
     )
     created_at: str = Field(
         ...,
         description="Timestamp when this points snapshot was produced.",
-        example="2026-02-10T12:20:00Z",
+        examples=["2026-02-10T12:20:00Z"],
     )
     task: List[TaskPointsByGameWithDetails] = Field(
         ...,
@@ -248,12 +248,12 @@ class AllPointsByGameWithDetails(BaseModel):
     externalGameId: str = Field(
         ...,
         description="External identifier of the game.",
-        example="game-city-mobility",
+        examples=["game-city-mobility"],
     )
     created_at: str = Field(
         ...,
         description="Timestamp when this points snapshot was produced.",
-        example="2026-02-10T12:20:00Z",
+        examples=["2026-02-10T12:20:00Z"],
     )
     task: List[TaskPointsByGameWithDetails] = Field(
         ...,
@@ -272,7 +272,7 @@ class BaseUserPointsBaseModel(PostAssignPointsToUser):
     userId: str = Field(
         ...,
         description="Internal UUID of the user receiving the points.",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
 
 
@@ -287,7 +287,7 @@ class BaseUserPointsBaseModelWithCaseName(BaseUserPointsBaseModel):
     caseName: Optional[str] = Field(
         default=None,
         description="Scoring case/category used by the strategy engine.",
-        example="TASK_COMPLETION",
+        examples=["TASK_COMPLETION"],
     )
 
 
@@ -302,12 +302,12 @@ class UserPointsAssign(BaseUserPointsBaseModel):
     apiKey_used: Optional[str] = Field(
         default=None,
         description="API key used for the request (when API-key auth is used).",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        examples=["gk_live_3f6a9e0f1a2b4c5d6e7f8a9b"],
     )
     idempotencyKey: Optional[str] = Field(
         default=None,
         description="Optional idempotency key to deduplicate retries safely.",
-        example="k6-1739301225000-points-vu1-iter10",
+        examples=["k6-1739301225000-points-vu1-iter10"],
     )
 
     @staticmethod
@@ -342,12 +342,12 @@ class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
     userId: str = Field(
         ...,
         description="Internal UUID of the user receiving points.",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
     taskId: str = Field(
         ...,
         description="Internal UUID of the task generating points.",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     wallet: Optional[WalletWithoutUserId] = Field(
         default=None,
@@ -356,12 +356,12 @@ class UserPointsAssigned(ModelBaseInfo, BaseUserPointsBaseModel):
     description: Optional[str] = Field(
         default=None,
         description="Human-readable reason for the assignment.",
-        example="User completed task before deadline.",
+        examples=["User completed task before deadline."],
     )
     message: Optional[str] = Field(
         default="Successfully assigned",
         description="Operation result message.",
-        example="Successfully assigned",
+        examples=["Successfully assigned"],
     )
 
 
@@ -388,12 +388,12 @@ class ResponseGetPointsByTask(BaseModel):
     externalUserId: str = Field(
         ...,
         description="External user identifier.",
-        example="user-12345",
+        examples=["user-12345"],
     )
     points: int = Field(
         ...,
         description="Total points for this user in the queried task.",
-        example=95,
+        examples=[95],
     )
 
 
@@ -410,17 +410,17 @@ class PointsDetail(BaseModel):
     points: int = Field(
         ...,
         description="Points awarded in this detailed event entry.",
-        example=10,
+        examples=[10],
     )
     caseName: str = Field(
         ...,
         description="Case/category used for this award event.",
-        example="BONUS_STREAK",
+        examples=["BONUS_STREAK"],
     )
     created_at: str = Field(
         ...,
         description="Timestamp when the points were created (ISO-8601 UTC string).",
-        example="2026-02-10T12:20:00Z",
+        examples=["2026-02-10T12:20:00Z"],
     )
 
 
@@ -436,7 +436,7 @@ class TaskDetail(BaseModel):
     externalTaskId: str = Field(
         ...,
         description="External identifier of the task.",
-        example="task-daily-walk",
+        examples=["task-daily-walk"],
     )
     pointsData: List[PointsDetail] = Field(
         ...,
@@ -458,17 +458,17 @@ class GameDetail(BaseModel):
     externalGameId: str = Field(
         ...,
         description="External identifier of the game.",
-        example="game-city-mobility",
+        examples=["game-city-mobility"],
     )
     points: int = Field(
         ...,
         description="Total points accumulated in this game.",
-        example=340,
+        examples=[340],
     )
     timesAwarded: int = Field(
         ...,
         description="Number of award events in this game.",
-        example=18,
+        examples=[18],
     )
     tasks: List[TaskDetail] = Field(
         ...,
@@ -491,17 +491,17 @@ class UserGamePoints(BaseModel):
     externalUserId: str = Field(
         ...,
         description="External user identifier.",
-        example="user-12345",
+        examples=["user-12345"],
     )
     points: int = Field(
         ...,
         description="Total points accumulated by the user in the query scope.",
-        example=500,
+        examples=[500],
     )
     timesAwarded: int = Field(
         ...,
         description="Number of award events for the user in the query scope.",
-        example=30,
+        examples=[30],
     )
     games: List[GameDetail] = Field(
         ...,
@@ -510,7 +510,7 @@ class UserGamePoints(BaseModel):
     userExists: Optional[bool] = Field(
         default=True,
         description="Whether the external user exists in the platform context.",
-        example=True,
+        examples=[True],
     )
 
 
@@ -526,7 +526,7 @@ class ResponseGetPointsByGame(BaseModel):
     externalTaskId: str = Field(
         ...,
         description="External identifier of the task.",
-        example="task-daily-walk",
+        examples=["task-daily-walk"],
     )
     points: List[ResponseGetPointsByTask] = Field(
         ...,
@@ -546,12 +546,12 @@ class PointsByUserInTask(BaseModel):
     externalTaskId: str = Field(
         ...,
         description="External identifier of the task.",
-        example="task-daily-walk",
+        examples=["task-daily-walk"],
     )
     points: int = Field(
         ...,
         description="Total points earned by the user for this task.",
-        example=80,
+        examples=[80],
     )
 
 
@@ -568,12 +568,12 @@ class ResponsePointsByExternalUserId(BaseModel):
     externalUserId: str = Field(
         ...,
         description="External user identifier.",
-        example="user-12345",
+        examples=["user-12345"],
     )
     points: int = Field(
         ...,
         description="Total points accumulated by the user.",
-        example=210,
+        examples=[210],
     )
     points_by_task: List[PointsByUserInTask] = Field(
         ...,

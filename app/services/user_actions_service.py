@@ -96,7 +96,7 @@ class UserActionsService(BaseService):
 
         created_action = await self.user_actions_repository.create(new_action)
         response = ResponseAddActionDidByUserInTask(
-            **created_action.dict(),
+            **created_action.model_dump(),
             externalUserId=str(action.externalUserId),
             message="Action added successfully",
         )
@@ -132,7 +132,7 @@ class UserActionsService(BaseService):
             user_created = True
 
         new_action = CreateUserActions(
-            **schema.dict(),
+            **schema.model_dump(),
             userId=str(user.id),
         )
 

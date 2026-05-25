@@ -19,20 +19,20 @@ class UserInteractionsBase(BaseModel):
     userId: str = Field(
         ...,
         description="Internal UUID of the user that triggered the interaction.",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
     taskId: str = Field(
         ...,
         description="Internal UUID of the related task.",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     interactionType: str = Field(
         ...,
         description="Type of interaction event.",
-        example="TASK_COMPLETED",
+        examples=["TASK_COMPLETED"],
     )
     interactionDetail: str = Field(
         ...,
         description="Additional context describing what happened.",
-        example="User completed task and submitted evidence from mobile app.",
+        examples=["User completed task and submitted evidence from mobile app."],
     )

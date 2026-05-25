@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BaseUserGameConfig(BaseModel):
@@ -21,22 +21,22 @@ class BaseUserGameConfig(BaseModel):
     userId: str = Field(
         ...,
         description="Internal UUID of the user (serialized as string).",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
     gameId: str = Field(
         ...,
         description="Internal UUID of the game (serialized as string).",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     experimentGroup: str = Field(
         ...,
         description="Experiment/campaign group assigned to the user.",
-        example="A",
+        examples=["A"],
     )
     configData: Optional[Dict] = Field(
         default=None,
         description="Custom configuration object applied to this user-game pair.",
-        example={"incentiveMultiplier": 1.1, "featureFlags": {"new_reward_rule": True}},
+        examples=[{"incentiveMultiplier": 1.1, "featureFlags": {"new_reward_rule": True}}],
     )
 
 
@@ -70,12 +70,12 @@ class UpdateUserGameConfig(BaseModel):
     experimentGroup: Optional[str] = Field(
         default=None,
         description="Updated experiment/campaign group for the user-game pair.",
-        example="B",
+        examples=["B"],
     )
     configData: Optional[Dict] = Field(
         default=None,
         description="Updated custom configuration object.",
-        example={"incentiveMultiplier": 1.2},
+        examples=[{"incentiveMultiplier": 1.2}],
     )
 
 
@@ -92,18 +92,17 @@ class UserGameConfigResponse(BaseUserGameConfig):
     id: UUID = Field(
         ...,
         description="Unique UUID of the user-game configuration record.",
-        example="fd8551f4-7cf0-4f8b-b372-a269541db5a5",
+        examples=["fd8551f4-7cf0-4f8b-b372-a269541db5a5"],
     )
     created_at: datetime = Field(
         ...,
         description="UTC timestamp when the record was created.",
-        example="2026-02-10T12:20:00Z",
+        examples=["2026-02-10T12:20:00Z"],
     )
     updated_at: datetime = Field(
         ...,
         description="UTC timestamp when the record was last updated.",
-        example="2026-02-10T12:35:00Z",
+        examples=["2026-02-10T12:35:00Z"],
     )
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

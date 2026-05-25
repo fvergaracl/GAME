@@ -104,7 +104,7 @@ class TaskService(BaseService):
         if not game:
             raise NotFoundError(f"Game not found with gameId: {gameId}")
 
-        find_task_query = FindTask(gameId=game.id, **find_query.dict(exclude_none=True))
+        find_task_query = FindTask(gameId=game.id, **find_query.model_dump(exclude_none=True))
         all_tasks = self.task_repository.read_by_gameId(find_task_query)
 
         strategy_data = self.strategy_service.get_strategy_by_id(game.strategyId)
@@ -165,7 +165,7 @@ class TaskService(BaseService):
                         if type_param == type_strategy_variable:
                             strategy_data["variables"][param.key] = param.value
             task_params = task_params if task_params else []
-            task_cleaned = task.dict()
+            task_cleaned = task.model_dump()
             task_cleaned["strategy"] = strategy_data
             task_cleaned["gameParams"] = game_params
             task_cleaned["taskParams"] = task_params
@@ -330,7 +330,7 @@ class TaskService(BaseService):
 
         strategy_id = str(strategy_id)
 
-        new_task_dict = create_query.dict()
+        new_task_dict = create_query.model_dump()
         new_task_dict["gameId"] = str(gameId)
         if strategy_id:
             new_task_dict["strategyId"] = str(strategy_id)
@@ -345,7 +345,7 @@ class TaskService(BaseService):
             del create_query.params
 
             for param in params:
-                params_dict = param.dict()
+                params_dict = param.model_dump()
                 params_dict["taskId"] = str(created_task.id)
                 params_dict["value"] = str(params_dict["value"])
                 if api_key:

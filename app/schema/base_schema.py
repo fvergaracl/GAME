@@ -21,32 +21,32 @@ class RootEndpoint(BaseModel):
     projectName: str = Field(
         ...,
         description="Project name exposed by the API.",
-        example="GAME (Goals And Motivation Engine)",
+        examples=["GAME (Goals And Motivation Engine)"],
     )
     version: str = Field(
         ...,
         description="Semantic version of the running backend.",
-        example="1.4.2",
+        examples=["1.4.2"],
     )
     message: str = Field(
         ...,
         description="Welcome or status message of the API root endpoint.",
-        example="Welcome to GAME API",
+        examples=["Welcome to GAME API"],
     )
     docs: str = Field(
         ...,
         description="Swagger UI documentation URL.",
-        example="/docs",
+        examples=["/docs"],
     )
     redocs: str = Field(
         ...,
         description="ReDoc documentation URL.",
-        example="/redocs",
+        examples=["/redocs"],
     )
     commitVersion: str = Field(
         ...,
         description="Git commit hash of the deployed build.",
-        example="7f9d8a3c2e4b1f0a9d6c5b4e3f2a1b0c9d8e7f6a",
+        examples=["7f9d8a3c2e4b1f0a9d6c5b4e3f2a1b0c9d8e7f6a"],
     )
 
 
@@ -63,17 +63,17 @@ class ModelBaseInfo(BaseModel):
     id: UUID = Field(
         ...,
         description="Unique identifier of the resource.",
-        example="4ce32be2-77f6-4ffc-8e07-78dc220f0520",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
     )
     created_at: datetime = Field(
         ...,
         description="UTC timestamp when the resource was created.",
-        example="2026-02-10T12:15:00Z",
+        examples=["2026-02-10T12:15:00Z"],
     )
     updated_at: datetime = Field(
         ...,
         description="UTC timestamp when the resource was last updated.",
-        example="2026-02-10T12:45:00Z",
+        examples=["2026-02-10T12:45:00Z"],
     )
 
 
@@ -92,17 +92,17 @@ class FindBase(BaseModel):
     ordering: Optional[str] = Field(
         ...,
         description="Sort expression. Prefix with '-' for descending order.",
-        example="-created_at",
+        examples=["-created_at"],
     )
     page: Optional[int] = Field(
         ...,
         description="Page index (1-based) for paginated results.",
-        example=1,
+        examples=[1],
     )
     page_size: Optional[Union[int, str]] = Field(
         ...,
         description="Page size for pagination, or endpoint-specific string value.",
-        example=10,
+        examples=[10],
     )
 
 
@@ -118,7 +118,7 @@ class SearchOptions(FindBase):
     total_count: Optional[int] = Field(
         ...,
         description="Total number of records available for the current filter set.",
-        example=125,
+        examples=[125],
     )
 
 
@@ -134,7 +134,7 @@ class FindResult(BaseModel):
     items: Optional[List] = Field(
         ...,
         description="List of resources returned by the query.",
-        example=[],
+        examples=[[]],
     )
     search_options: Optional[SearchOptions] = Field(
         ...,
@@ -156,22 +156,22 @@ class FindDateRange(BaseModel):
     created_at__lt: str = Field(
         ...,
         description="Filter records with created_at earlier than this timestamp.",
-        example="2026-02-11T00:00:00Z",
+        examples=["2026-02-11T00:00:00Z"],
     )
     created_at__lte: str = Field(
         ...,
         description="Filter records with created_at earlier than or equal to this timestamp.",
-        example="2026-02-11T23:59:59Z",
+        examples=["2026-02-11T23:59:59Z"],
     )
     created_at__gt: str = Field(
         ...,
         description="Filter records with created_at later than this timestamp.",
-        example="2026-02-01T00:00:00Z",
+        examples=["2026-02-01T00:00:00Z"],
     )
     created_at__gte: str = Field(
         ...,
         description="Filter records with created_at later than or equal to this timestamp.",
-        example="2026-02-01T00:00:00Z",
+        examples=["2026-02-01T00:00:00Z"],
     )
 
 
@@ -186,7 +186,7 @@ class SuccesfullyCreated(BaseModel):
     message: Optional[str] = Field(
         default="Successfully created",
         description="Operation result message.",
-        example="Successfully created",
+        examples=["Successfully created"],
     )
 
 

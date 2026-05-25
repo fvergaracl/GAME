@@ -1,3 +1,4 @@
+from pydantic import ConfigDict
 """
 transactions Types:
 {
@@ -44,15 +45,14 @@ class WalletTransactions(BaseModel, table=True):
     transactionType: str = Field(sa_column=Column(String))
     points: int = Field(sa_column=Column(Integer))
     coins: float = Field(sa_column=Column(Float))
-    data: dict = Field(sa_column=Column(JSONB), nullable=True)
+    data: dict = Field(sa_column=Column(JSONB, nullable=True))
     appliedConversionRate: float = Field(sa_column=Column(Float))
     walletId: str = Field(sa_column=Column(UUID(as_uuid=True), ForeignKey("wallet.id")))
     apiKey_used: str = Field(
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
-    class Config:  # noqa
-        orm_mode = True  # noqa
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

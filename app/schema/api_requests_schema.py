@@ -22,27 +22,27 @@ class ApiRequestBase(BaseModel):
     userId: str = Field(
         ...,
         description="Internal user identifier associated with the request.",
-        example="8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d",
+        examples=["8f9d6bc1-2b5f-4cab-b82a-2b0e61bf7c1d"],
     )
     endpoint: str = Field(
         ...,
         description="API endpoint path or route key processed by the server.",
-        example="/api/v1/games/4ce32be2-77f6-4ffc-8e07-78dc220f0520/tasks",
+        examples=["/api/v1/games/4ce32be2-77f6-4ffc-8e07-78dc220f0520/tasks"],
     )
     statusCode: int = Field(
         ...,
         description="HTTP status code returned for the request.",
-        example=200,
+        examples=[200],
     )
     responseTimeMS: int = Field(
         ...,
         description="Request processing time in milliseconds.",
-        example=84,
+        examples=[84],
     )
     requestType: str = Field(
         ...,
         description="HTTP method of the request.",
-        example="GET",
+        examples=["GET"],
     )
 
     @staticmethod

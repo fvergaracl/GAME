@@ -25,12 +25,12 @@ class DashboardSummaryElement(BaseModel):
     label: str = Field(
         ...,
         description="Time bucket or grouping label.",
-        example="2026-02-10",
+        examples=["2026-02-10"],
     )
     count: int | float = Field(
         ...,
         description="Aggregated metric value for the given label.",
-        example=42,
+        examples=[42],
     )
 
 

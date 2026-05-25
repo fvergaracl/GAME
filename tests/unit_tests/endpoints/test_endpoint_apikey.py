@@ -14,7 +14,7 @@ def test_client():
 
 
 class FakeResponse:
-    def dict(self):
+    def model_dump(self):
         return {
             "client": "test-client",
             "description": "desc",

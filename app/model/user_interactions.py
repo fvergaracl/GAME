@@ -2,6 +2,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import Column, Field, ForeignKey, Integer, String
 
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class UserInteractions(BaseModel, table=True):
@@ -26,8 +27,7 @@ class UserInteractions(BaseModel, table=True):
     interactionType: str = Field(sa_column=Column(String))
     interactionDetail: str = Field(sa_column=Column(String))
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         """

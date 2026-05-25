@@ -3,6 +3,7 @@ from sqlmodel import Column, Field, Float, ForeignKey, Integer, String
 
 from app.core.config import configs
 from app.model.base_model import BaseModel
+from pydantic import ConfigDict
 
 
 class Wallet(BaseModel, table=True):
@@ -16,8 +17,8 @@ class Wallet(BaseModel, table=True):
         userId (str): The ID of the user associated with the wallet.
     """
 
-    coinsBalance: float = Field(sa_column=Column(Float), default=0.0)
-    pointsBalance: float = Field(sa_column=Column(Float), default=0.0)
+    coinsBalance: float = Field(sa_column=Column(Float, default=0.0))
+    pointsBalance: float = Field(sa_column=Column(Float, default=0.0))
     conversionRate: float = Field(
         sa_column=Column(Integer),
         default=configs.DEFAULT_CONVERTION_RATE_POINTS_TO_COIN,
@@ -31,8 +32,7 @@ class Wallet(BaseModel, table=True):
         sa_column=Column(String, ForeignKey("apikey.apiKey"), nullable=True)
     )
 
-    class Config:  # noqa
-        orm_mode = True  # noqa
+    model_config = ConfigDict(from_attributes=True)
 
     def __str__(self):
         return (

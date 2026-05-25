@@ -21,22 +21,22 @@ class BaseWalletTransactionWithoutWalletId(BaseModel):
     transactionType: str = Field(
         ...,
         description="Transaction type (for example conversion, reward, refund).",
-        example="conversion",
+        examples=["conversion"],
     )
     points: int = Field(
         ...,
         description="Number of points credited/debited in the transaction.",
-        example=100,
+        examples=[100],
     )
     coins: float = Field(
         ...,
         description="Coin/currency amount credited/debited in the transaction.",
-        example=50.0,
+        examples=[50.0],
     )
     data: Optional[dict] = Field(
         default=None,
         description="Additional transaction metadata.",
-        example={"reason": "manual-adjustment", "source": "admin-panel"},
+        examples=[{"reason": "manual-adjustment", "source": "admin-panel"}],
     )
 
 
@@ -53,17 +53,17 @@ class BaseWalletTransaction(BaseWalletTransactionWithoutWalletId):
     walletId: str = Field(
         ...,
         description="Internal UUID of the wallet associated with this transaction.",
-        example="fd8551f4-7cf0-4f8b-b372-a269541db5a5",
+        examples=["fd8551f4-7cf0-4f8b-b372-a269541db5a5"],
     )
     appliedConversionRate: float = Field(
         ...,
         description="Conversion rate applied to compute coins from points.",
-        example=1.5,
+        examples=[1.5],
     )
     apiKey_used: Optional[str] = Field(
         default=None,
         description="API key used to submit the transaction request, if available.",
-        example="gk_live_3f6a9e0f1a2b4c5d6e7f8a9b",
+        examples=["gk_live_3f6a9e0f1a2b4c5d6e7f8a9b"],
     )
 
     @staticmethod
@@ -93,10 +93,10 @@ class BaseWalletTransactionInfo(BaseWalletTransactionWithoutWalletId):
     id: UUID = Field(
         ...,
         description="Unique UUID of the wallet transaction record.",
-        example="a20ed58b-f9d2-45fa-bb63-88572745ef5a",
+        examples=["a20ed58b-f9d2-45fa-bb63-88572745ef5a"],
     )
     created_at: str = Field(
         ...,
         description="Transaction creation timestamp (ISO-8601 UTC string).",
-        example="2026-02-10T12:20:00Z",
+        examples=["2026-02-10T12:20:00Z"],
     )

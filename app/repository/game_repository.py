@@ -66,7 +66,7 @@ class GameRepository(BaseRepository):
             FindGameResult: A result set containing the games and search options.
         """
         with self.session_factory() as session:
-            schema_as_dict = schema.dict(exclude_none=True)
+            schema_as_dict = schema.model_dump(exclude_none=True)
             ordering = schema_as_dict.get("ordering", configs.ORDERING)
             order_query = (
                 getattr(self.model, ordering[1:]).desc()
@@ -195,7 +195,7 @@ class GameRepository(BaseRepository):
             if not game:
                 raise NotFoundError(detail=f"Not found id : {gameId}")
 
-            for key, value in schema.dict(exclude_none=True).items():
+            for key, value in schema.model_dump(exclude_none=True).items():
                 setattr(game, key, value)
 
             try:

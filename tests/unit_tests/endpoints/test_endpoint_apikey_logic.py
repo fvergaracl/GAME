@@ -17,7 +17,7 @@ GENERATED = GeneratedApiKey(
 
 
 class _FakeApiKeyCreated:
-    def dict(self):
+    def model_dump(self):
         return {
             "apiKey": GENERATED.prefix,
             "apiKeyHash": GENERATED.key_hash,
