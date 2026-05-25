@@ -314,7 +314,7 @@
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_params_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"gameId"</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">only_one</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
-        <span class="n">response_dict</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+        <span class="n">response_dict</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
         <span class="n">response_dict</span><span class="p">[</span><span class="s2">"params"</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">BaseGameResult</span><span class="p">(</span><span class="o">**</span><span class="n">response_dict</span><span class="p">,</span> <span class="n">gameId</span><span class="o">=</span><span class="n">gameId</span><span class="p">)</span>
@@ -453,7 +453,7 @@
             <span class="k">del</span> <span class="n">schema</span><span class="o">.</span><span class="n">params</span>
 
             <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-                <span class="n">params_dict</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+                <span class="n">params_dict</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
                 <span class="n">params_dict</span><span class="p">[</span><span class="s2">"gameId"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">api_key</span><span class="p">:</span>
                     <span class="n">params_dict</span><span class="p">[</span><span class="s2">"apiKey_used"</span><span class="p">]</span> <span class="o">=</span> <span class="n">api_key</span>
@@ -466,7 +466,7 @@
                 <span class="n">created_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">created_param</span><span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">GameCreated</span><span class="p">(</span>
-            <span class="o">**</span><span class="n">game</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
+            <span class="o">**</span><span class="n">game</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
             <span class="n">params</span><span class="o">=</span><span class="n">created_params</span><span class="p">,</span>
             <span class="n">gameId</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game with gameId: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> created successfully"</span><span class="p">,</span>
@@ -522,9 +522,9 @@
                     <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game already exists with externalGameId: "</span>
                     <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">schema</span><span class="o">.</span><span class="n">externalGameId</span><span class="si">}</span><span class="s2"> . Cannot update externalGameId"</span>
                 <span class="p">)</span>
-        <span class="n">is_matching</span> <span class="o">=</span> <span class="n">are_variables_matching</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span> <span class="n">game</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
-        <span class="n">params_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"params"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">params_game</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"params"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">is_matching</span> <span class="o">=</span> <span class="n">are_variables_matching</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span> <span class="n">game</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
+        <span class="n">params_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"params"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">params_game</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"params"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">params_is_matching</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">params_schema</span> <span class="ow">and</span> <span class="n">params_game</span><span class="p">:</span>
             <span class="n">params_is_matching</span> <span class="o">=</span> <span class="n">are_variables_matching</span><span class="p">(</span><span class="n">params_schema</span><span class="p">,</span> <span class="n">params_game</span><span class="p">)</span>
@@ -533,7 +533,7 @@
             <span class="k">raise</span> <span class="n">ConflictError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="p">(</span><span class="s2">"It is not possible to update the game with the same data"</span><span class="p">)</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="n">schema</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="o">==</span> <span class="n">game</span><span class="o">.</span><span class="n">dict</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">schema</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="o">==</span> <span class="n">game</span><span class="o">.</span><span class="n">model_dump</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">ConflictError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">"No difference between schema and game"</span><span class="p">)</span>
 
         <span class="n">strategyId</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">strategyId</span>
@@ -559,7 +559,7 @@
                 <span class="n">updated_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
 
         <span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">patch_game_by_id</span><span class="p">(</span><span class="n">gameId</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
-        <span class="n">game_dict</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+        <span class="n">game_dict</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">ResponsePatchGame</span><span class="p">(</span>
             <span class="n">externalGameId</span><span class="o">=</span><span class="n">game_dict</span><span class="p">[</span><span class="s2">"externalGameId"</span><span class="p">],</span>
             <span class="n">strategyId</span><span class="o">=</span><span class="n">strategyId</span><span class="p">,</span>
@@ -663,8 +663,8 @@
         <span class="n">tasks_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-                <span class="n">tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
-        <span class="n">game_dict</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+                <span class="n">tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
+        <span class="n">game_dict</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
         <span class="n">game_dict</span><span class="p">[</span><span class="s2">"tasks"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tasks_list</span>
 
         <span class="k">return</span> <span class="n">game_dict</span></div>
