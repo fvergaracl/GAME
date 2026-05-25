@@ -111,31 +111,7 @@ async def test_auth_oauth2_rejects_invalid_signature():
 
 
 @pytest.mark.asyncio
-async def test_auth_oauth2_accepts_expired_token_via_decode_without_expiration_check():
-    oauth_service = _mock_oauth_user_service(existing_user=False)
-    with patch(
-        "app.middlewares.authentication.Container.oauth_users_service",
-        return_value=oauth_service,
-    ), patch(
-        "app.middlewares.authentication.valid_access_token",
-        new=AsyncMock(
-            return_value=SimpleNamespace(
-                error=HTTPException(status_code=401, detail="Token has expired"),
-                data=None,
-            )
-        ),
-    ), patch(
-        "app.middlewares.authentication.decode_token_without_exp_check",
-        return_value=SimpleNamespace(data={"sub": "oauth-user-1"}),
-    ):
-        result = await authentication.auth_oauth2(oauth_2_scheme="expired-token")
-
-    assert result is True
-    oauth_service.add.assert_awaited_once()
-
-
-@pytest.mark.asyncio
-async def test_auth_oauth2_expired_token_fallback_failure_still_returns_401():
+async def test_auth_oauth2_rejects_expired_token():
     oauth_service = _mock_oauth_user_service(existing_user=True)
     with patch(
         "app.middlewares.authentication.Container.oauth_users_service",
@@ -148,15 +124,13 @@ async def test_auth_oauth2_expired_token_fallback_failure_still_returns_401():
                 data=None,
             )
         ),
-    ), patch(
-        "app.middlewares.authentication.decode_token_without_exp_check",
-        side_effect=RuntimeError("decode failed"),
     ):
         with pytest.raises(HTTPException) as exc_info:
             await authentication.auth_oauth2(oauth_2_scheme="expired-token")
 
     assert exc_info.value.status_code == 401
     assert exc_info.value.detail == "Invalid authentication credentials"
+    oauth_service.add.assert_not_awaited()
 
 
 @pytest.mark.asyncio

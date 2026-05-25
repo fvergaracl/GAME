@@ -8,7 +8,6 @@ from fastapi import HTTPException
 from jwt import exceptions
 
 import app.middlewares.valid_access_token as access_token_middleware
-from app.util.response import Response
 
 
 @pytest.mark.asyncio
@@ -99,43 +98,12 @@ async def test_valid_access_token_returns_fail_response_for_invalid_signature(
 
 
 @pytest.mark.asyncio
-async def test_valid_access_token_uses_decode_without_exp_check_when_expired(
-    monkeypatch,
-):
+async def test_valid_access_token_rejects_expired_token(monkeypatch):
     _mock_jwks_client(monkeypatch)
     monkeypatch.setattr(
         access_token_middleware.jwt,
         "decode",
         MagicMock(side_effect=exceptions.ExpiredSignatureError("expired")),
-    )
-    decoded_response = Response.ok({"sub": "expired-user"})
-    decode_without_exp_mock = MagicMock(return_value=decoded_response)
-    monkeypatch.setattr(
-        access_token_middleware,
-        "decode_token_without_exp_check",
-        decode_without_exp_mock,
-    )
-
-    result = await access_token_middleware.valid_access_token("expired-token")
-
-    decode_without_exp_mock.assert_called_once_with("expired-token")
-    assert result is decoded_response
-
-
-@pytest.mark.asyncio
-async def test_valid_access_token_returns_expired_error_when_decode_without_exp_fails(
-    monkeypatch,
-):
-    _mock_jwks_client(monkeypatch)
-    monkeypatch.setattr(
-        access_token_middleware.jwt,
-        "decode",
-        MagicMock(side_effect=exceptions.ExpiredSignatureError("expired")),
-    )
-    monkeypatch.setattr(
-        access_token_middleware,
-        "decode_token_without_exp_check",
-        MagicMock(return_value=SimpleNamespace(ok=False)),
     )
 
     result = await access_token_middleware.valid_access_token("expired-token")
@@ -143,6 +111,19 @@ async def test_valid_access_token_returns_expired_error_when_decode_without_exp_
     assert result.sucess is False
     assert result.error.status_code == 401
     assert result.error.detail == "Token has expired"
+
+
+@pytest.mark.asyncio
+async def test_valid_access_token_passes_leeway_to_jwt_decode(monkeypatch):
+    _mock_jwks_client(monkeypatch)
+    decode_mock = MagicMock(return_value={"sub": "user-1"})
+    monkeypatch.setattr(access_token_middleware.jwt, "decode", decode_mock)
+
+    await access_token_middleware.valid_access_token("valid-token")
+
+    _, kwargs = decode_mock.call_args
+    assert kwargs.get("leeway") == 30
+    assert kwargs["options"]["verify_exp"] is True
 
 
 @pytest.mark.asyncio
@@ -251,31 +232,3 @@ def test_refresh_access_token_raises_http_500_on_unexpected_error(monkeypatch):
     assert "Internal server error" in exc_info.value.detail
 
 
-def test_decode_token_without_exp_check_returns_ok_response(monkeypatch):
-    _mock_jwks_client(monkeypatch, signing_key="decode-key")
-    monkeypatch.setattr(
-        access_token_middleware.jwt, "decode", MagicMock(return_value={"sub": "user-2"})
-    )
-
-    result = access_token_middleware.decode_token_without_exp_check("token")
-
-    assert result.sucess is True
-    assert result.data == {"sub": "user-2"}
-    assert result.error is None
-
-
-def test_decode_token_without_exp_check_returns_fail_response_on_pyjwt_error(
-    monkeypatch,
-):
-    _mock_jwks_client(monkeypatch, signing_key="decode-key")
-    monkeypatch.setattr(
-        access_token_middleware.jwt,
-        "decode",
-        MagicMock(side_effect=jwt.PyJWTError("decode failed")),
-    )
-
-    result = access_token_middleware.decode_token_without_exp_check("token")
-
-    assert result.sucess is False
-    assert result.error.status_code == 401
-    assert result.error.detail == "Invalid token: decode failed"
