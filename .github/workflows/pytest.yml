@@ -1,48 +1,31 @@
-name: pytest
+name: pytest (unit)
 
-# on:
-#   push:
-#     branches:
-#       - main
 on:
   push:
     branches:
-      - never-happening-branch
+      - main
+  pull_request:
 
 jobs:
-  test:
+  unit:
     runs-on: ubuntu-latest
     env:
       ENV: test
-      DB_USER: test
-      DB_PASSWORD: test
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB: postgresql
     strategy:
       matrix:
         python-version: ["3.10"]
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test_game_dev_db
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
 
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: pytest
-        run: pytest
+      - name: Run unit tests
+        run: pytest tests/unit_tests -m "not e2e_real_http"
