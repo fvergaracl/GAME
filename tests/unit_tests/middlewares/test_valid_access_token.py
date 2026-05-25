@@ -124,6 +124,8 @@ async def test_valid_access_token_passes_leeway_to_jwt_decode(monkeypatch):
     _, kwargs = decode_mock.call_args
     assert kwargs.get("leeway") == 30
     assert kwargs["options"]["verify_exp"] is True
+    assert kwargs["options"]["verify_aud"] is True
+    assert kwargs.get("audience") == access_token_middleware.configs.KEYCLOAK_AUDIENCE
 
 
 @pytest.mark.asyncio

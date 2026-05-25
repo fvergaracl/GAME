@@ -78,10 +78,11 @@ async def valid_access_token(
             key=signing_key.key,
             algorithms=["RS256"],
             issuer=f"{configs.KEYCLOAK_URL}/realms/{configs.KEYCLOAK_REALM}",
+            audience=configs.KEYCLOAK_AUDIENCE,
             leeway=30,
             options={
                 "verify_exp": True,
-                "verify_aud": False,
+                "verify_aud": True,
             },
         )
         return _build_token_response(data)
