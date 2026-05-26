@@ -1,5 +1,6 @@
 # Usar una imagen base de Node para construir la aplicación
-FROM node:18 AS build
+ARG NODE_VERSION=20.19.0
+FROM node:${NODE_VERSION} AS build
 WORKDIR /app
 COPY package.json ./package.json
 COPY . .
@@ -10,7 +11,7 @@ COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
-FROM node:18 AS development
+FROM node:${NODE_VERSION} AS development
 WORKDIR /app
 COPY --from=build /app /app
 CMD ["yarn", "start"]
