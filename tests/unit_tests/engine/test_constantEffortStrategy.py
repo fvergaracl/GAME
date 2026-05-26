@@ -12,12 +12,13 @@ def strategy():
     strategy = ConstantEffortStrategy()
     strategy.task_service = MagicMock()
     strategy.user_points_service = MagicMock()
+    strategy.user_points_analytics_service = MagicMock()
     return strategy
 
 
 @pytest.mark.asyncio
 async def test_calculate_points_default(strategy):
-    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = (
+    strategy.user_points_analytics_service.get_user_task_measurements_count_the_last_seconds.return_value = (
         0
     )
 
@@ -31,7 +32,7 @@ async def test_calculate_points_default(strategy):
 
 @pytest.mark.asyncio
 async def test_calculate_points_consistent_effort(strategy):
-    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = (
+    strategy.user_points_analytics_service.get_user_task_measurements_count_the_last_seconds.return_value = (
         4
     )
 
@@ -45,7 +46,7 @@ async def test_calculate_points_consistent_effort(strategy):
 
 @pytest.mark.asyncio
 async def test_calculate_points_no_measurements(strategy):
-    strategy.user_points_service.get_user_task_measurements_count_the_last_seconds.return_value = (
+    strategy.user_points_analytics_service.get_user_task_measurements_count_the_last_seconds.return_value = (
         0
     )
 

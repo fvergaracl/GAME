@@ -21,6 +21,7 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
         )
         self.task_service = Container.task_service()
         self.user_points_service = Container.user_points_service()
+        self.user_points_analytics_service = Container.user_points_analytics_service()
 
         self.debug = True
 
@@ -36,7 +37,7 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
         self, externalGameId, externalTaskId, externalUserId, data=None
     ):
         task_measurements_count = (
-            self.user_points_service.count_measurements_by_external_task_id(
+            self.user_points_analytics_service.count_measurements_by_external_task_id(
                 externalTaskId
             )
         )
@@ -44,7 +45,7 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
         if task_measurements_count < 2:
             return (self.variable_basic_points, "BasicEngagement")
         user_task_measurements_count = (
-            self.user_points_service.get_user_task_measurements_count(
+            self.user_points_analytics_service.get_user_task_measurements_count(
                 externalTaskId, externalUserId
             )
         )
@@ -53,12 +54,12 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
         )
 
         if user_task_measurements_count > 2:
-            user_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_by_user_and_game_task(  # noqa
+            user_avg_time_taken = self.user_points_analytics_service.get_avg_time_between_tasks_by_user_and_game_task(  # noqa
                 externalGameId, externalTaskId, externalUserId
             )
             self.debug_print(f"user_avg_time_taken: {user_avg_time_taken}")
 
-            all_avg_time_taken = self.user_points_service.get_avg_time_between_tasks_for_all_users(  # noqa
+            all_avg_time_taken = self.user_points_analytics_service.get_avg_time_between_tasks_for_all_users(  # noqa
                 externalGameId, externalTaskId
             )
             self.debug_print(f"all_avg_time_taken: {all_avg_time_taken}")
@@ -71,7 +72,7 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
                     "PerformanceBonus",
                 )
             user_last_window_time_diff = (
-                self.user_points_service.get_last_window_time_diff(
+                self.user_points_analytics_service.get_last_window_time_diff(
                     externalTaskId, externalUserId
                 )
             )
@@ -80,7 +81,7 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
             )
 
             user_new_last_window_time_diff = (
-                self.user_points_service.get_new_last_window_time_diff(
+                self.user_points_analytics_service.get_new_last_window_time_diff(
                     externalTaskId, externalUserId, externalGameId
                 )
             )

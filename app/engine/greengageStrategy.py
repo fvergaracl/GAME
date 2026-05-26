@@ -28,6 +28,7 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
 
         self.task_service = Container.task_service()
         self.user_points_service = Container.user_points_service()
+        self.user_points_analytics_service = Container.user_points_analytics_service()
 
         self.debug = True
 
@@ -200,7 +201,7 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
         points_to_award = self.variable_default_points
 
         user_has_record_before = (
-            self.user_points_service.user_has_record_before_in_externalTaskId_last_min(
+            self.user_points_analytics_service.user_has_record_before_in_externalTaskId_last_min(
                 externalTaskId, externalUserId, self.variable_minutes_to_check
             )
         )
@@ -210,21 +211,21 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
             return (points_to_award / 2, "Case 1.2 (DP/2)")
 
         count_personal_records_in_game = (
-            self.user_points_service.count_personal_records_by_external_game_id(
+            self.user_points_analytics_service.count_personal_records_by_external_game_id(
                 externalGameId, externalUserId
             )
         )
         if count_personal_records_in_game < 2:
             return (points_to_award * 2, "Case 2 (DP x 2)")
 
-        global_avg_game = self.user_points_service.get_global_avg_by_external_game_id(
+        global_avg_game = self.user_points_analytics_service.get_global_avg_by_external_game_id(
             externalGameId
         )
         if minutes > global_avg_game:
             return (self.get_BP(points_to_award, minutes), "Case 3 (BP)")
 
         personal_avg_game = (
-            self.user_points_service.get_personal_avg_by_external_game_id(
+            self.user_points_analytics_service.get_personal_avg_by_external_game_id(
                 externalGameId, externalUserId
             )
         )

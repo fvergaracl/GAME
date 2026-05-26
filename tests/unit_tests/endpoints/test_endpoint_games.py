@@ -25,31 +25,59 @@ class _SchemaWithoutSimulated:
         return {"externalUserId": self.externalUserId, "data": self.data}
 
 
+_GAMES_SUBMODULES = (
+    "app.api.v1.endpoints.games_crud",
+    "app.api.v1.endpoints.games_strategy",
+    "app.api.v1.endpoints.games_tasks",
+    "app.api.v1.endpoints.games_points",
+    "app.api.v1.endpoints.games_users",
+)
+
+
+def _patch_in_submodules(name, **kwargs):
+    """Patch ``name`` across every games_* sub-module that imports it.
+
+    The endpoint code was split into sub-resource files, so test patches must
+    target each sub-module instead of the old monolithic ``games`` module.
+    Sub-modules that don't bind ``name`` are skipped silently.
+    """
+    patches = []
+    for mod in _GAMES_SUBMODULES:
+        try:
+            patches.append(patch(f"{mod}.{name}", **kwargs))
+        except AttributeError:
+            continue
+    return patches
+
+
 class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        self._patch_add_log = patch(
-            "app.api.v1.endpoints.games.add_log",
-            new=AsyncMock(),
+        self.mock_add_log = AsyncMock()
+        self.mock_valid_access_token = AsyncMock(
+            return_value=SimpleNamespace(data={"sub": "oauth-user-1"})
         )
-        self._patch_valid_access_token = patch(
-            "app.api.v1.endpoints.games.valid_access_token",
-            new=AsyncMock(return_value=SimpleNamespace(data={"sub": "oauth-user-1"})),
-        )
-        self._patch_check_role = patch(
-            "app.api.v1.endpoints.games.check_role",
-            return_value=False,
-        )
-        self._patch_hash = patch(
-            "app.api.v1.endpoints.games.calculate_hash_simulated_strategy",
-            return_value="sim-hash-1",
-        )
-        self._patch_secret = patch.object(games.configs, "SECRET_KEY", "test-secret")
+        self.mock_check_role = MagicMock(return_value=False)
+        self.mock_hash = MagicMock(return_value="sim-hash-1")
 
-        self.mock_add_log = self._patch_add_log.start()
-        self.mock_valid_access_token = self._patch_valid_access_token.start()
-        self.mock_check_role = self._patch_check_role.start()
-        self.mock_hash = self._patch_hash.start()
-        self._patch_secret.start()
+        self._patches = []
+        self._patches.extend(
+            _patch_in_submodules("add_log", new=self.mock_add_log)
+        )
+        self._patches.extend(
+            _patch_in_submodules("valid_access_token", new=self.mock_valid_access_token)
+        )
+        self._patches.extend(
+            _patch_in_submodules("check_role", new=self.mock_check_role)
+        )
+        self._patches.extend(
+            _patch_in_submodules(
+                "calculate_hash_simulated_strategy", new=self.mock_hash
+            )
+        )
+        self._patches.append(patch.object(games.configs, "SECRET_KEY", "test-secret"))
+
+        for p in self._patches:
+            p.start()
 
     def tearDown(self):
         patch.stopall()

@@ -14,7 +14,8 @@ from app.repository import (AbuseLimitCounterRepository, ApiKeyRepository, ApiRe
 from app.services import (AbusePreventionService, ApiKeyService, ApiRequestsService, GameParamsService,
                           GameService, KpiMetricsService, StrategyService, TaskService,
                           UptimeLogsService, UserActionsService, UserGameConfigService,
-                          UserInteractionsService, UserPointsService, UserService,
+                          UserInteractionsService, UserPointsAnalyticsService,
+                          UserPointsService, UserService,
                           WalletService, WalletTransactionService, dashboard_service,
                           logs_service, oauth_users_service)
 
@@ -246,6 +247,11 @@ class Container(containers.DeclarativeContainer):
         task_repository=task_repository,
         wallet_repository=wallet_repository,
         wallet_transaction_repository=wallet_transaction_repository,
+    )
+
+    user_points_analytics_service = providers.Factory(
+        UserPointsAnalyticsService,
+        user_points_repository=user_points_repository,
     )
 
     user_service = providers.Factory(

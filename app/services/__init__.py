@@ -14,6 +14,7 @@ from app.services.uptime_logs_service import UptimeLogsService
 from app.services.user_actions_service import UserActionsService
 from app.services.user_game_config_service import UserGameConfigService
 from app.services.user_interactions_service import UserInteractionsService
+from app.services.user_points_analytics_service import UserPointsAnalyticsService
 from app.services.user_points_service import UserPointsService
 from app.services.user_service import UserService
 from app.services.wallet_service import WalletService

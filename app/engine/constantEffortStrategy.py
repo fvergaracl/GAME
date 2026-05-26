@@ -18,6 +18,7 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
         )
         self.task_service = Container.task_service()
         self.user_points_service = Container.user_points_service()
+        self.user_points_analytics_service = Container.user_points_analytics_service()
 
         self.debug = True
 
@@ -31,7 +32,7 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
         self, externalGameId, externalTaskId, externalUserId, data=None
     ):
         task_measurements_count = (
-            self.user_points_service.get_user_task_measurements_count_the_last_seconds(
+            self.user_points_analytics_service.get_user_task_measurements_count_the_last_seconds(
                 externalTaskId,
                 externalUserId,
                 self.variable_constant_effort_interval_minutes * 60,
