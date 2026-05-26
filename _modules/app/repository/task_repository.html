@@ -236,10 +236,12 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-repository-task-repository--page-root">Source code for app.repository.task_repository</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractContextManager</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAsyncContextManager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span><span class="p">,</span> <span class="n">joinedload</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">func</span><span class="p">,</span> <span class="n">select</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">joinedload</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">configs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundError</span>
@@ -253,43 +255,22 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TaskRepository</span><span class="p">(</span><span class="n">BaseRepository</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Repository class for tasks.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        session_factory (Callable[..., AbstractContextManager[Session]]):</span>
-<span class="sd">          Factory for creating SQLAlchemy sessions.</span>
-<span class="sd">        model: SQLAlchemy model class for tasks.</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Session</span><span class="p">]],</span>
+        <span class="n">session_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">AbstractAsyncContextManager</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">]],</span>
         <span class="n">model</span><span class="o">=</span><span class="n">Tasks</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Initializes the TaskRepository with the provided session factory and</span>
-<span class="sd">          model.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            session_factory (Callable[..., AbstractContextManager[Session]]):</span>
-<span class="sd">              The session factory.</span>
-<span class="sd">            model: The SQLAlchemy model class for tasks.</span>
-<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TaskRepository.read_by_gameId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.task_repository.TaskRepository.read_by_gameId">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">read_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">eager</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">eager</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Reads tasks by game ID based on the provided schema.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            schema: The schema containing query options.</span>
-<span class="sd">            eager (bool): Whether to use eager loading.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            dict: Query results and search options.</span>
+<span class="sd">        Reads tasks filtered by gameId (and any other schema fields).</span>
 <span class="sd">        """</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">schema_as_dict</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">ordering</span> <span class="o">=</span> <span class="n">schema_as_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ordering"</span><span class="p">,</span> <span class="n">configs</span><span class="o">.</span><span class="n">ORDERING</span><span class="p">)</span>
             <span class="n">order_query</span> <span class="o">=</span> <span class="p">(</span>
@@ -302,19 +283,25 @@
             <span class="n">filter_options</span> <span class="o">=</span> <span class="n">dict_to_sqlalchemy_filter_options</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+
+            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_options</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">eager</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">eager</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">"eagers"</span><span class="p">,</span> <span class="p">[]):</span>
-                    <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">joinedload</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">eager</span><span class="p">)))</span>
-            <span class="n">filtered_query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_options</span><span class="p">)</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">filtered_query</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">order_query</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">page_size</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
-                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">((</span><span class="n">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-            <span class="n">total_count</span> <span class="o">=</span> <span class="n">filtered_query</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">eager_rel</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">"eagers"</span><span class="p">,</span> <span class="p">[]):</span>
+                    <span class="n">stmt</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">options</span><span class="p">(</span>
+                        <span class="n">joinedload</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">eager_rel</span><span class="p">))</span>
+                    <span class="p">)</span>
+
+            <span class="n">count_stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">())</span><span class="o">.</span><span class="n">select_from</span><span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_options</span><span class="p">)</span><span class="o">.</span><span class="n">subquery</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">stmt</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">order_query</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">page_size</span> <span class="o">!=</span> <span class="s2">"all"</span><span class="p">:</span>
+                <span class="n">stmt</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">page_size</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">((</span><span class="n">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">page_size</span><span class="p">)</span>
+
+            <span class="n">items</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">total_count</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">count_stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one</span><span class="p">()</span>
             <span class="k">return</span> <span class="p">{</span>
-                <span class="s2">"items"</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
+                <span class="s2">"items"</span><span class="p">:</span> <span class="n">items</span><span class="p">,</span>
                 <span class="s2">"search_options"</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s2">"page"</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
                     <span class="s2">"page_size"</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
@@ -326,46 +313,26 @@
 
 <div class="viewcode-block" id="TaskRepository.read_by_gameId_and_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.task_repository.TaskRepository.read_by_gameId_and_externalTaskId">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">read_by_gameId_and_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Reads a task by game ID and external task ID.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            gameId (int): The game ID.</span>
-<span class="sd">            externalTaskId (str): The external task ID.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            object: The task if found, otherwise None.</span>
-<span class="sd">        """</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">gameId</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_by_gameId_and_externalTaskId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">):</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">gameId</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">query</span></div>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="TaskRepository.get_points_and_users_by_taskId">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.task_repository.TaskRepository.get_points_and_users_by_taskId">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_points_and_users_by_taskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Retrieves points and users associated with a task ID.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            taskId (int): The task ID.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            object: The task if found, otherwise raises NotFoundError.</span>
-<span class="sd">        """</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_and_users_by_taskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">taskId</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Task not found by id : </span><span class="si">{</span><span class="n">taskId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">query</span></div>
+            <span class="k">return</span> <span class="n">result</span></div>
 </div>
 
 </pre></div>

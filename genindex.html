@@ -495,8 +495,6 @@
         <li><a href="app/app.services.html#app.services.user_points_service.UserPointsService.count_personal_records_by_external_game_id">(app.services.user_points_service.UserPointsService method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app/app.repository.html#app.repository.base_repository.BaseRepository.create">create() (app.repository.base_repository.BaseRepository method)</a>
 
       <ul>
@@ -505,6 +503,10 @@
         <li><a href="app/app.services.html#app.services.game_service.GameService.create">(app.services.game_service.GameService method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="app/app.repository.html#app.repository.UserGameConfigRepository.create_or_update">create_or_update() (app.repository.UserGameConfigRepository method)</a>
+</li>
       <li><a href="app/app.services.html#app.services.task_service.TaskService.create_task_by_externalGameId">create_task_by_externalGameId() (app.services.task_service.TaskService method)</a>
 </li>
       <li><a href="app/app.services.html#app.services.task_service.TaskService.create_task_by_game_id">create_task_by_game_id() (app.services.task_service.TaskService method)</a>
@@ -526,6 +528,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app/app.repository.html#app.repository.DashboardRepository">DashboardRepository (class in app.repository)</a>
+</li>
+      <li><a href="app/app.repository.html#app.repository.UserGameConfigRepository.delete">delete() (app.repository.UserGameConfigRepository method)</a>
 </li>
       <li><a href="app/app.repository.html#app.repository.base_repository.BaseRepository.delete_by_id">delete_by_id() (app.repository.base_repository.BaseRepository method)</a>
 
@@ -638,6 +642,8 @@
       <li><a href="app/app.services.html#app.services.game_service.GameService.get_by_gameId">get_by_gameId() (app.services.game_service.GameService method)</a>
 </li>
       <li><a href="app/app.services.html#app.services.base_service.BaseService.get_by_id">get_by_id() (app.services.base_service.BaseService method)</a>
+</li>
+      <li><a href="app/app.repository.html#app.repository.UserGameConfigRepository.get_by_user_and_game">get_by_user_and_game() (app.repository.UserGameConfigRepository method)</a>
 </li>
       <li><a href="app/app.services.html#app.services.strategy_service.StrategyService.get_Class_by_id">get_Class_by_id() (app.services.strategy_service.StrategyService method)</a>
 </li>
@@ -903,22 +909,12 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app/app.repository.html#app.repository.ApiKeyRepository.model">model (app.repository.ApiKeyRepository attribute)</a>
+      <li><a href="app/app.repository.html#app.repository.ApiRequestsRepository.model">model (app.repository.ApiRequestsRepository attribute)</a>
 
       <ul>
-        <li><a href="app/app.repository.html#app.repository.ApiRequestsRepository.model">(app.repository.ApiRequestsRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.base_repository.BaseRepository.model">(app.repository.base_repository.BaseRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.BaseRepository.model">(app.repository.BaseRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.game_params_repository.GameParamsRepository.model">(app.repository.game_params_repository.GameParamsRepository attribute)</a>
 </li>
-        <li><a href="app/app.repository.html#app.repository.game_repository.GameRepository.model">(app.repository.game_repository.GameRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.GameParamsRepository.model">(app.repository.GameParamsRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.GameRepository.model">(app.repository.GameRepository attribute)</a>
 </li>
         <li><a href="app/app.repository.html#app.repository.KpiMetricsRepository.model">(app.repository.KpiMetricsRepository attribute)</a>
 </li>
@@ -928,17 +924,9 @@
 </li>
         <li><a href="app/app.repository.html#app.repository.task_params_repository.TaskParamsRepository.model">(app.repository.task_params_repository.TaskParamsRepository attribute)</a>
 </li>
-        <li><a href="app/app.repository.html#app.repository.task_repository.TaskRepository.model">(app.repository.task_repository.TaskRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.TaskParamsRepository.model">(app.repository.TaskParamsRepository attribute)</a>
 </li>
-        <li><a href="app/app.repository.html#app.repository.TaskRepository.model">(app.repository.TaskRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.UptimeLogsRepository.model">(app.repository.UptimeLogsRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.model">(app.repository.user_points_repository.UserPointsRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.user_repository.UserRepository.model">(app.repository.user_repository.UserRepository attribute)</a>
 </li>
         <li><a href="app/app.repository.html#app.repository.UserActionsRepository.model">(app.repository.UserActionsRepository attribute)</a>
 </li>
@@ -946,31 +934,9 @@
 </li>
         <li><a href="app/app.repository.html#app.repository.UserInteractionsRepository.model">(app.repository.UserInteractionsRepository attribute)</a>
 </li>
-        <li><a href="app/app.repository.html#app.repository.UserPointsRepository.model">(app.repository.UserPointsRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.UserRepository.model">(app.repository.UserRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.wallet_repository.WalletRepository.model">(app.repository.wallet_repository.WalletRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository.model">(app.repository.wallet_transaction_repository.WalletTransactionRepository attribute)</a>
 </li>
-        <li><a href="app/app.repository.html#app.repository.WalletRepository.model">(app.repository.WalletRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.WalletTransactionRepository.model">(app.repository.WalletTransactionRepository attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="app/app.repository.html#app.repository.game_repository.GameRepository.model_game_params">model_game_params (app.repository.game_repository.GameRepository attribute)</a>
-
-      <ul>
-        <li><a href="app/app.repository.html#app.repository.GameRepository.model_game_params">(app.repository.GameRepository attribute)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app/app.repository.html#app.repository.game_repository.GameRepository.model_tasks">model_tasks (app.repository.game_repository.GameRepository attribute)</a>
-
-      <ul>
-        <li><a href="app/app.repository.html#app.repository.GameRepository.model_tasks">(app.repository.GameRepository attribute)</a>
 </li>
       </ul></li>
       <li>
@@ -1152,8 +1118,6 @@
       </ul></li>
       <li><a href="app/app.services.html#app.services.base_service.BaseService.remove_by_id">remove_by_id() (app.services.base_service.BaseService method)</a>
 </li>
-      <li><a href="app/app.services.html#app.services.base_service.BaseService.repository">repository (app.services.base_service.BaseService attribute)</a>
-</li>
       <li><a href="app/app.html#app.main.run_migrations">run_migrations() (in module app.main)</a>
 </li>
   </ul></td>
@@ -1162,22 +1126,12 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app/app.repository.html#app.repository.ApiKeyRepository.session_factory">session_factory (app.repository.ApiKeyRepository attribute)</a>
+      <li><a href="app/app.repository.html#app.repository.ApiRequestsRepository.session_factory">session_factory (app.repository.ApiRequestsRepository attribute)</a>
 
       <ul>
-        <li><a href="app/app.repository.html#app.repository.ApiRequestsRepository.session_factory">(app.repository.ApiRequestsRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.base_repository.BaseRepository.session_factory">(app.repository.base_repository.BaseRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.BaseRepository.session_factory">(app.repository.BaseRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.game_params_repository.GameParamsRepository.session_factory">(app.repository.game_params_repository.GameParamsRepository attribute)</a>
 </li>
-        <li><a href="app/app.repository.html#app.repository.game_repository.GameRepository.session_factory">(app.repository.game_repository.GameRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.GameParamsRepository.session_factory">(app.repository.GameParamsRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.GameRepository.session_factory">(app.repository.GameRepository attribute)</a>
 </li>
         <li><a href="app/app.repository.html#app.repository.KpiMetricsRepository.session_factory">(app.repository.KpiMetricsRepository attribute)</a>
 </li>
@@ -1187,17 +1141,9 @@
 </li>
         <li><a href="app/app.repository.html#app.repository.task_params_repository.TaskParamsRepository.session_factory">(app.repository.task_params_repository.TaskParamsRepository attribute)</a>
 </li>
-        <li><a href="app/app.repository.html#app.repository.task_repository.TaskRepository.session_factory">(app.repository.task_repository.TaskRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.TaskParamsRepository.session_factory">(app.repository.TaskParamsRepository attribute)</a>
 </li>
-        <li><a href="app/app.repository.html#app.repository.TaskRepository.session_factory">(app.repository.TaskRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.UptimeLogsRepository.session_factory">(app.repository.UptimeLogsRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.session_factory">(app.repository.user_points_repository.UserPointsRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.user_repository.UserRepository.session_factory">(app.repository.user_repository.UserRepository attribute)</a>
 </li>
         <li><a href="app/app.repository.html#app.repository.UserActionsRepository.session_factory">(app.repository.UserActionsRepository attribute)</a>
 </li>
@@ -1205,15 +1151,7 @@
 </li>
         <li><a href="app/app.repository.html#app.repository.UserInteractionsRepository.session_factory">(app.repository.UserInteractionsRepository attribute)</a>
 </li>
-        <li><a href="app/app.repository.html#app.repository.UserPointsRepository.session_factory">(app.repository.UserPointsRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.UserRepository.session_factory">(app.repository.UserRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.wallet_repository.WalletRepository.session_factory">(app.repository.wallet_repository.WalletRepository attribute)</a>
-</li>
         <li><a href="app/app.repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository.session_factory">(app.repository.wallet_transaction_repository.WalletTransactionRepository attribute)</a>
-</li>
-        <li><a href="app/app.repository.html#app.repository.WalletRepository.session_factory">(app.repository.WalletRepository attribute)</a>
 </li>
         <li><a href="app/app.repository.html#app.repository.WalletTransactionRepository.session_factory">(app.repository.WalletTransactionRepository attribute)</a>
 </li>
@@ -1236,13 +1174,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app/app.services.html#app.services.task_service.TaskService.task_params_repository">task_params_repository (app.services.task_service.TaskService attribute)</a>
 </li>
-      <li><a href="app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.task_repository">task_repository (app.repository.user_points_repository.UserPointsRepository attribute)</a>
+      <li><a href="app/app.services.html#app.services.game_service.GameService.task_repository">task_repository (app.services.game_service.GameService attribute)</a>
 
       <ul>
-        <li><a href="app/app.repository.html#app.repository.UserPointsRepository.task_repository">(app.repository.UserPointsRepository attribute)</a>
-</li>
-        <li><a href="app/app.services.html#app.services.game_service.GameService.task_repository">(app.services.game_service.GameService attribute)</a>
-</li>
         <li><a href="app/app.services.html#app.services.task_service.TaskService.task_repository">(app.services.task_service.TaskService attribute)</a>
 </li>
         <li><a href="app/app.services.html#app.services.user_service.UserService.task_repository">(app.services.user_service.UserService attribute)</a>
@@ -1304,20 +1238,14 @@
         <li><a href="app/app.services.html#app.services.user_service.UserService.user_points_repository">(app.services.user_service.UserService attribute)</a>
 </li>
       </ul></li>
-      <li><a href="app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.user_repository">user_repository (app.repository.user_points_repository.UserPointsRepository attribute)</a>
-
-      <ul>
-        <li><a href="app/app.repository.html#app.repository.UserPointsRepository.user_repository">(app.repository.UserPointsRepository attribute)</a>
-</li>
-        <li><a href="app/app.services.html#app.services.task_service.TaskService.user_repository">(app.services.task_service.TaskService attribute)</a>
-</li>
-        <li><a href="app/app.services.html#app.services.user_service.UserService.user_repository">(app.services.user_service.UserService attribute)</a>
-</li>
-        <li><a href="app/app.services.html#app.services.wallet_service.WalletService.user_repository">(app.services.wallet_service.WalletService attribute)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="app/app.services.html#app.services.task_service.TaskService.user_repository">user_repository (app.services.task_service.TaskService attribute)</a>
+
+      <ul>
+        <li><a href="app/app.services.html#app.services.user_service.UserService.user_repository">(app.services.user_service.UserService attribute)</a>
+</li>
+      </ul></li>
       <li><a href="app/app.repository.html#app.repository.UserActionsRepository">UserActionsRepository (class in app.repository)</a>
 </li>
       <li><a href="app/app.repository.html#app.repository.UserGameConfigRepository">UserGameConfigRepository (class in app.repository)</a>
@@ -1347,11 +1275,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app/app.services.html#app.services.user_service.UserService.wallet_repository">wallet_repository (app.services.user_service.UserService attribute)</a>
-
-      <ul>
-        <li><a href="app/app.services.html#app.services.wallet_service.WalletService.wallet_repository">(app.services.wallet_service.WalletService attribute)</a>
 </li>
-      </ul></li>
       <li><a href="app/app.services.html#app.services.user_service.UserService.wallet_transaction_repository">wallet_transaction_repository (app.services.user_service.UserService attribute)</a>
 
       <ul>

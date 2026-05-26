@@ -231,8 +231,6 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.base_service.BaseService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.base_service.BaseService.repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.repository</span></code></a>
-        </li>
         <li class="md-nav__item"><a href="#app.services.base_service.BaseService.add" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.add()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.base_service.BaseService.get_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.get_by_id()</span></code></a>
@@ -483,10 +481,6 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService.wallet_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService.wallet_repository</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService.user_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService.user_repository</span></code></a>
-        </li>
         <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService.get_wallet_by_user_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService.get_wallet_by_user_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService.preview_convert" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService.preview_convert()</span></code></a>
@@ -534,131 +528,36 @@
 <dt class="sig sig-object py" id="app.services.base_service.BaseService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.base_service.</span></span><span class="sig-name descname"><span class="pre">BaseService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repository</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Base service class providing common CRUD operations.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.base_service.BaseService.repository">
-<span class="sig-name descname"><span class="pre">repository</span></span><a class="headerlink" href="#app.services.base_service.BaseService.repository" title="Link to this definition">¶</a></dt>
-<dd><p>The repository instance used for database operations.</p>
-</dd></dl>
+<p>Async base service class providing common CRUD operations on top of
+an async repository.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.add" title="Link to this definition">¶</a></dt>
-<dd><p>Adds a new item using the provided schema.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – The schema representing the item to be added.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The added item.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
-</dd>
-</dl>
-</dd></dl>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.add" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.get_by_id">
-<span class="sig-name descname"><span class="pre">get_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.get_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.get_by_id" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves an item by its ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>id</strong> (<em>UUID</em>) – The unique identifier of the item.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The item with the given ID.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
-</dd>
-</dl>
-</dd></dl>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.get_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.get_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.get_list">
-<span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.get_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.get_list" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves a list of items based on the provided schema.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – The schema for filtering the items.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of items matching the schema.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
-</dd>
-</dl>
-</dd></dl>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.get_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.get_list" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.patch">
-<span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.patch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.patch" title="Link to this definition">¶</a></dt>
-<dd><p>Updates an item partially by its ID using the provided schema.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<em>UUID</em>) – The unique identifier of the item.</p></li>
-<li><p><strong>schema</strong> – The schema representing the updated data.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The updated item.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
-</dd>
-</dl>
-</dd></dl>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.patch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.patch" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.patch_attr">
-<span class="sig-name descname"><span class="pre">patch_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.patch_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.patch_attr" title="Link to this definition">¶</a></dt>
-<dd><p>Updates a specific attribute of an item by its ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<em>UUID</em>) – The unique identifier of the item.</p></li>
-<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The attribute to be updated.</p></li>
-<li><p><strong>value</strong> – The new value of the attribute.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The updated item.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
-</dd>
-</dl>
-</dd></dl>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.patch_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.patch_attr" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.put_update">
-<span class="sig-name descname"><span class="pre">put_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.put_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.put_update" title="Link to this definition">¶</a></dt>
-<dd><p>Replaces an item entirely by its ID using the provided schema.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<em>UUID</em>) – The unique identifier of the item.</p></li>
-<li><p><strong>schema</strong> – The schema representing the new data.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The updated item.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
-</dd>
-</dl>
-</dd></dl>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">put_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.put_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.put_update" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.remove_by_id">
-<span class="sig-name descname"><span class="pre">remove_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.remove_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.remove_by_id" title="Link to this definition">¶</a></dt>
-<dd><p>Removes an item by its ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>id</strong> (<em>UUID</em>) – The unique identifier of the item.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.remove_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.remove_by_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.game_params_service">
@@ -752,7 +651,7 @@ created.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.delete_game_by_id">
-<span class="sig-name descname"><span class="pre">delete_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.delete_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.delete_game_by_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.delete_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.delete_game_by_id" title="Link to this definition">¶</a></dt>
 <dd><p>Deletes a game by its game ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -765,7 +664,7 @@ created.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_all_games">
-<span class="sig-name descname"><span class="pre">get_all_games</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_all_games"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_all_games" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_games</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_all_games"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_all_games" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves all games based on the provided schema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -784,7 +683,7 @@ created.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_by_externalId">
-<span class="sig-name descname"><span class="pre">get_by_externalId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_by_externalId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_by_externalId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_by_externalId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_by_externalId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_by_externalId" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves a game by its external game ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -800,7 +699,7 @@ created.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_by_gameId">
-<span class="sig-name descname"><span class="pre">get_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_by_gameId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_by_gameId" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves a game by its game ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -816,7 +715,7 @@ created.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_game_by_external_id">
-<span class="sig-name descname"><span class="pre">get_game_by_external_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_game_by_external_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_game_by_external_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_game_by_external_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_game_by_external_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_game_by_external_id" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves a game by its external game ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -836,7 +735,7 @@ created.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_strategy_by_externalGameId">
-<span class="sig-name descname"><span class="pre">get_strategy_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_strategy_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_strategy_by_externalGameId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_strategy_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_strategy_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_strategy_by_externalGameId" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves the strategy associated with a game by its external game ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -852,7 +751,7 @@ created.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_strategy_by_gameId">
-<span class="sig-name descname"><span class="pre">get_strategy_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_strategy_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_strategy_by_gameId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_strategy_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_strategy_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_strategy_by_gameId" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves the strategy associated with a game by its game ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -868,7 +767,7 @@ created.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.get_tasks_by_gameId">
-<span class="sig-name descname"><span class="pre">get_tasks_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_tasks_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_tasks_by_gameId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tasks_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.get_tasks_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.get_tasks_by_gameId" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves the tasks associated with a game by its game ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -884,7 +783,7 @@ created.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.patch_game_by_externalGameId">
-<span class="sig-name descname"><span class="pre">patch_game_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PatchGame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.patch_game_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.patch_game_by_externalGameId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_game_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PatchGame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.patch_game_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.patch_game_by_externalGameId" title="Link to this definition">¶</a></dt>
 <dd><p>Updates a game by its external game ID using the provided schema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -903,7 +802,7 @@ created.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.game_service.GameService.patch_game_by_id">
-<span class="sig-name descname"><span class="pre">patch_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PatchGame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.patch_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.patch_game_by_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_game_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PatchGame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/game_service.html#GameService.patch_game_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.game_service.GameService.patch_game_by_id" title="Link to this definition">¶</a></dt>
 <dd><p>Updates a game by its game ID using the provided schema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1106,7 +1005,7 @@ task parameters.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_by_task_id">
-<span class="sig-name descname"><span class="pre">get_points_by_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_by_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_by_task_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_by_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_by_task_id" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves points by task ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1125,7 +1024,7 @@ task parameters.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_by_task_id_with_details">
-<span class="sig-name descname"><span class="pre">get_points_by_task_id_with_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_by_task_id_with_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_by_task_id_with_details" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_task_id_with_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_by_task_id_with_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_by_task_id_with_details" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves points by task ID with details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1144,7 +1043,7 @@ task parameters.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_of_user_by_task_id">
-<span class="sig-name descname"><span class="pre">get_points_of_user_by_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_of_user_by_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_of_user_by_task_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_of_user_by_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_of_user_by_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_of_user_by_task_id" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves points of a user by task ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1164,7 +1063,7 @@ task parameters.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId">
-<span class="sig-name descname"><span class="pre">get_task_by_externalGameId_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_by_externalGameId_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_by_externalGameId_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_by_externalGameId_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves a task by its game ID and external task ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1183,7 +1082,7 @@ task parameters.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_by_gameId_externalTaskId">
-<span class="sig-name descname"><span class="pre">get_task_by_gameId_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_by_gameId_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_by_gameId_externalTaskId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_by_gameId_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_by_gameId_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_by_gameId_externalTaskId" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves a task by its game ID and external task ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1202,7 +1101,7 @@ task parameters.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_detail_by_id">
-<span class="sig-name descname"><span class="pre">get_task_detail_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_detail_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_detail_by_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_detail_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_detail_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_detail_by_id" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves task details by its ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1218,7 +1117,7 @@ task parameters.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_params_by_externalTaskId">
-<span class="sig-name descname"><span class="pre">get_task_params_by_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_params_by_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_params_by_externalTaskId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_params_by_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_params_by_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_params_by_externalTaskId" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves task parameters by external task ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1234,7 +1133,7 @@ task parameters.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_tasks_list_by_externalGameId">
-<span class="sig-name descname"><span class="pre">get_tasks_list_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_tasks_list_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_tasks_list_by_externalGameId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tasks_list_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_tasks_list_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_tasks_list_by_externalGameId" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Retrieves a list of tasks associated with a game by its external game</dt><dd><p>ID.</p>
 </dd>
@@ -1256,7 +1155,7 @@ task parameters.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService.get_tasks_list_by_gameId">
-<span class="sig-name descname"><span class="pre">get_tasks_list_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_tasks_list_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_tasks_list_by_gameId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tasks_list_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_tasks_list_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_tasks_list_by_gameId" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves a list of tasks associated with a game by its game ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1330,11 +1229,11 @@ assign points.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id">
-<span class="sig-name descname"><span class="pre">count_measurements_by_external_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.count_measurements_by_external_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_measurements_by_external_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.count_measurements_by_external_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.count_measurements_by_external_task_id" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.count_personal_records_by_external_game_id">
-<span class="sig-name descname"><span class="pre">count_personal_records_by_external_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_game_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.count_personal_records_by_external_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.count_personal_records_by_external_game_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_personal_records_by_external_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_game_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.count_personal_records_by_external_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.count_personal_records_by_external_game_id" title="Link to this definition">¶</a></dt>
 <dd><p>Count the number of records for a user in a game.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1353,23 +1252,23 @@ assign points.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_all_point_of_tasks_list">
-<span class="sig-name descname"><span class="pre">get_all_point_of_tasks_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_ids_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">withData</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_all_point_of_tasks_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_all_point_of_tasks_list" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_point_of_tasks_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_ids_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">withData</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_all_point_of_tasks_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_all_point_of_tasks_list" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId">
-<span class="sig-name descname"><span class="pre">get_all_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_all_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_all_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task">
-<span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_by_user_and_game_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_avg_time_between_tasks_by_user_and_game_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_by_user_and_game_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_avg_time_between_tasks_by_user_and_game_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_by_user_and_game_task" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users">
-<span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_for_all_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_avg_time_between_tasks_for_all_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_for_all_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_avg_time_between_tasks_for_all_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_avg_time_between_tasks_for_all_users" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_global_avg_by_external_game_id">
-<span class="sig-name descname"><span class="pre">get_global_avg_by_external_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_game_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_global_avg_by_external_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_global_avg_by_external_game_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_global_avg_by_external_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_game_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_global_avg_by_external_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_global_avg_by_external_game_id" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Get the global average time rewarded. It does not take into account</dt><dd><p>the time with 0 value (minutes)</p>
 </dd>
@@ -1388,15 +1287,15 @@ assign points.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_last_window_time_diff">
-<span class="sig-name descname"><span class="pre">get_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_last_window_time_diff" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_last_window_time_diff" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_new_last_window_time_diff">
-<span class="sig-name descname"><span class="pre">get_new_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_new_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_new_last_window_time_diff" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_new_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_new_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_new_last_window_time_diff" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_personal_avg_by_external_game_id">
-<span class="sig-name descname"><span class="pre">get_personal_avg_by_external_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_game_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_personal_avg_by_external_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_personal_avg_by_external_game_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_personal_avg_by_external_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_game_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_personal_avg_by_external_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_personal_avg_by_external_game_id" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Get the personal average time rewarded. It does not take into account</dt><dd><p>the time with 0 value (minutes)</p>
 </dd>
@@ -1418,31 +1317,31 @@ assign points.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_externalUserId">
-<span class="sig-name descname"><span class="pre">get_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_externalUserId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_externalUserId" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_gameId">
-<span class="sig-name descname"><span class="pre">get_points_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_gameId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_gameId" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_gameId_with_details">
-<span class="sig-name descname"><span class="pre">get_points_by_gameId_with_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_gameId_with_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_gameId_with_details" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_gameId_with_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_gameId_with_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_gameId_with_details" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_by_user_list">
-<span class="sig-name descname"><span class="pre">get_points_by_user_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_user_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_user_list" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_user_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_by_user_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_by_user_list" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_of_simulated_task">
-<span class="sig-name descname"><span class="pre">get_points_of_simulated_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulationHash</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_simulated_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_simulated_task" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_of_simulated_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulationHash</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_simulated_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_simulated_task" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_of_user">
-<span class="sig-name descname"><span class="pre">get_points_of_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_user" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_of_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_user" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_of_user_in_game">
-<span class="sig-name descname"><span class="pre">get_points_of_user_in_game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_user_in_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_user_in_game" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_of_user_in_game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_points_of_user_in_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_points_of_user_in_game" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_points_simulated_of_user_in_game">
@@ -1470,39 +1369,39 @@ assign points.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_user_task_measurements">
-<span class="sig-name descname"><span class="pre">get_user_task_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_user_task_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_user_task_measurements" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_task_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_user_task_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_user_task_measurements" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_user_task_measurements_count">
-<span class="sig-name descname"><span class="pre">get_user_task_measurements_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_user_task_measurements_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_user_task_measurements_count" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_task_measurements_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_user_task_measurements_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_user_task_measurements_count" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_user_task_measurements_count_the_last_seconds">
-<span class="sig-name descname"><span class="pre">get_user_task_measurements_count_the_last_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_user_task_measurements_count_the_last_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_user_task_measurements_count_the_last_seconds" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_task_measurements_count_the_last_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_user_task_measurements_count_the_last_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_user_task_measurements_count_the_last_seconds" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_by_gameId">
-<span class="sig-name descname"><span class="pre">get_users_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_by_gameId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_users_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_by_gameId" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId">
-<span class="sig-name descname"><span class="pre">get_users_points_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_users_points_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId">
-<span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId">
-<span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId_and_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalTaskId_and_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId_and_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.get_users_points_by_externalTaskId_and_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.query_user_points">
-<span class="sig-name descname"><span class="pre">query_user_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.query_user_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.query_user_points" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_user_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.query_user_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.query_user_points" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_service.UserPointsService.user_has_record_before_in_externalTaskId_last_min">
-<span class="sig-name descname"><span class="pre">user_has_record_before_in_externalTaskId_last_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.user_has_record_before_in_externalTaskId_last_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.user_has_record_before_in_externalTaskId_last_min" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user_has_record_before_in_externalTaskId_last_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_service.html#UserPointsService.user_has_record_before_in_externalTaskId_last_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_service.UserPointsService.user_has_record_before_in_externalTaskId_last_min" title="Link to this definition">¶</a></dt>
 <dd><p>Check if a user has a record before in the task in the last minute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1606,7 +1505,7 @@ assignment details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.basic_engagement_points">
-<span class="sig-name descname"><span class="pre">basic_engagement_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.basic_engagement_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.basic_engagement_points" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">basic_engagement_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.basic_engagement_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.basic_engagement_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Provides a fixed number of points as a basic engagement reward for a</dt><dd><p>user’s initial actions within the gamification system.</p>
 </dd>
@@ -1667,7 +1566,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.create_user">
-<span class="sig-name descname"><span class="pre">create_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.create_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.create_user" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.create_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.create_user" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a new user using the provided schema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1683,7 +1582,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.get_points_by_user_id">
-<span class="sig-name descname"><span class="pre">get_points_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_points_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_points_by_user_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_points_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_points_by_user_id" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves points associated with a user by their user ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1699,7 +1598,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.get_user_by_externalUserId">
-<span class="sig-name descname"><span class="pre">get_user_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_user_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_user_by_externalUserId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_user_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_user_by_externalUserId" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieves a user by their external user ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1747,7 +1646,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.global_advantage_adjustment_points">
-<span class="sig-name descname"><span class="pre">global_advantage_adjustment_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.global_advantage_adjustment_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.global_advantage_adjustment_points" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">global_advantage_adjustment_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.global_advantage_adjustment_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.global_advantage_adjustment_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Awards additional points to users whose performance is above the</dt><dd><dl class="simple">
 <dt>global average but have shown a decrease in their individual</dt><dd><dl class="simple">
@@ -1776,7 +1675,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.individual_adjustment_points">
-<span class="sig-name descname"><span class="pre">individual_adjustment_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.individual_adjustment_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.individual_adjustment_points" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">individual_adjustment_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.individual_adjustment_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.individual_adjustment_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Rewards users who have improved their individual performance,</dt><dd><dl class="simple">
 <dt>regardless of their standing against the global average. It aims to</dt><dd><dl class="simple">
@@ -1802,7 +1701,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.individual_over_global_points">
-<span class="sig-name descname"><span class="pre">individual_over_global_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.individual_over_global_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.individual_over_global_points" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">individual_over_global_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.individual_over_global_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.individual_over_global_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Awards additional points for users who have improved their individual</dt><dd><dl class="simple">
 <dt>performance compared to their own history, even if below the global</dt><dd><p>average.</p>
@@ -1821,7 +1720,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.need_for_motivation_points">
-<span class="sig-name descname"><span class="pre">need_for_motivation_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.need_for_motivation_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.need_for_motivation_points" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">need_for_motivation_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.need_for_motivation_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.need_for_motivation_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Provides a small point incentive for users who are underperforming</dt><dd><p>both individually and globally, to motivate improvement.</p>
 </dd>
@@ -1837,7 +1736,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.peak_performer_bonus_points">
-<span class="sig-name descname"><span class="pre">peak_performer_bonus_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.peak_performer_bonus_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.peak_performer_bonus_points" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">peak_performer_bonus_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.peak_performer_bonus_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.peak_performer_bonus_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Rewards users who have exceeded both their individual performance and</dt><dd><p>the global average, standing out as peak performers in the system.</p>
 </dd>
@@ -1853,7 +1752,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.performance_bonus_points">
-<span class="sig-name descname"><span class="pre">performance_bonus_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.performance_bonus_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.performance_bonus_points" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">performance_bonus_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.performance_bonus_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.performance_bonus_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Calculates the number of additional points to award for performance</dt><dd><p>above a certain threshold.</p>
 </dd>
@@ -1869,7 +1768,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.performance_penalty_points">
-<span class="sig-name descname"><span class="pre">performance_penalty_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.performance_penalty_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.performance_penalty_points" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">performance_penalty_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.performance_penalty_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.performance_penalty_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Calculates the number of points to deduct as a penalty for performance</dt><dd><p>below a certain threshold.</p>
 </dd>
@@ -1885,7 +1784,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.preview_points_to_coins_conversion">
-<span class="sig-name descname"><span class="pre">preview_points_to_coins_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.preview_points_to_coins_conversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.preview_points_to_coins_conversion" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preview_points_to_coins_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.preview_points_to_coins_conversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.preview_points_to_coins_conversion" title="Link to this definition">¶</a></dt>
 <dd><p>Previews the conversion of points to coins for a user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1904,7 +1803,7 @@ conversion details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_service.UserService.preview_points_to_coins_conversion_externalUserId">
-<span class="sig-name descname"><span class="pre">preview_points_to_coins_conversion_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.preview_points_to_coins_conversion_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.preview_points_to_coins_conversion_externalUserId" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preview_points_to_coins_conversion_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.preview_points_to_coins_conversion_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.preview_points_to_coins_conversion_externalUserId" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Previews the conversion of points to coins for a user by their</dt><dd><p>external user ID.</p>
 </dd>
@@ -1933,58 +1832,14 @@ conversion details.</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.wallet_service.</span></span><span class="sig-name descname"><span class="pre">WalletService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wallet_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository"><span class="pre">WalletRepository</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_repository</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository"><span class="pre">UserRepository</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_service.html#WalletService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_service.WalletService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
 <p>Service class for managing wallets.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.wallet_service.WalletService.wallet_repository">
-<span class="sig-name descname"><span class="pre">wallet_repository</span></span><a class="headerlink" href="#app.services.wallet_service.WalletService.wallet_repository" title="Link to this definition">¶</a></dt>
-<dd><p>Repository instance for wallets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository">WalletRepository</a></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.wallet_service.WalletService.user_repository">
-<span class="sig-name descname"><span class="pre">user_repository</span></span><a class="headerlink" href="#app.services.wallet_service.WalletService.user_repository" title="Link to this definition">¶</a></dt>
-<dd><p>Repository instance for users.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="app.repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository">UserRepository</a></p>
-</dd>
-</dl>
-</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.wallet_service.WalletService.get_wallet_by_user_id">
-<span class="sig-name descname"><span class="pre">get_wallet_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_service.html#WalletService.get_wallet_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_service.WalletService.get_wallet_by_user_id" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves the wallet associated with the given user ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>externalUserId</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The external user ID.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The wallet details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>BaseWallet</p>
-</dd>
-</dl>
-</dd></dl>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_wallet_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_service.html#WalletService.get_wallet_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_service.WalletService.get_wallet_by_user_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.wallet_service.WalletService.preview_convert">
-<span class="sig-name descname"><span class="pre">preview_convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_service.html#WalletService.preview_convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_service.WalletService.preview_convert" title="Link to this definition">¶</a></dt>
-<dd><p>Previews the conversion of points to coins for a user.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – The schema containing conversion details.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The conversion preview details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ResponsePreviewConvertPoints</p>
-</dd>
-</dl>
-</dd></dl>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preview_convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_service.html#WalletService.preview_convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_service.WalletService.preview_convert" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 </dd></dl>
 </section>
 <section id="module-app.services.wallet_transaction_service">
