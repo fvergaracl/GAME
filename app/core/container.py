@@ -220,7 +220,7 @@ class Container(containers.DeclarativeContainer):
 
     task_service = providers.Factory(
         TaskService,
-        strategy_service=StrategyService,
+        strategy_service=strategy_service,
         task_repository=task_repository,
         game_repository=game_repository,
         user_repository=user_repository,

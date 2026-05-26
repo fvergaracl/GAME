@@ -28,7 +28,7 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
         self.task_params_repository = MagicMock(spec=TaskParamsRepository)
 
         self.service = TaskService(
-            strategy_service=lambda: self.strategy_service_instance,
+            strategy_service=self.strategy_service_instance,
             task_repository=self.task_repository,
             game_repository=self.game_repository,
             user_repository=self.user_repository,

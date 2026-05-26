@@ -55,7 +55,7 @@ class TaskService(BaseService):
             task_params_repository (TaskParamsRepository): The task parameters
               repository instance.
         """
-        self.strategy_service = strategy_service()
+        self.strategy_service = strategy_service
         self.task_repository = task_repository
         self.game_repository = game_repository
         self.user_repository = user_repository
