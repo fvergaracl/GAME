@@ -247,6 +247,7 @@
                                     <span class="n">FindTask</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.tasks_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">InsertTaskParams</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.game_access</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_authorized_game</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyService</span>
 
 
@@ -333,7 +334,16 @@
 
 <div class="viewcode-block" id="TaskService.get_tasks_list_by_gameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_tasks_list_by_gameId">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_tasks_list_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">find_query</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_tasks_list_by_gameId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">,</span>
+        <span class="n">find_query</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a list of tasks associated with a game by its game ID.</span>
 
@@ -344,7 +354,18 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list: A list of tasks associated with the game.</span>
 <span class="sd">        """</span>
-        <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span><span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
+                <span class="n">gameId</span><span class="p">,</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+                <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
+                <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Game not found with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -421,7 +442,16 @@
 
 <div class="viewcode-block" id="TaskService.get_task_by_gameId_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_by_gameId_externalTaskId">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_by_gameId_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_by_gameId_externalTaskId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">,</span>
+        <span class="n">externalTaskId</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a task by its game ID and external task ID.</span>
 
@@ -432,7 +462,18 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            CreateTaskPostSuccesfullyCreated: The task details.</span>
 <span class="sd">        """</span>
-        <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span><span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
+                <span class="n">gameId</span><span class="p">,</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+                <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
+                <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Game not found with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
@@ -498,7 +539,16 @@
 
 <div class="viewcode-block" id="TaskService.get_task_by_externalGameId_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_by_externalGameId_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_by_externalGameId_externalTaskId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">,</span>
+        <span class="n">externalTaskId</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a task by its game ID and external task ID.</span>
 
@@ -516,7 +566,14 @@
             <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task_by_gameId_externalTaskId</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_task_by_gameId_externalTaskId</span><span class="p">(</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">externalTaskId</span><span class="p">,</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+            <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="n">enforce_scope</span><span class="o">=</span><span class="n">enforce_scope</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TaskService.create_task_by_externalGameId">
@@ -545,7 +602,16 @@
 
 <div class="viewcode-block" id="TaskService.create_task_by_game_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.create_task_by_game_id">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_task_by_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">create_query</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_task_by_game_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">,</span>
+        <span class="n">create_query</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates a task for a game by its game ID.</span>
 
@@ -556,9 +622,18 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            CreateTaskPostSuccesfullyCreated: The created task details.</span>
 <span class="sd">        """</span>
-        <span class="n">game_data</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
-            <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
+            <span class="n">game_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
+                <span class="n">gameId</span><span class="p">,</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+                <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">game_data</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
+                <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">game_data</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Game not found with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
@@ -688,7 +763,16 @@
 
 <div class="viewcode-block" id="TaskService.get_points_by_task_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_points_by_task_id">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_task_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">,</span>
+        <span class="n">externalTaskId</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points by task ID.</span>
 
@@ -699,12 +783,21 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list: A list of points associated with the task.</span>
 <span class="sd">        """</span>
-        <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
-            <span class="s2">"id"</span><span class="p">,</span>
-            <span class="n">gameId</span><span class="p">,</span>
-            <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
-            <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
+                <span class="n">gameId</span><span class="p">,</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+                <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
+                <span class="s2">"id"</span><span class="p">,</span>
+                <span class="n">gameId</span><span class="p">,</span>
+                <span class="n">not_found_message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found with gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">only_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_gameId_and_externalTaskId</span><span class="p">(</span>
             <span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">externalTaskId</span>
@@ -724,7 +817,17 @@
 
 <div class="viewcode-block" id="TaskService.get_points_of_user_by_task_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_points_of_user_by_task_id">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_user_by_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_user_by_task_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">,</span>
+        <span class="n">externalTaskId</span><span class="p">,</span>
+        <span class="n">externalUserId</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points of a user by task ID.</span>
 
@@ -736,7 +839,14 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            dict: The user's points details.</span>
 <span class="sd">        """</span>
-        <span class="n">points_task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_points_by_task_id_with_details</span><span class="p">(</span><span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">)</span>
+        <span class="n">points_task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_points_by_task_id_with_details</span><span class="p">(</span>
+            <span class="n">gameId</span><span class="p">,</span>
+            <span class="n">externalTaskId</span><span class="p">,</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+            <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="n">enforce_scope</span><span class="o">=</span><span class="n">enforce_scope</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">user_points</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
             <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">points_task</span><span class="p">)</span>
         <span class="p">)</span>
@@ -751,7 +861,16 @@
 
 <div class="viewcode-block" id="TaskService.get_points_by_task_id_with_details">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_points_by_task_id_with_details">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_task_id_with_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_task_id_with_details</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">,</span>
+        <span class="n">externalTaskId</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points by task ID with details.</span>
 
@@ -762,6 +881,15 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list: A list of points associated with the task.</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
+                <span class="n">gameId</span><span class="p">,</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+                <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="p">)</span>
+
         <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_gameId_and_externalTaskId</span><span class="p">(</span>
             <span class="n">gameId</span><span class="p">,</span> <span class="n">externalTaskId</span>
         <span class="p">)</span>
