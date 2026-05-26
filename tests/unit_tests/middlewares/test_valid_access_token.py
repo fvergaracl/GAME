@@ -1,13 +1,21 @@
 from types import SimpleNamespace
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
+import httpx
 import jwt
 import pytest
-import requests
 from fastapi import HTTPException
 from jwt import exceptions
 
 import app.middlewares.valid_access_token as access_token_middleware
+
+
+@pytest.fixture(autouse=True)
+def _reset_jwks_singleton():
+    """Drop the cached PyJWKClient so each test sees the patched class."""
+    access_token_middleware._reset_jwks_client_for_tests()
+    yield
+    access_token_middleware._reset_jwks_client_for_tests()
 
 
 @pytest.mark.asyncio
@@ -193,42 +201,68 @@ async def test_valid_access_token_returns_fail_response_for_generic_pyjwt_error(
     assert "Invalid token: generic jwt error" == result.error.detail
 
 
-def test_refresh_access_token_returns_json_on_success(monkeypatch):
+class _FakeAsyncClient:
+    """Replacement for ``httpx.AsyncClient`` used by refresh_access_token tests."""
+
+    post_mock: AsyncMock = AsyncMock()
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        return None
+
+    async def post(self, url, data=None):
+        return await type(self).post_mock(url, data=data)
+
+
+def _install_fake_httpx(monkeypatch, post_side_effect):
+    _FakeAsyncClient.post_mock = AsyncMock(side_effect=post_side_effect)
+    monkeypatch.setattr(
+        access_token_middleware.httpx, "AsyncClient", _FakeAsyncClient
+    )
+    return _FakeAsyncClient.post_mock
+
+
+@pytest.mark.asyncio
+async def test_refresh_access_token_returns_json_on_success(monkeypatch):
     mock_response = MagicMock()
     mock_response.raise_for_status.return_value = None
     mock_response.json.return_value = {"access_token": "new-token"}
-    post_mock = MagicMock(return_value=mock_response)
-    monkeypatch.setattr(access_token_middleware.requests, "post", post_mock)
+    post_mock = _install_fake_httpx(monkeypatch, [mock_response])
 
-    result = access_token_middleware.refresh_access_token("refresh-token")
+    result = await access_token_middleware.refresh_access_token("refresh-token")
 
     assert result == {"access_token": "new-token"}
-    post_mock.assert_called_once()
+    post_mock.assert_awaited_once()
 
 
-def test_refresh_access_token_raises_http_400_on_http_error(monkeypatch):
+@pytest.mark.asyncio
+async def test_refresh_access_token_raises_http_400_on_http_error(monkeypatch):
     mock_response = MagicMock()
-    mock_response.raise_for_status.side_effect = requests.HTTPError("bad request")
-    monkeypatch.setattr(
-        access_token_middleware.requests, "post", MagicMock(return_value=mock_response)
+    mock_response.raise_for_status.side_effect = httpx.HTTPStatusError(
+        "bad request",
+        request=httpx.Request("POST", "http://example.com"),
+        response=httpx.Response(400),
     )
+    _install_fake_httpx(monkeypatch, [mock_response])
 
     with pytest.raises(HTTPException) as exc_info:
-        access_token_middleware.refresh_access_token("refresh-token")
+        await access_token_middleware.refresh_access_token("refresh-token")
 
     assert exc_info.value.status_code == 400
     assert "Failed to refresh token" in exc_info.value.detail
 
 
-def test_refresh_access_token_raises_http_500_on_unexpected_error(monkeypatch):
-    monkeypatch.setattr(
-        access_token_middleware.requests,
-        "post",
-        MagicMock(side_effect=RuntimeError("service unavailable")),
-    )
+@pytest.mark.asyncio
+async def test_refresh_access_token_raises_http_500_on_unexpected_error(monkeypatch):
+    _install_fake_httpx(monkeypatch, RuntimeError("service unavailable"))
 
     with pytest.raises(HTTPException) as exc_info:
-        access_token_middleware.refresh_access_token("refresh-token")
+        await access_token_middleware.refresh_access_token("refresh-token")
 
     assert exc_info.value.status_code == 500
     assert "Internal server error" in exc_info.value.detail

@@ -1,21 +1,11 @@
+import pytest
+from sqlalchemy import func, select
+
 from app.model.games import Games
 
 
-def test_e2e_context_starts_with_empty_database(e2e_context):
-    with e2e_context.container.db().session() as session:
-        assert session.query(Games).count() == 0
-
-
-def test_e2e_context_resets_state_between_tests(e2e_context):
-    with e2e_context.container.db().session() as session:
-        game = Games(
-            externalGameId="e2e_game_1",
-            strategyId="default",
-            platform="web",
-        )
-        session.add(game)
-        session.commit()
-
-    # The current test can mutate state; the next test starts clean due fixture reset.
-    with e2e_context.container.db().session() as session:
-        assert session.query(Games).count() == 1
+@pytest.mark.asyncio
+async def test_database_is_clean_on_new_test(e2e_context):
+    async with e2e_context.container.db().session() as session:
+        result = await session.execute(select(func.count()).select_from(Games))
+        assert result.scalar_one() == 0

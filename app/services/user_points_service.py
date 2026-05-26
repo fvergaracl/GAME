@@ -1,6 +1,11 @@
+import asyncio
 import logging
 from collections import Counter
 from uuid import UUID
+
+# Cap parallel fan-out so a request over a large user/task list cannot
+# saturate the connection pool (pool_size=20, max_overflow=40).
+_FANOUT_LIMIT = 20
 
 from sqlalchemy.exc import DataError, IntegrityError, ProgrammingError
 
@@ -222,11 +227,13 @@ class UserPointsService(BaseService):
         return ListTasksWithUsers(gameId=gameId, tasks=response)
 
     async def get_points_by_user_list(self, users_list):
-        response = []
-        for user in users_list:
-            user_points = await self.get_all_points_by_externalUserId(user)
-            response.append(user_points)
-        return response
+        semaphore = asyncio.Semaphore(_FANOUT_LIMIT)
+
+        async def _fetch(user):
+            async with semaphore:
+                return await self.get_all_points_by_externalUserId(user)
+
+        return list(await asyncio.gather(*[_fetch(u) for u in users_list]))
 
     async def get_points_by_externalUserId(self, externalUserId):
         user = await self.users_repository.read_by_column(
@@ -241,12 +248,18 @@ class UserPointsService(BaseService):
             externalUserId
         )
 
-        response = []
-        for task in tasks_of_users:
-            game = await self.game_repository.read_by_column(
-                "id", task.gameId, not_found_raise_exception=True
-            )
-            response.append(await self.get_points_by_gameId_with_details(game.id))
+        semaphore = asyncio.Semaphore(_FANOUT_LIMIT)
+
+        async def _fetch(task):
+            async with semaphore:
+                game = await self.game_repository.read_by_column(
+                    "id", task.gameId, not_found_raise_exception=True
+                )
+                return await self.get_points_by_gameId_with_details(game.id)
+
+        response = list(
+            await asyncio.gather(*[_fetch(task) for task in tasks_of_users])
+        )
 
         new_response = []
         for game in response:

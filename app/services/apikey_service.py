@@ -1,4 +1,4 @@
-from threading import Lock
+import asyncio
 from time import monotonic
 from types import SimpleNamespace
 from typing import Optional
@@ -33,7 +33,10 @@ class ApiKeyService(BaseService):
     """
 
     _header_cache = {}
-    _cache_lock = Lock()
+    # Lazy-bound to the running event loop on first use; cleared whenever
+    # ``clear_header_cache`` runs so that test loops don't share a lock with
+    # the prior loop (which would raise "attached to a different loop").
+    _cache_lock: Optional[asyncio.Lock] = None
 
     def __init__(self, apikey_repository: ApiKeyRepository):
         """
@@ -102,7 +105,7 @@ class ApiKeyService(BaseService):
         if api_key is None:
             return Response.fail(error=ForbiddenError("API key not provided."))
         key_hash = hash_api_key(api_key)
-        cached_api_key = ApiKeyService._get_cached_api_key(key_hash)
+        cached_api_key = await ApiKeyService._get_cached_api_key(key_hash)
         if cached_api_key is not None:
             return Response.ok(data=cached_api_key)
         api_key_Repository = Container.apikey_repository()
@@ -118,7 +121,7 @@ class ApiKeyService(BaseService):
         normalized = SimpleNamespace(
             apiKey=api_key_in_db.apiKey, active=api_key_in_db.active
         )
-        ApiKeyService._set_cached_api_key(key_hash, normalized)
+        await ApiKeyService._set_cached_api_key(key_hash, normalized)
         return Response.ok(data=normalized)
 
     @classmethod
@@ -127,12 +130,20 @@ class ApiKeyService(BaseService):
         return ttl if ttl > 0 else 0
 
     @classmethod
-    def _get_cached_api_key(cls, cache_key: str) -> Optional[SimpleNamespace]:
+    def _get_lock(cls) -> asyncio.Lock:
+        if cls._cache_lock is None:
+            cls._cache_lock = asyncio.Lock()
+        return cls._cache_lock
+
+    @classmethod
+    async def _get_cached_api_key(
+        cls, cache_key: str
+    ) -> Optional[SimpleNamespace]:
         ttl_seconds = cls._get_cache_ttl_seconds()
         if ttl_seconds <= 0:
             return None
         now = monotonic()
-        with cls._cache_lock:
+        async with cls._get_lock():
             cache_entry = cls._header_cache.get(cache_key)
             if cache_entry is None:
                 return None
@@ -143,15 +154,17 @@ class ApiKeyService(BaseService):
             return cached_value
 
     @classmethod
-    def _set_cached_api_key(cls, cache_key: str, api_key_data) -> None:
+    async def _set_cached_api_key(cls, cache_key: str, api_key_data) -> None:
         ttl_seconds = cls._get_cache_ttl_seconds()
         if ttl_seconds <= 0:
             return
         expires_at = monotonic() + ttl_seconds
-        with cls._cache_lock:
+        async with cls._get_lock():
             cls._header_cache[cache_key] = (expires_at, api_key_data)
 
     @classmethod
     def clear_header_cache(cls) -> None:
-        with cls._cache_lock:
-            cls._header_cache.clear()
+        # dict.clear() is atomic under the GIL; reset the lock so the next
+        # async caller binds it to the current event loop.
+        cls._header_cache.clear()
+        cls._cache_lock = None

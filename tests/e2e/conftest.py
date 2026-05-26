@@ -1,18 +1,19 @@
 import os
 import shutil
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterator, Optional
+from typing import AsyncIterator, Dict, Optional
 
 import pytest
+import pytest_asyncio
 from dependency_injector import providers
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
 from sqlalchemy.ext.compiler import compiles
-from sqlalchemy import create_engine, orm
-from sqlalchemy.orm import Session
 from sqlmodel import SQLModel
 
 
@@ -36,39 +37,38 @@ def _env_flag(value: Optional[str], default: bool = False) -> bool:
 
 class ControlledDatabase:
     """
-    Lightweight database wrapper used by E2E tests.
-
-    It mirrors the interface expected by repository providers (`session()`).
+    Async database wrapper used by E2E tests. Mirrors the interface of
+    :class:`app.core.database.Database` (``async with db.session() as s``) so
+    repository providers see the same contract as in production.
     """
 
     def __init__(self, db_url: str):
-        self._engine = create_engine(
-            db_url,
-            connect_args={"check_same_thread": False},
-            echo=False,
-        )
-        self._session_factory = orm.scoped_session(
-            orm.sessionmaker(
-                autocommit=False,
-                autoflush=False,
-                bind=self._engine,
-            )
+        self._engine = create_async_engine(db_url, future=True)
+        self._session_factory = async_sessionmaker(
+            bind=self._engine,
+            class_=AsyncSession,
+            expire_on_commit=False,
+            autoflush=False,
         )
 
-    @contextmanager
-    def session(self) -> Iterator[Session]:
-        session: Session = self._session_factory()
+    async def create_all(self) -> None:
+        async with self._engine.begin() as conn:
+            await conn.run_sync(SQLModel.metadata.drop_all)
+            await conn.run_sync(SQLModel.metadata.create_all)
+
+    @asynccontextmanager
+    async def session(self) -> AsyncIterator[AsyncSession]:
+        session: AsyncSession = self._session_factory()
         try:
             yield session
         except Exception:
-            session.rollback()
+            await session.rollback()
             raise
         finally:
-            session.close()
+            await session.close()
 
-    def dispose(self) -> None:
-        self._session_factory.remove()
-        self._engine.dispose()
+    async def dispose(self) -> None:
+        await self._engine.dispose()
 
 
 @dataclass
@@ -136,7 +136,7 @@ def _resolve_base_snapshot(request: pytest.FixtureRequest) -> Optional[Path]:
     return Path(cli_value).expanduser().resolve()
 
 
-def _initialize_database(
+async def _initialize_database(
     db_path: Path,
     base_state: str,
     base_snapshot: Optional[Path],
@@ -148,11 +148,10 @@ def _initialize_database(
             )
         shutil.copy2(base_snapshot, db_path)
 
-    db = ControlledDatabase(f"sqlite:///{db_path}")
+    db = ControlledDatabase(f"sqlite+aiosqlite:///{db_path}")
 
     if base_snapshot is None:
-        SQLModel.metadata.drop_all(db._engine)
-        SQLModel.metadata.create_all(db._engine)
+        await db.create_all()
 
     if base_state != "empty":
         raise ValueError(
@@ -162,15 +161,15 @@ def _initialize_database(
     return db
 
 
-@pytest.fixture
-def e2e_context(tmp_path: Path, request: pytest.FixtureRequest, e2e_runtime):
+@pytest_asyncio.fixture
+async def e2e_context(tmp_path: Path, request: pytest.FixtureRequest, e2e_runtime):
     app, container = e2e_runtime
     base_state = _resolve_base_state(request)
     base_snapshot = _resolve_base_snapshot(request)
     keep_db = bool(request.config.getoption("--e2e-keep-db"))
 
     db_path = tmp_path / "e2e.sqlite3"
-    db = _initialize_database(
+    db = await _initialize_database(
         db_path=db_path,
         base_state=base_state,
         base_snapshot=base_snapshot,
@@ -192,12 +191,12 @@ def e2e_context(tmp_path: Path, request: pytest.FixtureRequest, e2e_runtime):
         app.dependency_overrides.clear()
         app.dependency_overrides.update(previous_dependency_overrides)
         container.db.reset_override()
-        db.dispose()
+        await db.dispose()
         if not keep_db and db_path.exists():
             db_path.unlink()
 
 
-@pytest.fixture
-def e2e_client(e2e_context: E2EContext):
-    with TestClient(e2e_context.app) as client:
+@pytest_asyncio.fixture
+async def e2e_client(e2e_context: E2EContext):
+    async with AsyncClient(app=e2e_context.app, base_url="http://testserver") as client:
         yield client

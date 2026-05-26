@@ -1,7 +1,8 @@
+import asyncio
 from typing import Annotated, Any, Optional
 
+import httpx
 import jwt
-import requests
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from jwt import PyJWKClient, exceptions
@@ -24,6 +25,31 @@ SUBJECT_FALLBACK_CLAIMS = (
     "client_id",
     "azp",
 )
+
+
+# Lazy module-level singleton. Building a fresh PyJWKClient per request issues
+# a JWKS HTTP roundtrip every time; reusing one client lets it cache signing
+# keys for ``lifespan`` seconds.
+_JWKS_CLIENT: Optional[PyJWKClient] = None
+
+
+def _get_jwks_client() -> PyJWKClient:
+    global _JWKS_CLIENT
+    if _JWKS_CLIENT is None:
+        url = f"{configs.KEYCLOAK_URL_DOCKER}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/certs"
+        _JWKS_CLIENT = PyJWKClient(
+            url,
+            headers={"User-agent": "fastapi-jwt-auth/0.1.0 ( GAME )"},
+            cache_keys=True,
+            lifespan=300,
+        )
+    return _JWKS_CLIENT
+
+
+def _reset_jwks_client_for_tests() -> None:
+    """Test hook: drop the cached PyJWKClient so monkeypatched classes apply."""
+    global _JWKS_CLIENT
+    _JWKS_CLIENT = None
 
 
 class CustomOAuth2AuthorizationCodeBearer(OAuth2AuthorizationCodeBearer):
@@ -67,12 +93,13 @@ def _build_token_response(payload: dict[str, Any]) -> Response:
 async def valid_access_token(
     access_token: Annotated[str, Depends(oauth_2_scheme)]
 ) -> Response:
-    url = f"{configs.KEYCLOAK_URL_DOCKER}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/certs"
-    optional_custom_headers = {"User-agent": "fastapi-jwt-auth/0.1.0 ( GAME )"}
-    jwks_client = PyJWKClient(url, headers=optional_custom_headers)
-
     try:
-        signing_key = jwks_client.get_signing_key_from_jwt(access_token)
+        jwks_client = _get_jwks_client()
+        # PyJWKClient does sync HTTP under the hood; offload to a worker thread
+        # so a JWKS roundtrip doesn't stall the event loop.
+        signing_key = await asyncio.to_thread(
+            jwks_client.get_signing_key_from_jwt, access_token
+        )
         data = jwt.decode(
             access_token,
             key=signing_key.key,
@@ -123,12 +150,13 @@ async def valid_access_token(
         )
 
 
-def refresh_access_token(refresh_token: str):
+async def refresh_access_token(refresh_token: str):
     """
     Refresh the access token using the refresh token.
 
     Args:
-        refresh_token (str): The refresh token to be used to generate a new access token.
+        refresh_token (str): The refresh token to be used to generate a new
+          access token.
 
     Returns:
         dict: The new access token and other related information.
@@ -142,10 +170,11 @@ def refresh_access_token(refresh_token: str):
     }
 
     try:
-        response = requests.post(url, data=data)
-        response.raise_for_status()
-        return response.json()
-    except requests.HTTPError as http_err:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, data=data)
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPStatusError as http_err:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to refresh token: {http_err}",
@@ -155,5 +184,3 @@ def refresh_access_token(refresh_token: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Internal server error: {err}",
         )
-
-
