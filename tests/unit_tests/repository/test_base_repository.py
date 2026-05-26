@@ -1,359 +1,265 @@
-from types import SimpleNamespace
+"""
+Integration tests for ``BaseRepository``. The repository is exercised
+against a real in-memory aiosqlite engine via the shared ``session_factory``
+fixture (see ``conftest.py``). This replaces the legacy mocked tests that
+targeted the sync ``session.query()`` API which no longer exists.
+"""
+
+from contextlib import asynccontextmanager
 from typing import Optional
-from unittest.mock import MagicMock
 
 import pytest
-
-pytestmark = pytest.mark.skip(
-    reason='Repository tests target the legacy sync session.query() pattern; porting to async session.execute(select(...)) is a follow-up.',
-)
-
-from dependency_injector import containers, providers
-from pydantic import BaseModel, ConfigDict
-from sqlalchemy import Column, Integer, String, create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+import pytest_asyncio
+from pydantic import BaseModel as PydBaseModel
+from pydantic import ConfigDict
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.orm import declarative_base
 
 from app.core.exceptions import DuplicatedError, NotFoundError
 from app.repository.base_repository import BaseRepository
 
-Base = declarative_base()
+
+_Base = declarative_base()
 
 
-class Model(Base):
-    __tablename__ = "test_model"
+class _BaseRepoModel(_Base):
+    """
+    Standalone declarative model used only by ``BaseRepository`` tests. It is
+    intentionally not part of ``SQLModel.metadata`` so it stays isolated from
+    the application schema.
+    """
+
+    __tablename__ = "test_base_repo_model"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
     value = Column(String, nullable=True)
 
 
-class ModelSchema(BaseModel):
+class _Schema(PydBaseModel):
     name: str
     value: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class Container(containers.DeclarativeContainer):
-    config = providers.Configuration()
-    db = providers.Singleton(create_engine, "sqlite:///:memory:", echo=True)
-    session_factory = providers.Factory(sessionmaker, bind=db)
-    test_repository = providers.Factory(
-        BaseRepository, session_factory=session_factory, model=Model
-    )
+class _OrderingSchema(PydBaseModel):
+    """Mimics the read_by_options input contract."""
+
+    page: int = 1
+    page_size: object = 50
+    ordering: str = "id"
+
+    model_config = ConfigDict(from_attributes=True)
 
 
-class DummySchema:
-    def __init__(self, payload):
-        self.payload = payload
+@pytest_asyncio.fixture
+async def base_repo_session_factory():
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:", future=True)
+    async with engine.begin() as conn:
+        await conn.run_sync(_Base.metadata.create_all)
+    sessionmaker = async_sessionmaker(bind=engine, expire_on_commit=False)
 
-    def model_dump(self, exclude_none=False):
-        if exclude_none:
-            return {k: v for k, v in self.payload.items() if v is not None}
-        return dict(self.payload)
+    @asynccontextmanager
+    async def _factory():
+        session = sessionmaker()
+        try:
+            yield session
+        finally:
+            await session.close()
 
-
-def build_mocked_repository():
-    mock_session = MagicMock()
-    context_manager = MagicMock()
-    context_manager.__enter__.return_value = mock_session
-    context_manager.__exit__.return_value = False
-    session_factory = MagicMock(return_value=context_manager)
-    repository = BaseRepository(session_factory=session_factory, model=Model)
-    return repository, mock_session
-
-
-@pytest.fixture(scope="module")
-def container():
-    return Container()
+    try:
+        yield _factory
+    finally:
+        await engine.dispose()
 
 
-@pytest.fixture(scope="function")
-def setup_database(container):
-    engine = container.db()
-    Base.metadata.create_all(engine)
-    yield
-    Base.metadata.drop_all(engine)
-
-
-@pytest.fixture
-def repository(container, setup_database):
-    return container.test_repository()
+@pytest_asyncio.fixture
+async def base_repo(base_repo_session_factory):
+    return BaseRepository(base_repo_session_factory, _BaseRepoModel)
 
 
 @pytest.mark.asyncio
-async def test_create(repository):
-    schema = ModelSchema(name="test", value="value")
-    created = await repository.create(schema)
+async def test_create_persists_entity_and_returns_it(base_repo):
+    created = await base_repo.create(_Schema(name="alpha", value="v"))
+
     assert created.id is not None
-    assert created.name == "test"
+    assert created.name == "alpha"
+    assert created.value == "v"
 
 
 @pytest.mark.asyncio
-async def test_read_by_id(repository):
-    schema = ModelSchema(name="test_read", value="value")
-    created = await repository.create(schema)
-    found = repository.read_by_id(created.id)
-    assert found.id == created.id
-    assert found.name == "test_read"
+async def test_create_raises_duplicated_error_on_unique_violation(base_repo):
+    await base_repo.create(_Schema(name="dup", value="a"))
 
-
-@pytest.mark.asyncio
-async def test_update(repository):
-    schema = ModelSchema(name="test_update", value="value")
-    created = await repository.create(schema)
-    update_schema = ModelSchema(name="test_update", value="new_value")
-    updated = await repository.update(created.id, update_schema)
-    assert updated.value == "new_value"
-
-
-@pytest.mark.asyncio
-async def test_delete(repository):
-    schema = ModelSchema(name="test_delete", value="value")
-    created = await repository.create(schema)
-    repository.delete_by_id(created.id)
-    with pytest.raises(NotFoundError):
-        repository.read_by_id(created.id)
-
-
-@pytest.mark.asyncio
-async def test_read_by_column(repository):
-    schema1 = ModelSchema(name="test_column_1", value="value1")
-    schema2 = ModelSchema(name="test_column_2", value="value2")
-    await repository.create(schema1)
-    await repository.create(schema2)
-    result = repository.read_by_column("name", "test_column_1")
-    assert result.name == "test_column_1"
-
-
-@pytest.mark.asyncio
-async def test_duplicate_error(repository):
-    schema1 = ModelSchema(name="unique_name", value="value1")
-    schema2 = ModelSchema(name="unique_name", value="value2")
-    await repository.create(schema1)
     with pytest.raises(DuplicatedError):
-        await repository.create(schema2)
+        await base_repo.create(_Schema(name="dup", value="b"))
 
 
 @pytest.mark.asyncio
-async def test_create_with_external_session_and_no_auto_commit_flushes_only():
-    repository, mock_session = build_mocked_repository()
-    schema = DummySchema({"name": "external-session", "value": "v"})
-
-    created = await repository.create(
-        schema,
-        session=mock_session,
-        auto_commit=False,
-    )
-
-    mock_session.add.assert_called_once_with(created)
-    mock_session.flush.assert_called_once()
-    mock_session.commit.assert_not_called()
-    mock_session.refresh.assert_called_once_with(created)
-
-
-@pytest.mark.asyncio
-async def test_create_without_external_session_rejects_auto_commit_false():
-    repository, _ = build_mocked_repository()
-    schema = DummySchema({"name": "invalid-auto-commit", "value": "v"})
-
+async def test_create_without_external_session_rejects_auto_commit_false(base_repo):
     with pytest.raises(ValueError):
-        await repository.create(schema, auto_commit=False)
+        await base_repo.create(_Schema(name="x"), auto_commit=False)
 
 
-def test_not_found_error(repository):
+@pytest.mark.asyncio
+async def test_create_with_external_session_and_auto_commit_false_flushes_only(
+    base_repo, base_repo_session_factory
+):
+    async with base_repo_session_factory() as session:
+        created = await base_repo.create(
+            _Schema(name="external-tx", value="v"),
+            session=session,
+            auto_commit=False,
+        )
+        # No commit yet — visible inside the same transaction only.
+        assert created.id is not None
+        await session.rollback()
+
+    # After rollback the row must not be there.
     with pytest.raises(NotFoundError):
-        repository.read_by_id(999)
+        await base_repo.read_by_column("name", "external-tx")
 
 
 @pytest.mark.asyncio
-async def test_update_attr(repository):
-    schema = ModelSchema(name="test_attr", value="value")
-    created = await repository.create(schema)
-    repository.update_attr(created.id, "value", "new_value")
-    updated = repository.read_by_id(created.id)
-    assert updated.value == "new_value"
+async def test_read_by_id_returns_existing_entity(base_repo):
+    created = await base_repo.create(_Schema(name="findme"))
+
+    found = await base_repo.read_by_id(created.id)
+    assert found.id == created.id
+    assert found.name == "findme"
 
 
 @pytest.mark.asyncio
-async def test_whole_update(repository):
-    schema = ModelSchema(name="test_whole", value="value")
-    created = await repository.create(schema)
-    update_schema = ModelSchema(name="updated_name", value="updated_value")
-    updated = repository.whole_update(created.id, update_schema)
-    assert updated.name == "updated_name"
-    assert updated.value == "updated_value"
+async def test_read_by_id_raises_not_found_when_missing(base_repo):
+    with pytest.raises(NotFoundError):
+        await base_repo.read_by_id(999_999)
 
 
-def test_read_by_options_with_page_size_all_and_eager(monkeypatch):
-    repository, mock_session = build_mocked_repository()
-    monkeypatch.setattr(
-        "app.repository.base_repository.joinedload", lambda relation: relation
+@pytest.mark.asyncio
+async def test_read_by_id_returns_none_when_not_found_raise_false(base_repo):
+    result = await base_repo.read_by_id(
+        999_999, not_found_raise_exception=False
     )
-    monkeypatch.setattr(
-        "app.repository.base_repository.dict_to_sqlalchemy_filter_options",
-        lambda model, schema: True,
-    )
-    monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
-
-    schema = DummySchema({"ordering": "name", "page": 1, "page_size": "all"})
-    base_query = MagicMock()
-    filtered_query = MagicMock()
-    ordered_query = MagicMock()
-    mock_session.query.return_value = base_query
-    base_query.options.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.order_by.return_value = ordered_query
-    ordered_query.all.return_value = ["item-a", "item-b"]
-    filtered_query.count.return_value = 2
-
-    result = repository.read_by_options(schema, eager=True)
-
-    assert result["items"] == ["item-a", "item-b"]
-    assert result["search_options"]["page_size"] == "all"
-    assert result["search_options"]["total_count"] == 2
-    assert base_query.options.called
-
-
-def test_read_by_options_with_pagination(monkeypatch):
-    repository, mock_session = build_mocked_repository()
-    monkeypatch.setattr(
-        "app.repository.base_repository.dict_to_sqlalchemy_filter_options",
-        lambda model, schema: True,
-    )
-
-    schema = DummySchema({"ordering": "-name", "page": 2, "page_size": 3})
-    base_query = MagicMock()
-    filtered_query = MagicMock()
-    ordered_query = MagicMock()
-    limited_query = MagicMock()
-    offset_query = MagicMock()
-    mock_session.query.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.order_by.return_value = ordered_query
-    ordered_query.limit.return_value = limited_query
-    limited_query.offset.return_value = offset_query
-    offset_query.all.return_value = ["item-paged"]
-    filtered_query.count.return_value = 11
-
-    result = repository.read_by_options(schema)
-
-    assert result["items"] == ["item-paged"]
-    assert result["search_options"]["page"] == 2
-    assert result["search_options"]["page_size"] == 3
-    ordered_query.limit.assert_called_once_with(3)
-    limited_query.offset.assert_called_once_with(3)
-
-
-def test_read_by_id_with_eager_and_not_found_returns_none(monkeypatch):
-    repository, mock_session = build_mocked_repository()
-    monkeypatch.setattr(
-        "app.repository.base_repository.joinedload", lambda relation: relation
-    )
-    monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
-
-    base_query = MagicMock()
-    filtered_query = MagicMock()
-    mock_session.query.return_value = base_query
-    base_query.options.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.first.return_value = None
-
-    result = repository.read_by_id(999, eager=True, not_found_raise_exception=False)
-
     assert result is None
-    assert base_query.options.called
 
 
-def test_read_by_column_with_eager_raises_not_found(monkeypatch):
-    repository, mock_session = build_mocked_repository()
-    monkeypatch.setattr(
-        "app.repository.base_repository.joinedload", lambda relation: relation
+@pytest.mark.asyncio
+async def test_read_by_column_returns_first_match(base_repo):
+    await base_repo.create(_Schema(name="col-a", value="1"))
+    await base_repo.create(_Schema(name="col-b", value="2"))
+
+    result = await base_repo.read_by_column("name", "col-a")
+    assert result.name == "col-a"
+
+
+@pytest.mark.asyncio
+async def test_read_by_column_raises_not_found_when_missing(base_repo):
+    with pytest.raises(NotFoundError):
+        await base_repo.read_by_column("name", "absent")
+
+
+@pytest.mark.asyncio
+async def test_read_by_column_returns_list_when_only_one_false(base_repo):
+    await base_repo.create(_Schema(name="multi-1", value="shared"))
+    await base_repo.create(_Schema(name="multi-2", value="shared"))
+
+    result = await base_repo.read_by_column("value", "shared", only_one=False)
+    assert {r.name for r in result} == {"multi-1", "multi-2"}
+
+
+@pytest.mark.asyncio
+async def test_read_by_columns_returns_first_match(base_repo):
+    await base_repo.create(_Schema(name="combo", value="green"))
+
+    result = await base_repo.read_by_columns(
+        {"name": "combo", "value": "green"}
     )
-    monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
+    assert result.name == "combo"
 
-    base_query = MagicMock()
-    filtered_query = MagicMock()
-    mock_session.query.return_value = base_query
-    base_query.options.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.first.return_value = None
+
+@pytest.mark.asyncio
+async def test_read_by_columns_raises_not_found_when_missing(base_repo):
+    with pytest.raises(NotFoundError):
+        await base_repo.read_by_columns({"name": "ghost"})
+
+
+@pytest.mark.asyncio
+async def test_read_by_columns_returns_all_when_only_one_false(base_repo):
+    await base_repo.create(_Schema(name="m-1", value="x"))
+    await base_repo.create(_Schema(name="m-2", value="x"))
+
+    result = await base_repo.read_by_columns(
+        {"value": "x"}, only_one=False
+    )
+    assert {r.name for r in result} == {"m-1", "m-2"}
+
+
+@pytest.mark.asyncio
+async def test_update_changes_columns(base_repo):
+    created = await base_repo.create(_Schema(name="upd", value="old"))
+
+    updated = await base_repo.update(created.id, _Schema(name="upd", value="new"))
+    assert updated.value == "new"
+
+
+@pytest.mark.asyncio
+async def test_update_attr_changes_single_column(base_repo):
+    created = await base_repo.create(_Schema(name="attr", value="old"))
+
+    updated = await base_repo.update_attr(created.id, "value", "new")
+    assert updated.value == "new"
+
+
+@pytest.mark.asyncio
+async def test_whole_update_replaces_all_columns(base_repo):
+    created = await base_repo.create(_Schema(name="whole", value="old"))
+
+    updated = await base_repo.whole_update(
+        created.id, _Schema(name="whole-new", value="new-v")
+    )
+    assert updated.name == "whole-new"
+    assert updated.value == "new-v"
+
+
+@pytest.mark.asyncio
+async def test_delete_by_id_removes_entity(base_repo):
+    created = await base_repo.create(_Schema(name="del"))
+
+    await base_repo.delete_by_id(created.id)
 
     with pytest.raises(NotFoundError):
-        repository.read_by_column("name", "missing", eager=True)
+        await base_repo.read_by_id(created.id)
 
 
-def test_read_by_column_returns_list_when_only_one_false():
-    repository, mock_session = build_mocked_repository()
-
-    base_query = MagicMock()
-    filtered_query = MagicMock()
-    mock_session.query.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.all.return_value = ["row-1", "row-2"]
-
-    result = repository.read_by_column(
-        "name", "value", only_one=False, not_found_raise_exception=False
-    )
-
-    assert result == ["row-1", "row-2"]
-
-
-def test_delete_by_id_raises_not_found_for_missing_record():
-    repository, mock_session = build_mocked_repository()
-
-    base_query = MagicMock()
-    filtered_query = MagicMock()
-    mock_session.query.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.first.return_value = None
-
+@pytest.mark.asyncio
+async def test_delete_by_id_raises_not_found_for_missing_record(base_repo):
     with pytest.raises(NotFoundError):
-        repository.delete_by_id(404)
+        await base_repo.delete_by_id(999_999)
 
 
-def test_read_by_columns_returns_first_with_eager(monkeypatch):
-    repository, mock_session = build_mocked_repository()
-    monkeypatch.setattr(
-        "app.repository.base_repository.joinedload", lambda relation: relation
+@pytest.mark.asyncio
+async def test_read_by_options_paginates_and_orders(base_repo):
+    for i in range(5):
+        await base_repo.create(_Schema(name=f"page-{i}"))
+
+    result = await base_repo.read_by_options(
+        _OrderingSchema(page=1, page_size=2, ordering="name")
     )
-    monkeypatch.setattr(Model, "eagers", ["name"], raising=False)
-
-    base_query = MagicMock()
-    filtered_query = MagicMock()
-    expected = SimpleNamespace(id=1, name="first")
-    mock_session.query.return_value = base_query
-    base_query.options.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.first.return_value = expected
-
-    result = repository.read_by_columns({"name": "first"}, eager=True, only_one=True)
-
-    assert result == expected
+    assert len(result["items"]) == 2
+    assert result["search_options"]["total_count"] == 5
+    assert [item.name for item in result["items"]] == ["page-0", "page-1"]
 
 
-def test_read_by_columns_raises_not_found_when_missing():
-    repository, mock_session = build_mocked_repository()
+@pytest.mark.asyncio
+async def test_read_by_options_returns_all_when_page_size_all(base_repo):
+    for i in range(3):
+        await base_repo.create(_Schema(name=f"all-{i}"))
 
-    base_query = MagicMock()
-    filtered_query = MagicMock()
-    mock_session.query.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.first.return_value = None
-
-    with pytest.raises(NotFoundError):
-        repository.read_by_columns({"name": "missing"})
-
-
-def test_read_by_columns_returns_all_when_only_one_false():
-    repository, mock_session = build_mocked_repository()
-
-    base_query = MagicMock()
-    filtered_query = MagicMock()
-    expected = [SimpleNamespace(id=1), SimpleNamespace(id=2)]
-    mock_session.query.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.all.return_value = expected
-
-    result = repository.read_by_columns({"name": "any"}, only_one=False)
-
-    assert result == expected
+    result = await base_repo.read_by_options(
+        _OrderingSchema(page=1, page_size="all", ordering="-name")
+    )
+    assert len(result["items"]) == 3
+    # Descending ordering by name
+    assert [item.name for item in result["items"]] == ["all-2", "all-1", "all-0"]

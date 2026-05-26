@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter
 
@@ -59,4 +59,7 @@ async def health_check():
     Returns:
         dict: The health status of the KPI service.
     """
-    return {"status": "KPI service is running", "timestamp": datetime.utcnow()}
+    return {
+        "status": "KPI service is running",
+        "timestamp": datetime.now(timezone.utc),
+    }

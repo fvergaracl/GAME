@@ -1,400 +1,195 @@
-from datetime import datetime
-from types import SimpleNamespace
-from unittest.mock import MagicMock
-from uuid import uuid4
+"""
+Integration tests for ``GameRepository`` against aiosqlite.
+
+Replaces the legacy mocked tests that exercised the sync ``session.query()``
+chain. Each test seeds the database via the shared ``db_session`` fixture and
+then drives the repository's async API directly.
+"""
+
+from uuid import UUID, uuid4
 
 import pytest
 
-pytestmark = pytest.mark.skip(
-    reason='Repository tests target the legacy sync session.query() pattern; porting to async session.execute(select(...)) is a follow-up.',
-)
-
-from sqlalchemy.exc import IntegrityError
-
 from app.core.exceptions import DuplicatedError, NotFoundError
+from app.model.game_params import GamesParams
+from app.model.games import Games
+from app.model.tasks import Tasks
 from app.repository.game_repository import GameRepository
+from app.schema.games_schema import PatchGame, PostFindGame
 
 
-class DummySchema:
-    def __init__(self, payload):
-        self.payload = payload
-
-    def model_dump(self, exclude_none=False):
-        if exclude_none:
-            return {k: v for k, v in self.payload.items() if v is not None}
-        return dict(self.payload)
+@pytest.fixture
+def repository(session_factory):
+    return GameRepository(session_factory=session_factory)
 
 
-def build_repository():
-    session = MagicMock()
-    context_manager = MagicMock()
-    context_manager.__enter__.return_value = session
-    context_manager.__exit__.return_value = False
-    session_factory = MagicMock(return_value=context_manager)
-    repository = GameRepository(session_factory=session_factory)
-    return repository, session
-
-
-def build_query(first_result=None, all_result=None, delete_result=1):
-    query = MagicMock()
-    query.options.return_value = query
-    query.filter.return_value = query
-    query.order_by.return_value = query
-    query.outerjoin.return_value = query
-    query.limit.return_value = query
-    query.offset.return_value = query
-    query.first.return_value = first_result
-    query.all.return_value = [] if all_result is None else all_result
-    query.delete.return_value = delete_result
-    return query
-
-
-def test_get_all_games_with_eager_api_key_and_page_size_all(monkeypatch):
-    repository, session = build_repository()
-    monkeypatch.setattr(
-        "app.repository.game_repository.dict_to_sqlalchemy_filter_options",
-        lambda model, schema: True,
+async def _seed_game(
+    db_session,
+    *,
+    external_id="ext-1",
+    platform="web",
+    strategy="default",
+    api_key=None,
+):
+    game = Games(
+        externalGameId=external_id,
+        platform=platform,
+        strategyId=strategy,
+        apiKey_used=api_key,
     )
-    monkeypatch.setattr(
-        "app.repository.game_repository.joinedload", lambda relation: relation
+    db_session.add(game)
+    await db_session.commit()
+    await db_session.refresh(game)
+    return game
+
+
+@pytest.mark.asyncio
+async def test_get_game_by_id_returns_game_and_params(
+    repository, db_session
+):
+    game = await _seed_game(db_session)
+    db_session.add(
+        GamesParams(gameId=game.id, key="difficulty", value="hard")
     )
-    monkeypatch.setattr(repository.model, "eagers", ["params"], raising=False)
+    db_session.add(GamesParams(gameId=game.id, key="lives", value="3"))
+    await db_session.commit()
 
-    base_query = build_query()
-    filtered_query = build_query()
-    ordered_query = build_query()
-    joined_query = build_query()
-    api_key_query = build_query()
+    result = await repository.get_game_by_id(game.id)
 
-    session.query.return_value = base_query
-    base_query.options.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.order_by.return_value = ordered_query
-    ordered_query.outerjoin.return_value = joined_query
-    joined_query.filter.return_value = api_key_query
-
-    game_id_1 = uuid4()
-    game_id_2 = uuid4()
-    now = datetime(2026, 2, 9, 12, 0, 0)
-    param = SimpleNamespace(id=uuid4(), key="difficulty", value="hard")
-    api_key_query.all.return_value = [
-        SimpleNamespace(
-            id=game_id_1,
-            updated_at=now,
-            strategyId="default",
-            created_at=now,
-            platform="web",
-            externalGameId="ext-1",
-            GamesParams=param,
-        ),
-        SimpleNamespace(
-            id=game_id_1,
-            updated_at=now,
-            strategyId="default",
-            created_at=now,
-            platform="web",
-            externalGameId="ext-1",
-            GamesParams=None,
-        ),
-        SimpleNamespace(
-            id=game_id_2,
-            updated_at=now,
-            strategyId="default",
-            created_at=now,
-            platform="mobile",
-            externalGameId="ext-2",
-            GamesParams=None,
-        ),
-    ]
-
-    schema = DummySchema(
-        {
-            "ordering": "-id",
-            "page": 1,
-            "page_size": "all",
-            "eager": True,
-            "externalGameId": "ext-1",
-        }
-    )
-    result = repository.get_all_games(schema, api_key="api-key-1")
-
-    assert result.search_options.page == 1
-    assert result.search_options.page_size == "all"
-    assert result.search_options.ordering == "-id"
-    assert result.search_options.total_count == 2
-    assert len(result.items) == 2
-
-    items_by_id = {item.gameId: item for item in result.items}
-    assert len(items_by_id[game_id_1].params) == 1
-    assert items_by_id[game_id_1].params[0]["id"] == param.id
-    assert items_by_id[game_id_1].params[0]["key"] == "difficulty"
-    assert items_by_id[game_id_1].params[0]["value"] == "hard"
-    assert items_by_id[game_id_2].params == []
-    assert base_query.options.called
-    joined_query.filter.assert_called_once()
-
-
-def test_get_all_games_with_pagination(monkeypatch):
-    repository, session = build_repository()
-    monkeypatch.setattr(
-        "app.repository.game_repository.dict_to_sqlalchemy_filter_options",
-        lambda model, schema: True,
-    )
-
-    base_query = build_query()
-    filtered_query = build_query()
-    ordered_query = build_query()
-    joined_query = build_query()
-    limited_query = build_query()
-    offset_query = build_query()
-
-    session.query.return_value = base_query
-    base_query.filter.return_value = filtered_query
-    filtered_query.order_by.return_value = ordered_query
-    ordered_query.outerjoin.return_value = joined_query
-    joined_query.limit.return_value = limited_query
-    limited_query.offset.return_value = offset_query
-
-    game_id = uuid4()
-    now = datetime(2026, 2, 9, 12, 0, 0)
-    offset_query.all.return_value = [
-        SimpleNamespace(
-            id=game_id,
-            updated_at=now,
-            strategyId="default",
-            created_at=now,
-            platform="web",
-            externalGameId="ext-1",
-            GamesParams=None,
-        )
-    ]
-
-    schema = DummySchema({"ordering": "id", "page": 2, "page_size": 3})
-    result = repository.get_all_games(schema)
-
-    assert result.search_options.page == 2
-    assert result.search_options.page_size == 3
-    assert result.search_options.ordering == "id"
-    assert result.search_options.total_count == 1
-    assert len(result.items) == 1
-    joined_query.limit.assert_called_once_with(3)
-    limited_query.offset.assert_called_once_with(3)
-
-
-def test_get_game_by_id_success():
-    repository, session = build_repository()
-
-    game_id = uuid4()
-    now = datetime(2026, 2, 9, 12, 0, 0)
-    game = SimpleNamespace(
-        id=game_id,
-        created_at=now,
-        updated_at=now,
-        externalGameId="ext-1",
-        platform="web",
-    )
-    params = [
-        SimpleNamespace(id=uuid4(), key="difficulty", value="hard"),
-        SimpleNamespace(id=uuid4(), key="lives", value="3"),
-    ]
-
-    game_query = build_query(first_result=game)
-    params_query = build_query(all_result=params)
-    session.query.side_effect = [game_query, params_query]
-
-    result = repository.get_game_by_id(game_id)
-
-    assert result.gameId == game_id
+    assert str(result.gameId) == str(game.id)
     assert result.externalGameId == "ext-1"
     assert result.platform == "web"
     assert len(result.params) == 2
-    assert result.params[0].key == "difficulty"
-    assert result.params[0].value == "hard"
+    keys = {p.key for p in result.params}
+    assert keys == {"difficulty", "lives"}
 
 
-def test_get_game_by_id_raises_not_found_for_missing_game():
-    repository, session = build_repository()
-
-    game_query = build_query(first_result=None)
-    session.query.return_value = game_query
-
+@pytest.mark.asyncio
+async def test_get_game_by_id_raises_not_found_when_missing(repository):
     with pytest.raises(NotFoundError):
-        repository.get_game_by_id(uuid4())
+        await repository.get_game_by_id(
+            UUID("00000000-0000-0000-0000-000000000000")
+        )
 
 
-def test_patch_game_by_id_success(monkeypatch):
-    repository, session = build_repository()
+@pytest.mark.asyncio
+async def test_patch_game_by_id_updates_fields(repository, db_session):
+    game = await _seed_game(db_session, external_id="ext-patch")
 
-    game_id = uuid4()
-    game = SimpleNamespace(
-        id=game_id,
-        externalGameId="old-external",
-        platform="web",
-        strategyId="old-strategy",
+    updated = await repository.patch_game_by_id(
+        game.id,
+        PatchGame(platform="mobile"),
     )
-    game_query = build_query(first_result=game)
-    session.query.return_value = game_query
 
-    expected = SimpleNamespace(gameId=game_id)
-    get_game_by_id_mock = MagicMock(return_value=expected)
-    monkeypatch.setattr(repository, "get_game_by_id", get_game_by_id_mock)
-
-    schema = DummySchema(
-        {
-            "externalGameId": "new-external",
-            "platform": "mobile",
-            "strategyId": "new-strategy",
-            "params": None,
-        }
-    )
-    result = repository.patch_game_by_id(game_id, schema)
-
-    assert game.externalGameId == "new-external"
-    assert game.platform == "mobile"
-    assert game.strategyId == "new-strategy"
-    session.commit.assert_called_once()
-    session.refresh.assert_called_once_with(game)
-    get_game_by_id_mock.assert_called_once_with(game_id)
-    assert result == expected
+    assert updated.platform == "mobile"
 
 
-def test_patch_game_by_id_raises_not_found_for_missing_game():
-    repository, session = build_repository()
-
-    game_query = build_query(first_result=None)
-    session.query.return_value = game_query
-
+@pytest.mark.asyncio
+async def test_patch_game_by_id_raises_not_found_when_missing(repository):
     with pytest.raises(NotFoundError):
-        repository.patch_game_by_id(uuid4(), DummySchema({"platform": "mobile"}))
+        await repository.patch_game_by_id(
+            UUID("00000000-0000-0000-0000-000000000000"),
+            PatchGame(platform="mobile"),
+        )
 
 
-def test_patch_game_by_id_raises_duplicated_error_on_integrity_error():
-    repository, session = build_repository()
+@pytest.mark.asyncio
+async def test_patch_game_by_id_raises_duplicated_on_unique_violation(
+    repository, db_session
+):
+    """
+    The ``externalGameId`` column has a unique constraint; attempting to
+    rename a game to an already-taken external id must surface as
+    ``DuplicatedError`` rather than a raw integrity error.
+    """
+    await _seed_game(db_session, external_id="ext-original")
+    other = await _seed_game(db_session, external_id="ext-conflict")
 
-    game_id = uuid4()
-    game_query = build_query(first_result=SimpleNamespace(id=game_id, platform="web"))
-    session.query.return_value = game_query
-    session.commit.side_effect = IntegrityError(
-        "stmt", {}, Exception("duplicated game")
-    )
-
-    with pytest.raises(DuplicatedError) as exc_info:
-        repository.patch_game_by_id(game_id, DummySchema({"platform": "mobile"}))
-
-    assert "duplicated game" in str(exc_info.value.detail)
+    with pytest.raises(DuplicatedError):
+        await repository.patch_game_by_id(
+            other.id, PatchGame(externalGameId="ext-original")
+        )
 
 
-def test_delete_game_by_id_success():
-    repository, session = build_repository()
+@pytest.mark.asyncio
+async def test_delete_game_by_id_cascades_params_and_tasks(
+    repository, db_session
+):
+    game = await _seed_game(db_session, external_id="ext-del")
+    db_session.add(GamesParams(gameId=game.id, key="k", value="v"))
+    task = Tasks(externalTaskId="t-1", gameId=game.id, strategyId="default")
+    db_session.add(task)
+    await db_session.commit()
 
-    game_id = uuid4()
-    game = SimpleNamespace(id=game_id)
-    task_1 = SimpleNamespace(id=uuid4())
-    task_2 = SimpleNamespace(id=uuid4())
-
-    game_query = build_query(first_result=game)
-    game_params_query = build_query()
-    tasks_query = build_query(all_result=[task_1, task_2])
-    task_1_params_query = build_query()
-    task_1_user_points_query = build_query()
-    task_2_params_query = build_query()
-    task_2_user_points_query = build_query()
-    tasks_delete_query = build_query()
-
-    session.query.side_effect = [
-        game_query,
-        game_params_query,
-        tasks_query,
-        task_1_params_query,
-        task_1_user_points_query,
-        task_2_params_query,
-        task_2_user_points_query,
-        tasks_delete_query,
-    ]
-
-    result = repository.delete_game_by_id(game_id)
+    result = await repository.delete_game_by_id(game.id)
 
     assert result is True
-    assert game_params_query.delete.call_count == 1
-    assert task_1_params_query.delete.call_count == 1
-    assert task_1_user_points_query.delete.call_count == 1
-    assert task_2_params_query.delete.call_count == 1
-    assert task_2_user_points_query.delete.call_count == 1
-    assert tasks_delete_query.delete.call_count == 1
-    session.delete.assert_called_once_with(game)
-    session.commit.assert_called_once()
+    with pytest.raises(NotFoundError):
+        await repository.get_game_by_id(game.id)
 
 
-def test_delete_game_by_id_raises_not_found_when_game_missing():
-    repository, session = build_repository()
-
-    game_query = build_query(first_result=None)
-    session.query.return_value = game_query
-    game_id = uuid4()
-
-    with pytest.raises(NotFoundError) as exc_info:
-        repository.delete_game_by_id(game_id)
-
-    assert "Not found id" in str(exc_info.value.detail)
+@pytest.mark.asyncio
+async def test_delete_game_by_id_raises_not_found_when_missing(repository):
+    with pytest.raises(NotFoundError):
+        await repository.delete_game_by_id(
+            UUID("00000000-0000-0000-0000-000000000000")
+        )
 
 
-def test_delete_game_by_id_raises_duplicated_error_on_integrity_error():
-    repository, session = build_repository()
+@pytest.mark.asyncio
+async def test_get_all_games_returns_paginated_results(
+    repository, db_session
+):
+    for i in range(3):
+        await _seed_game(db_session, external_id=f"ext-{i}")
 
-    game_id = uuid4()
-    game = SimpleNamespace(id=game_id)
-    task = SimpleNamespace(id=uuid4())
-
-    game_query = build_query(first_result=game)
-    game_params_query = build_query()
-    tasks_query = build_query(all_result=[task])
-    task_params_query = build_query()
-    user_points_query = build_query()
-    tasks_delete_query = build_query()
-
-    session.query.side_effect = [
-        game_query,
-        game_params_query,
-        tasks_query,
-        task_params_query,
-        user_points_query,
-        tasks_delete_query,
-    ]
-    session.commit.side_effect = IntegrityError(
-        "stmt", {}, Exception("delete duplicated")
+    schema = PostFindGame(
+        ordering="externalGameId",
+        page=1,
+        page_size=10,
     )
+    result = await repository.get_all_games(schema)
 
-    with pytest.raises(DuplicatedError) as exc_info:
-        repository.delete_game_by_id(game_id)
-
-    assert "delete duplicated" in str(exc_info.value.detail)
-
-
-def test_delete_game_by_id_raises_not_found_for_unexpected_errors():
-    repository, session = build_repository()
-
-    game_id = uuid4()
-    game = SimpleNamespace(id=game_id)
-    task = SimpleNamespace(id=uuid4())
-
-    game_query = build_query(first_result=game)
-    game_params_query = build_query()
-    tasks_query = build_query(all_result=[task])
-    task_params_query = build_query()
-    user_points_query = build_query()
-    tasks_delete_query = build_query()
-
-    session.query.side_effect = [
-        game_query,
-        game_params_query,
-        tasks_query,
-        task_params_query,
-        user_points_query,
-        tasks_delete_query,
+    assert result.search_options.total_count == 3
+    assert len(result.items) == 3
+    assert [item.externalGameId for item in result.items] == [
+        "ext-0",
+        "ext-1",
+        "ext-2",
     ]
-    session.commit.side_effect = RuntimeError("commit exploded")
 
-    with pytest.raises(NotFoundError) as exc_info:
-        repository.delete_game_by_id(game_id)
 
-    assert "commit exploded" in str(exc_info.value.detail)
+@pytest.mark.asyncio
+async def test_get_all_games_filters_by_api_key(repository, db_session):
+    from app.model.api_key import ApiKey
+
+    api_key_value = "kk-1"
+    db_session.add(
+        ApiKey(apiKey=api_key_value, apiKeyHash="h", apiKeyPrefix="p")
+    )
+    await db_session.commit()
+
+    await _seed_game(db_session, external_id="ext-with-key", api_key=api_key_value)
+    await _seed_game(db_session, external_id="ext-no-key")
+
+    schema = PostFindGame(ordering="externalGameId", page=1, page_size=10)
+    result = await repository.get_all_games(schema, api_key=api_key_value)
+
+    assert result.search_options.total_count == 1
+    assert result.items[0].externalGameId == "ext-with-key"
+
+
+@pytest.mark.asyncio
+async def test_get_all_games_groups_params_under_each_game(
+    repository, db_session
+):
+    game = await _seed_game(db_session, external_id="ext-group")
+    db_session.add(GamesParams(gameId=game.id, key="a", value="1"))
+    db_session.add(GamesParams(gameId=game.id, key="b", value="2"))
+    await db_session.commit()
+
+    schema = PostFindGame(ordering="externalGameId", page=1, page_size=10)
+    result = await repository.get_all_games(schema)
+
+    assert result.search_options.total_count == 1
+    assert len(result.items[0].params) == 2

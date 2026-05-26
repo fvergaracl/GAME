@@ -1,70 +1,60 @@
-from types import SimpleNamespace
-from unittest.mock import MagicMock
+"""
+Integration tests for ``GameParamsRepository``.
+"""
+
+from uuid import UUID
 
 import pytest
 
-pytestmark = pytest.mark.skip(
-    reason='Repository tests target the legacy sync session.query() pattern; porting to async session.execute(select(...)) is a follow-up.',
-)
-
 from app.core.exceptions import NotFoundError
+from app.model.game_params import GamesParams
+from app.model.games import Games
 from app.repository.game_params_repository import GameParamsRepository
+from app.schema.games_params_schema import UpdateGameParams
 
 
-class DummySchema:
-    def __init__(self, payload):
-        self.payload = payload
-
-    def model_dump(self, exclude_none=False):
-        if exclude_none:
-            return {k: v for k, v in self.payload.items() if v is not None}
-        return dict(self.payload)
+@pytest.fixture
+def repository(session_factory):
+    return GameParamsRepository(session_factory=session_factory)
 
 
-def build_repository():
-    session = MagicMock()
-    context_manager = MagicMock()
-    context_manager.__enter__.return_value = session
-    context_manager.__exit__.return_value = False
-    session_factory = MagicMock(return_value=context_manager)
-    repository = GameParamsRepository(session_factory=session_factory)
-    return repository, session
+async def _seed_game_with_param(db_session, *, key="difficulty", value="normal"):
+    game = Games(externalGameId="g-1", platform="web", strategyId="default")
+    db_session.add(game)
+    await db_session.commit()
+    await db_session.refresh(game)
+    param = GamesParams(gameId=game.id, key=key, value=value)
+    db_session.add(param)
+    await db_session.commit()
+    await db_session.refresh(param)
+    return param
 
 
-def test_patch_game_params_by_id_updates_fields_and_returns_refreshed_entity():
-    repository, session = build_repository()
-    query = MagicMock()
-    session.query.return_value = query
-    query.filter.return_value = query
-    game_param = SimpleNamespace(id="param-1", key="difficulty", value="normal")
-    query.first.return_value = game_param
+@pytest.mark.asyncio
+async def test_patch_game_params_by_id_updates_and_returns_refreshed_row(
+    repository, db_session
+):
+    param = await _seed_game_with_param(db_session)
 
-    refreshed = SimpleNamespace(id="param-1", key="difficulty", value="hard")
-    repository.read_by_id = MagicMock(return_value=refreshed)
-    schema = DummySchema({"value": "hard"})
-
-    result = repository.patch_game_params_by_id("param-1", schema)
-
-    assert game_param.value == "hard"
-    session.commit.assert_called_once()
-    repository.read_by_id.assert_called_once_with(
-        "param-1",
-        not_found_message="GameParams not found (id) : param-1",
+    updated = await repository.patch_game_params_by_id(
+        param.id,
+        UpdateGameParams(id=param.id, key="difficulty", value="hard"),
     )
-    assert result == refreshed
+
+    assert updated.id == param.id
+    assert updated.value == "hard"
 
 
-def test_patch_game_params_by_id_raises_not_found_when_id_does_not_exist():
-    repository, session = build_repository()
-    query = MagicMock()
-    session.query.return_value = query
-    query.filter.return_value = query
-    query.first.return_value = None
-    schema = DummySchema({"value": "hard"})
+@pytest.mark.asyncio
+async def test_patch_game_params_by_id_raises_not_found_when_missing(
+    repository,
+):
+    missing = UUID("00000000-0000-0000-0000-000000000000")
 
     with pytest.raises(NotFoundError) as exc_info:
-        repository.patch_game_params_by_id("missing-id", schema)
+        await repository.patch_game_params_by_id(
+            missing,
+            UpdateGameParams(id=missing, key="difficulty", value="hard"),
+        )
 
-    session.commit.assert_not_called()
-    assert exc_info.value.detail == "GameParams not found (id) : missing-id"
-
+    assert "GameParams not found" in str(exc_info.value.detail)

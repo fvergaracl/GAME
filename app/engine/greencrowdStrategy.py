@@ -191,7 +191,7 @@ def get_dynamic_values_from_tasks(
     current_slot = next(
         slot
         for slot, (start, end) in time_slots.items()
-        if start <= datetime.datetime.utcnow().hour < end
+        if start <= datetime.datetime.now(datetime.timezone.utc).hour < end
     )
     total_other_slots = sum(slot_counts.values()) - slot_counts[current_slot]
     dim_td_value = (
@@ -213,7 +213,7 @@ def get_dynamic_values_from_tasks(
     avg_time_window = np.mean(time_diffs) if time_diffs else 0
     last_time_window = (
         (
-            datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
+            datetime.datetime.now(datetime.timezone.utc)
             - user_records[-1]
         ).total_seconds()
         / 60
@@ -247,7 +247,7 @@ def get_dynamic_values_from_tasks(
         1
         for i in range(len(unique_days) - 1, -1, -1)
         if unique_days[i]
-        >= (datetime.datetime.utcnow().date() - datetime.timedelta(days=i))
+        >= (datetime.datetime.now(datetime.timezone.utc).date() - datetime.timedelta(days=i))
     )
     dim_s_value = round(variable_basic_points * (2 ** (consecutive_days / 5)))
 

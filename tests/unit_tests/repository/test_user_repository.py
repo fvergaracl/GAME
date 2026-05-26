@@ -1,148 +1,129 @@
-from unittest.mock import MagicMock
+"""
+Integration tests for ``UserRepository`` against in-memory aiosqlite.
+
+The repository contains both standard CRUD paths and a Postgres-style
+``INSERT ... ON CONFLICT DO UPDATE`` upsert. The conftest ``@compiles`` hook
+makes the latter compile correctly under SQLite so we can exercise it for
+real instead of mocking the session chain.
+"""
 
 import pytest
-
-pytestmark = pytest.mark.skip(
-    reason='Repository tests target the legacy sync session.query() pattern; porting to async session.execute(select(...)) is a follow-up.',
-)
-
-from sqlalchemy.exc import IntegrityError
 
 from app.core.exceptions import NotFoundError
 from app.repository.user_repository import UserRepository
 
 
-def build_repository():
-    session = MagicMock()
-    context_manager = MagicMock()
-    context_manager.__enter__.return_value = session
-    context_manager.__exit__.return_value = False
-    session_factory = MagicMock(return_value=context_manager)
-    repository = UserRepository(session_factory=session_factory)
-    return repository, session
-
-
-def _configure_user_lookup(session, user_id, user_obj):
-    execute_result = MagicMock()
-    execute_result.scalar_one.return_value = user_id
-    session.execute.return_value = execute_result
-
-    query = MagicMock()
-    filtered = MagicMock()
-    session.query.return_value = query
-    query.filter.return_value = filtered
-    filtered.first.return_value = user_obj
+@pytest.fixture
+def repository(session_factory):
+    return UserRepository(session_factory=session_factory)
 
 
 @pytest.mark.asyncio
-async def test_create_user_by_external_user_id_persists_and_returns_user():
-    repository, session = build_repository()
+async def test_create_user_persists_and_returns_user(repository):
+    user = await repository.create_user_by_externalUserId("ext-user-1")
 
-    result = await repository.create_user_by_externalUserId("external-user-1", "oauth-user-1")
-
-    session.add.assert_called_once()
-    added_user = session.add.call_args.args[0]
-    assert added_user.externalUserId == "external-user-1"
-    assert added_user.oauth_user_id == "oauth-user-1"
-    session.commit.assert_called_once()
-    session.refresh.assert_called_once_with(added_user)
-    assert result is added_user
+    assert user.id is not None
+    assert user.externalUserId == "ext-user-1"
+    assert user.oauth_user_id is None
 
 
 @pytest.mark.asyncio
-async def test_create_user_by_external_user_id_defaults_oauth_to_none():
-    repository, session = build_repository()
+async def test_create_user_defaults_oauth_id_to_none(repository):
+    user = await repository.create_user_by_externalUserId("ext-user-2")
 
-    result = await repository.create_user_by_externalUserId("external-user-2")
-
-    session.add.assert_called_once()
-    added_user = session.add.call_args.args[0]
-    assert added_user.externalUserId == "external-user-2"
-    assert added_user.oauth_user_id is None
-    session.commit.assert_called_once()
-    session.refresh.assert_called_once_with(added_user)
-    assert result is added_user
+    assert user.oauth_user_id is None
 
 
 @pytest.mark.asyncio
-async def test_create_user_by_external_user_id_returns_existing_on_integrity_race():
-    repository, session = build_repository()
-    existing_user = MagicMock()
-    session.commit.side_effect = IntegrityError("insert into users", {}, Exception("duplicate key"))
-    session.query.return_value.filter_by.return_value.first.return_value = existing_user
+async def test_create_user_returns_existing_on_duplicate(repository):
+    """
+    A race-style duplicate externalUserId must return the pre-existing row
+    rather than propagating IntegrityError, so the caller sees idempotent
+    semantics.
+    """
+    first = await repository.create_user_by_externalUserId("dup-user")
+    second = await repository.create_user_by_externalUserId("dup-user")
 
-    result = await repository.create_user_by_externalUserId("external-user-3")
-
-    session.rollback.assert_called_once()
-    session.query.assert_called_once_with(repository.model)
-    session.query.return_value.filter_by.assert_called_once_with(
-        externalUserId="external-user-3"
-    )
-    assert result is existing_user
-    session.refresh.assert_not_called()
+    assert first.id == second.id
+    assert second.externalUserId == "dup-user"
 
 
 @pytest.mark.asyncio
-async def test_create_user_by_external_user_id_raises_when_integrity_race_has_no_existing():
-    repository, session = build_repository()
-    session.commit.side_effect = IntegrityError("insert into users", {}, Exception("duplicate key"))
-    session.query.return_value.filter_by.return_value.first.return_value = None
-
-    with pytest.raises(IntegrityError):
-        await repository.create_user_by_externalUserId("external-user-4")
-
-    session.rollback.assert_called_once()
-
-
-def test_get_or_create_by_external_user_id_commits_and_returns_user():
-    repository, session = build_repository()
-    user = MagicMock(id="user-1")
-    _configure_user_lookup(session, "user-1", user)
-
-    result = repository.get_or_create_by_externalUserId(
-        externalUserId="external-user-5",
-        oauth_user_id="oauth-user-5",
+async def test_get_or_create_creates_when_missing(repository):
+    user = await repository.get_or_create_by_externalUserId(
+        externalUserId="upsert-1"
     )
 
-    assert result is user
-    session.execute.assert_called_once()
-    session.commit.assert_called_once()
-    session.flush.assert_not_called()
+    assert user.externalUserId == "upsert-1"
+    assert user.id is not None
 
 
-def test_get_or_create_by_external_user_id_with_external_session_flushes():
-    repository, session = build_repository()
-    user = MagicMock(id="user-2")
-    _configure_user_lookup(session, "user-2", user)
+@pytest.mark.asyncio
+async def test_get_or_create_returns_existing_user(repository):
+    created = await repository.create_user_by_externalUserId("upsert-existing")
 
-    result = repository.get_or_create_by_externalUserId(
-        externalUserId="external-user-6",
-        session=session,
-        auto_commit=False,
+    upserted = await repository.get_or_create_by_externalUserId(
+        externalUserId="upsert-existing"
     )
 
-    assert result is user
-    session.execute.assert_called_once()
-    session.flush.assert_called_once()
-    session.commit.assert_not_called()
+    assert upserted.id == created.id
 
 
-def test_get_or_create_by_external_user_id_raises_when_user_not_found_after_upsert():
-    repository, session = build_repository()
-    _configure_user_lookup(session, "user-missing", None)
+@pytest.mark.asyncio
+async def test_get_or_create_updates_oauth_id_when_provided(repository, session_factory):
+    """
+    When called on an existing row with a new ``oauth_user_id``, the upsert
+    must update the linked OAuth identity in place.
+    """
+    from app.model.oauth_users import OAuthUsers
 
-    with pytest.raises(NotFoundError):
-        repository.get_or_create_by_externalUserId(
-            externalUserId="external-user-7",
-            session=session,
+    async with session_factory() as seed:
+        seed.add(
+            OAuthUsers(
+                provider="google",
+                provider_user_id="oauth-link-1",
+                email="x@y.z",
+            )
+        )
+        await seed.commit()
+
+    await repository.create_user_by_externalUserId("upsert-oauth")
+
+    upserted = await repository.get_or_create_by_externalUserId(
+        externalUserId="upsert-oauth",
+        oauth_user_id="oauth-link-1",
+    )
+
+    assert upserted.oauth_user_id == "oauth-link-1"
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_requires_session_when_auto_commit_false(repository):
+    with pytest.raises(ValueError):
+        await repository.get_or_create_by_externalUserId(
+            externalUserId="bad", auto_commit=False
         )
 
 
-def test_get_or_create_by_external_user_id_requires_external_session_when_no_auto_commit():
-    repository, _ = build_repository()
-
-    with pytest.raises(ValueError):
-        repository.get_or_create_by_externalUserId(
-            externalUserId="external-user-8",
+@pytest.mark.asyncio
+async def test_get_or_create_with_external_session_flushes_only(
+    repository, session_factory
+):
+    """
+    When a caller-managed session is supplied with ``auto_commit=False``, the
+    repository must flush but not commit — leaving the transaction open for
+    the caller to compose with other operations.
+    """
+    async with session_factory() as session:
+        user = await repository.get_or_create_by_externalUserId(
+            externalUserId="flush-only",
+            session=session,
             auto_commit=False,
         )
+        assert user.externalUserId == "flush-only"
+        # Roll back so the row never lands.
+        await session.rollback()
+
+    # A new transaction must not see the rolled-back row.
+    with pytest.raises(NotFoundError):
+        await repository.read_by_column("externalUserId", "flush-only")

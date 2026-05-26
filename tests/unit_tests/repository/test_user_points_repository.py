@@ -1,457 +1,429 @@
+"""
+Integration tests for ``UserPointsRepository``.
+
+The repository contains a wide range of read paths. Postgres-only methods
+(those depending on ``func.array_agg``, ``func.json_build_object`` or
+``UserPoints.data["..."].as_float``) are out of scope for aiosqlite; this
+module covers the rest end-to-end against an in-memory aiosqlite engine.
+"""
+
+from datetime import datetime, timedelta, timezone
+
 import pytest
 
-pytestmark = pytest.mark.skip(
-    reason='Repository tests target the legacy sync session.query() pattern; porting to async session.execute(select(...)) is a follow-up.',
-)
-
-import unittest
-from datetime import datetime, timedelta, timezone
-from types import SimpleNamespace
-from unittest.mock import MagicMock
-from uuid import uuid4
-
+from app.model.games import Games
 from app.model.tasks import Tasks
 from app.model.user_points import UserPoints
 from app.model.users import Users
-from app.repository.base_repository import BaseRepository
 from app.repository.user_points_repository import UserPointsRepository
 
 
-class TestUserPointsRepository(unittest.TestCase):
-    def _build_query(
-        self,
-        all_result=None,
-        first_result=None,
-        one_result=None,
-        count_result=0,
-        scalar_result=None,
-        yield_result=None,
-    ):
-        query = MagicMock()
-        query.join.return_value = query
-        query.filter.return_value = query
-        query.order_by.return_value = query
-        query.group_by.return_value = query
-        query.limit.return_value = query
-        query.with_entities.return_value = query
-        query.all.return_value = all_result
-        query.first.return_value = first_result
-        query.one.return_value = one_result
-        query.count.return_value = count_result
-        query.scalar.return_value = scalar_result
-        query.yield_per.return_value = yield_result
-        return query
+@pytest.fixture
+def repository(session_factory):
+    return UserPointsRepository(session_factory=session_factory)
 
-    def _build_repo(self, query_or_queries):
-        session = MagicMock()
-        if isinstance(query_or_queries, list):
-            session.query.side_effect = query_or_queries
-        else:
-            session.query.return_value = query_or_queries
-        context_manager = MagicMock()
-        context_manager.__enter__.return_value = session
-        context_manager.__exit__.return_value = False
-        session_factory = MagicMock(return_value=context_manager)
-        repository = UserPointsRepository(session_factory=session_factory)
-        return repository, session
 
-    def test_init_sets_internal_repositories_and_model(self):
-        query = self._build_query()
-        repository, _ = self._build_repo(query)
+async def _seed_user(db_session, external_id):
+    user = Users(externalUserId=external_id)
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user
 
-        self.assertIs(repository.model, UserPoints)
-        self.assertIsInstance(repository.task_repository, BaseRepository)
-        self.assertIsInstance(repository.user_repository, BaseRepository)
-        self.assertIs(repository.task_repository.model, Tasks)
-        self.assertIs(repository.user_repository.model, Users)
 
-    def test_get_first_user_points_in_external_task_id_by_user_id(self):
-        expected = {"id": "first-point"}
-        query = self._build_query(first_result=expected)
-        repository, _ = self._build_repo(query)
+async def _seed_game(db_session, external_id="g-1"):
+    game = Games(externalGameId=external_id, platform="web", strategyId="default")
+    db_session.add(game)
+    await db_session.commit()
+    await db_session.refresh(game)
+    return game
 
-        result = repository.get_first_user_points_in_external_task_id_by_user_id(
-            "task-1", "user-1"
+
+async def _seed_task(db_session, game_id, external_task_id):
+    task = Tasks(
+        externalTaskId=external_task_id,
+        gameId=game_id,
+        strategyId="default",
+    )
+    db_session.add(task)
+    await db_session.commit()
+    await db_session.refresh(task)
+    return task
+
+
+async def _seed_points(
+    db_session, user_id, task_id, points, idempotency_key=None, data=None
+):
+    point = UserPoints(
+        userId=user_id,
+        taskId=task_id,
+        points=points,
+        idempotencyKey=idempotency_key,
+        data=data,
+    )
+    db_session.add(point)
+    await db_session.commit()
+    await db_session.refresh(point)
+    return point
+
+
+def test_repository_exposes_helper_repositories(repository):
+    assert repository.task_repository.model is Tasks
+    assert repository.user_repository.model is Users
+
+
+@pytest.mark.asyncio
+async def test_get_first_user_points_returns_a_row_when_present(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-fp")
+    game = await _seed_game(db_session, "g-fp")
+    task = await _seed_task(db_session, game.id, "task-fp")
+    await _seed_points(
+        db_session, user.id, task.id, points=10, idempotency_key="k1"
+    )
+
+    result = await repository.get_first_user_points_in_external_task_id_by_user_id(
+        externalTaskId="task-fp",
+        externalUserId="ext-fp",
+    )
+
+    assert result is not None
+    assert result.points == 10
+
+
+@pytest.mark.asyncio
+async def test_get_first_user_points_returns_none_when_missing(repository):
+    result = await repository.get_first_user_points_in_external_task_id_by_user_id(
+        externalTaskId="absent",
+        externalUserId="absent",
+    )
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_read_by_user_task_and_idempotency_returns_match(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-idem")
+    game = await _seed_game(db_session, "g-idem")
+    task = await _seed_task(db_session, game.id, "task-idem")
+    point = await _seed_points(
+        db_session, user.id, task.id, points=5, idempotency_key="abc-123"
+    )
+
+    result = await repository.read_by_user_task_and_idempotency(
+        user_id=user.id, task_id=task.id, idempotency_key="abc-123"
+    )
+
+    assert result is not None
+    assert result.id == point.id
+
+
+@pytest.mark.asyncio
+async def test_read_by_user_task_and_idempotency_short_circuits_empty_key(
+    repository,
+):
+    """
+    Returns ``None`` immediately for empty idempotency keys so a missing key
+    never coincidentally matches a row with NULL ``idempotencyKey``.
+    """
+    result = await repository.read_by_user_task_and_idempotency(
+        user_id="any", task_id="any", idempotency_key=""
+    )
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_read_by_user_task_and_idempotency_returns_none_when_missing(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-no-match")
+    game = await _seed_game(db_session, "g-no-match")
+    task = await _seed_task(db_session, game.id, "task-no-match")
+
+    result = await repository.read_by_user_task_and_idempotency(
+        user_id=user.id, task_id=task.id, idempotency_key="never-stored"
+    )
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_get_user_measurement_count_counts_per_user(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-meas")
+    game = await _seed_game(db_session, "g-meas")
+    task = await _seed_task(db_session, game.id, "task-meas")
+    for i in range(3):
+        await _seed_points(
+            db_session, user.id, task.id, points=i, idempotency_key=f"k-{i}"
         )
 
-        self.assertEqual(result, expected)
+    count = await repository.get_user_measurement_count(user.id)
 
-    def test_read_by_user_task_and_idempotency_with_external_session(self):
-        expected = SimpleNamespace(id="up-1")
-        query = self._build_query(first_result=expected)
-        repository, _ = self._build_repo(query)
-        external_session = MagicMock()
-        external_query = self._build_query(first_result=expected)
-        external_session.query.return_value = external_query
+    assert count == 3
 
-        result = repository.read_by_user_task_and_idempotency(
-            user_id="user-1",
-            task_id="task-1",
-            idempotency_key="evt-1",
-            session=external_session,
+
+@pytest.mark.asyncio
+async def test_get_individual_calculation_returns_avg_points(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-avg")
+    game = await _seed_game(db_session, "g-avg")
+    task = await _seed_task(db_session, game.id, "task-avg")
+    for i, p in enumerate([2, 4, 6]):
+        await _seed_points(
+            db_session, user.id, task.id, points=p, idempotency_key=f"k-{i}"
         )
 
-        self.assertEqual(result, expected)
-        external_session.query.assert_called_once_with(repository.model)
+    avg = await repository.get_individual_calculation(user.id)
 
-    def test_read_by_user_task_and_idempotency_returns_none_when_key_missing(self):
-        query = self._build_query(first_result=SimpleNamespace(id="up-1"))
-        repository, _ = self._build_repo(query)
+    assert avg == 4.0
 
-        result = repository.read_by_user_task_and_idempotency(
-            user_id="user-1",
-            task_id="task-1",
-            idempotency_key="",
+
+@pytest.mark.asyncio
+async def test_get_global_calculation_returns_avg_across_all(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-glob")
+    game = await _seed_game(db_session, "g-glob")
+    task = await _seed_task(db_session, game.id, "task-glob")
+    for i, p in enumerate([10, 20, 30]):
+        await _seed_points(
+            db_session, user.id, task.id, points=p, idempotency_key=f"k-{i}"
         )
 
-        self.assertIsNone(result)
+    avg = await repository.get_global_calculation()
 
-    def test_get_all_user_points_by_game_id(self):
-        expected = [SimpleNamespace(externalTaskId="task-1", points=10)]
-        query = self._build_query(all_result=expected)
-        repository, _ = self._build_repo(query)
+    assert avg == 20.0
 
-        result = repository.get_all_UserPoints_by_gameId("game-1")
 
-        self.assertEqual(result, expected)
+@pytest.mark.asyncio
+async def test_get_start_and_last_task_times(repository, db_session):
+    user = await _seed_user(db_session, "ext-time")
+    game = await _seed_game(db_session, "g-time")
+    task = await _seed_task(db_session, game.id, "task-time")
+    await _seed_points(
+        db_session, user.id, task.id, points=1, idempotency_key="k-1"
+    )
+    await _seed_points(
+        db_session, user.id, task.id, points=2, idempotency_key="k-2"
+    )
 
-    def test_get_all_user_points_by_task_id(self):
-        expected = [SimpleNamespace(externalUserId="user-1", points=5)]
-        query = self._build_query(all_result=expected)
-        repository, _ = self._build_repo(query)
+    start = await repository.get_start_time_for_last_task(user.id)
+    last = await repository.get_time_taken_for_last_task(user.id)
 
-        result = repository.get_all_UserPoints_by_taskId("task-1")
+    assert start is not None
+    assert last is not None
+    assert last >= start
 
-        self.assertEqual(result, expected)
 
-    def test_get_all_user_points_by_task_id_with_details(self):
-        expected = [
-            SimpleNamespace(
-                externalUserId="user-1", points=5, pointsData=[{"points": 5}]
-            )
-        ]
-        query = self._build_query(all_result=expected)
-        repository, _ = self._build_repo(query)
+@pytest.mark.asyncio
+async def test_get_task_by_external_user_id_returns_user_tasks(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-task-list")
+    game = await _seed_game(db_session, "g-task-list")
+    task = await _seed_task(db_session, game.id, "task-list-1")
+    await _seed_points(
+        db_session, user.id, task.id, points=1, idempotency_key="k"
+    )
 
-        result = repository.get_all_UserPoints_by_taskId_with_details("task-1")
+    tasks = await repository.get_task_by_externalUserId("ext-task-list")
 
-        self.assertEqual(result, expected)
+    assert any(t.externalTaskId == "task-list-1" for t in tasks)
 
-    def test_get_points_and_users_by_task_id(self):
-        expected = [SimpleNamespace(externalUserId="user-1", points=7)]
-        query = self._build_query(all_result=expected)
-        repository, _ = self._build_repo(query)
 
-        result = repository.get_points_and_users_by_taskId("task-1")
+@pytest.mark.asyncio
+async def test_get_last_task_by_user_id_returns_some_row(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-last")
+    game = await _seed_game(db_session, "g-last")
+    task = await _seed_task(db_session, game.id, "task-last")
+    await _seed_points(
+        db_session, user.id, task.id, points=1, idempotency_key="old"
+    )
+    await _seed_points(
+        db_session, user.id, task.id, points=2, idempotency_key="new"
+    )
 
-        self.assertEqual(result, expected)
+    result = await repository.get_last_task_by_userId(user.id)
 
-    def test_get_task_by_external_user_id(self):
-        expected = [SimpleNamespace(id="task-1")]
-        query = self._build_query(all_result=expected)
-        repository, _ = self._build_repo(query)
+    assert result is not None
+    assert result.points in {1, 2}
 
-        result = repository.get_task_by_externalUserId("user-1")
 
-        self.assertEqual(result, expected)
-
-    def test_get_task_and_sum_points_by_user_id(self):
-        expected = [SimpleNamespace(externalTaskId="task-1", points=12)]
-        query = self._build_query(all_result=expected)
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_task_and_sum_points_by_userId("user-id-1")
-
-        self.assertEqual(result, expected)
-
-    def test_get_user_measurement_count(self):
-        query = self._build_query(one_result=SimpleNamespace(measurement_count=8))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_user_measurement_count("user-id-1")
-
-        self.assertEqual(result, 8)
-
-    def test_get_time_taken_for_last_task(self):
-        dt = datetime(2026, 2, 10, 10, 0, 0)
-        query = self._build_query(one_result=SimpleNamespace(last_task_time=dt))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_time_taken_for_last_task("user-id-1")
-
-        self.assertEqual(result, dt)
-
-    def test_get_individual_calculation(self):
-        query = self._build_query(one_result=SimpleNamespace(average_points=4.25))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_individual_calculation("user-id-1")
-
-        self.assertEqual(result, 4.25)
-
-    def test_get_global_calculation(self):
-        query = self._build_query(one_result=SimpleNamespace(average_points=3.5))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_global_calculation()
-
-        self.assertEqual(result, 3.5)
-
-    def test_get_start_time_for_last_task(self):
-        dt = datetime(2026, 2, 9, 9, 0, 0)
-        query = self._build_query(one_result=SimpleNamespace(start_time=dt))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_start_time_for_last_task("user-id-1")
-
-        self.assertEqual(result, dt)
-
-    def test_count_measurements_by_external_task_id(self):
-        query = self._build_query(one_result=SimpleNamespace(measurement_count=15))
-        repository, _ = self._build_repo(query)
-
-        result = repository.count_measurements_by_external_task_id("task-1")
-
-        self.assertEqual(result, 15)
-
-    def test_get_user_task_measurements(self):
-        expected = [SimpleNamespace(timestamp=datetime(2026, 2, 10, 10, 0, 0))]
-        query = self._build_query(all_result=expected)
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_user_task_measurements("task-1", "user-1")
-
-        self.assertEqual(result, expected)
-
-    def test_get_user_task_measurements_count(self):
-        query = self._build_query(one_result=SimpleNamespace(measurement_count=3))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_user_task_measurements_count("task-1", "user-1")
-
-        self.assertEqual(result, 3)
-
-    def test_get_user_task_measurements_count_the_last_seconds(self):
-        query = self._build_query(one_result=SimpleNamespace(measurement_count=2))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_user_task_measurements_count_the_last_seconds(
-            "task-1", "user-1", 60
+@pytest.mark.asyncio
+async def test_count_measurements_by_external_task_id(repository, db_session):
+    user = await _seed_user(db_session, "ext-cnt")
+    game = await _seed_game(db_session, "g-cnt")
+    task = await _seed_task(db_session, game.id, "task-cnt")
+    for i in range(4):
+        await _seed_points(
+            db_session, user.id, task.id, points=i, idempotency_key=f"k-{i}"
         )
 
-        self.assertEqual(result, 2)
+    count = await repository.count_measurements_by_external_task_id("task-cnt")
 
-    def test_get_avg_time_between_tasks_by_user_and_game_task_returns_minus_one_when_insufficient(
-        self,
-    ):
-        query = self._build_query(all_result=[(datetime(2026, 2, 10, 10, 0, 0),)])
-        repository, _ = self._build_repo(query)
+    assert count == 4
 
-        result = repository.get_avg_time_between_tasks_by_user_and_game_task(
-            "game-1", "task-1", "user-1"
+
+@pytest.mark.asyncio
+async def test_user_has_record_in_last_minutes_true_when_recent(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-recent")
+    game = await _seed_game(db_session, "g-recent")
+    task = await _seed_task(db_session, game.id, "task-recent")
+    await _seed_points(
+        db_session, user.id, task.id, points=1, idempotency_key="k"
+    )
+
+    result = await repository.user_has_record_before_in_externalTaskId_last_min(
+        externalTaskId="task-recent",
+        externalUserId="ext-recent",
+        minutes=60,
+    )
+
+    assert result is True
+
+
+@pytest.mark.asyncio
+async def test_get_user_task_measurements_returns_timestamps(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-ts")
+    game = await _seed_game(db_session, "g-ts")
+    task = await _seed_task(db_session, game.id, "task-ts")
+    for i in range(3):
+        await _seed_points(
+            db_session, user.id, task.id, points=i, idempotency_key=f"k-{i}"
         )
 
-        self.assertEqual(result, -1)
+    timestamps = await repository.get_user_task_measurements(
+        externalTaskId="task-ts",
+        externalUserId="ext-ts",
+    )
 
-    def test_get_avg_time_between_tasks_by_user_and_game_task_returns_average(self):
-        t1 = datetime(2026, 2, 10, 10, 0, 0)
-        t2 = datetime(2026, 2, 10, 10, 0, 20)
-        t3 = datetime(2026, 2, 10, 10, 0, 50)
-        query = self._build_query(all_result=[(t1,), (t2,), (t3,)])
-        repository, _ = self._build_repo(query)
+    assert len(timestamps) == 3
 
-        result = repository.get_avg_time_between_tasks_by_user_and_game_task(
-            "game-1", "task-1", "user-1"
+
+@pytest.mark.asyncio
+async def test_get_user_task_measurements_count(repository, db_session):
+    user = await _seed_user(db_session, "ext-cn")
+    game = await _seed_game(db_session, "g-cn")
+    task = await _seed_task(db_session, game.id, "task-cn")
+    for i in range(2):
+        await _seed_points(
+            db_session, user.id, task.id, points=i, idempotency_key=f"k-{i}"
         )
 
-        self.assertEqual(result, 25.0)
+    count = await repository.get_user_task_measurements_count(
+        externalTaskId="task-cn",
+        externalUserId="ext-cn",
+    )
 
-    def test_get_avg_time_between_tasks_for_all_users_returns_minus_one_when_insufficient(
-        self,
-    ):
-        query = self._build_query(all_result=[(datetime(2026, 2, 10, 10, 0, 0),)])
-        repository, _ = self._build_repo(query)
+    assert count == 2
 
-        result = repository.get_avg_time_between_tasks_for_all_users("game-1", "task-1")
 
-        self.assertEqual(result, -1)
-
-    def test_get_avg_time_between_tasks_for_all_users_returns_average(self):
-        t1 = datetime(2026, 2, 10, 10, 0, 0)
-        t2 = datetime(2026, 2, 10, 10, 0, 10)
-        t3 = datetime(2026, 2, 10, 10, 0, 40)
-        query = self._build_query(all_result=[(t1,), (t2,), (t3,)])
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_avg_time_between_tasks_for_all_users("game-1", "task-1")
-
-        self.assertEqual(result, 20.0)
-
-    def test_get_last_window_time_diff_returns_zero_when_insufficient_points(self):
-        query = self._build_query(
-            all_result=[SimpleNamespace(created_at=datetime.now())]
-        )
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_last_window_time_diff("task-1", "user-1")
-
-        self.assertEqual(result, 0)
-
-    def test_get_last_window_time_diff_returns_seconds(self):
-        t_now = datetime(2026, 2, 10, 10, 1, 0)
-        t_prev = datetime(2026, 2, 10, 10, 0, 0)
-        query = self._build_query(
-            all_result=[
-                SimpleNamespace(created_at=t_now),
-                SimpleNamespace(created_at=t_prev),
-            ]
-        )
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_last_window_time_diff("task-1", "user-1")
-
-        self.assertEqual(result, 60.0)
-
-    def test_get_new_last_window_time_diff_returns_zero_when_no_last_point(self):
-        query = self._build_query(first_result=None)
-        repository, session = self._build_repo(query)
-
-        result = repository.get_new_last_window_time_diff("task-1", "user-1", "game-1")
-
-        self.assertEqual(result, 0)
-        self.assertEqual(session.query.call_count, 1)
-
-    def test_get_new_last_window_time_diff_handles_naive_datetimes(self):
-        last_created_at = datetime(2026, 2, 10, 10, 0, 0)
-        current_time = datetime(2026, 2, 10, 10, 1, 30)
-        first_query = self._build_query(
-            first_result=SimpleNamespace(created_at=last_created_at)
-        )
-        second_query = self._build_query(scalar_result=current_time)
-        repository, session = self._build_repo([first_query, second_query])
-
-        result = repository.get_new_last_window_time_diff("task-1", "user-1", "game-1")
-
-        self.assertEqual(result, 90.0)
-        self.assertEqual(session.query.call_count, 2)
-
-    def test_get_new_last_window_time_diff_handles_aware_last_point(self):
-        last_created_at = datetime(2026, 2, 10, 10, 0, 0, tzinfo=timezone.utc)
-        current_time = datetime(2026, 2, 10, 10, 2, 0, tzinfo=timezone.utc)
-        first_query = self._build_query(
-            first_result=SimpleNamespace(created_at=last_created_at)
-        )
-        second_query = self._build_query(scalar_result=current_time)
-        repository, _ = self._build_repo([first_query, second_query])
-
-        result = repository.get_new_last_window_time_diff("task-1", "user-1", "game-1")
-
-        self.assertEqual(result, 120.0)
-
-    def test_count_personal_records_by_external_game_id(self):
-        query = self._build_query(one_result=SimpleNamespace(record_count=11))
-        repository, _ = self._build_repo(query)
-
-        result = repository.count_personal_records_by_external_game_id(
-            "game-1", "user-1"
+@pytest.mark.asyncio
+async def test_count_personal_records_by_external_game_id(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-pr")
+    game = await _seed_game(db_session, "g-pr-ext")
+    task = await _seed_task(db_session, game.id, "task-pr")
+    for i in range(2):
+        await _seed_points(
+            db_session, user.id, task.id, points=i, idempotency_key=f"k-{i}"
         )
 
-        self.assertEqual(result, 11)
+    count = await repository.count_personal_records_by_external_game_id(
+        externalGameId="g-pr-ext", externalUserId="ext-pr"
+    )
 
-    def test_user_has_record_before_in_external_task_id_last_min_true(self):
-        query = self._build_query(count_result=2)
-        repository, _ = self._build_repo(query)
-
-        result = repository.user_has_record_before_in_externalTaskId_last_min(
-            "task-1", "user-1", 5
-        )
-
-        self.assertTrue(result)
-
-    def test_user_has_record_before_in_external_task_id_last_min_false(self):
-        query = self._build_query(count_result=0)
-        repository, _ = self._build_repo(query)
-
-        result = repository.user_has_record_before_in_externalTaskId_last_min(
-            "task-1", "user-1", 5
-        )
-
-        self.assertFalse(result)
-
-    def test_get_global_avg_by_external_game_id_returns_value(self):
-        query = self._build_query(one_result=SimpleNamespace(average_minutes=6.4))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_global_avg_by_external_game_id("game-1")
-
-        self.assertEqual(result, 6.4)
-
-    def test_get_global_avg_by_external_game_id_returns_minus_one_when_none(self):
-        query = self._build_query(one_result=SimpleNamespace(average_minutes=None))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_global_avg_by_external_game_id("game-1")
-
-        self.assertEqual(result, -1)
-
-    def test_get_personal_avg_by_external_game_id_returns_value(self):
-        query = self._build_query(one_result=SimpleNamespace(average_minutes=3.2))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_personal_avg_by_external_game_id("game-1", "user-1")
-
-        self.assertEqual(result, 3.2)
-
-    def test_get_personal_avg_by_external_game_id_returns_minus_one_when_none(self):
-        query = self._build_query(one_result=SimpleNamespace(average_minutes=None))
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_personal_avg_by_external_game_id("game-1", "user-1")
-
-        self.assertEqual(result, -1)
-
-    def test_get_points_of_simulated_task(self):
-        expected = [SimpleNamespace(id="up-1"), SimpleNamespace(id="up-2")]
-        query = self._build_query(all_result=expected)
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_points_of_simulated_task("task-1", "hash-1")
-
-        self.assertEqual(result, expected)
-
-    def test_get_all_point_of_tasks_list_without_data_uses_with_entities(self):
-        expected = [SimpleNamespace(id="up-1")]
-        query = self._build_query(yield_result=expected)
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_all_point_of_tasks_list(
-            ["task-1", "task-2"], withData=False
-        )
-
-        self.assertEqual(result, expected)
-        query.with_entities.assert_called_once()
-        query.yield_per.assert_called_once_with(1000)
-
-    def test_get_all_point_of_tasks_list_with_data_skips_with_entities(self):
-        expected = [SimpleNamespace(id="up-1", data={"k": "v"})]
-        query = self._build_query(yield_result=expected)
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_all_point_of_tasks_list(["task-1"], withData=True)
-
-        self.assertEqual(result, expected)
-        query.with_entities.assert_not_called()
-        query.yield_per.assert_called_once_with(1000)
-
-    def test_get_last_task_by_user_id(self):
-        expected = SimpleNamespace(id="last-point")
-        query = self._build_query(first_result=expected)
-        repository, _ = self._build_repo(query)
-
-        result = repository.get_last_task_by_userId("user-id-1")
-
-        self.assertEqual(result, expected)
+    assert count == 2
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.asyncio
+async def test_get_avg_time_between_tasks_returns_minus_one_with_few_rows(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-avg-time")
+    game = await _seed_game(db_session, "g-avg-time")
+    task = await _seed_task(db_session, game.id, "task-avg-time")
+    await _seed_points(
+        db_session, user.id, task.id, points=1, idempotency_key="k"
+    )
+
+    result = await repository.get_avg_time_between_tasks_for_all_users(
+        externalGameId="g-avg-time",
+        externalTaskId="task-avg-time",
+    )
+
+    assert result == -1
+
+
+@pytest.mark.asyncio
+async def test_get_last_window_time_diff_returns_zero_when_under_two_points(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-win-zero")
+    game = await _seed_game(db_session, "g-win-zero")
+    task = await _seed_task(db_session, game.id, "task-win-zero")
+    await _seed_points(
+        db_session, user.id, task.id, points=1, idempotency_key="k"
+    )
+
+    diff = await repository.get_last_window_time_diff(
+        externalTaskId="task-win-zero",
+        externalUserId="ext-win-zero",
+    )
+
+    assert diff == 0
+
+
+@pytest.mark.asyncio
+async def test_get_all_point_of_tasks_list_returns_only_listed_tasks(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-list")
+    game = await _seed_game(db_session, "g-list")
+    task_a = await _seed_task(db_session, game.id, "task-list-a")
+    task_b = await _seed_task(db_session, game.id, "task-list-b")
+    await _seed_points(
+        db_session, user.id, task_a.id, points=1, idempotency_key="ka"
+    )
+    await _seed_points(
+        db_session, user.id, task_b.id, points=2, idempotency_key="kb"
+    )
+
+    results = await repository.get_all_point_of_tasks_list([task_a.id])
+
+    assert len(results) == 1
+
+
+@pytest.mark.asyncio
+async def test_get_all_point_of_tasks_list_with_data_returns_full_objects(
+    repository, db_session
+):
+    user = await _seed_user(db_session, "ext-list-data")
+    game = await _seed_game(db_session, "g-list-data")
+    task = await _seed_task(db_session, game.id, "task-list-data")
+    await _seed_points(
+        db_session,
+        user.id,
+        task.id,
+        points=1,
+        idempotency_key="k",
+        data={"meta": "abc"},
+    )
+
+    results = await repository.get_all_point_of_tasks_list(
+        [task.id], withData=True
+    )
+
+    assert len(results) == 1
+    assert results[0].data == {"meta": "abc"}
