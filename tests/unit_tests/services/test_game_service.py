@@ -121,7 +121,12 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         result = await self.service.get_all_games(schema, api_key="api-key")
 
         self.assertEqual(result, expected)
-        self.game_repository.get_all_games.assert_called_once_with(schema, "api-key")
+        self.game_repository.get_all_games.assert_called_once_with(
+            schema,
+            api_key="api-key",
+            oauth_user_id=None,
+            is_admin=False,
+        )
 
     async def test_get_by_external_id_delegates_to_repository(self):
         game = self._build_game(uuid4())

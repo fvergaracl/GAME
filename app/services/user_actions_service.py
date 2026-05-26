@@ -8,6 +8,7 @@ from app.schema.task_schema import (AddActionDidByUserInTask,
 from app.schema.user_actions_schema import (CreatedUserActions, CreateUserActions,
                                             CreateUserBodyActions)
 from app.services.base_service import BaseService
+from app.services.game_access import get_authorized_game
 
 
 class UserActionsService(BaseService):
@@ -56,6 +57,10 @@ class UserActionsService(BaseService):
         externalTaskId: str,
         action: AddActionDidByUserInTask,
         api_key: str = None,
+        *,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
     ):
         """
         Add action in task for user.
@@ -72,6 +77,15 @@ class UserActionsService(BaseService):
             NotFoundError: If the user or task is not found.
             GoneError: If the task is not active.
         """
+        if enforce_scope:
+            await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+
         task = await self.task_repository.read_by_gameId_and_externalTaskId(
             gameId,
             externalTaskId,

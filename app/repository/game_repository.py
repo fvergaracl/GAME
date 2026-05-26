@@ -1,7 +1,7 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy import delete as sa_delete, select
+from sqlalchemy import delete as sa_delete, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
@@ -38,7 +38,13 @@ class GameRepository(BaseRepository):
         self.model_user_points = model_user_points
         super().__init__(session_factory, model)
 
-    async def get_all_games(self, schema, api_key=None):
+    async def get_all_games(
+        self,
+        schema,
+        api_key=None,
+        oauth_user_id=None,
+        is_admin: bool = False,
+    ):
         async with self.session_factory() as session:
             schema_as_dict = schema.model_dump(exclude_none=True)
             ordering = schema_as_dict.get("ordering", configs.ORDERING)
@@ -74,8 +80,24 @@ class GameRepository(BaseRepository):
                 GamesParams, Games.id == GamesParams.gameId
             )
 
-            if api_key:
-                stmt = stmt.filter(Games.apiKey_used == api_key)
+            if not is_admin:
+                scope_filters = []
+                if api_key:
+                    scope_filters.append(Games.apiKey_used == api_key)
+                if oauth_user_id:
+                    scope_filters.append(Games.oauth_user_id == oauth_user_id)
+
+                if not scope_filters:
+                    return FindGameResult(
+                        items=[],
+                        search_options={
+                            "page": page,
+                            "page_size": page_size,
+                            "ordering": ordering,
+                            "total_count": 0,
+                        },
+                    )
+                stmt = stmt.filter(or_(*scope_filters))
 
             if page_size != "all":
                 stmt = stmt.limit(page_size).offset((page - 1) * page_size)

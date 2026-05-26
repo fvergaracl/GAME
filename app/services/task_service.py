@@ -9,6 +9,7 @@ from app.schema.task_schema import (CreateTask, CreateTaskPostSuccesfullyCreated
                                     FindTask)
 from app.schema.tasks_params_schema import InsertTaskParams
 from app.services.base_service import BaseService
+from app.services.game_access import get_authorized_game
 from app.services.strategy_service import StrategyService
 
 
@@ -88,7 +89,16 @@ class TaskService(BaseService):
 
         return await self.get_tasks_list_by_gameId(game.id, find_query)
 
-    async def get_tasks_list_by_gameId(self, gameId, find_query):
+    async def get_tasks_list_by_gameId(
+        self,
+        gameId,
+        find_query,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Retrieves a list of tasks associated with a game by its game ID.
 
@@ -99,7 +109,18 @@ class TaskService(BaseService):
         Returns:
             list: A list of tasks associated with the game.
         """
-        game = await self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_id(
+                gameId, not_found_raise_exception=False
+            )
 
         if not game:
             raise NotFoundError(f"Game not found with gameId: {gameId}")
@@ -173,7 +194,16 @@ class TaskService(BaseService):
         all_tasks["items"] = cleaned_tasks
         return all_tasks
 
-    async def get_task_by_gameId_externalTaskId(self, gameId, externalTaskId):
+    async def get_task_by_gameId_externalTaskId(
+        self,
+        gameId,
+        externalTaskId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Retrieves a task by its game ID and external task ID.
 
@@ -184,7 +214,18 @@ class TaskService(BaseService):
         Returns:
             CreateTaskPostSuccesfullyCreated: The task details.
         """
-        game = await self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_id(
+                gameId, not_found_raise_exception=False
+            )
         if not game:
             raise NotFoundError(f"Game not found with gameId: {gameId}")
 
@@ -247,7 +288,16 @@ class TaskService(BaseService):
 
         return response
 
-    async def get_task_by_externalGameId_externalTaskId(self, gameId, externalTaskId):
+    async def get_task_by_externalGameId_externalTaskId(
+        self,
+        gameId,
+        externalTaskId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Retrieves a task by its game ID and external task ID.
 
@@ -265,7 +315,14 @@ class TaskService(BaseService):
             only_one=True,
         )
 
-        return await self.get_task_by_gameId_externalTaskId(game.id, externalTaskId)
+        return await self.get_task_by_gameId_externalTaskId(
+            game.id,
+            externalTaskId,
+            api_key=api_key,
+            oauth_user_id=oauth_user_id,
+            is_admin=is_admin,
+            enforce_scope=enforce_scope,
+        )
 
     async def create_task_by_externalGameId(self, externalGameId, create_query):
         """
@@ -288,7 +345,16 @@ class TaskService(BaseService):
 
         return await self.create_task_by_game_id(game.id, externalGameId, create_query)
 
-    async def create_task_by_game_id(self, gameId, create_query, api_key: str = None):
+    async def create_task_by_game_id(
+        self,
+        gameId,
+        create_query,
+        api_key: str = None,
+        *,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Creates a task for a game by its game ID.
 
@@ -299,9 +365,18 @@ class TaskService(BaseService):
         Returns:
             CreateTaskPostSuccesfullyCreated: The created task details.
         """
-        game_data = await self.game_repository.read_by_id(
-            gameId, not_found_raise_exception=False
-        )
+        if enforce_scope:
+            game_data = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game_data = await self.game_repository.read_by_id(
+                gameId, not_found_raise_exception=False
+            )
         if not game_data:
             raise NotFoundError(f"Game not found with gameId: {gameId}")
 
@@ -425,7 +500,16 @@ class TaskService(BaseService):
             )
         return {"task": task, "strategy": strategy}
 
-    async def get_points_by_task_id(self, gameId, externalTaskId):
+    async def get_points_by_task_id(
+        self,
+        gameId,
+        externalTaskId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Retrieves points by task ID.
 
@@ -436,12 +520,21 @@ class TaskService(BaseService):
         Returns:
             list: A list of points associated with the task.
         """
-        game = await self.game_repository.read_by_column(
-            "id",
-            gameId,
-            not_found_message=f"Game not found with gameId: {gameId}",
-            only_one=True,
-        )
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_column(
+                "id",
+                gameId,
+                not_found_message=f"Game not found with gameId: {gameId}",
+                only_one=True,
+            )
 
         task = await self.task_repository.read_by_gameId_and_externalTaskId(
             game.id, externalTaskId
@@ -458,7 +551,17 @@ class TaskService(BaseService):
 
         return user_points
 
-    async def get_points_of_user_by_task_id(self, gameId, externalTaskId, externalUserId):
+    async def get_points_of_user_by_task_id(
+        self,
+        gameId,
+        externalTaskId,
+        externalUserId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Retrieves points of a user by task ID.
 
@@ -470,7 +573,14 @@ class TaskService(BaseService):
         Returns:
             dict: The user's points details.
         """
-        points_task = await self.get_points_by_task_id_with_details(gameId, externalTaskId)
+        points_task = await self.get_points_by_task_id_with_details(
+            gameId,
+            externalTaskId,
+            api_key=api_key,
+            oauth_user_id=oauth_user_id,
+            is_admin=is_admin,
+            enforce_scope=enforce_scope,
+        )
         user_points = list(
             filter(lambda x: x.externalUserId == externalUserId, points_task)
         )
@@ -482,7 +592,16 @@ class TaskService(BaseService):
             )
         return user_points[0]
 
-    async def get_points_by_task_id_with_details(self, gameId, externalTaskId):
+    async def get_points_by_task_id_with_details(
+        self,
+        gameId,
+        externalTaskId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Retrieves points by task ID with details.
 
@@ -493,6 +612,15 @@ class TaskService(BaseService):
         Returns:
             list: A list of points associated with the task.
         """
+        if enforce_scope:
+            await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+
         task = await self.task_repository.read_by_gameId_and_externalTaskId(
             gameId, externalTaskId
         )

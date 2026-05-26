@@ -249,7 +249,12 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(result, "task-data")
         self.service.get_task_by_gameId_externalTaskId.assert_called_once_with(
-            game_id, "task-1"
+            game_id,
+            "task-1",
+            api_key=None,
+            oauth_user_id=None,
+            is_admin=False,
+            enforce_scope=False,
         )
 
     async def test_create_task_by_external_game_id_delegates_to_game_id_method(self):

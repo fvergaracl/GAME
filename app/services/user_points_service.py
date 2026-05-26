@@ -27,6 +27,7 @@ from app.schema.user_points_schema import (AllPointsByGame, GameDetail,
                                            UserPointsAssign)
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
+from app.services.game_access import get_authorized_game
 from app.services.strategy_service import StrategyService
 from app.util.is_valid_slug import is_valid_slug
 
@@ -160,10 +161,27 @@ class UserPointsService(BaseService):
     async def query_user_points(self, schema):
         return await self.user_points_repository.read_by_options(schema)
 
-    async def get_users_by_gameId(self, gameId):
-        game = await self.game_repository.read_by_column(
-            "id", gameId, not_found_raise_exception=False
-        )
+    async def get_users_by_gameId(
+        self,
+        gameId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_column(
+                "id", gameId, not_found_raise_exception=False
+            )
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {game}")
         tasks = await self.task_repository.read_by_column(
@@ -256,10 +274,27 @@ class UserPointsService(BaseService):
                         )
         return new_response
 
-    async def get_points_by_gameId(self, gameId):
-        game = await self.game_repository.read_by_column(
-            "id", gameId, not_found_message=f"Game with gameId: {gameId} not found"
-        )
+    async def get_points_by_gameId(
+        self,
+        gameId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_column(
+                "id", gameId, not_found_message=f"Game with gameId: {gameId} not found"
+            )
         tasks = await self.task_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
         )
@@ -292,10 +327,27 @@ class UserPointsService(BaseService):
         )
         return response
 
-    async def get_points_by_gameId_with_details(self, gameId: UUID):
-        game = await self.game_repository.read_by_column(
-            "id", gameId, not_found_message=f"Game with gameId: {gameId} not found"
-        )
+    async def get_points_by_gameId_with_details(
+        self,
+        gameId: UUID,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_column(
+                "id", gameId, not_found_message=f"Game with gameId: {gameId} not found"
+            )
         tasks = await self.task_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
         )
@@ -329,10 +381,28 @@ class UserPointsService(BaseService):
         )
         return response
 
-    async def get_points_of_user_in_game(self, gameId, externalUserId):
-        game = await self.game_repository.read_by_column(
-            "id", gameId, not_found_raise_exception=False
-        )
+    async def get_points_of_user_in_game(
+        self,
+        gameId,
+        externalUserId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_column(
+                "id", gameId, not_found_raise_exception=False
+            )
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
         user = await self.users_repository.read_by_column(
@@ -368,6 +438,10 @@ class UserPointsService(BaseService):
         externalTaskId,
         schema,
         api_key: str = None,
+        *,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
     ):
         """
         Assign points to a user directly (non-simulated), using a predefined strategy.
@@ -384,12 +458,21 @@ class UserPointsService(BaseService):
         externalUserId = schema.externalUserId
         is_a_created_user = False
 
-        game = await self.game_repository.read_by_column(
-            column="id",
-            value=gameId,
-            not_found_message=f"Game with gameId {gameId} not found",
-            only_one=True,
-        )
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_column(
+                column="id",
+                value=gameId,
+                not_found_message=f"Game with gameId {gameId} not found",
+                only_one=True,
+            )
         externalGameId = game.externalGameId
 
         task = await self.task_repository.read_by_gameId_and_externalTaskId(
@@ -457,6 +540,10 @@ class UserPointsService(BaseService):
         schema,
         isSimulated: bool = False,
         api_key: str = None,
+        *,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
     ):
         """
         Assign points to a user.
@@ -475,12 +562,21 @@ class UserPointsService(BaseService):
         """
         externalUserId = schema.externalUserId
         is_a_created_user = False
-        game = await self.game_repository.read_by_column(
-            column="id",
-            value=gameId,
-            not_found_message=(f"Game with gameId {gameId} not found"),
-            only_one=True,
-        )
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_column(
+                column="id",
+                value=gameId,
+                not_found_message=(f"Game with gameId {gameId} not found"),
+                only_one=True,
+            )
         externalGameId = game.externalGameId
         task = await self.task_repository.read_by_gameId_and_externalTaskId(
             game.id, externalTaskId
@@ -600,6 +696,10 @@ class UserPointsService(BaseService):
         externalUserId,
         oauth_user_id: str = None,
         assign_control_group: bool = False,
+        *,
+        api_key: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
     ):
         """
         Simulates the assignment of points for a user without persisting the
@@ -614,12 +714,21 @@ class UserPointsService(BaseService):
         Returns:
             dict: Simulation result with calculated points and case name.
         """
-        game = await self.game_repository.read_by_column(
-            column="id",
-            value=gameId,
-            not_found_message=(f"Game with gameId {gameId} not found"),
-            only_one=True,
-        )
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_column(
+                column="id",
+                value=gameId,
+                not_found_message=(f"Game with gameId {gameId} not found"),
+                only_one=True,
+            )
         all_tasks = await self.task_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
         )

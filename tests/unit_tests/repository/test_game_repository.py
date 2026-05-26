@@ -148,7 +148,7 @@ async def test_get_all_games_returns_paginated_results(
         page=1,
         page_size=10,
     )
-    result = await repository.get_all_games(schema)
+    result = await repository.get_all_games(schema, is_admin=True)
 
     assert result.search_options.total_count == 3
     assert len(result.items) == 3
@@ -189,7 +189,7 @@ async def test_get_all_games_groups_params_under_each_game(
     await db_session.commit()
 
     schema = PostFindGame(ordering="externalGameId", page=1, page_size=10)
-    result = await repository.get_all_games(schema)
+    result = await repository.get_all_games(schema, is_admin=True)
 
     assert result.search_options.total_count == 1
     assert len(result.items[0].params) == 2

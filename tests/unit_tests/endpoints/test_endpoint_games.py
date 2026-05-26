@@ -70,6 +70,15 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         return SimpleNamespace(data=SimpleNamespace(apiKey=api_key))
 
     @staticmethod
+    def _scope_kwargs(api_key="api-key-1", oauth_user_id="oauth-user-1", is_admin=False):
+        return {
+            "api_key": api_key,
+            "oauth_user_id": oauth_user_id,
+            "is_admin": is_admin,
+            "enforce_scope": True,
+        }
+
+    @staticmethod
     def _oauth_service(user_exists=True, async_add=True):
         service_oauth = MagicMock()
         service_oauth.get_user_by_sub = AsyncMock(
@@ -109,7 +118,12 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, {"items": []})
-        service.get_all_games.assert_called_once_with(schema, "k-1")
+        service.get_all_games.assert_called_once_with(
+            schema,
+            api_key="k-1",
+            oauth_user_id=None,
+            is_admin=False,
+        )
 
     async def test_get_games_list_with_admin_token_returns_unfiltered(self):
         self.mock_check_role.return_value = True
@@ -128,7 +142,12 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, {"items": ["all"]})
-        service.get_all_games.assert_called_once_with(schema)
+        service.get_all_games.assert_called_once_with(
+            schema,
+            api_key="k-2",
+            oauth_user_id="oauth-user-1",
+            is_admin=True,
+        )
         service_oauth.add.assert_awaited_once()
 
     async def test_get_game_by_id_with_token(self):
@@ -148,7 +167,10 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, expected)
-        service.get_by_gameId.assert_called_once_with(game_id)
+        service.get_by_gameId.assert_called_once_with(
+            game_id,
+            **self._scope_kwargs(),
+        )
         service_oauth.add.assert_awaited_once()
 
     async def test_delete_game_by_id_success(self):
@@ -167,7 +189,10 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, {"gameId": str(game_id)})
-        service.delete_game_by_id.assert_called_once_with(game_id)
+        service.delete_game_by_id.assert_called_once_with(
+            game_id,
+            **self._scope_kwargs(),
+        )
 
     async def test_delete_game_by_id_error_logs_and_raises(self):
         game_id = uuid4()
@@ -250,7 +275,11 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, {"ok": True})
-        service.patch_game_by_id.assert_awaited_once_with(game_id, schema)
+        service.patch_game_by_id.assert_awaited_once_with(
+            game_id,
+            schema,
+            **self._scope_kwargs(),
+        )
         service_oauth.add.assert_awaited_once()
 
     async def test_patch_game_error_logs_and_raises(self):
@@ -286,7 +315,10 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, {"id": "default"})
-        service.get_strategy_by_gameId.assert_called_once_with(game_id)
+        service.get_strategy_by_gameId.assert_called_once_with(
+            game_id,
+            **self._scope_kwargs(),
+        )
 
     async def test_create_task_success(self):
         game_id = uuid4()
@@ -311,7 +343,12 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(result, {"task": "created"})
         service.create_task_by_game_id.assert_awaited_once_with(
-            game_id, create_query, "api-key-1"
+            game_id,
+            create_query,
+            "api-key-1",
+            oauth_user_id="oauth-user-1",
+            is_admin=False,
+            enforce_scope=True,
         )
 
     async def test_create_task_error_logs_and_raises(self):
@@ -385,7 +422,11 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, {"items": []})
-        service.get_tasks_list_by_gameId.assert_called_once_with(game_id, find_query)
+        service.get_tasks_list_by_gameId.assert_called_once_with(
+            game_id,
+            find_query,
+            **self._scope_kwargs(),
+        )
 
     async def test_get_task_by_game_id_task_id(self):
         game_id = uuid4()
@@ -405,7 +446,9 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(result, {"task": "one"})
         service.get_task_by_externalGameId_externalTaskId.assert_called_once_with(
-            str(game_id), "task-1"
+            str(game_id),
+            "task-1",
+            **self._scope_kwargs(),
         )
 
     async def test_get_points_by_game_id(self):
@@ -552,7 +595,13 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(result, {"ok": True})
         service.user_add_action_in_task.assert_awaited_once_with(
-            game_id, "task-1", schema, "api-key-1"
+            game_id,
+            "task-1",
+            schema,
+            "api-key-1",
+            oauth_user_id=None,
+            is_admin=False,
+            enforce_scope=True,
         )
 
     async def test_user_action_in_task_with_invalid_bearer_does_not_crash_when_api_key_is_valid(
@@ -610,7 +659,14 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(result, {"points": 1})
         service.assign_points_to_user.assert_awaited_once_with(
-            game_id, "task-1", schema, True, "api-key-1"
+            game_id,
+            "task-1",
+            schema,
+            True,
+            "api-key-1",
+            oauth_user_id=None,
+            is_admin=False,
+            enforce_scope=True,
         )
 
     async def test_assign_points_to_user_with_invalid_bearer_does_not_crash_when_api_key_is_valid(
@@ -662,7 +718,14 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(result, {"points": 2})
         service.assign_points_to_user.assert_awaited_once_with(
-            game_id, "task-2", schema, False, "api-key-1"
+            game_id,
+            "task-2",
+            schema,
+            False,
+            "api-key-1",
+            oauth_user_id=None,
+            is_admin=False,
+            enforce_scope=True,
         )
 
     async def test_user_action_in_task_calls_abuse_prevention_service(self):
@@ -1071,7 +1134,12 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
         self.assertEqual(result, {"items": ["filtered"]})
-        games_list_service.get_all_games.assert_called_once_with(schema, "k-existing")
+        games_list_service.get_all_games.assert_called_once_with(
+            schema,
+            api_key="k-existing",
+            oauth_user_id="oauth-user-1",
+            is_admin=False,
+        )
 
         get_by_id_service = AsyncMock()
         get_by_id_service.get_by_gameId.return_value = {"id": str(game_id)}

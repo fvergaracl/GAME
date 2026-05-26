@@ -10,6 +10,7 @@ from app.schema.games_params_schema import InsertGameParams
 from app.schema.games_schema import (BaseGameResult, GameCreated, PatchGame,
                                      PostCreateGame, ResponsePatchGame)
 from app.services.base_service import BaseService
+from app.services.game_access import get_authorized_game
 from app.services.strategy_service import StrategyService
 from app.util.are_variables_matching import are_variables_matching
 from app.util.is_valid_slug import is_valid_slug
@@ -52,7 +53,15 @@ class GameService(BaseService):
         self.strategy_service = strategy_service
         super().__init__(game_repository)
 
-    async def get_by_gameId(self, gameId: UUID):
+    async def get_by_gameId(
+        self,
+        gameId: UUID,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Retrieves a game by its game ID.
 
@@ -62,13 +71,22 @@ class GameService(BaseService):
         Returns:
             BaseGameResult: The game details.
         """
-        response = await self.game_repository.read_by_column(
-            "id",
-            gameId,
-            not_found_raise_exception=True,
-            only_one=True,
-            not_found_message=f"Game not found by gameId: {gameId}",
-        )
+        if enforce_scope:
+            response = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            response = await self.game_repository.read_by_column(
+                "id",
+                gameId,
+                not_found_raise_exception=True,
+                only_one=True,
+                not_found_message=f"Game not found by gameId: {gameId}",
+            )
         params = await self.game_params_repository.read_by_column(
             "gameId", response.id, not_found_raise_exception=False, only_one=False
         )
@@ -79,7 +97,15 @@ class GameService(BaseService):
 
         return response
 
-    async def delete_game_by_id(self, gameId: UUID):
+    async def delete_game_by_id(
+        self,
+        gameId: UUID,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Deletes a game by its game ID.
 
@@ -89,7 +115,18 @@ class GameService(BaseService):
         Raises:
             NotFoundError: If the game is not found.
         """
-        game = await self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_id(
+                gameId, not_found_raise_exception=False
+            )
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
 
@@ -107,7 +144,13 @@ class GameService(BaseService):
             return response
         return {"message": f"Game with gameId: {gameId} not deleted"}
 
-    async def get_all_games(self, schema, api_key=None):
+    async def get_all_games(
+        self,
+        schema,
+        api_key=None,
+        oauth_user_id=None,
+        is_admin: bool = False,
+    ):
         """
         Retrieves all games based on the provided schema.
 
@@ -118,7 +161,12 @@ class GameService(BaseService):
         Returns:
             list: A list of all games matching the schema.
         """
-        return await self.game_repository.get_all_games(schema, api_key)
+        return await self.game_repository.get_all_games(
+            schema,
+            api_key=api_key,
+            oauth_user_id=oauth_user_id,
+            is_admin=is_admin,
+        )
 
     async def get_by_externalId(self, externalGameId: str):
         """
@@ -239,7 +287,16 @@ class GameService(BaseService):
             )
         return await self.patch_game_by_id(game.id, schema)
 
-    async def patch_game_by_id(self, gameId: UUID, schema: PatchGame):
+    async def patch_game_by_id(
+        self,
+        gameId: UUID,
+        schema: PatchGame,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Updates a game by its game ID using the provided schema.
 
@@ -250,7 +307,18 @@ class GameService(BaseService):
         Returns:
             ResponsePatchGame: The updated game details.
         """
-        game = await self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_id(
+                gameId, not_found_raise_exception=False
+            )
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
         if schema.externalGameId and schema.externalGameId != game.externalGameId:
@@ -331,7 +399,15 @@ class GameService(BaseService):
 
         return await self.get_strategy_by_gameId(game.id)
 
-    async def get_strategy_by_gameId(self, gameId: UUID):
+    async def get_strategy_by_gameId(
+        self,
+        gameId: UUID,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Retrieves the strategy associated with a game by its game ID.
 
@@ -341,7 +417,18 @@ class GameService(BaseService):
         Returns:
             dict: The strategy details.
         """
-        game = await self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_id(
+                gameId, not_found_raise_exception=False
+            )
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
 
@@ -374,7 +461,15 @@ class GameService(BaseService):
 
         return strategy
 
-    async def get_tasks_by_gameId(self, gameId: UUID):
+    async def get_tasks_by_gameId(
+        self,
+        gameId: UUID,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
         """
         Retrieves the tasks associated with a game by its game ID.
 
@@ -384,7 +479,16 @@ class GameService(BaseService):
         Returns:
             dict: The game details including tasks.
         """
-        game = await self.game_repository.read_by_id(gameId)
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_id(gameId)
         if not game:
             raise NotFoundError(detail=f"Game not found by id: {gameId}")
 

@@ -50,6 +50,23 @@ router = APIRouter(
 logger = logging.getLogger(__name__)
 
 
+def _extract_api_key_from_header(api_key_header) -> Optional[str]:
+    return getattr(getattr(api_key_header, "data", None), "apiKey", None)
+
+
+def _game_access_kwargs(
+    api_key: Optional[str],
+    oauth_user_id: Optional[str],
+    is_admin: bool = False,
+) -> dict:
+    return {
+        "api_key": api_key,
+        "oauth_user_id": oauth_user_id,
+        "is_admin": is_admin,
+        "enforce_scope": True,
+    }
+
+
 def _extract_oauth_user_id_from_token(token: str) -> Optional[str]:
     """
     Extracts `sub` from a bearer token without re-validating against Keycloak.
@@ -285,8 +302,9 @@ async def get_games_list(
     Returns:
         FindGameResult: A result set containing the games and search options.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         token_data = token_data.data
@@ -308,8 +326,6 @@ async def get_games_list(
                 oauth_user_id,
             )
         is_admin = check_role(token_data, "AdministratorGAME")
-        if is_admin:
-            return await service.get_all_games(schema)
     await add_log(
         "game",
         "INFO",
@@ -319,7 +335,12 @@ async def get_games_list(
         api_key,
         oauth_user_id,
     )
-    return await service.get_all_games(schema, api_key)
+    return await service.get_all_games(
+        schema,
+        api_key=api_key,
+        oauth_user_id=oauth_user_id,
+        is_admin=is_admin,
+    )
 
 
 summary_get_game_by_id = "Retrieve Game by ID"
@@ -439,11 +460,13 @@ async def get_game_by_id(
     Returns:
         BaseGameResult: The details of the specified game.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -469,7 +492,9 @@ async def get_game_by_id(
         api_key,
         oauth_user_id,
     )
-    response = await service.get_by_gameId(gameId)
+    response = await service.get_by_gameId(
+        gameId, **_game_access_kwargs(api_key, oauth_user_id, is_admin)
+    )
     return response
 
 
@@ -591,11 +616,13 @@ async def delete_game_by_id(
     Returns:
         BaseGameResult: The details of the deleted game.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -624,7 +651,9 @@ async def delete_game_by_id(
     )
 
     try:
-        response = await service.delete_game_by_id(gameId)
+        response = await service.delete_game_by_id(
+            gameId, **_game_access_kwargs(api_key, oauth_user_id, is_admin)
+        )
         data_to_log = {"gameId": str(gameId)}
         await add_log(
             "game",
@@ -765,11 +794,13 @@ async def create_game(
         GameCreated: The details of the created game.
     """
 
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -951,11 +982,13 @@ async def patch_game(
     Returns:
         ResponsePatchGame: The updated game details.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -983,7 +1016,11 @@ async def patch_game(
     )
 
     try:
-        response = await service.patch_game_by_id(gameId, schema)
+        response = await service.patch_game_by_id(
+            gameId,
+            schema,
+            **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+        )
         data_to_log = {"gameId": str(gameId), "body": schema.model_dump()}
         await add_log(
             "game",
@@ -1122,11 +1159,13 @@ async def get_strategy_by_gameId(
     Returns:
         Strategy: The strategy associated with the specified game.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -1153,7 +1192,9 @@ async def get_strategy_by_gameId(
         oauth_user_id,
     )
 
-    return await service.get_strategy_by_gameId(gameId)
+    return await service.get_strategy_by_gameId(
+        gameId, **_game_access_kwargs(api_key, oauth_user_id, is_admin)
+    )
 
 
 summary_create_task = "Create a New Task"
@@ -1300,11 +1341,13 @@ async def create_task(
     Returns:
         CreateTaskPostSuccesfullyCreated: The details of the created task.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -1331,7 +1374,14 @@ async def create_task(
         oauth_user_id,
     )
     try:
-        response = await service.create_task_by_game_id(gameId, create_query, api_key)
+        response = await service.create_task_by_game_id(
+            gameId,
+            create_query,
+            api_key,
+            oauth_user_id=oauth_user_id,
+            is_admin=is_admin,
+            enforce_scope=True,
+        )
         data_to_log = {"gameId": str(gameId), "body": create_query.model_dump()}
         await add_log(
             "game",
@@ -1538,11 +1588,13 @@ async def create_tasks_bulk(
         List[CreateTaskPostSuccesfullyCreated]: The details of the created
           tasks.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -1573,8 +1625,17 @@ async def create_tasks_bulk(
 
     for task in create_query.tasks:
         try:
-            created_task = await service.create_task_by_game_id(gameId, task, api_key)
+            created_task = await service.create_task_by_game_id(
+                gameId,
+                task,
+                api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+                enforce_scope=True,
+            )
             succesfully_created.append(created_task)
+        except ForbiddenError:
+            raise
         except Exception as e:
             failed_to_create.append({"task": task, "error": str(e)})
     if len(failed_to_create) > 0:
@@ -1755,11 +1816,13 @@ async def get_task_list(
     Returns:
         FoundTasks: A result set containing the tasks.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -1785,7 +1848,11 @@ async def get_task_list(
         api_key,
         oauth_user_id,
     )
-    return await service.get_tasks_list_by_gameId(gameId, find_query)
+    return await service.get_tasks_list_by_gameId(
+        gameId,
+        find_query,
+        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+    )
 
 
 summary_get_task_by_gameId_taskId = (
@@ -1926,11 +1993,13 @@ async def get_task_by_gameId_taskId(
     Returns:
         CreateTaskPostSuccesfullyCreated: The details of the specified task.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -1959,7 +2028,9 @@ async def get_task_by_gameId_taskId(
     )
 
     return await service.get_task_by_externalGameId_externalTaskId(
-        str(gameId), externalTaskId
+        str(gameId),
+        externalTaskId,
+        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
     )
 
 
@@ -2094,11 +2165,13 @@ async def get_points_by_gameId(
     Returns:
         AllPointsByGame: The points details for the specified game.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -2125,7 +2198,9 @@ async def get_points_by_gameId(
         oauth_user_id,
     )
 
-    return await service.get_points_by_gameId(gameId)
+    return await service.get_points_by_gameId(
+        gameId, **_game_access_kwargs(api_key, oauth_user_id, is_admin)
+    )
 
 
 summary_get_points_by_gameId_with_details = "Retrieve Points by Game ID with Details"
@@ -2258,11 +2333,13 @@ async def get_points_by_gameId_with_details(
     Returns:
         AllPointsByGame: The points details for the specified game.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -2289,7 +2366,9 @@ async def get_points_by_gameId_with_details(
         oauth_user_id,
     )
 
-    return await service.get_points_by_gameId_with_details(gameId)
+    return await service.get_points_by_gameId_with_details(
+        gameId, **_game_access_kwargs(api_key, oauth_user_id, is_admin)
+    )
 
 
 summary_get_points_of_user_in_game = "Retrieve User Points in Game"
@@ -2405,11 +2484,13 @@ async def get_points_of_user_in_game(
         List[PointsAssignedToUser]: The points details of the user in the
           specified game.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -2435,7 +2516,11 @@ async def get_points_of_user_in_game(
         api_key,
         oauth_user_id,
     )
-    return await service.get_points_of_user_in_game(gameId, externalUserId)
+    return await service.get_points_of_user_in_game(
+        gameId,
+        externalUserId,
+        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+    )
 
 
 summary_get_points_simulated_of_user_in_game = "Retrieve Simulated User Points in Game"
@@ -2613,6 +2698,8 @@ async def get_points_simulated_of_user_in_game(
             externalUserId,
             oauth_user_id=oauth_user_id,
             assign_control_group=True,
+            is_admin=is_admin,
+            enforce_scope=True,
         )
     )
 
@@ -2811,8 +2898,13 @@ async def user_action_in_task(
     Returns:
         ResponseAddActionDidByUserInTask: The details of the action added.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = _extract_oauth_user_id_from_token(token)
+    is_admin = False
+    if token and not api_key:
+        token_data = await valid_access_token(token)
+        oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
     correlation_id = _resolve_correlation_id(request)
     if isinstance(schema.data, dict):
         schema.data.setdefault("correlationId", correlation_id)
@@ -2839,7 +2931,13 @@ async def user_action_in_task(
     )
     try:
         return await service.user_add_action_in_task(
-            gameId, externalTaskId, schema, api_key
+            gameId,
+            externalTaskId,
+            schema,
+            api_key,
+            oauth_user_id=oauth_user_id,
+            is_admin=is_admin,
+            enforce_scope=True,
         )
     except Exception as exc:
         mapped_exc = _map_write_exception(exc, correlation_id=correlation_id)
@@ -3034,8 +3132,13 @@ async def assign_points_to_user(
     Returns:
         AssignedPointsToExternalUserId: The details of the points assigned.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = _extract_oauth_user_id_from_token(token)
+    is_admin = False
+    if token and not api_key:
+        token_data = await valid_access_token(token)
+        oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
     correlation_id = _resolve_correlation_id(request)
     idempotency_key = _resolve_idempotency_key(request)
     if schema.data is None:
@@ -3068,7 +3171,14 @@ async def assign_points_to_user(
     isSimulated = schema.isSimulated if hasattr(schema, "isSimulated") else False
     try:
         return await service.assign_points_to_user(
-            gameId, externalTaskId, schema, isSimulated, api_key
+            gameId,
+            externalTaskId,
+            schema,
+            isSimulated,
+            api_key,
+            oauth_user_id=oauth_user_id,
+            is_admin=is_admin,
+            enforce_scope=True,
         )
     except Exception as exc:
         mapped_exc = _map_write_exception(exc, correlation_id=correlation_id)
@@ -3211,11 +3321,13 @@ async def get_points_by_task_id(
     Returns:
         List[PointsAssignedToUser]: The points details for the specified task.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -3241,7 +3353,11 @@ async def get_points_by_task_id(
         api_key,
         oauth_user_id,
     )
-    return await service.get_points_by_task_id(gameId, externalTaskId)
+    return await service.get_points_by_task_id(
+        gameId,
+        externalTaskId,
+        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+    )
 
 
 summary_get_points_of_user_by_task_id = "Retrieve User Points by Task ID"
@@ -3378,11 +3494,13 @@ async def get_points_of_user_by_task_id(
         PointsAssignedToUser: The points details of the user for the specified
           task.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -3412,7 +3530,12 @@ async def get_points_of_user_by_task_id(
         api_key,
         oauth_user_id,
     )
-    return await service.get_points_of_user_by_task_id(gameId, externalTaskId, externalUserId)
+    return await service.get_points_of_user_by_task_id(
+        gameId,
+        externalTaskId,
+        externalUserId,
+        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+    )
 
 
 summary_get_points_by_task_id_with_details = (
@@ -3580,11 +3703,13 @@ async def get_points_by_task_id_with_details(
     Returns:
         List[dict]: Detailed points information for the specified task.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -3610,7 +3735,11 @@ async def get_points_by_task_id_with_details(
         api_key,
         oauth_user_id,
     )
-    return await service.get_points_by_task_id_with_details(gameId, externalTaskId)
+    return await service.get_points_by_task_id_with_details(
+        gameId,
+        externalTaskId,
+        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+    )
 
 
 summary_get_users_by_gameId = "Retrieve Users by Game ID"
@@ -3760,11 +3889,13 @@ async def get_users_by_gameId(
         ListTasksWithUsers: The list of users associated with the specified
           game.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
+    api_key = _extract_api_key_from_header(api_key_header)
     oauth_user_id = None
+    is_admin = False
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
+        is_admin = check_role(token_data.data, "AdministratorGAME")
         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
@@ -3790,4 +3921,6 @@ async def get_users_by_gameId(
         api_key,
         oauth_user_id,
     )
-    return await service.get_users_by_gameId(gameId)
+    return await service.get_users_by_gameId(
+        gameId, **_game_access_kwargs(api_key, oauth_user_id, is_admin)
+    )
