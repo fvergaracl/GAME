@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -12,42 +12,49 @@ def test_basemodel_tablename_uses_lowercase_class_name():
     assert SampleModel.__tablename__ == "samplemodel"
 
 
-def test_create_database_calls_metadata_create_all_with_engine():
+@pytest.mark.asyncio
+async def test_create_database_runs_metadata_create_all_on_async_engine():
     database = Database("sqlite:///:memory:")
 
-    with patch.object(BaseModel.metadata, "create_all") as mock_create_all:
-        database.create_database()
+    # ``create_database`` wraps ``BaseModel.metadata.create_all`` inside the
+    # async engine's ``begin()`` block. We exercise it against the real
+    # in-memory aiosqlite engine to ensure no exception is raised.
+    await database.create_database()
 
-    mock_create_all.assert_called_once_with(database._engine)
 
-
-def test_session_context_yields_session_and_closes_on_success():
+@pytest.mark.asyncio
+async def test_session_context_yields_session_and_closes_on_success():
     database = Database("sqlite:///:memory:")
     fake_session = MagicMock()
+    fake_session.close = AsyncMock()
+    fake_session.rollback = AsyncMock()
     database._session_factory = MagicMock(return_value=fake_session)
 
-    with database.session() as session:
+    async with database.session() as session:
         assert session is fake_session
 
     fake_session.rollback.assert_not_called()
-    fake_session.close.assert_called_once()
+    fake_session.close.assert_awaited_once()
 
 
-def test_session_context_rolls_back_and_closes_on_exception():
+@pytest.mark.asyncio
+async def test_session_context_rolls_back_and_closes_on_exception():
     database = Database("sqlite:///:memory:")
     fake_session = MagicMock()
+    fake_session.close = AsyncMock()
+    fake_session.rollback = AsyncMock()
     database._session_factory = MagicMock(return_value=fake_session)
 
     with pytest.raises(RuntimeError, match="boom"):
-        with database.session():
+        async with database.session():
             raise RuntimeError("boom")
 
-    fake_session.rollback.assert_called_once()
-    fake_session.close.assert_called_once()
+    fake_session.rollback.assert_awaited_once()
+    fake_session.close.assert_awaited_once()
 
 
 def test_database_uses_pool_settings_for_non_sqlite_urls():
-    with patch("app.core.database.create_engine") as mock_create_engine:
+    with patch("app.core.database.create_async_engine") as mock_create_engine:
         mock_create_engine.return_value = MagicMock()
 
         Database(
@@ -70,7 +77,7 @@ def test_database_uses_pool_settings_for_non_sqlite_urls():
 
 
 def test_database_does_not_apply_pool_kwargs_for_sqlite_urls():
-    with patch("app.core.database.create_engine") as mock_create_engine:
+    with patch("app.core.database.create_async_engine") as mock_create_engine:
         mock_create_engine.return_value = MagicMock()
 
         Database("sqlite:///:memory:")

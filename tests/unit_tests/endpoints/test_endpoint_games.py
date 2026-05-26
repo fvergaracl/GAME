@@ -72,8 +72,8 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
     @staticmethod
     def _oauth_service(user_exists=True, async_add=True):
         service_oauth = MagicMock()
-        service_oauth.get_user_by_sub.return_value = (
-            SimpleNamespace(id="oauth-user") if user_exists else None
+        service_oauth.get_user_by_sub = AsyncMock(
+            return_value=SimpleNamespace(id="oauth-user") if user_exists else None
         )
         service_oauth.add = AsyncMock() if async_add else MagicMock()
         return service_oauth
@@ -87,14 +87,16 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     @staticmethod
     def _abuse_service(ip="198.51.100.1", enforce_side_effect=None):
-        service = MagicMock()
-        service.extract_client_ip.return_value = ip
-        service.enforce_task_mutation_limits.side_effect = enforce_side_effect
+        service = AsyncMock()
+        service.extract_client_ip = MagicMock(return_value=ip)
+        service.enforce_task_mutation_limits = AsyncMock(
+            side_effect=enforce_side_effect
+        )
         return service
 
     async def test_get_games_list_without_token_uses_api_key_filter(self):
         schema = PostFindGame(ordering="-created_at", page=1, page_size=10)
-        service = MagicMock()
+        service = AsyncMock()
         service.get_all_games.return_value = {"items": []}
 
         result = await games.get_games_list(
@@ -112,7 +114,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
     async def test_get_games_list_with_admin_token_returns_unfiltered(self):
         self.mock_check_role.return_value = True
         schema = PostFindGame(ordering="-created_at", page=1, page_size=10)
-        service = MagicMock()
+        service = AsyncMock()
         service.get_all_games.return_value = {"items": ["all"]}
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -131,7 +133,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_game_by_id_with_token(self):
         game_id = uuid4()
-        service = MagicMock()
+        service = AsyncMock()
         expected = {"id": str(game_id)}
         service.get_by_gameId.return_value = expected
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
@@ -151,7 +153,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_delete_game_by_id_success(self):
         game_id = uuid4()
-        service = MagicMock()
+        service = AsyncMock()
         service.delete_game_by_id.return_value = {"gameId": str(game_id)}
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -169,7 +171,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_delete_game_by_id_error_logs_and_raises(self):
         game_id = uuid4()
-        service = MagicMock()
+        service = AsyncMock()
         service.delete_game_by_id.side_effect = RuntimeError("delete failed")
 
         with self.assertRaises(RuntimeError):
@@ -191,7 +193,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             apiKey_used=None,
             oauth_user_id=None,
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.create = AsyncMock(return_value=SimpleNamespace(gameId=uuid4()))
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -217,7 +219,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             apiKey_used=None,
             oauth_user_id=None,
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.create = AsyncMock(side_effect=RuntimeError("create failed"))
 
         with self.assertRaises(RuntimeError):
@@ -233,7 +235,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
     async def test_patch_game_success(self):
         game_id = uuid4()
         schema = PatchGame(externalGameId="slug", strategyId="default", platform="web")
-        service = MagicMock()
+        service = AsyncMock()
         service.patch_game_by_id = AsyncMock(return_value={"ok": True})
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -254,7 +256,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
     async def test_patch_game_error_logs_and_raises(self):
         game_id = uuid4()
         schema = PatchGame(externalGameId="slug", strategyId="default", platform="web")
-        service = MagicMock()
+        service = AsyncMock()
         service.patch_game_by_id = AsyncMock(side_effect=RuntimeError("patch failed"))
 
         with self.assertRaises(RuntimeError):
@@ -270,7 +272,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_strategy_by_game_id(self):
         game_id = uuid4()
-        service = MagicMock()
+        service = AsyncMock()
         service.get_strategy_by_gameId.return_value = {"id": "default"}
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -293,7 +295,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             strategyId="default",
             params=[CreateTaskParams(key="k", value=1)],
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.create_task_by_game_id = AsyncMock(return_value={"task": "created"})
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -317,7 +319,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         create_query = CreateTaskPost(
             externalTaskId="task-2", strategyId=None, params=None
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.create_task_by_game_id = AsyncMock(
             side_effect=RuntimeError("task failed")
         )
@@ -345,7 +347,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
                 ),
             ]
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.create_task_by_game_id = AsyncMock(
             side_effect=[{"task": "task-1"}, RuntimeError("bulk error")]
         )
@@ -368,7 +370,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
     async def test_get_task_list(self):
         game_id = uuid4()
         find_query = PostFindTask(ordering="-created_at", page=1, page_size=10)
-        service = MagicMock()
+        service = AsyncMock()
         service.get_tasks_list_by_gameId.return_value = {"items": []}
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -387,7 +389,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_task_by_game_id_task_id(self):
         game_id = uuid4()
-        service = MagicMock()
+        service = AsyncMock()
         service.get_task_by_externalGameId_externalTaskId.return_value = {"task": "one"}
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -408,7 +410,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_points_by_game_id(self):
         game_id = uuid4()
-        service = MagicMock()
+        service = AsyncMock()
         service.get_points_by_gameId.return_value = {"game": "points"}
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -425,7 +427,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_points_by_game_id_with_details(self):
         game_id = uuid4()
-        service = MagicMock()
+        service = AsyncMock()
         service.get_points_by_gameId_with_details.return_value = {"game": "details"}
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -442,7 +444,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_points_of_user_in_game(self):
         game_id = uuid4()
-        service = MagicMock()
+        service = AsyncMock()
         service.get_points_of_user_in_game.return_value = [{"externalUserId": "u1"}]
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -502,11 +504,11 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
                 "expirationDate": "2026-02-10T00:00:00",
             }
         ]
-        service = MagicMock()
+        service = AsyncMock()
         service.get_points_simulated_of_user_in_game = AsyncMock(
             return_value=(simulated_tasks, "external-game-1")
         )
-        service_oauth = self._oauth_service(user_exists=False, async_add=False)
+        service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
         result = await games.get_points_simulated_of_user_in_game(
             gameId=game_id,
@@ -521,7 +523,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.simulationHash, "sim-hash-1")
         self.assertEqual(len(result.tasks), 1)
         service.get_points_simulated_of_user_in_game.assert_awaited_once()
-        service_oauth.add.assert_called_once()
+        service_oauth.add.assert_awaited_once()
 
     async def test_user_action_in_task(self):
         game_id = uuid4()
@@ -531,7 +533,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             description="desc",
             externalUserId="u1",
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.user_add_action_in_task = AsyncMock(return_value={"ok": True})
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -563,7 +565,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             description="desc",
             externalUserId="u1",
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.user_add_action_in_task = AsyncMock(return_value={"ok": True})
 
         result = await games.user_action_in_task(
@@ -589,7 +591,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             data={"points": 1},
             isSimulated=True,
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.assign_points_to_user = AsyncMock(return_value={"points": 1})
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
 
@@ -620,7 +622,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             data={"points": 1},
             isSimulated=False,
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.assign_points_to_user = AsyncMock(return_value={"points": 1})
 
         result = await games.assign_points_to_user(
@@ -642,7 +644,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
     async def test_assign_points_to_user_defaults_simulated_flag_to_false(self):
         game_id = uuid4()
         schema = _SchemaWithoutSimulated("u2")
-        service = MagicMock()
+        service = AsyncMock()
         service.assign_points_to_user = AsyncMock(return_value={"points": 2})
 
         result = await games.assign_points_to_user(
@@ -673,7 +675,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             description="desc",
             externalUserId="u1",
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.user_add_action_in_task = AsyncMock(return_value={"ok": True})
 
         await games.user_action_in_task(
@@ -707,7 +709,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             data={"points": 1},
             isSimulated=False,
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.assign_points_to_user = AsyncMock(return_value={"points": 99})
 
         with self.assertRaises(TooManyRequestsError):
@@ -733,7 +735,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             data={"points": 1},
             isSimulated=False,
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.assign_points_to_user = AsyncMock(
             side_effect=PreconditionFailedError(detail="invalid scoring payload")
         )
@@ -761,7 +763,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             data={"points": 1},
             isSimulated=False,
         )
-        service = MagicMock()
+        service = AsyncMock()
         service.assign_points_to_user = AsyncMock(
             side_effect=DuplicatedError(detail="duplicate key")
         )
@@ -783,7 +785,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(exc_info.exception.status_code, 409)
 
     async def test_get_points_by_task_id(self):
-        service = MagicMock()
+        service = AsyncMock()
         service.get_points_by_task_id.return_value = [{"externalUserId": "u1"}]
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
         game_id = uuid4()
@@ -801,7 +803,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, [{"externalUserId": "u1"}])
 
     async def test_get_points_of_user_by_task_id(self):
-        service = MagicMock()
+        service = AsyncMock()
         service.get_points_of_user_by_task_id.return_value = {"externalUserId": "u1"}
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
         game_id = uuid4()
@@ -820,7 +822,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, {"externalUserId": "u1"})
 
     async def test_get_points_by_task_id_with_details(self):
-        service = MagicMock()
+        service = AsyncMock()
         service.get_points_by_task_id_with_details.return_value = [{"details": True}]
         service_oauth = self._oauth_service(user_exists=False, async_add=True)
         game_id = uuid4()
@@ -838,7 +840,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, [{"details": True}])
 
     async def test_get_users_by_game_id(self):
-        service = MagicMock()
+        service = AsyncMock()
         service.get_users_by_gameId.return_value = {
             "gameId": str(uuid4()),
             "tasks": [],
@@ -862,7 +864,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         api_key_header = self._api_key_header("k-no-token")
         oauth_service = self._oauth_service(user_exists=True, async_add=True)
 
-        get_by_id_service = MagicMock()
+        get_by_id_service = AsyncMock()
         get_by_id_service.get_by_gameId.return_value = {"id": str(game_id)}
         result = await games.get_game_by_id(
             gameId=game_id,
@@ -874,7 +876,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result["id"], str(game_id))
 
-        strategy_service = MagicMock()
+        strategy_service = AsyncMock()
         strategy_service.get_strategy_by_gameId.return_value = {"id": "default"}
         result = await games.get_strategy_by_gameId(
             gameId=game_id,
@@ -886,7 +888,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, {"id": "default"})
 
-        bulk_service = MagicMock()
+        bulk_service = AsyncMock()
         bulk_service.create_task_by_game_id = AsyncMock(
             side_effect=[{"task": "a"}, {"task": "b"}]
         )
@@ -908,7 +910,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result["failed_to_create"], [])
         self.assertEqual(len(result["succesfully_created"]), 2)
 
-        list_service = MagicMock()
+        list_service = AsyncMock()
         list_service.get_tasks_list_by_gameId.return_value = {"items": []}
         result = await games.get_task_list(
             gameId=game_id,
@@ -921,7 +923,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, {"items": []})
 
-        task_service = MagicMock()
+        task_service = AsyncMock()
         task_service.get_task_by_externalGameId_externalTaskId.return_value = {"task": "one"}
         result = await games.get_task_by_gameId_taskId(
             gameId=game_id,
@@ -934,7 +936,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, {"task": "one"})
 
-        points_service = MagicMock()
+        points_service = AsyncMock()
         points_service.get_points_by_gameId.return_value = {"game": "points"}
         result = await games.get_points_by_gameId(
             gameId=game_id,
@@ -946,7 +948,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, {"game": "points"})
 
-        points_details_service = MagicMock()
+        points_details_service = AsyncMock()
         points_details_service.get_points_by_gameId_with_details.return_value = {
             "game": "details"
         }
@@ -960,7 +962,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, {"game": "details"})
 
-        user_points_service = MagicMock()
+        user_points_service = AsyncMock()
         user_points_service.get_points_of_user_in_game.return_value = [{"externalUserId": "u1"}]
         result = await games.get_points_of_user_in_game(
             gameId=game_id,
@@ -973,7 +975,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, [{"externalUserId": "u1"}])
 
-        user_action_service = MagicMock()
+        user_action_service = AsyncMock()
         user_action_service.user_add_action_in_task = AsyncMock(return_value={"ok": True})
         action_schema = AddActionDidByUserInTask(
             typeAction="click",
@@ -995,7 +997,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, {"ok": True})
 
-        points_by_task_service = MagicMock()
+        points_by_task_service = AsyncMock()
         points_by_task_service.get_points_by_task_id.return_value = [{"externalUserId": "u1"}]
         result = await games.get_points_by_task_id(
             gameId=game_id,
@@ -1008,7 +1010,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, [{"externalUserId": "u1"}])
 
-        user_points_by_task_service = MagicMock()
+        user_points_by_task_service = AsyncMock()
         user_points_by_task_service.get_points_of_user_by_task_id.return_value = {
             "externalUserId": "u1"
         }
@@ -1024,7 +1026,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, {"externalUserId": "u1"})
 
-        points_task_details_service = MagicMock()
+        points_task_details_service = AsyncMock()
         points_task_details_service.get_points_by_task_id_with_details.return_value = [
             {"details": True}
         ]
@@ -1039,7 +1041,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, [{"details": True}])
 
-        users_by_game_service = MagicMock()
+        users_by_game_service = AsyncMock()
         users_by_game_service.get_users_by_gameId.return_value = {"gameId": str(game_id), "tasks": []}
         result = await games.get_users_by_gameId(
             gameId=game_id,
@@ -1058,7 +1060,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         oauth_service = self._oauth_service(user_exists=True, async_add=True)
 
         schema = PostFindGame(ordering="-created_at", page=1, page_size=10)
-        games_list_service = MagicMock()
+        games_list_service = AsyncMock()
         games_list_service.get_all_games.return_value = {"items": ["filtered"]}
         result = await games.get_games_list(
             schema=schema,
@@ -1071,7 +1073,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, {"items": ["filtered"]})
         games_list_service.get_all_games.assert_called_once_with(schema, "k-existing")
 
-        get_by_id_service = MagicMock()
+        get_by_id_service = AsyncMock()
         get_by_id_service.get_by_gameId.return_value = {"id": str(game_id)}
         await games.get_game_by_id(
             gameId=game_id,
@@ -1082,7 +1084,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        delete_service = MagicMock()
+        delete_service = AsyncMock()
         delete_service.delete_game_by_id.return_value = {"gameId": str(game_id)}
         await games.delete_game_by_id(
             gameId=game_id,
@@ -1093,7 +1095,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        create_service = MagicMock()
+        create_service = AsyncMock()
         create_service.create = AsyncMock(return_value=SimpleNamespace(gameId=uuid4()))
         await games.create_game(
             schema=PostCreateGame(
@@ -1111,7 +1113,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        patch_service = MagicMock()
+        patch_service = AsyncMock()
         patch_service.patch_game_by_id = AsyncMock(return_value={"ok": True})
         await games.patch_game(
             gameId=game_id,
@@ -1123,7 +1125,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        strategy_service = MagicMock()
+        strategy_service = AsyncMock()
         strategy_service.get_strategy_by_gameId.return_value = {"id": "default"}
         await games.get_strategy_by_gameId(
             gameId=game_id,
@@ -1134,7 +1136,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        create_task_service = MagicMock()
+        create_task_service = AsyncMock()
         create_task_service.create_task_by_game_id = AsyncMock(return_value={"task": "created"})
         await games.create_task(
             gameId=game_id,
@@ -1150,7 +1152,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        bulk_fail_service = MagicMock()
+        bulk_fail_service = AsyncMock()
         bulk_fail_service.create_task_by_game_id = AsyncMock(
             side_effect=[RuntimeError("fail-1"), RuntimeError("fail-2")]
         )
@@ -1175,7 +1177,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(bulk_result["succesfully_created"]), 0)
         self.assertEqual(len(bulk_result["failed_to_create"]), 2)
 
-        list_service = MagicMock()
+        list_service = AsyncMock()
         list_service.get_tasks_list_by_gameId.return_value = {"items": []}
         await games.get_task_list(
             gameId=game_id,
@@ -1187,7 +1189,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        task_service = MagicMock()
+        task_service = AsyncMock()
         task_service.get_task_by_externalGameId_externalTaskId.return_value = {"task": "one"}
         await games.get_task_by_gameId_taskId(
             gameId=game_id,
@@ -1199,7 +1201,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        points_service = MagicMock()
+        points_service = AsyncMock()
         points_service.get_points_by_gameId.return_value = {"game": "points"}
         await games.get_points_by_gameId(
             gameId=game_id,
@@ -1210,7 +1212,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        points_details_service = MagicMock()
+        points_details_service = AsyncMock()
         points_details_service.get_points_by_gameId_with_details.return_value = {
             "game": "details"
         }
@@ -1223,7 +1225,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        user_points_service = MagicMock()
+        user_points_service = AsyncMock()
         user_points_service.get_points_of_user_in_game.return_value = [{"externalUserId": "u1"}]
         await games.get_points_of_user_in_game(
             gameId=game_id,
@@ -1245,7 +1247,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
                 "expirationDate": "2026-02-10T00:00:00",
             }
         ]
-        simulated_service = MagicMock()
+        simulated_service = AsyncMock()
         simulated_service.get_points_simulated_of_user_in_game = AsyncMock(
             return_value=(simulated_tasks, "external-game-1")
         )
@@ -1260,7 +1262,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(result.simulationHash, "sim-hash-1")
 
-        user_action_service = MagicMock()
+        user_action_service = AsyncMock()
         user_action_service.user_add_action_in_task = AsyncMock(return_value={"ok": True})
         await games.user_action_in_task(
             gameId=game_id,
@@ -1280,7 +1282,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        assign_points_service = MagicMock()
+        assign_points_service = AsyncMock()
         assign_points_service.assign_points_to_user = AsyncMock(return_value={"points": 1})
         await games.assign_points_to_user(
             gameId=game_id,
@@ -1299,7 +1301,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        points_by_task_service = MagicMock()
+        points_by_task_service = AsyncMock()
         points_by_task_service.get_points_by_task_id.return_value = [{"externalUserId": "u1"}]
         await games.get_points_by_task_id(
             gameId=game_id,
@@ -1311,7 +1313,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        user_points_by_task_service = MagicMock()
+        user_points_by_task_service = AsyncMock()
         user_points_by_task_service.get_points_of_user_by_task_id.return_value = {
             "externalUserId": "u1"
         }
@@ -1326,7 +1328,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        points_task_details_service = MagicMock()
+        points_task_details_service = AsyncMock()
         points_task_details_service.get_points_by_task_id_with_details.return_value = [
             {"details": True}
         ]
@@ -1340,7 +1342,7 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             api_key_header=api_key_header,
         )
 
-        users_by_game_service = MagicMock()
+        users_by_game_service = AsyncMock()
         users_by_game_service.get_users_by_gameId.return_value = {
             "gameId": str(game_id),
             "tasks": [],

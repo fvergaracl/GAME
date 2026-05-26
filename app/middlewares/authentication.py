@@ -66,7 +66,7 @@ async def auth_oauth2(
         is_valid = await valid_access_token(oauth_2_scheme)
         if is_valid.error:
             raise is_valid.error
-        user = oauth_user_service.get_user_by_sub(is_valid.data["sub"])
+        user = await oauth_user_service.get_user_by_sub(is_valid.data["sub"])
         if not user:
             create_user = CreateOAuthUser(
                 provider="keycloak",

@@ -69,65 +69,65 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.assertIs(self.service.strategy_service, self.strategy_service)
         self.assertIs(self.service._repository, self.game_repository)
 
-    def test_get_by_game_id_returns_game_with_params(self):
+    async def test_get_by_game_id_returns_game_with_params(self):
         game_id = uuid4()
         game = self._build_game(game_id)
         params = [SimpleNamespace(id=uuid4(), key="multiplier", value="2")]
         self.game_repository.read_by_column.return_value = game
         self.game_params_repository.read_by_column.return_value = params
 
-        result = self.service.get_by_gameId(game_id)
+        result = await self.service.get_by_gameId(game_id)
 
         self.assertEqual(result.gameId, game_id)
         self.assertEqual(result.externalGameId, "external-game-1")
         self.assertEqual(result.params[0].key, "multiplier")
 
-    def test_delete_game_by_id_raises_when_game_not_found(self):
+    async def test_delete_game_by_id_raises_when_game_not_found(self):
         game_id = uuid4()
         self.game_repository.read_by_id.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.delete_game_by_id(game_id)
+            await self.service.delete_game_by_id(game_id)
 
-    def test_delete_game_by_id_returns_deleted_message(self):
+    async def test_delete_game_by_id_returns_deleted_message(self):
         game_id = uuid4()
         game = self._build_game(game_id, strategy_id="strategy-1")
         self.game_repository.read_by_id.return_value = game
         self.game_repository.delete_game_by_id.return_value = True
 
-        result = self.service.delete_game_by_id(game_id)
+        result = await self.service.delete_game_by_id(game_id)
 
         self.assertEqual(result.gameId, game_id)
         self.assertEqual(result.externalGameId, "external-game-1")
         self.assertEqual(result.strategyId, "strategy-1")
         self.assertEqual(result.params, [])
 
-    def test_delete_game_by_id_returns_not_deleted_message(self):
+    async def test_delete_game_by_id_returns_not_deleted_message(self):
         game_id = uuid4()
         self.game_repository.read_by_id.return_value = self._build_game(game_id)
         self.game_repository.delete_game_by_id.return_value = False
 
-        result = self.service.delete_game_by_id(game_id)
+        result = await self.service.delete_game_by_id(game_id)
 
         self.assertEqual(
             result, {"message": f"Game with gameId: {game_id} not deleted"}
         )
 
-    def test_get_all_games_delegates_to_repository(self):
+    async def test_get_all_games_delegates_to_repository(self):
         schema = SimpleNamespace(ordering="-created_at")
         expected = {"items": []}
         self.game_repository.get_all_games.return_value = expected
 
-        result = self.service.get_all_games(schema, api_key="api-key")
+        result = await self.service.get_all_games(schema, api_key="api-key")
 
         self.assertEqual(result, expected)
         self.game_repository.get_all_games.assert_called_once_with(schema, "api-key")
 
-    def test_get_by_external_id_delegates_to_repository(self):
+    async def test_get_by_external_id_delegates_to_repository(self):
         game = self._build_game(uuid4())
         self.game_repository.read_by_column.return_value = game
 
-        result = self.service.get_by_externalId("external-game-1")
+        result = await self.service.get_by_externalId("external-game-1")
 
         self.assertEqual(result, game)
         self.game_repository.read_by_column.assert_called_once_with(
@@ -246,7 +246,7 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(insert_payload.apiKey_used, "api-key")
         self.assertEqual(insert_payload.oauth_user_id, "oauth-user-2")
 
-    def test_patch_game_by_external_game_id_raises_when_not_found(self):
+    async def test_patch_game_by_external_game_id_raises_when_not_found(self):
         self.game_repository.read_by_column.return_value = None
         schema = PatchGame(
             externalGameId=None,
@@ -256,9 +256,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         )
 
         with self.assertRaises(NotFoundError):
-            self.service.patch_game_by_externalGameId("missing-external-id", schema)
+            await self.service.patch_game_by_externalGameId("missing-external-id", schema)
 
-    def test_patch_game_by_external_game_id_delegates_to_patch_by_id(self):
+    async def test_patch_game_by_external_game_id_delegates_to_patch_by_id(self):
         game_id = uuid4()
         schema = PatchGame(
             externalGameId=None,
@@ -267,14 +267,14 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
             params=None,
         )
         self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
-        self.service.patch_game_by_id = MagicMock(return_value="patched-result")
+        self.service.patch_game_by_id = AsyncMock(return_value="patched-result")
 
-        result = self.service.patch_game_by_externalGameId("external-id", schema)
+        result = await self.service.patch_game_by_externalGameId("external-id", schema)
 
         self.assertEqual(result, "patched-result")
         self.service.patch_game_by_id.assert_called_once_with(game_id, schema)
 
-    def test_patch_game_by_id_raises_when_game_not_found(self):
+    async def test_patch_game_by_id_raises_when_game_not_found(self):
         game_id = uuid4()
         schema = PatchGame(
             externalGameId="new_external",
@@ -285,9 +285,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.game_repository.read_by_id.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.patch_game_by_id(game_id, schema)
+            await self.service.patch_game_by_id(game_id, schema)
 
-    def test_patch_game_by_id_raises_when_external_game_id_is_duplicated(self):
+    async def test_patch_game_by_id_raises_when_external_game_id_is_duplicated(self):
         game_id = uuid4()
         game = self._build_game(
             game_id, external_game_id="old_external", include_params=True
@@ -302,10 +302,10 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.game_repository.read_by_column.return_value = SimpleNamespace(id=uuid4())
 
         with self.assertRaises(ConflictError):
-            self.service.patch_game_by_id(game_id, schema)
+            await self.service.patch_game_by_id(game_id, schema)
 
     @patch("app.services.game_service.are_variables_matching", side_effect=[True, True])
-    def test_patch_game_by_id_raises_when_data_and_params_are_equal(self, _mock_match):
+    async def test_patch_game_by_id_raises_when_data_and_params_are_equal(self, _mock_match):
         game_id = uuid4()
         param_id = uuid4()
         existing_param = SimpleNamespace(id=param_id, key="k", value="v")
@@ -326,11 +326,11 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.game_repository.read_by_column.return_value = None
 
         with self.assertRaises(ConflictError) as context:
-            self.service.patch_game_by_id(game_id, schema)
+            await self.service.patch_game_by_id(game_id, schema)
         self.assertIn("same data", context.exception.detail)
 
     @patch("app.services.game_service.are_variables_matching", return_value=False)
-    def test_patch_game_by_id_raises_when_schema_dict_equals_game_dict(
+    async def test_patch_game_by_id_raises_when_schema_dict_equals_game_dict(
         self, _mock_match
     ):
         game_id = uuid4()
@@ -354,10 +354,10 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.game_repository.read_by_id.return_value = game
 
         with self.assertRaises(ConflictError):
-            self.service.patch_game_by_id(game_id, schema)
+            await self.service.patch_game_by_id(game_id, schema)
 
     @patch("app.services.game_service.all_engine_strategies", return_value=[])
-    def test_patch_game_by_id_raises_when_strategy_not_found(self, _mock_strategies):
+    async def test_patch_game_by_id_raises_when_strategy_not_found(self, _mock_strategies):
         game_id = uuid4()
         game = self._build_game(game_id, include_params=True)
         schema = PatchGame(
@@ -370,13 +370,13 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.game_repository.read_by_column.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.patch_game_by_id(game_id, schema)
+            await self.service.patch_game_by_id(game_id, schema)
 
     @patch(
         "app.services.game_service.all_engine_strategies",
         return_value=[SimpleNamespace(id="default")],
     )
-    def test_patch_game_by_id_uses_default_when_strategy_missing_in_schema_and_game(
+    async def test_patch_game_by_id_uses_default_when_strategy_missing_in_schema_and_game(
         self, _mock_strategies
     ):
         game_id = uuid4()
@@ -396,13 +396,13 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.game_repository.read_by_column.return_value = None
         self.game_repository.patch_game_by_id.return_value = patched_game
 
-        result = self.service.patch_game_by_id(game_id, schema)
+        result = await self.service.patch_game_by_id(game_id, schema)
 
         self.assertEqual(result.strategyId, "default")
         self.assertEqual(result.platform, "mobile")
         self.assertEqual(result.params, [])
 
-    def test_patch_game_by_id_updates_params_and_uses_game_strategy(self):
+    async def test_patch_game_by_id_updates_params_and_uses_game_strategy(self):
         game_id = uuid4()
         param_id = uuid4()
         update_param = UpdateGameParams(id=param_id, key="threshold", value=3)
@@ -425,7 +425,7 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.game_repository.read_by_column.return_value = None
         self.game_repository.patch_game_by_id.return_value = patched_game
 
-        result = self.service.patch_game_by_id(game_id, schema)
+        result = await self.service.patch_game_by_id(game_id, schema)
 
         self.assertEqual(result.strategyId, "strategy_from_game")
         self.assertEqual(result.params[0].id, param_id)
@@ -433,36 +433,36 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
             param_id, update_param
         )
 
-    def test_get_strategy_by_external_game_id_raises_when_game_missing(self):
+    async def test_get_strategy_by_external_game_id_raises_when_game_missing(self):
         self.game_repository.read_by_column.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.get_strategy_by_externalGameId("missing-ext")
+            await self.service.get_strategy_by_externalGameId("missing-ext")
 
-    def test_get_strategy_by_external_game_id_delegates_to_game_id_method(self):
+    async def test_get_strategy_by_external_game_id_delegates_to_game_id_method(self):
         game_id = uuid4()
         self.game_repository.read_by_column.return_value = SimpleNamespace(id=game_id)
-        self.service.get_strategy_by_gameId = MagicMock(return_value={"id": "default"})
+        self.service.get_strategy_by_gameId = AsyncMock(return_value={"id": "default"})
 
-        result = self.service.get_strategy_by_externalGameId("ext-1")
+        result = await self.service.get_strategy_by_externalGameId("ext-1")
 
         self.assertEqual(result, {"id": "default"})
         self.service.get_strategy_by_gameId.assert_called_once_with(game_id)
 
-    def test_get_strategy_by_game_id_raises_when_game_not_found(self):
+    async def test_get_strategy_by_game_id_raises_when_game_not_found(self):
         self.game_repository.read_by_id.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.get_strategy_by_gameId(uuid4())
+            await self.service.get_strategy_by_gameId(uuid4())
 
-    def test_get_strategy_by_game_id_raises_when_strategy_id_missing(self):
+    async def test_get_strategy_by_game_id_raises_when_strategy_id_missing(self):
         game = self._build_game(uuid4(), strategy_id=None)
         self.game_repository.read_by_id.return_value = game
 
         with self.assertRaises(ConflictError):
-            self.service.get_strategy_by_gameId(uuid4())
+            await self.service.get_strategy_by_gameId(uuid4())
 
-    def test_get_strategy_by_game_id_applies_game_params_with_type_coercion(self):
+    async def test_get_strategy_by_game_id_applies_game_params_with_type_coercion(self):
         game_id = uuid4()
         game = self._build_game(game_id, strategy_id="default")
         self.game_repository.read_by_id.return_value = game
@@ -485,7 +485,7 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         ]
         self.game_params_repository.read_by_column.return_value = game_params
 
-        result = self.service.get_strategy_by_gameId(game_id)
+        result = await self.service.get_strategy_by_gameId(game_id)
 
         self.assertEqual(result["variables"]["int_var"], 10)
         self.assertEqual(result["variables"]["float_var"], 3.5)
@@ -493,7 +493,7 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result["variables"]["keep_int"], 7)
         self.assertEqual(result["game_params"], game_params)
 
-    def test_get_strategy_by_game_id_returns_strategy_when_no_game_params(self):
+    async def test_get_strategy_by_game_id_returns_strategy_when_no_game_params(self):
         game_id = uuid4()
         game = self._build_game(game_id, strategy_id="default")
         self.game_repository.read_by_id.return_value = game
@@ -501,18 +501,18 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.strategy_service.get_strategy_by_id.return_value = strategy_payload
         self.game_params_repository.read_by_column.return_value = []
 
-        result = self.service.get_strategy_by_gameId(game_id)
+        result = await self.service.get_strategy_by_gameId(game_id)
 
         self.assertEqual(result["variables"]["k"], 1)
         self.assertEqual(result["game_params"], [])
 
-    def test_get_tasks_by_game_id_raises_when_game_missing(self):
+    async def test_get_tasks_by_game_id_raises_when_game_missing(self):
         self.game_repository.read_by_id.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.get_tasks_by_gameId(uuid4())
+            await self.service.get_tasks_by_gameId(uuid4())
 
-    def test_get_tasks_by_game_id_returns_game_with_tasks(self):
+    async def test_get_tasks_by_game_id_returns_game_with_tasks(self):
         game_id = uuid4()
         game = self._build_game(game_id)
         self.game_repository.read_by_id.return_value = game
@@ -522,33 +522,33 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
             )
         ]
 
-        result = self.service.get_tasks_by_gameId(game_id)
+        result = await self.service.get_tasks_by_gameId(game_id)
 
         self.assertEqual(result["externalGameId"], "external-game-1")
         self.assertEqual(len(result["tasks"]), 1)
         self.assertEqual(result["tasks"][0]["externalTaskId"], "task-1")
 
-    def test_get_tasks_by_game_id_returns_empty_task_list(self):
+    async def test_get_tasks_by_game_id_returns_empty_task_list(self):
         game_id = uuid4()
         game = self._build_game(game_id)
         self.game_repository.read_by_id.return_value = game
         self.task_repository.read_by_column.return_value = []
 
-        result = self.service.get_tasks_by_gameId(game_id)
+        result = await self.service.get_tasks_by_gameId(game_id)
 
         self.assertEqual(result["tasks"], [])
 
-    def test_get_game_by_external_id_raises_when_game_missing(self):
+    async def test_get_game_by_external_id_raises_when_game_missing(self):
         self.game_repository.read_by_column.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.get_game_by_external_id("missing-ext")
+            await self.service.get_game_by_external_id("missing-ext")
 
-    def test_get_game_by_external_id_sets_api_key_and_oauth_user_id(self):
+    async def test_get_game_by_external_id_sets_api_key_and_oauth_user_id(self):
         game = self._build_game(uuid4())
         self.game_repository.read_by_column.return_value = game
 
-        result = self.service.get_game_by_external_id(
+        result = await self.service.get_game_by_external_id(
             "external-game-1", api_key="api-key", oauth_user_id="oauth-1"
         )
 

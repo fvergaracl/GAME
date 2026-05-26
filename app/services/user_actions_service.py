@@ -72,7 +72,7 @@ class UserActionsService(BaseService):
             NotFoundError: If the user or task is not found.
             GoneError: If the task is not active.
         """
-        task = self.task_repository.read_by_gameId_and_externalTaskId(
+        task = await self.task_repository.read_by_gameId_and_externalTaskId(
             gameId,
             externalTaskId,
         )
@@ -82,7 +82,7 @@ class UserActionsService(BaseService):
         if task.status != "open":
             raise GoneError("Task is not active")
 
-        user = self.users_repository.get_or_create_by_externalUserId(
+        user = await self.users_repository.get_or_create_by_externalUserId(
             externalUserId=action.externalUserId
         )
 
@@ -119,7 +119,7 @@ class UserActionsService(BaseService):
         Returns:
             object: The added action for user.
         """
-        user = self.users_repository.read_by_column(
+        user = await self.users_repository.read_by_column(
             "externalUserId",
             externalUserId,
             not_found_raise_exception=False,

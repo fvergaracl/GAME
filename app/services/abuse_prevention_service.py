@@ -40,7 +40,7 @@ class AbusePreventionService:
             return request.client.host
         return None
 
-    def enforce_task_mutation_limits(
+    async def enforce_task_mutation_limits(
         self,
         api_key: Optional[str],
         client_ip: Optional[str],
@@ -62,7 +62,7 @@ class AbusePreventionService:
         normalized_ip = self._normalize_scope_value(client_ip)
         normalized_external_user = self._normalize_scope_value(external_user_id)
 
-        self._enforce_limit(
+        await self._enforce_limit(
             scope_type="api_key",
             scope_value=normalized_api_key,
             window_name=short_window_name,
@@ -70,7 +70,7 @@ class AbusePreventionService:
             max_allowed=int(configs.ABUSE_RATE_LIMIT_PER_API_KEY),
             error_detail="API key rate limit exceeded for sensitive task operations.",
         )
-        self._enforce_limit(
+        await self._enforce_limit(
             scope_type="ip",
             scope_value=normalized_ip,
             window_name=short_window_name,
@@ -78,7 +78,7 @@ class AbusePreventionService:
             max_allowed=int(configs.ABUSE_RATE_LIMIT_PER_IP),
             error_detail="IP rate limit exceeded for sensitive task operations.",
         )
-        self._enforce_limit(
+        await self._enforce_limit(
             scope_type="external_user",
             scope_value=normalized_external_user,
             window_name=short_window_name,
@@ -89,7 +89,7 @@ class AbusePreventionService:
 
         daily_window_name = "task_mutation_daily"
         daily_window_start = self._get_daily_bucket_start(now)
-        self._enforce_limit(
+        await self._enforce_limit(
             scope_type="api_key",
             scope_value=normalized_api_key,
             window_name=daily_window_name,
@@ -98,7 +98,7 @@ class AbusePreventionService:
             error_detail="Daily API key quota exceeded for sensitive task operations.",
         )
 
-    def _enforce_limit(
+    async def _enforce_limit(
         self,
         scope_type: str,
         scope_value: Optional[str],
@@ -112,7 +112,7 @@ class AbusePreventionService:
         if max_allowed <= 0:
             return
 
-        counter = self.abuse_limit_counter_repository.increment_and_get(
+        counter = await self.abuse_limit_counter_repository.increment_and_get(
             scope_type=scope_type,
             scope_value=scope_value,
             window_name=window_name,

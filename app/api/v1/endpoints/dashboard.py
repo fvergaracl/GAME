@@ -145,7 +145,7 @@ async def get_dashboard_summary(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -164,7 +164,7 @@ async def get_dashboard_summary(
                 oauth_user_id=oauth_user_id,
             )
 
-    response = service.get_dashboard_summary(start_date, end_date, group_by)
+    response = await service.get_dashboard_summary(start_date, end_date, group_by)
 
     await add_log(
         "dashboard",
@@ -310,7 +310,7 @@ async def get_dashboard_summary_logs(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -329,7 +329,7 @@ async def get_dashboard_summary_logs(
                 oauth_user_id=oauth_user_id,
             )
 
-    response = service.get_dashboard_summary_logs(start_date, end_date, group_by)
+    response = await service.get_dashboard_summary_logs(start_date, end_date, group_by)
     await add_log(
         "dashboard",
         "INFO",
@@ -403,7 +403,7 @@ async def get_dashboard_summary_logs(
 #     if token:
 #         token_data = await valid_access_token(token)
 #         oauth_user_id = token_data.data["sub"]
-#         if service_oauth.get_user_by_sub(oauth_user_id) is None:
+#         if await service_oauth.get_user_by_sub(oauth_user_id) is None:
 #             create_user = CreateOAuthUser(
 #                 provider="keycloak",
 #                 provider_user_id=oauth_user_id,
@@ -422,7 +422,7 @@ async def get_dashboard_summary_logs(
 #                 oauth_user_id=oauth_user_id,
 #             )
 
-#     response = service.get_dashboard_summary_logs_module_counts(
+#     response = await service.get_dashboard_summary_logs_module_counts(
 #         start_date, end_date, group_by
 #     )
 #     await add_log(

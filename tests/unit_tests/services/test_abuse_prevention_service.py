@@ -1,6 +1,6 @@
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
+import asyncio
 import threading
+from datetime import datetime, timezone
 from types import SimpleNamespace
 
 import pytest
@@ -15,7 +15,7 @@ class InMemoryAbuseLimitCounterRepository:
         self._lock = threading.Lock()
         self.counters = {}
 
-    def increment_and_get(
+    async def increment_and_get(
         self,
         scope_type: str,
         scope_value: str,
@@ -60,12 +60,13 @@ def test_window_bucket_start_is_deterministic():
     assert bucket == datetime(2026, 2, 10, 12, 0, 0, tzinfo=timezone.utc)
 
 
-def test_enforce_limits_ignores_empty_scope_values(monkeypatch):
+@pytest.mark.asyncio
+async def test_enforce_limits_ignores_empty_scope_values(monkeypatch):
     _set_default_limits(monkeypatch)
     repository = InMemoryAbuseLimitCounterRepository()
     service = AbusePreventionService(repository)
 
-    service.enforce_task_mutation_limits(
+    await service.enforce_task_mutation_limits(
         api_key=None,
         client_ip="  ",
         external_user_id="",
@@ -75,31 +76,33 @@ def test_enforce_limits_ignores_empty_scope_values(monkeypatch):
     assert repository.counters == {}
 
 
-def test_enforce_limits_raises_when_api_key_rate_limit_is_exceeded(monkeypatch):
+@pytest.mark.asyncio
+async def test_enforce_limits_raises_when_api_key_rate_limit_is_exceeded(monkeypatch):
     _set_default_limits(monkeypatch)
     monkeypatch.setattr(configs, "ABUSE_RATE_LIMIT_PER_API_KEY", 1)
     repository = InMemoryAbuseLimitCounterRepository()
     service = AbusePreventionService(repository)
     now = datetime(2026, 2, 10, 12, 0, 0, tzinfo=timezone.utc)
 
-    service.enforce_task_mutation_limits(
+    await service.enforce_task_mutation_limits(
         api_key="k-1", client_ip=None, external_user_id=None, now=now
     )
 
     with pytest.raises(TooManyRequestsError):
-        service.enforce_task_mutation_limits(
+        await service.enforce_task_mutation_limits(
             api_key="k-1", client_ip=None, external_user_id=None, now=now
         )
 
 
-def test_enforce_limits_raises_when_daily_quota_is_exceeded(monkeypatch):
+@pytest.mark.asyncio
+async def test_enforce_limits_raises_when_daily_quota_is_exceeded(monkeypatch):
     _set_default_limits(monkeypatch)
     monkeypatch.setattr(configs, "ABUSE_DAILY_QUOTA_PER_API_KEY", 1)
     repository = InMemoryAbuseLimitCounterRepository()
     service = AbusePreventionService(repository)
     now = datetime(2026, 2, 10, 12, 0, 0, tzinfo=timezone.utc)
 
-    service.enforce_task_mutation_limits(
+    await service.enforce_task_mutation_limits(
         api_key="k-1",
         client_ip="203.0.113.4",
         external_user_id="user_1",
@@ -107,7 +110,7 @@ def test_enforce_limits_raises_when_daily_quota_is_exceeded(monkeypatch):
     )
 
     with pytest.raises(TooManyRequestsError):
-        service.enforce_task_mutation_limits(
+        await service.enforce_task_mutation_limits(
             api_key="k-1",
             client_ip="203.0.113.4",
             external_user_id="user_1",
@@ -115,22 +118,22 @@ def test_enforce_limits_raises_when_daily_quota_is_exceeded(monkeypatch):
         )
 
 
-def test_enforce_limits_is_stable_under_concurrency(monkeypatch):
+@pytest.mark.asyncio
+async def test_enforce_limits_is_stable_under_concurrency(monkeypatch):
     _set_default_limits(monkeypatch)
     repository = InMemoryAbuseLimitCounterRepository()
     service = AbusePreventionService(repository)
     now = datetime(2026, 2, 10, 12, 0, 0, tzinfo=timezone.utc)
 
-    def _run_once():
-        service.enforce_task_mutation_limits(
+    async def _run_once():
+        await service.enforce_task_mutation_limits(
             api_key="k-1",
             client_ip="203.0.113.5",
             external_user_id="user_2",
             now=now,
         )
 
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        list(executor.map(lambda _: _run_once(), range(20)))
+    await asyncio.gather(*[_run_once() for _ in range(20)])
 
     short_window_name = "task_mutation_short_60s"
     daily_window_name = "task_mutation_daily"

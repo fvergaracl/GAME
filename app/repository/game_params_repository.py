@@ -1,7 +1,8 @@
-from contextlib import AbstractContextManager
+from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundError
 from app.model.game_params import GamesParams
@@ -13,14 +14,14 @@ class GameParamsRepository(BaseRepository):
     Repository class for game parameters.
 
     Attributes:
-        session_factory (Callable[..., AbstractContextManager[Session]]):
+        session_factory (Callable[..., AbstractAsyncContextManager[AsyncSession]]):
           Factory for creating SQLAlchemy sessions.
         model: SQLAlchemy model class for game parameters.
     """
 
     def __init__(
         self,
-        session_factory: Callable[..., AbstractContextManager[Session]],
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model=GamesParams,
     ) -> None:
         """
@@ -28,40 +29,33 @@ class GameParamsRepository(BaseRepository):
           and model.
 
         Args:
-            session_factory (Callable[..., AbstractContextManager[Session]]):
+            session_factory (Callable[..., AbstractAsyncContextManager[AsyncSession]]):
               The session factory.
             model: The SQLAlchemy model class for game parameters.
         """
         super().__init__(session_factory, model)
 
-    def patch_game_params_by_id(self, id: str, schema):
+    async def patch_game_params_by_id(self, id: str, schema):
         """
         Updates game parameters by their ID.
-
-        Args:
-            id (str): The game parameter ID.
-            schema: The schema containing the updated data.
-
-        Returns:
-            object: The updated game parameters.
-
-        Raises:
-            NotFoundError: If the game parameters are not found.
         """
-        with self.session_factory() as session:
+        async with self.session_factory() as session:
+            stmt = select(self.model).filter(self.model.id == id)
             game_params_model = (
-                session.query(self.model).filter(self.model.id == id).first()
-            )
+                await session.execute(stmt)
+            ).scalars().first()
 
             if game_params_model:
                 for key, value in schema.model_dump(exclude_none=True).items():
                     setattr(game_params_model, key, value)
 
-                session.commit()
+                await session.commit()
+                target_id = game_params_model.id
 
-                return self.read_by_id(
-                    game_params_model.id,
-                    not_found_message=f"GameParams not found (id) : "
-                    f"{game_params_model.id}",
-                )
-            raise NotFoundError(f"GameParams not found (id) : {id}")
+            else:
+                raise NotFoundError(f"GameParams not found (id) : {id}")
+
+        return await self.read_by_id(
+            target_id,
+            not_found_message=f"GameParams not found (id) : {target_id}",
+        )

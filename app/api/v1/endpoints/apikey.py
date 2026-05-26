@@ -168,7 +168,7 @@ async def create_api_key(
     if token_decoded.data:
         oauth_user_id = token_decoded.data["sub"]
         existing_user = await _await_if_needed(
-            service_oauth.get_user_by_sub(oauth_user_id)
+            await service_oauth.get_user_by_sub(oauth_user_id)
         )
         if existing_user is None:
             create_user = CreateOAuthUser(
@@ -404,7 +404,7 @@ async def get_all_api_keys(
     if token_decoded_data:
         oauth_user_id = token_decoded_data["sub"]
         existing_user = await _await_if_needed(
-            service_oauth.get_user_by_sub(oauth_user_id)
+            await service_oauth.get_user_by_sub(oauth_user_id)
         )
         if existing_user is None:
             create_user = CreateOAuthUser(
@@ -448,7 +448,7 @@ async def get_all_api_keys(
         api_key=api_key,
         oauth_user_id=oauth_user_id,
     )
-    return service.get_all_api_keys()
+    return await service.get_all_api_keys()
 
 
 summary_revoke_api_key = "Revoke API Key (Admin)"
@@ -533,7 +533,7 @@ async def revoke_api_key(
     if token_decoded_data:
         oauth_user_id = token_decoded_data["sub"]
         existing_user = await _await_if_needed(
-            service_oauth.get_user_by_sub(oauth_user_id)
+            await service_oauth.get_user_by_sub(oauth_user_id)
         )
         if existing_user is None:
             create_user = CreateOAuthUser(
@@ -563,7 +563,7 @@ async def revoke_api_key(
         )
 
     try:
-        revoked = service.revoke_api_key_by_prefix(prefix)
+        revoked = await service.revoke_api_key_by_prefix(prefix)
     except NotFoundError as exc:
         await add_log(
             "api_key",

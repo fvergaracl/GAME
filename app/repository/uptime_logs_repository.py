@@ -1,7 +1,7 @@
-from contextlib import AbstractContextManager
+from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.model.uptime_logs import UptimeLogs
 from app.repository.base_repository import BaseRepository
@@ -12,14 +12,14 @@ class UptimeLogsRepository(BaseRepository):
     Repository class for Uptime Logs.
 
     Attributes:
-        session_factory (Callable[..., AbstractContextManager[Session]]):
+        session_factory (Callable[..., AbstractAsyncContextManager[AsyncSession]]):
           Factory for creating SQLAlchemy sessions.
         model: SQLAlchemy model class for Uptime Logs.
     """
 
     def __init__(
         self,
-        session_factory: Callable[..., AbstractContextManager[Session]],
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model=UptimeLogs,
     ) -> None:
         """
@@ -27,7 +27,7 @@ class UptimeLogsRepository(BaseRepository):
           and model.
 
         Args:
-            session_factory (Callable[..., AbstractContextManager[Session]]):
+            session_factory (Callable[..., AbstractAsyncContextManager[AsyncSession]]):
               The session factory.
             model: The SQLAlchemy model class for Uptime Logs.
         """

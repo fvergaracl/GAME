@@ -10,8 +10,8 @@ from app.util.check_role import check_role
 
 def _mock_oauth_user_service(existing_user=True):
     service = MagicMock()
-    service.get_user_by_sub.return_value = (
-        SimpleNamespace(id="oauth-user") if existing_user else None
+    service.get_user_by_sub = AsyncMock(
+        return_value=SimpleNamespace(id="oauth-user") if existing_user else None
     )
     service.add = AsyncMock()
     return service

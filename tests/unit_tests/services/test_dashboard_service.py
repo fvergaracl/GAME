@@ -1,18 +1,18 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 from app.services.dashboard_service import DashboardService
 
 
 class TestDashboardService(unittest.TestCase):
     def setUp(self):
-        self.dashboard_repository = MagicMock()
-        self.game_repository = MagicMock()
-        self.task_repository = MagicMock()
-        self.user_repository = MagicMock()
-        self.logs_repository = MagicMock()
-        self.user_points_repository = MagicMock()
-        self.user_actions_repository = MagicMock()
+        self.dashboard_repository = AsyncMock()
+        self.game_repository = AsyncMock()
+        self.task_repository = AsyncMock()
+        self.user_repository = AsyncMock()
+        self.logs_repository = AsyncMock()
+        self.user_points_repository = AsyncMock()
+        self.user_actions_repository = AsyncMock()
 
         self.service = DashboardService(
             dashboard_repository=self.dashboard_repository,
@@ -34,7 +34,7 @@ class TestDashboardService(unittest.TestCase):
         self.assertIs(self.service.user_actions_repository, self.user_actions_repository)
         self.assertIs(self.service._repository, self.dashboard_repository)
 
-    def test_get_dashboard_summary_delegates_to_repository(self):
+    async def test_get_dashboard_summary_delegates_to_repository(self):
         expected = {
             "new_users": [{"label": "2026-02-09", "count": 5}],
             "games_opened": [{"label": "2026-02-09", "count": 2}],
@@ -43,7 +43,7 @@ class TestDashboardService(unittest.TestCase):
         }
         self.dashboard_repository.get_dashboard_summary.return_value = expected
 
-        result = self.service.get_dashboard_summary("2026-02-01", "2026-02-09", "day")
+        result = await self.service.get_dashboard_summary("2026-02-01", "2026-02-09", "day")
 
         self.assertEqual(result, expected)
         self.dashboard_repository.get_dashboard_summary.assert_called_once_with(
@@ -52,7 +52,7 @@ class TestDashboardService(unittest.TestCase):
             "day",
         )
 
-    def test_get_dashboard_summary_logs_delegates_to_repository(self):
+    async def test_get_dashboard_summary_logs_delegates_to_repository(self):
         expected = {
             "info": [{"label": "2026-02", "count": 100}],
             "success": [{"label": "2026-02", "count": 70}],
@@ -60,7 +60,7 @@ class TestDashboardService(unittest.TestCase):
         }
         self.dashboard_repository.get_dashboard_summary_logs.return_value = expected
 
-        result = self.service.get_dashboard_summary_logs(
+        result = await self.service.get_dashboard_summary_logs(
             "2026-02-01",
             "2026-02-28",
             "month",

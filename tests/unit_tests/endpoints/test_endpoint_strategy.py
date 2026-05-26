@@ -14,8 +14,8 @@ def _api_key_header(api_key="api-key-1"):
 
 def _oauth_service(user_exists=True):
     service_oauth = MagicMock()
-    service_oauth.get_user_by_sub.return_value = (
-        SimpleNamespace(id="oauth-user-id") if user_exists else None
+    service_oauth.get_user_by_sub = AsyncMock(
+        return_value=SimpleNamespace(id="oauth-user-id") if user_exists else None
     )
     service_oauth.add = AsyncMock()
     return service_oauth

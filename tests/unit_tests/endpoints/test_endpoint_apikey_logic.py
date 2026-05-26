@@ -33,7 +33,7 @@ def _api_key_header(api_key="api-key-header-1"):
 
 @pytest.mark.asyncio
 async def test_create_api_key_raises_when_token_validation_fails():
-    service = MagicMock()
+    service = AsyncMock()
     service_log = MagicMock()
     service_oauth = MagicMock()
     service_oauth.get_user_by_sub = AsyncMock()
@@ -59,7 +59,7 @@ async def test_create_api_key_raises_when_token_validation_fails():
 
 @pytest.mark.asyncio
 async def test_create_api_key_raises_forbidden_when_role_is_missing():
-    service = MagicMock()
+    service = AsyncMock()
     service_log = MagicMock()
     service_oauth = MagicMock()
     service_oauth.get_user_by_sub = AsyncMock(
@@ -91,7 +91,7 @@ async def test_create_api_key_raises_forbidden_when_role_is_missing():
 
 @pytest.mark.asyncio
 async def test_create_api_key_logs_and_raises_when_create_fails():
-    service = MagicMock()
+    service = AsyncMock()
     service.generate_api_key_service = AsyncMock(return_value=GENERATED)
     service.create_api_key = AsyncMock(side_effect=RuntimeError("db-failure"))
     service_log = MagicMock()
@@ -125,7 +125,7 @@ async def test_create_api_key_logs_and_raises_when_create_fails():
 
 @pytest.mark.asyncio
 async def test_get_all_api_keys_raises_when_token_validation_fails():
-    service = MagicMock()
+    service = AsyncMock()
     service_log = MagicMock()
     service_oauth = MagicMock()
 
@@ -149,10 +149,10 @@ async def test_get_all_api_keys_raises_when_token_validation_fails():
 
 @pytest.mark.asyncio
 async def test_get_all_api_keys_raises_forbidden_when_role_is_missing():
-    service = MagicMock()
+    service = AsyncMock()
     service_log = MagicMock()
     service_oauth = MagicMock()
-    service_oauth.get_user_by_sub = MagicMock(
+    service_oauth.get_user_by_sub = AsyncMock(
         return_value=SimpleNamespace(id="oauth-user-1")
     )
     service_oauth.add = AsyncMock()
@@ -181,12 +181,12 @@ async def test_get_all_api_keys_raises_forbidden_when_role_is_missing():
 
 @pytest.mark.asyncio
 async def test_get_all_api_keys_success_creates_missing_user_and_returns_data():
-    service = MagicMock()
+    service = AsyncMock()
     expected = [{"apiKey": "k-1"}, {"apiKey": "k-2"}]
-    service.get_all_api_keys = MagicMock(return_value=expected)
+    service.get_all_api_keys = AsyncMock(return_value=expected)
     service_log = MagicMock()
     service_oauth = MagicMock()
-    service_oauth.get_user_by_sub = MagicMock(return_value=None)
+    service_oauth.get_user_by_sub = AsyncMock(return_value=None)
     service_oauth.add = AsyncMock()
 
     with patch(
@@ -215,7 +215,7 @@ async def test_get_all_api_keys_success_creates_missing_user_and_returns_data():
 
 @pytest.mark.asyncio
 async def test_create_api_key_success_returns_plaintext_only_once():
-    service = MagicMock()
+    service = AsyncMock()
     service.generate_api_key_service = AsyncMock(return_value=GENERATED)
     service.create_api_key = AsyncMock(return_value=_FakeApiKeyCreated())
     service_log = MagicMock()
@@ -255,8 +255,8 @@ async def test_create_api_key_success_returns_plaintext_only_once():
 
 @pytest.mark.asyncio
 async def test_revoke_api_key_success_returns_revoked_payload():
-    service = MagicMock()
-    service.revoke_api_key_by_prefix = MagicMock(
+    service = AsyncMock()
+    service.revoke_api_key_by_prefix = AsyncMock(
         return_value=SimpleNamespace(
             apiKey="gme_live_revoked0", active=False
         )
@@ -298,8 +298,8 @@ async def test_revoke_api_key_success_returns_revoked_payload():
 
 @pytest.mark.asyncio
 async def test_revoke_api_key_forbids_non_admin():
-    service = MagicMock()
-    service.revoke_api_key_by_prefix = MagicMock()
+    service = AsyncMock()
+    service.revoke_api_key_by_prefix = AsyncMock()
     service_log = MagicMock()
     service_oauth = MagicMock()
     service_oauth.get_user_by_sub = AsyncMock(
@@ -331,8 +331,8 @@ async def test_revoke_api_key_forbids_non_admin():
 
 @pytest.mark.asyncio
 async def test_revoke_api_key_raises_not_found_when_prefix_missing():
-    service = MagicMock()
-    service.revoke_api_key_by_prefix = MagicMock(
+    service = AsyncMock()
+    service.revoke_api_key_by_prefix = AsyncMock(
         side_effect=NotFoundError("missing")
     )
     service_log = MagicMock()

@@ -83,22 +83,22 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
         self.assertIs(self.service.strategy_service, self.strategy_service_instance)
         self.assertIs(self.service._repository, self.task_repository)
 
-    def test_get_tasks_list_by_external_game_id_raises_when_game_missing(self):
+    async def test_get_tasks_list_by_external_game_id_raises_when_game_missing(self):
         self.game_repository.read_by_column.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.get_tasks_list_by_externalGameId(
+            await self.service.get_tasks_list_by_externalGameId(
                 "missing-game",
                 PostFindTask(ordering="-created_at", page=1, page_size=10),
             )
 
-    def test_get_tasks_list_by_external_game_id_delegates_to_game_id_method(self):
+    async def test_get_tasks_list_by_external_game_id_delegates_to_game_id_method(self):
         game_id = uuid4()
         self.game_repository.read_by_column.return_value = self._game(game_id)
-        self.service.get_tasks_list_by_gameId = MagicMock(return_value={"items": []})
+        self.service.get_tasks_list_by_gameId = AsyncMock(return_value={"items": []})
         find_query = PostFindTask(ordering="-created_at", page=1, page_size=10)
 
-        result = self.service.get_tasks_list_by_externalGameId(
+        result = await self.service.get_tasks_list_by_externalGameId(
             "external-game-1", find_query
         )
 
@@ -107,16 +107,16 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
             game_id, find_query
         )
 
-    def test_get_tasks_list_by_game_id_raises_when_game_missing(self):
+    async def test_get_tasks_list_by_game_id_raises_when_game_missing(self):
         self.game_repository.read_by_id.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.get_tasks_list_by_gameId(
+            await self.service.get_tasks_list_by_gameId(
                 uuid4(),
                 PostFindTask(ordering="-created_at", page=1, page_size=10),
             )
 
-    def test_get_tasks_list_by_game_id_returns_enriched_tasks(self):
+    async def test_get_tasks_list_by_game_id_returns_enriched_tasks(self):
         game_id = uuid4()
         task_id_1 = uuid4()
         task_id_2 = uuid4()
@@ -162,7 +162,7 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
             None,
         ]
 
-        result = self.service.get_tasks_list_by_gameId(game_id, find_query)
+        result = await self.service.get_tasks_list_by_gameId(game_id, find_query)
 
         self.assertEqual(len(result["items"]), 2)
         first_task = result["items"][0]
@@ -178,22 +178,22 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(first_task["taskParams"], task_params_for_task_1)
         self.assertEqual(second_task["taskParams"], [])
 
-    def test_get_task_by_game_id_external_task_id_raises_when_game_missing(self):
+    async def test_get_task_by_game_id_external_task_id_raises_when_game_missing(self):
         self.game_repository.read_by_id.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.get_task_by_gameId_externalTaskId(uuid4(), "task-x")
+            await self.service.get_task_by_gameId_externalTaskId(uuid4(), "task-x")
 
-    def test_get_task_by_game_id_external_task_id_raises_when_task_missing(self):
+    async def test_get_task_by_game_id_external_task_id_raises_when_task_missing(self):
         game_id = uuid4()
         game = self._game(game_id)
         self.game_repository.read_by_id.return_value = game
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.get_task_by_gameId_externalTaskId(game_id, "missing-task")
+            await self.service.get_task_by_gameId_externalTaskId(game_id, "missing-task")
 
-    def test_get_task_by_game_id_external_task_id_returns_task_details(self):
+    async def test_get_task_by_game_id_external_task_id_returns_task_details(self):
         game_id = uuid4()
         task_id = uuid4()
         game = self._game(game_id, external_game_id="external-game-1")
@@ -224,7 +224,7 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
         self.game_params_repository.read_by_column.return_value = game_params
         self.task_params_repository.read_by_column.return_value = task_params
 
-        result = self.service.get_task_by_gameId_externalTaskId(game_id, "task-1")
+        result = await self.service.get_task_by_gameId_externalTaskId(game_id, "task-1")
 
         self.assertEqual(result.externalTaskId, "task-1")
         self.assertEqual(result.externalGameId, "external-game-1")
@@ -236,14 +236,14 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.gameParams, game_params)
         self.assertEqual(result.taskParams, task_params)
 
-    def test_get_task_by_external_game_id_external_task_id_delegates(self):
+    async def test_get_task_by_external_game_id_external_task_id_delegates(self):
         game_id = uuid4()
         self.game_repository.read_by_column.return_value = self._game(game_id)
-        self.service.get_task_by_gameId_externalTaskId = MagicMock(
+        self.service.get_task_by_gameId_externalTaskId = AsyncMock(
             return_value="task-data"
         )
 
-        result = self.service.get_task_by_externalGameId_externalTaskId(
+        result = await self.service.get_task_by_externalGameId_externalTaskId(
             game_id, "task-1"
         )
 
@@ -400,38 +400,38 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(first_insert_payload.value, "9")
         self.assertEqual(first_insert_payload.apiKey_used, "api-key")
 
-    def test_get_task_detail_by_id_returns_task_and_strategy(self):
+    async def test_get_task_detail_by_id_returns_task_and_strategy(self):
         task_id = uuid4()
         task = SimpleNamespace(id=task_id, strategyId="strategy-A")
         self.task_repository.read_by_id.return_value = task
-        self.service.strategy_repository = MagicMock()
+        self.service.strategy_repository = AsyncMock()
         expected_strategy = {"id": "strategy-A"}
         self.service.strategy_repository.read_by_id.return_value = expected_strategy
         schema = SimpleNamespace(taskId=task_id)
 
-        result = self.service.get_task_detail_by_id(schema)
+        result = await self.service.get_task_detail_by_id(schema)
 
         self.assertEqual(result, {"task": task, "strategy": expected_strategy})
 
-    def test_get_task_detail_by_id_returns_task_with_none_strategy(self):
+    async def test_get_task_detail_by_id_returns_task_with_none_strategy(self):
         task_id = uuid4()
         task = SimpleNamespace(id=task_id, strategyId=None)
         self.task_repository.read_by_id.return_value = task
         schema = SimpleNamespace(taskId=task_id)
 
-        result = self.service.get_task_detail_by_id(schema)
+        result = await self.service.get_task_detail_by_id(schema)
 
         self.assertEqual(result, {"task": task, "strategy": None})
 
-    def test_get_points_by_task_id_raises_when_task_missing(self):
+    async def test_get_points_by_task_id_raises_when_task_missing(self):
         game_id = uuid4()
         self.game_repository.read_by_column.return_value = self._game(game_id)
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.get_points_by_task_id(game_id, "missing-task")
+            await self.service.get_points_by_task_id(game_id, "missing-task")
 
-    def test_get_points_by_task_id_returns_user_points(self):
+    async def test_get_points_by_task_id_returns_user_points(self):
         game_id = uuid4()
         task_id = uuid4()
         self.game_repository.read_by_column.return_value = self._game(game_id)
@@ -442,33 +442,33 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
             {"points": 3}
         ]
 
-        result = self.service.get_points_by_task_id(game_id, "task-1")
+        result = await self.service.get_points_by_task_id(game_id, "task-1")
 
         self.assertEqual(result, [{"points": 3}])
 
-    def test_get_points_of_user_by_task_id_raises_when_user_points_missing(self):
-        self.service.get_points_by_task_id_with_details = MagicMock(return_value=[])
+    async def test_get_points_of_user_by_task_id_raises_when_user_points_missing(self):
+        self.service.get_points_by_task_id_with_details = AsyncMock(return_value=[])
 
         with self.assertRaises(NotFoundError):
-            self.service.get_points_of_user_by_task_id(uuid4(), "task-1", "user-x")
+            await self.service.get_points_of_user_by_task_id(uuid4(), "task-1", "user-x")
 
-    def test_get_points_of_user_by_task_id_returns_first_matching_user(self):
+    async def test_get_points_of_user_by_task_id_returns_first_matching_user(self):
         matching = SimpleNamespace(externalUserId="user-1", points=8)
-        self.service.get_points_by_task_id_with_details = MagicMock(
+        self.service.get_points_by_task_id_with_details = AsyncMock(
             return_value=[SimpleNamespace(externalUserId="user-2"), matching]
         )
 
-        result = self.service.get_points_of_user_by_task_id(uuid4(), "task-1", "user-1")
+        result = await self.service.get_points_of_user_by_task_id(uuid4(), "task-1", "user-1")
 
         self.assertEqual(result, matching)
 
-    def test_get_points_by_task_id_with_details_raises_when_task_missing(self):
+    async def test_get_points_by_task_id_with_details_raises_when_task_missing(self):
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = None
 
         with self.assertRaises(NotFoundError):
-            self.service.get_points_by_task_id_with_details(uuid4(), "missing-task")
+            await self.service.get_points_by_task_id_with_details(uuid4(), "missing-task")
 
-    def test_get_points_by_task_id_with_details_returns_points(self):
+    async def test_get_points_by_task_id_with_details_returns_points(self):
         task_id = uuid4()
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = (
             self._task(task_id)
@@ -477,18 +477,18 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
             {"externalUserId": "user-1", "pointsData": []}
         ]
 
-        result = self.service.get_points_by_task_id_with_details(uuid4(), "task-1")
+        result = await self.service.get_points_by_task_id_with_details(uuid4(), "task-1")
 
         self.assertEqual(result, [{"externalUserId": "user-1", "pointsData": []}])
 
-    def test_get_task_params_by_external_task_id_returns_params(self):
+    async def test_get_task_params_by_external_task_id_returns_params(self):
         task_id = uuid4()
         task = self._task(task_id, external_task_id="task-1")
         self.task_repository.read_by_column.return_value = task
         expected_params = [CreateTaskParams(key="k", value="v")]
         self.task_params_repository.read_by_column.return_value = expected_params
 
-        result = self.service.get_task_params_by_externalTaskId("task-1")
+        result = await self.service.get_task_params_by_externalTaskId("task-1")
 
         self.assertEqual(result, expected_params)
         self.task_params_repository.read_by_column.assert_called_once_with(

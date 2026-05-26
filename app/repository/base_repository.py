@@ -1,9 +1,10 @@
-from contextlib import AbstractContextManager
+from contextlib import AbstractAsyncContextManager
 from typing import Callable, Optional
 
-from sqlalchemy import and_
+from sqlalchemy import and_, delete as sa_delete, func, select, update as sa_update
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.core.config import configs
 from app.core.exceptions import DuplicatedError, NotFoundError
@@ -12,41 +13,20 @@ from app.util.query_builder import dict_to_sqlalchemy_filter_options
 
 class BaseRepository:
     """
-    Base repository providing common CRUD operations.
-
-    Attributes:
-        session_factory (Callable[..., AbstractContextManager[Session]]):
-          Factory for creating SQLAlchemy sessions.
-        model: SQLAlchemy model class.
+    Async base repository providing common CRUD operations on top of
+    SQLAlchemy 2.0's ``AsyncSession``.
     """
 
     def __init__(
-        self, session_factory: Callable[..., AbstractContextManager[Session]], model
+        self,
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
+        model,
     ) -> None:
-        """
-        Initializes the BaseRepository with the provided session factory and
-          model.
-
-        Args:
-            session_factory (Callable[..., AbstractContextManager[Session]]):
-              The session factory.
-            model: The SQLAlchemy model class.
-        """
         self.session_factory = session_factory
         self.model = model
 
-    def read_by_options(self, schema, eager=False):
-        """
-        Reads records by specified options.
-
-        Args:
-            schema: The schema containing query options.
-            eager (bool): Whether to use eager loading.
-
-        Returns:
-            dict: Query results and search options.
-        """
-        with self.session_factory() as session:
+    async def read_by_options(self, schema, eager: bool = False):
+        async with self.session_factory() as session:
             schema_as_dict = schema.model_dump(exclude_none=True)
             ordering = schema_as_dict.get("ordering", configs.ORDERING)
             order_query = (
@@ -59,19 +39,25 @@ class BaseRepository:
             filter_options = dict_to_sqlalchemy_filter_options(
                 self.model, schema.model_dump(exclude_none=True)
             )
-            query = session.query(self.model)
+
+            stmt = select(self.model)
             if eager:
-                for eager in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(getattr(self.model, eager)))
-            filtered_query = query.filter(filter_options)
-            query = filtered_query.order_by(order_query)
-            if page_size == "all":
-                query = query.all()
-            else:
-                query = query.limit(page_size).offset((page - 1) * page_size).all()
-            total_count = filtered_query.count()
+                for eager_rel in getattr(self.model, "eagers", []):
+                    stmt = stmt.options(
+                        joinedload(getattr(self.model, eager_rel))
+                    )
+            stmt = stmt.filter(filter_options)
+            count_stmt = select(func.count()).select_from(
+                select(self.model).filter(filter_options).subquery()
+            )
+            stmt = stmt.order_by(order_query)
+            if page_size != "all":
+                stmt = stmt.limit(page_size).offset((page - 1) * page_size)
+            result = await session.execute(stmt)
+            items = result.unique().scalars().all()
+            total_count = (await session.execute(count_stmt)).scalar_one()
             return {
-                "items": query,
+                "items": items,
                 "search_options": {
                     "page": page,
                     "page_size": page_size,
@@ -80,228 +66,148 @@ class BaseRepository:
                 },
             }
 
-    def read_by_id(
+    async def read_by_id(
         self,
-        id: int,
-        eager=False,
-        not_found_raise_exception=True,
-        not_found_message="Not found id : {id}",
+        id,
+        eager: bool = False,
+        not_found_raise_exception: bool = True,
+        not_found_message: str = "Not found id : {id}",
     ):
-        """
-        Reads a record by its ID.
-
-        Args:
-            id (int): The record ID.
-            eager (bool): Whether to use eager loading.
-            not_found_raise_exception (bool): Whether to raise an exception if
-              the record is not found.
-            not_found_message (str): The message for the not found exception.
-
-        Returns:
-            object: The record if found, otherwise None or raises an exception.
-        """
-        with self.session_factory() as session:
-            query = session.query(self.model)
+        async with self.session_factory() as session:
+            stmt = select(self.model).filter(self.model.id == id)
             if eager:
-                for eager in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(getattr(self.model, eager)))
-            query = query.filter(self.model.id == id).first()
-            if not query and not_found_raise_exception:
+                for eager_rel in getattr(self.model, "eagers", []):
+                    stmt = stmt.options(
+                        joinedload(getattr(self.model, eager_rel))
+                    )
+            result = (await session.execute(stmt)).unique().scalars().first()
+            if not result and not_found_raise_exception:
                 raise NotFoundError(detail=not_found_message.format(id=id))
-            if not not_found_raise_exception and not query:
-                return None
-            return query
+            return result
 
-    def read_by_column(
+    async def read_by_column(
         self,
         column: str,
-        value: str,
-        eager=False,
-        only_one=True,
-        not_found_raise_exception=True,
-        not_found_message="Not found {column} : {value}",
+        value,
+        eager: bool = False,
+        only_one: bool = True,
+        not_found_raise_exception: bool = True,
+        not_found_message: str = "Not found {column} : {value}",
     ):
-        """
-        Reads records by a specified column and value.
-
-        Args:
-            column (str): The column name.
-            value (str): The value to filter by.
-            eager (bool): Whether to use eager loading.
-            only_one (bool): Whether to return only one record.
-            not_found_raise_exception (bool): Whether to raise an exception if
-              the record is not found.
-            not_found_message (str): The message for the not found exception.
-
-        Returns:
-            object or list: The record(s) if found, otherwise None or raises
-              an exception.
-        """
-        with self.session_factory() as session:
-            query = session.query(self.model)
+        async with self.session_factory() as session:
+            stmt = select(self.model).filter(
+                getattr(self.model, column) == value
+            )
             if eager:
-                for eager in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(getattr(self.model, eager)))
+                for eager_rel in getattr(self.model, "eagers", []):
+                    stmt = stmt.options(
+                        joinedload(getattr(self.model, eager_rel))
+                    )
+            executed = await session.execute(stmt)
             if only_one:
-                query = query.filter(getattr(self.model, column) == value).first()
-                if not query and not_found_raise_exception:
+                result = executed.unique().scalars().first()
+                if not result and not_found_raise_exception:
                     raise NotFoundError(
                         detail=not_found_message.format(column=column, value=value)
                     )
-                return query
-            query = query.filter(getattr(self.model, column) == value).all()
-            return query
+                return result
+            return executed.unique().scalars().all()
 
     async def create(
         self,
         schema,
-        session: Optional[Session] = None,
+        session: Optional[AsyncSession] = None,
         auto_commit: bool = True,
     ):
-        """
-        Creates a new record.
-
-        Args:
-            schema: The schema containing the record data.
-            session (Optional[Session]): Existing SQLAlchemy session. When not
-              provided, a new managed session is created.
-            auto_commit (bool): Controls whether this method commits the
-              transaction. Set to False to compose multiple repository writes
-              in one outer transaction.
-
-        Returns:
-            object: The created record.
-        """
         if session is None and not auto_commit:
             raise ValueError(
                 "auto_commit=False requires an external session managed by the caller."
             )
         if session is None:
-            with self.session_factory() as managed_session:
+            async with self.session_factory() as managed_session:
                 return await self.create(
                     schema,
                     session=managed_session,
                     auto_commit=auto_commit,
                 )
 
-        query = self.model(**schema.model_dump())
+        entity = self.model(**schema.model_dump())
         try:
-            session.add(query)
+            session.add(entity)
             if auto_commit:
-                session.commit()
+                await session.commit()
             else:
-                session.flush()
-            session.refresh(query)
+                await session.flush()
+            await session.refresh(entity)
         except IntegrityError as e:
             if auto_commit:
-                session.rollback()
+                await session.rollback()
             raise DuplicatedError(detail=str(e.orig))
-        return query
+        return entity
 
-    async def update(self, id: int, schema):
-        """
-        Updates a record by its ID.
-
-        Args:
-            id (int): The record ID.
-            schema: The schema containing the updated data.
-
-        Returns:
-            object: The updated record.
-        """
-        with self.session_factory() as session:
-            session.query(self.model).filter(self.model.id == id).update(
-                schema.model_dump(exclude_none=True)
+    async def update(self, id, schema):
+        async with self.session_factory() as session:
+            await session.execute(
+                sa_update(self.model)
+                .where(self.model.id == id)
+                .values(**schema.model_dump(exclude_none=True))
             )
-            session.commit()
-            return self.read_by_id(id)
+            await session.commit()
+            return await self.read_by_id(id)
 
-    def update_attr(self, id: int, column: str, value):
-        """
-        Updates a specific attribute of a record by its ID.
-
-        Args:
-            id (int): The record ID.
-            column (str): The column name.
-            value: The new value of the attribute.
-
-        Returns:
-            object: The updated record.
-        """
-        with self.session_factory() as session:
-            session.query(self.model).filter(self.model.id == id).update(
-                {column: value}
+    async def update_attr(self, id, column: str, value):
+        async with self.session_factory() as session:
+            await session.execute(
+                sa_update(self.model)
+                .where(self.model.id == id)
+                .values(**{column: value})
             )
-            session.commit()
-            return self.read_by_id(id)
+            await session.commit()
+            return await self.read_by_id(id)
 
-    def whole_update(self, id: int, schema):
-        """
-        Replaces a record entirely by its ID.
+    async def whole_update(self, id, schema):
+        async with self.session_factory() as session:
+            await session.execute(
+                sa_update(self.model)
+                .where(self.model.id == id)
+                .values(**schema.model_dump())
+            )
+            await session.commit()
+            return await self.read_by_id(id)
 
-        Args:
-            id (int): The record ID.
-            schema: The schema containing the new data.
-
-        Returns:
-            object: The updated record.
-        """
-        with self.session_factory() as session:
-            session.query(self.model).filter(self.model.id == id).update(schema.model_dump())
-            session.commit()
-            return self.read_by_id(id)
-
-    def delete_by_id(self, id: int):
-        """
-        Deletes a record by its ID.
-
-        Args:
-            id (int): The record ID.
-
-        Returns:
-            None
-        """
-        with self.session_factory() as session:
-            query = session.query(self.model).filter(self.model.id == id).first()
-            if not query:
+    async def delete_by_id(self, id):
+        async with self.session_factory() as session:
+            stmt = select(self.model).filter(self.model.id == id)
+            entity = (await session.execute(stmt)).scalars().first()
+            if not entity:
                 raise NotFoundError(detail=f"Not found id : {id}")
-            session.delete(query)
-            session.commit()
+            await session.execute(
+                sa_delete(self.model).where(self.model.id == id)
+            )
+            await session.commit()
 
-    def read_by_columns(
-        self, filters: dict, eager=False, only_one=True, not_found_raise_exception=True
+    async def read_by_columns(
+        self,
+        filters: dict,
+        eager: bool = False,
+        only_one: bool = True,
+        not_found_raise_exception: bool = True,
     ):
-        """
-        Reads records based on multiple column filters.
-
-        Args:
-            filters (dict): Dictionary where keys are column names and values are filter values.
-            eager (bool): Whether to use eager loading.
-            only_one (bool): Whether to return only one record.
-            not_found_raise_exception (bool): Whether to raise an exception if the record is not found.
-
-        Returns:
-            object or list: The record(s) if found, otherwise None or raises an exception.
-        """
-        with self.session_factory() as session:
-            query = session.query(self.model)
-
-            # Aplicar cargas ansiosas si están definidas en el modelo
+        async with self.session_factory() as session:
+            stmt = select(self.model)
             if eager:
                 for eager_field in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(getattr(self.model, eager_field)))
-
-            # Construir el filtro dinámicamente
-            filter_conditions = [
+                    stmt = stmt.options(
+                        joinedload(getattr(self.model, eager_field))
+                    )
+            conditions = [
                 getattr(self.model, col) == val for col, val in filters.items()
             ]
-            query = query.filter(and_(*filter_conditions))
-
-            # Retornar un solo resultado o una lista de resultados
+            stmt = stmt.filter(and_(*conditions))
+            executed = await session.execute(stmt)
             if only_one:
-                result = query.first()
+                result = executed.unique().scalars().first()
                 if not result and not_found_raise_exception:
                     raise NotFoundError(detail=f"Not found for filters: {filters}")
                 return result
-            else:
-                return query.all()
+            return executed.unique().scalars().all()

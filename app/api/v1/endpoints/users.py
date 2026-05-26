@@ -234,7 +234,7 @@ async def query_user_points(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -262,7 +262,7 @@ async def query_user_points(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
-        response = service.get_points_by_user_list(schema)
+        response = await service.get_points_by_user_list(schema)
         return response
     except Exception as e:
         await add_log(
@@ -412,7 +412,7 @@ async def get_points_by_user_id(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -440,7 +440,7 @@ async def get_points_by_user_id(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
-        response = service.get_points_by_externalUserId(externalUserId)
+        response = await service.get_points_by_externalUserId(externalUserId)
         return response
     except Exception as e:
         await add_log(
@@ -589,7 +589,7 @@ async def get_wallet_by_user_id(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -638,7 +638,7 @@ async def get_wallet_by_user_id(
 #     schema: FindBase = Depends(),
 #     service: UserService = Depends(Provide[Container.user_service]),
 # ):
-#     return service.get_list(schema)
+#     return await service.get_list(schema)
 
 
 # @router.post("", response_model=CreatedUser)
@@ -647,7 +647,7 @@ async def get_wallet_by_user_id(
 #     schema: PostCreateUser,
 #     service: UserService = Depends(Provide[Container.user_service]),
 # ):
-#     return service.create_user(schema)
+#     return await service.create_user(schema)
 
 
 summary_assign_points_by_external_id = "Assign points to user by externalUserId"
@@ -820,7 +820,7 @@ async def assign_points_by_external_user_id(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             await service_oauth.add(
                 CreateOAuthUser(
                     provider="keycloak",
@@ -896,7 +896,7 @@ description_get_points = """
 #     userId: UUID,
 #     service: UserService = Depends(Provide[Container.user_service]),
 # ):
-#     return service.get_points_by_user_id(userId)
+#     return await service.get_points_by_user_id(userId)
 
 
 summary_preview_points = "Preview Points to Coins Conversion"
@@ -1039,7 +1039,7 @@ async def preview_points_to_coins_conversion(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -1067,7 +1067,7 @@ async def preview_points_to_coins_conversion(
             api_key=api_key,
             oauth_user_id=oauth_user_id,
         )
-        response = service.preview_points_to_coins_conversion_externalUserId(
+        response = await service.preview_points_to_coins_conversion_externalUserId(
             externalUserId, points
         )
         return response
@@ -1232,7 +1232,7 @@ async def convert_points_to_coins(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -1418,7 +1418,7 @@ async def add_action_to_user(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,

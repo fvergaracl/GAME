@@ -123,7 +123,7 @@ async def get_strategy_list(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -268,7 +268,7 @@ async def get_strategy_by_id(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -406,7 +406,7 @@ async def get_strategy_graph_by_id(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,

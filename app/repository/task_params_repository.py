@@ -1,7 +1,7 @@
-from contextlib import AbstractContextManager
+from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.model.task_params import TasksParams
 from app.repository.base_repository import BaseRepository
@@ -12,14 +12,14 @@ class TaskParamsRepository(BaseRepository):
     Repository class for task parameters.
 
     Attributes:
-        session_factory (Callable[..., AbstractContextManager[Session]]):
+        session_factory (Callable[..., AbstractAsyncContextManager[AsyncSession]]):
           Factory for creating SQLAlchemy sessions.
         model: SQLAlchemy model class for task parameters.
     """
 
     def __init__(
         self,
-        session_factory: Callable[..., AbstractContextManager[Session]],
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model=TasksParams,
     ) -> None:
         """
@@ -27,7 +27,7 @@ class TaskParamsRepository(BaseRepository):
           and model.
 
         Args:
-            session_factory (Callable[..., AbstractContextManager[Session]]):
+            session_factory (Callable[..., AbstractAsyncContextManager[AsyncSession]]):
               The session factory.
             model: The SQLAlchemy model class for task parameters.
         """

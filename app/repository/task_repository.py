@@ -1,7 +1,9 @@
-from contextlib import AbstractContextManager
+from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.core.config import configs
 from app.core.exceptions import NotFoundError
@@ -13,41 +15,20 @@ from app.util.query_builder import dict_to_sqlalchemy_filter_options
 class TaskRepository(BaseRepository):
     """
     Repository class for tasks.
-
-    Attributes:
-        session_factory (Callable[..., AbstractContextManager[Session]]):
-          Factory for creating SQLAlchemy sessions.
-        model: SQLAlchemy model class for tasks.
     """
 
     def __init__(
         self,
-        session_factory: Callable[..., AbstractContextManager[Session]],
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model=Tasks,
     ) -> None:
-        """
-        Initializes the TaskRepository with the provided session factory and
-          model.
-
-        Args:
-            session_factory (Callable[..., AbstractContextManager[Session]]):
-              The session factory.
-            model: The SQLAlchemy model class for tasks.
-        """
         super().__init__(session_factory, model)
 
-    def read_by_gameId(self, schema, eager=False):
+    async def read_by_gameId(self, schema, eager: bool = False):
         """
-        Reads tasks by game ID based on the provided schema.
-
-        Args:
-            schema: The schema containing query options.
-            eager (bool): Whether to use eager loading.
-
-        Returns:
-            dict: Query results and search options.
+        Reads tasks filtered by gameId (and any other schema fields).
         """
-        with self.session_factory() as session:
+        async with self.session_factory() as session:
             schema_as_dict = schema.model_dump(exclude_none=True)
             ordering = schema_as_dict.get("ordering", configs.ORDERING)
             order_query = (
@@ -60,19 +41,25 @@ class TaskRepository(BaseRepository):
             filter_options = dict_to_sqlalchemy_filter_options(
                 self.model, schema.model_dump(exclude_none=True)
             )
-            query = session.query(self.model)
+
+            stmt = select(self.model).filter(filter_options)
             if eager:
-                for eager in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(getattr(self.model, eager)))
-            filtered_query = query.filter(filter_options)
-            query = filtered_query.order_by(order_query)
-            if page_size == "all":
-                query = query.all()
-            else:
-                query = query.limit(page_size).offset((page - 1) * page_size).all()
-            total_count = filtered_query.count()
+                for eager_rel in getattr(self.model, "eagers", []):
+                    stmt = stmt.options(
+                        joinedload(getattr(self.model, eager_rel))
+                    )
+
+            count_stmt = select(func.count()).select_from(
+                select(self.model).filter(filter_options).subquery()
+            )
+            stmt = stmt.order_by(order_query)
+            if page_size != "all":
+                stmt = stmt.limit(page_size).offset((page - 1) * page_size)
+
+            items = (await session.execute(stmt)).unique().scalars().all()
+            total_count = (await session.execute(count_stmt)).scalar_one()
             return {
-                "items": query,
+                "items": items,
                 "search_options": {
                     "page": page,
                     "page_size": page_size,
@@ -81,40 +68,20 @@ class TaskRepository(BaseRepository):
                 },
             }
 
-    def read_by_gameId_and_externalTaskId(self, gameId: int, externalTaskId: str):
-        """
-        Reads a task by game ID and external task ID.
-
-        Args:
-            gameId (int): The game ID.
-            externalTaskId (str): The external task ID.
-
-        Returns:
-            object: The task if found, otherwise None.
-        """
-        with self.session_factory() as session:
-            query = (
-                session.query(self.model)
-                .filter(
-                    self.model.gameId == gameId,
-                    self.model.externalTaskId == externalTaskId,
-                )
-                .first()
+    async def read_by_gameId_and_externalTaskId(
+        self, gameId, externalTaskId: str
+    ):
+        async with self.session_factory() as session:
+            stmt = select(self.model).filter(
+                self.model.gameId == gameId,
+                self.model.externalTaskId == externalTaskId,
             )
-            return query
+            return (await session.execute(stmt)).scalars().first()
 
-    def get_points_and_users_by_taskId(self, taskId):
-        """
-        Retrieves points and users associated with a task ID.
-
-        Args:
-            taskId (int): The task ID.
-
-        Returns:
-            object: The task if found, otherwise raises NotFoundError.
-        """
-        with self.session_factory() as session:
-            query = session.query(self.model).filter(self.model.id == taskId).first()
-            if not query:
+    async def get_points_and_users_by_taskId(self, taskId):
+        async with self.session_factory() as session:
+            stmt = select(self.model).filter(self.model.id == taskId)
+            result = (await session.execute(stmt)).scalars().first()
+            if not result:
                 raise NotFoundError(detail=f"Task not found by id : {taskId}")
-            return query
+            return result

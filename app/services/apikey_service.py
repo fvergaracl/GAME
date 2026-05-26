@@ -49,21 +49,17 @@ class ApiKeyService(BaseService):
         """
         Generate a cryptographically-secure API key whose prefix and hash do
         not collide with any existing record.
-
-        Returns:
-            GeneratedApiKey: plaintext (shown once), public prefix, and
-            sha256 hash.
         """
         while True:
             generated = generate_api_key()
-            hash_collision = self.apikey_repository.read_by_column(
+            hash_collision = await self.apikey_repository.read_by_column(
                 "apiKeyHash",
                 generated.key_hash,
                 not_found_raise_exception=False,
             )
             if hash_collision is not None:
                 continue
-            prefix_collision = self.apikey_repository.read_by_column(
+            prefix_collision = await self.apikey_repository.read_by_column(
                 "apiKey",
                 generated.prefix,
                 not_found_raise_exception=False,
@@ -72,50 +68,28 @@ class ApiKeyService(BaseService):
                 return generated
 
     async def create_api_key(self, apikeyPostBody):
-        """
-        Persist a new API key record.
-
-        Args:
-            apikeyPostBody: The schema with prefix + hash + metadata.
-
-        Returns:
-            The created API key row.
-        """
         return await self.apikey_repository.create(apikeyPostBody)
 
-    def get_all_api_keys(self):
-        """
-        Get all API keys.
+    async def get_all_api_keys(self):
+        return await self.apikey_repository.read_all()
 
-        Returns:
-            List[ApiKey]: All API keys.
-        """
-        return self.apikey_repository.read_all()
-
-    def revoke_api_key_by_prefix(self, prefix: str):
+    async def revoke_api_key_by_prefix(self, prefix: str):
         """
         Revoke an API key identified by its public prefix.
-
-        Args:
-            prefix (str): The public prefix (e.g. ``gme_live_abc12345``).
-
-        Returns:
-            The updated row.
-
-        Raises:
-            NotFoundError: when the prefix does not match any record.
         """
-        row = self.apikey_repository.read_by_column(
+        row = await self.apikey_repository.read_by_column(
             "apiKey", prefix, not_found_raise_exception=False
         )
         if row is None:
             raise NotFoundError(detail=f"API key not found: {prefix}")
-        updated = self.apikey_repository.update_attr(row.id, "active", False)
+        updated = await self.apikey_repository.update_attr(
+            row.id, "active", False
+        )
         ApiKeyService.clear_header_cache()
         return updated
 
     @staticmethod
-    def get_api_key_header(
+    async def get_api_key_header(
         api_key: str = Security(api_key_header),
     ):
         from app.core.container import Container
@@ -132,7 +106,7 @@ class ApiKeyService(BaseService):
         if cached_api_key is not None:
             return Response.ok(data=cached_api_key)
         api_key_Repository = Container.apikey_repository()
-        api_key_in_db = api_key_Repository.read_by_column(
+        api_key_in_db = await api_key_Repository.read_by_column(
             "apiKeyHash", key_hash, not_found_raise_exception=False
         )
         if api_key_in_db is None:

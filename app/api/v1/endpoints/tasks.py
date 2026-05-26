@@ -25,4 +25,4 @@ router = APIRouter(
 #     schema: GetTaskById = Depends(),
 #     service: TaskService = Depends(Provide[Container.task_service]),
 # ):
-#     return service.get_points_by_task_id(schema)
+#     return await service.get_points_by_task_id(schema)

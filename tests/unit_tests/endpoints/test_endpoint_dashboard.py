@@ -12,7 +12,7 @@ def _api_key_header(api_key="api-key-1"):
 
 @pytest.mark.asyncio
 async def test_get_dashboard_summary_with_token_creates_oauth_user_and_returns_schema():
-    service = MagicMock()
+    service = AsyncMock()
     service.get_dashboard_summary.return_value = {
         "new_users": [{"label": "2026-02-01", "count": 2}],
         "games_opened": [{"label": "2026-02-01", "count": 1}],
@@ -21,7 +21,7 @@ async def test_get_dashboard_summary_with_token_creates_oauth_user_and_returns_s
     }
     service_log = MagicMock()
     service_oauth = MagicMock()
-    service_oauth.get_user_by_sub.return_value = None
+    service_oauth.get_user_by_sub = AsyncMock(return_value=None)
     service_oauth.add = AsyncMock()
 
     with patch(
@@ -52,7 +52,7 @@ async def test_get_dashboard_summary_with_token_creates_oauth_user_and_returns_s
 
 @pytest.mark.asyncio
 async def test_get_dashboard_summary_without_token_skips_oauth_validation():
-    service = MagicMock()
+    service = AsyncMock()
     service.get_dashboard_summary.return_value = {
         "new_users": [],
         "games_opened": [],
@@ -60,7 +60,7 @@ async def test_get_dashboard_summary_without_token_skips_oauth_validation():
         "actions_performed": [],
     }
     service_oauth = MagicMock()
-    service_oauth.get_user_by_sub.return_value = None
+    service_oauth.get_user_by_sub = AsyncMock(return_value=None)
     service_oauth.add = AsyncMock()
 
     with patch(
@@ -91,7 +91,7 @@ async def test_get_dashboard_summary_without_token_skips_oauth_validation():
 
 @pytest.mark.asyncio
 async def test_get_dashboard_summary_logs_with_token_creates_oauth_user_and_returns_schema():
-    service = MagicMock()
+    service = AsyncMock()
     service.get_dashboard_summary_logs.return_value = {
         "info": [{"label": "2026-02-01", "count": 7}],
         "success": [{"label": "2026-02-01", "count": 5}],
@@ -99,7 +99,7 @@ async def test_get_dashboard_summary_logs_with_token_creates_oauth_user_and_retu
     }
     service_log = MagicMock()
     service_oauth = MagicMock()
-    service_oauth.get_user_by_sub.return_value = None
+    service_oauth.get_user_by_sub = AsyncMock(return_value=None)
     service_oauth.add = AsyncMock()
 
     with patch(
@@ -129,14 +129,14 @@ async def test_get_dashboard_summary_logs_with_token_creates_oauth_user_and_retu
 
 @pytest.mark.asyncio
 async def test_get_dashboard_summary_logs_without_token_skips_oauth_validation():
-    service = MagicMock()
+    service = AsyncMock()
     service.get_dashboard_summary_logs.return_value = {
         "info": [],
         "success": [],
         "error": [],
     }
     service_oauth = MagicMock()
-    service_oauth.get_user_by_sub.return_value = None
+    service_oauth.get_user_by_sub = AsyncMock(return_value=None)
     service_oauth.add = AsyncMock()
 
     with patch(

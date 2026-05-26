@@ -1,7 +1,8 @@
-from contextlib import AbstractContextManager
+from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.model.oauth_users import OAuthUsers
 from app.repository.base_repository import BaseRepository
@@ -12,14 +13,14 @@ class OAuthUsersRepository(BaseRepository):
     Repository class for OAuth users.
 
     Attributes:
-        session_factory (Callable[..., AbstractContextManager[Session]]):
+        session_factory (Callable[..., AbstractAsyncContextManager[AsyncSession]]):
           Factory for creating SQLAlchemy sessions.
         model: SQLAlchemy model class for OAuth users.
     """
 
     def __init__(
         self,
-        session_factory: Callable[..., AbstractContextManager[Session]],
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model=OAuthUsers,
     ) -> None:
         """
@@ -27,7 +28,7 @@ class OAuthUsersRepository(BaseRepository):
           factory and model.
 
         Args:
-            session_factory (Callable[..., AbstractContextManager[Session]]):
+            session_factory (Callable[..., AbstractAsyncContextManager[AsyncSession]]):
               The session factory.
             model: The SQLAlchemy model class for OAuth users.
         """
@@ -43,5 +44,6 @@ class OAuthUsersRepository(BaseRepository):
         Returns:
             The user with the provided sub.
         """
-        with self.session_factory() as session:
-            return session.query(self.model).filter_by(provider_user_id=sub).first()
+        async with self.session_factory() as session:
+            stmt = select(self.model).filter_by(provider_user_id=sub)
+            return (await session.execute(stmt)).scalars().first()

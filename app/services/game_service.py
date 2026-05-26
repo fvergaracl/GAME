@@ -52,7 +52,7 @@ class GameService(BaseService):
         self.strategy_service = strategy_service
         super().__init__(game_repository)
 
-    def get_by_gameId(self, gameId: UUID):
+    async def get_by_gameId(self, gameId: UUID):
         """
         Retrieves a game by its game ID.
 
@@ -62,14 +62,14 @@ class GameService(BaseService):
         Returns:
             BaseGameResult: The game details.
         """
-        response = self.game_repository.read_by_column(
+        response = await self.game_repository.read_by_column(
             "id",
             gameId,
             not_found_raise_exception=True,
             only_one=True,
             not_found_message=f"Game not found by gameId: {gameId}",
         )
-        params = self.game_params_repository.read_by_column(
+        params = await self.game_params_repository.read_by_column(
             "gameId", response.id, not_found_raise_exception=False, only_one=False
         )
         response_dict = response.model_dump()
@@ -79,7 +79,7 @@ class GameService(BaseService):
 
         return response
 
-    def delete_game_by_id(self, gameId: UUID):
+    async def delete_game_by_id(self, gameId: UUID):
         """
         Deletes a game by its game ID.
 
@@ -89,11 +89,11 @@ class GameService(BaseService):
         Raises:
             NotFoundError: If the game is not found.
         """
-        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
+        game = await self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
 
-        if self.game_repository.delete_game_by_id(gameId):
+        if await self.game_repository.delete_game_by_id(gameId):
             response = BaseGameResult(
                 externalGameId=game.externalGameId,
                 strategyId=game.strategyId,
@@ -107,7 +107,7 @@ class GameService(BaseService):
             return response
         return {"message": f"Game with gameId: {gameId} not deleted"}
 
-    def get_all_games(self, schema, api_key=None):
+    async def get_all_games(self, schema, api_key=None):
         """
         Retrieves all games based on the provided schema.
 
@@ -118,9 +118,9 @@ class GameService(BaseService):
         Returns:
             list: A list of all games matching the schema.
         """
-        return self.game_repository.get_all_games(schema, api_key)
+        return await self.game_repository.get_all_games(schema, api_key)
 
-    def get_by_externalId(self, externalGameId: str):
+    async def get_by_externalId(self, externalGameId: str):
         """
         Retrieves a game by its external game ID.
 
@@ -130,7 +130,7 @@ class GameService(BaseService):
         Returns:
             object: The game details.
         """
-        return self.game_repository.read_by_column("externalGameId", externalGameId)
+        return await self.game_repository.read_by_column("externalGameId", externalGameId)
 
     async def create(
         self, schema: PostCreateGame, api_key: str = None, oauth_user_id=None
@@ -150,7 +150,7 @@ class GameService(BaseService):
         params = schema.params
         externalGameId = schema.externalGameId
 
-        externalGameId_exist = self.game_repository.read_by_column(
+        externalGameId_exist = await self.game_repository.read_by_column(
             "externalGameId", externalGameId, not_found_raise_exception=False
         )
 
@@ -219,7 +219,7 @@ class GameService(BaseService):
         )
         return response
 
-    def patch_game_by_externalGameId(self, externalGameId: str, schema: PatchGame):
+    async def patch_game_by_externalGameId(self, externalGameId: str, schema: PatchGame):
         """
         Updates a game by its external game ID using the provided schema.
 
@@ -230,16 +230,16 @@ class GameService(BaseService):
         Returns:
             ResponsePatchGame: The updated game details.
         """
-        game = self.game_repository.read_by_column(
+        game = await self.game_repository.read_by_column(
             "externalGameId", externalGameId, not_found_raise_exception=False
         )
         if not game:
             raise NotFoundError(
                 detail=f"Game not found by externalGameId: {externalGameId}"
             )
-        return self.patch_game_by_id(game.id, schema)
+        return await self.patch_game_by_id(game.id, schema)
 
-    def patch_game_by_id(self, gameId: UUID, schema: PatchGame):
+    async def patch_game_by_id(self, gameId: UUID, schema: PatchGame):
         """
         Updates a game by its game ID using the provided schema.
 
@@ -250,11 +250,11 @@ class GameService(BaseService):
         Returns:
             ResponsePatchGame: The updated game details.
         """
-        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
+        game = await self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
         if schema.externalGameId and schema.externalGameId != game.externalGameId:
-            externalGameId_exist = self.game_repository.read_by_column(
+            externalGameId_exist = await self.game_repository.read_by_column(
                 "externalGameId", schema.externalGameId, not_found_raise_exception=False
             )
             if externalGameId_exist:
@@ -295,10 +295,10 @@ class GameService(BaseService):
         updated_params = []
         if params:
             for param in params:
-                self.game_params_repository.patch_game_params_by_id(param.id, param)
+                await self.game_params_repository.patch_game_params_by_id(param.id, param)
                 updated_params.append(param)
 
-        game = self.game_repository.patch_game_by_id(gameId, schema)
+        game = await self.game_repository.patch_game_by_id(gameId, schema)
         game_dict = game.model_dump()
         response = ResponsePatchGame(
             externalGameId=game_dict["externalGameId"],
@@ -310,7 +310,7 @@ class GameService(BaseService):
         )
         return response
 
-    def get_strategy_by_externalGameId(self, externalGameId: str):
+    async def get_strategy_by_externalGameId(self, externalGameId: str):
         """
         Retrieves the strategy associated with a game by its external game ID.
 
@@ -320,7 +320,7 @@ class GameService(BaseService):
         Returns:
             dict: The strategy details.
         """
-        game = self.game_repository.read_by_column(
+        game = await self.game_repository.read_by_column(
             "externalGameId", externalGameId, not_found_raise_exception=True
         )
 
@@ -329,9 +329,9 @@ class GameService(BaseService):
                 detail=f"Game not found by externalGameId: {externalGameId}"
             )
 
-        return self.get_strategy_by_gameId(game.id)
+        return await self.get_strategy_by_gameId(game.id)
 
-    def get_strategy_by_gameId(self, gameId: UUID):
+    async def get_strategy_by_gameId(self, gameId: UUID):
         """
         Retrieves the strategy associated with a game by its game ID.
 
@@ -341,7 +341,7 @@ class GameService(BaseService):
         Returns:
             dict: The strategy details.
         """
-        game = self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
+        game = await self.game_repository.read_by_id(gameId, not_found_raise_exception=False)
         if not game:
             raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
 
@@ -351,7 +351,7 @@ class GameService(BaseService):
             )
 
         strategy = self.strategy_service.get_strategy_by_id(game.strategyId)
-        game_params = self.game_params_repository.read_by_column(
+        game_params = await self.game_params_repository.read_by_column(
             "gameId", game.id, not_found_raise_exception=False, only_one=False
         )
 
@@ -374,7 +374,7 @@ class GameService(BaseService):
 
         return strategy
 
-    def get_tasks_by_gameId(self, gameId: UUID):
+    async def get_tasks_by_gameId(self, gameId: UUID):
         """
         Retrieves the tasks associated with a game by its game ID.
 
@@ -384,11 +384,11 @@ class GameService(BaseService):
         Returns:
             dict: The game details including tasks.
         """
-        game = self.game_repository.read_by_id(gameId)
+        game = await self.game_repository.read_by_id(gameId)
         if not game:
             raise NotFoundError(detail=f"Game not found by id: {gameId}")
 
-        tasks = self.task_repository.read_by_column(
+        tasks = await self.task_repository.read_by_column(
             "gameId", gameId, not_found_raise_exception=False, only_one=False
         )
         tasks_list = []
@@ -400,7 +400,7 @@ class GameService(BaseService):
 
         return game_dict
 
-    def get_game_by_external_id(
+    async def get_game_by_external_id(
         self, externalGameId: str, api_key: str = None, oauth_user_id=None
     ):
         """
@@ -414,7 +414,7 @@ class GameService(BaseService):
         Returns:
             dict: The game details.
         """
-        game = self.game_repository.read_by_column(
+        game = await self.game_repository.read_by_column(
             "externalGameId", externalGameId, not_found_raise_exception=False
         )
         if not game:

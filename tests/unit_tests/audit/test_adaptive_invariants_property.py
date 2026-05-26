@@ -19,11 +19,11 @@ class InMemoryUserRepository:
     def __init__(self, user_id: str = "user-1", external_user_id: str = "external-user-1"):
         self.user = SimpleNamespace(id=user_id, externalUserId=external_user_id)
 
-    def read_by_id(self, user_id, **_kwargs):
+    async def read_by_id(self, user_id, **_kwargs):
         assert str(user_id) == str(self.user.id)
         return self.user
 
-    def read_by_column(self, column, value, **_kwargs):
+    async def read_by_column(self, column, value, **_kwargs):
         if column == "externalUserId" and value == self.user.externalUserId:
             return self.user
         return None
@@ -69,7 +69,7 @@ class InMemoryWalletTransactionRepository:
     def __init__(self):
         self.transactions = []
 
-    def create(self, schema):
+    async def create(self, schema):
         transaction = SimpleNamespace(id=str(uuid4()), **schema.model_dump())
         self.transactions.append(transaction)
         return transaction

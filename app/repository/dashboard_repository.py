@@ -1,8 +1,8 @@
-from contextlib import AbstractContextManager
+from contextlib import AbstractAsyncContextManager
 from typing import Callable, Dict, List, Union
 
-from sqlalchemy import String, case, func
-from sqlalchemy.orm import Session
+from sqlalchemy import String, case, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestError
 from app.model.games import Games
@@ -21,7 +21,7 @@ class DashboardRepository(BaseRepository):
 
     def __init__(
         self,
-        session_factory: Callable[..., AbstractContextManager[Session]],
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model_games=Games,
         model_tasks=Tasks,
         model_users=Users,
@@ -45,16 +45,7 @@ class DashboardRepository(BaseRepository):
         self, query, start_date=None, end_date=None, group_by_column=None
     ):
         """
-        Processes the query by filtering and grouping the results.
-
-        Args:
-            query: The query to process.
-            start_date: The start date for the query.
-            end_date: The end date for the query.
-            group_by_column: The column to group by.
-
-        Returns:
-            Any: The processed query.
+        Processes the SELECT statement by filtering and grouping the results.
         """
         if start_date:
             query = query.filter(self.model_users.created_at >= start_date)
@@ -113,19 +104,20 @@ class DashboardRepository(BaseRepository):
                 "Invalid group_by value. Choose 'day', 'week', or 'month'."
             )
 
-    def _execute_query(
+    async def _execute_query(
         self, model, group_by_column, start_date, end_date, aggregation_field
     ) -> List[Dict[str, Union[str, int]]]:
         """Executes a query for a specific model and aggregation field."""
-        with self.session_factory() as session:
-            query = session.query(group_by_column, aggregation_field.label("count"))
-            query = self.process_query(query, start_date, end_date, group_by_column)
-            results = query.all()
+        async with self.session_factory() as session:
+            stmt = select(group_by_column, aggregation_field.label("count"))
+            stmt = self.process_query(stmt, start_date, end_date, group_by_column)
+            results = (await session.execute(stmt)).all()
             return [
-                {"label": str(result[0]), "count": result.count} for result in results
+                {"label": str(result[0]), "count": result.count}
+                for result in results
             ]
 
-    def get_dashboard_summary(self, start_date, end_date, group_by):
+    async def get_dashboard_summary(self, start_date, end_date, group_by):
         """
         Retrieves the dashboard summary.
 
@@ -139,7 +131,7 @@ class DashboardRepository(BaseRepository):
         """
 
         group_by_column_users = self._get_group_by_column(self.model_users, group_by)
-        new_users = self._execute_query(
+        new_users = await self._execute_query(
             self.model_users,
             group_by_column_users,
             start_date,
@@ -148,7 +140,7 @@ class DashboardRepository(BaseRepository):
         )
 
         group_by_column_games = self._get_group_by_column(self.model_games, group_by)
-        games_opened = self._execute_query(
+        games_opened = await self._execute_query(
             self.model_games,
             group_by_column_games,
             start_date,
@@ -159,7 +151,7 @@ class DashboardRepository(BaseRepository):
         group_by_column_points = self._get_group_by_column(
             self.model_user_points, group_by
         )
-        points_earned = self._execute_query(
+        points_earned = await self._execute_query(
             self.model_user_points,
             group_by_column_points,
             start_date,
@@ -170,7 +162,7 @@ class DashboardRepository(BaseRepository):
         group_by_column_actions = self._get_group_by_column(
             self.model_user_actions, group_by
         )
-        actions_performed = self._execute_query(
+        actions_performed = await self._execute_query(
             self.model_user_actions,
             group_by_column_actions,
             start_date,
@@ -185,7 +177,7 @@ class DashboardRepository(BaseRepository):
             "actions_performed": actions_performed,
         }
 
-    def get_dashboard_summary_logs(self, start_date, end_date, group_by):
+    async def get_dashboard_summary_logs(self, start_date, end_date, group_by):
         """
         Retrieves the dashboard summary logs.
 
@@ -199,7 +191,7 @@ class DashboardRepository(BaseRepository):
         """
 
         group_by_column = self._get_group_by_column(self.model_logs, group_by)
-        info = self._execute_query(
+        info = await self._execute_query(
             self.model_logs,
             group_by_column,
             start_date,
@@ -207,7 +199,7 @@ class DashboardRepository(BaseRepository):
             func.count(case((self.model_logs.log_level == "INFO", 1))),
         )
 
-        success = self._execute_query(
+        success = await self._execute_query(
             self.model_logs,
             group_by_column,
             start_date,
@@ -215,7 +207,7 @@ class DashboardRepository(BaseRepository):
             func.count(case((self.model_logs.log_level == "SUCCESS", 1))),
         )
 
-        error = self._execute_query(
+        error = await self._execute_query(
             self.model_logs,
             group_by_column,
             start_date,

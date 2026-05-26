@@ -291,7 +291,7 @@ async def get_games_list(
         token_data = await valid_access_token(token)
         token_data = token_data.data
         oauth_user_id = token_data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -309,7 +309,7 @@ async def get_games_list(
             )
         is_admin = check_role(token_data, "AdministratorGAME")
         if is_admin:
-            return service.get_all_games(schema)
+            return await service.get_all_games(schema)
     await add_log(
         "game",
         "INFO",
@@ -319,7 +319,7 @@ async def get_games_list(
         api_key,
         oauth_user_id,
     )
-    return service.get_all_games(schema, api_key)
+    return await service.get_all_games(schema, api_key)
 
 
 summary_get_game_by_id = "Retrieve Game by ID"
@@ -444,7 +444,7 @@ async def get_game_by_id(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -469,7 +469,7 @@ async def get_game_by_id(
         api_key,
         oauth_user_id,
     )
-    response = service.get_by_gameId(gameId)
+    response = await service.get_by_gameId(gameId)
     return response
 
 
@@ -596,7 +596,7 @@ async def delete_game_by_id(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -624,7 +624,7 @@ async def delete_game_by_id(
     )
 
     try:
-        response = service.delete_game_by_id(gameId)
+        response = await service.delete_game_by_id(gameId)
         data_to_log = {"gameId": str(gameId)}
         await add_log(
             "game",
@@ -770,7 +770,7 @@ async def create_game(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -956,7 +956,7 @@ async def patch_game(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -1127,7 +1127,7 @@ async def get_strategy_by_gameId(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -1153,7 +1153,7 @@ async def get_strategy_by_gameId(
         oauth_user_id,
     )
 
-    return service.get_strategy_by_gameId(gameId)
+    return await service.get_strategy_by_gameId(gameId)
 
 
 summary_create_task = "Create a New Task"
@@ -1305,7 +1305,7 @@ async def create_task(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -1543,7 +1543,7 @@ async def create_tasks_bulk(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -1760,7 +1760,7 @@ async def get_task_list(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -1785,7 +1785,7 @@ async def get_task_list(
         api_key,
         oauth_user_id,
     )
-    return service.get_tasks_list_by_gameId(gameId, find_query)
+    return await service.get_tasks_list_by_gameId(gameId, find_query)
 
 
 summary_get_task_by_gameId_taskId = (
@@ -1931,7 +1931,7 @@ async def get_task_by_gameId_taskId(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -1958,7 +1958,7 @@ async def get_task_by_gameId_taskId(
         oauth_user_id,
     )
 
-    return service.get_task_by_externalGameId_externalTaskId(
+    return await service.get_task_by_externalGameId_externalTaskId(
         str(gameId), externalTaskId
     )
 
@@ -2099,7 +2099,7 @@ async def get_points_by_gameId(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -2125,7 +2125,7 @@ async def get_points_by_gameId(
         oauth_user_id,
     )
 
-    return service.get_points_by_gameId(gameId)
+    return await service.get_points_by_gameId(gameId)
 
 
 summary_get_points_by_gameId_with_details = "Retrieve Points by Game ID with Details"
@@ -2263,7 +2263,7 @@ async def get_points_by_gameId_with_details(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -2289,7 +2289,7 @@ async def get_points_by_gameId_with_details(
         oauth_user_id,
     )
 
-    return service.get_points_by_gameId_with_details(gameId)
+    return await service.get_points_by_gameId_with_details(gameId)
 
 
 summary_get_points_of_user_in_game = "Retrieve User Points in Game"
@@ -2410,7 +2410,7 @@ async def get_points_of_user_in_game(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -2435,7 +2435,7 @@ async def get_points_of_user_in_game(
         api_key,
         oauth_user_id,
     )
-    return service.get_points_of_user_in_game(gameId, externalUserId)
+    return await service.get_points_of_user_in_game(gameId, externalUserId)
 
 
 summary_get_points_simulated_of_user_in_game = "Retrieve Simulated User Points in Game"
@@ -2590,13 +2590,13 @@ async def get_points_simulated_of_user_in_game(
     if is_admin and (not (oauth_user_id == externalUserId)):
         raise ForbiddenError(detail="You are not authorized to access this resource.")
 
-    if service_oauth.get_user_by_sub(oauth_user_id) is None:
+    if await service_oauth.get_user_by_sub(oauth_user_id) is None:
         create_user = CreateOAuthUser(
             provider="keycloak",
             provider_user_id=oauth_user_id,
             status="active",
         )
-        service_oauth.add(create_user)
+        await service_oauth.add(create_user)
         await add_log(
             "game",
             "INFO",
@@ -2818,7 +2818,7 @@ async def user_action_in_task(
         schema.data.setdefault("correlationId", correlation_id)
         schema.data.setdefault("eventId", correlation_id)
     client_ip = abuse_prevention_service.extract_client_ip(request)
-    abuse_prevention_service.enforce_task_mutation_limits(
+    await abuse_prevention_service.enforce_task_mutation_limits(
         api_key=api_key,
         client_ip=client_ip,
         external_user_id=schema.externalUserId,
@@ -3045,7 +3045,7 @@ async def assign_points_to_user(
         if idempotency_key:
             schema.data.setdefault("eventId", idempotency_key)
     client_ip = abuse_prevention_service.extract_client_ip(request)
-    abuse_prevention_service.enforce_task_mutation_limits(
+    await abuse_prevention_service.enforce_task_mutation_limits(
         api_key=api_key,
         client_ip=client_ip,
         external_user_id=schema.externalUserId,
@@ -3216,7 +3216,7 @@ async def get_points_by_task_id(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -3241,7 +3241,7 @@ async def get_points_by_task_id(
         api_key,
         oauth_user_id,
     )
-    return service.get_points_by_task_id(gameId, externalTaskId)
+    return await service.get_points_by_task_id(gameId, externalTaskId)
 
 
 summary_get_points_of_user_by_task_id = "Retrieve User Points by Task ID"
@@ -3383,7 +3383,7 @@ async def get_points_of_user_by_task_id(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -3412,7 +3412,7 @@ async def get_points_of_user_by_task_id(
         api_key,
         oauth_user_id,
     )
-    return service.get_points_of_user_by_task_id(gameId, externalTaskId, externalUserId)
+    return await service.get_points_of_user_by_task_id(gameId, externalTaskId, externalUserId)
 
 
 summary_get_points_by_task_id_with_details = (
@@ -3585,7 +3585,7 @@ async def get_points_by_task_id_with_details(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -3610,7 +3610,7 @@ async def get_points_by_task_id_with_details(
         api_key,
         oauth_user_id,
     )
-    return service.get_points_by_task_id_with_details(gameId, externalTaskId)
+    return await service.get_points_by_task_id_with_details(gameId, externalTaskId)
 
 
 summary_get_users_by_gameId = "Retrieve Users by Game ID"
@@ -3765,7 +3765,7 @@ async def get_users_by_gameId(
     if token:
         token_data = await valid_access_token(token)
         oauth_user_id = token_data.data["sub"]
-        if service_oauth.get_user_by_sub(oauth_user_id) is None:
+        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
             create_user = CreateOAuthUser(
                 provider="keycloak",
                 provider_user_id=oauth_user_id,
@@ -3790,4 +3790,4 @@ async def get_users_by_gameId(
         api_key,
         oauth_user_id,
     )
-    return service.get_users_by_gameId(gameId)
+    return await service.get_users_by_gameId(gameId)

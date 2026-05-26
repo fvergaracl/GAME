@@ -1,10 +1,10 @@
-from contextlib import AbstractContextManager, contextmanager
-from typing import Any, Callable
+from contextlib import asynccontextmanager
+from typing import Any, AsyncIterator, Callable
 
-from sqlalchemy import create_engine, orm
 from sqlalchemy.engine import make_url
-from sqlalchemy.ext.declarative import as_declarative, declared_attr
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
+from sqlalchemy.orm import as_declarative, declared_attr
 
 
 @as_declarative()
@@ -20,24 +20,40 @@ class BaseModel:
     id: Any
     __name__: str
 
-    @declared_attr  # noqa
+    @declared_attr
     def __tablename__(cls) -> str:
-        """
-        Automatically generates the table name from the model class name.
-
-        Returns:
-            str: The table name.
-        """
         return cls.__name__.lower()
+
+
+def _to_async_url(db_url: str) -> str:
+    """
+    Coerce a sync DB URL into the async-driver form. Allows operators to keep
+    the sync-style ``DATABASE_URI`` in env files while the engine itself runs
+    on asyncpg / aiosqlite.
+    """
+    url = make_url(db_url)
+    backend = url.get_backend_name()
+    driver = url.get_driver_name() or ""
+    if backend == "postgresql" and driver in ("", "psycopg2", "psycopg"):
+        return url.set(drivername="postgresql+asyncpg").render_as_string(
+            hide_password=False
+        )
+    if backend == "sqlite" and driver in ("", "pysqlite"):
+        return url.set(drivername="sqlite+aiosqlite").render_as_string(
+            hide_password=False
+        )
+    if backend == "mysql" and driver in ("", "pymysql", "mysqldb"):
+        return url.set(drivername="mysql+aiomysql").render_as_string(
+            hide_password=False
+        )
+    return db_url
 
 
 class Database:
     """
-    Database class for managing SQLAlchemy sessions and engine.
-
-    Attributes:
-        _engine: SQLAlchemy engine instance.
-        _session_factory: SQLAlchemy session factory.
+    Async database wrapper around SQLAlchemy 2.0's ``AsyncEngine`` and
+    ``async_sessionmaker``. Exposes an ``async with database.session() as s``
+    context manager used by every repository.
     """
 
     def __init__(
@@ -51,15 +67,9 @@ class Database:
         pool_timeout_seconds: int = 30,
         pool_recycle_seconds: int = 1800,
     ) -> None:
-        """
-        Initializes the Database with the provided database URL.
-
-        Args:
-            db_url (str): The database URL.
-        """
-        engine_kwargs = {"echo": echo}
-        dialect_name = make_url(db_url).get_backend_name()
-        if dialect_name != "sqlite":
+        async_url = _to_async_url(db_url)
+        engine_kwargs: dict = {"echo": echo}
+        if make_url(async_url).get_backend_name() != "sqlite":
             engine_kwargs.update(
                 {
                     "pool_pre_ping": pool_pre_ping,
@@ -70,37 +80,25 @@ class Database:
                 }
             )
 
-        self._engine = create_engine(db_url, **engine_kwargs)
-        self._session_factory = orm.scoped_session(
-            orm.sessionmaker(
-                autocommit=False,
-                autoflush=False,
-                bind=self._engine,
-            ),
+        self._engine = create_async_engine(async_url, **engine_kwargs)
+        self._session_factory: Callable[..., AsyncSession] = async_sessionmaker(
+            bind=self._engine,
+            class_=AsyncSession,
+            expire_on_commit=False,
+            autoflush=False,
         )
 
-    def create_database(self) -> None:  # noqa
-        """
-        Creates the database tables defined in the BaseModel metadata.
+    async def create_database(self) -> None:
+        async with self._engine.begin() as conn:
+            await conn.run_sync(BaseModel.metadata.create_all)
 
-        Returns:
-            None
-        """
-        BaseModel.metadata.create_all(self._engine)
-
-    @contextmanager
-    def session(self) -> Callable[..., AbstractContextManager[Session]]:
-        """
-        Provides a context manager for a SQLAlchemy session.
-
-        Yields:
-            Session: A SQLAlchemy session.
-        """
-        session: Session = self._session_factory()
+    @asynccontextmanager
+    async def session(self) -> AsyncIterator[AsyncSession]:
+        session: AsyncSession = self._session_factory()
         try:
             yield session
         except Exception:
-            session.rollback()
+            await session.rollback()
             raise
         finally:
-            session.close()
+            await session.close()

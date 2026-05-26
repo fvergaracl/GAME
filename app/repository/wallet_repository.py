@@ -1,9 +1,9 @@
-from contextlib import AbstractContextManager
+from contextlib import AbstractAsyncContextManager
 from typing import Callable, Optional
 
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import configs
 from app.core.exceptions import NotFoundError
@@ -14,51 +14,35 @@ from app.repository.base_repository import BaseRepository
 class WalletRepository(BaseRepository):
     """
     Repository class for wallets.
-
-    Attributes:
-        session_factory (Callable[..., AbstractContextManager[Session]]):
-          Factory for creating SQLAlchemy sessions.
-        model: SQLAlchemy model class for wallets.
     """
 
     def __init__(
         self,
-        session_factory: Callable[..., AbstractContextManager[Session]],
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model=Wallet,
     ) -> None:
-        """
-        Initializes the WalletRepository with the provided session factory and
-          model.
-
-        Args:
-            session_factory (Callable[..., AbstractContextManager[Session]]):
-              The session factory.
-            model: The SQLAlchemy model class for wallets.
-        """
         super().__init__(session_factory, model)
 
-    def upsert_points_balance(
+    async def upsert_points_balance(
         self,
         user_id,
         points_delta: int,
         api_key: Optional[str] = None,
         oauth_user_id: Optional[str] = None,
-        session: Optional[Session] = None,
+        session: Optional[AsyncSession] = None,
         auto_commit: bool = True,
     ) -> Wallet:
         """
-        Atomically increments a user's wallet points balance.
-
-        If no wallet exists for the user, it is created first. This method is
-        safe under concurrent writes thanks to `ON CONFLICT ... DO UPDATE`.
+        Atomically increments a user's wallet points balance via
+        ``INSERT ... ON CONFLICT DO UPDATE``.
         """
         if session is None and not auto_commit:
             raise ValueError(
                 "auto_commit=False requires an external session managed by the caller."
             )
         if session is None:
-            with self.session_factory() as managed_session:
-                return self.upsert_points_balance(
+            async with self.session_factory() as managed_session:
+                return await self.upsert_points_balance(
                     user_id=user_id,
                     points_delta=points_delta,
                     api_key=api_key,
@@ -91,13 +75,17 @@ class WalletRepository(BaseRepository):
             set_=on_conflict_updates,
         ).returning(wallet_table.c.id)
 
-        wallet_id = session.execute(upsert_stmt).scalar_one()
+        wallet_id = (await session.execute(upsert_stmt)).scalar_one()
         if auto_commit:
-            session.commit()
+            await session.commit()
         else:
-            session.flush()
+            await session.flush()
 
-        wallet = session.query(self.model).filter(self.model.id == wallet_id).first()
+        wallet = (
+            await session.execute(
+                select(self.model).filter(self.model.id == wallet_id)
+            )
+        ).scalars().first()
         if wallet is None:
             raise NotFoundError(detail=f"Wallet not found by id: {wallet_id}")
         return wallet
