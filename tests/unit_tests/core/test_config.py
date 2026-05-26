@@ -11,6 +11,7 @@ import app.core.config as config_module
 def restore_config_module():
     original_env = os.getenv("ENV")
     original_cors = os.getenv("BACKEND_CORS_ORIGINS")
+    original_db_name = os.getenv("DB_NAME")
     yield
     if original_env is None:
         os.environ.pop("ENV", None)
@@ -20,6 +21,10 @@ def restore_config_module():
         os.environ.pop("BACKEND_CORS_ORIGINS", None)
     else:
         os.environ["BACKEND_CORS_ORIGINS"] = original_cors
+    if original_db_name is None:
+        os.environ.pop("DB_NAME", None)
+    else:
+        os.environ["DB_NAME"] = original_db_name
     importlib.reload(config_module)
 
 
@@ -33,6 +38,8 @@ def restore_config_module():
 )
 def test_config_prints_banner_for_environment(env_value, expected_banner, monkeypatch):
     monkeypatch.setenv("ENV", env_value)
+    if env_value in {"prod", "stage"}:
+        monkeypatch.setenv("DB_NAME", "game_test_db")
 
     with patch("builtins.print") as mock_print:
         reloaded = importlib.reload(config_module)
@@ -68,6 +75,7 @@ def test_cors_origins_parse_comma_separated_env_value(monkeypatch):
 @pytest.mark.parametrize("env_value", ["prod", "stage"])
 def test_cors_origins_wildcard_rejected_in_protected_envs(env_value, monkeypatch):
     monkeypatch.setenv("ENV", env_value)
+    monkeypatch.setenv("DB_NAME", "game_test_db")
     monkeypatch.setenv("BACKEND_CORS_ORIGINS", "*")
 
     with pytest.raises(ValueError, match="BACKEND_CORS_ORIGINS"):
