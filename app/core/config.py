@@ -52,6 +52,30 @@ def _validate_cors_origins(env: str, origins: List[str]) -> None:
         )
 
 
+_NON_PROD_DB_NAME_DEFAULTS = {
+    "dev": "game_dev_db",
+    "test": "test_game_dev_db",
+}
+
+
+def _resolve_db_name(env: str, db_name: Optional[str]) -> str:
+    """
+    Resolve the database name from ``DB_NAME``. Required in protected
+    environments (``prod``/``stage``) so the app cannot silently fall back
+    to a development database when ``DB_HOST`` is repointed.
+    """
+    if db_name:
+        return db_name
+    if env in {"prod", "stage"}:
+        raise ValueError(
+            f"DB_NAME must be set when ENV={env!r}. The previous "
+            "ENV_DATABASE_MAPPER default ('game_dev_db') was removed to "
+            "prevent prod/stage workloads from being written to a "
+            "database literally named 'dev' when DB_HOST points elsewhere."
+        )
+    return _NON_PROD_DB_NAME_DEFAULTS.get(env, "game_dev_db")
+
+
 class Configs(BaseSettings):
     """
     Configuration class for loading environment variables and application
@@ -63,8 +87,9 @@ class Configs(BaseSettings):
         PROJECT_NAME (str): The name of the project.
         GAMIFICATIONENGINE_VERSION_APP (str): The version of the gamification
           engine application.
-        ENV_DATABASE_MAPPER (dict): A mapping of environments to database
-          names.
+        DB_NAME (Optional[str]): The database name. Required when
+          ``ENV`` is ``prod`` or ``stage``; defaults to ``game_dev_db``
+          (or ``test_game_dev_db`` in tests) otherwise.
         DEFAULT_CONVERTION_RATE_POINTS_TO_COIN (int): The default conversion
           rate from points to coins.
         SECRET_KEY (str): The secret key for the application . Important to
@@ -124,12 +149,7 @@ class Configs(BaseSettings):
         "EXTRA_SERVER_DESCRIPTION", None
     )
 
-    ENV_DATABASE_MAPPER: dict = {
-        "prod": "game_dev_db",
-        "stage": "game_dev_db",
-        "dev": "game_dev_db",
-        "test": "test_game_dev_db",
-    }
+    DB_NAME: Optional[str] = os.getenv("DB_NAME")
     DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
         "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100
     )
@@ -166,7 +186,7 @@ class Configs(BaseSettings):
             password=DB_PASSWORD,
             host=DB_HOST,
             port=DB_PORT,
-            database=ENV_DATABASE_MAPPER[ENV],
+            database=_resolve_db_name(ENV, DB_NAME),
         )
     )
 
