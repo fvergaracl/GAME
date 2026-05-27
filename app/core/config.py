@@ -302,6 +302,24 @@ class Configs(BaseSettings):
     DSL_MAX_NODES: int = _env_to_int("DSL_MAX_NODES", 1000)
     DSL_MAX_DEPTH: int = _env_to_int("DSL_MAX_DEPTH", 32)
 
+    # Sprint 11: sampled persistence of DSL execution traces. Errors are
+    # always persisted regardless of the sample rate -- the rate only
+    # applies to OK runs. 0.0 disables successful-run sampling; 1.0
+    # persists every run (only safe in dev/test, see runbook).
+    DSL_EXECUTION_LOG_ENABLED: bool = _env_to_bool(
+        "DSL_EXECUTION_LOG_ENABLED", True
+    )
+    DSL_EXECUTION_LOG_SAMPLE_RATE: float = float(
+        os.getenv("DSL_EXECUTION_LOG_SAMPLE_RATE", "0.05")
+    )
+    # Bound the persisted trace length per row so a worst-case 1000-node
+    # AST doesn't store a 1000-entry array in JSONB on every sample.
+    # When truncated we drop tail entries (the early ones are usually
+    # the discriminating ones for "why did this rule match").
+    DSL_EXECUTION_LOG_TRACE_LIMIT: int = _env_to_int(
+        "DSL_EXECUTION_LOG_TRACE_LIMIT", 200
+    )
+
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
     def _coerce_cors_origins(
