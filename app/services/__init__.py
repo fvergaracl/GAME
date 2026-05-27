@@ -15,6 +15,9 @@ from app.services.game_service import GameService
 from app.services.kpi_metrics_service import KpiMetricsService
 from app.services.logs_service import LogsService
 from app.services.oauth_users_service import OAuthUsersService
+from app.services.strategy_definition_service import (
+    StrategyDefinitionService,
+)
 from app.services.strategy_service import StrategyService
 from app.services.task_service import TaskService
 from app.services.uptime_logs_service import UptimeLogsService

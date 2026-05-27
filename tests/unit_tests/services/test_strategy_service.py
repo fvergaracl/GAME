@@ -1,8 +1,13 @@
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.core.exceptions import NotFoundError
-from app.services.strategy_service import StrategyService
+from app.services.strategy_service import (
+    CUSTOM_STRATEGY_PREFIX,
+    StrategyService,
+    is_custom_strategy_id,
+    parse_custom_strategy_id,
+)
 
 
 class FakeStrategyDefault:
@@ -118,6 +123,66 @@ class TestStrategyService(unittest.TestCase):
         self.assertEqual(
             context.exception.detail, "Strategy not found with id: missing"
         )
+
+
+class TestCustomStrategyPrefix(unittest.TestCase):
+    def test_prefix_helpers_round_trip_an_id(self):
+        custom_id = f"{CUSTOM_STRATEGY_PREFIX}abc-123"
+        self.assertTrue(is_custom_strategy_id(custom_id))
+        self.assertEqual(parse_custom_strategy_id(custom_id), "abc-123")
+
+    def test_builtin_ids_are_not_custom(self):
+        self.assertFalse(is_custom_strategy_id("default"))
+        self.assertFalse(is_custom_strategy_id(""))
+        self.assertFalse(is_custom_strategy_id(None))
+
+
+class TestStrategyServiceCompatLayer(unittest.IsolatedAsyncioTestCase):
+    async def test_get_class_by_id_refuses_custom_prefix(self):
+        service = StrategyService()
+        with self.assertRaises(NotFoundError):
+            service.get_Class_by_id(f"{CUSTOM_STRATEGY_PREFIX}some-uuid")
+
+    async def test_resolve_routes_builtin_to_registry(self):
+        service = StrategyService()
+        instance = MagicMock()
+        instance.id = "default"
+        with patch(
+            "app.services.strategy_service.all_engine_strategies",
+            return_value=[instance],
+        ):
+            resolved = await service.resolve("default")
+
+        self.assertEqual(resolved["kind"], "BUILT_IN")
+        self.assertIs(resolved["instance"], instance)
+
+    async def test_resolve_routes_custom_to_definition_service(self):
+        fake_definition = MagicMock()
+        fake_definition.type = "DSL_FULL"
+        definition_service = MagicMock()
+        definition_service.get_strategy = AsyncMock(
+            return_value=fake_definition
+        )
+
+        service = StrategyService(
+            strategy_definition_service=definition_service
+        )
+        resolved = await service.resolve(
+            f"{CUSTOM_STRATEGY_PREFIX}uuid-1", realmId="realm-a"
+        )
+
+        definition_service.get_strategy.assert_awaited_once_with(
+            id="uuid-1", realmId="realm-a"
+        )
+        self.assertEqual(resolved["kind"], "DSL_FULL")
+        self.assertIs(resolved["definition"], fake_definition)
+
+    async def test_resolve_custom_without_dsl_service_raises(self):
+        service = StrategyService(strategy_definition_service=None)
+        with self.assertRaises(NotFoundError):
+            await service.resolve(
+                f"{CUSTOM_STRATEGY_PREFIX}uuid-1", realmId="realm-a"
+            )
 
 
 if __name__ == "__main__":

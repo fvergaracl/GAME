@@ -12,6 +12,7 @@ from app.repository import (
     GameParamsRepository,
     GameRepository,
     KpiMetricsRepository,
+    StrategyDefinitionRepository,
     TaskParamsRepository,
     TaskRepository,
     UptimeLogsRepository,
@@ -34,6 +35,7 @@ from app.services import (
     GameParamsService,
     GameService,
     KpiMetricsService,
+    StrategyDefinitionService,
     StrategyService,
     TaskService,
     UptimeLogsService,
@@ -149,6 +151,7 @@ class Container(containers.DeclarativeContainer):
             "app.api.v1.endpoints.kpi",
             "app.api.v1.endpoints.dashboard",
             "app.api.v1.endpoints.exports",
+            "app.api.v1.endpoints.strategies_custom",
             "app.middlewares.auth_context",
         ]
     )
@@ -246,13 +249,25 @@ class Container(containers.DeclarativeContainer):
         ExportAuditLogRepository, session_factory=db.provided.session
     )
 
+    strategy_definition_repository = providers.Factory(
+        StrategyDefinitionRepository, session_factory=db.provided.session
+    )
+
     # Services (Add in here)
 
     game_params_service = providers.Factory(
         GameParamsService, game_params_repository=game_params_repository
     )
 
-    strategy_service = providers.Factory(StrategyService)
+    strategy_definition_service = providers.Factory(
+        StrategyDefinitionService,
+        strategy_definition_repository=strategy_definition_repository,
+    )
+
+    strategy_service = providers.Factory(
+        StrategyService,
+        strategy_definition_service=strategy_definition_service,
+    )
 
     game_service = providers.Factory(
         GameService,

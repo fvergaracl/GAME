@@ -9,6 +9,9 @@ from app.repository.game_repository import GameRepository
 from app.repository.kpi_metrics_repository import KpiMetricsRepository
 from app.repository.logs_repository import LogsRepository
 from app.repository.oauth_users_repository import OAuthUsersRepository
+from app.repository.strategy_definition_repository import (
+    StrategyDefinitionRepository,
+)
 from app.repository.task_params_repository import TaskParamsRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.uptime_logs_repository import UptimeLogsRepository
@@ -42,4 +45,5 @@ __all__ = [
     "OAuthUsersRepository",
     "LogsRepository",
     "UserGameConfigRepository",
+    "StrategyDefinitionRepository",
 ]

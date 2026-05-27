@@ -19,6 +19,7 @@ from app.model.games import Games  # noqa: F401
 from app.model.kpi_metrics import KpiMetrics  # noqa: F401
 from app.model.logs import Logs  # noqa: F401
 from app.model.oauth_users import OAuthUsers  # noqa: F401
+from app.model.strategy_definition import StrategyDefinition  # noqa: F401
 from app.model.task_params import TasksParams  # noqa: F401
 from app.model.tasks import Tasks  # noqa: F401
 from app.model.uptime_logs import UptimeLogs  # noqa: F401
