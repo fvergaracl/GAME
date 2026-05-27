@@ -30,8 +30,12 @@ class ExportAuditLog(BaseModel, table=True):
     format: str = Field(sa_column=Column(String, nullable=False))
     filters: dict = Field(sa_column=Column(JSONB, nullable=True))
     rowLimit: int = Field(sa_column=Column(Integer, nullable=False))
-    rowCount: int = Field(sa_column=Column(Integer, nullable=False, default=-1))
-    status: str = Field(sa_column=Column(String, nullable=False, default="started"))
+    rowCount: int = Field(
+        sa_column=Column(Integer, nullable=False, default=-1)
+    )
+    status: str = Field(
+        sa_column=Column(String, nullable=False, default="started")
+    )
     requestedBy: str = Field(sa_column=Column(String, nullable=True))
 
     model_config = ConfigDict(from_attributes=True)

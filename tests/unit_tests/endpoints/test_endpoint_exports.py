@@ -20,21 +20,32 @@ async def _aiter(items):
 
 
 def _make_mock_service(rows):
-    """Build a mock ExportService whose iter_dataset returns the given rows."""
+    """
+    Build a mock ExportService whose iter_dataset returns the given rows.
+
+    We can't reuse `ExportService.format_iterator` directly because it
+    dispatches through ``self.format_as_csv`` etc., and ``self`` is an
+    AsyncMock — every attribute access yields an AsyncMock that returns a
+    coroutine, breaking ``async for``. So we route to the underlying
+    staticmethods explicitly.
+    """
+    from app.services.export_service import DATASET_COLUMNS, ExportService
+
     service = AsyncMock()
     service.audit_start = AsyncMock(
         return_value=SimpleNamespace(id="audit-1")
     )
     service.audit_finish = AsyncMock()
-    # iter_dataset is sync (returns an async iterator) — match the real API.
     service.iter_dataset = lambda dataset_type, filters: _aiter(rows)
-    # Use the real formatter — we want to assert on actual CSV/JSON bytes.
-    from app.services.export_service import ExportService
 
-    service.format_iterator = lambda dt, fmt, it: ExportService.format_iterator(
-        service, dt, fmt, it
-    )
-    # Bind the static helpers from the real class.
+    def _format_iterator(dt, fmt, it):
+        if fmt == "csv":
+            return ExportService.format_as_csv(it, DATASET_COLUMNS[dt])
+        if fmt == "json":
+            return ExportService.format_as_json(it)
+        return ExportService.format_as_xlsx(it, DATASET_COLUMNS[dt])
+
+    service.format_iterator = _format_iterator
     service.media_type_for = ExportService.media_type_for
     service.filename_for = ExportService.filename_for
     return service
@@ -71,7 +82,9 @@ def override_di_logs(monkeypatch):
     )
 
     container.logs_service.override(providers.Object(mock_logs_service))
-    container.oauth_users_service.override(providers.Object(mock_oauth_service))
+    container.oauth_users_service.override(
+        providers.Object(mock_oauth_service)
+    )
     yield
     container.logs_service.reset_override()
     container.oauth_users_service.reset_override()

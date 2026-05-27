@@ -14,7 +14,7 @@ Design notes:
 import csv
 import io
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, AsyncIterator, Dict, List, Optional
 
 from sqlalchemy import select
@@ -174,7 +174,8 @@ class ExportService(BaseService):
 
     async def _stream_rows(self, stmt) -> AsyncIterator[Any]:
         """Yield ORM rows one by one using SQLAlchemy's async streaming API."""
-        async with self.export_audit_log_repository.session_factory() as session:
+        session_factory = self.export_audit_log_repository.session_factory
+        async with session_factory() as session:
             result = await session.stream(stmt)
             async for row in result:
                 yield row
@@ -302,7 +303,9 @@ class ExportService(BaseService):
             .join(Users, Wallet.userId == Users.id)
         )
         stmt = self._apply_date_filters(stmt, WalletTransactions, filters)
-        stmt = stmt.order_by(WalletTransactions.created_at).limit(filters.limit)
+        stmt = stmt.order_by(WalletTransactions.created_at).limit(
+            filters.limit
+        )
         async for row in self._stream_rows(stmt):
             yield {
                 "id": str(row.id),
@@ -330,8 +333,12 @@ class ExportService(BaseService):
         mapping = {
             ExportDatasetType.USERS.value: self.iter_users,
             ExportDatasetType.USER_POINTS.value: self.iter_user_points,
-            ExportDatasetType.USER_INTERACTIONS.value: self.iter_user_interactions,
-            ExportDatasetType.WALLET_TRANSACTIONS.value: self.iter_wallet_transactions,
+            ExportDatasetType.USER_INTERACTIONS.value: (
+                self.iter_user_interactions
+            ),
+            ExportDatasetType.WALLET_TRANSACTIONS.value: (
+                self.iter_wallet_transactions
+            ),
         }
         try:
             return mapping[dataset_type](filters)
@@ -362,7 +369,9 @@ class ExportService(BaseService):
         async for row in rows:
             buffer.seek(0)
             buffer.truncate(0)
-            writer.writerow({k: _stringify_for_tabular(row.get(k)) for k in columns})
+            writer.writerow(
+                {k: _stringify_for_tabular(row.get(k)) for k in columns}
+            )
             yield buffer.getvalue().encode("utf-8")
 
     @staticmethod
@@ -400,7 +409,7 @@ class ExportService(BaseService):
         """
         try:
             from openpyxl import Workbook
-        except ImportError as exc:  # pragma: no cover - exercised via env w/o lib
+        except ImportError as exc:  # pragma: no cover - env w/o openpyxl
             raise InternalServerError(
                 detail=(
                     "XLSX export requires 'openpyxl'. Install it "
@@ -412,7 +421,9 @@ class ExportService(BaseService):
         sheet = workbook.create_sheet(title="export")
         sheet.append(columns)
         async for row in rows:
-            sheet.append([_stringify_for_tabular(row.get(col)) for col in columns])
+            sheet.append(
+                [_stringify_for_tabular(row.get(col)) for col in columns]
+            )
         buffer = io.BytesIO()
         workbook.save(buffer)
         buffer.seek(0)
@@ -436,7 +447,9 @@ class ExportService(BaseService):
             return self.format_as_json(rows)
         if export_format == ExportFormat.XLSX.value:
             return self.format_as_xlsx(rows, columns)
-        raise InternalServerError(detail=f"Unknown export format: {export_format}")
+        raise InternalServerError(
+            detail=f"Unknown export format: {export_format}"
+        )
 
     @staticmethod
     def media_type_for(export_format: str) -> str:
@@ -451,5 +464,5 @@ class ExportService(BaseService):
 
     @staticmethod
     def filename_for(dataset_type: str, export_format: str) -> str:
-        timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         return f"{dataset_type}_{timestamp}.{export_format}"
