@@ -301,15 +301,19 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.strategy_service.StrategyService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.strategy_service.StrategyService.None" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyService.None</span></code></a>
-        </li>
         <li class="md-nav__item"><a href="#app.services.strategy_service.StrategyService.get_Class_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyService.get_Class_by_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.strategy_service.StrategyService.get_strategy_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyService.get_strategy_by_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.strategy_service.StrategyService.list_all_strategies" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyService.list_all_strategies()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_service.StrategyService.resolve" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyService.resolve()</span></code></a>
         </li></ul>
             </nav>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_service.is_custom_strategy_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">is_custom_strategy_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_service.parse_custom_strategy_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">parse_custom_strategy_id()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -532,7 +536,7 @@ an async repository.</p>
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.base_service.BaseService.remove_by_id">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#app.services.strategy_service.StrategyService.None" title="app.services.strategy_service.StrategyService.None"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.remove_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.remove_by_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><span class="pre">UUID</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.remove_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.remove_by_id" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 </dd></dl>
 </section>
@@ -801,64 +805,73 @@ created.</p></li>
 <span id="app-services-strategy-service-module"></span><h2 id="module-app.services.strategy_service">app.services.strategy_service module<a class="headerlink" href="#module-app.services.strategy_service" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.services.strategy_service.StrategyService">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.strategy_service.</span></span><span class="sig-name descname"><span class="pre">StrategyService</span></span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.strategy_service.</span></span><span class="sig-name descname"><span class="pre">StrategyService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_definition_service</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StrategyDefinitionService</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
 <p>Service class for managing strategies.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="app.services.strategy_service.StrategyService.None">
-<span class="sig-name descname"><span class="pre">None</span></span><a class="headerlink" href="#app.services.strategy_service.StrategyService.None" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="simple">
+<dt>Resolution is a two-step routing:</dt><dd><ul class="simple">
+<li><p>built-in strategies (registry-discovered <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code>
+subclasses) keep their bare id, e.g. <code class="docutils literal notranslate"><span class="pre">"default"</span></code>.</p></li>
+<li><p>persistent strategies authored from the dashboard live in the
+<code class="docutils literal notranslate"><span class="pre">strategydefinition</span></code> table and are addressed as
+<code class="docutils literal notranslate"><span class="pre">"custom:&lt;uuid&gt;"</span></code>. The resolver returns a thin descriptor for
+them; the DSL interpreter that actually runs the AST lands in
+Sprint 4 and will plug into this same method.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.strategy_service.StrategyService.get_Class_by_id">
 <span class="sig-name descname"><span class="pre">get_Class_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService.get_Class_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService.get_Class_by_id" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves the instance of a strategy by its ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The ID of the strategy.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The strategy instance.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>NotFoundError</strong> – If the strategy class is not found.</p>
-</dd>
-</dl>
+<dd><p>Retrieves the instance of a built-in strategy by its ID.</p>
+<p>Only handles the registry path; custom DSL strategies need a DB
+round-trip and use the async <a class="reference internal" href="#app.services.strategy_service.StrategyService.resolve" title="app.services.strategy_service.StrategyService.resolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resolve()</span></code></a> instead.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.strategy_service.StrategyService.get_strategy_by_id">
 <span class="sig-name descname"><span class="pre">get_strategy_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService.get_strategy_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService.get_strategy_by_id" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves a strategy by its ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The ID of the strategy.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The strategy details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>NotFoundError</strong> – If the strategy is not found.</p>
-</dd>
-</dl>
+<dd><p>Retrieves a built-in strategy by its ID.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.strategy_service.StrategyService.list_all_strategies">
 <span class="sig-name descname"><span class="pre">list_all_strategies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService.list_all_strategies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService.list_all_strategies" title="Link to this definition">¶</a></dt>
-<dd><p>Lists all available strategies.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of all strategies.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
+<dd><p>Lists all available built-in strategies.</p>
+<p>Custom DB-stored strategies are returned through the dedicated
+<code class="docutils literal notranslate"><span class="pre">/v1/strategies/custom</span></code> endpoints rather than mixed in here, so
+the legacy contract of this endpoint stays stable.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_service.StrategyService.resolve">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService.resolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService.resolve" title="Link to this definition">¶</a></dt>
+<dd><p>Single resolution entrypoint for both code paths.</p>
+<dl>
+<dt>Returns a small descriptor:</dt><dd><ul>
+<li><p>for built-ins:
+<code class="docutils literal notranslate"><span class="pre">{"kind":</span> <span class="pre">"BUILT_IN",</span> <span class="pre">"id":</span> <span class="pre">"default",</span> <span class="pre">"instance":</span> <span class="pre">&lt;obj&gt;}</span></code></p></li>
+<li><p>for custom:
+<a href="#id1"><span class="problematic" id="id2">``</span></a>{“kind”: “DSL_FULL”|”DSL_EXTEND”, “id”: “custom:&lt;uuid&gt;”,</p>
+<blockquote>
+<div><p>“definition”: &lt;StrategyDefinitionRead&gt;}``</p>
+</div></blockquote>
+</li>
+</ul>
 </dd>
 </dl>
+<p>Execution wiring (<code class="docutils literal notranslate"><span class="pre">BaseStrategy.calculate_points</span></code> delegating to
+the DSL interpreter when the descriptor is a DSL one) is wired
+in Sprint 4; right now this method is here so call sites can
+already adopt it.</p>
 </dd></dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.services.strategy_service.is_custom_strategy_id">
+<span class="sig-prename descclassname"><span class="pre">app.services.strategy_service.</span></span><span class="sig-name descname"><span class="pre">is_custom_strategy_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/app/services/strategy_service.html#is_custom_strategy_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.is_custom_strategy_id" title="Link to this definition">¶</a></dt>
+<dd><p>Return True when <code class="docutils literal notranslate"><span class="pre">strategy_id</span></code> addresses a DB-stored strategy.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.services.strategy_service.parse_custom_strategy_id">
+<span class="sig-prename descclassname"><span class="pre">app.services.strategy_service.</span></span><span class="sig-name descname"><span class="pre">parse_custom_strategy_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/app/services/strategy_service.html#parse_custom_strategy_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.parse_custom_strategy_id" title="Link to this definition">¶</a></dt>
+<dd><p>Strip the <code class="docutils literal notranslate"><span class="pre">custom:</span></code> prefix and return the underlying uuid.</p>
 </dd></dl>
 </section>
 <section id="module-app.services.task_service">

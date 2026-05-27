@@ -236,11 +236,37 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-strategy-service--page-root">Source code for app.services.strategy_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.all_engine_strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_engine_strategies</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_definition_service</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">StrategyDefinitionService</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Prefix used to address DB-persisted custom strategies from the existing</span>
+<span class="c1"># ``Games.strategyId`` / ``Tasks.strategyId`` columns. Anything without this</span>
+<span class="c1"># prefix is resolved against the in-process registry, preserving the</span>
+<span class="c1"># pre-Sprint-3 behaviour. See the Sprint 3 compat-layer notes in the</span>
+<span class="c1"># roadmap.</span>
+<span class="n">CUSTOM_STRATEGY_PREFIX</span> <span class="o">=</span> <span class="s2">"custom:"</span>
+
+
+<div class="viewcode-block" id="is_custom_strategy_id">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.is_custom_strategy_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_custom_strategy_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return True when ``strategy_id`` addresses a DB-stored strategy."""</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">)</span> <span class="ow">and</span> <span class="n">strategy_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">CUSTOM_STRATEGY_PREFIX</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="parse_custom_strategy_id">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.parse_custom_strategy_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_custom_strategy_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Strip the ``custom:`` prefix and return the underlying uuid."""</span>
+    <span class="k">return</span> <span class="n">strategy_id</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">CUSTOM_STRATEGY_PREFIX</span><span class="p">):]</span></div>
+
 
 
 <div class="viewcode-block" id="StrategyService">
@@ -249,24 +275,43 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Service class for managing strategies.</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        None</span>
+<span class="sd">    Resolution is a two-step routing:</span>
+<span class="sd">      * built-in strategies (registry-discovered ``BaseStrategy``</span>
+<span class="sd">        subclasses) keep their bare id, e.g. ``"default"``.</span>
+<span class="sd">      * persistent strategies authored from the dashboard live in the</span>
+<span class="sd">        ``strategydefinition`` table and are addressed as</span>
+<span class="sd">        ``"custom:&lt;uuid&gt;"``. The resolver returns a thin descriptor for</span>
+<span class="sd">        them; the DSL interpreter that actually runs the AST lands in</span>
+<span class="sd">        Sprint 4 and will plug into this same method.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">strategy_definition_service</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">StrategyDefinitionService</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initializes the StrategyService.</span>
+
+<span class="sd">        ``strategy_definition_service`` is optional so legacy call sites</span>
+<span class="sd">        that only need built-ins still work after the Sprint 3 wiring.</span>
+<span class="sd">        When it's omitted, attempting to resolve a ``custom:`` id raises</span>
+<span class="sd">        ``NotFoundError`` with a clear message rather than silently</span>
+<span class="sd">        crashing.</span>
 <span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strategy_definition_service</span> <span class="o">=</span> <span class="n">strategy_definition_service</span>
 
 <div class="viewcode-block" id="StrategyService.list_all_strategies">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.list_all_strategies">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">list_all_strategies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Lists all available strategies.</span>
+<span class="sd">        Lists all available built-in strategies.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            list: A list of all strategies.</span>
+<span class="sd">        Custom DB-stored strategies are returned through the dedicated</span>
+<span class="sd">        ``/v1/strategies/custom`` endpoints rather than mixed in here, so</span>
+<span class="sd">        the legacy contract of this endpoint stays stable.</span>
 <span class="sd">        """</span>
         <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_engine_strategies</span><span class="p">():</span>
@@ -288,16 +333,7 @@
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.get_strategy_by_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_strategy_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Retrieves a strategy by its ID.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            id (str): The ID of the strategy.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            dict: The strategy details.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            NotFoundError: If the strategy is not found.</span>
+<span class="sd">        Retrieves a built-in strategy by its ID.</span>
 <span class="sd">        """</span>
         <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_all_strategies</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">strategy</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">:</span>
@@ -309,21 +345,70 @@
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.get_Class_by_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Class_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Retrieves the instance of a strategy by its ID.</span>
+<span class="sd">        Retrieves the instance of a built-in strategy by its ID.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            id (str): The ID of the strategy.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            object: The strategy instance.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            NotFoundError: If the strategy class is not found.</span>
+<span class="sd">        Only handles the registry path; custom DSL strategies need a DB</span>
+<span class="sd">        round-trip and use the async :meth:`resolve` instead.</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">is_custom_strategy_id</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Strategy '</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">' is a DSL strategy. Use the async "</span>
+                    <span class="s2">"resolve() method (DSL execution arrives in Sprint 4)."</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_engine_strategies</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">strategy</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">strategy</span>
         <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Strategy not found with id: </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StrategyService.resolve">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.resolve">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">strategy_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">realmId</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Single resolution entrypoint for both code paths.</span>
+
+<span class="sd">        Returns a small descriptor:</span>
+<span class="sd">          * for built-ins:</span>
+<span class="sd">            ``{"kind": "BUILT_IN", "id": "default", "instance": &lt;obj&gt;}``</span>
+<span class="sd">          * for custom:</span>
+<span class="sd">            ``{"kind": "DSL_FULL"|"DSL_EXTEND", "id": "custom:&lt;uuid&gt;",</span>
+<span class="sd">               "definition": &lt;StrategyDefinitionRead&gt;}``</span>
+
+<span class="sd">        Execution wiring (``BaseStrategy.calculate_points`` delegating to</span>
+<span class="sd">        the DSL interpreter when the descriptor is a DSL one) is wired</span>
+<span class="sd">        in Sprint 4; right now this method is here so call sites can</span>
+<span class="sd">        already adopt it.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">is_custom_strategy_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy_definition_service</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
+                    <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                        <span class="s2">"Custom strategy resolution is unavailable: "</span>
+                        <span class="s2">"StrategyDefinitionService not wired."</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">uuid_part</span> <span class="o">=</span> <span class="n">parse_custom_strategy_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">)</span>
+            <span class="n">definition</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy_definition_service</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">uuid_part</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">"kind"</span><span class="p">:</span> <span class="n">definition</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                <span class="s2">"id"</span><span class="p">:</span> <span class="n">strategy_id</span><span class="p">,</span>
+                <span class="s2">"definition"</span><span class="p">:</span> <span class="n">definition</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_Class_by_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"BUILT_IN"</span><span class="p">,</span>
+            <span class="s2">"id"</span><span class="p">:</span> <span class="n">strategy_id</span><span class="p">,</span>
+            <span class="s2">"instance"</span><span class="p">:</span> <span class="n">instance</span><span class="p">,</span>
+        <span class="p">}</span></div>
 </div>
 
 </pre></div>

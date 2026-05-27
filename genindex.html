@@ -658,6 +658,8 @@
         <li><a href="app/app.repository.html#app.repository.UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id">(app.repository.UserPointsRepository method)</a>
 </li>
       </ul></li>
+      <li><a href="app/app.repository.html#app.repository.StrategyDefinitionRepository.get_for_realm">get_for_realm() (app.repository.StrategyDefinitionRepository method)</a>
+</li>
       <li><a href="app/app.services.html#app.services.game_service.GameService.get_game_by_external_id">get_game_by_external_id() (app.services.game_service.GameService method)</a>
 </li>
       <li><a href="app/app.repository.html#app.repository.game_repository.GameRepository.get_game_by_id">get_game_by_id() (app.repository.game_repository.GameRepository method)</a>
@@ -699,6 +701,8 @@
 </li>
       </ul></li>
       <li><a href="app/app.services.html#app.services.base_service.BaseService.get_list">get_list() (app.services.base_service.BaseService method)</a>
+</li>
+      <li><a href="app/app.repository.html#app.repository.StrategyDefinitionRepository.get_max_version">get_max_version() (app.repository.StrategyDefinitionRepository method)</a>
 </li>
       <li><a href="app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_new_last_window_time_diff">get_new_last_window_time_diff() (app.repository.user_points_repository.UserPointsRepository method)</a>
 
@@ -761,6 +765,8 @@
       <li><a href="app/app.services.html#app.services.user_points_service.UserPointsService.get_points_simulated_of_user_in_game">get_points_simulated_of_user_in_game() (app.services.user_points_service.UserPointsService method)</a>
 </li>
       <li><a href="app/app.html#app.main.get_project_data">get_project_data() (in module app.main)</a>
+</li>
+      <li><a href="app/app.repository.html#app.repository.StrategyDefinitionRepository.get_published">get_published() (app.repository.StrategyDefinitionRepository method)</a>
 </li>
       <li><a href="app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_start_time_for_last_task">get_start_time_for_last_task() (app.repository.user_points_repository.UserPointsRepository method)</a>
 
@@ -862,11 +868,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app/app.repository.html#app.repository.AbuseLimitCounterRepository.increment_and_get">increment_and_get() (app.repository.AbuseLimitCounterRepository method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app/app.services.html#app.services.user_service.UserService.individual_adjustment_points">individual_adjustment_points() (app.services.user_service.UserService method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app/app.services.html#app.services.user_service.UserService.individual_over_global_points">individual_over_global_points() (app.services.user_service.UserService method)</a>
+</li>
+      <li><a href="app/app.services.html#app.services.strategy_service.is_custom_strategy_id">is_custom_strategy_id() (in module app.services.strategy_service)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -886,9 +894,13 @@
 </li>
       <li><a href="app/app.services.html#app.services.strategy_service.StrategyService.list_all_strategies">list_all_strategies() (app.services.strategy_service.StrategyService method)</a>
 </li>
+      <li><a href="app/app.repository.html#app.repository.StrategyDefinitionRepository.list_for_realm">list_for_realm() (app.repository.StrategyDefinitionRepository method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="app/app.repository.html#app.repository.ExportAuditLogRepository.list_recent">list_recent() (app.repository.ExportAuditLogRepository method)</a>
+</li>
+      <li><a href="app/app.repository.html#app.repository.StrategyDefinitionRepository.list_versions">list_versions() (app.repository.StrategyDefinitionRepository method)</a>
 </li>
       <li><a href="app/app.repository.html#app.repository.LogsRepository">LogsRepository (class in app.repository)</a>
 </li>
@@ -992,10 +1004,6 @@
       <li><a href="app/app.services.html#app.services.user_service.UserService.need_for_motivation_points">need_for_motivation_points() (app.services.user_service.UserService method)</a>
 </li>
   </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="app/app.services.html#app.services.strategy_service.StrategyService.None">None (app.services.strategy_service.StrategyService attribute)</a>
-</li>
-  </ul></td>
 </tr></table>
 
 <h2 id="O">O</h2>
@@ -1009,6 +1017,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="app/app.services.html#app.services.strategy_service.parse_custom_strategy_id">parse_custom_strategy_id() (in module app.services.strategy_service)</a>
+</li>
       <li><a href="app/app.services.html#app.services.base_service.BaseService.patch">patch() (app.services.base_service.BaseService method)</a>
 </li>
       <li><a href="app/app.services.html#app.services.base_service.BaseService.patch_attr">patch_attr() (app.services.base_service.BaseService method)</a>
@@ -1109,6 +1119,8 @@
       </ul></li>
       <li><a href="app/app.services.html#app.services.base_service.BaseService.remove_by_id">remove_by_id() (app.services.base_service.BaseService method)</a>
 </li>
+      <li><a href="app/app.services.html#app.services.strategy_service.StrategyService.resolve">resolve() (app.services.strategy_service.StrategyService method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1147,12 +1159,16 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="app/app.repository.html#app.repository.StrategyDefinitionRepository.set_status">set_status() (app.repository.StrategyDefinitionRepository method)</a>
+</li>
       <li><a href="app/app.services.html#app.services.game_service.GameService.strategy_service">strategy_service (app.services.game_service.GameService attribute)</a>
 
       <ul>
         <li><a href="app/app.services.html#app.services.task_service.TaskService.strategy_service">(app.services.task_service.TaskService attribute)</a>
 </li>
       </ul></li>
+      <li><a href="app/app.repository.html#app.repository.StrategyDefinitionRepository">StrategyDefinitionRepository (class in app.repository)</a>
+</li>
       <li><a href="app/app.services.html#app.services.strategy_service.StrategyService">StrategyService (class in app.services.strategy_service)</a>
 </li>
   </ul></td>
