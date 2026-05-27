@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ---------- builder ----------
-FROM python:3.11.10-slim AS builder
+FROM python:3.12-slim AS builder
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -47,7 +47,7 @@ CMD ["bash", "./app/start-dev.sh"]
 
 
 # ---------- prod ----------
-FROM python:3.11.10-slim AS prod
+FROM python:3.12-slim AS prod
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \

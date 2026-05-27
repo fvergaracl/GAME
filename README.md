@@ -129,15 +129,15 @@ GAME is designed to behave safely under failure scenarios:
 
 # Python Compatibility
 
-- Poetry constraint: `python = "^3.10"` (effective range: `>=3.10,<4.0`)
-- CI currently runs Python `3.12.3`
+- Poetry constraint: `python = "^3.12"` (effective range: `>=3.12,<4.0`)
+- CI runs Python `3.12`
 - Recommended local version: **Python 3.12.x**
 
 ---
 
 # Stack
 
-- Python ≥ 3.10
+- Python ≥ 3.12
 - FastAPI + Starlette
 - SQLModel + SQLAlchemy
 - PostgreSQL
