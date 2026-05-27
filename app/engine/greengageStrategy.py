@@ -7,8 +7,10 @@ from graphviz import Digraph
 
 from app.core.container import Container
 from app.engine.base_strategy import BaseStrategy
+from app.engine.strategy_registry import register_strategy
 
 
+@register_strategy(id="greengageStrategy", version="0.0.1")
 class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
     def __init__(self):
         super().__init__(

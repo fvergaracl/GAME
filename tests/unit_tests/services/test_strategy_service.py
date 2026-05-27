@@ -6,6 +6,8 @@ from app.services.strategy_service import StrategyService
 
 
 class FakeStrategyDefault:
+    id = "default"
+
     def get_strategy_name(self):
         return "Default Strategy"
 
@@ -23,6 +25,8 @@ class FakeStrategyDefault:
 
 
 class FakeStrategySocioBee:
+    id = "socio_bee"
+
     def get_strategy_name(self):
         return "Socio Bee"
 
@@ -39,14 +43,6 @@ class FakeStrategySocioBee:
         return "hash-socio"
 
 
-def fake_getfile_for_strategy(cls):
-    if cls is FakeStrategyDefault:
-        return "/tmp/default.py"
-    if cls is FakeStrategySocioBee:
-        return "/tmp/socio_bee.py"
-    return "/tmp/unknown.py"
-
-
 class TestStrategyService(unittest.TestCase):
     def setUp(self):
         self.service = StrategyService()
@@ -55,17 +51,12 @@ class TestStrategyService(unittest.TestCase):
         self.assertIsNone(self.service._repository)
 
     @patch(
-        "app.services.strategy_service.inspect.getfile",
-        side_effect=fake_getfile_for_strategy,
-    )
-    @patch(
         "app.services.strategy_service.all_engine_strategies",
         return_value=[FakeStrategyDefault(), FakeStrategySocioBee()],
     )
     async def test_list_all_strategies_returns_cleaned_strategy_payloads(
         self,
         _mock_all_engine_strategies,
-        _mock_getfile,
     ):
         result = await self.service.list_all_strategies()
 
@@ -90,7 +81,9 @@ class TestStrategyService(unittest.TestCase):
         self.assertEqual(result, expected)
 
     async def test_get_strategy_by_id_raises_not_found_when_missing(self):
-        self.service.list_all_strategies = MagicMock(return_value=[{"id": "default"}])
+        self.service.list_all_strategies = MagicMock(
+            return_value=[{"id": "default"}]
+        )
 
         with self.assertRaises(NotFoundError) as context:
             await self.service.get_strategy_by_id("missing")
@@ -100,26 +93,17 @@ class TestStrategyService(unittest.TestCase):
         )
 
     @patch(
-        "app.services.strategy_service.inspect.getfile",
-        side_effect=fake_getfile_for_strategy,
-    )
-    @patch(
         "app.services.strategy_service.all_engine_strategies",
         return_value=[FakeStrategyDefault(), FakeStrategySocioBee()],
     )
     async def test_get_class_by_id_returns_strategy_instance(
         self,
         _mock_all_engine_strategies,
-        _mock_getfile,
     ):
         result = await self.service.get_Class_by_id("socio_bee")
 
         self.assertIsInstance(result, FakeStrategySocioBee)
 
-    @patch(
-        "app.services.strategy_service.inspect.getfile",
-        side_effect=fake_getfile_for_strategy,
-    )
     @patch(
         "app.services.strategy_service.all_engine_strategies",
         return_value=[FakeStrategyDefault()],
@@ -127,7 +111,6 @@ class TestStrategyService(unittest.TestCase):
     async def test_get_class_by_id_raises_not_found_when_missing(
         self,
         _mock_all_engine_strategies,
-        _mock_getfile,
     ):
         with self.assertRaises(NotFoundError) as context:
             await self.service.get_Class_by_id("missing")

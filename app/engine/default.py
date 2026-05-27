@@ -6,8 +6,10 @@ https://dreampuf.github.io/GraphvizOnline/#digraph%20G%20%7B%0A%20%20%20%20rankd
 
 from app.core.container import Container
 from app.engine.base_strategy import BaseStrategy
+from app.engine.strategy_registry import register_strategy
 
 
+@register_strategy(id="default", version="0.0.2")
 class EnhancedGamificationStrategy(BaseStrategy):  # noqa
     def __init__(self):
         super().__init__(

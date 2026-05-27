@@ -6,6 +6,8 @@ from typing import Iterable
 import numpy as np
 from graphviz import Digraph
 
+from app.engine.strategy_registry import register_strategy
+
 
 def _build_rook_weights(rows: int, cols: int) -> np.ndarray:
     """
@@ -78,6 +80,7 @@ def rank_hotspots(grid: Iterable[Iterable[float]]) -> list[tuple[tuple[int, int]
     return ranked
 
 
+@register_strategy(id="getis_ord_gi_star", version="0.0.1")
 class GetisOrdStrategy:
 
     def __init__(

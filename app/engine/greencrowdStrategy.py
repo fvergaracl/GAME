@@ -15,6 +15,7 @@ from app.core.config import configs
 from app.core.container import Container
 from app.core.exceptions import InternalServerError
 from app.engine.base_strategy import BaseStrategy
+from app.engine.strategy_registry import register_strategy
 from app.schema.task_schema import SimulatedTaskPoints
 from app.util.add_log import add_log
 from app.util.calculate_hash_simulated_strategy import calculate_hash_simulated_strategy
@@ -270,6 +271,7 @@ def assign_random_scores(min_value: int, max_value: int):
     }
 
 
+@register_strategy(id="greencrowdStrategy", version="1.0.0")
 class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
     def __init__(self):
         super().__init__(
