@@ -502,10 +502,35 @@
         <span class="n">definition</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy_definition_service</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="n">uuid_part</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span>
         <span class="p">)</span>
+
+        <span class="c1"># Sprint 7: DSL_EXTEND wraps a built-in parent with pre/post</span>
+        <span class="c1"># rules. Resolve the parent here (sync registry lookup) and</span>
+        <span class="c1"># hand it to DslStrategy as a constructor dependency. If the</span>
+        <span class="c1"># parent id stored in the row no longer references an existing</span>
+        <span class="c1"># built-in (e.g. removed from the registry between persist and</span>
+        <span class="c1"># execution), ``get_Class_by_id`` raises NotFoundError with a</span>
+        <span class="c1"># clear message — better than a silent KeyError at run time.</span>
+        <span class="n">parent_strategy</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">"DSL_EXTEND"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">definition</span><span class="o">.</span><span class="n">parentStrategyId</span><span class="p">:</span>
+                <span class="c1"># The CRUD validator (_validate_payload) enforces this</span>
+                <span class="c1"># at write time, but defend in depth in case an older</span>
+                <span class="c1"># row predates the rule.</span>
+                <span class="k">raise</span> <span class="n">InternalServerError</span><span class="p">(</span>
+                    <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"Custom strategy </span><span class="si">{</span><span class="n">strategy_id</span><span class="si">}</span><span class="s2"> is DSL_EXTEND "</span>
+                        <span class="s2">"but has no parentStrategyId set."</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">parent_strategy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_Class_by_id</span><span class="p">(</span>
+                <span class="n">definition</span><span class="o">.</span><span class="n">parentStrategyId</span>
+            <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">DslStrategy</span><span class="p">(</span>
             <span class="n">definition</span><span class="o">=</span><span class="n">definition</span><span class="p">,</span>
             <span class="n">interpreter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dsl_interpreter</span><span class="p">,</span>
             <span class="n">analytics_service</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_analytics_service</span><span class="p">,</span>
+            <span class="n">parent_strategy</span><span class="o">=</span><span class="n">parent_strategy</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>
 
