@@ -2,22 +2,51 @@ from dependency_injector import containers, providers
 
 from app.core.config import configs
 from app.core.database import Database
+
 # pylint: disable=unused-wildcard-import
-from app.repository import (AbuseLimitCounterRepository, ApiKeyRepository, ApiRequestsRepository,
-                            GameParamsRepository, GameRepository, KpiMetricsRepository,
-                            TaskParamsRepository, TaskRepository, UptimeLogsRepository,
-                            UserActionsRepository, UserGameConfigRepository,
-                            UserInteractionsRepository, UserPointsRepository,
-                            UserRepository, WalletRepository,
-                            WalletTransactionRepository, dashboard_repository,
-                            logs_repository, oauth_users_repository)
-from app.services import (AbusePreventionService, ApiKeyService, ApiRequestsService, GameParamsService,
-                          GameService, KpiMetricsService, StrategyService, TaskService,
-                          UptimeLogsService, UserActionsService, UserGameConfigService,
-                          UserInteractionsService, UserPointsAnalyticsService,
-                          UserPointsService, UserService,
-                          WalletService, WalletTransactionService, dashboard_service,
-                          logs_service, oauth_users_service)
+from app.repository import (
+    AbuseLimitCounterRepository,
+    ApiKeyRepository,
+    ApiRequestsRepository,
+    GameParamsRepository,
+    GameRepository,
+    KpiMetricsRepository,
+    TaskParamsRepository,
+    TaskRepository,
+    UptimeLogsRepository,
+    UserActionsRepository,
+    UserGameConfigRepository,
+    UserInteractionsRepository,
+    UserPointsRepository,
+    UserRepository,
+    WalletRepository,
+    WalletTransactionRepository,
+    dashboard_repository,
+    logs_repository,
+    oauth_users_repository,
+)
+from app.services import (
+    AbusePreventionService,
+    ApiKeyService,
+    ApiRequestsService,
+    GameParamsService,
+    GameService,
+    KpiMetricsService,
+    StrategyService,
+    TaskService,
+    UptimeLogsService,
+    UserActionsService,
+    UserGameConfigService,
+    UserInteractionsService,
+    UserPointsAnalyticsService,
+    UserPointsService,
+    UserService,
+    WalletService,
+    WalletTransactionService,
+    dashboard_service,
+    logs_service,
+    oauth_users_service,
+)
 
 
 class Container(containers.DeclarativeContainer):
@@ -102,6 +131,11 @@ class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
         modules=[
             "app.api.v1.endpoints.games",
+            "app.api.v1.endpoints.games_crud",
+            "app.api.v1.endpoints.games_points",
+            "app.api.v1.endpoints.games_strategy",
+            "app.api.v1.endpoints.games_tasks",
+            "app.api.v1.endpoints.games_users",
             "app.api.v1.endpoints.tasks",
             "app.api.v1.endpoints.strategy",
             "app.api.v1.endpoints.userPoints",
@@ -110,6 +144,7 @@ class Container(containers.DeclarativeContainer):
             "app.api.v1.endpoints.apikey",
             "app.api.v1.endpoints.kpi",
             "app.api.v1.endpoints.dashboard",
+            "app.middlewares.auth_context",
         ]
     )
 

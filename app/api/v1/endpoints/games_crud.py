@@ -1,55 +1,23 @@
 import logging
-import traceback
-from typing import List, Optional
-from uuid import UUID, uuid4
+from uuid import UUID
 
-import jwt
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
-from sqlalchemy.exc import DataError, IntegrityError, ProgrammingError
+from fastapi import APIRouter, Body, Depends
 
-from app.api.v1.endpoints.games_common import (
-    _extract_api_key_from_header,
-    _extract_db_error_code,
-    _extract_oauth_user_id_from_token,
-    _game_access_kwargs,
-    _map_write_exception,
-    _resolve_correlation_id,
-    _resolve_idempotency_key,
-)
-from app.core.config import configs
+from app.api.v1.endpoints.games_common import _game_access_kwargs
 from app.core.container import Container
-from app.core.exceptions import (ConflictError, DuplicatedError, ForbiddenError,
-                                 InternalServerError, NotFoundError,
-                                 PreconditionFailedError)
-from app.middlewares.authentication import auth_api_key_or_oauth2, auth_oauth2
-from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
-from app.schema.games_schema import (BaseGameResult, FindGameResult, GameCreated,
-                                     ListTasksWithUsers, PatchGame, PostCreateGame,
-                                     PostFindGame, ResponsePatchGame)
-from app.schema.oauth_users_schema import CreateOAuthUser
-from app.schema.strategy_schema import Strategy
-from app.schema.task_schema import (AddActionDidByUserInTask,
-                                    AsignPointsToExternalUserId,
-                                    AssignedPointsToExternalUserId, CreateTaskPost,
-                                    CreateTaskPostSuccesfullyCreated, CreateTasksPost,
-                                    CreateTasksPostBulkCreated, FoundTasks,
-                                    PostFindTask, ResponseAddActionDidByUserInTask,
-                                    SimulatedPointsAssignedToUser)
-from app.schema.user_points_schema import (AllPointsByGame, AllPointsByGameWithDetails,
-                                           PointsAssignedToUser)
-from app.services.apikey_service import ApiKeyService
-from app.services.abuse_prevention_service import AbusePreventionService
+from app.middlewares.auth_context import AuditLogger, audit_log
+from app.middlewares.authentication import auth_api_key_or_oauth2
+from app.schema.games_schema import (
+    BaseGameResult,
+    FindGameResult,
+    GameCreated,
+    PatchGame,
+    PostCreateGame,
+    PostFindGame,
+    ResponsePatchGame,
+)
 from app.services.game_service import GameService
-from app.services.logs_service import LogsService
-from app.services.oauth_users_service import OAuthUsersService
-from app.services.task_service import TaskService
-from app.services.user_actions_service import UserActionsService
-from app.services.user_points_service import UserPointsService
-from app.services.user_service import UserService
-from app.util.add_log import add_log
-from app.util.calculate_hash_simulated_strategy import calculate_hash_simulated_strategy
-from app.util.check_role import check_role
 
 router = APIRouter(
     prefix="/games",
@@ -157,10 +125,7 @@ Returns:
 async def get_games_list(
     schema: PostFindGame = Depends(),
     service: GameService = Depends(Provide[Container.game_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve a list of all games with their parameters.
@@ -168,53 +133,19 @@ async def get_games_list(
     Args:
         schema(PostFindGame): Query parameters for finding games.
         service(GameService): Injected GameService dependency.
-        service_log(LogsService): Injected LogsService dependency.
-        service_oauth(OAuthUsersService): Injected OAuthUsersService dependency.
-        token(str): The OAuth2 token.
-        api_key_header(str): The API key header.
+        audit(AuditLogger): Per-request audit logger bound to the auth context.
 
 
     Returns:
         FindGameResult: A result set containing the games and search options.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        token_data = token_data.data
-        oauth_user_id = token_data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Get games list - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-        is_admin = check_role(token_data, "AdministratorGAME")
-    await add_log(
-        "game",
-        "INFO",
-        "Game list retrieval",
-        schema.model_dump(),
-        service_log,
-        api_key,
-        oauth_user_id,
-    )
+    auth = audit.auth
+    await audit.info("Game list retrieval", schema.model_dump())
     return await service.get_all_games(
         schema,
-        api_key=api_key,
-        oauth_user_id=oauth_user_id,
-        is_admin=is_admin,
+        api_key=auth.api_key,
+        oauth_user_id=auth.oauth_user_id,
+        is_admin=auth.is_admin,
     )
 
 
@@ -316,10 +247,7 @@ Returns the game metadata and strategy parameters:
 async def get_game_by_id(
     gameId: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve a game by its ID.
@@ -327,50 +255,17 @@ async def get_game_by_id(
     Args:
         gameId(UUID): The ID of the game.
         service(GameService): Injected GameService dependency.
-        service_log(LogsService): Injected LogsService dependency.
-        service_oauth(OAuthUsersService): Injected OAuthUsersService dependency.
-        token(str): The OAuth2 token.
-        api_key_header(str): The API key header.
+        audit(AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         BaseGameResult: The details of the specified game.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Get game by ID - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
-        "Game retrieval by ID",
-        {"gameId": str(gameId)},
-        service_log,
-        api_key,
-        oauth_user_id,
+    auth = audit.auth
+    await audit.info("Game retrieval by ID", {"gameId": str(gameId)})
+    return await service.get_by_gameId(
+        gameId,
+        **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
     )
-    response = await service.get_by_gameId(
-        gameId, **_game_access_kwargs(api_key, oauth_user_id, is_admin)
-    )
-    return response
 
 
 # delete game by gameId
@@ -394,7 +289,9 @@ response_example_delete_game_by_id = {
 responses_delete_game_by_id = {
     200: {
         "description": "Game deleted successfully",
-        "content": {"application/json": {"example": response_example_delete_game_by_id}},
+        "content": {
+            "application/json": {"example": response_example_delete_game_by_id}
+        },
     },
     401: {
         "description": "Unauthorized: missing/invalid credentials",
@@ -472,10 +369,7 @@ Returns the deleted game metadata:
 async def delete_game_by_id(
     gameId: UUID,
     service: GameService = Depends(Provide[Container.game_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Delete a game by its ID.
@@ -483,73 +377,23 @@ async def delete_game_by_id(
     Args:
         gameId (UUID): The ID of the game.
         service (GameService): Injected GameService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         BaseGameResult: The details of the deleted game.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Delete game by ID - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-
-    await add_log(
-        "game",
-        "INFO",
-        "Game deletion by ID",
-        {"gameId": str(gameId)},
-        service_log,
-        api_key,
-        oauth_user_id,
-    )
+    auth = audit.auth
+    await audit.info("Game deletion by ID", {"gameId": str(gameId)})
 
     try:
         response = await service.delete_game_by_id(
-            gameId, **_game_access_kwargs(api_key, oauth_user_id, is_admin)
+            gameId,
+            **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
         )
-        data_to_log = {"gameId": str(gameId)}
-        await add_log(
-            "game",
-            "SUCCESS",
-            "Game deletion successful",
-            data_to_log,
-            service_log,
-            api_key,
-            oauth_user_id,
-        )
+        await audit.success("Game deletion successful", {"gameId": str(gameId)})
         return response
     except Exception as e:
-        await add_log(
-            "game",
-            "ERROR",
-            "Game deletion failed",
-            {"error": str(e)},
-            service_log,
-            api_key,
-            oauth_user_id,
-        )
+        await audit.error("Game deletion failed", {"error": str(e)})
         raise e
 
 
@@ -650,10 +494,7 @@ Returns the created game metadata and persisted parameters.
 async def create_game(
     schema: PostCreateGame = Body(..., examples=[request_example_create_game]),
     service: GameService = Depends(Provide[Container.game_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Create a new game.
@@ -661,69 +502,21 @@ async def create_game(
     Args:
         schema (PostCreateGame): The schema for creating a new game.
         service (GameService): Injected GameService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         GameCreated: The details of the created game.
     """
 
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Create game - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
-        "Game creation",
-        schema.model_dump(),
-        service_log,
-        api_key,
-        oauth_user_id,
-    )
+    auth = audit.auth
+    await audit.info("Game creation", schema.model_dump())
     try:
-        response = await service.create(schema, api_key, oauth_user_id)
+        response = await service.create(schema, auth.api_key, auth.oauth_user_id)
         data_to_log = {"body": schema.model_dump(), "gameId": str(response.gameId)}
-        await add_log(
-            "game",
-            "SUCCESS",
-            "Game creation successful",
-            data_to_log,
-            service_log,
-            api_key,
-            oauth_user_id,
-        )
+        await audit.success("Game creation successful", data_to_log)
         return response
     except Exception as e:
-        await add_log(
-            "game",
-            "ERROR",
-            "Game creation failed",
-            {"error": str(e)},
-            service_log,
-            api_key,
-            oauth_user_id,
-        )
+        await audit.error("Game creation failed", {"error": str(e)})
         raise e
 
 
@@ -837,10 +630,7 @@ async def patch_game(
     gameId: UUID,
     schema: PatchGame = Body(..., examples=[request_example_patch_game]),
     service: GameService = Depends(Provide[Container.game_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Update a game by its ID.
@@ -849,74 +639,25 @@ async def patch_game(
         gameId (UUID): The ID of the game to update.
         schema (PatchGame): The schema for updating the game.
         service (GameService): Injected GameService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         ResponsePatchGame: The updated game details.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Update game by ID - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
-        "Game update by ID",
-        {"gameId": str(gameId), "body": schema.model_dump()},
-        service_log,
-        api_key,
-        oauth_user_id,
+    auth = audit.auth
+    await audit.info(
+        "Game update by ID", {"gameId": str(gameId), "body": schema.model_dump()}
     )
 
     try:
         response = await service.patch_game_by_id(
             gameId,
             schema,
-            **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+            **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
         )
         data_to_log = {"gameId": str(gameId), "body": schema.model_dump()}
-        await add_log(
-            "game",
-            "SUCCESS",
-            "Game update successful",
-            data_to_log,
-            service_log,
-            api_key,
-            oauth_user_id,
-        )
+        await audit.success("Game update successful", data_to_log)
         return response
     except Exception as e:
-        await add_log(
-            "game",
-            "ERROR",
-            "Game update failed",
-            {"error": str(e)},
-            service_log,
-            api_key,
-            oauth_user_id,
-        )
+        await audit.error("Game update failed", {"error": str(e)})
         raise e
-
-

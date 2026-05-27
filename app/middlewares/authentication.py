@@ -1,9 +1,6 @@
 from fastapi import Depends, HTTPException, status
 
-from app.core.container import Container
-from app.middlewares.valid_access_token import (oauth_2_scheme,
-                                                valid_access_token)
-from app.schema.oauth_users_schema import CreateOAuthUser
+from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
 from app.services.apikey_service import ApiKeyService
 
 
@@ -61,19 +58,10 @@ async def auth_oauth2(
           authentication fails.
     """
 
-    oauth_user_service = Container.oauth_users_service()
     try:
         is_valid = await valid_access_token(oauth_2_scheme)
         if is_valid.error:
             raise is_valid.error
-        user = await oauth_user_service.get_user_by_sub(is_valid.data["sub"])
-        if not user:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=is_valid.data["sub"],
-                status="active",
-            )
-            await oauth_user_service.add(create_user)
         return True
     except HTTPException:
         raise HTTPException(

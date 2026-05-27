@@ -1,13 +1,22 @@
-from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from app.api.v1.endpoints import dashboard
+from app.middlewares.auth_context import AuditLogger, AuthContext
 
 
-def _api_key_header(api_key="api-key-1"):
-    return SimpleNamespace(data=SimpleNamespace(apiKey=api_key))
+def _audit(api_key="api-key-1", oauth_user_id=None):
+    return AuditLogger(
+        "dashboard",
+        MagicMock(),
+        AuthContext(
+            api_key=api_key,
+            oauth_user_id=oauth_user_id,
+            is_admin=False,
+            token_data={"sub": oauth_user_id} if oauth_user_id else None,
+        ),
+    )
 
 
 @pytest.mark.asyncio
@@ -19,24 +28,13 @@ async def test_get_dashboard_summary_with_token_creates_oauth_user_and_returns_s
         "points_earned": [{"label": "2026-02-01", "count": 100}],
         "actions_performed": [{"label": "2026-02-01", "count": 4}],
     }
-    service_log = MagicMock()
-    service_oauth = MagicMock()
-    service_oauth.get_user_by_sub = AsyncMock(return_value=None)
-    service_oauth.add = AsyncMock()
-
-    with patch(
-        "app.api.v1.endpoints.dashboard.valid_access_token",
-        new=AsyncMock(return_value=SimpleNamespace(data={"sub": "oauth-user-1"})),
-    ), patch("app.api.v1.endpoints.dashboard.add_log", new=AsyncMock()) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         result = await dashboard.get_dashboard_summary(
             start_date="2026-02-01",
             end_date="2026-02-02",
             group_by="day",
             service=service,
-            service_log=service_log,
-            service_oauth=service_oauth,
-            token="Bearer token",
-            api_key_header=_api_key_header(),
+            audit=_audit(oauth_user_id="oauth-user-1"),
         )
 
     assert result.new_users[0].count == 2
@@ -46,8 +44,7 @@ async def test_get_dashboard_summary_with_token_creates_oauth_user_and_returns_s
     service.get_dashboard_summary.assert_called_once_with(
         "2026-02-01", "2026-02-02", "day"
     )
-    service_oauth.add.assert_awaited_once()
-    assert mock_add_log.await_count == 2
+    mock_add_log.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -59,33 +56,19 @@ async def test_get_dashboard_summary_without_token_skips_oauth_validation():
         "points_earned": [],
         "actions_performed": [],
     }
-    service_oauth = MagicMock()
-    service_oauth.get_user_by_sub = AsyncMock(return_value=None)
-    service_oauth.add = AsyncMock()
-
-    with patch(
-        "app.api.v1.endpoints.dashboard.valid_access_token",
-        new=AsyncMock(),
-    ) as mock_valid_access_token, patch(
-        "app.api.v1.endpoints.dashboard.add_log", new=AsyncMock()
-    ) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         result = await dashboard.get_dashboard_summary(
             start_date=None,
             end_date=None,
             group_by=None,
             service=service,
-            service_log=MagicMock(),
-            service_oauth=service_oauth,
-            token=None,
-            api_key_header=_api_key_header(),
+            audit=_audit(),
         )
 
     assert result.new_users == []
     assert result.games_opened == []
     assert result.points_earned == []
     assert result.actions_performed == []
-    mock_valid_access_token.assert_not_awaited()
-    service_oauth.add.assert_not_awaited()
     mock_add_log.assert_awaited_once()
 
 
@@ -97,24 +80,13 @@ async def test_get_dashboard_summary_logs_with_token_creates_oauth_user_and_retu
         "success": [{"label": "2026-02-01", "count": 5}],
         "error": [{"label": "2026-02-01", "count": 1}],
     }
-    service_log = MagicMock()
-    service_oauth = MagicMock()
-    service_oauth.get_user_by_sub = AsyncMock(return_value=None)
-    service_oauth.add = AsyncMock()
-
-    with patch(
-        "app.api.v1.endpoints.dashboard.valid_access_token",
-        new=AsyncMock(return_value=SimpleNamespace(data={"sub": "oauth-user-2"})),
-    ), patch("app.api.v1.endpoints.dashboard.add_log", new=AsyncMock()) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         result = await dashboard.get_dashboard_summary_logs(
             start_date="2026-02-01",
             end_date="2026-02-28",
             group_by="month",
             service=service,
-            service_log=service_log,
-            service_oauth=service_oauth,
-            token="Bearer token",
-            api_key_header=_api_key_header(),
+            audit=_audit(oauth_user_id="oauth-user-2"),
         )
 
     assert result.info[0].count == 7
@@ -123,8 +95,7 @@ async def test_get_dashboard_summary_logs_with_token_creates_oauth_user_and_retu
     service.get_dashboard_summary_logs.assert_called_once_with(
         "2026-02-01", "2026-02-28", "month"
     )
-    service_oauth.add.assert_awaited_once()
-    assert mock_add_log.await_count == 2
+    mock_add_log.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -135,30 +106,16 @@ async def test_get_dashboard_summary_logs_without_token_skips_oauth_validation()
         "success": [],
         "error": [],
     }
-    service_oauth = MagicMock()
-    service_oauth.get_user_by_sub = AsyncMock(return_value=None)
-    service_oauth.add = AsyncMock()
-
-    with patch(
-        "app.api.v1.endpoints.dashboard.valid_access_token",
-        new=AsyncMock(),
-    ) as mock_valid_access_token, patch(
-        "app.api.v1.endpoints.dashboard.add_log", new=AsyncMock()
-    ) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         result = await dashboard.get_dashboard_summary_logs(
             start_date=None,
             end_date=None,
             group_by=None,
             service=service,
-            service_log=MagicMock(),
-            service_oauth=service_oauth,
-            token=None,
-            api_key_header=_api_key_header(),
+            audit=_audit(),
         )
 
     assert result.info == []
     assert result.success == []
     assert result.error == []
-    mock_valid_access_token.assert_not_awaited()
-    service_oauth.add.assert_not_awaited()
     mock_add_log.assert_awaited_once()

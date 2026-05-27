@@ -1,4 +1,3 @@
-import inspect
 from typing import List
 
 from dependency_injector.wiring import Provide, inject
@@ -6,28 +5,21 @@ from fastapi import APIRouter, Body, Depends, Path
 
 from app.core.container import Container
 from app.core.exceptions import ForbiddenError, NotFoundError
-from app.middlewares.valid_access_token import (oauth_2_scheme,
-                                                valid_access_token)
-from app.schema.apikey_schema import (ApiKeyCreate, ApiKeyCreated,
-                                      ApiKeyCreatedUnitList, ApiKeyPostBody,
-                                      ApiKeyRevoked)
-from app.schema.oauth_users_schema import CreateOAuthUser
+from app.middlewares.auth_context import AuditLogger, audit_log
+from app.middlewares.authentication import auth_oauth2
+from app.schema.apikey_schema import (
+    ApiKeyCreate,
+    ApiKeyCreated,
+    ApiKeyCreatedUnitList,
+    ApiKeyPostBody,
+    ApiKeyRevoked,
+)
 from app.services.apikey_service import ApiKeyService
-from app.services.logs_service import LogsService
-from app.services.oauth_users_service import OAuthUsersService
-from app.util.add_log import add_log
-from app.util.check_role import check_role
 
 router = APIRouter(
     prefix="/apikey",
     tags=["API Key"],
 )
-
-
-async def _await_if_needed(value):
-    if inspect.isawaitable(value):
-        return await value
-    return value
 
 
 summary_create_api_key = "Create API Key (Admin)"
@@ -48,14 +40,10 @@ response_example_create_api_key = {
 responses_create_api_key = {
     201: {
         "description": "API key created successfully",
-        "content": {
-            "application/json": {"example": response_example_create_api_key}
-        },
+        "content": {"application/json": {"example": response_example_create_api_key}},
     },
     401: {
-        "description": (
-            "Unauthorized: missing, invalid, or expired bearer token"
-        ),
+        "description": ("Unauthorized: missing, invalid, or expired bearer token"),
         "content": {
             "application/json": {
                 "example": {"detail": "Invalid authentication credentials"}
@@ -64,14 +52,11 @@ responses_create_api_key = {
     },
     403: {
         "description": (
-            "Forbidden: token is valid but user lacks `AdministratorGAME` "
-            "role"
+            "Forbidden: token is valid but user lacks `AdministratorGAME` " "role"
         ),
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "You do not have permission to create an API key"
-                }
+                "example": {"detail": "You do not have permission to create an API key"}
             }
         },
     },
@@ -117,18 +102,13 @@ public prefix, which is what appears in audit logs.
     response_model=ApiKeyCreated,
     status_code=201,
     responses=responses_create_api_key,
-    dependencies=[Depends(oauth_2_scheme)],
+    dependencies=[Depends(auth_oauth2)],
 )
 @inject
 async def create_api_key(
     schema: ApiKeyPostBody = Body(..., examples=[request_example_create_api_key]),
     service: ApiKeyService = Depends(Provide[Container.apikey_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]
-    ),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("api_key")),
 ):
     """
     Endpoint to create an API key, requires authentication.
@@ -136,112 +116,43 @@ async def create_api_key(
     Args:
         schema (ApiKeyPostBody): The API key schema.
         service (ApiKeyService): The API key service.
-        service_log (LogsService): The logs service.
-        service_oauth (OAuthUsersService): The OAuth users service.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         ApiKeyCreated: The API key created response.
     """
-    api_key = getattr(
-        getattr(api_key_header, "data", None), "apiKey", None
-    )
-    oauth_user_id = None
-    token_decoded = await valid_access_token(token)
-    if token_decoded.error:
-        await add_log(
-            "api_key",
-            "ERROR",
-            "Error creating API key",
-            {
-                "client": schema.client,
-                "description": schema.description,
-                "error": str(token_decoded.error),
-            },
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
-
-        raise token_decoded.error
-    if token_decoded.data:
-        oauth_user_id = token_decoded.data["sub"]
-        existing_user = await _await_if_needed(
-            await service_oauth.get_user_by_sub(oauth_user_id)
-        )
-        if existing_user is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "api_key",
-                "INFO",
-                "Creating API key - User created",
-                {
-                    "client": schema.client,
-                    "description": schema.description,
-                    "oauth_user_id": oauth_user_id,
-                },
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
-    await add_log(
-        "api_key",
-        "INFO",
+    auth = audit.auth
+    await audit.info(
         "Creating API key",
         {"client": schema.client, "description": schema.description},
-        service_log,
-        api_key=api_key,
-        oauth_user_id=str(oauth_user_id),
     )
 
-    token_decoded = token_decoded.data
-
-    if not check_role(token_decoded, "AdministratorGAME"):
-        await add_log(
-            "api_key",
-            "ERROR",
+    if not auth.is_admin:
+        await audit.error(
             "Error creating API key",
             {
                 "client": schema.client,
                 "description": schema.description,
-                "error": (
-                    "You do not have permission to create an API key"
-                ),
+                "error": ("You do not have permission to create an API key"),
             },
-            service_log,
-            api_key=api_key,
-            oauth_user_id=str(oauth_user_id),
         )
-        raise ForbiddenError(
-            "You do not have permission to create an API key"
-        )
+        raise ForbiddenError("You do not have permission to create an API key")
     generated = await service.generate_api_key_service()
     apikeyBody = ApiKeyCreate(
         **schema.model_dump(),
-        createdBy=oauth_user_id,
+        createdBy=auth.oauth_user_id,
         apiKey=generated.prefix,
         apiKeyHash=generated.key_hash,
     )
     try:
         response = await service.create_api_key(apikeyBody)
-        await add_log(
-            "api_key",
-            "SUCCESS",
+        await audit.success(
             "API key created successfully",
             {
                 "client": schema.client,
                 "description": schema.description,
                 "apiKey": generated.prefix,
             },
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
         )
         response_dict = response.model_dump()
         response_dict.pop("apiKeyHash", None)
@@ -251,18 +162,13 @@ async def create_api_key(
             message="API Key created successfully",
         )
     except Exception as e:
-        await add_log(
-            "api_key",
-            "ERROR",
+        await audit.error(
             "Error creating API key",
             {
                 "client": schema.client,
                 "description": schema.description,
                 "error": str(e),
             },
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
         )
         raise e
 
@@ -290,16 +196,10 @@ response_example_get_all_api_keys = [
 responses_get_all_api_keys = {
     200: {
         "description": "List of API keys retrieved successfully",
-        "content": {
-            "application/json": {
-                "example": response_example_get_all_api_keys
-            }
-        },
+        "content": {"application/json": {"example": response_example_get_all_api_keys}},
     },
     401: {
-        "description": (
-            "Unauthorized: missing, invalid, or expired bearer token"
-        ),
+        "description": ("Unauthorized: missing, invalid, or expired bearer token"),
         "content": {
             "application/json": {
                 "example": {"detail": "Invalid authentication credentials"}
@@ -308,14 +208,11 @@ responses_get_all_api_keys = {
     },
     403: {
         "description": (
-            "Forbidden: token is valid but user lacks `AdministratorGAME` "
-            "role"
+            "Forbidden: token is valid but user lacks `AdministratorGAME` " "role"
         ),
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "You do not have permission to get all API keys"
-                }
+                "example": {"detail": "You do not have permission to get all API keys"}
             }
         },
     },
@@ -356,98 +253,32 @@ Returns an array of API key records with metadata:
     response_model=List[ApiKeyCreatedUnitList],
     status_code=200,
     responses=responses_get_all_api_keys,
-    dependencies=[Depends(oauth_2_scheme)],
+    dependencies=[Depends(auth_oauth2)],
 )
 @inject
 async def get_all_api_keys(
     service: ApiKeyService = Depends(Provide[Container.apikey_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]
-    ),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("api_key")),
 ):
     """
     Endpoint to get all API keys, requires authentication.
 
     Args:
         service (ApiKeyService): The API key service.
-        service_log (LogsService): The logs service.
-        service_oauth (OAuthUsersService): The OAuth users service.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         List[ApiKeyCreatedUnitList]: The list of all API keys.
     """
-    api_key = getattr(
-        getattr(api_key_header, "data", None), "apiKey", None
-    )
-    oauth_user_id = None
-    token_decoded = await valid_access_token(token)
-    if token_decoded.error:
-        await add_log(
-            "api_key",
-            "ERROR",
+    if not audit.auth.is_admin:
+        await audit.error(
             "Error getting all API keys",
             {
-                "error": str(token_decoded.error),
+                "error": ("You do not have permission to get all API keys"),
             },
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
         )
-        raise token_decoded.error
-
-    token_decoded_data = token_decoded.data
-    if token_decoded_data:
-        oauth_user_id = token_decoded_data["sub"]
-        existing_user = await _await_if_needed(
-            await service_oauth.get_user_by_sub(oauth_user_id)
-        )
-        if existing_user is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "api_key",
-                "INFO",
-                "Getting all API keys - User created",
-                {},
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
-    if not check_role(token_decoded_data, "AdministratorGAME"):
-        await add_log(
-            "api_key",
-            "ERROR",
-            "Error getting all API keys",
-            {
-                "error": (
-                    "You do not have permission to get all API keys"
-                ),
-            },
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
-        raise ForbiddenError(
-            "You do not have permission to get all API keys"
-        )
-    await add_log(
-        "api_key",
-        "INFO",
-        "Getting all API keys",
-        {},
-        service_log,
-        api_key=api_key,
-        oauth_user_id=oauth_user_id,
-    )
+        raise ForbiddenError("You do not have permission to get all API keys")
+    await audit.info("Getting all API keys")
     return await service.get_all_api_keys()
 
 
@@ -494,97 +325,37 @@ key stops working on subsequent requests.
     response_model=ApiKeyRevoked,
     status_code=200,
     responses=responses_revoke_api_key,
-    dependencies=[Depends(oauth_2_scheme)],
+    dependencies=[Depends(auth_oauth2)],
 )
 @inject
 async def revoke_api_key(
-    prefix: str = Path(
-        ..., description="Public prefix of the API key to revoke."
-    ),
+    prefix: str = Path(..., description="Public prefix of the API key to revoke."),
     service: ApiKeyService = Depends(Provide[Container.apikey_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(
-        Provide[Container.oauth_users_service]
-    ),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("api_key")),
 ):
     """
     Endpoint to revoke an API key by its public prefix.
     """
-    api_key = getattr(
-        getattr(api_key_header, "data", None), "apiKey", None
-    )
-    oauth_user_id = None
-    token_decoded = await valid_access_token(token)
-    if token_decoded.error:
-        await add_log(
-            "api_key",
-            "ERROR",
-            "Error revoking API key",
-            {"prefix": prefix, "error": str(token_decoded.error)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
-        raise token_decoded.error
-
-    token_decoded_data = token_decoded.data
-    if token_decoded_data:
-        oauth_user_id = token_decoded_data["sub"]
-        existing_user = await _await_if_needed(
-            await service_oauth.get_user_by_sub(oauth_user_id)
-        )
-        if existing_user is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-
-    if not check_role(token_decoded_data, "AdministratorGAME"):
-        await add_log(
-            "api_key",
-            "ERROR",
+    if not audit.auth.is_admin:
+        await audit.error(
             "Error revoking API key",
             {
                 "prefix": prefix,
-                "error": (
-                    "You do not have permission to revoke an API key"
-                ),
+                "error": ("You do not have permission to revoke an API key"),
             },
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
         )
-        raise ForbiddenError(
-            "You do not have permission to revoke an API key"
-        )
+        raise ForbiddenError("You do not have permission to revoke an API key")
 
     try:
         revoked = await service.revoke_api_key_by_prefix(prefix)
     except NotFoundError as exc:
-        await add_log(
-            "api_key",
-            "ERROR",
+        await audit.error(
             "Error revoking API key",
             {"prefix": prefix, "error": str(exc.detail)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
         )
         raise exc
 
-    await add_log(
-        "api_key",
-        "SUCCESS",
-        "API key revoked successfully",
-        {"prefix": prefix},
-        service_log,
-        api_key=api_key,
-        oauth_user_id=oauth_user_id,
-    )
+    await audit.success("API key revoked successfully", {"prefix": prefix})
     return ApiKeyRevoked(
         apiKey=revoked.apiKey,
         active=bool(revoked.active),

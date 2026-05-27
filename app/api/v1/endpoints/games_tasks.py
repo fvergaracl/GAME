@@ -1,55 +1,23 @@
 import logging
-import traceback
-from typing import List, Optional
-from uuid import UUID, uuid4
+from uuid import UUID
 
-import jwt
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
-from sqlalchemy.exc import DataError, IntegrityError, ProgrammingError
+from fastapi import APIRouter, Body, Depends
 
-from app.api.v1.endpoints.games_common import (
-    _extract_api_key_from_header,
-    _extract_db_error_code,
-    _extract_oauth_user_id_from_token,
-    _game_access_kwargs,
-    _map_write_exception,
-    _resolve_correlation_id,
-    _resolve_idempotency_key,
-)
-from app.core.config import configs
+from app.api.v1.endpoints.games_common import _game_access_kwargs
 from app.core.container import Container
-from app.core.exceptions import (ConflictError, DuplicatedError, ForbiddenError,
-                                 InternalServerError, NotFoundError,
-                                 PreconditionFailedError)
-from app.middlewares.authentication import auth_api_key_or_oauth2, auth_oauth2
-from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
-from app.schema.games_schema import (BaseGameResult, FindGameResult, GameCreated,
-                                     ListTasksWithUsers, PatchGame, PostCreateGame,
-                                     PostFindGame, ResponsePatchGame)
-from app.schema.oauth_users_schema import CreateOAuthUser
-from app.schema.strategy_schema import Strategy
-from app.schema.task_schema import (AddActionDidByUserInTask,
-                                    AsignPointsToExternalUserId,
-                                    AssignedPointsToExternalUserId, CreateTaskPost,
-                                    CreateTaskPostSuccesfullyCreated, CreateTasksPost,
-                                    CreateTasksPostBulkCreated, FoundTasks,
-                                    PostFindTask, ResponseAddActionDidByUserInTask,
-                                    SimulatedPointsAssignedToUser)
-from app.schema.user_points_schema import (AllPointsByGame, AllPointsByGameWithDetails,
-                                           PointsAssignedToUser)
-from app.services.apikey_service import ApiKeyService
-from app.services.abuse_prevention_service import AbusePreventionService
-from app.services.game_service import GameService
-from app.services.logs_service import LogsService
-from app.services.oauth_users_service import OAuthUsersService
+from app.core.exceptions import ForbiddenError
+from app.middlewares.auth_context import AuditLogger, audit_log
+from app.middlewares.authentication import auth_api_key_or_oauth2
+from app.schema.task_schema import (
+    CreateTaskPost,
+    CreateTaskPostSuccesfullyCreated,
+    CreateTasksPost,
+    CreateTasksPostBulkCreated,
+    FoundTasks,
+    PostFindTask,
+)
 from app.services.task_service import TaskService
-from app.services.user_actions_service import UserActionsService
-from app.services.user_points_service import UserPointsService
-from app.services.user_service import UserService
-from app.util.add_log import add_log
-from app.util.calculate_hash_simulated_strategy import calculate_hash_simulated_strategy
-from app.util.check_role import check_role
 
 router = APIRouter(
     prefix="/games",
@@ -183,10 +151,7 @@ async def create_task(
     gameId: UUID,
     create_query: CreateTaskPost = Body(..., examples=[request_example_create_task]),
     service: TaskService = Depends(Provide[Container.task_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Create a task for a specific game.
@@ -195,76 +160,29 @@ async def create_task(
         gameId (UUID): The ID of the game.
         create_query (CreateTaskPost): The schema for creating a task.
         service (TaskService): Injected TaskService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         CreateTaskPostSuccesfullyCreated: The details of the created task.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Create task - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
-        "Task creation",
-        {"gameId": str(gameId), "body": create_query.model_dump()},
-        service_log,
-        api_key,
-        oauth_user_id,
+    auth = audit.auth
+    await audit.info(
+        "Task creation", {"gameId": str(gameId), "body": create_query.model_dump()}
     )
     try:
         response = await service.create_task_by_game_id(
             gameId,
             create_query,
-            api_key,
-            oauth_user_id=oauth_user_id,
-            is_admin=is_admin,
+            auth.api_key,
+            oauth_user_id=auth.oauth_user_id,
+            is_admin=auth.is_admin,
             enforce_scope=True,
         )
         data_to_log = {"gameId": str(gameId), "body": create_query.model_dump()}
-        await add_log(
-            "game",
-            "SUCCESS",
-            "Task creation successful",
-            data_to_log,
-            service_log,
-            api_key,
-            oauth_user_id,
-        )
+        await audit.success("Task creation successful", data_to_log)
         return response
     except Exception as e:
-        await add_log(
-            "game",
-            "ERROR",
-            "Task creation failed",
-            {"error": str(e)},
-            service_log,
-            api_key,
-            oauth_user_id,
-        )
+        await audit.error("Task creation failed", {"error": str(e)})
         raise e
 
 
@@ -348,7 +266,9 @@ response_example_create_tasks_bulk = {
 responses_create_tasks_bulk = {
     200: {
         "description": "Bulk task creation processed (can contain both successes and failures)",
-        "content": {"application/json": {"example": response_example_create_tasks_bulk}},
+        "content": {
+            "application/json": {"example": response_example_create_tasks_bulk}
+        },
     },
     401: {
         "description": "Unauthorized: missing/invalid credentials",
@@ -427,12 +347,11 @@ Returns a mixed outcome payload:
 @inject
 async def create_tasks_bulk(
     gameId: UUID,
-    create_query: CreateTasksPost = Body(..., examples=[request_example_create_tasks_bulk]),
+    create_query: CreateTasksPost = Body(
+        ..., examples=[request_example_create_tasks_bulk]
+    ),
     service: TaskService = Depends(Provide[Container.task_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Create multiple tasks for a specific game (bulk creation).
@@ -441,48 +360,18 @@ async def create_tasks_bulk(
         gameId (UUID): The ID of the game.
         create_query (CreateTasksPost): The schema for creating multiple tasks.
         service (TaskService): Injected TaskService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         List[CreateTaskPostSuccesfullyCreated]: The details of the created
           tasks.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Bulk task creation - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
+    auth = audit.auth
     succesfully_created = []
     failed_to_create = []
-    await add_log(
-        "game",
-        "INFO",
+    await audit.info(
         "Bulk task creation",
         {"gameId": str(gameId), "body": create_query.model_dump()},
-        service_log,
-        api_key,
-        oauth_user_id,
     )
 
     for task in create_query.tasks:
@@ -490,9 +379,9 @@ async def create_tasks_bulk(
             created_task = await service.create_task_by_game_id(
                 gameId,
                 task,
-                api_key,
-                oauth_user_id=oauth_user_id,
-                is_admin=is_admin,
+                auth.api_key,
+                oauth_user_id=auth.oauth_user_id,
+                is_admin=auth.is_admin,
                 enforce_scope=True,
             )
             succesfully_created.append(created_task)
@@ -501,32 +390,22 @@ async def create_tasks_bulk(
         except Exception as e:
             failed_to_create.append({"task": task, "error": str(e)})
     if len(failed_to_create) > 0:
-        await add_log(
-            "game",
-            "ERROR",
+        await audit.error(
             "Bulk task creation failed",
             {
                 "gameId": str(gameId),
                 "body": create_query.model_dump(),
                 "failed_tasks": failed_to_create,
             },
-            service_log,
-            api_key,
-            oauth_user_id,
         )
     if len(succesfully_created) > 0:
-        await add_log(
-            "game",
-            "SUCCESS",
+        await audit.success(
             "Bulk task creation successful",
             {
                 "gameId": str(gameId),
                 "body": create_query.model_dump(),
                 "succesfully_created": succesfully_created,
             },
-            service_log,
-            api_key,
-            oauth_user_id,
         )
 
     return {
@@ -658,10 +537,7 @@ async def get_task_list(
     gameId: UUID,
     find_query: PostFindTask = Depends(),
     service: TaskService = Depends(Provide[Container.task_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve a list of tasks for a specific game.
@@ -670,50 +546,20 @@ async def get_task_list(
         gameId (UUID): The ID of the game.
         find_query (PostFindTask): Query parameters for finding tasks.
         service (TaskService): Injected TaskService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         FoundTasks: A result set containing the tasks.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Task list retrieval - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
+    auth = audit.auth
+    await audit.info(
         "Task list retrieval",
         {"gameId": str(gameId), "body": find_query.model_dump()},
-        service_log,
-        api_key,
-        oauth_user_id,
     )
     return await service.get_tasks_list_by_gameId(
         gameId,
         find_query,
-        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+        **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
     )
 
 
@@ -756,9 +602,7 @@ responses_get_task_by_gameId_taskId = {
     200: {
         "description": "Task retrieved successfully",
         "content": {
-            "application/json": {
-                "example": response_example_get_task_by_gameId_taskId
-            }
+            "application/json": {"example": response_example_get_task_by_gameId_taskId}
         },
     },
     401: {
@@ -835,10 +679,7 @@ async def get_task_by_gameId_taskId(
     gameId: UUID,
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve a task by its external game ID and external task ID.
@@ -847,52 +688,19 @@ async def get_task_by_gameId_taskId(
         gameId (UUID): The ID of the game.
         externalTaskId (str): The external task ID.
         service (TaskService): Injected TaskService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         CreateTaskPostSuccesfullyCreated: The details of the specified task.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Task retrieval by game ID and external task ID - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-
-    await add_log(
-        "game",
-        "INFO",
+    auth = audit.auth
+    await audit.info(
         "Task retrieval by game ID and external task ID",
         {"gameId": str(gameId), "externalTaskId": externalTaskId},
-        service_log,
-        api_key,
-        oauth_user_id,
     )
 
     return await service.get_task_by_externalGameId_externalTaskId(
         str(gameId),
         externalTaskId,
-        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+        **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
     )
-
-

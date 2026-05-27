@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi import HTTPException
@@ -8,18 +8,11 @@ import app.middlewares.authentication as authentication
 from app.util.check_role import check_role
 
 
-def _mock_oauth_user_service(existing_user=True):
-    service = MagicMock()
-    service.get_user_by_sub = AsyncMock(
-        return_value=SimpleNamespace(id="oauth-user") if existing_user else None
-    )
-    service.add = AsyncMock()
-    return service
-
-
 @pytest.mark.asyncio
 async def test_auth_api_key_or_oauth2_accepts_valid_api_key_without_oauth():
-    with patch("app.middlewares.authentication.auth_oauth2", new=AsyncMock()) as auth_oauth2:
+    with patch(
+        "app.middlewares.authentication.auth_oauth2", new=AsyncMock()
+    ) as auth_oauth2:
         result = await authentication.auth_api_key_or_oauth2(
             api_key=SimpleNamespace(data=SimpleNamespace(apiKey="k-1")),
             oauth_2_scheme="Bearer token",
@@ -46,11 +39,7 @@ async def test_auth_api_key_or_oauth2_falls_back_to_oauth_when_api_key_missing()
 
 @pytest.mark.asyncio
 async def test_auth_oauth2_rejects_missing_token():
-    oauth_service = _mock_oauth_user_service(existing_user=True)
     with patch(
-        "app.middlewares.authentication.Container.oauth_users_service",
-        return_value=oauth_service,
-    ), patch(
         "app.middlewares.authentication.valid_access_token",
         new=AsyncMock(
             return_value=SimpleNamespace(
@@ -68,11 +57,7 @@ async def test_auth_oauth2_rejects_missing_token():
 
 @pytest.mark.asyncio
 async def test_auth_oauth2_rejects_malformed_token():
-    oauth_service = _mock_oauth_user_service(existing_user=True)
     with patch(
-        "app.middlewares.authentication.Container.oauth_users_service",
-        return_value=oauth_service,
-    ), patch(
         "app.middlewares.authentication.valid_access_token",
         new=AsyncMock(
             return_value=SimpleNamespace(
@@ -90,11 +75,7 @@ async def test_auth_oauth2_rejects_malformed_token():
 
 @pytest.mark.asyncio
 async def test_auth_oauth2_rejects_invalid_signature():
-    oauth_service = _mock_oauth_user_service(existing_user=True)
     with patch(
-        "app.middlewares.authentication.Container.oauth_users_service",
-        return_value=oauth_service,
-    ), patch(
         "app.middlewares.authentication.valid_access_token",
         new=AsyncMock(
             return_value=SimpleNamespace(
@@ -112,11 +93,7 @@ async def test_auth_oauth2_rejects_invalid_signature():
 
 @pytest.mark.asyncio
 async def test_auth_oauth2_rejects_expired_token():
-    oauth_service = _mock_oauth_user_service(existing_user=True)
     with patch(
-        "app.middlewares.authentication.Container.oauth_users_service",
-        return_value=oauth_service,
-    ), patch(
         "app.middlewares.authentication.valid_access_token",
         new=AsyncMock(
             return_value=SimpleNamespace(
@@ -130,16 +107,11 @@ async def test_auth_oauth2_rejects_expired_token():
 
     assert exc_info.value.status_code == 401
     assert exc_info.value.detail == "Invalid authentication credentials"
-    oauth_service.add.assert_not_awaited()
 
 
 @pytest.mark.asyncio
 async def test_auth_oauth2_accepts_valid_token_and_existing_user():
-    oauth_service = _mock_oauth_user_service(existing_user=True)
     with patch(
-        "app.middlewares.authentication.Container.oauth_users_service",
-        return_value=oauth_service,
-    ), patch(
         "app.middlewares.authentication.valid_access_token",
         new=AsyncMock(
             return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-1"})
@@ -148,16 +120,11 @@ async def test_auth_oauth2_accepts_valid_token_and_existing_user():
         result = await authentication.auth_oauth2(oauth_2_scheme="valid-token")
 
     assert result is True
-    oauth_service.add.assert_not_awaited()
 
 
 @pytest.mark.asyncio
-async def test_auth_oauth2_accepts_valid_token_and_creates_missing_user():
-    oauth_service = _mock_oauth_user_service(existing_user=False)
+async def test_auth_oauth2_accepts_valid_token_without_bootstrapping_user():
     with patch(
-        "app.middlewares.authentication.Container.oauth_users_service",
-        return_value=oauth_service,
-    ), patch(
         "app.middlewares.authentication.valid_access_token",
         new=AsyncMock(
             return_value=SimpleNamespace(error=None, data={"sub": "oauth-user-2"})
@@ -166,7 +133,6 @@ async def test_auth_oauth2_accepts_valid_token_and_creates_missing_user():
         result = await authentication.auth_oauth2(oauth_2_scheme="valid-token")
 
     assert result is True
-    oauth_service.add.assert_awaited_once()
 
 
 def test_check_role_security_correct_role_and_missing_role():

@@ -4,23 +4,25 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Body, Depends, Query
 
 from app.core.container import Container
+from app.middlewares.auth_context import AuditLogger, audit_log
 from app.middlewares.authentication import auth_api_key_or_oauth2
-from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
-from app.schema.oauth_users_schema import CreateOAuthUser
 from app.schema.user_actions_schema import CreatedUserActions, CreateUserBodyActions
-from app.schema.user_points_schema import (AllPointsByGame, BaseUserPointsBaseModel,
-                                           UserGamePoints, UserPointsAssigned)
-from app.schema.user_schema import (PostAssignPointsToUserWithCaseName,
-                                    PostPointsConversionRequest,
-                                    ResponseConversionPreview, ResponsePointsConversion,
-                                    UserWallet)
-from app.services.apikey_service import ApiKeyService
-from app.services.logs_service import LogsService
-from app.services.oauth_users_service import OAuthUsersService
+from app.schema.user_points_schema import (
+    AllPointsByGame,
+    BaseUserPointsBaseModel,
+    UserGamePoints,
+    UserPointsAssigned,
+)
+from app.schema.user_schema import (
+    PostAssignPointsToUserWithCaseName,
+    PostPointsConversionRequest,
+    ResponseConversionPreview,
+    ResponsePointsConversion,
+    UserWallet,
+)
 from app.services.user_actions_service import UserActionsService
 from app.services.user_points_service import UserPointsService
 from app.services.user_service import UserService
-from app.util.add_log import add_log
 
 router = APIRouter(
     prefix="/users",
@@ -210,10 +212,7 @@ Returns one `UserGamePoints` item per requested external user id:
 async def query_user_points(
     schema: List[str] = Body(..., examples=[request_example_query_user_points]),
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("users")),
 ):
     """
     Retrieve point totals for a list of users based on their external user IDs.
@@ -221,59 +220,16 @@ async def query_user_points(
     Args:
         schema (List[str]): A list of external user IDs.
         service (UserPointsService): Injected UserPointsService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): The OAuth users service.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         List[UserGamePoints]: The point details for each user.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "users",
-                "INFO",
-                "Query user points - User created",
-                {
-                    "oauth_user_id": oauth_user_id,
-                },
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
+    await audit.info("Query user points", {"externalUserIds": schema})
     try:
-        await add_log(
-            "users",
-            "INFO",
-            "Query user points",
-            {"externalUserIds": schema},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
-        response = await service.get_points_by_user_list(schema)
-        return response
+        return await service.get_points_by_user_list(schema)
     except Exception as e:
-        await add_log(
-            "users",
-            "ERROR",
-            "Query user points failed",
-            {"error": str(e)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
+        await audit.error("Query user points failed", {"error": str(e)})
         raise e
 
 
@@ -310,9 +266,7 @@ response_example_get_user_points = [
 responses_get_user_points = {
     200: {
         "description": "User points retrieved successfully",
-        "content": {
-            "application/json": {"example": response_example_get_user_points}
-        },
+        "content": {"application/json": {"example": response_example_get_user_points}},
     },
     401: {
         "description": "Unauthorized: missing/invalid credentials",
@@ -334,9 +288,7 @@ responses_get_user_points = {
         "description": "User not found for provided external identifier",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "User not found by externalUserId: user-123"
-                }
+                "example": {"detail": "User not found by externalUserId: user-123"}
             }
         },
     },
@@ -388,10 +340,7 @@ Returns a list of games where the user has point records:
 async def get_points_by_user_id(
     externalUserId: str,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("users")),
 ):
     """
     Retrieve points associated with a user by their external user ID.
@@ -399,59 +348,16 @@ async def get_points_by_user_id(
     Args:
         externalUserId (str): The external user ID.
         service (UserPointsService): Injected UserPointsService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): The OAuth users service.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         List[AllPointsByGame]: The points details for the specified user.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "users",
-                "INFO",
-                "Get user points - User created",
-                {
-                    "oauth_user_id": oauth_user_id,
-                },
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
+    await audit.info("Get user points", {"externalUserId": externalUserId})
     try:
-        await add_log(
-            "users",
-            "INFO",
-            "Get user points",
-            {"externalUserId": externalUserId},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
-        response = await service.get_points_by_externalUserId(externalUserId)
-        return response
+        return await service.get_points_by_externalUserId(externalUserId)
     except Exception as e:
-        await add_log(
-            "users",
-            "ERROR",
-            "Get user points failed",
-            {"error": str(e)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
+        await audit.error("Get user points failed", {"error": str(e)})
         raise e
 
 
@@ -470,7 +376,10 @@ response_example_get_user_wallet = {
             "transactionType": "AssignPoints",
             "points": 20,
             "coins": 0.0,
-            "data": {"externalTaskId": "task-login", "caseName": "variable_basic_points"},
+            "data": {
+                "externalTaskId": "task-login",
+                "caseName": "variable_basic_points",
+            },
         },
         {
             "id": "2a18d9a9-8eb5-4d33-a7bd-9590ea7ea41e",
@@ -486,9 +395,7 @@ response_example_get_user_wallet = {
 responses_get_user_wallet = {
     200: {
         "description": "User wallet retrieved successfully",
-        "content": {
-            "application/json": {"example": response_example_get_user_wallet}
-        },
+        "content": {"application/json": {"example": response_example_get_user_wallet}},
     },
     401: {
         "description": "Unauthorized: missing/invalid credentials",
@@ -510,9 +417,7 @@ responses_get_user_wallet = {
         "description": "User not found for provided external identifier",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "User not found by externalUserId: user-123"
-                }
+                "example": {"detail": "User not found by externalUserId: user-123"}
             }
         },
     },
@@ -564,10 +469,7 @@ Returns:
 async def get_wallet_by_user_id(
     externalUserId: str,
     service: UserService = Depends(Provide[Container.user_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("users")),
 ):
     """
     Retrieve the wallet details associated with a user by their external user
@@ -576,59 +478,16 @@ async def get_wallet_by_user_id(
     Args:
         externalUserId (str): The external user ID.
         service (UserService): Injected UserService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): The OAuth users service.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         UserWallet: The wallet details for the specified user.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "users",
-                "INFO",
-                "Get user wallet - User created",
-                {
-                    "oauth_user_id": oauth_user_id,
-                },
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
+    await audit.info("Get user wallet", {"externalUserId": externalUserId})
     try:
-        await add_log(
-            "users",
-            "INFO",
-            "Get user wallet",
-            {"externalUserId": externalUserId},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
-        response = await service.get_wallet_by_externalUserId(externalUserId)
-        return response
+        return await service.get_wallet_by_externalUserId(externalUserId)
     except Exception as e:
-        await add_log(
-            "users",
-            "ERROR",
-            "Get user wallet failed",
-            {"error": str(e)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
+        await audit.error("Get user wallet failed", {"error": str(e)})
         raise e
 
 
@@ -702,9 +561,7 @@ responses_assign_points_by_external_user_id = {
         "description": "User or task not found for provided identifiers",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "Task not found with externalTaskId: task-xyz"
-                }
+                "example": {"detail": "Task not found with externalTaskId: task-xyz"}
             }
         },
     },
@@ -728,9 +585,7 @@ responses_assign_points_by_external_user_id = {
         "description": "Internal server error while assigning points",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "Error when assigning points by externalUserId"
-                }
+                "example": {"detail": "Error when assigning points by externalUserId"}
             }
         },
     },
@@ -796,10 +651,7 @@ async def assign_points_by_external_user_id(
         description="Details of point assignment",
     ),
     service: UserService = Depends(Provide[Container.user_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("users")),
 ):
     """
     Assign points to user based on externalUserId.
@@ -808,38 +660,16 @@ async def assign_points_by_external_user_id(
         externalUserId (str): The external user ID.
         schema (PostAssignPointsToUser): The point assignment payload.
         service (UserService): User service to handle logic.
-        token (str): OAuth token.
-        api_key_header (str): API Key (optional).
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         UserPointsAssigned: Information about the point assignment and wallet.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            await service_oauth.add(
-                CreateOAuthUser(
-                    provider="keycloak",
-                    provider_user_id=oauth_user_id,
-                    status="active",
-                )
-            )
-
+    await audit.info(
+        "Assign points by externalUserId",
+        {"externalUserId": externalUserId, "schema": schema.model_dump()},
+    )
     try:
-        await add_log(
-            "users",
-            "INFO",
-            "Assign points by externalUserId",
-            {"externalUserId": externalUserId, "schema": schema.model_dump()},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
-
         taskId = service.task_repository.read_by_column(
             "externalTaskId",
             schema.taskId,
@@ -862,19 +692,11 @@ async def assign_points_by_external_user_id(
         )
 
         return await service.assign_points_to_user(
-            user.id, schema_with_user_id, api_key
+            user.id, schema_with_user_id, audit.auth.api_key
         )
 
     except Exception as e:
-        await add_log(
-            "users",
-            "ERROR",
-            "Assign points by externalUserId failed",
-            {"error": str(e)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
+        await audit.error("Assign points by externalUserId failed", {"error": str(e)})
         raise e
 
 
@@ -934,9 +756,7 @@ responses_preview_points = {
         "description": "User not found for provided external identifier",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "User not found by externalUserId: user-123"
-                }
+                "example": {"detail": "User not found by externalUserId: user-123"}
             }
         },
     },
@@ -959,9 +779,7 @@ responses_preview_points = {
     500: {
         "description": "Internal server error while calculating conversion preview",
         "content": {
-            "application/json": {
-                "example": {"detail": "Points must be greater than 0"}
-            }
+            "application/json": {"example": {"detail": "Points must be greater than 0"}}
         },
     },
 }
@@ -1014,10 +832,7 @@ async def preview_points_to_coins_conversion(
     externalUserId: str,
     points: int = Query(..., description="The number of points to convert to coins"),
     service: UserService = Depends(Provide[Container.user_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("users")),
 ):
     """
     Preview the conversion of points to coins for a specific user.
@@ -1026,60 +841,22 @@ async def preview_points_to_coins_conversion(
         externalUserId (str): The external user ID.
         points (int): The number of points to convert.
         service (UserService): Injected UserService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): The OAuth users service.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         ResponseConversionPreview: The conversion preview details.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "users",
-                "INFO",
-                "Preview points to coins conversion - User created",
-                {
-                    "oauth_user_id": oauth_user_id,
-                },
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
+    await audit.info(
+        "Preview points to coins conversion",
+        {"externalUserId": externalUserId, "points": points},
+    )
     try:
-        await add_log(
-            "users",
-            "INFO",
-            "Preview points to coins conversion",
-            {"externalUserId": externalUserId, "points": points},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
-        response = await service.preview_points_to_coins_conversion_externalUserId(
+        return await service.preview_points_to_coins_conversion_externalUserId(
             externalUserId, points
         )
-        return response
     except Exception as e:
-        await add_log(
-            "users",
-            "ERROR",
-            "Preview points to coins conversion failed",
-            {"error": str(e)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
+        await audit.error(
+            "Preview points to coins conversion failed", {"error": str(e)}
         )
         raise e
 
@@ -1124,9 +901,7 @@ responses_convert_points = {
         "description": "User not found for provided external identifier",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "User not found by externalUserId: user-123"
-                }
+                "example": {"detail": "User not found by externalUserId: user-123"}
             }
         },
     },
@@ -1148,11 +923,7 @@ responses_convert_points = {
     },
     500: {
         "description": "Internal server error during conversion",
-        "content": {
-            "application/json": {
-                "example": {"detail": "Not enough points"}
-            }
-        },
+        "content": {"application/json": {"example": {"detail": "Not enough points"}}},
     },
 }
 
@@ -1204,12 +975,11 @@ Returns the conversion transaction result:
 @inject
 async def convert_points_to_coins(
     externalUserId: str,
-    schema: PostPointsConversionRequest = Body(..., examples=[request_example_convert_points]),
+    schema: PostPointsConversionRequest = Body(
+        ..., examples=[request_example_convert_points]
+    ),
     service: UserService = Depends(Provide[Container.user_actions_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("users")),
 ):
     """
     Convert points to coins for a specific user.
@@ -1219,61 +989,21 @@ async def convert_points_to_coins(
         schema (PostPointsConversionRequest): The schema containing conversion
           details.
         service (UserService): Injected UserService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): The OAuth users service.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         ResponsePointsConversion: The conversion details.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "users",
-                "INFO",
-                "Convert points to coins - User created",
-                {
-                    "oauth_user_id": oauth_user_id,
-                },
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
+    await audit.info(
+        "Convert points to coins",
+        {"externalUserId": externalUserId, "schema": schema},
+    )
     try:
-        await add_log(
-            "users",
-            "INFO",
-            "Convert points to coins",
-            {"externalUserId": externalUserId, "schema": schema},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
+        return await service.convert_points_to_coins_externalUserId(
+            externalUserId, schema, audit.auth.api_key
         )
-        response = await service.convert_points_to_coins_externalUserId(
-            externalUserId, schema, api_key
-        )
-        return response
     except Exception as e:
-        await add_log(
-            "users",
-            "ERROR",
-            "Convert points to coins failed",
-            {"error": str(e)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
+        await audit.error("Convert points to coins failed", {"error": str(e)})
         raise e
 
 
@@ -1390,12 +1120,11 @@ Returns:
 @inject
 async def add_action_to_user(
     externalUserId: str,
-    schema: CreateUserBodyActions = Body(..., examples=[request_example_add_action_to_user]),
+    schema: CreateUserBodyActions = Body(
+        ..., examples=[request_example_add_action_to_user]
+    ),
     service: UserActionsService = Depends(Provide[Container.user_actions_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("users")),
 ):
     """
     Add an action to a specific user.
@@ -1405,60 +1134,20 @@ async def add_action_to_user(
         schema (PostPointsConversionRequest): The schema containing action
           details.
         service (UserService): Injected UserService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): The OAuth users service.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         ResponsePointsConversion: The action details.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "users",
-                "INFO",
-                "Add action to user - User created",
-                {
-                    "oauth_user_id": oauth_user_id,
-                },
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
+    await audit.info(
+        "Add action to user",
+        {"externalUserId": externalUserId, "schema": schema},
+    )
     try:
-        await add_log(
-            "users",
-            "INFO",
-            "Add action to user",
-            {"externalUserId": externalUserId, "schema": schema},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
+        return await service.user_add_action_default(
+            externalUserId, schema, audit.auth.api_key
         )
-        response = await service.user_add_action_default(
-            externalUserId, schema, api_key
-        )
-        return response
     except Exception as e:
-        await add_log(
-            "users",
-            "ERROR",
-            "Add action to user failed",
-            {"error": str(e)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
+        await audit.error("Add action to user failed", {"error": str(e)})
         print(f"Error (add_action_to_user): {e}")
         raise e

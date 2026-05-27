@@ -1,17 +1,12 @@
 import logging
 import traceback
-from typing import List, Optional
-from uuid import UUID, uuid4
+from typing import List
+from uuid import UUID
 
-import jwt
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
-from sqlalchemy.exc import DataError, IntegrityError, ProgrammingError
+from fastapi import APIRouter, Body, Depends, Request
 
 from app.api.v1.endpoints.games_common import (
-    _extract_api_key_from_header,
-    _extract_db_error_code,
-    _extract_oauth_user_id_from_token,
     _game_access_kwargs,
     _map_write_exception,
     _resolve_correlation_id,
@@ -19,37 +14,27 @@ from app.api.v1.endpoints.games_common import (
 )
 from app.core.config import configs
 from app.core.container import Container
-from app.core.exceptions import (ConflictError, DuplicatedError, ForbiddenError,
-                                 InternalServerError, NotFoundError,
-                                 PreconditionFailedError)
+from app.core.exceptions import ForbiddenError, InternalServerError
+from app.middlewares.auth_context import AuditLogger, audit_log
 from app.middlewares.authentication import auth_api_key_or_oauth2, auth_oauth2
-from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
-from app.schema.games_schema import (BaseGameResult, FindGameResult, GameCreated,
-                                     ListTasksWithUsers, PatchGame, PostCreateGame,
-                                     PostFindGame, ResponsePatchGame)
-from app.schema.oauth_users_schema import CreateOAuthUser
-from app.schema.strategy_schema import Strategy
-from app.schema.task_schema import (AddActionDidByUserInTask,
-                                    AsignPointsToExternalUserId,
-                                    AssignedPointsToExternalUserId, CreateTaskPost,
-                                    CreateTaskPostSuccesfullyCreated, CreateTasksPost,
-                                    CreateTasksPostBulkCreated, FoundTasks,
-                                    PostFindTask, ResponseAddActionDidByUserInTask,
-                                    SimulatedPointsAssignedToUser)
-from app.schema.user_points_schema import (AllPointsByGame, AllPointsByGameWithDetails,
-                                           PointsAssignedToUser)
-from app.services.apikey_service import ApiKeyService
+from app.schema.task_schema import (
+    AddActionDidByUserInTask,
+    AsignPointsToExternalUserId,
+    AssignedPointsToExternalUserId,
+    ResponseAddActionDidByUserInTask,
+    SimulatedPointsAssignedToUser,
+)
+from app.schema.user_points_schema import (
+    AllPointsByGame,
+    AllPointsByGameWithDetails,
+    PointsAssignedToUser,
+)
 from app.services.abuse_prevention_service import AbusePreventionService
-from app.services.game_service import GameService
-from app.services.logs_service import LogsService
-from app.services.oauth_users_service import OAuthUsersService
 from app.services.task_service import TaskService
 from app.services.user_actions_service import UserActionsService
 from app.services.user_points_service import UserPointsService
 from app.services.user_service import UserService
-from app.util.add_log import add_log
 from app.util.calculate_hash_simulated_strategy import calculate_hash_simulated_strategy
-from app.util.check_role import check_role
 
 router = APIRouter(
     prefix="/games",
@@ -171,10 +156,7 @@ Returns:
 async def get_points_by_gameId(
     gameId: UUID,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve points associated with a specific game by its ID.
@@ -182,49 +164,16 @@ async def get_points_by_gameId(
     Args:
         gameId (UUID): The ID of the game.
         service (UserPointsService): Injected UserPointsService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         AllPointsByGame: The points details for the specified game.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Points retrieval by game ID - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
-        "Points retrieval by game ID",
-        {"gameId": str(gameId)},
-        service_log,
-        api_key,
-        oauth_user_id,
-    )
+    auth = audit.auth
+    await audit.info("Points retrieval by game ID", {"gameId": str(gameId)})
 
     return await service.get_points_by_gameId(
-        gameId, **_game_access_kwargs(api_key, oauth_user_id, is_admin)
+        gameId, **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin)
     )
 
 
@@ -339,10 +288,7 @@ Returns:
 async def get_points_by_gameId_with_details(
     gameId: UUID,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve points associated with a specific game by its ID.
@@ -350,49 +296,19 @@ async def get_points_by_gameId_with_details(
     Args:
         gameId (UUID): The ID of the game.
         service (UserPointsService): Injected UserPointsService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         AllPointsByGame: The points details for the specified game.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Points retrieval by game ID with details - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
+    auth = audit.auth
+    await audit.info(
         "Points retrieval by game ID with details",
         {"gameId": str(gameId)},
-        service_log,
-        api_key,
-        oauth_user_id,
     )
 
     return await service.get_points_by_gameId_with_details(
-        gameId, **_game_access_kwargs(api_key, oauth_user_id, is_admin)
+        gameId, **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin)
     )
 
 
@@ -409,9 +325,7 @@ responses_get_points_of_user_in_game = {
     200: {
         "description": "User points in game retrieved successfully",
         "content": {
-            "application/json": {
-                "example": response_example_get_points_of_user_in_game
-            }
+            "application/json": {"example": response_example_get_points_of_user_in_game}
         },
     },
     401: {
@@ -488,10 +402,7 @@ async def get_points_of_user_in_game(
     gameId: UUID,
     externalUserId: str,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve points of a user in a specific game.
@@ -500,51 +411,21 @@ async def get_points_of_user_in_game(
         gameId (UUID): The ID of the game.
         externalUserId (str): The external user ID.
         service (UserPointsService): Injected UserPointsService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         List[PointsAssignedToUser]: The points details of the user in the
           specified game.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "User points retrieval by game ID - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
+    auth = audit.auth
+    await audit.info(
         "User points retrieval by game ID",
         {"gameId": str(gameId), "externalUserId": externalUserId},
-        service_log,
-        api_key,
-        oauth_user_id,
     )
     return await service.get_points_of_user_in_game(
         gameId,
         externalUserId,
-        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+        **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
     )
 
 
@@ -598,9 +479,7 @@ responses_get_points_simulated_of_user_in_game = {
         "description": "Forbidden: token user is not allowed to access the requested external user id",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "You are not authorized to access this resource."
-                }
+                "example": {"detail": "You are not authorized to access this resource."}
             }
         },
     },
@@ -666,10 +545,8 @@ async def get_points_simulated_of_user_in_game(
     gameId: UUID,
     externalUserId: str,
     service: UserPointsService = Depends(Provide[Container.user_points_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
     service_user: UserService = Depends(Provide[Container.user_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve simulated points of a user in a specific game.
@@ -678,8 +555,8 @@ async def get_points_simulated_of_user_in_game(
         gameId (UUID): The ID of the game.
         externalUserId (str): The external user ID.
         service (UserPointsService): Injected UserPointsService dependency.
-        service_log (LogsService): Injected LogsService dependency.
         service_user (UserService): Injected UserService dependency.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         List[SimulatedPointsAssignedToUser]: The simulated points details of the user in the specified game.
@@ -693,37 +570,17 @@ async def get_points_simulated_of_user_in_game(
         raise InternalServerError(
             detail="SECRET_KEY is not set. Please set the SECRET_KEY in the environment variables"
         )
-    token_data = await valid_access_token(token)
-    token_data = token_data.data
-    oauth_user_id = token_data["sub"]
-    is_admin = check_role(token_data, "AdministratorGAME")
-    if is_admin and (not (oauth_user_id == externalUserId)):
+    auth = audit.auth
+    if auth.is_admin and (not (auth.oauth_user_id == externalUserId)):
         raise ForbiddenError(detail="You are not authorized to access this resource.")
-
-    if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-        create_user = CreateOAuthUser(
-            provider="keycloak",
-            provider_user_id=oauth_user_id,
-            status="active",
-        )
-        await service_oauth.add(create_user)
-        await add_log(
-            "game",
-            "INFO",
-            "Simulated user points retrieval by game ID - User created",
-            {"oauth_user_id": oauth_user_id},
-            service_log,
-            None,
-            oauth_user_id,
-        )
 
     tasks_simulated, externalGameId = (
         await service.get_points_simulated_of_user_in_game(
             gameId,
             externalUserId,
-            oauth_user_id=oauth_user_id,
+            oauth_user_id=auth.oauth_user_id,
             assign_control_group=True,
-            is_admin=is_admin,
+            is_admin=auth.is_admin,
             enforce_scope=True,
         )
     )
@@ -738,18 +595,13 @@ async def get_points_simulated_of_user_in_game(
         simulationHash=simulationHash, tasks=tasks_simulated
     )
 
-    await add_log(
-        "game",
-        "INFO",
+    await audit.info(
         "Simulated user points retrieval by game ID",
         {
             "gameId": str(gameId),
             "externalUserId": externalUserId,
             "response": response.model_dump(),
         },
-        service_log,
-        None,
-        oauth_user_id,
     )
     return response
 
@@ -895,15 +747,14 @@ async def user_action_in_task(
     gameId: UUID,
     externalTaskId: str,
     request: Request,
-    schema: AddActionDidByUserInTask = Body(..., examples=[request_example_user_action]),
+    schema: AddActionDidByUserInTask = Body(
+        ..., examples=[request_example_user_action]
+    ),
     service: UserActionsService = Depends(Provide[Container.user_actions_service]),
     abuse_prevention_service: AbusePreventionService = Depends(
         Provide[Container.abuse_prevention_service]
     ),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Register a user action in a task within a game. This endpoint is used to
@@ -915,34 +766,23 @@ async def user_action_in_task(
         externalTaskId (str): The external task ID.
         schema (AddActionDidByUserInTask): The schema for adding an action.
         service (UserActionsService): Injected UserActionsService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         ResponseAddActionDidByUserInTask: The details of the action added.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = _extract_oauth_user_id_from_token(token)
-    is_admin = False
-    if token and not api_key:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
+    auth = audit.auth
     correlation_id = _resolve_correlation_id(request)
     if isinstance(schema.data, dict):
         schema.data.setdefault("correlationId", correlation_id)
         schema.data.setdefault("eventId", correlation_id)
     client_ip = abuse_prevention_service.extract_client_ip(request)
     await abuse_prevention_service.enforce_task_mutation_limits(
-        api_key=api_key,
+        api_key=auth.api_key,
         client_ip=client_ip,
         external_user_id=schema.externalUserId,
     )
-    await add_log(
-        "game",
-        "INFO",
+    await audit.info(
         "User action in task",
         {
             "gameId": str(gameId),
@@ -950,18 +790,15 @@ async def user_action_in_task(
             "correlationId": correlation_id,
             "body": schema.model_dump(),
         },
-        service_log,
-        api_key,
-        oauth_user_id,
     )
     try:
         return await service.user_add_action_in_task(
             gameId,
             externalTaskId,
             schema,
-            api_key,
-            oauth_user_id=oauth_user_id,
-            is_admin=is_admin,
+            auth.api_key,
+            oauth_user_id=auth.oauth_user_id,
+            is_admin=auth.is_admin,
             enforce_scope=True,
         )
     except Exception as exc:
@@ -979,15 +816,7 @@ async def user_action_in_task(
             "user_action_in_task failed",
             extra=error_payload,
         )
-        await add_log(
-            "game",
-            "ERROR",
-            "User action in task failed",
-            error_payload,
-            service_log,
-            api_key,
-            oauth_user_id,
-        )
+        await audit.error("User action in task failed", error_payload)
         raise mapped_exc
 
 
@@ -1073,9 +902,7 @@ responses_assign_points_to_user = {
         "description": "Internal server error while assigning points",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "Error when assigning points to user in task"
-                }
+                "example": {"detail": "Error when assigning points to user in task"}
             }
         },
     },
@@ -1136,10 +963,7 @@ async def assign_points_to_user(
     abuse_prevention_service: AbusePreventionService = Depends(
         Provide[Container.abuse_prevention_service]
     ),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Assign points to a user for a specific task in a game.
@@ -1149,21 +973,12 @@ async def assign_points_to_user(
         externalTaskId (str): The external task ID.
         schema (AsignPointsToExternalUserId): The schema for assigning points.
         service (UserPointsService): Injected UserPointsService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         AssignedPointsToExternalUserId: The details of the points assigned.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = _extract_oauth_user_id_from_token(token)
-    is_admin = False
-    if token and not api_key:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
+    auth = audit.auth
     correlation_id = _resolve_correlation_id(request)
     idempotency_key = _resolve_idempotency_key(request)
     if schema.data is None:
@@ -1174,13 +989,11 @@ async def assign_points_to_user(
             schema.data.setdefault("eventId", idempotency_key)
     client_ip = abuse_prevention_service.extract_client_ip(request)
     await abuse_prevention_service.enforce_task_mutation_limits(
-        api_key=api_key,
+        api_key=auth.api_key,
         client_ip=client_ip,
         external_user_id=schema.externalUserId,
     )
-    await add_log(
-        "game",
-        "INFO",
+    await audit.info(
         "Points assignment to user",
         {
             "gameId": str(gameId),
@@ -1189,9 +1002,6 @@ async def assign_points_to_user(
             "idempotencyKey": idempotency_key,
             "body": schema.model_dump(),
         },
-        service_log,
-        api_key,
-        oauth_user_id,
     )
     isSimulated = schema.isSimulated if hasattr(schema, "isSimulated") else False
     try:
@@ -1200,9 +1010,9 @@ async def assign_points_to_user(
             externalTaskId,
             schema,
             isSimulated,
-            api_key,
-            oauth_user_id=oauth_user_id,
-            is_admin=is_admin,
+            auth.api_key,
+            oauth_user_id=auth.oauth_user_id,
+            is_admin=auth.is_admin,
             enforce_scope=True,
         )
     except Exception as exc:
@@ -1221,15 +1031,7 @@ async def assign_points_to_user(
             "assign_points_to_user failed",
             extra=error_payload,
         )
-        await add_log(
-            "game",
-            "ERROR",
-            "Points assignment to user failed",
-            error_payload,
-            service_log,
-            api_key,
-            oauth_user_id,
-        )
+        await audit.error("Points assignment to user failed", error_payload)
         raise mapped_exc
 
 
@@ -1250,7 +1052,9 @@ response_example_get_points_by_task_id = [
 responses_get_points_by_task_id = {
     200: {
         "description": "Points by task retrieved successfully",
-        "content": {"application/json": {"example": response_example_get_points_by_task_id}},
+        "content": {
+            "application/json": {"example": response_example_get_points_by_task_id}
+        },
     },
     401: {
         "description": "Unauthorized: missing/invalid credentials",
@@ -1326,10 +1130,7 @@ async def get_points_by_task_id(
     gameId: UUID,
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve points by task ID.
@@ -1338,50 +1139,20 @@ async def get_points_by_task_id(
         gameId (UUID): The ID of the game.
         externalTaskId (str): The external task ID.
         service (TaskService): Injected TaskService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         List[PointsAssignedToUser]: The points details for the specified task.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Points retrieval by task ID - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
+    auth = audit.auth
+    await audit.info(
         "Points retrieval by task ID",
         {"gameId": str(gameId), "externalTaskId": externalTaskId},
-        service_log,
-        api_key,
-        oauth_user_id,
     )
     return await service.get_points_by_task_id(
         gameId,
         externalTaskId,
-        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+        **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
     )
 
 
@@ -1447,9 +1218,7 @@ responses_get_points_of_user_by_task_id = {
         "description": "Internal server error while retrieving user task points",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "Error when retrieving points for user in task"
-                }
+                "example": {"detail": "Error when retrieving points for user in task"}
             }
         },
     },
@@ -1497,10 +1266,7 @@ async def get_points_of_user_by_task_id(
     externalTaskId: str,
     externalUserId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve points of a user by task ID.
@@ -1510,56 +1276,26 @@ async def get_points_of_user_by_task_id(
         externalTaskId (str): The external task ID.
         externalUserId (str): The external user ID.
         service (TaskService): Injected TaskService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         PointsAssignedToUser: The points details of the user for the specified
           task.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "User points retrieval by task ID - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
+    auth = audit.auth
+    await audit.info(
         "User points retrieval by task ID",
         {
             "gameId": str(gameId),
             "externalTaskId": externalTaskId,
             "externalUserId": externalUserId,
         },
-        service_log,
-        api_key,
-        oauth_user_id,
     )
     return await service.get_points_of_user_by_task_id(
         gameId,
         externalTaskId,
         externalUserId,
-        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+        **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
     )
 
 
@@ -1659,9 +1395,7 @@ responses_get_points_by_task_id_with_details = {
         "description": "Internal server error while retrieving detailed task points",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "Error when retrieving detailed points by task"
-                }
+                "example": {"detail": "Error when retrieving detailed points by task"}
             }
         },
     },
@@ -1708,10 +1442,7 @@ async def get_points_by_task_id_with_details(
     gameId: UUID,
     externalTaskId: str,
     service: TaskService = Depends(Provide[Container.task_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("game")),
 ):
     """
     Retrieve detailed points by task ID.
@@ -1720,50 +1451,18 @@ async def get_points_by_task_id_with_details(
         gameId (UUID): The ID of the game.
         externalTaskId (str): The external task ID.
         service (TaskService): Injected TaskService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         List[dict]: Detailed points information for the specified task.
     """
-    api_key = _extract_api_key_from_header(api_key_header)
-    oauth_user_id = None
-    is_admin = False
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        is_admin = check_role(token_data.data, "AdministratorGAME")
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "game",
-                "INFO",
-                "Detailed points retrieval by task ID - User created",
-                {"oauth_user_id": oauth_user_id},
-                service_log,
-                api_key,
-                oauth_user_id,
-            )
-    await add_log(
-        "game",
-        "INFO",
+    auth = audit.auth
+    await audit.info(
         "Detailed points retrieval by task ID",
         {"gameId": str(gameId), "externalTaskId": externalTaskId},
-        service_log,
-        api_key,
-        oauth_user_id,
     )
     return await service.get_points_by_task_id_with_details(
         gameId,
         externalTaskId,
-        **_game_access_kwargs(api_key, oauth_user_id, is_admin),
+        **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
     )
-
-

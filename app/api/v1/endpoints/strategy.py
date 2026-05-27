@@ -7,14 +7,9 @@ from fastapi.responses import StreamingResponse
 
 from app.core.container import Container
 from app.core.exceptions import NotFoundError
-from app.middlewares.valid_access_token import oauth_2_scheme, valid_access_token
-from app.schema.oauth_users_schema import CreateOAuthUser
+from app.middlewares.auth_context import AuditLogger, audit_log
 from app.schema.strategy_schema import Strategy
-from app.services.apikey_service import ApiKeyService
-from app.services.logs_service import LogsService
-from app.services.oauth_users_service import OAuthUsersService
 from app.services.strategy_service import StrategyService
-from app.util.add_log import add_log
 
 router = APIRouter(
     prefix="/strategies",
@@ -100,69 +95,23 @@ Returns a list of strategies with:
 @inject
 async def get_strategy_list(
     service: StrategyService = Depends(Provide[Container.strategy_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("strategies")),
 ):
     """
     Retrieve a list of all strategies.
 
     Args:
         service (StrategyService): Injected StrategyService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         List[Strategy]: The list of all strategies.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "strategies",
-                "INFO",
-                "Get all strategies - User created",
-                {
-                    "oauth_user_id": oauth_user_id,
-                },
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
-    await add_log(
-        "strategies",
-        "INFO",
-        "Get all strategies",
-        {},
-        service_log,
-        api_key=api_key,
-        oauth_user_id=oauth_user_id,
-    )
+    await audit.info("Get all strategies")
     try:
-        response = service.list_all_strategies()
-        return response
+        return service.list_all_strategies()
     except Exception as e:
-        await add_log(
-            "strategies",
-            "ERROR",
-            "Get all strategies failed",
-            {"error": str(e)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
+        await audit.error("Get all strategies failed", {"error": str(e)})
         raise e
 
 
@@ -182,7 +131,9 @@ response_example_get_strategy_by_id = {
 responses_get_strategy_by_id = {
     200: {
         "description": "Strategy retrieved successfully",
-        "content": {"application/json": {"example": response_example_get_strategy_by_id}},
+        "content": {
+            "application/json": {"example": response_example_get_strategy_by_id}
+        },
     },
     401: {
         "description": "Unauthorized: invalid bearer token when provided",
@@ -244,10 +195,7 @@ Returns the strategy object with:
 async def get_strategy_by_id(
     id: str,
     service: StrategyService = Depends(Provide[Container.strategy_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("strategies")),
 ):
     """
     Retrieve a strategy by its ID.
@@ -255,46 +203,12 @@ async def get_strategy_by_id(
     Args:
         id (str): The ID of the strategy.
         service (StrategyService): Injected StrategyService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         Strategy: The details of the specified strategy.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "strategies",
-                "INFO",
-                "Get strategy by ID - User created",
-                {
-                    "oauth_user_id": oauth_user_id,
-                },
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
-    await add_log(
-        "strategies",
-        "INFO",
-        "Get strategy by ID",
-        {"id": id},
-        service_log,
-        api_key=api_key,
-        oauth_user_id=oauth_user_id,
-    )
+    await audit.info("Get strategy by ID", {"id": id})
     all_strategies = service.list_all_strategies()
     try:
         for strategy in all_strategies:
@@ -302,15 +216,7 @@ async def get_strategy_by_id(
                 return strategy
         raise NotFoundError(detail=f"Strategy not found with id: {id}")
     except Exception as e:
-        await add_log(
-            "strategies",
-            "ERROR",
-            "Get strategy by ID failed",
-            {"id": id, "error": str(e)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
+        await audit.error("Get strategy by ID failed", {"id": id, "error": str(e)})
         raise e
 
 
@@ -382,10 +288,7 @@ Returns a visual representation of a strategy logic graph as a PNG image.
 async def get_strategy_graph_by_id(
     id: str,
     service: StrategyService = Depends(Provide[Container.strategy_service]),
-    service_log: LogsService = Depends(Provide[Container.logs_service]),
-    service_oauth: OAuthUsersService = Depends(Provide[Container.oauth_users_service]),
-    token: str = Depends(oauth_2_scheme),
-    api_key_header: str = Depends(ApiKeyService.get_api_key_header),
+    audit: AuditLogger = Depends(audit_log("strategies")),
 ):
     """
     Retrieve a strategy graph by its ID.
@@ -393,47 +296,13 @@ async def get_strategy_graph_by_id(
     Args:
         id (str): The ID of the strategy.
         service (StrategyService): Injected StrategyService dependency.
-        service_log (LogsService): Injected LogsService dependency.
-        service_oauth (OAuthUsersService): Injected OAuthUsersService dependency.
-        token (str): The OAuth2 token.
-        api_key_header (str): The API key header.
+        audit (AuditLogger): Per-request audit logger bound to the auth context.
 
     Returns:
         StreamingResponse: The logic graph of the specified strategy.
     """
-    api_key = getattr(getattr(api_key_header, "data", None), "apiKey", None)
-    oauth_user_id = None
-    if token:
-        token_data = await valid_access_token(token)
-        oauth_user_id = token_data.data["sub"]
-        if await service_oauth.get_user_by_sub(oauth_user_id) is None:
-            create_user = CreateOAuthUser(
-                provider="keycloak",
-                provider_user_id=oauth_user_id,
-                status="active",
-            )
-            await service_oauth.add(create_user)
-            await add_log(
-                "strategies",
-                "INFO",
-                "Get strategy graph by ID - User created",
-                {
-                    "oauth_user_id": oauth_user_id,
-                },
-                service_log,
-                api_key=api_key,
-                oauth_user_id=oauth_user_id,
-            )
     try:
-        await add_log(
-            "strategies",
-            "INFO",
-            "Get strategy graph by ID",
-            {"id": id},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
-        )
+        await audit.info("Get strategy graph by ID", {"id": id})
         strategy = service.get_strategy_by_id(id)
         if not strategy:
             raise NotFoundError(detail=f"Strategy not found with id: {id}")
@@ -446,13 +315,7 @@ async def get_strategy_graph_by_id(
 
         return StreamingResponse(io.BytesIO(graph_png), media_type="image/png")
     except Exception as e:
-        await add_log(
-            "strategies",
-            "ERROR",
-            "Get strategy graph by ID failed",
-            {"id": id, "error": str(e)},
-            service_log,
-            api_key=api_key,
-            oauth_user_id=oauth_user_id,
+        await audit.error(
+            "Get strategy graph by ID failed", {"id": id, "error": str(e)}
         )
         raise e

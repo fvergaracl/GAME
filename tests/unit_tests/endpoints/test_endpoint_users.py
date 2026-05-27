@@ -3,40 +3,37 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.api.v1.endpoints import users
+from app.middlewares.auth_context import AuditLogger, AuthContext
 from app.schema.user_actions_schema import CreateUserBodyActions
-from app.schema.user_schema import (PostAssignPointsToUserWithCaseName,
-                                    PostPointsConversionRequest)
+from app.schema.user_schema import (
+    PostAssignPointsToUserWithCaseName,
+    PostPointsConversionRequest,
+)
 
 
 class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self._patch_add_log = patch(
-            "app.api.v1.endpoints.users.add_log",
+            "app.middlewares.auth_context.add_log",
             new=AsyncMock(),
         )
-        self._patch_valid_access_token = patch(
-            "app.api.v1.endpoints.users.valid_access_token",
-            new=AsyncMock(return_value=SimpleNamespace(data={"sub": "oauth-user-1"})),
-        )
-
         self.mock_add_log = self._patch_add_log.start()
-        self.mock_valid_access_token = self._patch_valid_access_token.start()
 
     def tearDown(self):
         patch.stopall()
 
     @staticmethod
-    def _api_key_header(api_key="api-key-1"):
-        return SimpleNamespace(data=SimpleNamespace(apiKey=api_key))
-
-    @staticmethod
-    def _oauth_service(user_exists=True):
-        service_oauth = MagicMock()
-        service_oauth.get_user_by_sub = AsyncMock(
-            return_value=SimpleNamespace(id="oauth-user") if user_exists else None
+    def _audit(api_key="api-key-1", oauth_user_id=None, is_admin=False):
+        return AuditLogger(
+            "users",
+            MagicMock(),
+            AuthContext(
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+                token_data={"sub": oauth_user_id} if oauth_user_id else None,
+            ),
         )
-        service_oauth.add = AsyncMock()
-        return service_oauth
 
     async def test_query_user_points_success_with_token_and_new_oauth_user(self):
         service = AsyncMock()
@@ -44,21 +41,16 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
             {"externalUserId": "u1", "points": 10, "timesAwarded": 1, "games": []}
         ]
         service.get_points_by_user_list.return_value = expected
-        service_oauth = self._oauth_service(user_exists=False)
 
         result = await users.query_user_points(
             schema=["u1"],
             service=service,
-            service_log=MagicMock(),
-            service_oauth=service_oauth,
-            token="Bearer any",
-            api_key_header=self._api_key_header("k-1"),
+            audit=self._audit(api_key="k-1", oauth_user_id="oauth-user-1"),
         )
 
         self.assertEqual(result, expected)
         service.get_points_by_user_list.assert_called_once_with(["u1"])
-        service_oauth.add.assert_awaited_once()
-        self.assertGreaterEqual(self.mock_add_log.await_count, 2)
+        self.mock_add_log.assert_awaited_once()
 
     async def test_query_user_points_error_logs_and_raises(self):
         service = AsyncMock()
@@ -68,30 +60,22 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
             await users.query_user_points(
                 schema=["u1"],
                 service=service,
-                service_log=MagicMock(),
-                service_oauth=self._oauth_service(),
-                token=None,
-                api_key_header=self._api_key_header(),
+                audit=self._audit(),
             )
 
     async def test_get_points_by_user_id_success_with_token_and_new_oauth_user(self):
         service = AsyncMock()
         expected = [{"externalGameId": "g1", "created_at": "now", "task": []}]
         service.get_points_by_externalUserId.return_value = expected
-        service_oauth = self._oauth_service(user_exists=False)
 
         result = await users.get_points_by_user_id(
             externalUserId="u1",
             service=service,
-            service_log=MagicMock(),
-            service_oauth=service_oauth,
-            token="Bearer any",
-            api_key_header=self._api_key_header(),
+            audit=self._audit(oauth_user_id="oauth-user-1"),
         )
 
         self.assertEqual(result, expected)
         service.get_points_by_externalUserId.assert_called_once_with("u1")
-        service_oauth.add.assert_awaited_once()
 
     async def test_get_points_by_user_id_error_logs_and_raises(self):
         service = AsyncMock()
@@ -103,30 +87,22 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
             await users.get_points_by_user_id(
                 externalUserId="u1",
                 service=service,
-                service_log=MagicMock(),
-                service_oauth=self._oauth_service(),
-                token=None,
-                api_key_header=self._api_key_header(),
+                audit=self._audit(),
             )
 
     async def test_get_wallet_by_user_id_success_with_token_and_new_oauth_user(self):
         service = AsyncMock()
         expected = {"userId": "u1", "wallet": None, "walletTransactions": []}
         service.get_wallet_by_externalUserId = AsyncMock(return_value=expected)
-        service_oauth = self._oauth_service(user_exists=False)
 
         result = await users.get_wallet_by_user_id(
             externalUserId="u1",
             service=service,
-            service_log=MagicMock(),
-            service_oauth=service_oauth,
-            token="Bearer any",
-            api_key_header=self._api_key_header(),
+            audit=self._audit(oauth_user_id="oauth-user-1"),
         )
 
         self.assertEqual(result, expected)
         service.get_wallet_by_externalUserId.assert_awaited_once_with("u1")
-        service_oauth.add.assert_awaited_once()
 
     async def test_get_wallet_by_user_id_error_logs_and_raises(self):
         service = AsyncMock()
@@ -138,10 +114,7 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
             await users.get_wallet_by_user_id(
                 externalUserId="u1",
                 service=service,
-                service_log=MagicMock(),
-                service_oauth=self._oauth_service(),
-                token=None,
-                api_key_header=self._api_key_header(),
+                audit=self._audit(),
             )
 
     async def test_assign_points_by_external_user_id_success(self):
@@ -162,16 +135,12 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
             id="user-id-1"
         )
         service.assign_points_to_user = AsyncMock(return_value={"ok": True})
-        service_oauth = self._oauth_service(user_exists=False)
 
         result = await users.assign_points_by_external_user_id(
             externalUserId="ext-user-1",
             schema=schema,
             service=service,
-            service_oauth=service_oauth,
-            service_log=MagicMock(),
-            token="Bearer any",
-            api_key_header=self._api_key_header(),
+            audit=self._audit(oauth_user_id="oauth-user-1"),
         )
 
         self.assertEqual(result, {"ok": True})
@@ -184,7 +153,6 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(call_args[1].taskId, "task-id-1")
         self.assertEqual(call_args[1].points, 30)
         self.assertEqual(call_args[2], "api-key-1")
-        service_oauth.add.assert_awaited_once()
 
     async def test_assign_points_by_external_user_id_error_logs_and_raises(self):
         schema = PostAssignPointsToUserWithCaseName(
@@ -207,10 +175,7 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
                 externalUserId="ext-user-1",
                 schema=schema,
                 service=service,
-                service_oauth=self._oauth_service(),
-                service_log=MagicMock(),
-                token=None,
-                api_key_header=self._api_key_header(),
+                audit=self._audit(),
             )
 
     async def test_preview_points_to_coins_conversion_success(self):
@@ -226,23 +191,18 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
         service.preview_points_to_coins_conversion_externalUserId.return_value = (
             expected
         )
-        service_oauth = self._oauth_service(user_exists=False)
 
         result = await users.preview_points_to_coins_conversion(
             externalUserId="u1",
             points=100,
             service=service,
-            service_log=MagicMock(),
-            service_oauth=service_oauth,
-            token="Bearer any",
-            api_key_header=self._api_key_header(),
+            audit=self._audit(oauth_user_id="oauth-user-1"),
         )
 
         self.assertEqual(result, expected)
         service.preview_points_to_coins_conversion_externalUserId.assert_called_once_with(
             "u1", 100
         )
-        service_oauth.add.assert_awaited_once()
 
     async def test_preview_points_to_coins_conversion_error_logs_and_raises(self):
         service = AsyncMock()
@@ -255,10 +215,7 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
                 externalUserId="u1",
                 points=100,
                 service=service,
-                service_log=MagicMock(),
-                service_oauth=self._oauth_service(),
-                token=None,
-                api_key_header=self._api_key_header(),
+                audit=self._audit(),
             )
 
     async def test_convert_points_to_coins_success(self):
@@ -276,23 +233,18 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
         service.convert_points_to_coins_externalUserId = AsyncMock(
             return_value=expected
         )
-        service_oauth = self._oauth_service(user_exists=False)
 
         result = await users.convert_points_to_coins(
             externalUserId="u1",
             schema=schema,
             service=service,
-            service_log=MagicMock(),
-            service_oauth=service_oauth,
-            token="Bearer any",
-            api_key_header=self._api_key_header("k-2"),
+            audit=self._audit(api_key="k-2", oauth_user_id="oauth-user-1"),
         )
 
         self.assertEqual(result, expected)
         service.convert_points_to_coins_externalUserId.assert_awaited_once_with(
             "u1", schema, "k-2"
         )
-        service_oauth.add.assert_awaited_once()
 
     async def test_convert_points_to_coins_error_logs_and_raises(self):
         schema = PostPointsConversionRequest(points=25)
@@ -306,10 +258,7 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
                 externalUserId="u1",
                 schema=schema,
                 service=service,
-                service_log=MagicMock(),
-                service_oauth=self._oauth_service(),
-                token=None,
-                api_key_header=self._api_key_header(),
+                audit=self._audit(),
             )
 
     async def test_add_action_to_user_success(self):
@@ -328,21 +277,16 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
             "message": "Action added successfully",
         }
         service.user_add_action_default = AsyncMock(return_value=expected)
-        service_oauth = self._oauth_service(user_exists=False)
 
         result = await users.add_action_to_user(
             externalUserId="u1",
             schema=schema,
             service=service,
-            service_log=MagicMock(),
-            service_oauth=service_oauth,
-            token="Bearer any",
-            api_key_header=self._api_key_header("k-3"),
+            audit=self._audit(api_key="k-3", oauth_user_id="oauth-user-1"),
         )
 
         self.assertEqual(result, expected)
         service.user_add_action_default.assert_awaited_once_with("u1", schema, "k-3")
-        service_oauth.add.assert_awaited_once()
 
     async def test_add_action_to_user_error_logs_and_raises(self):
         schema = CreateUserBodyActions(
@@ -361,10 +305,7 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
                 externalUserId="u1",
                 schema=schema,
                 service=service,
-                service_log=MagicMock(),
-                service_oauth=self._oauth_service(),
-                token=None,
-                api_key_header=self._api_key_header(),
+                audit=self._audit(),
             )
 
 
