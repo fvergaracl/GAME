@@ -19,14 +19,18 @@
       "serviceAccountsEnabled": true,
       "redirectUris": [
         "http://localhost:8000/*",
+        "http://localhost:3000/*",
         "http://localhost/*",
         "https://localhost/*",
-        "https://localhost:8000/*"
+        "https://localhost:8000/*",
+        "https://localhost:3000/*"
       ],
       "webOrigins": [
         "http://localhost:8000",
+        "http://localhost:3000",
         "http://localhost",
         "https://localhost:8000",
+        "https://localhost:3000",
         "https://localhost"
       ],
       "defaultClientScopes": [

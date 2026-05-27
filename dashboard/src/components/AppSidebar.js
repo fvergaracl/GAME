@@ -24,28 +24,19 @@ const AppSidebar = () => {
   const sidebarShow = useSelector((state) => state.sidebarShow)
   const sidebarNav = useSelector((state) => state.sidebarNav) || _nav
   useEffect(() => {
-    console.log('authenticated', keycloak.authenticated)
-    const token = keycloak.token
-    console.log(token)
-    if (token) {
-      const payload = token.split('.')[1]
-      const decoded_payload = JSON.parse(atob(payload))
-      if (decoded_payload?.resource_access?.account?.roles?.includes('AdministratorGAME')) {
-        dispatch({ type: 'set', sidebarNav: _nav_administrator })
-      } else {
-        dispatch({ type: 'set', sidebarNav: _nav })
-      }
-    } else if (import.meta.env.DEV) {
-      // Dev-only workaround (Sprint 7): Keycloak.init() isn't wired up
-      // yet so ``authenticated`` is always false and the admin nav
-      // (Strategy Editor, Exports, API keys) would be invisible during
-      // local development. Force the admin sidebar in dev mode so the
-      // designer can iterate; the REAL gate at the backend stays
-      // intact (publish/archive endpoints still 403 without a Bearer
-      // token). REMOVE this branch once Keycloak init lands in S10.
+    // AdministratorGAME is a CLIENT role on ${VITE_KEYCLOAK_CLIENT_ID}
+    // (see keycloak/realm-template.json), so it lands under
+    // resource_access[<client-id>].roles in the JWT — not under
+    // resource_access.account.roles.
+    const clientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID
+    const roles =
+      keycloak.tokenParsed?.resource_access?.[clientId]?.roles ?? []
+    if (roles.includes('AdministratorGAME')) {
       dispatch({ type: 'set', sidebarNav: _nav_administrator })
+    } else {
+      dispatch({ type: 'set', sidebarNav: _nav })
     }
-  }, [])
+  }, [keycloak.authenticated])
 
   return (
     <CSidebar

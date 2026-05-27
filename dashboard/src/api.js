@@ -10,13 +10,23 @@ const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use(
-  (config) => {
-    let token = null
+  async (config) => {
     if (keycloak.authenticated) {
-      token = keycloak.token
-      config.headers
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
+      try {
+        // Refresh silently if the access token expires in the next 30s.
+        // Returning false means the token was still valid; true means a
+        // fresh one was issued.
+        await keycloak.updateToken(30)
+      } catch (e) {
+        // Refresh failed (Keycloak SSO session expired) → bounce the
+        // user back through the login flow.
+        keycloak.login()
+        return Promise.reject(
+          new axios.Cancel('Keycloak session expired, redirecting to login'),
+        )
+      }
+      if (keycloak.token) {
+        config.headers.Authorization = `Bearer ${keycloak.token}`
       }
     }
     return config
