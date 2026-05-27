@@ -22,10 +22,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
+
+      - name: Install Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz graphviz-dev
+
+      - name: Install Poetry
+        run: curl -sSL https://install.python-poetry.org | python3 -
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: poetry install
 
       - name: Run unit tests
-        run: pytest tests/unit_tests -m "not e2e_real_http"
+        run: poetry run pytest tests/unit_tests -m "not e2e_real_http"

@@ -37,7 +37,6 @@ The GAME project is structured to facilitate easy navigation and understanding f
 ├── poetry.lock                   # Poetry lock file (dependencies)
 ├── pyproject.toml                # Poetry configuration and project metadata
 ├── README.md                     # Project README
-├── requirements.txt              # Python requirements (for non-Poetry environments)
 ├── strategies.md                 # Documentation on strategy patterns used
 └── tests                         # Test suite (unit and integration tests)
 ```
