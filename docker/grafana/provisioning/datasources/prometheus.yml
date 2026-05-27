@@ -1,0 +1,22 @@
+# Auto-provisioned datasource for the bundled docker-compose stack
+# (Sprint 11 follow-up). Grafana reads every file under
+# /etc/grafana/provisioning/datasources/ at startup, so dropping this
+# in is enough -- no admin clicks required on first boot.
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    # Pinned UID so the provisioned dashboard JSON in
+    # docker/grafana/dashboards/*.json can reference this datasource
+    # without Grafana minting a fresh random UID on first boot.
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    # ``prometheus`` is the docker-compose service name; resolved via
+    # the embedded Docker DNS on whichever network they share.
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: 15s

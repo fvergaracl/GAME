@@ -92,6 +92,51 @@ services:
     networks:
       - traefik-public
 
+  # Sprint 11 follow-up: Prometheus + Grafana on the same external
+  # traefik-public network so prometheus can reach api:8000/metrics.
+  # Direct port mappings (no traefik labels) for simplicity; if a
+  # sub-path /prometheus or /grafana behind traefik is later needed,
+  # add labels + GF_SERVER_ROOT_URL / --web.external-url accordingly.
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    container_name: "GAME_PROMETHEUS"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-15d}'
+      - '--web.enable-lifecycle'
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus-data:/prometheus
+    networks:
+      - traefik-public
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: "GAME_GRAFANA"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    networks:
+      - traefik-public
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
 networks:
   traefik-public:
     external: true
@@ -100,3 +145,5 @@ volumes:
   postgres-data:
   keycloak-data:
   game-logs:
+  prometheus-data:
+  grafana-data:

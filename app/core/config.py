@@ -172,6 +172,13 @@ class Configs(BaseSettings):
 
     ENV: str = os.getenv("ENV", "dev")
     ROOT_PATH: str = os.getenv("ROOT_PATH", "")
+    # Sprint 11 follow-up: when True the FastAPI app exposes /metrics via
+    # prometheus_fastapi_instrumentator so the bundled docker-compose
+    # Prometheus container can scrape the DSL counters out of the box.
+    # Default ON because the metrics stack ships pre-configured; flip to
+    # false in production deployments that front the api with an ingress
+    # already blocking /metrics externally.
+    METRICS_ENABLED: bool = _env_to_bool("METRICS_ENABLED", True)
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "GAME-api"
     GAMIFICATIONENGINE_VERSION_APP: str = os.getenv(

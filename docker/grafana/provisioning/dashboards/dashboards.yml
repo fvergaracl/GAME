@@ -1,0 +1,20 @@
+# Dashboard provider config (Sprint 11 follow-up).
+#
+# Grafana walks /var/lib/grafana/dashboards looking for *.json on
+# startup and refreshes every 30 s, so dropping a new dashboard JSON
+# into docker/grafana/dashboards/ (which is bind-mounted at the path
+# below) makes it appear in the "GAME" folder without a restart.
+
+apiVersion: 1
+
+providers:
+  - name: 'GAME'
+    orgId: 1
+    folder: 'GAME'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

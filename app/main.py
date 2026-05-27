@@ -9,6 +9,7 @@ import toml
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import RedirectResponse
+from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api.v1.routes import routers as v1_routers
@@ -198,6 +199,25 @@ class AppCreator:
                 allow_credentials=True,
                 allow_methods=["*"],
                 allow_headers=["*"],
+            )
+
+        # Sprint 11 follow-up: expose Prometheus /metrics.  Wired here
+        # (after CORS, before include_router) so the instrumentor sees
+        # every request middleware but does NOT itself sit behind any
+        # router-level auth dependency. The custom DSL counters in
+        # app/engine/dsl_metrics.py already live in the default
+        # prometheus_client registry, so Instrumentator.expose() emits
+        # them automatically without extra wiring.
+        if configs.METRICS_ENABLED:
+            Instrumentator(
+                should_group_status_codes=True,
+                should_ignore_untemplated=True,
+                excluded_handlers=["/metrics"],
+            ).instrument(self.app).expose(
+                self.app,
+                endpoint="/metrics",
+                include_in_schema=False,
+                tags=["observability"],
             )
 
         @self.app.get("/", include_in_schema=False)

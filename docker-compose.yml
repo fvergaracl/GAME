@@ -59,6 +59,55 @@ services:
       - backend
       - api
 
+  # Sprint 11 follow-up: Prometheus + Grafana for production. Ports
+  # are bound to localhost only so the metrics stack is not exposed
+  # outside the host -- access via SSH tunnel or by changing the
+  # binding intentionally. /metrics on the api itself remains
+  # reachable on the docker network only; the public api port
+  # (80 -> 8000) does NOT proxy /metrics through any nginx/ingress
+  # by default, but operators fronting the api directly should keep
+  # METRICS_ENABLED=false in .env.prod or block /metrics at the
+  # ingress (see docs/dsl/runbook.md).
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    container_name: "GAME_PROMETHEUS"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-15d}'
+      - '--web.enable-lifecycle'
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus-data:/prometheus
+    networks:
+      - backend
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: "GAME_GRAFANA"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3001}:3000"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    networks:
+      - backend
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
 networks:
   backend:
     driver: "bridge"
@@ -66,3 +115,5 @@ networks:
 volumes:
   postgres-data:
   game-logs:
+  prometheus-data:
+  grafana-data:

@@ -1,3 +1,6 @@
+# KEEP IN SYNC WITH docker/prometheus/rules/dsl-rules.yml
+# (the docker-compose Prometheus container loads that file directly;
+# the rule body in this ConfigMap mirrors it -- edit both together).
 apiVersion: v1
 kind: ConfigMap
 metadata:

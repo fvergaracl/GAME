@@ -144,6 +144,50 @@ services:
         env: "ENV,DEBUG"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
+  # Sprint 11 follow-up: pre-configured Prometheus + Grafana stack.
+  # Scrapes the api container's /metrics (exposed by
+  # prometheus_fastapi_instrumentator wired in app/main.py) and ships
+  # the DSL alert rules from docker/prometheus/rules/dsl-rules.yml.
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    container_name: "GAME_PROMETHEUS"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-15d}'
+      - '--web.enable-lifecycle'
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus-data:/prometheus
+    networks:
+      - backend
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: "GAME_GRAFANA"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    networks:
+      - backend
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
 networks:
   backend:
     driver: "bridge"
@@ -153,3 +197,5 @@ volumes:
   keycloak-data:
   game-logs:
   dashboard-node-modules:
+  prometheus-data:
+  grafana-data:
