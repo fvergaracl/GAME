@@ -256,42 +256,34 @@
 </section>
 <section id="module-app.engine.all_engine_strategies">
 <span id="app-engine-all-engine-strategies"></span><h2 id="module-app.engine.all_engine_strategies">app.engine.all_engine_strategies<a class="headerlink" href="#module-app.engine.all_engine_strategies" title="Link to this heading">¶</a></h2>
+<p>Strategy enumeration backed by the explicit registry.</p>
+<p>The legacy implementation walked <code class="docutils literal notranslate"><span class="pre">app/engine</span></code> with <a class="reference external" href="https://docs.python.org/3/library/os.html#os.listdir" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.listdir()</span></code></a>
+(CWD-dependent), imported every module, picked classes by “first letter
+uppercase”, and mutated the list while iterating. It also could not load
+strategies from external packages.</p>
+<p>This module now:</p>
+<ol class="arabic simple">
+<li><p>Auto-discovers every module inside the <code class="xref py py-mod docutils literal notranslate"><span class="pre">app.engine</span></code> package using
+<a class="reference external" href="https://docs.python.org/3/library/pkgutil.html#pkgutil.iter_modules" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pkgutil.iter_modules()</span></code></a> against the package’s resolved <code class="docutils literal notranslate"><span class="pre">__path__</span></code>
+(independent of the current working directory), so newly added strategy
+files are picked up without editing this file.</p></li>
+<li><p>Imports each module, which triggers <code class="docutils literal notranslate"><span class="pre">@register_strategy</span></code> and registers
+the class in <code class="xref py py-mod docutils literal notranslate"><span class="pre">app.engine.strategy_registry</span></code>. Modules that don’t
+register anything (helpers, base classes) simply contribute nothing.</p></li>
+<li><p>Returns instances of every class currently in the registry. Third-party
+strategies declared via the <code class="docutils literal notranslate"><span class="pre">game.strategies</span></code> entry point are loaded
+lazily by the registry.</p></li>
+</ol>
 <dl class="py function">
 <dt class="sig sig-object py" id="app.engine.all_engine_strategies.all_engine_strategies">
 <span class="sig-prename descclassname"><span class="pre">app.engine.all_engine_strategies.</span></span><span class="sig-name descname"><span class="pre">all_engine_strategies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></span><a class="reference internal" href="../_modules/app/engine/all_engine_strategies.html#all_engine_strategies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.all_engine_strategies.all_engine_strategies" title="Link to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Scans the ‘app/engine’ directory for Python modules that define strategy</dt><dd><dl class="simple">
-<dt>classes, excluding base and utility modules. Each strategy class is</dt><dd><dl class="simple">
-<dt>instantiated, checked for required methods and variables, and if</dt><dd><dl class="simple">
-<dt>valid, added to a list with its ‘id’ attribute set to the module</dt><dd><dl class="simple">
-<dt>name. This process dynamically discovers and validates strategy</dt><dd><dl class="simple">
-<dt>implementations at runtime, facilitating a plug-and-play</dt><dd><dl class="simple">
-<dt>architecture for strategies without hardcoding their</dt><dd><p>references.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-<dt><strong>Note</strong>: Strategies must extend a base strategy class and implement all</dt><dd><p>required methods and variables as per :func:
-<cite>check_class_methods_and_variables</cite> criteria to be considered valid.</p>
-</dd>
-</dl>
+<dd><p>Return instances of every registered, validated strategy class.</p>
+<p>Each instance has an <code class="docutils literal notranslate"><span class="pre">id</span></code> attribute set to the registered strategy
+id (the public identifier persisted on games and exposed by the API).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><p>A list of instantiated and validated strategy class objects,
-each with an ‘id’ attribute corresponding to their module name. The</p>
-<blockquote>
-<div><p>’BaseStrategy’ class, if found, is excluded from the returned list.</p>
-</div></blockquote>
-</p>
+<dd class="field-odd"><p>List of strategy instances, one per registered class. Classes
+that fail <code class="xref py py-func docutils literal notranslate"><span class="pre">check_class_methods_and_variables()</span></code> are skipped.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>

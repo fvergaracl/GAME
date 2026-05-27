@@ -236,10 +236,7 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-strategy-service--page-root">Source code for app.services.strategy_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundError</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.all_engine_strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_engine_strategies</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 
@@ -269,20 +266,17 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list: A list of all strategies.</span>
 <span class="sd">        """</span>
-        <span class="n">all_unclean_strategies</span> <span class="o">=</span> <span class="n">all_engine_strategies</span><span class="p">()</span>
         <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_unclean_strategies</span><span class="p">:</span>
-            <span class="n">file_class</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
-            <span class="n">filename_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_class</span><span class="p">)</span>
-            <span class="n">filename_id</span> <span class="o">=</span> <span class="n">filename_id</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">".py"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_engine_strategies</span><span class="p">():</span>
+            <span class="n">hash_version</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">_generate_hash_of_calculate_points</span><span class="p">()</span>
             <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="s2">"id"</span><span class="p">:</span> <span class="n">filename_id</span><span class="p">,</span>
+                    <span class="s2">"id"</span><span class="p">:</span> <span class="n">strategy</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                     <span class="s2">"name"</span><span class="p">:</span> <span class="n">strategy</span><span class="o">.</span><span class="n">get_strategy_name</span><span class="p">(),</span>
                     <span class="s2">"description"</span><span class="p">:</span> <span class="n">strategy</span><span class="o">.</span><span class="n">get_strategy_description</span><span class="p">(),</span>
                     <span class="s2">"version"</span><span class="p">:</span> <span class="n">strategy</span><span class="o">.</span><span class="n">get_strategy_version</span><span class="p">(),</span>
                     <span class="s2">"variables"</span><span class="p">:</span> <span class="n">strategy</span><span class="o">.</span><span class="n">get_variables</span><span class="p">(),</span>
-                    <span class="s2">"hash_version"</span><span class="p">:</span> <span class="n">strategy</span><span class="o">.</span><span class="n">_generate_hash_of_calculate_points</span><span class="p">(),</span>
+                    <span class="s2">"hash_version"</span><span class="p">:</span> <span class="n">hash_version</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">response</span></div>
@@ -303,8 +297,7 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            NotFoundError: If the strategy is not found.</span>
 <span class="sd">        """</span>
-        <span class="n">all_strategies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_all_strategies</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_strategies</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_all_strategies</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">strategy</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">strategy</span>
         <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Strategy not found with id: </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
@@ -314,23 +307,19 @@
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.get_Class_by_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_Class_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Retrieves the class of a strategy by its ID.</span>
+<span class="sd">        Retrieves the instance of a strategy by its ID.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            id (str): The ID of the strategy.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            class: The strategy class.</span>
+<span class="sd">            object: The strategy instance.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            NotFoundError: If the strategy class is not found.</span>
 <span class="sd">        """</span>
-        <span class="n">all_strategies</span> <span class="o">=</span> <span class="n">all_engine_strategies</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_strategies</span><span class="p">:</span>
-            <span class="n">file_class</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
-            <span class="n">filename_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_class</span><span class="p">)</span>
-            <span class="n">filename_id</span> <span class="o">=</span> <span class="n">filename_id</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">".py"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">filename_id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_engine_strategies</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">strategy</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">strategy</span>
         <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Strategy not found with id: </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 </div>
