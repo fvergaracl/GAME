@@ -15,7 +15,9 @@ from app.schema.task_schema import (
     CreateTasksPost,
     CreateTasksPostBulkCreated,
     FoundTasks,
+    PatchTask,
     PostFindTask,
+    ResponsePatchTask,
 )
 from app.services.task_service import TaskService
 
@@ -704,3 +706,88 @@ async def get_task_by_gameId_taskId(
         externalTaskId,
         **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
     )
+
+
+summary_patch_task = "Update a Task (Sprint 9)"
+description_patch_task = """
+Partially updates a task identified by ``gameId`` + ``taskId``.
+
+### Path Parameters
+- `gameId` (`UUID`, required): Internal game identifier.
+- `taskId` (`UUID`, required): Internal task identifier.
+
+### Authentication
+- Requires either `X-API-Key` or `Authorization: Bearer <access_token>`.
+
+### Request Body
+Any subset of:
+- `strategyId` (`string`): built-in id (e.g. ``default``) or
+  ``custom:<uuid>``. Custom strategies must be PUBLISHED in the
+  caller's realm.
+- `status` (`string`): task lifecycle status.
+
+### Success (200)
+Returns the updated task fields plus a result ``message``.
+
+### Error Cases
+- `400`: empty patch or unpublished custom strategy assignment.
+- `401`/`403`: missing/invalid auth or scope.
+- `404`: game/task not found or cross-tenant access.
+- `422`: malformed UUID or invalid body.
+"""
+
+
+@router.patch(
+    "/{gameId}/tasks/{taskId}",
+    response_model=ResponsePatchTask,
+    summary=summary_patch_task,
+    description=description_patch_task,
+    dependencies=[Depends(auth_api_key_or_oauth2)],
+)
+@inject
+async def patch_task(
+    gameId: UUID,
+    taskId: UUID,
+    schema: PatchTask = Body(...),
+    service: TaskService = Depends(Provide[Container.task_service]),
+    audit: AuditLogger = Depends(audit_log("game")),
+):
+    """
+    Update a task by ``gameId`` + ``taskId``.
+
+    Sprint 9: introduced to let the assignments admin view (and any
+    integration that wants to reassign a strategy) target individual
+    tasks. Body fields are all optional and patched in-place; the
+    service validates ``strategyId`` against built-ins and custom
+    strategies in the caller's realm.
+    """
+    auth = audit.auth
+    await audit.info(
+        "Task update by ID",
+        {
+            "gameId": str(gameId),
+            "taskId": str(taskId),
+            "body": schema.model_dump(),
+        },
+    )
+    try:
+        response = await service.patch_task_by_id(
+            gameId,
+            taskId,
+            schema,
+            **_game_access_kwargs(
+                auth.api_key, auth.oauth_user_id, auth.is_admin
+            ),
+        )
+        await audit.success(
+            "Task update successful",
+            {
+                "gameId": str(gameId),
+                "taskId": str(taskId),
+                "body": schema.model_dump(),
+            },
+        )
+        return response
+    except Exception as e:
+        await audit.error("Task update failed", {"error": str(e)})
+        raise e

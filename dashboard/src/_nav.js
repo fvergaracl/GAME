@@ -82,6 +82,16 @@ const _nav_administrator = [
     },
   },
   {
+    component: CNavItem,
+    name: 'Asignación',
+    to: '/admin/strategies/assignments',
+    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+    badge: {
+      color: 'info',
+      text: 'NEW',
+    },
+  },
+  {
     component: CNavTitle,
     name: 'Admin',
   },

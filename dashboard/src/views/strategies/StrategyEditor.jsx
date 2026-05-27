@@ -46,10 +46,31 @@ import {
   simulateCustomStrategy,
   updateCustomStrategy,
 } from '../../api'
+import keycloak from '../../keycloak'
 import { DEFAULT_TOOLBOX_XML, EXTEND_TOOLBOX_XML, registerDslBlocks } from './blocks'
 import { workspaceToAst } from './dsl/generator'
 import { validateAst } from './dsl/validator'
+import StrategyVersionHistoryModal from './StrategyVersionHistoryModal'
 import TemplatePickerModal from './TemplatePickerModal'
+
+// Inline admin-token decoder so the "Hacer rollback" CTA inside the
+// history modal stays disabled for non-admins. The server-side
+// ``require_admin`` gate is the authoritative check; this is just a
+// UX hint to avoid showing a button that would always 403.
+const isCurrentUserAdmin = () => {
+  try {
+    const token = keycloak?.token
+    if (!token) return false
+    const payload = token.split('.')[1]
+    const decoded = JSON.parse(atob(payload))
+    return (
+      decoded?.resource_access?.account?.roles?.includes('AdministratorGAME') ||
+      false
+    )
+  } catch {
+    return false
+  }
+}
 
 // Register the custom block prototypes exactly once per browser tab.
 // Calling registerDslBlocks more than once would throw on the second
@@ -112,6 +133,12 @@ const StrategyEditor = () => {
   const [simResult, setSimResult] = useState(null)
   const [simError, setSimError] = useState(null)
   const [isSimulating, setIsSimulating] = useState(false)
+
+  // Sprint 9: history modal visibility. Only meaningful when the editor
+  // is loaded with an existing strategy (i.e. ``strategyId`` is set);
+  // otherwise there's no family to walk back through.
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const isAdmin = useMemo(() => isCurrentUserAdmin(), [])
 
   // Sprint 7: toolbox swaps wholesale when the mode changes. We track
   // it as state (not just useMemo) because the Blockly workspace needs
@@ -737,6 +764,18 @@ const StrategyEditor = () => {
                 {isImporting && <CSpinner size="sm" className="me-2" />}
                 Importar JSON
               </CButton>
+              {/* Sprint 9: only meaningful for already-persisted
+                  strategies — for a brand-new draft there's nothing
+                  to compare against yet. */}
+              {strategyId && (
+                <CButton
+                  color="secondary"
+                  variant="outline"
+                  onClick={() => setHistoryOpen(true)}
+                >
+                  Ver historial
+                </CButton>
+              )}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -904,6 +943,18 @@ const StrategyEditor = () => {
           </CCardBody>
         </CCard>
       </CCol>
+      <StrategyVersionHistoryModal
+        visible={historyOpen}
+        strategyId={strategyId}
+        isAdmin={isAdmin}
+        onClose={() => setHistoryOpen(false)}
+        onRollbackDone={(promoted) => {
+          // Server rolled back; navigate the editor onto the newly
+          // published version so the workspace reflects the cascade.
+          setHistoryOpen(false)
+          if (promoted?.id) navigate(`/strategies/editor/${promoted.id}`)
+        }}
+      />
     </CRow>
   )
 }

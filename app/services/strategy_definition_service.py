@@ -17,6 +17,7 @@ and we never accept it from the caller body — the endpoint resolves it
 from the auth context and passes it in.
 """
 
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import List, Optional
 
@@ -26,6 +27,14 @@ from app.core.exceptions import (
     DuplicatedError,
     NotFoundError,
 )
+
+# Kept in sync with ``CUSTOM_STRATEGY_PREFIX`` in
+# ``app/services/strategy_service.py``. We inline the literal here
+# instead of importing it because ``StrategyService`` already imports
+# this module — pulling the constant back the other way would create a
+# circular module dependency (same reason ``_validate_payload`` doesn't
+# resolve parent strategies; see comment below).
+_CUSTOM_STRATEGY_PREFIX = "custom:"
 from app.engine.dsl_validator import validate_ast
 from app.model.strategy_definition import (
     StrategyDefinition,
@@ -44,6 +53,16 @@ from app.schema.strategy_definition_schema import (
 from app.services.base_service import BaseService
 
 
+@dataclass(frozen=True)
+class RollbackResult:
+    """Outcome of a rollback operation, returned by the service so the
+    endpoint can include cascade counts in the audit log without re-hitting
+    the DB."""
+    strategy: StrategyDefinitionRead
+    games_reassigned: int
+    tasks_reassigned: int
+
+
 class StrategyDefinitionService(BaseService):
     """
     CRUD + lifecycle operations for custom strategies.
@@ -52,8 +71,20 @@ class StrategyDefinitionService(BaseService):
     def __init__(
         self,
         strategy_definition_repository: StrategyDefinitionRepository,
+        game_repository=None,
+        task_repository=None,
     ) -> None:
+        """
+        ``game_repository`` and ``task_repository`` are optional so legacy
+        call sites that only need CRUD/lifecycle (most tests, the
+        simulation service) keep working without a wider DI graph. The
+        Sprint 9 rollback flow requires both — when missing,
+        :meth:`rollback` raises a precise error rather than silently
+        leaving cascade UPDATEs undone.
+        """
         self.strategy_definition_repository = strategy_definition_repository
+        self.game_repository = game_repository
+        self.task_repository = task_repository
         super().__init__(strategy_definition_repository)
 
     @staticmethod
@@ -363,5 +394,146 @@ class StrategyDefinitionService(BaseService):
             status=StrategyDefinitionStatus.ARCHIVED.value,
         )
         return await self.get_strategy(id=id, realmId=realmId)
+
+    async def list_versions(
+        self,
+        *,
+        id: str,
+        realmId: Optional[str],
+    ) -> List[StrategyDefinitionRead]:
+        """
+        Return every version in the family that contains ``id``, newest
+        first. The caller passes a single id (typically the current
+        published version) and we resolve the family name from it so the
+        endpoint contract stays "one id in, full history out".
+
+        Tenant-scoped: ``get_for_realm`` 404s when the row belongs to
+        another realm, so cross-tenant probing returns nothing.
+        """
+        row = await self.strategy_definition_repository.get_for_realm(
+            id=id, realmId=realmId
+        )
+        if row is None:
+            raise NotFoundError(
+                detail=f"Custom strategy not found: {id}"
+            )
+        rows = await self.strategy_definition_repository.list_versions(
+            realmId=realmId, name=row.name
+        )
+        return [self._to_read(r) for r in rows]
+
+    async def rollback(
+        self,
+        *,
+        id: str,
+        target_version: int,
+        realmId: Optional[str],
+    ) -> RollbackResult:
+        """
+        Promote ``target_version`` back to PUBLISHED in the family that
+        contains ``id``, archive whichever version is currently published,
+        and rewrite every ``Games.strategyId`` / ``Tasks.strategyId``
+        pointing at the displaced row so no consumer is left referencing
+        an ARCHIVED row.
+
+        ``id`` doesn't have to be PUBLISHED: an admin may initiate rollback
+        from any version of the family (e.g. browsing the version history
+        UI). We always treat the family's *current* PUBLISHED row as the
+        one to archive + reassign, regardless of which id was clicked.
+
+        Errors:
+          * 404 if ``id`` doesn't resolve (or is in another realm).
+          * 404 if ``target_version`` isn't a version of that family.
+          * 409 if the requested target is the row that's already PUBLISHED
+            — rolling back to the current state would be a no-op that
+            falsely advertises a status change in the audit log.
+        """
+        if self.game_repository is None or self.task_repository is None:
+            # Defensive: rollback writes to Games/Tasks. If those weren't
+            # wired we'd silently leave the cascade undone — much worse
+            # than refusing the operation up front.
+            raise BadRequestError(
+                detail=(
+                    "Rollback requires game/task repositories wired into "
+                    "StrategyDefinitionService."
+                )
+            )
+
+        current = await self.strategy_definition_repository.get_for_realm(
+            id=id, realmId=realmId
+        )
+        if current is None:
+            raise NotFoundError(
+                detail=f"Custom strategy not found: {id}"
+            )
+
+        target = await self.strategy_definition_repository.get_version(
+            realmId=realmId,
+            name=current.name,
+            version=target_version,
+        )
+        if target is None:
+            raise NotFoundError(
+                detail=(
+                    f"Version {target_version} not found for strategy "
+                    f"'{current.name}'."
+                )
+            )
+
+        displaced = await self.strategy_definition_repository.get_published(
+            realmId=realmId, name=current.name
+        )
+
+        if displaced is not None and str(displaced.id) == str(target.id):
+            # Target is already the live PUBLISHED row — rollback would be
+            # a no-op and would obscure intent in the audit trail.
+            raise ConflictError(
+                detail=(
+                    f"Version {target_version} is already the published "
+                    f"version of '{current.name}'."
+                )
+            )
+
+        # Order matters: archive the displaced row first, then promote
+        # the target, then run the cascade. If a failure interrupts the
+        # sequence the worst observable state is "0 PUBLISHED in family"
+        # for a few ms — preferable to leaving two PUBLISHED rows.
+        if displaced is not None:
+            await self.strategy_definition_repository.set_status(
+                id=str(displaced.id),
+                status=StrategyDefinitionStatus.ARCHIVED.value,
+            )
+        await self.strategy_definition_repository.set_status(
+            id=str(target.id),
+            status=StrategyDefinitionStatus.PUBLISHED.value,
+            publishedAt=datetime.now(timezone.utc),
+        )
+
+        games_reassigned = 0
+        tasks_reassigned = 0
+        if displaced is not None:
+            old_strategy_id = f"{_CUSTOM_STRATEGY_PREFIX}{displaced.id}"
+            new_strategy_id = f"{_CUSTOM_STRATEGY_PREFIX}{target.id}"
+            games_reassigned = (
+                await self.game_repository.bulk_update_strategy_id(
+                    old_strategy_id=old_strategy_id,
+                    new_strategy_id=new_strategy_id,
+                )
+            )
+            tasks_reassigned = (
+                await self.task_repository.bulk_update_strategy_id(
+                    old_strategy_id=old_strategy_id,
+                    new_strategy_id=new_strategy_id,
+                )
+            )
+
+        promoted = await self.get_strategy(
+            id=str(target.id), realmId=realmId
+        )
+        return RollbackResult(
+            strategy=promoted,
+            games_reassigned=games_reassigned,
+            tasks_reassigned=tasks_reassigned,
+        )
 
 

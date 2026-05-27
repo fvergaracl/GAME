@@ -152,6 +152,32 @@ class StrategyDefinitionRepository(BaseRepository):
             result = await session.execute(stmt)
             return result.scalars().first()
 
+    async def get_version(
+        self,
+        *,
+        realmId: Optional[str],
+        name: str,
+        version: int,
+    ) -> Optional[StrategyDefinition]:
+        """
+        Fetch a specific ``(realmId, name, version)`` row.
+
+        Used by the rollback flow (Sprint 9) to locate the target version
+        being promoted back to PUBLISHED. Returns ``None`` when the version
+        does not exist in the family; the service maps that to a 404 so we
+        don't leak cross-family info.
+        """
+        stmt = select(self.model).where(
+            and_(
+                self.model.realmId == realmId,
+                self.model.name == name,
+                self.model.version == version,
+            )
+        )
+        async with self.session_factory() as session:
+            result = await session.execute(stmt)
+            return result.scalars().first()
+
     async def set_status(
         self,
         *,
@@ -159,7 +185,7 @@ class StrategyDefinitionRepository(BaseRepository):
         status: str,
         publishedAt: Optional[datetime] = None,
     ) -> None:
-        """Bulk-set the status (and ``publishedAt`` when transitioning to PUBLISHED)."""
+        """Bulk-set the status (and ``publishedAt`` on PUBLISHED)."""
         values = {"status": status}
         if publishedAt is not None:
             values["publishedAt"] = publishedAt

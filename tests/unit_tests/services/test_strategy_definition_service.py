@@ -105,6 +105,18 @@ class FakeStrategyDefinitionRepository:
                 return r
         return None
 
+    async def get_version(
+        self, *, realmId: Optional[str], name: str, version: int
+    ) -> Optional[SimpleNamespace]:
+        for r in self._rows.values():
+            if (
+                r.realmId == realmId
+                and r.name == name
+                and r.version == version
+            ):
+                return r
+        return None
+
     async def set_status(
         self,
         *,
@@ -527,6 +539,217 @@ class TestNameExists(_Base):
                 realmId="realm-b", name="shared"
             )
         )
+
+
+class FakeAssignmentRepository:
+    """
+    Stand-in for ``GameRepository`` / ``TaskRepository`` exposing just
+    the two methods :meth:`StrategyDefinitionService.rollback` calls on
+    them. Each instance keeps a list of (strategyId,) tuples so the
+    test can assert the cascade actually rewrote them.
+    """
+
+    def __init__(self, rows: Optional[List[str]] = None):
+        # rows is a list of strategyId values (one per Games/Tasks row).
+        self.rows: List[str] = list(rows or [])
+        self.bulk_calls: List[Dict[str, str]] = []
+
+    async def list_by_strategy_id(self, strategy_id: str):
+        return [
+            SimpleNamespace(strategyId=s)
+            for s in self.rows
+            if s == strategy_id
+        ]
+
+    async def bulk_update_strategy_id(
+        self, *, old_strategy_id: str, new_strategy_id: str
+    ) -> int:
+        self.bulk_calls.append(
+            {"old": old_strategy_id, "new": new_strategy_id}
+        )
+        count = 0
+        for i, current in enumerate(self.rows):
+            if current == old_strategy_id:
+                self.rows[i] = new_strategy_id
+                count += 1
+        return count
+
+
+class TestListVersions(_Base):
+    """``list_versions`` returns every row in the family newest-first
+    and 404s when the seed id is in another realm."""
+
+    async def test_list_versions_returns_family_newest_first(self):
+        # Build v1 → publish → edit → v2 DRAFT inside realm-a.
+        created = await self.service.create(
+            payload=StrategyDefinitionCreate(
+                name="combo",
+                type=StrategyDefinitionType.DSL_FULL,
+                astJson={"type": "program", "rules": []},
+            ),
+            realmId="realm-a",
+            createdBy=None,
+            apiKey_used=None,
+            oauth_user_id=None,
+        )
+        await self.service.publish(id=created.id, realmId="realm-a")
+        # Update on PUBLISHED forks a new draft at v2.
+        await self.service.update(
+            id=created.id,
+            payload=StrategyDefinitionUpdate(description="v2"),
+            realmId="realm-a",
+            createdBy=None,
+            apiKey_used=None,
+            oauth_user_id=None,
+        )
+
+        versions = await self.service.list_versions(
+            id=created.id, realmId="realm-a"
+        )
+        self.assertEqual([v.version for v in versions], [2, 1])
+        # Status assertions catch the publish/archive bookkeeping.
+        self.assertEqual(versions[0].status, "DRAFT")
+        self.assertEqual(versions[1].status, "PUBLISHED")
+
+    async def test_list_versions_404s_on_unknown_id(self):
+        with self.assertRaises(NotFoundError):
+            await self.service.list_versions(
+                id="does-not-exist", realmId="realm-a"
+            )
+
+    async def test_list_versions_is_tenant_scoped(self):
+        created = await self.service.create(
+            payload=StrategyDefinitionCreate(
+                name="iso", type=StrategyDefinitionType.DSL_FULL
+            ),
+            realmId="realm-a",
+            createdBy=None,
+            apiKey_used=None,
+            oauth_user_id=None,
+        )
+        # realm-b probing realm-a's id must 404, not leak.
+        with self.assertRaises(NotFoundError):
+            await self.service.list_versions(
+                id=created.id, realmId="realm-b"
+            )
+
+
+class TestRollback(unittest.IsolatedAsyncioTestCase):
+    """Sprint 9 rollback flow: archive the current PUBLISHED row,
+    promote the target version, and cascade Games.strategyId /
+    Tasks.strategyId rewrites so consumers never reference an
+    ARCHIVED row."""
+
+    def setUp(self):
+        self.repo = FakeStrategyDefinitionRepository()
+        self.games = FakeAssignmentRepository()
+        self.tasks = FakeAssignmentRepository()
+        self.service = StrategyDefinitionService(
+            strategy_definition_repository=self.repo,
+            game_repository=self.games,
+            task_repository=self.tasks,
+        )
+
+    async def _build_two_versions(self):
+        """Create v1 → publish → edit → v2 → publish; return both ids."""
+        v1 = await self.service.create(
+            payload=StrategyDefinitionCreate(
+                name="happy",
+                type=StrategyDefinitionType.DSL_FULL,
+                astJson={"type": "program", "rules": []},
+            ),
+            realmId="realm-a",
+            createdBy=None,
+            apiKey_used=None,
+            oauth_user_id=None,
+        )
+        await self.service.publish(id=v1.id, realmId="realm-a")
+        v2_draft = await self.service.update(
+            id=v1.id,
+            payload=StrategyDefinitionUpdate(description="v2 desc"),
+            realmId="realm-a",
+            createdBy=None,
+            apiKey_used=None,
+            oauth_user_id=None,
+        )
+        v2 = await self.service.publish(
+            id=v2_draft.id, realmId="realm-a"
+        )
+        return v1, v2
+
+    async def test_happy_path_promotes_v1_and_archives_v2(self):
+        v1, v2 = await self._build_two_versions()
+        # Games/Tasks point at v2 (the currently published row).
+        self.games.rows = [f"custom:{v2.id}", f"custom:{v2.id}"]
+        self.tasks.rows = [f"custom:{v2.id}"]
+
+        result = await self.service.rollback(
+            id=v2.id, target_version=1, realmId="realm-a"
+        )
+
+        self.assertEqual(result.strategy.id, v1.id)
+        self.assertEqual(result.strategy.status, "PUBLISHED")
+        self.assertEqual(result.games_reassigned, 2)
+        self.assertEqual(result.tasks_reassigned, 1)
+        # v2 must be archived now.
+        v2_after = await self.repo.get_for_realm(
+            id=v2.id, realmId="realm-a"
+        )
+        self.assertEqual(v2_after.status, "ARCHIVED")
+        # All games/tasks now point at v1.
+        self.assertEqual(
+            self.games.rows,
+            [f"custom:{v1.id}", f"custom:{v1.id}"],
+        )
+        self.assertEqual(self.tasks.rows, [f"custom:{v1.id}"])
+
+    async def test_refuses_rolling_back_to_published_version(self):
+        _, v2 = await self._build_two_versions()
+        with self.assertRaises(ConflictError):
+            await self.service.rollback(
+                id=v2.id,
+                target_version=v2.version,
+                realmId="realm-a",
+            )
+
+    async def test_404_on_unknown_target_version(self):
+        _, v2 = await self._build_two_versions()
+        with self.assertRaises(NotFoundError):
+            await self.service.rollback(
+                id=v2.id, target_version=99, realmId="realm-a"
+            )
+
+    async def test_404_on_cross_realm_seed_id(self):
+        _, v2 = await self._build_two_versions()
+        with self.assertRaises(NotFoundError):
+            await self.service.rollback(
+                id=v2.id, target_version=1, realmId="realm-b"
+            )
+
+    async def test_rollback_can_be_initiated_from_a_draft_seed(self):
+        """An admin browsing history may click on v1 (ARCHIVED) to
+        rollback to it — current published is still v2 and must get
+        archived + reassigned."""
+        v1, v2 = await self._build_two_versions()
+        # After publish(v2), v1 was archived. Click on v1 to rollback.
+        self.games.rows = [f"custom:{v2.id}"]
+        result = await self.service.rollback(
+            id=v1.id, target_version=1, realmId="realm-a"
+        )
+        self.assertEqual(result.strategy.id, v1.id)
+        self.assertEqual(self.games.rows, [f"custom:{v1.id}"])
+
+    async def test_rollback_requires_assignment_repositories(self):
+        """Without game/task repos wired the cascade would silently
+        skip — refuse the operation up front."""
+        bare_service = StrategyDefinitionService(
+            strategy_definition_repository=self.repo,
+        )
+        _, v2 = await self._build_two_versions()
+        with self.assertRaises(BadRequestError):
+            await bare_service.rollback(
+                id=v2.id, target_version=1, realmId="realm-a"
+            )
 
 
 if __name__ == "__main__":

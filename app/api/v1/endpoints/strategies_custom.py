@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Path, Query, status
 
 from app.core.config import configs
 from app.core.container import Container
@@ -408,6 +408,87 @@ async def archive_custom_strategy(
         await audit.error(
             "Archive custom strategy failed",
             {"id": id, "error": str(e)},
+        )
+        raise
+
+
+@router.get(
+    "/{id}/versions",
+    response_model=List[StrategyDefinitionRead],
+    summary="List the version history of a strategy family (Sprint 9)",
+)
+@inject
+async def list_strategy_versions(
+    id: str,
+    auth: AuthContext = Depends(require_authenticated),
+    service: StrategyDefinitionService = Depends(
+        Provide[Container.strategy_definition_service]
+    ),
+) -> List[StrategyDefinitionRead]:
+    """
+    Return every persisted version (DRAFT/PUBLISHED/ARCHIVED) of the
+    family that contains ``id``, newest version first.
+
+    Tenant-scoped: only versions in the caller's realm are returned;
+    cross-realm probing 404s on the seed id rather than leaking that
+    other tenants own a same-named strategy.
+    """
+    realm = _resolve_realm_id(auth)
+    return await service.list_versions(id=id, realmId=realm)
+
+
+@router.post(
+    "/{id}/rollback/{version}",
+    response_model=StrategyDefinitionRead,
+    summary="Roll back to a previous version (admin-only, Sprint 9)",
+)
+@inject
+async def rollback_strategy(
+    id: str,
+    version: int = Path(..., ge=1),
+    auth: AuthContext = Depends(require_admin),
+    service: StrategyDefinitionService = Depends(
+        Provide[Container.strategy_definition_service]
+    ),
+    audit: AuditLogger = Depends(audit_log("strategies_custom")),
+) -> StrategyDefinitionRead:
+    """
+    Promote ``version`` back to PUBLISHED in the family that contains
+    ``id`` and cascade the reassignment to every Games/Tasks row that
+    pointed at the previously-published UUID.
+
+    Audit log captures the cascade counts so an operator can verify
+    after-the-fact how many consumers were redirected — the response
+    body contains only the newly-published strategy.
+    """
+    realm = _resolve_realm_id(auth)
+    await audit.info(
+        "Rollback custom strategy",
+        {"id": id, "target_version": version},
+    )
+    try:
+        result = await service.rollback(
+            id=id, target_version=version, realmId=realm
+        )
+        await audit.success(
+            "Rollback custom strategy successful",
+            {
+                "id": id,
+                "target_version": version,
+                "promoted_id": result.strategy.id,
+                "games_reassigned": result.games_reassigned,
+                "tasks_reassigned": result.tasks_reassigned,
+            },
+        )
+        return result.strategy
+    except Exception as e:
+        await audit.error(
+            "Rollback custom strategy failed",
+            {
+                "id": id,
+                "target_version": version,
+                "error": str(e),
+            },
         )
         raise
 

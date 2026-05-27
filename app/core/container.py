@@ -264,6 +264,13 @@ class Container(containers.DeclarativeContainer):
     strategy_definition_service = providers.Factory(
         StrategyDefinitionService,
         strategy_definition_repository=strategy_definition_repository,
+        # Sprint 9: rollback rewrites Games.strategyId/Tasks.strategyId
+        # so the cascade reaches every consumer pointing at the
+        # to-be-archived UUID. These are optional in the service to keep
+        # legacy tests/light call sites working; production wiring always
+        # supplies them.
+        game_repository=game_repository,
+        task_repository=task_repository,
     )
 
     # Declared before strategy_service so the latter can inject it for
@@ -296,6 +303,10 @@ class Container(containers.DeclarativeContainer):
         task_repository=task_repository,
         user_points_repository=user_points_repository,
         strategy_service=strategy_service,
+        # Sprint 9: accept ``custom:<uuid>`` strategyIds on patch_game and
+        # validate them against the DB-backed registry instead of refusing
+        # everything that isn't a built-in id.
+        strategy_definition_service=strategy_definition_service,
     )
 
     task_service = providers.Factory(
@@ -307,6 +318,7 @@ class Container(containers.DeclarativeContainer):
         user_points_repository=user_points_repository,
         game_params_repository=game_params_repository,
         task_params_repository=task_params_repository,
+        strategy_definition_service=strategy_definition_service,
     )
 
     user_actions_service = providers.Factory(

@@ -1,6 +1,13 @@
-from typing import Any
+from typing import Any, Optional
+from uuid import UUID
 
-from app.core.exceptions import ConflictError, NotFoundError
+from app.core.exceptions import (
+    BadRequestError,
+    ConflictError,
+    NotFoundError,
+)
+from app.engine.all_engine_strategies import all_engine_strategies
+from app.model.strategy_definition import StrategyDefinitionStatus
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
 from app.repository.task_params_repository import TaskParamsRepository
@@ -8,11 +15,16 @@ from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
 from app.schema.task_schema import (CreateTask, CreateTaskPostSuccesfullyCreated,
-                                    FindTask)
+                                    FindTask, PatchTask, ResponsePatchTask)
 from app.schema.tasks_params_schema import InsertTaskParams
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
-from app.services.strategy_service import StrategyService
+from app.services.strategy_definition_service import \
+    StrategyDefinitionService
+from app.services.strategy_service import (StrategyService,
+                                           is_custom_strategy_id,
+                                           parse_custom_strategy_id,
+                                           resolve_realm_id)
 
 
 class TaskService(BaseService):
@@ -41,22 +53,18 @@ class TaskService(BaseService):
         user_points_repository: UserPointsRepository,
         game_params_repository: GameParamsRepository,
         task_params_repository: TaskParamsRepository,
+        strategy_definition_service: Optional[
+            StrategyDefinitionService
+        ] = None,
     ) -> None:
         """
         Initializes the TaskService with the provided repositories and
           services.
 
-        Args:
-            strategy_service (StrategyService): The strategy service instance.
-            task_repository (TaskRepository): The task repository instance.
-            game_repository (GameRepository): The game repository instance.
-            user_repository (UserRepository): The user repository instance.
-            user_points_repository (UserPointsRepository): The user points
-              repository instance.
-            game_params_repository (GameParamsRepository): The game parameters
-              repository instance.
-            task_params_repository (TaskParamsRepository): The task parameters
-              repository instance.
+        ``strategy_definition_service`` is optional so existing call sites
+        and tests that don't exercise ``custom:`` strategyIds keep
+        working. Required for :meth:`patch_task_by_id` to validate
+        ``custom:`` ids against the persistent registry.
         """
         self.strategy_service = strategy_service
         self.task_repository = task_repository
@@ -65,7 +73,153 @@ class TaskService(BaseService):
         self.user_points_repository = user_points_repository
         self.game_params_repository = game_params_repository
         self.task_params_repository = task_params_repository
+        self.strategy_definition_service = strategy_definition_service
         super().__init__(task_repository)
+
+    async def _validate_strategy_assignment(
+        self,
+        strategy_id: str,
+        *,
+        api_key: Optional[str] = None,
+        oauth_user_id: Optional[str] = None,
+    ) -> None:
+        """
+        Mirror of ``GameService._validate_strategy_assignment``. Kept here
+        as a sibling rather than a shared helper to avoid a third
+        cross-service import path; the body is small enough that
+        duplication is cheaper than the extra abstraction.
+        """
+        if not is_custom_strategy_id(strategy_id):
+            strategies = all_engine_strategies()
+            strategy = next(
+                (s for s in strategies if s.id == strategy_id), None
+            )
+            if not strategy:
+                raise NotFoundError(
+                    detail=f"Strategy with id: {strategy_id} not found"
+                )
+            return
+        if self.strategy_definition_service is None:
+            raise BadRequestError(
+                detail=(
+                    "Custom strategy assignment is unavailable: "
+                    "StrategyDefinitionService not wired."
+                )
+            )
+        realmId = resolve_realm_id(
+            api_key=api_key, oauth_user_id=oauth_user_id
+        )
+        uuid_part = parse_custom_strategy_id(strategy_id)
+        definition = await self.strategy_definition_service.get_strategy(
+            id=uuid_part, realmId=realmId
+        )
+        if definition.status != StrategyDefinitionStatus.PUBLISHED.value:
+            raise BadRequestError(
+                detail=(
+                    f"Only PUBLISHED custom strategies can be assigned. "
+                    f"Strategy '{definition.name}' v{definition.version} "
+                    f"is {definition.status}."
+                )
+            )
+
+    async def patch_task_by_id(
+        self,
+        gameId: UUID,
+        taskId: UUID,
+        schema: PatchTask,
+        *,
+        api_key: Optional[str] = None,
+        oauth_user_id: Optional[str] = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ) -> ResponsePatchTask:
+        """
+        Partially update a task identified by ``gameId`` + ``taskId``.
+
+        Sprint 9 scope: the only mutable field is ``strategyId`` (plus
+        the existing ``status`` lifecycle) — we don't expose params
+        editing here because the rest of the task body has its own
+        endpoints and the use case driving this method is "reassign a
+        task to a different strategy" from the admin assignments view.
+
+        ``strategyId`` accepts both built-ins and ``custom:<uuid>`` —
+        validated by :meth:`_validate_strategy_assignment` with the
+        caller's tenant boundary.
+        """
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_id(
+                gameId, not_found_raise_exception=False
+            )
+        if not game:
+            raise NotFoundError(
+                detail=f"Game not found by gameId: {gameId}"
+            )
+
+        task = await self.task_repository.read_by_id(
+            taskId, not_found_raise_exception=False
+        )
+        if not task:
+            raise NotFoundError(
+                detail=f"Task not found by taskId: {taskId}"
+            )
+        if str(task.gameId) != str(gameId):
+            # Mismatched parent — 404 instead of 400 so we don't leak
+            # which other game the task actually belongs to.
+            raise NotFoundError(
+                detail=(
+                    f"Task {taskId} does not belong to game {gameId}."
+                )
+            )
+
+        # Build the update payload only with non-None fields the caller
+        # actually wants to change; an empty patch is rejected to keep
+        # the audit trail meaningful.
+        update_fields = {}
+        if schema.strategyId is not None:
+            await self._validate_strategy_assignment(
+                schema.strategyId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+            )
+            update_fields["strategyId"] = schema.strategyId
+        if schema.status is not None:
+            update_fields["status"] = schema.status
+
+        if not update_fields:
+            raise ConflictError(
+                detail="Empty patch: no fields provided."
+            )
+        if all(
+            getattr(task, k) == v for k, v in update_fields.items()
+        ):
+            raise ConflictError(
+                detail=(
+                    "It is not possible to update the task with the "
+                    "same data"
+                )
+            )
+
+        updated = await self.task_repository.patch_by_id(
+            taskId, update_fields
+        )
+        return ResponsePatchTask(
+            taskId=updated.id,
+            gameId=gameId,
+            externalTaskId=updated.externalTaskId,
+            strategyId=updated.strategyId,
+            status=updated.status,
+            message=(
+                f"Task with taskId: {taskId} updated successfully"
+            ),
+        )
 
     async def get_tasks_list_by_externalGameId(
         self, externalGameId, find_query

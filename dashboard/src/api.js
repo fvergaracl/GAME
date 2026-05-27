@@ -220,3 +220,48 @@ export const importCustomStrategy = async (bundle) => {
   // the round-trip from "Exportar JSON" lands cleanly.
   return postRequest('/strategies/custom/import', bundle)
 }
+
+// ---------------------------------------------------------------------------
+// Sprint 9 — version history, rollback, and assignment helpers
+//
+// The history endpoint feeds the StrategyVersionHistoryModal (diff view +
+// rollback CTA) and the assignment helpers back the admin "Asignación"
+// table. Rollback cascades server-side through Games.strategyId /
+// Tasks.strategyId so the UI only needs to re-fetch the assignment table
+// after the call returns.
+// ---------------------------------------------------------------------------
+
+export const listStrategyVersions = async (id) => {
+  return getRequest(`/strategies/custom/${encodeURIComponent(id)}/versions`)
+}
+
+export const rollbackStrategy = async (id, version) => {
+  return postRequest(
+    `/strategies/custom/${encodeURIComponent(id)}/rollback/${encodeURIComponent(version)}`,
+    {},
+  )
+}
+
+export const listGames = async ({ page = 1, pageSize = 100, ordering = '-id' } = {}) => {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+    ordering,
+  })
+  return getRequest(`/games?${params.toString()}`)
+}
+
+export const listGameTasks = async (gameId) => {
+  return getRequest(`/games/${encodeURIComponent(gameId)}/tasks`)
+}
+
+export const patchGameStrategy = async (gameId, strategyId) => {
+  return patchRequest(`/games/${encodeURIComponent(gameId)}`, { strategyId })
+}
+
+export const patchTaskStrategy = async (gameId, taskId, strategyId) => {
+  return patchRequest(
+    `/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(taskId)}`,
+    { strategyId },
+  )
+}

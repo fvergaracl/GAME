@@ -1,7 +1,7 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy import delete as sa_delete, or_, select
+from sqlalchemy import delete as sa_delete, or_, select, update as sa_update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
@@ -187,6 +187,45 @@ class GameRepository(BaseRepository):
                 raise DuplicatedError(detail=str(e.orig))
 
         return await self.get_game_by_id(gameId)
+
+    async def list_by_strategy_id(self, strategy_id: str):
+        """
+        Return all games whose ``strategyId`` matches the given value.
+
+        Used by the Sprint 9 rollback cascade to know which games will be
+        reassigned to the rolled-back version (the actual UPDATE goes
+        through :meth:`bulk_update_strategy_id`; this helper is exposed
+        for audit logging and tests).
+        """
+        async with self.session_factory() as session:
+            stmt = select(self.model).filter(
+                self.model.strategyId == strategy_id
+            )
+            return list(
+                (await session.execute(stmt)).scalars().all()
+            )
+
+    async def bulk_update_strategy_id(
+        self, *, old_strategy_id: str, new_strategy_id: str
+    ) -> int:
+        """
+        Rewrite every game's ``strategyId`` from ``old_strategy_id`` to
+        ``new_strategy_id`` in a single UPDATE. Returns the row count so
+        the caller can log/audit the cascade.
+
+        Used by the Sprint 9 rollback flow: when a published custom
+        strategy is rolled back, the games that pointed at the previous
+        UUID get reassigned to the target UUID in one trip so no game is
+        left referring to an ARCHIVED row.
+        """
+        async with self.session_factory() as session:
+            result = await session.execute(
+                sa_update(self.model)
+                .where(self.model.strategyId == old_strategy_id)
+                .values(strategyId=new_strategy_id)
+            )
+            await session.commit()
+            return int(result.rowcount or 0)
 
     async def delete_game_by_id(self, game_id: str):
         try:

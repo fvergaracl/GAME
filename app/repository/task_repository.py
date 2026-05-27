@@ -1,7 +1,7 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -85,3 +85,60 @@ class TaskRepository(BaseRepository):
             if not result:
                 raise NotFoundError(detail=f"Task not found by id : {taskId}")
             return result
+
+    async def patch_by_id(self, taskId, fields: dict):
+        """
+        Apply a small ``fields`` dict to the task identified by
+        ``taskId``. Returns the refreshed row. Used by the Sprint 9
+        ``PATCH /games/{gameId}/tasks/{taskId}`` flow so the assignments
+        admin view can rewrite ``strategyId`` (and ``status``) without a
+        full upsert.
+
+        Raises :class:`NotFoundError` if the task does not exist.
+        """
+        async with self.session_factory() as session:
+            stmt = select(self.model).filter(self.model.id == taskId)
+            task = (await session.execute(stmt)).scalars().first()
+            if not task:
+                raise NotFoundError(
+                    detail=f"Task not found by id : {taskId}"
+                )
+            for key, value in fields.items():
+                setattr(task, key, value)
+            await session.commit()
+            await session.refresh(task)
+            return task
+
+    async def list_by_strategy_id(self, strategy_id: str):
+        """
+        Return all tasks whose ``strategyId`` matches the given value.
+
+        Sprint 9 rollback cascade companion to
+        :meth:`GameRepository.list_by_strategy_id`.
+        """
+        async with self.session_factory() as session:
+            stmt = select(self.model).filter(
+                self.model.strategyId == strategy_id
+            )
+            return list(
+                (await session.execute(stmt)).scalars().all()
+            )
+
+    async def bulk_update_strategy_id(
+        self, *, old_strategy_id: str, new_strategy_id: str
+    ) -> int:
+        """
+        Rewrite every task's ``strategyId`` from ``old_strategy_id`` to
+        ``new_strategy_id`` in a single UPDATE. Returns the row count.
+
+        Sprint 9 rollback cascade companion to
+        :meth:`GameRepository.bulk_update_strategy_id`.
+        """
+        async with self.session_factory() as session:
+            result = await session.execute(
+                sa_update(self.model)
+                .where(self.model.strategyId == old_strategy_id)
+                .values(strategyId=new_strategy_id)
+            )
+            await session.commit()
+            return int(result.rowcount or 0)

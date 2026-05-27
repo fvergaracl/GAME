@@ -233,6 +233,77 @@ class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
     )
 
 
+class PatchTask(BaseModel):
+    """
+    Request schema for a partial task update (Sprint 9).
+
+    Attributes:
+        strategyId (Optional[str]): New strategy id to assign to the
+          task. Accepts both built-ins and ``custom:<uuid>``; the service
+          validates against the persistent registry and refuses unpublished
+          custom strategies.
+        status (Optional[str]): New task lifecycle status.
+    """
+
+    strategyId: Optional[str] = Field(
+        default=None,
+        description=(
+            "Updated strategy id (built-in or ``custom:<uuid>``)."
+        ),
+        examples=["default"],
+    )
+    status: Optional[str] = Field(
+        default=None,
+        description="Updated task status.",
+        examples=["open"],
+    )
+
+
+class ResponsePatchTask(BaseModel):
+    """
+    Response schema returned after a successful ``PATCH`` on a task.
+
+    Attributes:
+        taskId (UUID): Internal task identifier.
+        gameId (UUID): Internal game identifier.
+        externalTaskId (Optional[str]): External task identifier.
+        strategyId (Optional[str]): Effective strategy id after the update.
+        status (Optional[str]): Effective status after the update.
+        message (Optional[str]): Operation result message.
+    """
+
+    taskId: UUID = Field(
+        ...,
+        description="Internal UUID of the task.",
+        examples=["9ea6a77d-b540-4548-8f76-f23f3dce56bd"],
+    )
+    gameId: UUID = Field(
+        ...,
+        description="Internal UUID of the owning game.",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
+    )
+    externalTaskId: Optional[str] = Field(
+        default=None,
+        description="External task identifier.",
+        examples=["task-login"],
+    )
+    strategyId: Optional[str] = Field(
+        default=None,
+        description="Strategy id currently bound to the task.",
+        examples=["default"],
+    )
+    status: Optional[str] = Field(
+        default=None,
+        description="Current task status.",
+        examples=["open"],
+    )
+    message: Optional[str] = Field(
+        default="Successfully updated",
+        description="Human-readable operation result message.",
+        examples=["Successfully updated"],
+    )
+
+
 class CreateTaskPostError(BaseModel):
     """
     Error entry for a failed task creation in bulk operations.
