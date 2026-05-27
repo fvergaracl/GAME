@@ -562,3 +562,108 @@ async def test_import_logs_failure_with_audit():
 
     # INFO on attempt + ERROR on failure.
     assert mock_add_log.await_count == 2
+
+
+# ---------------------------------------------------------------- versions
+
+
+@pytest.mark.asyncio
+async def test_list_versions_passes_resolved_realm():
+    """``GET /{id}/versions`` resolves the realm from the auth context
+    and delegates straight to the service. Doesn't require admin —
+    history is a read-only audit affordance."""
+    service = MagicMock()
+    service.list_versions = AsyncMock(
+        return_value=[
+            _read_stub(id="v2", version=2, status="DRAFT"),
+            _read_stub(id="v1", version=1, status="PUBLISHED"),
+        ]
+    )
+    auth = _auth(api_key="api-key-xyz")
+
+    result = await endpoint.list_strategy_versions(
+        id="v2", auth=auth, service=service,
+    )
+
+    assert [v.version for v in result] == [2, 1]
+    service.list_versions.assert_awaited_once_with(
+        id="v2", realmId="api-key-xyz",
+    )
+
+
+# ---------------------------------------------------------------- rollback
+
+
+@pytest.mark.asyncio
+async def test_rollback_requires_admin_via_dependency():
+    """``require_admin`` rejects a non-admin caller before the endpoint
+    body runs. Calling the dependency directly mirrors what FastAPI
+    does at request time."""
+    with pytest.raises(ForbiddenError):
+        await endpoint.require_admin(auth=_auth(api_key="api-key-xyz"))
+
+
+@pytest.mark.asyncio
+async def test_rollback_logs_cascade_counts_on_success():
+    """Audit success entry must carry games_reassigned / tasks_reassigned
+    so an operator can verify the cascade after the fact."""
+    from app.services.strategy_definition_service import RollbackResult
+
+    promoted = _read_stub(id="v1", version=1, status="PUBLISHED")
+    service = MagicMock()
+    service.rollback = AsyncMock(
+        return_value=RollbackResult(
+            strategy=promoted,
+            games_reassigned=3,
+            tasks_reassigned=5,
+        )
+    )
+    auth = _auth(oauth_user_id="admin-1", is_admin=True)
+
+    with patch(
+        "app.middlewares.auth_context.add_log", new=AsyncMock()
+    ) as mock_add_log:
+        result = await endpoint.rollback_strategy(
+            id="v2",
+            version=1,
+            auth=auth,
+            service=service,
+            audit=_audit(auth),
+        )
+
+    assert result.id == "v1"
+    service.rollback.assert_awaited_once_with(
+        id="v2", target_version=1, realmId=configs.KEYCLOAK_REALM,
+    )
+    # INFO on attempt + SUCCESS on completion.
+    assert mock_add_log.await_count == 2
+    # The SUCCESS payload (second call) must contain the cascade counts.
+    success_call = mock_add_log.await_args_list[-1]
+    success_data = success_call.kwargs.get("data") or success_call.args[-1]
+    if isinstance(success_data, dict):
+        assert success_data.get("games_reassigned") == 3
+        assert success_data.get("tasks_reassigned") == 5
+
+
+@pytest.mark.asyncio
+async def test_rollback_logs_failure_with_audit():
+    """An exception inside service.rollback must still surface as an
+    audit ERROR before re-raising."""
+    service = MagicMock()
+    service.rollback = AsyncMock(side_effect=RuntimeError("kaboom"))
+    auth = _auth(oauth_user_id="admin-1", is_admin=True)
+
+    with patch(
+        "app.middlewares.auth_context.add_log", new=AsyncMock()
+    ) as mock_add_log:
+        with pytest.raises(RuntimeError, match="kaboom"):
+            await endpoint.rollback_strategy(
+                id="v2",
+                version=1,
+                auth=auth,
+                service=service,
+                audit=_audit(auth),
+            )
+
+    # INFO + ERROR.
+    assert mock_add_log.await_count == 2

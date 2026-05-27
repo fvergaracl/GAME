@@ -504,5 +504,150 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
         )
 
 
+class TestTaskServicePatch(unittest.IsolatedAsyncioTestCase):
+    """Sprint 9: ``patch_task_by_id`` is the only PATCH endpoint for an
+    individual task; it shares the strategyId validator with
+    GameService so the matrix mirrors the one in test_game_service."""
+
+    def setUp(self):
+        from app.schema.task_schema import PatchTask  # local import
+
+        self.PatchTask = PatchTask
+        self.strategy_service = MagicMock(spec=StrategyService)
+        self.task_repository = MagicMock(spec=TaskRepository)
+        self.game_repository = MagicMock(spec=GameRepository)
+        self.user_repository = MagicMock(spec=UserRepository)
+        self.user_points_repository = MagicMock(spec=UserPointsRepository)
+        self.game_params_repository = MagicMock(spec=GameParamsRepository)
+        self.task_params_repository = MagicMock(spec=TaskParamsRepository)
+        self.strategy_definition_service = MagicMock()
+        self.strategy_definition_service.get_strategy = AsyncMock()
+
+        self.service = TaskService(
+            strategy_service=self.strategy_service,
+            task_repository=self.task_repository,
+            game_repository=self.game_repository,
+            user_repository=self.user_repository,
+            user_points_repository=self.user_points_repository,
+            game_params_repository=self.game_params_repository,
+            task_params_repository=self.task_params_repository,
+            strategy_definition_service=self.strategy_definition_service,
+        )
+
+    def _make_task(self, task_id, game_id, strategy_id="default"):
+        return SimpleNamespace(
+            id=task_id,
+            gameId=game_id,
+            externalTaskId="task-1",
+            strategyId=strategy_id,
+            status="open",
+        )
+
+    async def test_patch_assigns_published_custom_strategy(self):
+        game_id = uuid4()
+        task_id = uuid4()
+        task = self._make_task(task_id, game_id, strategy_id="default")
+        self.game_repository.read_by_id.return_value = SimpleNamespace(
+            id=game_id
+        )
+        self.task_repository.read_by_id.return_value = task
+        updated = SimpleNamespace(
+            id=task_id,
+            externalTaskId="task-1",
+            strategyId="custom:abc",
+            status="open",
+        )
+        self.task_repository.patch_by_id = AsyncMock(return_value=updated)
+        self.strategy_definition_service.get_strategy.return_value = (
+            SimpleNamespace(
+                id="abc", name="x", version=1, status="PUBLISHED"
+            )
+        )
+
+        result = await self.service.patch_task_by_id(
+            game_id,
+            task_id,
+            self.PatchTask(strategyId="custom:abc"),
+            api_key="api-key-xyz",
+        )
+
+        self.assertEqual(result.strategyId, "custom:abc")
+        self.task_repository.patch_by_id.assert_awaited_once()
+
+    async def test_patch_rejects_unpublished_custom_strategy(self):
+        from app.core.exceptions import BadRequestError
+
+        game_id = uuid4()
+        task_id = uuid4()
+        task = self._make_task(task_id, game_id)
+        self.game_repository.read_by_id.return_value = SimpleNamespace(
+            id=game_id
+        )
+        self.task_repository.read_by_id.return_value = task
+        self.strategy_definition_service.get_strategy.return_value = (
+            SimpleNamespace(
+                id="abc", name="x", version=2, status="DRAFT"
+            )
+        )
+
+        with self.assertRaises(BadRequestError):
+            await self.service.patch_task_by_id(
+                game_id,
+                task_id,
+                self.PatchTask(strategyId="custom:abc"),
+                api_key="api-key-xyz",
+            )
+
+    async def test_patch_rejects_cross_game_task(self):
+        """A task that exists but belongs to a different game must 404
+        instead of silently mutating across owners."""
+        game_id = uuid4()
+        other_game_id = uuid4()
+        task_id = uuid4()
+        task = self._make_task(task_id, other_game_id)
+        self.game_repository.read_by_id.return_value = SimpleNamespace(
+            id=game_id
+        )
+        self.task_repository.read_by_id.return_value = task
+
+        with self.assertRaises(NotFoundError):
+            await self.service.patch_task_by_id(
+                game_id,
+                task_id,
+                self.PatchTask(status="closed"),
+            )
+
+    async def test_patch_rejects_empty_body(self):
+        game_id = uuid4()
+        task_id = uuid4()
+        task = self._make_task(task_id, game_id)
+        self.game_repository.read_by_id.return_value = SimpleNamespace(
+            id=game_id
+        )
+        self.task_repository.read_by_id.return_value = task
+
+        with self.assertRaises(ConflictError):
+            await self.service.patch_task_by_id(
+                game_id,
+                task_id,
+                self.PatchTask(),
+            )
+
+    async def test_patch_404_when_task_missing(self):
+        game_id = uuid4()
+        task_id = uuid4()
+        self.game_repository.read_by_id.return_value = SimpleNamespace(
+            id=game_id
+        )
+        self.task_repository.read_by_id.return_value = None
+
+        with self.assertRaises(NotFoundError):
+            await self.service.patch_task_by_id(
+                game_id,
+                task_id,
+                self.PatchTask(status="closed"),
+            )
+
+
 if __name__ == "__main__":
     unittest.main()

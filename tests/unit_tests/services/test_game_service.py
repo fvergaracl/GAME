@@ -561,5 +561,167 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.oauth_user_id, "oauth-1")
 
 
+class TestGameServiceCustomStrategyAssignment(unittest.IsolatedAsyncioTestCase):
+    """Sprint 9: ``patch_game_by_id`` must accept ``custom:<uuid>``
+    strategy ids and validate them against the persistent registry.
+    Unpublished customs (DRAFT/ARCHIVED) are rejected with
+    BadRequestError; unknown customs raise NotFoundError via
+    ``get_strategy``."""
+
+    def setUp(self):
+        self.game_repository = MagicMock(spec=GameRepository)
+        self.game_params_repository = MagicMock(spec=GameParamsRepository)
+        self.task_repository = MagicMock(spec=TaskRepository)
+        self.user_points_repository = MagicMock(spec=UserPointsRepository)
+        self.strategy_service = MagicMock(spec=StrategyService)
+        self.strategy_definition_service = MagicMock()
+        self.strategy_definition_service.get_strategy = AsyncMock()
+
+        self.service = GameService(
+            game_repository=self.game_repository,
+            game_params_repository=self.game_params_repository,
+            task_repository=self.task_repository,
+            user_points_repository=self.user_points_repository,
+            strategy_service=self.strategy_service,
+            strategy_definition_service=self.strategy_definition_service,
+        )
+
+    def _build_game(self, game_id, strategy_id="default"):
+        game = SimpleNamespace(
+            id=game_id,
+            externalGameId="external-game-1",
+            strategyId=strategy_id,
+            platform="web",
+            created_at=datetime(2026, 1, 1, 0, 0, 0),
+            updated_at=datetime(2026, 1, 2, 0, 0, 0),
+        )
+        payload = {
+            "id": game_id,
+            "externalGameId": "external-game-1",
+            "strategyId": strategy_id,
+            "platform": "web",
+            "params": [],
+        }
+        game.model_dump = lambda: payload
+        return game
+
+    async def test_custom_published_strategy_is_accepted(self):
+        game_id = uuid4()
+        game = self._build_game(game_id, strategy_id="default")
+        schema = PatchGame(
+            externalGameId="new-slug",
+            strategyId="custom:abc-123",
+            platform="web",
+            params=None,
+        )
+        self.game_repository.read_by_id.return_value = game
+        self.game_repository.read_by_column.return_value = None
+        patched = self._build_game(game_id, strategy_id="custom:abc-123")
+        patched.model_dump = lambda: {
+            "id": game_id,
+            "externalGameId": "new-slug",
+            "strategyId": "custom:abc-123",
+            "platform": "web",
+            "params": [],
+        }
+        self.game_repository.patch_game_by_id.return_value = patched
+        self.strategy_definition_service.get_strategy.return_value = (
+            SimpleNamespace(
+                id="abc-123",
+                name="foo",
+                version=1,
+                status="PUBLISHED",
+            )
+        )
+
+        result = await self.service.patch_game_by_id(
+            game_id, schema, api_key="api-key-xyz",
+        )
+
+        self.assertEqual(result.strategyId, "custom:abc-123")
+        self.strategy_definition_service.get_strategy.assert_awaited_once_with(
+            id="abc-123", realmId="api-key-xyz",
+        )
+
+    async def test_custom_draft_strategy_is_rejected(self):
+        from app.core.exceptions import BadRequestError
+
+        game_id = uuid4()
+        game = self._build_game(game_id)
+        schema = PatchGame(
+            externalGameId="new-slug",
+            strategyId="custom:draft-id",
+            platform="web",
+            params=None,
+        )
+        self.game_repository.read_by_id.return_value = game
+        self.game_repository.read_by_column.return_value = None
+        self.strategy_definition_service.get_strategy.return_value = (
+            SimpleNamespace(
+                id="draft-id",
+                name="not-yet",
+                version=1,
+                status="DRAFT",
+            )
+        )
+
+        with self.assertRaises(BadRequestError):
+            await self.service.patch_game_by_id(
+                game_id, schema, api_key="api-key-xyz",
+            )
+        # The repository must NOT be called when the validator rejects.
+        self.game_repository.patch_game_by_id.assert_not_called()
+
+    async def test_custom_unknown_strategy_raises_not_found(self):
+        game_id = uuid4()
+        game = self._build_game(game_id)
+        schema = PatchGame(
+            externalGameId="new-slug",
+            strategyId="custom:ghost",
+            platform="web",
+            params=None,
+        )
+        self.game_repository.read_by_id.return_value = game
+        self.game_repository.read_by_column.return_value = None
+        self.strategy_definition_service.get_strategy.side_effect = (
+            NotFoundError(detail="Custom strategy not found: ghost")
+        )
+
+        with self.assertRaises(NotFoundError):
+            await self.service.patch_game_by_id(
+                game_id, schema, api_key="api-key-xyz",
+            )
+
+    async def test_custom_without_strategy_definition_service_is_rejected(self):
+        """If the service was instantiated without the persistent
+        registry (legacy callers / older tests), trying to assign a
+        ``custom:`` id surfaces a clear error rather than silently
+        dropping into a 500."""
+        from app.core.exceptions import BadRequestError
+
+        bare_service = GameService(
+            game_repository=self.game_repository,
+            game_params_repository=self.game_params_repository,
+            task_repository=self.task_repository,
+            user_points_repository=self.user_points_repository,
+            strategy_service=self.strategy_service,
+        )
+        game_id = uuid4()
+        game = self._build_game(game_id)
+        schema = PatchGame(
+            externalGameId="new-slug",
+            strategyId="custom:abc",
+            platform="web",
+            params=None,
+        )
+        self.game_repository.read_by_id.return_value = game
+        self.game_repository.read_by_column.return_value = None
+
+        with self.assertRaises(BadRequestError):
+            await bare_service.patch_game_by_id(
+                game_id, schema, api_key="api-key-xyz",
+            )
+
+
 if __name__ == "__main__":
     unittest.main()

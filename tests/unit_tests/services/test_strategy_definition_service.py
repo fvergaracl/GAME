@@ -752,5 +752,115 @@ class TestRollback(unittest.IsolatedAsyncioTestCase):
             )
 
 
+class TestSprint9LifecycleEndToEnd(unittest.IsolatedAsyncioTestCase):
+    """End-to-end lifecycle test mirroring the Sprint 9 done-criteria
+    from the roadmap (see plan ``Post-S9`` verification section):
+
+      1. Create + publish v1.
+      2. Assign a Game and a Task to ``custom:<v1.id>``.
+      3. Edit → forks v2 DRAFT. v1 still PUBLISHED → Games/Tasks still
+         execute v1.
+      4. Publish v2 → v1 ARCHIVED. Game/Task strategyIds still point at
+         v1 (assignments don't cascade on publish).
+      5. Reassign Game/Task to ``custom:<v2.id>``.
+      6. Rollback to v1 → v2 ARCHIVED, v1 re-PUBLISHED, Game/Task
+         strategyIds rewritten back to ``custom:<v1.id>``.
+
+    Driven through the service against the same in-memory fakes used by
+    the focused tests above so it stays a unit test rather than a real
+    DB integration test (which would require migrations + Postgres
+    and isn't worth the cost for the lifecycle assertion). The plan
+    explicitly calls this scenario out as the sprint's acceptance
+    criterion."""
+
+    def setUp(self):
+        self.repo = FakeStrategyDefinitionRepository()
+        self.games = FakeAssignmentRepository()
+        self.tasks = FakeAssignmentRepository()
+        self.service = StrategyDefinitionService(
+            strategy_definition_repository=self.repo,
+            game_repository=self.games,
+            task_repository=self.tasks,
+        )
+
+    async def test_full_lifecycle_matches_roadmap_done_criteria(self):
+        # Step 1: create + publish v1.
+        v1 = await self.service.create(
+            payload=StrategyDefinitionCreate(
+                name="endgame",
+                type=StrategyDefinitionType.DSL_FULL,
+                astJson={"type": "program", "rules": []},
+            ),
+            realmId="realm-a",
+            createdBy="admin",
+            apiKey_used=None,
+            oauth_user_id=None,
+        )
+        v1 = await self.service.publish(id=v1.id, realmId="realm-a")
+        self.assertEqual(v1.status, "PUBLISHED")
+
+        # Step 2: assign a Game + a Task to v1.
+        self.games.rows = [f"custom:{v1.id}"]
+        self.tasks.rows = [f"custom:{v1.id}"]
+
+        # Step 3: edit → fork v2 DRAFT.
+        v2_draft = await self.service.update(
+            id=v1.id,
+            payload=StrategyDefinitionUpdate(
+                description="new behaviour",
+                astJson={"type": "program", "rules": []},
+            ),
+            realmId="realm-a",
+            createdBy="admin",
+            apiKey_used=None,
+            oauth_user_id=None,
+        )
+        self.assertEqual(v2_draft.version, 2)
+        self.assertEqual(v2_draft.status, "DRAFT")
+        # v1 is still PUBLISHED and the Game/Task still execute it.
+        v1_after_edit = await self.repo.get_for_realm(
+            id=v1.id, realmId="realm-a",
+        )
+        self.assertEqual(v1_after_edit.status, "PUBLISHED")
+        self.assertEqual(self.games.rows, [f"custom:{v1.id}"])
+
+        # Step 4: publish v2 → v1 ARCHIVED. Assignments NOT cascaded on
+        # publish (only rollback cascades) so the Game/Task still point
+        # at the now-archived v1.
+        v2 = await self.service.publish(
+            id=v2_draft.id, realmId="realm-a"
+        )
+        self.assertEqual(v2.status, "PUBLISHED")
+        v1_after_publish = await self.repo.get_for_realm(
+            id=v1.id, realmId="realm-a",
+        )
+        self.assertEqual(v1_after_publish.status, "ARCHIVED")
+        self.assertEqual(self.games.rows, [f"custom:{v1.id}"])
+        self.assertEqual(self.tasks.rows, [f"custom:{v1.id}"])
+
+        # Step 5: manual reassignment of Game/Task to v2 (the
+        # assignments admin view's PATCH path).
+        self.games.rows = [f"custom:{v2.id}"]
+        self.tasks.rows = [f"custom:{v2.id}"]
+
+        # Step 6: rollback to v1 → v2 ARCHIVED, v1 re-PUBLISHED, all
+        # assignments rewritten back to v1.
+        result = await self.service.rollback(
+            id=v2.id, target_version=1, realmId="realm-a",
+        )
+        self.assertEqual(result.strategy.id, v1.id)
+        self.assertEqual(result.strategy.status, "PUBLISHED")
+        self.assertEqual(result.games_reassigned, 1)
+        self.assertEqual(result.tasks_reassigned, 1)
+        v2_after = await self.repo.get_for_realm(
+            id=v2.id, realmId="realm-a",
+        )
+        self.assertEqual(v2_after.status, "ARCHIVED")
+        # The roadmap's done-criteria: Game.strategyId ends up pointing
+        # at v1 after rollback. Same for Task.
+        self.assertEqual(self.games.rows, [f"custom:{v1.id}"])
+        self.assertEqual(self.tasks.rows, [f"custom:{v1.id}"])
+
+
 if __name__ == "__main__":
     unittest.main()
