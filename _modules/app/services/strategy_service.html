@@ -238,8 +238,12 @@
   <h1 id="modules-app-services-strategy-service--page-root">Source code for app.services.strategy_service</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">configs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InternalServerError</span><span class="p">,</span> <span class="n">NotFoundError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.all_engine_strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_engine_strategies</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.base_strategy</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseStrategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.dsl_interpreter</span><span class="w"> </span><span class="kn">import</span> <span class="n">DslInterpreter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.dsl_strategy</span><span class="w"> </span><span class="kn">import</span> <span class="n">DslStrategy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_definition_service</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">StrategyDefinitionService</span><span class="p">,</span>
@@ -269,6 +273,33 @@
 
 
 
+<div class="viewcode-block" id="resolve_realm_id">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.resolve_realm_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_realm_id</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">oauth_user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Tenant-boundary resolver shared by call sites that don't have an</span>
+<span class="sd">    ``AuthContext`` handy (e.g. ``UserPointsService``).</span>
+
+<span class="sd">    Same convention as ``_resolve_realm_id`` in</span>
+<span class="sd">    ``app/api/v1/endpoints/strategies_custom.py``:</span>
+<span class="sd">      * API key present → its value *is* the realm.</span>
+<span class="sd">      * OAuth admin     → falls back to ``configs.KEYCLOAK_REALM``.</span>
+<span class="sd">      * Neither         → ``None`` (legacy unauthenticated path; any</span>
+<span class="sd">        attempt to load a ``custom:`` strategy will then 404, which is</span>
+<span class="sd">        the desired tenant-isolation behaviour).</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">api_key</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">api_key</span>
+    <span class="k">if</span> <span class="n">oauth_user_id</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">configs</span><span class="o">.</span><span class="n">KEYCLOAK_REALM</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
 <div class="viewcode-block" id="StrategyService">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">StrategyService</span><span class="p">(</span><span class="n">BaseService</span><span class="p">):</span>
@@ -290,6 +321,9 @@
         <span class="n">strategy_definition_service</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
             <span class="n">StrategyDefinitionService</span>
         <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">dsl_interpreter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DslInterpreter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">analytics_service</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initializes the StrategyService.</span>
@@ -299,9 +333,19 @@
 <span class="sd">        When it's omitted, attempting to resolve a ``custom:`` id raises</span>
 <span class="sd">        ``NotFoundError`` with a clear message rather than silently</span>
 <span class="sd">        crashing.</span>
+
+<span class="sd">        ``dsl_interpreter`` and ``analytics_service`` are required to</span>
+<span class="sd">        instantiate ``DslStrategy`` for ``custom:`` ids (Sprint 5 wiring).</span>
+<span class="sd">        They are optional kwargs to preserve the legacy</span>
+<span class="sd">        ``StrategyService()`` no-arg call style still in use by tests and</span>
+<span class="sd">        by ``UserPointsService.__init__`` until the container injection</span>
+<span class="sd">        lands; when missing, ``get_strategy_instance`` raises a precise</span>
+<span class="sd">        ``InternalServerError`` instead of crashing with ``AttributeError``.</span>
 <span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_strategy_definition_service</span> <span class="o">=</span> <span class="n">strategy_definition_service</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dsl_interpreter</span> <span class="o">=</span> <span class="n">dsl_interpreter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_analytics_service</span> <span class="o">=</span> <span class="n">analytics_service</span>
 
 <div class="viewcode-block" id="StrategyService.list_all_strategies">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.list_all_strategies">[docs]</a>
@@ -409,6 +453,60 @@
             <span class="s2">"id"</span><span class="p">:</span> <span class="n">strategy_id</span><span class="p">,</span>
             <span class="s2">"instance"</span><span class="p">:</span> <span class="n">instance</span><span class="p">,</span>
         <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="StrategyService.get_strategy_instance">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.get_strategy_instance">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_strategy_instance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">strategy_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">realmId</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseStrategy</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Single async entrypoint that returns something with</span>
+<span class="sd">        ``calculate_points(...)`` — either a built-in registry singleton</span>
+<span class="sd">        or a freshly-constructed ``DslStrategy`` wrapping a DB-persisted</span>
+<span class="sd">        AST.</span>
+
+<span class="sd">        For non-``custom:`` ids this delegates to the sync</span>
+<span class="sd">        ``get_Class_by_id`` so existing test patches on that method keep</span>
+<span class="sd">        intercepting. For ``custom:&lt;uuid&gt;`` it fetches the definition</span>
+<span class="sd">        scoped by ``realmId`` (multi-tenant isolation is enforced at the</span>
+<span class="sd">        repository layer in ``StrategyDefinitionService.get_strategy``)</span>
+<span class="sd">        and wires the same shared ``DslInterpreter`` + analytics service</span>
+<span class="sd">        injected at construction.</span>
+
+<span class="sd">        Raises ``InternalServerError`` if the DSL collaborators were not</span>
+<span class="sd">        wired — a clearer signal than ``AttributeError`` for ops.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_custom_strategy_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_Class_by_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy_definition_service</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">"Custom strategy resolution is unavailable: "</span>
+                    <span class="s2">"StrategyDefinitionService not wired."</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dsl_interpreter</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_analytics_service</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InternalServerError</span><span class="p">(</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">"DslStrategy dependencies (interpreter / analytics) "</span>
+                    <span class="s2">"are not wired into StrategyService."</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">uuid_part</span> <span class="o">=</span> <span class="n">parse_custom_strategy_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">)</span>
+        <span class="n">definition</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy_definition_service</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">uuid_part</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">DslStrategy</span><span class="p">(</span>
+            <span class="n">definition</span><span class="o">=</span><span class="n">definition</span><span class="p">,</span>
+            <span class="n">interpreter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dsl_interpreter</span><span class="p">,</span>
+            <span class="n">analytics_service</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_analytics_service</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </div>
 
 </pre></div>
