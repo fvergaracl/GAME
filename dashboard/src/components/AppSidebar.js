@@ -35,6 +35,15 @@ const AppSidebar = () => {
       } else {
         dispatch({ type: 'set', sidebarNav: _nav })
       }
+    } else if (import.meta.env.DEV) {
+      // Dev-only workaround (Sprint 7): Keycloak.init() isn't wired up
+      // yet so ``authenticated`` is always false and the admin nav
+      // (Strategy Editor, Exports, API keys) would be invisible during
+      // local development. Force the admin sidebar in dev mode so the
+      // designer can iterate; the REAL gate at the backend stays
+      // intact (publish/archive endpoints still 403 without a Bearer
+      // token). REMOVE this branch once Keycloak init lands in S10.
+      dispatch({ type: 'set', sidebarNav: _nav_administrator })
     }
   }, [])
 
