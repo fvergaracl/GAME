@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Annotated, Any, Optional
 
 import httpx
@@ -9,6 +10,8 @@ from jwt import PyJWKClient, exceptions
 
 from app.core.config import configs
 from app.util.response import Response
+
+logger = logging.getLogger(__name__)
 
 
 OIDC_SCOPES = {
@@ -115,35 +118,35 @@ async def valid_access_token(
         return _build_token_response(data)
 
     except exceptions.InvalidSignatureError as e:
-        print(f"Error: InvalidSignatureError - {e}")
+        logger.warning("JWT rejected: invalid signature: %s", e)
         return Response.fail(
             error=HTTPException(
                 status_code=401, detail="Invalid token signature")
         )
 
     except exceptions.ExpiredSignatureError as e:
-        print(f"Error: ExpiredSignatureError - {e}")
+        logger.warning("JWT rejected: expired: %s", e)
         return Response.fail(
             error=HTTPException(status_code=401, detail="Token has expired")
         )
     except exceptions.InvalidAudienceError as e:
-        print(f"Error: InvalidAudienceError - {e}")
+        logger.warning("JWT rejected: invalid audience: %s", e)
         return Response.fail(
             error=HTTPException(status_code=403, detail="Invalid audience")
         )
     except exceptions.InvalidTokenError as e:
-        print(f"Error: InvalidTokenError - {e}")
+        logger.warning("JWT rejected: invalid token: %s", e)
         return Response.fail(
             error=HTTPException(status_code=401, detail="Invalid token")
         )
-    except exceptions.PyJWKClientError as e:
-        print(f"Error: PyJWKClientError - {e}")
+    except exceptions.PyJWKClientError:
+        logger.exception("JWKS client failure fetching signing key")
         return Response.fail(
             error=HTTPException(
                 status_code=500, detail="Internal server error")
         )
     except jwt.PyJWTError as e:
-        print(f"Error: PyJWTError - {e}")
+        logger.warning("JWT rejected: %s", e)
         return Response.fail(
             error=HTTPException(
                 status_code=401, detail=f"Invalid token: {str(e)}")

@@ -1,4 +1,7 @@
+import ipaddress
+import logging
 import os
+from ipaddress import IPv4Network, IPv6Network
 from typing import List, Optional, Union
 
 from dotenv import load_dotenv
@@ -7,6 +10,15 @@ from pydantic_settings import BaseSettings, NoDecode
 from typing_extensions import Annotated
 
 load_dotenv()
+
+# Bootstrap handler so module-import-time log records have somewhere to go
+# before dictConfig in app.main runs. No-op on subsequent imports; dictConfig
+# later replaces root handlers with disable_existing_loggers=False.
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 
 def _env_to_bool(key: str, default: bool) -> bool:
@@ -34,6 +46,32 @@ def _parse_cors_origins(raw_value: str) -> List[str]:
     return [
         origin.strip() for origin in raw_value.split(",") if origin.strip()
     ]
+
+
+def _parse_trusted_proxy_ips(
+    raw_value: str,
+) -> List[Union[IPv4Network, IPv6Network]]:
+    """
+    Parse a comma-separated list of IPs and/or CIDR ranges into
+    ``ipaddress.ip_network`` objects. Bare IPs (e.g. ``10.0.0.5``) are
+    coerced to /32 (IPv4) or /128 (IPv6) networks. Whitespace-only
+    entries are dropped. Raises ``ValueError`` on any malformed entry so
+    the misconfiguration is caught at startup rather than silently
+    trusting no one in production.
+    """
+    networks: List[Union[IPv4Network, IPv6Network]] = []
+    for entry in raw_value.split(","):
+        token = entry.strip()
+        if not token:
+            continue
+        try:
+            networks.append(ipaddress.ip_network(token, strict=False))
+        except ValueError as exc:
+            raise ValueError(
+                f"TRUSTED_PROXY_IPS entry {token!r} is not a valid IP or "
+                f"CIDR range: {exc}"
+            ) from exc
+    return networks
 
 
 def _validate_cors_origins(env: str, origins: List[str]) -> None:
@@ -161,6 +199,17 @@ class Configs(BaseSettings):
     # granting authenticated cross-site access.
     BACKEND_CORS_ORIGINS: Annotated[List[str], NoDecode] = []
 
+    # Comma-separated list of IPs / CIDR ranges allowed to set forwarding
+    # headers (X-Forwarded-For, X-Real-IP). Empty (default) means NO proxy
+    # is trusted -- forwarding headers are ignored and the socket peer is
+    # used as the client IP. This is the secure default; populate with the
+    # IP of the reverse proxy / ingress when running behind Traefik /
+    # nginx / ALB. See H10 -- without this gate, any client can forge
+    # X-Forwarded-For to bypass per-IP abuse limits.
+    TRUSTED_PROXY_IPS: Annotated[
+        List[Union[IPv4Network, IPv6Network]], NoDecode
+    ] = []
+
     # keycloak
     KEYCLOAK_REALM: str = os.getenv("KEYCLOAK_REALM", "master")
     KEYCLOAK_AUDIENCE: str = os.getenv("KEYCLOAK_AUDIENCE", "account")
@@ -257,6 +306,17 @@ class Configs(BaseSettings):
             return _parse_cors_origins(value)
         return value
 
+    @field_validator("TRUSTED_PROXY_IPS", mode="before")
+    @classmethod
+    def _coerce_trusted_proxy_ips(
+        cls, value: Union[str, List, None]
+    ) -> List[Union[IPv4Network, IPv6Network]]:
+        if value is None or value == "":
+            return []
+        if isinstance(value, str):
+            return _parse_trusted_proxy_ips(value)
+        return list(value)
+
 
 class TestConfigs(Configs):
     """
@@ -276,11 +336,11 @@ configs = TestConfigs() if os.getenv("ENV") == "test" else Configs()
 
 _validate_cors_origins(configs.ENV, configs.BACKEND_CORS_ORIGINS)
 
-print("Environment:", configs.ENV)
+logger.info("Environment: %s", configs.ENV)
 
 if configs.ENV == "prod":
-    print("-------------- Production Environment --------------")
+    logger.info("-------------- Production Environment --------------")
 elif configs.ENV == "stage":
-    print("-------------- Staging Environment --------------")
+    logger.info("-------------- Staging Environment --------------")
 elif configs.ENV == "test":
-    print("-------------- Test Environment --------------")
+    logger.info("-------------- Test Environment --------------")

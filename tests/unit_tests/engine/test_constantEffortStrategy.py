@@ -1,4 +1,5 @@
 # tests/test_constant_effort_strategy.py
+import logging
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock
 
@@ -70,9 +71,9 @@ def test_calculate_points_from_consistency(strategy):
     assert points == 1
 
 
-def test_debug_print(strategy, capsys):
+def test_debug_print(strategy, caplog):
+    caplog.set_level(logging.DEBUG, logger="app.engine.base_strategy")
     strategy.debug = True
     strategy.debug_print("Test message")
 
-    captured = capsys.readouterr()
-    assert "Test message" in captured.out
+    assert "Test message" in caplog.text

@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pytest
 
@@ -85,7 +87,8 @@ def test_rank_hotspots_sorts_by_score_descending():
 
 
 @pytest.mark.asyncio
-async def test_getis_ord_strategy_behaviour_and_metadata(capsys):
+async def test_getis_ord_strategy_behaviour_and_metadata(caplog):
+    caplog.set_level(logging.DEBUG, logger="app.engine.getis_ord_gi_star")
     strategy = GetisOrdStrategy()
 
     assert strategy.get_strategy_name() == "GeoEquityGamificationModel"
@@ -118,5 +121,4 @@ async def test_getis_ord_strategy_behaviour_and_metadata(capsys):
 
     strategy.debug = True
     strategy.debug_print("debug-line")
-    captured = capsys.readouterr()
-    assert "debug-line" in captured.out
+    assert "debug-line" in caplog.text

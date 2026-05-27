@@ -1149,5 +1149,4 @@ async def add_action_to_user(
         )
     except Exception as e:
         await audit.error("Add action to user failed", {"error": str(e)})
-        print(f"Error (add_action_to_user): {e}")
         raise e

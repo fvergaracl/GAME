@@ -1,7 +1,10 @@
 import hashlib
 import inspect
+import logging
 
 from graphviz import Digraph
+
+logger = logging.getLogger(__name__)
 
 
 class BaseStrategy:
@@ -71,13 +74,13 @@ class BaseStrategy:
 
     def debug_print(self, *args):
         """
-        Prints debug information if debug mode is enabled.
+        Emits debug information if debug mode is enabled.
 
         Args:
-            *args: The arguments to print.
+            *args: The arguments to log.
         """
         if self.debug:
-            print("\033[95m", *args, "\033[0m")
+            logger.debug(" ".join(str(a) for a in args))
 
     def get_strategy_id(self):
         """

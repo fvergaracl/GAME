@@ -1,6 +1,10 @@
+import logging
+
 from app.core.container import Container
 from app.schema.logs_schema import CreateLogs
 from app.schema.oauth_users_schema import CreateOAuthUser
+
+logger = logging.getLogger(__name__)
 
 
 async def add_log(
@@ -32,7 +36,11 @@ async def add_log(
     try:
         await service_log.add(log_entry)
     except Exception as e:
-        print(f"> Error adding log: {e}")
+        # Do NOT route this through service_log -- this IS the audit-log
+        # writer; recursing would risk a tight failure loop.
+        logger.warning(
+            "Failed to write audit log entry: %s", e, exc_info=True
+        )
         oauthusers_service = Container.oauth_users_service()
         create_user = CreateOAuthUser(
             provider="keycloak",

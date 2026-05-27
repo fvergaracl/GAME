@@ -1,6 +1,6 @@
 import importlib
+import logging
 import os
-from unittest.mock import patch
 
 import pytest
 
@@ -36,16 +36,18 @@ def restore_config_module():
         ("test", "-------------- Test Environment --------------"),
     ],
 )
-def test_config_prints_banner_for_environment(env_value, expected_banner, monkeypatch):
+def test_config_prints_banner_for_environment(
+    env_value, expected_banner, monkeypatch, caplog
+):
     monkeypatch.setenv("ENV", env_value)
     if env_value in {"prod", "stage"}:
         monkeypatch.setenv("DB_NAME", "game_test_db")
 
-    with patch("builtins.print") as mock_print:
+    with caplog.at_level(logging.INFO, logger="app.core.config"):
         reloaded = importlib.reload(config_module)
 
-    mock_print.assert_any_call("Environment:", reloaded.configs.ENV)
-    mock_print.assert_any_call(expected_banner)
+    assert f"Environment: {reloaded.configs.ENV}" in caplog.text
+    assert expected_banner in caplog.text
 
 
 def test_cors_origins_default_to_empty_when_env_unset(monkeypatch):

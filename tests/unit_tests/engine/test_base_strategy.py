@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 from app.engine.base_strategy import BaseStrategy
@@ -67,13 +69,12 @@ async def test_base_strategy_default_behaviour_methods():
     assert "No logic graph available" in dot.source
 
 
-def test_base_strategy_debug_print_only_when_enabled(capsys):
+def test_base_strategy_debug_print_only_when_enabled(caplog):
+    caplog.set_level(logging.DEBUG, logger="app.engine.base_strategy")
     strategy = BaseStrategy()
     strategy.debug_print("hidden")
-    captured = capsys.readouterr()
-    assert captured.out == ""
+    assert "hidden" not in caplog.text
 
     strategy.debug = True
     strategy.debug_print("visible")
-    captured = capsys.readouterr()
-    assert "visible" in captured.out
+    assert "visible" in caplog.text

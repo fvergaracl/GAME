@@ -1,12 +1,15 @@
 # Gamification strategy using Getis-Ord Gi* statistic to identify hotspots in spatial
 import hashlib
 import inspect
+import logging
 from typing import Iterable
 
 import numpy as np
 from graphviz import Digraph
 
 from app.engine.strategy_registry import register_strategy
+
+logger = logging.getLogger(__name__)
 
 
 def _build_rook_weights(rows: int, cols: int) -> np.ndarray:
@@ -133,13 +136,13 @@ class GetisOrdStrategy:
 
     def debug_print(self, *args):
         """
-        Prints debug information if debug mode is enabled.
+        Emits debug information if debug mode is enabled.
 
         Args:
-            *args: The arguments to print.
+            *args: The arguments to log.
         """
         if self.debug:
-            print("\033[95m", *args, "\033[0m")
+            logger.debug(" ".join(str(a) for a in args))
 
     def get_strategy_id(self):
         """

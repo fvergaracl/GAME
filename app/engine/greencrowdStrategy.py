@@ -5,6 +5,7 @@ https://dreampuf.github.io/GraphvizOnline/?engine=dot#digraph%20G%7B%0A%20%20%20
 
 import datetime
 import hashlib
+import logging
 import random
 from collections import defaultdict
 
@@ -19,6 +20,8 @@ from app.engine.strategy_registry import register_strategy
 from app.schema.task_schema import SimulatedTaskPoints
 from app.util.add_log import add_log
 from app.util.calculate_hash_simulated_strategy import calculate_hash_simulated_strategy
+
+logger = logging.getLogger(__name__)
 
 
 def get_random_values_from_tasks(all_records):
@@ -128,8 +131,10 @@ def get_dynamic_values_from_tasks(
     all_records = all_records.all()
     try:
         poi_external_id = task.externalTaskId.split("_")[1]
-    except Exception as e:
-        print(f">Error extracting POI ID from task {task.externalTaskId}: {e}")
+    except Exception:
+        logger.exception(
+            "Error extracting POI ID from task %s", task.externalTaskId
+        )
         return {
             "DIM_BP": 0,
             "DIM_LBE": 0,
@@ -147,8 +152,10 @@ def get_dynamic_values_from_tasks(
         try:
             poi_id = t["externalTaskId"].split("_")[1]
             poi_task_map[poi_id].add(t["id"])
-        except Exception as e:
-            print(f">Error processing task {t['externalTaskId']}: {e}")
+        except Exception:
+            logger.exception(
+                "Error processing task %s", t.get("externalTaskId")
+            )
 
     count_total_task_in_poi = len(poi_task_map.get(poi_external_id, []))
     count_unique_task_in_poi = len(

@@ -53,9 +53,8 @@ class TestAddLog(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(log_entry.oauth_user_id)
 
     @patch("app.util.add_log.Container.oauth_users_service")
-    @patch("builtins.print")
     async def test_add_log_retries_after_failure_and_creates_oauth_user(
-        self, mock_print, mock_oauth_users_service
+        self, mock_oauth_users_service
     ):
         service_log = MagicMock()
         service_log.add = AsyncMock(side_effect=[Exception("db error"), None])
@@ -64,15 +63,16 @@ class TestAddLog(unittest.IsolatedAsyncioTestCase):
         oauthusers_service.add = AsyncMock(return_value=None)
         mock_oauth_users_service.return_value = oauthusers_service
 
-        retry_coroutine = await add_log(
-            module="apikey",
-            log_level="ERROR",
-            message="failing path",
-            details={"error": "db"},
-            service_log=service_log,
-            api_key="api-key-2",
-            oauth_user_id="oauth-user-2",
-        )
+        with self.assertLogs("app.util.add_log", level="WARNING") as captured:
+            retry_coroutine = await add_log(
+                module="apikey",
+                log_level="ERROR",
+                message="failing path",
+                details={"error": "db"},
+                service_log=service_log,
+                api_key="api-key-2",
+                oauth_user_id="oauth-user-2",
+            )
 
         self.assertTrue(asyncio.iscoroutine(retry_coroutine))
         self.assertEqual(service_log.add.await_count, 1)
@@ -83,8 +83,9 @@ class TestAddLog(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(created_oauth_user.provider, "keycloak")
         self.assertEqual(created_oauth_user.provider_user_id, "oauth-user-2")
         self.assertEqual(created_oauth_user.status, "active")
-        mock_print.assert_called_once()
-        self.assertIn("Error adding log", mock_print.call_args.args[0])
+        joined = "\n".join(captured.output)
+        self.assertIn("Failed to write audit log entry", joined)
+        self.assertIn("db error", joined)
 
         retry_result = await retry_coroutine
         self.assertIsNone(retry_result)

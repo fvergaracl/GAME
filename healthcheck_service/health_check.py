@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 import uuid
@@ -5,6 +6,12 @@ from datetime import datetime
 
 import psycopg2
 import requests
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 DB_ENGINE = os.getenv("DB_ENGINE", "postgresql")
 DB_HOST = os.getenv("DB_HOST", "localhost")
@@ -60,14 +67,14 @@ def save_health_check(status):
 
 
 if __name__ == "__main__":
-    print("\033[95m [i]Starting health check service\033[0m")
+    logger.info("Starting health check service")
     table_exist = check_if_table_exists()
     while not table_exist:
         table_exist = check_if_table_exists()
-        print("\033[91m [x]Table does not exist\033[0m")
+        logger.error("uptimelogs table does not exist; exiting")
         exit(1)
     while True:
         status = check_api_health()
         save_health_check(status)
-        print(f"\033[92m [✔]Health check saved with status {status}\033[0m")
+        logger.info("Health check saved with status %s", status)
         time.sleep(60)

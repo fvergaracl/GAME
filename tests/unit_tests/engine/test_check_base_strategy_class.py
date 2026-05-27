@@ -1,5 +1,5 @@
+import logging
 import unittest
-from unittest.mock import patch
 
 from app.engine.check_base_strategy_class import check_class_methods_and_variables
 
@@ -70,42 +70,40 @@ class TestCheckClassMethodsAndVariables(unittest.TestCase):
         def calculate_points(self):
             pass
 
-    @patch("builtins.print")
-    def test_class_with_all_methods_and_variables(self, mock_print):
+    def test_class_with_all_methods_and_variables(self):
         """
         Test that a class with all required methods and variables passes.
         """
-        result = check_class_methods_and_variables(self.FullClass, debug=True)
+        with self.assertLogs(
+            "app.engine.check_base_strategy_class", level="INFO"
+        ) as captured:
+            result = check_class_methods_and_variables(self.FullClass, debug=True)
         self.assertTrue(result)
 
-        mock_print.assert_any_call("[+] All methods are present.")
-        mock_print.assert_any_call("[+] All variables are present.")
+        joined = "\n".join(captured.output)
+        self.assertIn("All methods are present.", joined)
+        self.assertIn("All variables are present.", joined)
 
-    @patch("builtins.print")
-    def test_class_missing_some_methods_and_variables(self, mock_print):
+    def test_class_missing_some_methods_and_variables(self):
         """
         Test that a class missing some methods and variables fails.
         """
-        result = check_class_methods_and_variables(self.IncompleteClass, debug=True)
+        with self.assertLogs(
+            "app.engine.check_base_strategy_class", level="WARNING"
+        ) as captured:
+            result = check_class_methods_and_variables(
+                self.IncompleteClass, debug=True
+            )
         self.assertFalse(result)
 
-        expected_missing_variables = (
-            "Missing variables: ["
-            "'strategy_description', 'strategy_name_slug', 'strategy_version']"
-        )
-
-        printed_calls = [call.args[0] for call in mock_print.call_args_list]
-        assert any(
-            "Missing methods:" in str(c)
-            and "get_strategy_id" in str(c)
-            and "get_strategy_description" in str(c)
-            for c in printed_calls
-        ), "Expected missing methods print"
-        " not found"
-        assert any(
-            expected_missing_variables in str(c) for c in printed_calls
-        ), "Expected missing variables print"
-        " not found"
+        joined = "\n".join(captured.output)
+        self.assertIn("Missing methods:", joined)
+        self.assertIn("get_strategy_id", joined)
+        self.assertIn("get_strategy_description", joined)
+        self.assertIn("Missing variables:", joined)
+        self.assertIn("strategy_description", joined)
+        self.assertIn("strategy_name_slug", joined)
+        self.assertIn("strategy_version", joined)
 
 
 if __name__ == "__main__":

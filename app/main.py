@@ -1,4 +1,6 @@
 import logging
+import logging.config
+import os
 import subprocess
 from contextlib import asynccontextmanager
 
@@ -14,6 +16,48 @@ from app.core.config import configs
 from app.core.container import Container
 from app.util.class_object import singleton
 
+
+def _configure_logging() -> None:
+    use_json = configs.ENV in {"prod", "stage"}
+    level = os.getenv("LOG_LEVEL", "INFO").upper()
+    config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "plain": {
+                "format": "%(asctime)s %(levelname)s %(name)s: %(message)s",
+            },
+            "json": {
+                "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+                "fmt": "%(asctime)s %(levelname)s %(name)s %(message)s",
+                "rename_fields": {
+                    "asctime": "timestamp",
+                    "levelname": "level",
+                    "name": "logger",
+                },
+            },
+        },
+        "handlers": {
+            "stdout": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+                "formatter": "json" if use_json else "plain",
+            },
+        },
+        "root": {"level": level, "handlers": ["stdout"]},
+        "loggers": {
+            "uvicorn": {"handlers": ["stdout"], "level": level, "propagate": False},
+            "uvicorn.error": {"handlers": ["stdout"], "level": level, "propagate": False},
+            "uvicorn.access": {"handlers": ["stdout"], "level": level, "propagate": False},
+            "gunicorn": {"handlers": ["stdout"], "level": level, "propagate": False},
+            "gunicorn.error": {"handlers": ["stdout"], "level": level, "propagate": False},
+            "gunicorn.access": {"handlers": ["stdout"], "level": level, "propagate": False},
+        },
+    }
+    logging.config.dictConfig(config)
+
+
+_configure_logging()
 logger = logging.getLogger(__name__)
 
 

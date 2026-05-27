@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def check_class_methods_and_variables(Class_to_check, debug=False):
     """
     Check if the class has all the methods and variables expected for a
@@ -40,17 +45,17 @@ def check_class_methods_and_variables(Class_to_check, debug=False):
 
     missing_methods = [method for method in methods if not hasattr(instance, method)]
     if missing_methods:
-        print(f"Missing methods: {missing_methods}")
+        logger.warning("Missing methods: %s", missing_methods)
     else:
-        print("[+] All methods are present.")
+        logger.info("All methods are present.")
 
     missing_variables = [
         variable for variable in variables if not hasattr(instance, variable)
     ]
     if debug:
         if missing_variables:
-            print(f"Missing variables: {missing_variables}")
+            logger.warning("Missing variables: %s", missing_variables)
         else:
-            print("[+] All variables are present.")
+            logger.info("All variables are present.")
 
     return not missing_methods and not missing_variables

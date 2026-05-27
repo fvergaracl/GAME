@@ -1,3 +1,4 @@
+import ipaddress
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -19,26 +20,70 @@ class AbusePreventionService:
     @staticmethod
     def extract_client_ip(request: Optional[Request]) -> Optional[str]:
         """
-        Extracts best-effort client IP from forwarding headers or socket info.
+        Extracts the best-effort client IP.
+
+        X-Forwarded-For and X-Real-IP are honored only when the direct
+        socket peer is in ``configs.TRUSTED_PROXY_IPS``. Without that
+        gate any client can forge these headers and bypass per-IP rate
+        limiting (see security finding H10). When the peer is trusted,
+        X-Forwarded-For is walked right-to-left, skipping further
+        trusted hops, to find the leftmost untrusted address.
         """
         if request is None:
             return None
 
-        forwarded_for = request.headers.get("X-Forwarded-For") or request.headers.get(
-            "x-forwarded-for"
+        direct_peer = (
+            request.client.host
+            if request.client and request.client.host
+            else None
         )
+
+        if not AbusePreventionService._peer_is_trusted_proxy(direct_peer):
+            return direct_peer
+
+        forwarded_for = request.headers.get(
+            "X-Forwarded-For"
+        ) or request.headers.get("x-forwarded-for")
         if forwarded_for:
-            client_ip = forwarded_for.split(",")[0].strip()
-            if client_ip:
-                return client_ip
+            for raw in reversed(forwarded_for.split(",")):
+                candidate = raw.strip()
+                if not candidate:
+                    continue
+                try:
+                    ipaddress.ip_address(candidate)
+                except ValueError:
+                    continue
+                if not AbusePreventionService._peer_is_trusted_proxy(
+                    candidate
+                ):
+                    return candidate
 
-        real_ip = request.headers.get("X-Real-IP") or request.headers.get("x-real-ip")
+        real_ip = request.headers.get("X-Real-IP") or request.headers.get(
+            "x-real-ip"
+        )
         if real_ip:
-            return real_ip.strip() or None
+            candidate = real_ip.strip()
+            if candidate:
+                try:
+                    ipaddress.ip_address(candidate)
+                    return candidate
+                except ValueError:
+                    pass
 
-        if request.client and request.client.host:
-            return request.client.host
-        return None
+        return direct_peer
+
+    @staticmethod
+    def _peer_is_trusted_proxy(ip: Optional[str]) -> bool:
+        if not ip:
+            return False
+        trusted = configs.TRUSTED_PROXY_IPS
+        if not trusted:
+            return False
+        try:
+            addr = ipaddress.ip_address(ip)
+        except ValueError:
+            return False
+        return any(addr in network for network in trusted)
 
     async def enforce_task_mutation_limits(
         self,
