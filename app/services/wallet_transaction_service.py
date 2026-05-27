@@ -11,7 +11,9 @@ class WalletTransactionService(BaseService):
           Repository instance for wallet transactions.
     """
 
-    def __init__(self, wallet_transaction_repository: WalletTransactionRepository):
+    def __init__(
+        self, wallet_transaction_repository: WalletTransactionRepository
+    ) -> None:
         """
         Initializes the WalletTransactionService with the provided repository.
 

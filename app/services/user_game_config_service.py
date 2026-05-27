@@ -12,7 +12,7 @@ class UserGameConfigService:
     Service class for managing user-specific game configurations.
     """
 
-    def __init__(self, repository: UserGameConfigRepository):
+    def __init__(self, repository: UserGameConfigRepository) -> None:
         self.repository = repository
 
     async def get_user_config(

@@ -1,3 +1,5 @@
+from typing import Any
+
 from app.core.exceptions import NotFoundError
 from app.engine.all_engine_strategies import all_engine_strategies
 from app.services.base_service import BaseService
@@ -11,13 +13,13 @@ class StrategyService(BaseService):
         None
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes the StrategyService.
         """
         super().__init__(None)
 
-    def list_all_strategies(self):
+    def list_all_strategies(self) -> list[dict[str, Any]]:
         """
         Lists all available strategies.
 
@@ -39,7 +41,7 @@ class StrategyService(BaseService):
             )
         return response
 
-    def get_strategy_by_id(self, id):
+    def get_strategy_by_id(self, id) -> dict[str, Any]:
         """
         Retrieves a strategy by its ID.
 
@@ -57,7 +59,7 @@ class StrategyService(BaseService):
                 return strategy
         raise NotFoundError(detail=f"Strategy not found with id: {id}")
 
-    def get_Class_by_id(self, id):
+    def get_Class_by_id(self, id) -> Any:
         """
         Retrieves the instance of a strategy by its ID.
 

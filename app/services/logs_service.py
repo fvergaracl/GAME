@@ -11,7 +11,7 @@ class LogsService(BaseService):
 
     """
 
-    def __init__(self, logs_repository: LogsRepository):
+    def __init__(self, logs_repository: LogsRepository) -> None:
         """
         Initializes the LogsService with the provided repositories and
           services.

@@ -1,4 +1,5 @@
 import copy
+from typing import Any
 
 from app.core.config import configs
 from app.repository.task_repository import TaskRepository
@@ -40,7 +41,7 @@ class UserService(BaseService):
         task_repository: TaskRepository,
         wallet_repository: WalletRepository,
         wallet_transaction_repository: WalletTransactionRepository,
-    ):
+    ) -> None:
         """
         Initializes the UserService with the provided repositories.
 
@@ -61,7 +62,7 @@ class UserService(BaseService):
         self.wallet_transaction_repository = wallet_transaction_repository
         super().__init__(user_repository)
 
-    async def basic_engagement_points(self):
+    async def basic_engagement_points(self) -> int:
         """
         Provides a fixed number of points as a basic engagement reward for a
           user's initial actions within the gamification system.
@@ -73,7 +74,7 @@ class UserService(BaseService):
 
         return basic_points
 
-    async def performance_penalty_points(self):
+    async def performance_penalty_points(self) -> int:
         """
         Calculates the number of points to deduct as a penalty for performance
           below a certain threshold.
@@ -85,7 +86,7 @@ class UserService(BaseService):
 
         return penalty_points
 
-    async def performance_bonus_points(self):
+    async def performance_bonus_points(self) -> int:
         """
         Calculates the number of additional points to award for performance
           above a certain threshold.
@@ -97,7 +98,7 @@ class UserService(BaseService):
 
         return bonus_points
 
-    async def individual_over_global_points(self):
+    async def individual_over_global_points(self) -> int:
         """
         Awards additional points for users who have improved their individual
           performance compared to their own history, even if below the global
@@ -110,7 +111,7 @@ class UserService(BaseService):
 
         return improvement_points
 
-    async def need_for_motivation_points(self):
+    async def need_for_motivation_points(self) -> int:
         """
         Provides a small point incentive for users who are underperforming
           both individually and globally, to motivate improvement.
@@ -122,7 +123,7 @@ class UserService(BaseService):
 
         return motivation_points
 
-    async def peak_performer_bonus_points(self):
+    async def peak_performer_bonus_points(self) -> int:
         """
         Rewards users who have exceeded both their individual performance and
           the global average, standing out as peak performers in the system.
@@ -134,7 +135,7 @@ class UserService(BaseService):
 
         return peak_points
 
-    async def global_advantage_adjustment_points(self):
+    async def global_advantage_adjustment_points(self) -> int:
         """
         Awards additional points to users whose performance is above the
           global average but have shown a decrease in their individual
@@ -150,7 +151,7 @@ class UserService(BaseService):
 
         return adjustment_points
 
-    async def individual_adjustment_points(self):
+    async def individual_adjustment_points(self) -> int:
         """
         Rewards users who have improved their individual performance,
           regardless of their standing against the global average. It aims to
@@ -165,7 +166,7 @@ class UserService(BaseService):
 
         return improvement_points
 
-    async def create_user(self, schema):
+    async def create_user(self, schema) -> Any:
         """
         Creates a new user using the provided schema.
 
@@ -182,7 +183,7 @@ class UserService(BaseService):
         userId,
         schema: BaseUserPointsBaseModelWithCaseName,
         apiKey_used: str = None,
-    ):
+    ) -> UserPointsAssigned:
         """
         Assigns points to a user based on the provided schema.
 
@@ -335,7 +336,7 @@ class UserService(BaseService):
 
         return response
 
-    async def get_wallet_by_user_id(self, userId):
+    async def get_wallet_by_user_id(self, userId) -> UserWallet:
         """
         Retrieves the wallet associated with a user by their user ID.
 
@@ -377,7 +378,7 @@ class UserService(BaseService):
 
         return response
 
-    async def get_user_by_externalUserId(self, externalUserId):
+    async def get_user_by_externalUserId(self, externalUserId) -> Any:
         """
         Retrieves a user by their external user ID.
 
@@ -392,7 +393,7 @@ class UserService(BaseService):
         )
         return user
 
-    async def get_wallet_by_externalUserId(self, externalUserId):
+    async def get_wallet_by_externalUserId(self, externalUserId) -> UserWallet:
         """
         Retrieves the wallet associated with a user by their external user ID.
 
@@ -408,7 +409,7 @@ class UserService(BaseService):
         response = await self.get_wallet_by_user_id(str(user.id))
         return response
 
-    async def get_points_by_user_id(self, userId):
+    async def get_points_by_user_id(self, userId) -> UserPointsTasks:
         """
         Retrieves points associated with a user by their user ID.
 
@@ -456,7 +457,9 @@ class UserService(BaseService):
         response = UserPointsTasks(id=str(user.id), tasks=cleaned_tasks)
         return response
 
-    async def preview_points_to_coins_conversion(self, userId, points):
+    async def preview_points_to_coins_conversion(
+        self, userId, points
+    ) -> dict[str, Any]:
         """
         Previews the conversion of points to coins for a user.
 
@@ -504,7 +507,9 @@ class UserService(BaseService):
         }
         return response
 
-    async def preview_points_to_coins_conversion_externalUserId(self, externalUserId, points):
+    async def preview_points_to_coins_conversion_externalUserId(
+        self, externalUserId, points
+    ) -> dict[str, Any]:
         """
         Previews the conversion of points to coins for a user by their
           external user ID.
@@ -524,7 +529,7 @@ class UserService(BaseService):
 
     async def convert_points_to_coins(
         self, userId, schema: PostPointsConversionRequest, api_key
-    ):
+    ) -> ResponsePointsConversion:
         """
         Converts points to coins for a user based on the provided schema.
 
@@ -607,8 +612,11 @@ class UserService(BaseService):
         return response
 
     async def convert_points_to_coins_externalUserId(
-        self, externalUserId, schema: PostPointsConversionRequest, api_key: str = None
-    ):
+        self,
+        externalUserId,
+        schema: PostPointsConversionRequest,
+        api_key: str = None,
+    ) -> ResponsePointsConversion:
         """
         Converts points to coins for a user by their external user ID based on
           the provided schema.

@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
-from typing import Optional, Protocol, runtime_checkable
+from typing import Any, Optional, Protocol, runtime_checkable
 
 from app.repository.abuse_limit_counter_repository import (
     AbuseLimitCounterRepository,
@@ -121,7 +121,7 @@ class RedisRateLimitCounterBackend:
         return int(results[1])
 
 
-def build_redis_client_from_url(url: str):
+def build_redis_client_from_url(url: str) -> Any:
     """
     Build an async Redis client from a connection URL.
 

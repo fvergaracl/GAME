@@ -11,12 +11,12 @@ class WalletService(BaseService):
 
     def __init__(
         self, wallet_repository: WalletRepository, user_repository: UserRepository
-    ):
+    ) -> None:
         self.wallet_repository = wallet_repository
         self.user_repository = user_repository
         super().__init__(wallet_repository)
 
-    async def get_wallet_by_user_id(self, externalUserId):
+    async def get_wallet_by_user_id(self, externalUserId) -> BaseWallet:
         user = await self.user_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
@@ -40,7 +40,7 @@ class WalletService(BaseService):
             updated_at=wallet.updated_at,
         )
 
-    async def preview_convert(self, schema):
+    async def preview_convert(self, schema) -> ResponsePreviewConvertPoints:
         user = await self.user_repository.read_by_column(
             column="externalUserId",
             value=schema.externalUserId,

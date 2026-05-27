@@ -14,7 +14,7 @@ class AbusePreventionService:
     Service responsible for abuse prevention checks on sensitive endpoints.
     """
 
-    def __init__(self, counter_backend: RateLimitCounterBackend):
+    def __init__(self, counter_backend: RateLimitCounterBackend) -> None:
         self.counter_backend = counter_backend
 
     @staticmethod

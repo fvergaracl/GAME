@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from app.core.exceptions import ConflictError, NotFoundError
@@ -7,8 +8,9 @@ from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.schema.games_params_schema import InsertGameParams
-from app.schema.games_schema import (BaseGameResult, GameCreated, PatchGame,
-                                     PostCreateGame, ResponsePatchGame)
+from app.schema.games_schema import (BaseGameResult, FindGameResult,
+                                     GameCreated, PatchGame, PostCreateGame,
+                                     ResponsePatchGame)
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
 from app.services.strategy_service import StrategyService
@@ -35,7 +37,7 @@ class GameService(BaseService):
         task_repository: TaskRepository,
         user_points_repository: UserPointsRepository,
         strategy_service: StrategyService,
-    ):
+    ) -> None:
         """
         Initializes the GameService with the provided repositories and
           services.
@@ -61,7 +63,7 @@ class GameService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> BaseGameResult:
         """
         Retrieves a game by its game ID.
 
@@ -105,7 +107,7 @@ class GameService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> BaseGameResult | dict[str, str]:
         """
         Deletes a game by its game ID.
 
@@ -150,7 +152,7 @@ class GameService(BaseService):
         api_key=None,
         oauth_user_id=None,
         is_admin: bool = False,
-    ):
+    ) -> FindGameResult:
         """
         Retrieves all games based on the provided schema.
 
@@ -168,7 +170,7 @@ class GameService(BaseService):
             is_admin=is_admin,
         )
 
-    async def get_by_externalId(self, externalGameId: str):
+    async def get_by_externalId(self, externalGameId: str) -> Any:
         """
         Retrieves a game by its external game ID.
 
@@ -182,7 +184,7 @@ class GameService(BaseService):
 
     async def create(
         self, schema: PostCreateGame, api_key: str = None, oauth_user_id=None
-    ):
+    ) -> GameCreated:
         """
         Creates a new game using the provided schema.
 
@@ -267,7 +269,9 @@ class GameService(BaseService):
         )
         return response
 
-    async def patch_game_by_externalGameId(self, externalGameId: str, schema: PatchGame):
+    async def patch_game_by_externalGameId(
+        self, externalGameId: str, schema: PatchGame
+    ) -> ResponsePatchGame:
         """
         Updates a game by its external game ID using the provided schema.
 
@@ -296,7 +300,7 @@ class GameService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> ResponsePatchGame:
         """
         Updates a game by its game ID using the provided schema.
 
@@ -378,7 +382,9 @@ class GameService(BaseService):
         )
         return response
 
-    async def get_strategy_by_externalGameId(self, externalGameId: str):
+    async def get_strategy_by_externalGameId(
+        self, externalGameId: str
+    ) -> dict[str, Any]:
         """
         Retrieves the strategy associated with a game by its external game ID.
 
@@ -407,7 +413,7 @@ class GameService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> dict[str, Any]:
         """
         Retrieves the strategy associated with a game by its game ID.
 
@@ -469,7 +475,7 @@ class GameService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> dict[str, Any]:
         """
         Retrieves the tasks associated with a game by its game ID.
 
@@ -506,7 +512,7 @@ class GameService(BaseService):
 
     async def get_game_by_external_id(
         self, externalGameId: str, api_key: str = None, oauth_user_id=None
-    ):
+    ) -> Any:
         """
         Retrieves a game by its external game ID.
 

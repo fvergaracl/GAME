@@ -11,7 +11,7 @@ class UptimeLogsService(BaseService):
           for Uptime Logs.
     """
 
-    def __init__(self, uptime_logs_repository: UptimeLogsRepository):
+    def __init__(self, uptime_logs_repository: UptimeLogsRepository) -> None:
         """
         Initializes the UptimeLogsService with the provided repository.
 

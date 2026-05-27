@@ -1,4 +1,27 @@
 {
   "venvPath": ".",
-  "venv": ".venv"
+  "venv": ".venv",
+  "include": ["app"],
+  "exclude": [
+    "**/__pycache__",
+    "**/.venv",
+    "migrations"
+  ],
+  "reportMissingTypeStubs": false,
+  "reportOptionalMemberAccess": "warning",
+  "reportOptionalSubscript": "warning",
+  "reportOptionalIterable": "warning",
+  "reportOptionalCall": "warning",
+  "reportCallIssue": "warning",
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": ["."]
+    },
+    {
+      "root": "app/services",
+      "reportMissingReturnType": "error",
+      "reportReturnType": "error"
+    }
+  ]
 }

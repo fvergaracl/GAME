@@ -11,7 +11,7 @@ class GameParamsService(BaseService):
          game parameters.
     """
 
-    def __init__(self, game_params_repository: GameParamsRepository):
+    def __init__(self, game_params_repository: GameParamsRepository) -> None:
         """
         Initializes the GameParamsService with the provided repository.
 

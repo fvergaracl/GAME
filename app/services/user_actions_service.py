@@ -33,7 +33,7 @@ class UserActionsService(BaseService):
         users_repository: UserRepository,
         game_repository: GameRepository,
         task_repository: TaskRepository,
-    ):
+    ) -> None:
         """
         Initializes the UserPointsService with the provided repositories and
           services.
@@ -61,7 +61,7 @@ class UserActionsService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> ResponseAddActionDidByUserInTask:
         """
         Add action in task for user.
 
@@ -121,7 +121,7 @@ class UserActionsService(BaseService):
         externalUserId: str,
         schema: CreateUserBodyActions,
         api_key: str = None,
-    ):
+    ) -> CreatedUserActions:
         """
         Add action for user.
 

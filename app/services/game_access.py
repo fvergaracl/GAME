@@ -35,7 +35,7 @@ async def get_authorized_game(
     api_key: str | None = None,
     oauth_user_id: str | None = None,
     is_admin: bool = False,
-):
+) -> Any:
     game = await game_repository.read_by_id(
         game_id,
         not_found_raise_exception=False,

@@ -16,7 +16,7 @@ class TaskParamsService(BaseService):
     def __init__(
         self,
         task_params_repository: TaskParamsRepository,
-    ):
+    ) -> None:
         """
         Initializes the TaskService with the provided repositories and
           services.

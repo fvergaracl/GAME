@@ -11,7 +11,7 @@ class KpiMetricsService(BaseService):
           for KPI metrics.
     """
 
-    def __init__(self, kpi_metrics_repository: KpiMetricsRepository):
+    def __init__(self, kpi_metrics_repository: KpiMetricsRepository) -> None:
         """
         Initializes the KpiMetricsService with the provided repository.
 

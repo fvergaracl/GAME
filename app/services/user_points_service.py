@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from collections import Counter
+from typing import Any
 from uuid import UUID
 
 # Cap parallel fan-out so a request over a large user/task list cannot
@@ -49,7 +50,7 @@ class UserPointsService(BaseService):
         task_repository: TaskRepository,
         wallet_repository: WalletRepository,
         wallet_transaction_repository: WalletTransactionRepository,
-    ):
+    ) -> None:
         self.user_points_repository = user_points_repository
         self.users_repository = users_repository
         self.users_game_config_repository = users_game_config_repository
@@ -61,13 +62,13 @@ class UserPointsService(BaseService):
         super().__init__(user_points_repository)
 
     @staticmethod
-    def _extract_points(data):
+    def _extract_points(data) -> int | None:
         if isinstance(data, dict):
             return data.get("points")
         return getattr(data, "points", None)
 
     @staticmethod
-    def _extract_idempotency_key(data):
+    def _extract_idempotency_key(data) -> str | None:
         if not isinstance(data, dict):
             return None
         for key in ("eventId", "idempotencyKey", "correlationId"):
@@ -89,7 +90,7 @@ class UserPointsService(BaseService):
         external_user_id: str,
         external_task_id: str,
         idempotency_key: str = None,
-    ):
+    ) -> tuple[Any, Any, Any]:
         """
         Persists points assignment, wallet increment and wallet transaction in
         one database transaction.
@@ -163,7 +164,7 @@ class UserPointsService(BaseService):
                 await session.rollback()
                 raise
 
-    async def query_user_points(self, schema):
+    async def query_user_points(self, schema) -> Any:
         return await self.user_points_repository.read_by_options(schema)
 
     async def get_users_by_gameId(
@@ -174,7 +175,7 @@ class UserPointsService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> ListTasksWithUsers:
         if enforce_scope:
             game = await get_authorized_game(
                 self.game_repository,
@@ -226,16 +227,20 @@ class UserPointsService(BaseService):
             response.append(TasksWithUsers(**all_tasks))
         return ListTasksWithUsers(gameId=gameId, tasks=response)
 
-    async def get_points_by_user_list(self, users_list):
+    async def get_points_by_user_list(
+        self, users_list
+    ) -> list[UserGamePoints]:
         semaphore = asyncio.Semaphore(_FANOUT_LIMIT)
 
-        async def _fetch(user):
+        async def _fetch(user) -> UserGamePoints:
             async with semaphore:
                 return await self.get_all_points_by_externalUserId(user)
 
         return list(await asyncio.gather(*[_fetch(u) for u in users_list]))
 
-    async def get_points_by_externalUserId(self, externalUserId):
+    async def get_points_by_externalUserId(
+        self, externalUserId
+    ) -> list[AllPointsByGame]:
         user = await self.users_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=True
         )
@@ -250,7 +255,7 @@ class UserPointsService(BaseService):
 
         semaphore = asyncio.Semaphore(_FANOUT_LIMIT)
 
-        async def _fetch(task):
+        async def _fetch(task) -> AllPointsByGame:
             async with semaphore:
                 game = await self.game_repository.read_by_column(
                     "id", task.gameId, not_found_raise_exception=True
@@ -295,7 +300,7 @@ class UserPointsService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> AllPointsByGame:
         if enforce_scope:
             game = await get_authorized_game(
                 self.game_repository,
@@ -348,7 +353,7 @@ class UserPointsService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> AllPointsByGame:
         if enforce_scope:
             game = await get_authorized_game(
                 self.game_repository,
@@ -403,7 +408,7 @@ class UserPointsService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> list[PointsAssignedToUser]:
         if enforce_scope:
             game = await get_authorized_game(
                 self.game_repository,
@@ -455,7 +460,7 @@ class UserPointsService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> AssignedPointsToExternalUserId:
         """
         Assign points to a user directly (non-simulated), using a predefined strategy.
 
@@ -557,7 +562,7 @@ class UserPointsService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> AssignedPointsToExternalUserId:
         """
         Assign points to a user.
 
@@ -713,7 +718,7 @@ class UserPointsService(BaseService):
         api_key: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> tuple[list[Any], str]:
         """
         Simulates the assignment of points for a user without persisting the
           changes.
@@ -850,7 +855,9 @@ class UserPointsService(BaseService):
         externalGameId = game.externalGameId
         return response, externalGameId
 
-    async def get_users_points_by_externalGameId(self, externalGameId):
+    async def get_users_points_by_externalGameId(
+        self, externalGameId
+    ) -> list[ResponseGetPointsByGame]:
         game = await self.game_repository.read_by_column(
             column="externalGameId",
             value=externalGameId,
@@ -887,7 +894,9 @@ class UserPointsService(BaseService):
 
         return response
 
-    async def get_users_points_by_externalTaskId(self, externalTaskId):
+    async def get_users_points_by_externalTaskId(
+        self, externalTaskId
+    ) -> list[ResponseGetPointsByTask]:
         task = await self.task_repository.read_by_column(
             column="externalTaskId",
             value=externalTaskId,
@@ -909,7 +918,7 @@ class UserPointsService(BaseService):
 
     async def get_users_points_by_externalTaskId_and_externalUserId(
         self, externalTaskId, externalUserId
-    ):
+    ) -> Any:
         task = await self.task_repository.read_by_column(
             column="externalTaskId",
             value=externalTaskId,
@@ -927,7 +936,9 @@ class UserPointsService(BaseService):
 
         return points
 
-    async def get_all_points_by_externalUserId(self, externalUserId):
+    async def get_all_points_by_externalUserId(
+        self, externalUserId
+    ) -> UserGamePoints:
         user_data = await self.users_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
@@ -989,7 +1000,9 @@ class UserPointsService(BaseService):
             games=games,
         )
 
-    async def get_points_of_user(self, externalUserId):
+    async def get_points_of_user(
+        self, externalUserId
+    ) -> ResponsePointsByExternalUserId:
         user = await self.users_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
@@ -1009,12 +1022,16 @@ class UserPointsService(BaseService):
         )
         return response
 
-    async def get_points_of_simulated_task(self, externalTaskId, simulationHash):
+    async def get_points_of_simulated_task(
+        self, externalTaskId, simulationHash
+    ) -> Any:
         return await self.user_points_repository.get_points_of_simulated_task(
             externalTaskId, simulationHash
         )
 
-    async def get_all_point_of_tasks_list(self, list_ids_tasks, withData=False):
+    async def get_all_point_of_tasks_list(
+        self, list_ids_tasks, withData=False
+    ) -> Any:
         return await self.user_points_repository.get_all_point_of_tasks_list(
             list_ids_tasks, withData
         )

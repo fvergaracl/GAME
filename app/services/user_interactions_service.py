@@ -11,7 +11,9 @@ class UserInteractionsService(BaseService):
           instance for User Interactions.
     """
 
-    def __init__(self, user_interactions_repository: UserInteractionsRepository):
+    def __init__(
+        self, user_interactions_repository: UserInteractionsRepository
+    ) -> None:
         """
         Initializes the UserInteractionsService with the provided repository.
 

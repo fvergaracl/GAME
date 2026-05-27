@@ -1,3 +1,5 @@
+from typing import Any
+
 from app.repository.oauth_users_repository import OAuthUsersRepository
 from app.services.base_service import BaseService
 
@@ -12,7 +14,7 @@ class OAuthUsersService(BaseService):
 
     """
 
-    def __init__(self, oauth_users_repository: OAuthUsersRepository):
+    def __init__(self, oauth_users_repository: OAuthUsersRepository) -> None:
         """
         Initializes the OAuthUsersService with the provided repositories and
           services.
@@ -23,7 +25,7 @@ class OAuthUsersService(BaseService):
         self.oauth_users_repository = oauth_users_repository
         super().__init__(oauth_users_repository)
 
-    async def get_user_by_sub(self, sub: str):
+    async def get_user_by_sub(self, sub: str) -> Any:
         """
         Get a user by their sub.
 

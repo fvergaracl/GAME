@@ -1,3 +1,5 @@
+from typing import Any
+
 from app.core.exceptions import ConflictError, NotFoundError
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
@@ -39,7 +41,7 @@ class TaskService(BaseService):
         user_points_repository: UserPointsRepository,
         game_params_repository: GameParamsRepository,
         task_params_repository: TaskParamsRepository,
-    ):
+    ) -> None:
         """
         Initializes the TaskService with the provided repositories and
           services.
@@ -65,7 +67,9 @@ class TaskService(BaseService):
         self.task_params_repository = task_params_repository
         super().__init__(task_repository)
 
-    async def get_tasks_list_by_externalGameId(self, externalGameId, find_query):
+    async def get_tasks_list_by_externalGameId(
+        self, externalGameId, find_query
+    ) -> dict[str, Any]:
         """
         Retrieves a list of tasks associated with a game by its external game
           ID.
@@ -98,7 +102,7 @@ class TaskService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> dict[str, Any]:
         """
         Retrieves a list of tasks associated with a game by its game ID.
 
@@ -203,7 +207,7 @@ class TaskService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> CreateTaskPostSuccesfullyCreated:
         """
         Retrieves a task by its game ID and external task ID.
 
@@ -297,7 +301,7 @@ class TaskService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> CreateTaskPostSuccesfullyCreated:
         """
         Retrieves a task by its game ID and external task ID.
 
@@ -324,7 +328,9 @@ class TaskService(BaseService):
             enforce_scope=enforce_scope,
         )
 
-    async def create_task_by_externalGameId(self, externalGameId, create_query):
+    async def create_task_by_externalGameId(
+        self, externalGameId, create_query
+    ) -> CreateTaskPostSuccesfullyCreated:
         """
         Creates a task for a game by its external game ID.
 
@@ -354,7 +360,7 @@ class TaskService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> CreateTaskPostSuccesfullyCreated:
         """
         Creates a task for a game by its game ID.
 
@@ -477,7 +483,7 @@ class TaskService(BaseService):
 
         return response
 
-    async def get_task_detail_by_id(self, schema):
+    async def get_task_detail_by_id(self, schema) -> dict[str, Any]:
         """
         Retrieves task details by its ID.
 
@@ -509,7 +515,7 @@ class TaskService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> Any:
         """
         Retrieves points by task ID.
 
@@ -561,7 +567,7 @@ class TaskService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> Any:
         """
         Retrieves points of a user by task ID.
 
@@ -601,7 +607,7 @@ class TaskService(BaseService):
         oauth_user_id: str = None,
         is_admin: bool = False,
         enforce_scope: bool = False,
-    ):
+    ) -> Any:
         """
         Retrieves points by task ID with details.
 
@@ -637,7 +643,7 @@ class TaskService(BaseService):
         )
         return user_points
 
-    async def get_task_params_by_externalTaskId(self, externalTaskId):
+    async def get_task_params_by_externalTaskId(self, externalTaskId) -> Any:
         """
         Retrieves task parameters by external task ID.
 

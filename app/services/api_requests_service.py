@@ -11,7 +11,7 @@ class ApiRequestsService(BaseService):
           for API requests.
     """
 
-    def __init__(self, api_requests_repository: ApiRequestsRepository):
+    def __init__(self, api_requests_repository: ApiRequestsRepository) -> None:
         """
         Initializes the ApiRequestsService with the provided repository.
 

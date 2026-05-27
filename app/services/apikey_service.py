@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import Security
 from fastapi.security.api_key import APIKeyHeader
@@ -7,10 +7,8 @@ from fastapi.security.api_key import APIKeyHeader
 from app.core.config import configs
 from app.core.exceptions import ForbiddenError, NotFoundError
 from app.repository.apikey_repository import ApiKeyRepository
-from app.services.apikey_cache_backend import (
-    ApiKeyCacheBackend,
-    InMemoryApiKeyCacheBackend,
-)
+from app.services.apikey_cache_backend import (ApiKeyCacheBackend,
+                                                InMemoryApiKeyCacheBackend)
 from app.services.base_service import BaseService
 from app.util.generate_api_key import (GeneratedApiKey, generate_api_key,
                                        hash_api_key)
@@ -50,7 +48,7 @@ class ApiKeyService(BaseService):
         self,
         apikey_repository: ApiKeyRepository,
         cache_backend: Optional[ApiKeyCacheBackend] = None,
-    ):
+    ) -> None:
         """
         Initializes the ApiKeyService with the provided repository and cache.
 
@@ -86,13 +84,13 @@ class ApiKeyService(BaseService):
             if prefix_collision is None:
                 return generated
 
-    async def create_api_key(self, apikeyPostBody):
+    async def create_api_key(self, apikeyPostBody) -> Any:
         return await self.apikey_repository.create(apikeyPostBody)
 
-    async def get_all_api_keys(self):
+    async def get_all_api_keys(self) -> Any:
         return await self.apikey_repository.read_all()
 
-    async def revoke_api_key_by_prefix(self, prefix: str):
+    async def revoke_api_key_by_prefix(self, prefix: str) -> Any:
         """
         Revoke an API key identified by its public prefix and drop the
         matching cache entry. The deactivated row's ``apiKeyHash`` is the
@@ -116,7 +114,7 @@ class ApiKeyService(BaseService):
     @staticmethod
     async def get_api_key_header(
         api_key: str = Security(api_key_header),
-    ):
+    ) -> Response:
         from app.core.container import Container
 
         """
