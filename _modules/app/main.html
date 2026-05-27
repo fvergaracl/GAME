@@ -237,6 +237,8 @@
             
   <h1 id="modules-app-main--page-root">Source code for app.main</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging.config</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
 
@@ -252,6 +254,48 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">Container</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.util.class_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">singleton</span>
 
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_configure_logging</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">use_json</span> <span class="o">=</span> <span class="n">configs</span><span class="o">.</span><span class="n">ENV</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"prod"</span><span class="p">,</span> <span class="s2">"stage"</span><span class="p">}</span>
+    <span class="n">level</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"LOG_LEVEL"</span><span class="p">,</span> <span class="s2">"INFO"</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"version"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"disable_existing_loggers"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">"formatters"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"plain"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"format"</span><span class="p">:</span> <span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> </span><span class="si">%(name)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">"json"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"()"</span><span class="p">:</span> <span class="s2">"pythonjsonlogger.jsonlogger.JsonFormatter"</span><span class="p">,</span>
+                <span class="s2">"fmt"</span><span class="p">:</span> <span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2"> </span><span class="si">%(name)s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">,</span>
+                <span class="s2">"rename_fields"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"asctime"</span><span class="p">:</span> <span class="s2">"timestamp"</span><span class="p">,</span>
+                    <span class="s2">"levelname"</span><span class="p">:</span> <span class="s2">"level"</span><span class="p">,</span>
+                    <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"logger"</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+        <span class="s2">"handlers"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"stdout"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"class"</span><span class="p">:</span> <span class="s2">"logging.StreamHandler"</span><span class="p">,</span>
+                <span class="s2">"stream"</span><span class="p">:</span> <span class="s2">"ext://sys.stdout"</span><span class="p">,</span>
+                <span class="s2">"formatter"</span><span class="p">:</span> <span class="s2">"json"</span> <span class="k">if</span> <span class="n">use_json</span> <span class="k">else</span> <span class="s2">"plain"</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+        <span class="s2">"root"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">]},</span>
+        <span class="s2">"loggers"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"uvicorn"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="s2">"uvicorn.error"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="s2">"uvicorn.access"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="s2">"gunicorn"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="s2">"gunicorn.error"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="s2">"gunicorn.access"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+
+<span class="n">_configure_logging</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
