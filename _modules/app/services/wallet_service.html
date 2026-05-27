@@ -251,14 +251,14 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">wallet_repository</span><span class="p">:</span> <span class="n">WalletRepository</span><span class="p">,</span> <span class="n">user_repository</span><span class="p">:</span> <span class="n">UserRepository</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wallet_repository</span> <span class="o">=</span> <span class="n">wallet_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span> <span class="o">=</span> <span class="n">user_repository</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">wallet_repository</span><span class="p">)</span>
 
 <div class="viewcode-block" id="WalletService.get_wallet_by_user_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.wallet_service.WalletService.get_wallet_by_user_id">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_wallet_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_wallet_by_user_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseWallet</span><span class="p">:</span>
         <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
@@ -285,7 +285,7 @@
 
 <div class="viewcode-block" id="WalletService.preview_convert">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.wallet_service.WalletService.preview_convert">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">preview_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">preview_convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResponsePreviewConvertPoints</span><span class="p">:</span>
         <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">externalUserId</span><span class="p">,</span>

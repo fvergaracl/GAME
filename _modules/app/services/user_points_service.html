@@ -239,6 +239,7 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
 <span class="c1"># Cap parallel fan-out so a request over a large user/task list cannot</span>
@@ -289,7 +290,7 @@
         <span class="n">task_repository</span><span class="p">:</span> <span class="n">TaskRepository</span><span class="p">,</span>
         <span class="n">wallet_repository</span><span class="p">:</span> <span class="n">WalletRepository</span><span class="p">,</span>
         <span class="n">wallet_transaction_repository</span><span class="p">:</span> <span class="n">WalletTransactionRepository</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span> <span class="o">=</span> <span class="n">user_points_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span> <span class="o">=</span> <span class="n">users_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">users_game_config_repository</span> <span class="o">=</span> <span class="n">users_game_config_repository</span>
@@ -301,13 +302,13 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">user_points_repository</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_points</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_points</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"points"</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">"points"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_idempotency_key</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_idempotency_key</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"eventId"</span><span class="p">,</span> <span class="s2">"idempotencyKey"</span><span class="p">,</span> <span class="s2">"correlationId"</span><span class="p">):</span>
@@ -329,7 +330,7 @@
         <span class="n">external_user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">external_task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">idempotency_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Persists points assignment, wallet increment and wallet transaction in</span>
 <span class="sd">        one database transaction.</span>
@@ -405,7 +406,7 @@
 
 <div class="viewcode-block" id="UserPointsService.query_user_points">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.query_user_points">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query_user_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query_user_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">read_by_options</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
 
 
@@ -419,7 +420,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ListTasksWithUsers</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
@@ -474,10 +475,12 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_by_user_list">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_by_user_list">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_user_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users_list</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_user_list</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">users_list</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">UserGamePoints</span><span class="p">]:</span>
         <span class="n">semaphore</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="n">_FANOUT_LIMIT</span><span class="p">)</span>
 
-        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserGamePoints</span><span class="p">:</span>
             <span class="k">async</span> <span class="k">with</span> <span class="n">semaphore</span><span class="p">:</span>
                 <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_points_by_externalUserId</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
 
@@ -486,7 +489,9 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_by_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_by_externalUserId">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_externalUserId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AllPointsByGame</span><span class="p">]:</span>
         <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="s2">"externalUserId"</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
@@ -501,7 +506,7 @@
 
         <span class="n">semaphore</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="n">_FANOUT_LIMIT</span><span class="p">)</span>
 
-        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch</span><span class="p">(</span><span class="n">task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AllPointsByGame</span><span class="p">:</span>
             <span class="k">async</span> <span class="k">with</span> <span class="n">semaphore</span><span class="p">:</span>
                 <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
                     <span class="s2">"id"</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
@@ -549,7 +554,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AllPointsByGame</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
@@ -605,7 +610,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AllPointsByGame</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
@@ -663,7 +668,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PointsAssignedToUser</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
@@ -718,7 +723,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AssignedPointsToExternalUserId</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Assign points to a user directly (non-simulated), using a predefined strategy.</span>
 
@@ -823,7 +828,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AssignedPointsToExternalUserId</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Assign points to a user.</span>
 
@@ -982,7 +987,7 @@
         <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Simulates the assignment of points for a user without persisting the</span>
 <span class="sd">          changes.</span>
@@ -1122,7 +1127,9 @@
 
 <div class="viewcode-block" id="UserPointsService.get_users_points_by_externalGameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_users_points_by_externalGameId">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalGameId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ResponseGetPointsByGame</span><span class="p">]:</span>
         <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalGameId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalGameId</span><span class="p">,</span>
@@ -1162,7 +1169,9 @@
 
 <div class="viewcode-block" id="UserPointsService.get_users_points_by_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalTaskId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ResponseGetPointsByTask</span><span class="p">]:</span>
         <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalTaskId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
@@ -1187,7 +1196,7 @@
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_users_points_by_externalTaskId_and_externalUserId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalTaskId_and_externalUserId</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalTaskId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
@@ -1208,7 +1217,9 @@
 
 <div class="viewcode-block" id="UserPointsService.get_all_points_by_externalUserId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_all_points_by_externalUserId">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_points_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_points_by_externalUserId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserGamePoints</span><span class="p">:</span>
         <span class="n">user_data</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
@@ -1273,7 +1284,9 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_of_user">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_of_user">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_user</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResponsePointsByExternalUserId</span><span class="p">:</span>
         <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
@@ -1296,7 +1309,9 @@
 
 <div class="viewcode-block" id="UserPointsService.get_points_of_simulated_task">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_points_of_simulated_task">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_simulated_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">simulationHash</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_simulated_task</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">simulationHash</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_of_simulated_task</span><span class="p">(</span>
             <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">simulationHash</span>
         <span class="p">)</span></div>
@@ -1304,7 +1319,9 @@
 
 <div class="viewcode-block" id="UserPointsService.get_all_point_of_tasks_list">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.user_points_service.UserPointsService.get_all_point_of_tasks_list">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_point_of_tasks_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_ids_tasks</span><span class="p">,</span> <span class="n">withData</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_point_of_tasks_list</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">list_ids_tasks</span><span class="p">,</span> <span class="n">withData</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_all_point_of_tasks_list</span><span class="p">(</span>
             <span class="n">list_ids_tasks</span><span class="p">,</span> <span class="n">withData</span>
         <span class="p">)</span></div>

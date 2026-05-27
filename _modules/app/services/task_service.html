@@ -236,7 +236,9 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-app-services-task-service--page-root">Source code for app.services.task_service</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConflictError</span><span class="p">,</span> <span class="n">NotFoundError</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConflictError</span><span class="p">,</span> <span class="n">NotFoundError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_params_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameParamsRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_params_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskParamsRepository</span>
@@ -279,7 +281,7 @@
         <span class="n">user_points_repository</span><span class="p">:</span> <span class="n">UserPointsRepository</span><span class="p">,</span>
         <span class="n">game_params_repository</span><span class="p">:</span> <span class="n">GameParamsRepository</span><span class="p">,</span>
         <span class="n">task_params_repository</span><span class="p">:</span> <span class="n">TaskParamsRepository</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initializes the TaskService with the provided repositories and</span>
 <span class="sd">          services.</span>
@@ -307,7 +309,9 @@
 
 <div class="viewcode-block" id="TaskService.get_tasks_list_by_externalGameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_tasks_list_by_externalGameId">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_tasks_list_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">find_query</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_tasks_list_by_externalGameId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">find_query</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a list of tasks associated with a game by its external game</span>
 <span class="sd">          ID.</span>
@@ -343,7 +347,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a list of tasks associated with a game by its game ID.</span>
 
@@ -451,7 +455,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a task by its game ID and external task ID.</span>
 
@@ -548,7 +552,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves a task by its game ID and external task ID.</span>
 
@@ -578,7 +582,9 @@
 
 <div class="viewcode-block" id="TaskService.create_task_by_externalGameId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.create_task_by_externalGameId">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_task_by_externalGameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">create_query</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_task_by_externalGameId</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">create_query</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates a task for a game by its external game ID.</span>
 
@@ -611,7 +617,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates a task for a game by its game ID.</span>
 
@@ -737,7 +743,7 @@
 
 <div class="viewcode-block" id="TaskService.get_task_detail_by_id">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_detail_by_id">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_detail_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_detail_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves task details by its ID.</span>
 
@@ -772,7 +778,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points by task ID.</span>
 
@@ -827,7 +833,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points of a user by task ID.</span>
 
@@ -870,7 +876,7 @@
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves points by task ID with details.</span>
 
@@ -909,7 +915,7 @@
 
 <div class="viewcode-block" id="TaskService.get_task_params_by_externalTaskId">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.get_task_params_by_externalTaskId">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_params_by_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_params_by_externalTaskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves task parameters by external task ID.</span>
 
