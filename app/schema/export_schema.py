@@ -73,3 +73,9 @@ class CreateExportAuditLog(BaseModel):
     requestedBy: Optional[str] = None
     apiKey_used: Optional[str] = None
     oauth_user_id: Optional[str] = None
+    # The BaseModel parent declares server_default=func.now() for created_at,
+    # but the alembic migrations across this project create the column
+    # nullable with no DB-side default (project convention). Setting the
+    # timestamp client-side here keeps the dataset/created_at index usable
+    # for the audit dashboard / cleanup jobs.
+    created_at: Optional[datetime] = None

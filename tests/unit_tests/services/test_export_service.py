@@ -1,7 +1,8 @@
 import json
 import unittest
-from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock
+from datetime import datetime, timezone
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.repository.export_audit_log_repository import ExportAuditLogRepository
 from app.schema.export_schema import (
@@ -72,6 +73,25 @@ class TestExportServiceAudit(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(payload.requestedBy, "gme_live_xyz")
         self.assertEqual(payload.apiKey_used, "gme_live_xyz")
         self.assertIsNone(payload.oauth_user_id)
+
+    async def test_audit_start_sets_created_at_explicitly(self):
+        # BaseModel declares server_default=func.now() but the project's
+        # migrations create the column nullable with no DB default. Without
+        # an explicit timestamp, audit rows land with NULL created_at and
+        # the dataset/created_at index becomes useless for filtering.
+        before = datetime.now(timezone.utc)
+        await self.service.audit_start(
+            dataset_type=ExportDatasetType.USERS.value,
+            export_format=ExportFormat.CSV.value,
+            filters=ExportFilters(limit=10),
+            oauth_user_id="user-x",
+        )
+        after = datetime.now(timezone.utc)
+        payload = self.repo.create.await_args.args[0]
+        self.assertIsNotNone(payload.created_at)
+        self.assertEqual(payload.created_at.tzinfo, timezone.utc)
+        self.assertGreaterEqual(payload.created_at, before)
+        self.assertLessEqual(payload.created_at, after)
 
     async def test_audit_finish_updates_row(self):
         await self.service.audit_finish(
@@ -182,6 +202,138 @@ class TestExportServiceFormatters(unittest.IsolatedAsyncioTestCase):
         )
         self.assertTrue(name.startswith("user-points_"))
         self.assertTrue(name.endswith(".csv"))
+
+
+class TestExportServiceIterators(unittest.IsolatedAsyncioTestCase):
+    """
+    Iterator-level tests that snapshot the compiled SQL and the keys each
+    iterator yields. These exist because S1 shipped with
+    iter_user_interactions targeting a non-existent ``userinteractions``
+    table — a bug that bypassed all existing tests (which mock the iterator)
+    and only surfaced via a manual smoke test against Postgres.
+    """
+
+    def setUp(self):
+        self.repo = MagicMock(spec=ExportAuditLogRepository)
+        self.service = ExportService(export_audit_log_repository=self.repo)
+
+    async def _exercise(self, iterator_factory, fake_row):
+        """
+        Replace _stream_rows so we (a) capture the SQLAlchemy statement and
+        (b) feed a single fake row through the iterator without touching the
+        DB. Returns (compiled_sql_lowercase, yielded_dict).
+        """
+        captured = {}
+
+        async def _fake_stream_rows(_self, stmt):
+            captured["stmt"] = stmt
+            yield fake_row
+
+        with patch.object(
+            ExportService, "_stream_rows", _fake_stream_rows
+        ):
+            rows = []
+            async for row in iterator_factory():
+                rows.append(row)
+        compiled = str(
+            captured["stmt"].compile(compile_kwargs={"literal_binds": True})
+        ).lower()
+        return compiled, rows[0]
+
+    async def test_iter_user_interactions_queries_useractions_table(self):
+        # The key regression check: must hit `useractions`, never
+        # `userinteractions` (which doesn't exist in the DB).
+        fake = SimpleNamespace(
+            id="a-1",
+            created_at=datetime(2026, 5, 1, 12, 0, 0),
+            externalUserId="ext-u-1",
+            typeAction="task_completed",
+            description="user completed task",
+            data={"taskId": "t-1"},
+            apiKey_used="gme_live_abc",
+        )
+        sql, row = await self._exercise(
+            lambda: self.service.iter_user_interactions(
+                ExportFilters(limit=10)
+            ),
+            fake,
+        )
+        self.assertIn("useractions", sql)
+        self.assertNotIn("userinteractions", sql)
+        self.assertEqual(
+            set(row.keys()),
+            set(DATASET_COLUMNS[ExportDatasetType.USER_INTERACTIONS.value]),
+        )
+
+    async def test_iter_users_yields_columns_matching_dataset_columns(self):
+        fake = SimpleNamespace(
+            id="u-1",
+            externalUserId="ext-u-1",
+            created_at=datetime(2026, 5, 1),
+            updated_at=datetime(2026, 5, 2),
+            apiKey_used=None,
+            oauth_user_id="sub-1",
+        )
+        _, row = await self._exercise(
+            lambda: self.service.iter_users(ExportFilters(limit=10)),
+            fake,
+        )
+        self.assertEqual(
+            set(row.keys()),
+            set(DATASET_COLUMNS[ExportDatasetType.USERS.value]),
+        )
+
+    async def test_iter_user_points_yields_columns_matching_dataset_columns(
+        self,
+    ):
+        fake = SimpleNamespace(
+            id="p-1",
+            created_at=datetime(2026, 5, 1),
+            externalUserId="ext-u-1",
+            externalTaskId="ext-t-1",
+            externalGameId="ext-g-1",
+            points=10,
+            caseName="default",
+            description="",
+            idempotencyKey="key-1",
+            data={},
+            apiKey_used=None,
+        )
+        _, row = await self._exercise(
+            lambda: self.service.iter_user_points(ExportFilters(limit=10)),
+            fake,
+        )
+        self.assertEqual(
+            set(row.keys()),
+            set(DATASET_COLUMNS[ExportDatasetType.USER_POINTS.value]),
+        )
+
+    async def test_iter_wallet_transactions_yields_columns_matching_columns(
+        self,
+    ):
+        fake = SimpleNamespace(
+            id="w-1",
+            created_at=datetime(2026, 5, 1),
+            externalUserId="ext-u-1",
+            transactionType="credit",
+            points=5,
+            coins=1,
+            appliedConversionRate=5.0,
+            data={},
+            apiKey_used=None,
+        )
+        _, row = await self._exercise(
+            lambda: self.service.iter_wallet_transactions(
+                ExportFilters(limit=10)
+            ),
+            fake,
+        )
+        self.assertEqual(
+            set(row.keys()),
+            set(DATASET_COLUMNS[
+                ExportDatasetType.WALLET_TRANSACTIONS.value
+            ]),
+        )
 
 
 if __name__ == "__main__":

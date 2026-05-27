@@ -23,7 +23,7 @@ from app.core.exceptions import InternalServerError
 from app.model.export_audit_log import ExportAuditLog
 from app.model.games import Games
 from app.model.tasks import Tasks
-from app.model.user_interactions import UserInteractions
+from app.model.user_actions import UserActions
 from app.model.user_points import UserPoints
 from app.model.users import Users
 from app.model.wallet import Wallet
@@ -65,10 +65,10 @@ DATASET_COLUMNS: Dict[str, List[str]] = {
         "id",
         "created_at",
         "externalUserId",
-        "externalTaskId",
-        "externalGameId",
-        "interactionType",
-        "interactionDetail",
+        "typeAction",
+        "description",
+        "data",
+        "apiKey_used",
     ],
     ExportDatasetType.WALLET_TRANSACTIONS.value: [
         "id",
@@ -148,6 +148,7 @@ class ExportService(BaseService):
             requestedBy=requested_by,
             apiKey_used=api_key,
             oauth_user_id=oauth_user_id,
+            created_at=datetime.now(timezone.utc),
         )
         return await self.export_audit_log_repository.create(payload)
 
@@ -251,35 +252,36 @@ class ExportService(BaseService):
     async def iter_user_interactions(
         self, filters: ExportFilters
     ) -> AsyncIterator[Dict[str, Any]]:
+        # Backed by the ``useractions`` table (model: UserActions). The legacy
+        # ``UserInteractions`` model has no corresponding table, so any query
+        # against it raises UndefinedTableError at runtime.
+        # externalGameId/externalTaskId filters don't apply here: UserActions
+        # has no FK to tasks/games (related IDs, when present, live in the
+        # JSONB ``data`` column). We keep them in the endpoint signature for
+        # uniformity but ignore them on this dataset.
         stmt = (
             select(
-                UserInteractions.id,
-                UserInteractions.created_at,
+                UserActions.id,
+                UserActions.created_at,
                 Users.externalUserId.label("externalUserId"),
-                Tasks.externalTaskId.label("externalTaskId"),
-                Games.externalGameId.label("externalGameId"),
-                UserInteractions.interactionType,
-                UserInteractions.interactionDetail,
+                UserActions.typeAction,
+                UserActions.description,
+                UserActions.data,
+                UserActions.apiKey_used,
             )
-            .outerjoin(Users, UserInteractions.userId == Users.id)
-            .outerjoin(Tasks, UserInteractions.taskId == Tasks.id)
-            .outerjoin(Games, Tasks.gameId == Games.id)
+            .outerjoin(Users, UserActions.userId == Users.id)
         )
-        stmt = self._apply_date_filters(stmt, UserInteractions, filters)
-        if filters.externalGameId is not None:
-            stmt = stmt.filter(Games.externalGameId == filters.externalGameId)
-        if filters.externalTaskId is not None:
-            stmt = stmt.filter(Tasks.externalTaskId == filters.externalTaskId)
-        stmt = stmt.order_by(UserInteractions.created_at).limit(filters.limit)
+        stmt = self._apply_date_filters(stmt, UserActions, filters)
+        stmt = stmt.order_by(UserActions.created_at).limit(filters.limit)
         async for row in self._stream_rows(stmt):
             yield {
                 "id": str(row.id),
                 "created_at": _isoformat(row.created_at),
                 "externalUserId": row.externalUserId,
-                "externalTaskId": row.externalTaskId,
-                "externalGameId": row.externalGameId,
-                "interactionType": row.interactionType,
-                "interactionDetail": row.interactionDetail,
+                "typeAction": row.typeAction,
+                "description": row.description,
+                "data": row.data,
+                "apiKey_used": row.apiKey_used,
             }
 
     async def iter_wallet_transactions(
