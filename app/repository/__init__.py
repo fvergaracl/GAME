@@ -3,6 +3,7 @@ from app.repository.api_requests_repository import ApiRequestsRepository
 from app.repository.apikey_repository import ApiKeyRepository
 from app.repository.base_repository import BaseRepository
 from app.repository.dashboard_repository import DashboardRepository
+from app.repository.export_audit_log_repository import ExportAuditLogRepository
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
 from app.repository.kpi_metrics_repository import KpiMetricsRepository
@@ -37,6 +38,7 @@ __all__ = [
     "UptimeLogsRepository",
     "UserInteractionsRepository",
     "DashboardRepository",
+    "ExportAuditLogRepository",
     "OAuthUsersRepository",
     "LogsRepository",
     "UserGameConfigRepository",

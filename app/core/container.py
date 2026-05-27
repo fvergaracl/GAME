@@ -8,6 +8,7 @@ from app.repository import (
     AbuseLimitCounterRepository,
     ApiKeyRepository,
     ApiRequestsRepository,
+    ExportAuditLogRepository,
     GameParamsRepository,
     GameRepository,
     KpiMetricsRepository,
@@ -29,6 +30,7 @@ from app.services import (
     AbusePreventionService,
     ApiKeyService,
     ApiRequestsService,
+    ExportService,
     GameParamsService,
     GameService,
     KpiMetricsService,
@@ -146,6 +148,7 @@ class Container(containers.DeclarativeContainer):
             "app.api.v1.endpoints.apikey",
             "app.api.v1.endpoints.kpi",
             "app.api.v1.endpoints.dashboard",
+            "app.api.v1.endpoints.exports",
             "app.middlewares.auth_context",
         ]
     )
@@ -237,6 +240,10 @@ class Container(containers.DeclarativeContainer):
     logs_repository = providers.Factory(
         logs_repository.LogsRepository,
         session_factory=db.provided.session,
+    )
+
+    export_audit_log_repository = providers.Factory(
+        ExportAuditLogRepository, session_factory=db.provided.session
     )
 
     # Services (Add in here)
@@ -380,4 +387,9 @@ class Container(containers.DeclarativeContainer):
     logs_service = providers.Factory(
         logs_service.LogsService,
         logs_repository=logs_repository,
+    )
+
+    export_service = providers.Factory(
+        ExportService,
+        export_audit_log_repository=export_audit_log_repository,
     )

@@ -5,6 +5,7 @@ from starlette.routing import BaseRoute
 
 from app.api.v1.endpoints.apikey import router as apikey_router
 from app.api.v1.endpoints.dashboard import router as dashboard_router
+from app.api.v1.endpoints.exports import router as exports_router
 from app.api.v1.endpoints.games import router as game_router
 from app.api.v1.endpoints.kpi import router as kpi_router
 from app.api.v1.endpoints.strategy import router as strategy_router
@@ -24,6 +25,7 @@ router_list = [
     wallet_router,
     kpi_router,
     dashboard_router,
+    exports_router,
 ]
 
 

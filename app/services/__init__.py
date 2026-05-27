@@ -9,6 +9,7 @@ from app.services.api_requests_service import ApiRequestsService
 from app.services.apikey_service import ApiKeyService
 from app.services.base_service import BaseService
 from app.services.dashboard_service import DashboardService
+from app.services.export_service import ExportService
 from app.services.game_params_service import GameParamsService
 from app.services.game_service import GameService
 from app.services.kpi_metrics_service import KpiMetricsService
