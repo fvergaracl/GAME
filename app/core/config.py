@@ -234,6 +234,14 @@ class Configs(BaseSettings):
     API_KEY_HEADER_CACHE_TTL_SECONDS: int = _env_to_int(
         "API_KEY_HEADER_CACHE_TTL_SECONDS", 5
     )
+    # "memory" keeps the original per-process dict (one cache per gunicorn
+    # worker -- revocations only land on the worker that handled the
+    # request); "redis" shares the cache across workers via REDIS_URL so
+    # revocations propagate on the next request.
+    APIKEY_CACHE_BACKEND: str = os.getenv("APIKEY_CACHE_BACKEND", "memory")
+    APIKEY_CACHE_REDIS_KEY_PREFIX: str = os.getenv(
+        "APIKEY_CACHE_REDIS_KEY_PREFIX", "game:apikey:"
+    )
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod

@@ -1,5 +1,3 @@
-import asyncio
-from time import monotonic
 from types import SimpleNamespace
 from typing import Optional
 
@@ -9,6 +7,10 @@ from fastapi.security.api_key import APIKeyHeader
 from app.core.config import configs
 from app.core.exceptions import ForbiddenError, NotFoundError
 from app.repository.apikey_repository import ApiKeyRepository
+from app.services.apikey_cache_backend import (
+    ApiKeyCacheBackend,
+    InMemoryApiKeyCacheBackend,
+)
 from app.services.base_service import BaseService
 from app.util.generate_api_key import (GeneratedApiKey, generate_api_key,
                                        hash_api_key)
@@ -27,25 +29,39 @@ class ApiKeyService(BaseService):
     presented in the ``X-API-Key`` header against the canonical
     ``apiKeyHash`` column.
 
+    Revocation consistency depends on ``configs.APIKEY_CACHE_BACKEND``:
+
+    - ``redis`` (recommended for multi-worker deployments): cache entries
+      live in a shared Redis keyspace, so a revoke on any worker is
+      observed by every other worker on its next request.
+    - ``memory`` (default, single process): each gunicorn worker keeps its
+      own dict; revocations only invalidate the local worker's entry and
+      remote workers continue serving the cached value until the TTL
+      (``API_KEY_HEADER_CACHE_TTL_SECONDS``, default 5s) expires.
+
     Attributes:
         apikey_repository (ApiKeyRepository): Repository instance for API
           keys.
+        cache_backend (ApiKeyCacheBackend): Backing store for the resolved
+          ``(apiKey, active)`` tuple keyed by sha256 hash.
     """
 
-    _header_cache = {}
-    # Lazy-bound to the running event loop on first use; cleared whenever
-    # ``clear_header_cache`` runs so that test loops don't share a lock with
-    # the prior loop (which would raise "attached to a different loop").
-    _cache_lock: Optional[asyncio.Lock] = None
-
-    def __init__(self, apikey_repository: ApiKeyRepository):
+    def __init__(
+        self,
+        apikey_repository: ApiKeyRepository,
+        cache_backend: Optional[ApiKeyCacheBackend] = None,
+    ):
         """
-        Initializes the ApiKeyService with the provided repository.
+        Initializes the ApiKeyService with the provided repository and cache.
 
         Args:
-            apikey_repository (ApiKeyRepository): The repository instance.
+            apikey_repository: The repository instance.
+            cache_backend: The cache backend. Defaults to a fresh in-process
+              instance so direct instantiation (mostly tests) keeps working
+              without wiring through the DI container.
         """
         self.apikey_repository = apikey_repository
+        self.cache_backend = cache_backend or InMemoryApiKeyCacheBackend()
         super().__init__(apikey_repository)
 
     async def generate_api_key_service(self) -> GeneratedApiKey:
@@ -78,7 +94,11 @@ class ApiKeyService(BaseService):
 
     async def revoke_api_key_by_prefix(self, prefix: str):
         """
-        Revoke an API key identified by its public prefix.
+        Revoke an API key identified by its public prefix and drop the
+        matching cache entry. The deactivated row's ``apiKeyHash`` is the
+        exact cache key used by ``get_api_key_header`` (both are
+        ``hash_api_key(plaintext)``), so a precise ``delete`` is enough --
+        no need to nuke unrelated entries.
         """
         row = await self.apikey_repository.read_by_column(
             "apiKey", prefix, not_found_raise_exception=False
@@ -88,7 +108,9 @@ class ApiKeyService(BaseService):
         updated = await self.apikey_repository.update_attr(
             row.id, "active", False
         )
-        ApiKeyService.clear_header_cache()
+        cache_key = getattr(row, "apiKeyHash", None)
+        if cache_key:
+            await self.cache_backend.delete(cache_key)
         return updated
 
     @staticmethod
@@ -105,9 +127,14 @@ class ApiKeyService(BaseService):
         if api_key is None:
             return Response.fail(error=ForbiddenError("API key not provided."))
         key_hash = hash_api_key(api_key)
-        cached_api_key = await ApiKeyService._get_cached_api_key(key_hash)
-        if cached_api_key is not None:
-            return Response.ok(data=cached_api_key)
+        cache_backend = Container.apikey_cache_backend()
+        ttl_seconds = int(
+            getattr(configs, "API_KEY_HEADER_CACHE_TTL_SECONDS", 0) or 0
+        )
+        if ttl_seconds > 0:
+            cached = await cache_backend.get(key_hash)
+            if cached is not None:
+                return Response.ok(data=cached)
         api_key_Repository = Container.apikey_repository()
         api_key_in_db = await api_key_Repository.read_by_column(
             "apiKeyHash", key_hash, not_found_raise_exception=False
@@ -121,50 +148,24 @@ class ApiKeyService(BaseService):
         normalized = SimpleNamespace(
             apiKey=api_key_in_db.apiKey, active=api_key_in_db.active
         )
-        await ApiKeyService._set_cached_api_key(key_hash, normalized)
+        if ttl_seconds > 0:
+            await cache_backend.set(key_hash, normalized, ttl_seconds)
         return Response.ok(data=normalized)
 
     @classmethod
-    def _get_cache_ttl_seconds(cls) -> int:
-        ttl = int(getattr(configs, "API_KEY_HEADER_CACHE_TTL_SECONDS", 0))
-        return ttl if ttl > 0 else 0
-
-    @classmethod
-    def _get_lock(cls) -> asyncio.Lock:
-        if cls._cache_lock is None:
-            cls._cache_lock = asyncio.Lock()
-        return cls._cache_lock
-
-    @classmethod
-    async def _get_cached_api_key(
-        cls, cache_key: str
-    ) -> Optional[SimpleNamespace]:
-        ttl_seconds = cls._get_cache_ttl_seconds()
-        if ttl_seconds <= 0:
-            return None
-        now = monotonic()
-        async with cls._get_lock():
-            cache_entry = cls._header_cache.get(cache_key)
-            if cache_entry is None:
-                return None
-            expires_at, cached_value = cache_entry
-            if expires_at <= now:
-                cls._header_cache.pop(cache_key, None)
-                return None
-            return cached_value
-
-    @classmethod
-    async def _set_cached_api_key(cls, cache_key: str, api_key_data) -> None:
-        ttl_seconds = cls._get_cache_ttl_seconds()
-        if ttl_seconds <= 0:
-            return
-        expires_at = monotonic() + ttl_seconds
-        async with cls._get_lock():
-            cls._header_cache[cache_key] = (expires_at, api_key_data)
-
-    @classmethod
     def clear_header_cache(cls) -> None:
-        # dict.clear() is atomic under the GIL; reset the lock so the next
-        # async caller binds it to the current event loop.
-        cls._header_cache.clear()
-        cls._cache_lock = None
+        """
+        Reset the cache synchronously. Only the in-memory backend can be
+        cleared without an event loop; for the Redis backend, prefer the
+        async ``await backend.clear()`` (or rely on per-entry deletion via
+        ``revoke_api_key_by_prefix``). Kept as a classmethod so existing
+        tests can call it from ``setUp`` for isolation.
+        """
+        from app.core.container import Container
+
+        try:
+            backend = Container.apikey_cache_backend()
+        except Exception:
+            return
+        if isinstance(backend, InMemoryApiKeyCacheBackend):
+            backend.sync_clear()

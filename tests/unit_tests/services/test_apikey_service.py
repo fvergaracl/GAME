@@ -1,9 +1,11 @@
 import unittest
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.core.container import Container
 from app.core.exceptions import ForbiddenError, NotFoundError
 from app.repository.apikey_repository import ApiKeyRepository
+from app.services.apikey_cache_backend import InMemoryApiKeyCacheBackend
 from app.services.apikey_service import ApiKeyService
 from app.util.generate_api_key import GeneratedApiKey, hash_api_key
 
@@ -15,7 +17,10 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         """
         ApiKeyService.clear_header_cache()
         self.apikey_repository = MagicMock(spec=ApiKeyRepository)
-        self.api_key_service = ApiKeyService(self.apikey_repository)
+        self.cache_backend = InMemoryApiKeyCacheBackend()
+        self.api_key_service = ApiKeyService(
+            self.apikey_repository, cache_backend=self.cache_backend
+        )
 
     @patch("app.services.apikey_service.generate_api_key")
     async def test_generate_api_key_returns_unique_triple(
@@ -85,7 +90,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(retrieved_api_keys, api_keys)
 
     async def test_revoke_api_key_by_prefix_deactivates_row(self):
-        row = MagicMock(id="row-1", active=True)
+        row = MagicMock(id="row-1", active=True, apiKeyHash="hash-1")
         self.apikey_repository.read_by_column.return_value = row
         self.apikey_repository.update_attr.return_value = MagicMock(
             id="row-1", active=False, apiKey="gme_live_abcdefgh"
@@ -104,6 +109,36 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
             "row-1", "active", False
         )
         self.assertFalse(result.active)
+
+    async def test_revoke_api_key_by_prefix_deletes_only_targeted_cache_entry(
+        self,
+    ):
+        # Two cached entries; revoking one must leave the other intact.
+        await self.cache_backend.set(
+            "hash-1",
+            SimpleNamespace(apiKey="gme_live_aaaaaaaa", active=True),
+            ttl_seconds=60,
+        )
+        await self.cache_backend.set(
+            "hash-2",
+            SimpleNamespace(apiKey="gme_live_bbbbbbbb", active=True),
+            ttl_seconds=60,
+        )
+
+        row = MagicMock(id="row-1", active=True, apiKeyHash="hash-1")
+        self.apikey_repository.read_by_column.return_value = row
+        self.apikey_repository.update_attr.return_value = MagicMock(
+            id="row-1", active=False, apiKey="gme_live_aaaaaaaa"
+        )
+
+        await self.api_key_service.revoke_api_key_by_prefix(
+            "gme_live_aaaaaaaa"
+        )
+
+        self.assertIsNone(await self.cache_backend.get("hash-1"))
+        survivor = await self.cache_backend.get("hash-2")
+        self.assertIsNotNone(survivor)
+        self.assertEqual(survivor.apiKey, "gme_live_bbbbbbbb")
 
     async def test_revoke_api_key_by_prefix_raises_when_missing(self):
         self.apikey_repository.read_by_column.return_value = None

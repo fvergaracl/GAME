@@ -48,6 +48,7 @@ from app.services import (
     logs_service,
     oauth_users_service,
 )
+from app.services.apikey_cache_backend import build_apikey_cache_backend
 
 
 class Container(containers.DeclarativeContainer):
@@ -310,9 +311,17 @@ class Container(containers.DeclarativeContainer):
         wallet_transaction_repository=wallet_transaction_repository,
     )
 
+    apikey_cache_backend = providers.Singleton(
+        build_apikey_cache_backend,
+        backend_name=configs.APIKEY_CACHE_BACKEND,
+        redis_url=configs.REDIS_URL,
+        redis_key_prefix=configs.APIKEY_CACHE_REDIS_KEY_PREFIX,
+    )
+
     apikey_service = providers.Factory(
         ApiKeyService,
         apikey_repository=apikey_repository,
+        cache_backend=apikey_cache_backend,
     )
 
     api_requests_service = providers.Factory(

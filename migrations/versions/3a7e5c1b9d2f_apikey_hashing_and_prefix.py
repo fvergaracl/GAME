@@ -57,14 +57,32 @@ def upgrade():
     ).fetchall()
 
     if rows:
-        # Drop FK constraints temporarily so we can rewrite parent and
-        # child rows in one transaction without violating referential
-        # integrity mid-update.
-        for table in FK_TABLES:
-            op.execute(
-                f'ALTER TABLE "{table}" '
-                f'DROP CONSTRAINT IF EXISTS "{table}_apiKey_used_fkey"'
+        # Drop every FK that actually references apikey.apiKey, regardless of
+        # name. Earlier migrations created some FKs with op.create_foreign_key(None, ...),
+        # so Postgres-assigned names don't always match the canonical pattern.
+        fk_rows = bind.execute(
+            sa.text(
+                """
+                SELECT tc.table_name, tc.constraint_name
+                FROM information_schema.table_constraints AS tc
+                JOIN information_schema.constraint_column_usage AS ccu
+                  ON tc.constraint_name = ccu.constraint_name
+                 AND tc.table_schema    = ccu.table_schema
+                WHERE tc.constraint_type = 'FOREIGN KEY'
+                  AND ccu.table_name     = 'apikey'
+                  AND ccu.column_name    = 'apiKey'
+                """
             )
+        ).fetchall()
+
+        for table_name, constraint_name in fk_rows:
+            op.execute(
+                f'ALTER TABLE "{table_name}" '
+                f'DROP CONSTRAINT IF EXISTS "{constraint_name}"'
+            )
+
+        discovered_fk_tables = {row[0] for row in fk_rows}
+        update_tables = sorted(set(FK_TABLES) | discovered_fk_tables)
 
         for row in rows:
             row_id = row[0]
@@ -76,7 +94,7 @@ def upgrade():
             ).hexdigest()
             new_prefix = _legacy_prefix(legacy_plaintext, key_hash)
 
-            for table in FK_TABLES:
+            for table in update_tables:
                 bind.execute(
                     sa.text(
                         f'UPDATE "{table}" '
