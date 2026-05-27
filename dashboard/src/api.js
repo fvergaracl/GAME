@@ -124,7 +124,6 @@ export const getExportHistory = async ({ scope = 'mine', limit = 50 } = {}) => {
   return getRequest(`/exports/history?${params.toString()}`)
 }
 
-
 // ---------------------------------------------------------------------------
 // Custom Strategies (/v1/strategies/custom/*)
 //
@@ -154,9 +153,7 @@ export const updateCustomStrategy = async (id, payload) => {
   // PUT mutates a DRAFT in place; on a PUBLISHED row the backend forks
   // a new version+1 draft and returns that one.
   try {
-    const response = await apiClient.put(
-      `/strategies/custom/${encodeURIComponent(id)}`, payload,
-    )
+    const response = await apiClient.put(`/strategies/custom/${encodeURIComponent(id)}`, payload)
     return response.data
   } catch (error) {
     console.error('PUT request failed:', error)
@@ -165,24 +162,17 @@ export const updateCustomStrategy = async (id, payload) => {
 }
 
 export const publishCustomStrategy = async (id) => {
-  return postRequest(
-    `/strategies/custom/${encodeURIComponent(id)}/publish`, {},
-  )
+  return postRequest(`/strategies/custom/${encodeURIComponent(id)}/publish`, {})
 }
 
 export const archiveCustomStrategy = async (id) => {
-  return postRequest(
-    `/strategies/custom/${encodeURIComponent(id)}/archive`, {},
-  )
+  return postRequest(`/strategies/custom/${encodeURIComponent(id)}/archive`, {})
 }
 
 export const simulateCustomStrategy = async (id, request) => {
   // request: { externalGameId, externalTaskId, externalUserId, data?, mockState? }
-  return postRequest(
-    `/strategies/custom/${encodeURIComponent(id)}/simulate`, request,
-  )
+  return postRequest(`/strategies/custom/${encodeURIComponent(id)}/simulate`, request)
 }
-
 
 // ---------------------------------------------------------------------------
 // Sprint 7 — DSL_EXTEND editor helpers
@@ -207,4 +197,26 @@ export const listBuiltInStrategies = async () => {
 
 export const getStrategySchema = async (id) => {
   return getRequest(`/strategies/${encodeURIComponent(id)}/schema`)
+}
+
+// ---------------------------------------------------------------------------
+// Sprint 8 — templates + import
+//
+// Templates are static JSON fixtures shipped with the backend so they can
+// share the validator and stay version-pinned to the DSL grammar. The
+// "Importar JSON" flow posts a full bundle (the same shape the dashboard
+// exports), with the server auto-renaming on name collision so a repeated
+// import is idempotent for support engineers.
+// ---------------------------------------------------------------------------
+
+export const listStrategyTemplates = async () => {
+  return getRequest('/strategies/custom/templates')
+}
+
+export const importCustomStrategy = async (bundle) => {
+  // bundle: { name, description?, type, parentStrategyId?, astJson,
+  //           blocklyXml, exportedAt?, exportedFromVersion? }
+  // The server ignores unknown keys (exportedAt, exportedFromVersion) so
+  // the round-trip from "Exportar JSON" lands cleanly.
+  return postRequest('/strategies/custom/import', bundle)
 }

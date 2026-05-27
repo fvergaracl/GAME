@@ -1,0 +1,45 @@
+{
+  "id": "engagement_basico",
+  "name": "Engagement básico",
+  "description": "Premia con 1 punto a los usuarios que apenas han interactuado con la tarea (≤ 2 mediciones acumuladas). Útil para incentivar a quien empieza.",
+  "type": "DSL_FULL",
+  "parentStrategyId": null,
+  "astJson": {
+    "type": "program",
+    "id": "program",
+    "rules": [
+      {
+        "type": "rule",
+        "id": "rule_engagement",
+        "when": {
+          "type": "compare",
+          "id": "cmp_engagement",
+          "op": "<=",
+          "left": {
+            "type": "field",
+            "id": "f_user_count",
+            "path": "user.measurements_count"
+          },
+          "right": {
+            "type": "literal",
+            "id": "lit_two",
+            "value": 2
+          }
+        },
+        "then": [
+          {
+            "type": "assign_points",
+            "id": "assign_engagement",
+            "value": {
+              "type": "literal",
+              "id": "lit_one",
+              "value": 1
+            },
+            "case_name": "BasicEngagement"
+          }
+        ]
+      }
+    ]
+  },
+  "blocklyXml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"gd_rule\" id=\"rule_engagement\" x=\"40\" y=\"40\"><value name=\"WHEN\"><block type=\"gd_compare\" id=\"cmp_engagement\"><field name=\"OP\">&lt;=</field><value name=\"LEFT\"><block type=\"gd_field\" id=\"f_user_count\"><field name=\"PATH\">user.measurements_count</field></block></value><value name=\"RIGHT\"><block type=\"gd_literal_number\" id=\"lit_two\"><field name=\"VALUE\">2</field></block></value></block></value><statement name=\"THEN\"><block type=\"gd_assign_points\" id=\"assign_engagement\"><value name=\"VALUE\"><block type=\"gd_literal_number\" id=\"lit_one\"><field name=\"VALUE\">1</field></block></value><field name=\"CASE_NAME\">BasicEngagement</field></block></statement></block></xml>"
+}

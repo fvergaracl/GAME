@@ -481,5 +481,53 @@ class TestPublishLifecycle(_Base):
             )
 
 
+class TestNameExists(_Base):
+    """Sprint 8: the import endpoint relies on ``name_exists`` to decide
+    whether to auto-rename the incoming bundle. The helper must be
+    tenant-scoped (a name colliding in realm A must not stop an import
+    into realm B) and must consider every version of a family."""
+
+    async def test_name_exists_is_false_for_unknown_name(self):
+        self.assertFalse(
+            await self.service.name_exists(
+                realmId="realm-a", name="nada"
+            )
+        )
+
+    async def test_name_exists_is_true_after_create(self):
+        await self.service.create(
+            payload=StrategyDefinitionCreate(
+                name="taken",
+                type=StrategyDefinitionType.DSL_FULL,
+            ),
+            realmId="realm-a",
+            createdBy=None,
+            apiKey_used=None,
+            oauth_user_id=None,
+        )
+        self.assertTrue(
+            await self.service.name_exists(
+                realmId="realm-a", name="taken"
+            )
+        )
+
+    async def test_name_exists_is_tenant_scoped(self):
+        await self.service.create(
+            payload=StrategyDefinitionCreate(
+                name="shared",
+                type=StrategyDefinitionType.DSL_FULL,
+            ),
+            realmId="realm-a",
+            createdBy=None,
+            apiKey_used=None,
+            oauth_user_id=None,
+        )
+        self.assertFalse(
+            await self.service.name_exists(
+                realmId="realm-b", name="shared"
+            )
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

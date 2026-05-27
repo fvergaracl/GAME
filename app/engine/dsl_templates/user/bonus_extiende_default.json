@@ -1,0 +1,54 @@
+{
+  "id": "bonus_extiende_default",
+  "name": "Bonus de fin de semana (extiende default)",
+  "description": "Extiende la estrategia 'default' con una post-regla: si data.is_weekend está activo, multiplica los puntos del padre por 1.5 y renombra el caso a 'WeekendBonus'. Ejemplo de cómo combinar una estrategia existente con un realce condicional.",
+  "type": "DSL_EXTEND",
+  "parentStrategyId": "default",
+  "astJson": {
+    "type": "program",
+    "id": "program",
+    "rules": [],
+    "post_rules": [
+      {
+        "type": "rule",
+        "id": "post_weekend",
+        "when": {
+          "type": "field",
+          "id": "f_data_weekend",
+          "path": "data.is_weekend"
+        },
+        "then": [
+          {
+            "type": "set_points",
+            "id": "sp_weekend",
+            "value": {
+              "type": "arith",
+              "id": "arith_bonus",
+              "op": "*",
+              "left": {
+                "type": "field",
+                "id": "f_parent_pts",
+                "path": "parent.points"
+              },
+              "right": {
+                "type": "literal",
+                "id": "lit_factor",
+                "value": 1.5
+              }
+            }
+          },
+          {
+            "type": "set_case_name",
+            "id": "scn_weekend",
+            "value": {
+              "type": "literal",
+              "id": "lit_case",
+              "value": "WeekendBonus"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "blocklyXml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"gd_post_rule\" id=\"post_weekend\" x=\"40\" y=\"40\"><value name=\"WHEN\"><block type=\"gd_field_data\" id=\"f_data_weekend\"><field name=\"KEY\">is_weekend</field></block></value><statement name=\"THEN\"><block type=\"gd_set_points\" id=\"sp_weekend\"><value name=\"VALUE\"><block type=\"gd_arith\" id=\"arith_bonus\"><field name=\"OP\">*</field><value name=\"LEFT\"><block type=\"gd_field_parent\" id=\"f_parent_pts\"><field name=\"PATH\">parent.points</field></block></value><value name=\"RIGHT\"><block type=\"gd_literal_number\" id=\"lit_factor\"><field name=\"VALUE\">1.5</field></block></value></block></value><next><block type=\"gd_set_case_name\" id=\"scn_weekend\"><value name=\"VALUE\"><block type=\"gd_literal_text\" id=\"lit_case\"><field name=\"VALUE\">WeekendBonus</field></block></value></block></next></block></statement></block></xml>"
+}

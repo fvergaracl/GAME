@@ -13,6 +13,7 @@ Tenant scoping:
   realm's strategies and we do exactly that here.
 """
 
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from dependency_injector.wiring import Provide, inject
@@ -21,6 +22,8 @@ from fastapi import APIRouter, Depends, Query, status
 from app.core.config import configs
 from app.core.container import Container
 from app.core.exceptions import ForbiddenError
+from app.engine.dsl_templates.loader import load_user_templates
+from app.engine.dsl_validator import validate_ast
 from app.middlewares.auth_context import (
     AuditLogger,
     AuthContext,
@@ -31,8 +34,10 @@ from app.schema.dsl_schema import SimulationRequest, SimulationResponse
 from app.model.strategy_definition import StrategyDefinitionType
 from app.schema.strategy_definition_schema import (
     StrategyDefinitionCreate,
+    StrategyDefinitionImport,
     StrategyDefinitionRead,
     StrategyDefinitionUpdate,
+    StrategyTemplateRead,
 )
 from app.services.dsl_simulation_service import DslSimulationService
 from app.services.strategy_definition_service import (
@@ -201,6 +206,99 @@ async def list_custom_strategies(
         type=type_filter,
         limit=limit,
     )
+
+
+@router.get(
+    "/templates",
+    response_model=List[StrategyTemplateRead],
+    summary="List built-in user-facing templates (Sprint 8)",
+)
+async def list_strategy_templates(
+    auth: AuthContext = Depends(require_authenticated),
+) -> List[StrategyTemplateRead]:
+    """Return the curated templates that seed the editor's
+    "Usar una plantilla" CTA. Tenant-agnostic — every authenticated
+    caller sees the same list. The loader validates ASTs at boot, so
+    everything returned here is guaranteed to round-trip through the
+    editor and through ``POST /import`` without further checks.
+    """
+    return load_user_templates()
+
+
+@router.post(
+    "/import",
+    response_model=StrategyDefinitionRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Import a strategy bundle as a new DRAFT (Sprint 8)",
+)
+@inject
+async def import_custom_strategy(
+    payload: StrategyDefinitionImport,
+    auth: AuthContext = Depends(require_authenticated),
+    service: StrategyDefinitionService = Depends(
+        Provide[Container.strategy_definition_service]
+    ),
+    strategy_service: StrategyService = Depends(
+        Provide[Container.strategy_service]
+    ),
+    audit: AuditLogger = Depends(audit_log("strategy_import")),
+) -> StrategyDefinitionRead:
+    """
+    Persist a strategy bundle produced by the dashboard's
+    "Exportar JSON" action (or hand-authored equivalent).
+
+    Differs from ``POST /`` in two ways:
+      * AST is validated up-front so a malformed payload returns a
+        ``DslValidationError`` before any DB lookup.
+      * On a name collision in the same realm the import is renamed
+        ``"<name> (importada YYYY-MM-DD)"`` instead of failing with
+        ``DuplicatedError``. Import has to be idempotent enough for a
+        support engineer to retry without first deleting the prior
+        attempt.
+    """
+    realm = _resolve_realm_id(auth)
+    await audit.info(
+        "Import custom strategy",
+        {"name": payload.name, "type": payload.type.value},
+    )
+    try:
+        # Validate AST before any DB roundtrip so the caller gets a
+        # precise error pointing at the offending node.
+        validate_ast(payload.astJson)
+        _ensure_parent_strategy_exists(
+            payload.type, payload.parentStrategyId, strategy_service,
+        )
+
+        # Auto-rename on name collision so a re-import is idempotent.
+        # Without this the unique constraint on (realmId, name, version)
+        # would trip inside service.create with a confusing 400.
+        target_name = payload.name
+        if await service.name_exists(realmId=realm, name=target_name):
+            today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            target_name = f"{payload.name} (importada {today})"
+
+        create_payload = StrategyDefinitionCreate(
+            name=target_name,
+            description=payload.description,
+            type=payload.type,
+            parentStrategyId=payload.parentStrategyId,
+            astJson=payload.astJson,
+            blocklyXml=payload.blocklyXml,
+            experimentTag=payload.experimentTag,
+        )
+        return await service.create(
+            payload=create_payload,
+            realmId=realm,
+            createdBy=auth.oauth_user_id or auth.api_key,
+            apiKey_used=auth.api_key,
+            oauth_user_id=auth.oauth_user_id,
+        )
+    except Exception as e:
+        await audit.error(
+            "Import custom strategy failed",
+            {"name": payload.name, "error": str(e)},
+        )
+        raise
 
 
 @router.get(

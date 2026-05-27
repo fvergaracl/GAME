@@ -347,3 +347,218 @@ async def test_create_with_dsl_full_skips_parent_check():
 
     strategy_service.get_strategy_by_id.assert_not_called()
     service.create.assert_awaited_once()
+
+
+# ---------------------------------------------------------------- templates
+# Sprint 8: list_strategy_templates is a thin wrapper over the loader.
+# We patch the loader so the test doesn't depend on the on-disk files.
+
+
+from app.core.exceptions import DslValidationError  # noqa: E402
+from app.schema.strategy_definition_schema import (  # noqa: E402
+    StrategyDefinitionImport,
+    StrategyTemplateRead,
+)
+
+
+def _template_stub(**overrides) -> StrategyTemplateRead:
+    base = {
+        "id": "tpl-1",
+        "name": "Template uno",
+        "description": "desc",
+        "type": StrategyDefinitionType.DSL_FULL,
+        "parentStrategyId": None,
+        "astJson": {
+            "type": "program",
+            "id": "program",
+            "rules": [],
+        },
+        "blocklyXml": "<xml></xml>",
+    }
+    base.update(overrides)
+    return StrategyTemplateRead(**base)
+
+
+@pytest.mark.asyncio
+async def test_list_templates_returns_loaded_list():
+    """Endpoint hands back exactly what the loader returns, no filtering."""
+    payload = [
+        _template_stub(id="tpl-1"),
+        _template_stub(
+            id="tpl-2",
+            type=StrategyDefinitionType.DSL_EXTEND,
+            parentStrategyId="default",
+        ),
+    ]
+    with patch.object(endpoint, "load_user_templates", return_value=payload):
+        result = await endpoint.list_strategy_templates(
+            auth=_auth(api_key="api-key-xyz"),
+        )
+    assert [t.id for t in result] == ["tpl-1", "tpl-2"]
+
+
+# ---------------------------------------------------------------- import
+
+
+def _import_payload(**overrides) -> StrategyDefinitionImport:
+    base = {
+        "name": "imported_one",
+        "description": None,
+        "type": StrategyDefinitionType.DSL_FULL,
+        "parentStrategyId": None,
+        "astJson": {
+            "type": "program",
+            "id": "program",
+            "rules": [],
+        },
+        "blocklyXml": "<xml></xml>",
+    }
+    base.update(overrides)
+    return StrategyDefinitionImport(**base)
+
+
+@pytest.mark.asyncio
+async def test_import_creates_draft_when_name_is_unique():
+    service = MagicMock()
+    service.name_exists = AsyncMock(return_value=False)
+    service.create = AsyncMock(return_value=_read_stub(name="imported_one"))
+    strategy_service = MagicMock()
+    auth = _auth(api_key="api-key-xyz")
+
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
+        result = await endpoint.import_custom_strategy(
+            payload=_import_payload(),
+            auth=auth,
+            service=service,
+            strategy_service=strategy_service,
+            audit=_audit(auth),
+        )
+
+    service.name_exists.assert_awaited_once_with(
+        realmId="api-key-xyz", name="imported_one",
+    )
+    service.create.assert_awaited_once()
+    call_kwargs = service.create.await_args.kwargs
+    assert call_kwargs["payload"].name == "imported_one"
+    assert call_kwargs["realmId"] == "api-key-xyz"
+    assert result.name == "imported_one"
+
+
+@pytest.mark.asyncio
+async def test_import_renames_on_name_collision():
+    """When the realm already has a strategy with the same name, import
+    must auto-rename rather than 400 — otherwise a support engineer
+    re-running an import would have to manually delete prior attempts."""
+    service = MagicMock()
+    service.name_exists = AsyncMock(return_value=True)
+    service.create = AsyncMock(return_value=_read_stub())
+    strategy_service = MagicMock()
+    auth = _auth(api_key="api-key-xyz")
+
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
+        await endpoint.import_custom_strategy(
+            payload=_import_payload(name="dup_name"),
+            auth=auth,
+            service=service,
+            strategy_service=strategy_service,
+            audit=_audit(auth),
+        )
+
+    created_payload = service.create.await_args.kwargs["payload"]
+    # The renamed payload starts with the original name and ends with
+    # the "(importada ...)" suffix; we don't assert the date exactly so
+    # the test stays time-independent.
+    assert created_payload.name.startswith("dup_name (importada ")
+    assert created_payload.name.endswith(")")
+
+
+@pytest.mark.asyncio
+async def test_import_rejects_malformed_ast_before_db_roundtrip():
+    """A bad AST must 400 (via DslValidationError) and never touch
+    name_exists / create — proves the upfront validation guard."""
+    service = MagicMock()
+    service.name_exists = AsyncMock()
+    service.create = AsyncMock()
+    strategy_service = MagicMock()
+    auth = _auth(api_key="api-key-xyz")
+
+    bad = _import_payload(
+        astJson={
+            "type": "program",
+            "id": "program",
+            # rules must be a list — passing a dict trips validate_ast.
+            "rules": {"oops": "not_a_list"},
+        },
+    )
+
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
+        with pytest.raises(DslValidationError):
+            await endpoint.import_custom_strategy(
+                payload=bad,
+                auth=auth,
+                service=service,
+                strategy_service=strategy_service,
+                audit=_audit(auth),
+            )
+
+    service.name_exists.assert_not_awaited()
+    service.create.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_import_dsl_extend_validates_parent_against_registry():
+    """DSL_EXTEND import with an unknown parent must 404 before
+    create — same guard as the regular create endpoint."""
+    service = MagicMock()
+    service.name_exists = AsyncMock()
+    service.create = AsyncMock()
+    strategy_service = MagicMock()
+    strategy_service.get_strategy_by_id.side_effect = NotFoundError(
+        detail="Strategy not found with id: ghost"
+    )
+    auth = _auth(api_key="api-key-xyz")
+
+    payload = _import_payload(
+        name="extend_ghost",
+        type=StrategyDefinitionType.DSL_EXTEND,
+        parentStrategyId="ghost",
+    )
+
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
+        with pytest.raises(NotFoundError, match="ghost"):
+            await endpoint.import_custom_strategy(
+                payload=payload,
+                auth=auth,
+                service=service,
+                strategy_service=strategy_service,
+                audit=_audit(auth),
+            )
+
+    strategy_service.get_strategy_by_id.assert_called_once_with("ghost")
+    service.create.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_import_logs_failure_with_audit():
+    """An exception inside service.create must trigger an audit ERROR
+    log — same audit-on-failure pattern as the create endpoint."""
+    service = MagicMock()
+    service.name_exists = AsyncMock(return_value=False)
+    service.create = AsyncMock(side_effect=RuntimeError("boom"))
+    strategy_service = MagicMock()
+    auth = _auth(api_key="api-key-xyz")
+
+    with patch(
+        "app.middlewares.auth_context.add_log", new=AsyncMock()
+    ) as mock_add_log:
+        with pytest.raises(RuntimeError, match="boom"):
+            await endpoint.import_custom_strategy(
+                payload=_import_payload(),
+                auth=auth,
+                service=service,
+                strategy_service=strategy_service,
+                audit=_audit(auth),
+            )
+
+    # INFO on attempt + ERROR on failure.
+    assert mock_add_log.await_count == 2

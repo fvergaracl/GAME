@@ -1,0 +1,55 @@
+{
+  "id": "bonus_por_velocidad",
+  "name": "Bonus por velocidad",
+  "description": "Otorga 10 puntos (caso SpeedBonus) cuando el tiempo medio del usuario es claramente inferior al de la media global (user.avg_time < all.avg_time * 0.8). Recompensa el desempeño rápido sin disparar falsos positivos.",
+  "type": "DSL_FULL",
+  "parentStrategyId": null,
+  "astJson": {
+    "type": "program",
+    "id": "program",
+    "rules": [
+      {
+        "type": "rule",
+        "id": "rule_speed",
+        "when": {
+          "type": "compare",
+          "id": "cmp_speed",
+          "op": "<",
+          "left": {
+            "type": "field",
+            "id": "f_user_avg",
+            "path": "user.avg_time"
+          },
+          "right": {
+            "type": "arith",
+            "id": "arith_threshold",
+            "op": "*",
+            "left": {
+              "type": "field",
+              "id": "f_all_avg",
+              "path": "all.avg_time"
+            },
+            "right": {
+              "type": "literal",
+              "id": "lit_factor",
+              "value": 0.8
+            }
+          }
+        },
+        "then": [
+          {
+            "type": "assign_points",
+            "id": "assign_speed",
+            "value": {
+              "type": "literal",
+              "id": "lit_ten",
+              "value": 10
+            },
+            "case_name": "SpeedBonus"
+          }
+        ]
+      }
+    ]
+  },
+  "blocklyXml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"gd_rule\" id=\"rule_speed\" x=\"40\" y=\"40\"><value name=\"WHEN\"><block type=\"gd_compare\" id=\"cmp_speed\"><field name=\"OP\">&lt;</field><value name=\"LEFT\"><block type=\"gd_field\" id=\"f_user_avg\"><field name=\"PATH\">user.avg_time</field></block></value><value name=\"RIGHT\"><block type=\"gd_arith\" id=\"arith_threshold\"><field name=\"OP\">*</field><value name=\"LEFT\"><block type=\"gd_field\" id=\"f_all_avg\"><field name=\"PATH\">all.avg_time</field></block></value><value name=\"RIGHT\"><block type=\"gd_literal_number\" id=\"lit_factor\"><field name=\"VALUE\">0.8</field></block></value></block></value></block></value><statement name=\"THEN\"><block type=\"gd_assign_points\" id=\"assign_speed\"><value name=\"VALUE\"><block type=\"gd_literal_number\" id=\"lit_ten\"><field name=\"VALUE\">10</field></block></value><field name=\"CASE_NAME\">SpeedBonus</field></block></statement></block></xml>"
+}

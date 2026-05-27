@@ -88,6 +88,57 @@ class StrategyDefinitionRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class StrategyTemplateRead(BaseModel):
+    """
+    Outbound view of a built-in user-facing template (Sprint 8).
+
+    Templates live on disk under ``app/engine/dsl_templates/user/`` and
+    seed the "Usar una plantilla" path in the Blockly editor. They are
+    NOT persisted rows — the editor copies the AST + blocklyXml into a
+    fresh DRAFT when the designer picks one. The shape mirrors what the
+    file format is so the loader can `model_validate` each JSON directly.
+    """
+
+    id: str
+    name: str
+    description: Optional[str] = None
+    type: StrategyDefinitionType = StrategyDefinitionType.DSL_FULL
+    parentStrategyId: Optional[str] = None
+    astJson: dict
+    blocklyXml: str
+
+
+class StrategyDefinitionImport(BaseModel):
+    """
+    Input payload for ``POST /v1/strategies/custom/import`` (Sprint 8).
+
+    Matches the bundle produced by the dashboard's "Exportar JSON" action
+    so an export → import round-trip lands a structurally identical
+    strategy. Differs from :class:`StrategyDefinitionCreate` in two ways:
+
+      * ``astJson`` is required (the whole point of importing is the AST).
+      * ``blocklyXml`` is required so the imported strategy is editable in
+        the visual editor — a bare-AST import would leave a useless blank
+        workspace.
+
+    Unknown keys (``exportedAt``, ``exportedFromVersion``) are ignored so
+    operator tooling can stamp metadata on exports without breaking the
+    server contract.
+    """
+
+    name: str = Field(min_length=1, max_length=200)
+    description: Optional[str] = Field(default=None, max_length=2000)
+    type: StrategyDefinitionType = Field(
+        default=StrategyDefinitionType.DSL_FULL,
+    )
+    parentStrategyId: Optional[str] = None
+    astJson: dict
+    blocklyXml: str = Field(min_length=1)
+    experimentTag: Optional[str] = Field(default=None, max_length=200)
+
+    model_config = ConfigDict(extra="ignore")
+
+
 class StrategyDefinitionPersist(BaseModel):
     """
     Internal schema used by the repository layer to persist a row.

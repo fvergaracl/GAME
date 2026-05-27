@@ -101,6 +101,25 @@ class StrategyDefinitionService(BaseService):
                     )
                 )
 
+    async def name_exists(
+        self,
+        *,
+        realmId: Optional[str],
+        name: str,
+    ) -> bool:
+        """Whether any version of ``(realmId, name)`` already exists.
+
+        Used by the import endpoint (Sprint 8) to decide whether the
+        incoming bundle needs an auto-rename to avoid colliding with
+        the ``UNIQUE(realmId, name, version)`` constraint.
+        """
+        max_version = (
+            await self.strategy_definition_repository.get_max_version(
+                realmId=realmId, name=name
+            )
+        )
+        return max_version > 0
+
     async def list_strategies(
         self,
         *,

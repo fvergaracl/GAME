@@ -1,0 +1,55 @@
+{
+  "id": "recompensa_completar_tarea",
+  "name": "Recompensa por completar tarea",
+  "description": "Concede 5 puntos la primera vez que se completa la tarea (task.measurements_count == 1) y 2 puntos en completados sucesivos. Pensada para reforzar el hito inicial sin penalizar la repetición.",
+  "type": "DSL_FULL",
+  "parentStrategyId": null,
+  "astJson": {
+    "type": "program",
+    "id": "program",
+    "rules": [
+      {
+        "type": "rule",
+        "id": "rule_first",
+        "when": {
+          "type": "compare",
+          "id": "cmp_first",
+          "op": "==",
+          "left": {
+            "type": "field",
+            "id": "f_task_count",
+            "path": "task.measurements_count"
+          },
+          "right": {
+            "type": "literal",
+            "id": "lit_one_check",
+            "value": 1
+          }
+        },
+        "then": [
+          {
+            "type": "assign_points",
+            "id": "assign_first",
+            "value": {
+              "type": "literal",
+              "id": "lit_five",
+              "value": 5
+            },
+            "case_name": "FirstCompletion"
+          }
+        ]
+      }
+    ],
+    "default": {
+      "type": "assign_points",
+      "id": "default_assign",
+      "value": {
+        "type": "literal",
+        "id": "lit_two",
+        "value": 2
+      },
+      "case_name": "TaskCompleted"
+    }
+  },
+  "blocklyXml": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"gd_rule\" id=\"rule_first\" x=\"40\" y=\"40\"><value name=\"WHEN\"><block type=\"gd_compare\" id=\"cmp_first\"><field name=\"OP\">==</field><value name=\"LEFT\"><block type=\"gd_field\" id=\"f_task_count\"><field name=\"PATH\">task.measurements_count</field></block></value><value name=\"RIGHT\"><block type=\"gd_literal_number\" id=\"lit_one_check\"><field name=\"VALUE\">1</field></block></value></block></value><statement name=\"THEN\"><block type=\"gd_assign_points\" id=\"assign_first\"><value name=\"VALUE\"><block type=\"gd_literal_number\" id=\"lit_five\"><field name=\"VALUE\">5</field></block></value><field name=\"CASE_NAME\">FirstCompletion</field></block></statement></block><block type=\"gd_assign_points\" id=\"default_assign\" x=\"40\" y=\"260\"><value name=\"VALUE\"><block type=\"gd_literal_number\" id=\"lit_two\"><field name=\"VALUE\">2</field></block></value><field name=\"CASE_NAME\">TaskCompleted</field></block></xml>"
+}
