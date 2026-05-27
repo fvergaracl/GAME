@@ -39,6 +39,19 @@
         "address",
         "phone",
         "microprofile-jwt"
+      ],
+      "protocolMappers": [
+        {
+          "name": "game-backend-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "${KEYCLOAK_CLIENT_ID}",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
       ]
     }
   ],
