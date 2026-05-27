@@ -324,6 +324,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">dsl_interpreter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DslInterpreter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">analytics_service</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">execution_observer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initializes the StrategyService.</span>
@@ -346,6 +347,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_strategy_definition_service</span> <span class="o">=</span> <span class="n">strategy_definition_service</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dsl_interpreter</span> <span class="o">=</span> <span class="n">dsl_interpreter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_analytics_service</span> <span class="o">=</span> <span class="n">analytics_service</span>
+        <span class="c1"># Sprint 11: passed straight through to ``DslStrategy``. Optional</span>
+        <span class="c1"># so the legacy two-arg construction style in tests still works</span>
+        <span class="c1"># — metrics + persistence become no-ops in that case.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execution_observer</span> <span class="o">=</span> <span class="n">execution_observer</span>
 
 <div class="viewcode-block" id="StrategyService.list_all_strategies">
 <a class="viewcode-back" href="../../../app/app.services.html#app.services.strategy_service.StrategyService.list_all_strategies">[docs]</a>
@@ -531,6 +536,7 @@
             <span class="n">interpreter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dsl_interpreter</span><span class="p">,</span>
             <span class="n">analytics_service</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_analytics_service</span><span class="p">,</span>
             <span class="n">parent_strategy</span><span class="o">=</span><span class="n">parent_strategy</span><span class="p">,</span>
+            <span class="n">observer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_execution_observer</span><span class="p">,</span>
         <span class="p">)</span></div>
 </div>
 
