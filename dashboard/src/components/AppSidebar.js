@@ -24,13 +24,19 @@ const AppSidebar = () => {
   const sidebarShow = useSelector((state) => state.sidebarShow)
   const sidebarNav = useSelector((state) => state.sidebarNav) || _nav
   useEffect(() => {
-    // AdministratorGAME is a CLIENT role on ${VITE_KEYCLOAK_CLIENT_ID}
-    // (see keycloak/realm-template.json), so it lands under
-    // resource_access[<client-id>].roles in the JWT — not under
-    // resource_access.account.roles.
-    const clientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID
+    // AdministratorGAME is a CLIENT role on the *backend* client
+    // (VITE_KEYCLOAK_API_CLIENT_ID, e.g. game-backend), not on the public
+    // SPA client used for the login flow (VITE_KEYCLOAK_CLIENT_ID,
+    // e.g. game-frontend). The default "client roles" mapper in
+    // Keycloak's roles scope aggregates roles across clients into
+    // resource_access[<client>].roles regardless of which client
+    // requested the token, so the lookup below resolves even when the
+    // user logged in via the public SPA client.
+    const apiClientId =
+      import.meta.env.VITE_KEYCLOAK_API_CLIENT_ID ||
+      import.meta.env.VITE_KEYCLOAK_CLIENT_ID
     const roles =
-      keycloak.tokenParsed?.resource_access?.[clientId]?.roles ?? []
+      keycloak.tokenParsed?.resource_access?.[apiClientId]?.roles ?? []
     if (roles.includes('AdministratorGAME')) {
       dispatch({ type: 'set', sidebarNav: _nav_administrator })
     } else {

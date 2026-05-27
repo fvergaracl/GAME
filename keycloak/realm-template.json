@@ -19,18 +19,14 @@
       "serviceAccountsEnabled": true,
       "redirectUris": [
         "http://localhost:8000/*",
-        "http://localhost:3000/*",
         "http://localhost/*",
         "https://localhost/*",
-        "https://localhost:8000/*",
-        "https://localhost:3000/*"
+        "https://localhost:8000/*"
       ],
       "webOrigins": [
         "http://localhost:8000",
-        "http://localhost:3000",
         "http://localhost",
         "https://localhost:8000",
-        "https://localhost:3000",
         "https://localhost"
       ],
       "defaultClientScopes": [
@@ -42,6 +38,53 @@
         "offline_access",
         "address",
         "phone",
+        "microprofile-jwt"
+      ],
+      "protocolMappers": [
+        {
+          "name": "game-backend-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "${KEYCLOAK_CLIENT_ID}",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "game-frontend",
+      "name": "GAME Dashboard (browser)",
+      "description": "Public PKCE client used by the dashboard SPA. Issues tokens whose audience targets the backend (game-backend) so the API accepts them.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "https://localhost:3000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3000",
+        "https://localhost:3000"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:3000/*##https://localhost:3000/*"
+      },
+      "defaultClientScopes": [
+        "profile",
+        "email",
+        "roles"
+      ],
+      "optionalClientScopes": [
+        "offline_access",
         "microprofile-jwt"
       ],
       "protocolMappers": [

@@ -103,7 +103,12 @@ services:
       VITE_GAME_API_URL: "http://localhost:8000/api/v1"
       VITE_KEYCLOAK_URL: "http://localhost:8080"
       VITE_KEYCLOAK_REALM: "${KEYCLOAK_REALM}"
-      VITE_KEYCLOAK_CLIENT_ID: "${KEYCLOAK_CLIENT_ID}"
+      # Public client (PKCE) used by the SPA. Different from KEYCLOAK_CLIENT_ID,
+      # which is the confidential backend client.
+      VITE_KEYCLOAK_CLIENT_ID: "game-frontend"
+      # The backend client where the AdministratorGAME role lives. Used by
+      # AppSidebar to read resource_access[<api-client>].roles.
+      VITE_KEYCLOAK_API_CLIENT_ID: "${KEYCLOAK_CLIENT_ID}"
     command: ["npm", "run", "start", "--", "--host", "0.0.0.0", "--port", "3000"]
     depends_on:
       - api
