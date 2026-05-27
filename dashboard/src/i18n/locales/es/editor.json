@@ -1,0 +1,102 @@
+{
+  "chooser": {
+    "title": "¿Cómo quieres empezar?",
+    "fromScratch": {
+      "title": "Empezar desde cero",
+      "description": "Workspace en blanco. Útil cuando ya sabes qué reglas quieres modelar.",
+      "cta": "Crear estrategia vacía"
+    },
+    "template": {
+      "title": "Usar una plantilla",
+      "description": "Empieza con un ejemplo listo (engagement, recompensa por completar tarea, bonus de velocidad, ...).",
+      "cta": "Elegir plantilla"
+    },
+    "extend": {
+      "title": "Extender estrategia existente",
+      "description": "Envuelve una built-in (por ej. <code>default</code>) con reglas pre/post sin reescribirla.",
+      "cta": "Extender existente"
+    },
+    "importJson": "Importar JSON",
+    "importHint": "Sube un bundle previamente exportado."
+  },
+  "header": {
+    "title": "Editor de estrategia",
+    "id": "id",
+    "version": "v{{version}}"
+  },
+  "form": {
+    "name": "Nombre",
+    "description": "Descripción",
+    "mode": "Modo",
+    "modeFull": "Crear desde cero",
+    "modeExtend": "Extender existente",
+    "parent": "Estrategia padre",
+    "selectParent": "— Selecciona padre —"
+  },
+  "buttons": {
+    "save": "Guardar borrador",
+    "test": "Probar",
+    "exportJson": "Exportar JSON",
+    "importJson": "Importar JSON",
+    "history": "Ver historial",
+    "startTour": "Volver a ver tutorial",
+    "languageLabel": "Idioma"
+  },
+  "simulate": {
+    "title": "Probar estrategia",
+    "externalGameId": "externalGameId",
+    "externalTaskId": "externalTaskId",
+    "externalUserId": "externalUserId",
+    "data": "data (JSON)",
+    "mockState": "mockState (JSON)",
+    "mockHint": "Sustituye campos del whitelist por valores fijos, por ejemplo <code>{\"task.measurements_count\": 1}</code>.",
+    "result": "Resultado",
+    "trace": "Trace ({{count}} nodos)",
+    "noTrace": "—"
+  },
+  "result": {
+    "points": "points",
+    "caseName": "caseName",
+    "callbackData": "callbackData"
+  },
+  "parentSchema": {
+    "title": "Padre: {{name}}",
+    "version": "v{{version}}",
+    "variables": "Variables",
+    "name": "Nombre",
+    "type": "Tipo",
+    "defaultValue": "Valor por defecto",
+    "noVariables": "Esta estrategia no expone variables editables.",
+    "hint": "Usa los bloques de la categoría \"Overrides padre\" para ajustar estos valores."
+  },
+  "alerts": {
+    "astErrors": "El AST tiene errores:",
+    "nameRequired": "El nombre de la estrategia es obligatorio.",
+    "noWorkspace": "Abre el editor antes de exportar.",
+    "serializeFailed": "No se pudo serializar el workspace: {{error}}",
+    "noParent": "Selecciona una estrategia padre antes de guardar.",
+    "noParentSim": "Selecciona una estrategia padre antes de probar.",
+    "fileReadFailed": "No se pudo leer el archivo: {{error}}",
+    "notAStrategyBundle": "El archivo no parece un bundle de estrategia: falta astJson.",
+    "invalidDataJson": "data: JSON inválido ({{error}}).",
+    "invalidMockJson": "mockState: JSON inválido ({{error}}).",
+    "saveSuccessUpdate": "Estrategia actualizada (v{{version}}, {{status}}).",
+    "saveSuccessCreate": "Estrategia creada (id {{id}}, v{{version}}).",
+    "unknownError": "Error desconocido al contactar el backend."
+  },
+  "tour": {
+    "skip": "Saltar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "last": "Entendido",
+    "steps": {
+      "welcome": "Bienvenido al editor de estrategias. Aquí puedes diseñar reglas de puntos sin escribir código.",
+      "name": "Pon un nombre claro a tu estrategia — lo verás cuando la asignes a un juego o tarea.",
+      "mode": "Elige si empiezas de cero o extiendes una estrategia existente.",
+      "workspace": "Arrastra bloques desde la barra lateral hasta este lienzo. Conéctalos como piezas de puzzle para formar reglas.",
+      "simulate": "Cuando tengas una regla, pruébala aquí con un usuario y tarea ficticios — no se guarda nada en producción.",
+      "save": "Guarda como borrador todas las veces que quieras. Sólo entra en producción cuando un admin publique la versión.",
+      "history": "Cada vez que guardas, queda una versión. Desde aquí puedes ver el historial y hacer rollback."
+    }
+  }
+}

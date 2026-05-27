@@ -1,0 +1,19 @@
+{
+  "fallback": "Strategy error: {{message}}",
+  "DSL_ARITH_DIV_BY_ZERO": "Division by zero in an arithmetic operation (node {{nodeId}}).",
+  "DSL_ARITH_OP_NOT_ALLOWED": "The arithmetic operator '{{op}}' is not allowed (node {{nodeId}}).",
+  "DSL_ARITH_TYPE_MISMATCH": "Cannot apply '{{op}}' between {{leftType}} and {{rightType}} (node {{nodeId}}).",
+  "DSL_ASSIGN_POINTS_NOT_NUMBER": "'assign points' value must be a number (got: {{actualType}}, node {{nodeId}}).",
+  "DSL_COMPARE_OP_NOT_ALLOWED": "The comparison operator '{{op}}' is not allowed (node {{nodeId}}).",
+  "DSL_COMPARE_TYPE_MISMATCH": "Cannot compare {{leftType}} with {{rightType}} using '{{op}}' (node {{nodeId}}).",
+  "DSL_FIELD_NOT_PRECOMPUTED": "Field '{{path}}' was not precomputed before execution (node {{nodeId}}).",
+  "DSL_FIELD_PATH_NOT_ALLOWED": "Field '{{path}}' is not in the allowed list. Use an analytics field or 'data.<key>'.",
+  "DSL_FUNC_ARITY_MISMATCH": "Function '{{name}}' expects {{expected}} arguments but got {{actual}}.",
+  "DSL_FUNC_NAME_NOT_ALLOWED": "Function '{{name}}' is not allowed.",
+  "DSL_NO_AST_TO_SIMULATE": "This strategy has no saved AST yet. Save it before testing.",
+  "DSL_PARENT_FIELD_OUTSIDE_POST": "Field '{{path}}' can only be used inside POST rules.",
+  "DSL_SET_CASE_NAME_NOT_STRING": "The new caseName must be a string (got: {{actualType}}, node {{nodeId}}).",
+  "DSL_SET_POINTS_NOT_NUMBER": "'set points' value must be a number (got: {{actualType}}, node {{nodeId}}).",
+  "DSL_TIMEOUT": "Simulation took more than {{timeoutMs}}ms and was interrupted.",
+  "DSL_UNKNOWN_STATEMENT": "Unknown statement node type: '{{nodeType}}' (node {{nodeId}})."
+}

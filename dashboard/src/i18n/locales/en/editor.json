@@ -1,0 +1,102 @@
+{
+  "chooser": {
+    "title": "How would you like to start?",
+    "fromScratch": {
+      "title": "Start from scratch",
+      "description": "Empty workspace. Useful when you already know which rules you want to model.",
+      "cta": "Create empty strategy"
+    },
+    "template": {
+      "title": "Use a template",
+      "description": "Start from a ready-made example (engagement, reward on completion, speed bonus...).",
+      "cta": "Pick a template"
+    },
+    "extend": {
+      "title": "Extend an existing strategy",
+      "description": "Wrap a built-in (e.g. <code>default</code>) with pre/post rules without rewriting it.",
+      "cta": "Extend existing"
+    },
+    "importJson": "Import JSON",
+    "importHint": "Upload a previously exported bundle."
+  },
+  "header": {
+    "title": "Strategy editor",
+    "id": "id",
+    "version": "v{{version}}"
+  },
+  "form": {
+    "name": "Name",
+    "description": "Description",
+    "mode": "Mode",
+    "modeFull": "Start from scratch",
+    "modeExtend": "Extend existing",
+    "parent": "Parent strategy",
+    "selectParent": "— Select parent —"
+  },
+  "buttons": {
+    "save": "Save draft",
+    "test": "Test",
+    "exportJson": "Export JSON",
+    "importJson": "Import JSON",
+    "history": "View history",
+    "startTour": "Show tour again",
+    "languageLabel": "Language"
+  },
+  "simulate": {
+    "title": "Test strategy",
+    "externalGameId": "externalGameId",
+    "externalTaskId": "externalTaskId",
+    "externalUserId": "externalUserId",
+    "data": "data (JSON)",
+    "mockState": "mockState (JSON)",
+    "mockHint": "Override whitelisted fields with fixed values, e.g. <code>{\"task.measurements_count\": 1}</code>.",
+    "result": "Result",
+    "trace": "Trace ({{count}} nodes)",
+    "noTrace": "—"
+  },
+  "result": {
+    "points": "points",
+    "caseName": "caseName",
+    "callbackData": "callbackData"
+  },
+  "parentSchema": {
+    "title": "Parent: {{name}}",
+    "version": "v{{version}}",
+    "variables": "Variables",
+    "name": "Name",
+    "type": "Type",
+    "defaultValue": "Default value",
+    "noVariables": "This strategy exposes no editable variables.",
+    "hint": "Use the \"Parent overrides\" toolbox category to tweak these values."
+  },
+  "alerts": {
+    "astErrors": "The AST has errors:",
+    "nameRequired": "Strategy name is required.",
+    "noWorkspace": "Open the editor before exporting.",
+    "serializeFailed": "Could not serialize the workspace: {{error}}",
+    "noParent": "Select a parent strategy before saving.",
+    "noParentSim": "Select a parent strategy before testing.",
+    "fileReadFailed": "Could not read the file: {{error}}",
+    "notAStrategyBundle": "The file does not look like a strategy bundle: missing astJson.",
+    "invalidDataJson": "data: invalid JSON ({{error}}).",
+    "invalidMockJson": "mockState: invalid JSON ({{error}}).",
+    "saveSuccessUpdate": "Strategy updated (v{{version}}, {{status}}).",
+    "saveSuccessCreate": "Strategy created (id {{id}}, v{{version}}).",
+    "unknownError": "Unknown error when contacting the backend."
+  },
+  "tour": {
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "last": "Got it",
+    "steps": {
+      "welcome": "Welcome to the strategy editor. Here you can design point rules without writing code.",
+      "name": "Give your strategy a clear name — you'll see it when assigning it to a game or task.",
+      "mode": "Pick whether you start from scratch or extend an existing strategy.",
+      "workspace": "Drag blocks from the side panel onto this canvas. Snap them together like puzzle pieces to form rules.",
+      "simulate": "When you have a rule, test it here with a fictitious user and task — nothing is persisted to production.",
+      "save": "Save as draft as often as you like. It only reaches production when an admin publishes the version.",
+      "history": "Every save creates a version. From here you can view history and roll back."
+    }
+  }
+}

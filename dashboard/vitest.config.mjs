@@ -19,8 +19,12 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.js'],
-    // Keep the matcher tight: only the new strategies editor surface
-    // ships with tests in S6. Other dirs are intentionally skipped.
-    include: ['src/views/strategies/**/*.test.js'],
+    // Keep the matcher tight: the strategies editor surface (S6) and
+    // the i18n bundles (S10) ship with tests. Other dirs are
+    // intentionally skipped until they grow test coverage.
+    include: [
+      'src/views/strategies/**/*.test.js',
+      'src/i18n/**/*.test.js',
+    ],
   },
 })

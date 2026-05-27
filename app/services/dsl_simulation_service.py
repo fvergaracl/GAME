@@ -63,7 +63,9 @@ class DslSimulationService(BaseService):
                 detail=(
                     "Strategy has no AST to simulate. Provide an astJson "
                     "via PUT /v1/strategies/custom/{id} first."
-                )
+                ),
+                code="DSL_NO_AST_TO_SIMULATE",
+                params={"strategyId": id},
             )
 
         # Idempotent guard: drafts saved before validator changes still
@@ -95,7 +97,9 @@ class DslSimulationService(BaseService):
                 detail=(
                     f"DSL simulation exceeded the "
                     f"{configs.DSL_EXECUTION_TIMEOUT_MS}ms time limit."
-                )
+                ),
+                code="DSL_TIMEOUT",
+                params={"timeoutMs": configs.DSL_EXECUTION_TIMEOUT_MS},
             ) from exc
 
         return SimulationResponse(

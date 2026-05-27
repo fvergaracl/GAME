@@ -16,7 +16,10 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Trans, useTranslation } from 'react-i18next'
 import * as Blockly from 'blockly'
+import * as BlocklyEsMsg from 'blockly/msg/es'
+import * as BlocklyEnMsg from 'blockly/msg/en'
 import {
   CAlert,
   CBadge,
@@ -47,11 +50,33 @@ import {
   updateCustomStrategy,
 } from '../../api'
 import keycloak from '../../keycloak'
-import { DEFAULT_TOOLBOX_XML, EXTEND_TOOLBOX_XML, registerDslBlocks } from './blocks'
+import LanguageSwitcher from '../../components/LanguageSwitcher'
+import { translateDslError } from '../../i18n/errorMap'
+import {
+  DEFAULT_TOOLBOX_XML,
+  EXTEND_TOOLBOX_XML,
+  refreshBlockI18n,
+  registerDslBlocks,
+} from './blocks'
 import { workspaceToAst } from './dsl/generator'
 import { validateAst } from './dsl/validator'
+import EditorTour from './EditorTour'
 import StrategyVersionHistoryModal from './StrategyVersionHistoryModal'
 import TemplatePickerModal from './TemplatePickerModal'
+
+// Sprint 10: feed Blockly's own UI strings (right-click menu, trash
+// confirmations, etc.) the user's locale. Defaults to Spanish to match
+// the rest of the editor; the language switcher swaps these messages
+// in-place via `applyBlocklyLocale`.
+const BLOCKLY_MSG_BY_LANG = { es: BlocklyEsMsg, en: BlocklyEnMsg }
+
+function applyBlocklyLocale(lang) {
+  const bundle = BLOCKLY_MSG_BY_LANG[lang] || BLOCKLY_MSG_BY_LANG.es
+  // The compiled msg modules expose all keys on the default export.
+  // Object.assign copies them into Blockly.Msg without disturbing
+  // app-specific custom entries.
+  Object.assign(Blockly.Msg, bundle.default || bundle)
+}
 
 // Inline admin-token decoder so the "Hacer rollback" CTA inside the
 // history modal stays disabled for non-admins. The server-side
@@ -72,11 +97,6 @@ const isCurrentUserAdmin = () => {
   }
 }
 
-// Register the custom block prototypes exactly once per browser tab.
-// Calling registerDslBlocks more than once would throw on the second
-// Blockly.Blocks.foo assignment; the helper is idempotent for safety.
-registerDslBlocks()
-
 const INITIAL_SIM_FORM = {
   externalGameId: 'game-1',
   externalTaskId: 'task-1',
@@ -86,12 +106,31 @@ const INITIAL_SIM_FORM = {
 }
 
 const StrategyEditor = () => {
+  const { t, i18n } = useTranslation('editor')
+
+  // Sprint 10: lock in the active language for Blockly's own UI
+  // (right-click menus, trash dialog, etc.) and re-tooltip every
+  // registered block in the active locale. Idempotent — re-running on
+  // every language change is the supported pattern.
+  useEffect(() => {
+    applyBlocklyLocale(i18n.resolvedLanguage)
+    registerDslBlocks(t)
+    if (workspaceRef.current) {
+      refreshBlockI18n(workspaceRef.current, t)
+    }
+  }, [t, i18n.resolvedLanguage])
+
   // Sprint 8: ``/strategies/editor/:id`` reuses the same component to
   // edit an existing strategy. When ``id`` is present we skip the
   // empty-state chooser and jump straight into editing mode after
   // loading the row from the backend.
   const { id: routeStrategyId } = useParams()
   const navigate = useNavigate()
+
+  // Sprint 10: tour gating. ``runRequest=auto`` defers to the
+  // localStorage flag inside EditorTour; flipping to ``manual`` from the
+  // toolbar replays the tour on demand.
+  const [tourRunRequest, setTourRunRequest] = useState('auto')
 
   const workspaceDivRef = useRef(null)
   const workspaceRef = useRef(null)
@@ -224,12 +263,12 @@ const StrategyEditor = () => {
         }
       })
       .catch((err) => {
-        if (!cancelled) setLoadError(extractError(err))
+        if (!cancelled) setLoadError(translateDslError(t, err) || extractError(err, t))
       })
     return () => {
       cancelled = true
     }
-  }, [routeStrategyId])
+  }, [routeStrategyId, t])
 
   // ----- Built-ins list (parent picker source) -----------------------------
   // Loaded once on mount. The list is small (~6 entries) so re-fetching
@@ -242,14 +281,17 @@ const StrategyEditor = () => {
       })
       .catch((err) => {
         if (!cancelled) {
-          setParentLoadError(extractError(err))
+          setParentLoadError(translateDslError(t, err) || extractError(err, t))
           setBuiltIns([])
         }
       })
     return () => {
       cancelled = true
     }
-  }, [])
+    // ``t`` is stable across renders so depending on it here is safe;
+    // the ESLint exhaustive-deps rule still wants it listed for clarity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [t])
 
   // ----- Parent schema fetch -----------------------------------------------
   // Re-runs whenever the designer picks a different parent. The result
@@ -270,14 +312,14 @@ const StrategyEditor = () => {
       })
       .catch((err) => {
         if (cancelled) return
-        setParentLoadError(extractError(err))
+        setParentLoadError(translateDslError(t, err) || extractError(err, t))
         setParentSchema(null)
         parentSchemaRef.current = null
       })
     return () => {
       cancelled = true
     }
-  }, [mode, parentId])
+  }, [mode, parentId, t])
 
   // ----- Chooser actions (Sprint 8) ----------------------------------------
   const startFromScratch = useCallback(() => {
@@ -309,14 +351,14 @@ const StrategyEditor = () => {
   // ----- Import / Export JSON (Sprint 8) -----------------------------------
   const handleExport = useCallback(() => {
     if (!workspaceRef.current) {
-      setSaveError('Abre el editor antes de exportar.')
+      setSaveError(t('alerts.noWorkspace'))
       return
     }
     let ast
     try {
       ast = workspaceToAst(workspaceRef.current)
     } catch (err) {
-      setSaveError(`No se pudo serializar el workspace: ${err.message}`)
+      setSaveError(t('alerts.serializeFailed', { error: err.message }))
       return
     }
     // Persist Blockly's modern JSON state so a round-trip lands on the
@@ -360,11 +402,11 @@ const StrategyEditor = () => {
         const text = await file.text()
         bundle = JSON.parse(text)
       } catch (err) {
-        setSaveError(`No se pudo leer el archivo: ${err.message}`)
+        setSaveError(t('alerts.fileReadFailed', { error: err.message }))
         return
       }
       if (!bundle || typeof bundle !== 'object' || !bundle.astJson) {
-        setSaveError('El archivo no parece un bundle de estrategia: falta astJson.')
+        setSaveError(t('alerts.notAStrategyBundle'))
         return
       }
       setIsImporting(true)
@@ -386,12 +428,12 @@ const StrategyEditor = () => {
         // a half-loaded workspace remains from the previous session.
         navigate(`/strategies/editor/${created.id}`)
       } catch (err) {
-        setSaveError(extractError(err))
+        setSaveError(translateDslError(t, err) || extractError(err, t))
       } finally {
         setIsImporting(false)
       }
     },
-    [navigate],
+    [navigate, t],
   )
 
   // ----- Save (create or update) -------------------------------------------
@@ -413,7 +455,7 @@ const StrategyEditor = () => {
     const ast = buildAndValidateAst()
     if (!ast) return
     if (!strategyName.trim()) {
-      setSaveError('El nombre de la estrategia es obligatorio.')
+      setSaveError(t('alerts.nameRequired'))
       return
     }
 
@@ -426,7 +468,7 @@ const StrategyEditor = () => {
     // explicitly null so the backend's _validate_payload rejects any
     // accidental mismatch.
     if (mode === 'DSL_EXTEND' && !parentId) {
-      setSaveError('Selecciona una estrategia padre antes de guardar.')
+      setSaveError(t('alerts.noParent'))
       return
     }
     const payload = {
@@ -445,18 +487,28 @@ const StrategyEditor = () => {
         // The backend forks PUBLISHED rows into a new DRAFT version+1;
         // grab whatever id came back so subsequent saves target it.
         setStrategyId(updated.id)
-        setSaveSuccess(`Estrategia actualizada (v${updated.version}, ${updated.status}).`)
+        setSaveSuccess(
+          t('alerts.saveSuccessUpdate', {
+            version: updated.version,
+            status: updated.status,
+          }),
+        )
       } else {
         const created = await createCustomStrategy(payload)
         setStrategyId(created.id)
-        setSaveSuccess(`Estrategia creada (id ${created.id}, v${created.version}).`)
+        setSaveSuccess(
+          t('alerts.saveSuccessCreate', {
+            id: created.id,
+            version: created.version,
+          }),
+        )
       }
     } catch (err) {
-      setSaveError(extractError(err))
+      setSaveError(translateDslError(t, err) || extractError(err, t))
     } finally {
       setIsSaving(false)
     }
-  }, [strategyName, description, strategyId, mode, parentId, buildAndValidateAst])
+  }, [strategyName, description, strategyId, mode, parentId, buildAndValidateAst, t])
 
   // ----- Simulate ----------------------------------------------------------
   const handleSimulate = useCallback(async () => {
@@ -470,13 +522,13 @@ const StrategyEditor = () => {
     try {
       dataParsed = simForm.dataJson ? JSON.parse(simForm.dataJson) : {}
     } catch (err) {
-      setSimError(`data: JSON inválido (${err.message}).`)
+      setSimError(t('alerts.invalidDataJson', { error: err.message }))
       return
     }
     try {
       mockStateParsed = simForm.mockStateJson ? JSON.parse(simForm.mockStateJson) : {}
     } catch (err) {
-      setSimError(`mockState: JSON inválido (${err.message}).`)
+      setSimError(t('alerts.invalidMockJson', { error: err.message }))
       return
     }
 
@@ -487,7 +539,7 @@ const StrategyEditor = () => {
     if (!targetId) {
       try {
         if (mode === 'DSL_EXTEND' && !parentId) {
-          setSimError('Selecciona una estrategia padre antes de probar.')
+          setSimError(t('alerts.noParentSim'))
           return
         }
         const draft = await createCustomStrategy({
@@ -501,7 +553,7 @@ const StrategyEditor = () => {
         targetId = draft.id
         setStrategyId(targetId)
       } catch (err) {
-        setSimError(extractError(err))
+        setSimError(translateDslError(t, err) || extractError(err, t))
         return
       }
     }
@@ -517,11 +569,11 @@ const StrategyEditor = () => {
       })
       setSimResult(response)
     } catch (err) {
-      setSimError(extractError(err))
+      setSimError(translateDslError(t, err) || extractError(err, t))
     } finally {
       setIsSimulating(false)
     }
-  }, [buildAndValidateAst, simForm, strategyId, strategyName, description, mode, parentId])
+  }, [buildAndValidateAst, simForm, strategyId, strategyName, description, mode, parentId, t])
 
   // ----- Render ------------------------------------------------------------
   // Sprint 8: render the empty-state chooser as a stand-alone card when
@@ -533,20 +585,21 @@ const StrategyEditor = () => {
       <CRow>
         <CCol md={12}>
           <CCard className="mb-4">
-            <CCardHeader>
-              <strong>¿Cómo quieres empezar?</strong>
+            <CCardHeader className="d-flex justify-content-between align-items-center">
+              <strong>{t('chooser.title')}</strong>
+              <LanguageSwitcher />
             </CCardHeader>
             <CCardBody>
               <CRow>
                 <CCol md={4}>
                   <CCard className="h-100">
                     <CCardBody className="d-flex flex-column">
-                      <CCardTitle>Empezar desde cero</CCardTitle>
+                      <CCardTitle>{t('chooser.fromScratch.title')}</CCardTitle>
                       <CCardText className="flex-grow-1">
-                        Workspace en blanco. Útil cuando ya sabes qué reglas quieres modelar.
+                        {t('chooser.fromScratch.description')}
                       </CCardText>
                       <CButton color="primary" onClick={startFromScratch}>
-                        Crear estrategia vacía
+                        {t('chooser.fromScratch.cta')}
                       </CButton>
                     </CCardBody>
                   </CCard>
@@ -554,13 +607,12 @@ const StrategyEditor = () => {
                 <CCol md={4}>
                   <CCard className="h-100">
                     <CCardBody className="d-flex flex-column">
-                      <CCardTitle>Usar una plantilla</CCardTitle>
+                      <CCardTitle>{t('chooser.template.title')}</CCardTitle>
                       <CCardText className="flex-grow-1">
-                        Empieza con un ejemplo listo (engagement, recompensa por completar tarea,
-                        bonus de velocidad, ...).
+                        {t('chooser.template.description')}
                       </CCardText>
                       <CButton color="info" onClick={() => setTemplateModalOpen(true)}>
-                        Elegir plantilla
+                        {t('chooser.template.cta')}
                       </CButton>
                     </CCardBody>
                   </CCard>
@@ -568,13 +620,16 @@ const StrategyEditor = () => {
                 <CCol md={4}>
                   <CCard className="h-100">
                     <CCardBody className="d-flex flex-column">
-                      <CCardTitle>Extender estrategia existente</CCardTitle>
+                      <CCardTitle>{t('chooser.extend.title')}</CCardTitle>
                       <CCardText className="flex-grow-1">
-                        Envuelve una built-in (por ej. <code>default</code>) con reglas pre/post sin
-                        reescribirla.
+                        <Trans
+                          i18nKey="chooser.extend.description"
+                          ns="editor"
+                          components={{ code: <code /> }}
+                        />
                       </CCardText>
                       <CButton color="warning" onClick={startFromExtend}>
-                        Extender existente
+                        {t('chooser.extend.cta')}
                       </CButton>
                     </CCardBody>
                   </CCard>
@@ -589,10 +644,10 @@ const StrategyEditor = () => {
                   disabled={isImporting}
                 >
                   {isImporting && <CSpinner size="sm" className="me-2" />}
-                  Importar JSON
+                  {t('chooser.importJson')}
                 </CButton>
                 <small className="text-medium-emphasis">
-                  Sube un bundle previamente exportado.
+                  {t('chooser.importHint')}
                 </small>
               </div>
               <input
@@ -625,6 +680,11 @@ const StrategyEditor = () => {
 
   return (
     <CRow>
+      <EditorTour
+        runRequest={tourRunRequest}
+        hasHistory={Boolean(strategyId)}
+        onFinished={() => setTourRunRequest(null)}
+      />
       <CCol md={8}>
         {loadError && (
           <CAlert color="danger" className="mb-3">
@@ -632,28 +692,45 @@ const StrategyEditor = () => {
           </CAlert>
         )}
         <CCard className="mb-4">
-          <CCardHeader>
-            <strong>Editor de estrategia</strong>
-            {strategyId && <small className="text-medium-emphasis ms-2">id: {strategyId}</small>}
-            {loadedVersion !== null && (
-              <CBadge color="secondary" className="ms-2">
-                v{loadedVersion}
-              </CBadge>
-            )}
+          <CCardHeader className="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{t('header.title')}</strong>
+              {strategyId && (
+                <small className="text-medium-emphasis ms-2">
+                  {t('header.id')}: {strategyId}
+                </small>
+              )}
+              {loadedVersion !== null && (
+                <CBadge color="secondary" className="ms-2">
+                  {t('header.version', { version: loadedVersion })}
+                </CBadge>
+              )}
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <CButton
+                color="link"
+                size="sm"
+                onClick={() => setTourRunRequest('manual')}
+              >
+                {t('buttons.startTour')}
+              </CButton>
+              <LanguageSwitcher />
+            </div>
           </CCardHeader>
           <CCardBody>
             <CForm className="mb-3">
               <CRow className="mb-2">
                 <CCol md={6}>
-                  <CFormLabel>Nombre</CFormLabel>
+                  <CFormLabel>{t('form.name')}</CFormLabel>
                   <CFormInput
                     type="text"
                     value={strategyName}
                     onChange={(e) => setStrategyName(e.target.value)}
+                    data-tour="editor-name"
                   />
                 </CCol>
                 <CCol md={6}>
-                  <CFormLabel>Descripción</CFormLabel>
+                  <CFormLabel>{t('form.description')}</CFormLabel>
                   <CFormInput
                     type="text"
                     value={description}
@@ -667,14 +744,14 @@ const StrategyEditor = () => {
                   Existing blocks in the workspace stay (Blockly keeps
                   them) but the toolbox flyout changes. */}
               <CRow className="mb-2">
-                <CCol md={6}>
-                  <CFormLabel>Modo</CFormLabel>
+                <CCol md={6} data-tour="editor-mode">
+                  <CFormLabel>{t('form.mode')}</CFormLabel>
                   <div>
                     <CFormCheck
                       type="radio"
                       name="mode"
                       id="mode-full"
-                      label="Crear desde cero"
+                      label={t('form.modeFull')}
                       checked={mode === 'DSL_FULL'}
                       onChange={() => setMode('DSL_FULL')}
                       inline
@@ -683,7 +760,7 @@ const StrategyEditor = () => {
                       type="radio"
                       name="mode"
                       id="mode-extend"
-                      label="Extender existente"
+                      label={t('form.modeExtend')}
                       checked={mode === 'DSL_EXTEND'}
                       onChange={() => setMode('DSL_EXTEND')}
                       inline
@@ -692,9 +769,9 @@ const StrategyEditor = () => {
                 </CCol>
                 {mode === 'DSL_EXTEND' && (
                   <CCol md={6}>
-                    <CFormLabel>Estrategia padre</CFormLabel>
+                    <CFormLabel>{t('form.parent')}</CFormLabel>
                     <CFormSelect value={parentId} onChange={(e) => setParentId(e.target.value)}>
-                      <option value="">— Selecciona padre —</option>
+                      <option value="">{t('form.selectParent')}</option>
                       {builtIns.map((b) => (
                         <option key={b.id} value={b.id}>
                           {b.name || b.id}
@@ -709,6 +786,7 @@ const StrategyEditor = () => {
 
             <div
               ref={workspaceDivRef}
+              data-tour="editor-workspace"
               style={{
                 height: '60vh',
                 minHeight: 420,
@@ -719,7 +797,7 @@ const StrategyEditor = () => {
 
             {validationErrors.length > 0 && (
               <CAlert color="warning" className="mt-3">
-                <strong>El AST tiene errores:</strong>
+                <strong>{t('alerts.astErrors')}</strong>
                 <ul className="mb-0">
                   {validationErrors.map((err, i) => (
                     <li key={i}>
@@ -741,19 +819,24 @@ const StrategyEditor = () => {
             )}
 
             <div className="mt-3 d-flex flex-wrap gap-2">
-              <CButton color="primary" onClick={handleSave} disabled={isSaving}>
+              <CButton
+                color="primary"
+                onClick={handleSave}
+                disabled={isSaving}
+                data-tour="editor-save"
+              >
                 {isSaving ? <CSpinner size="sm" className="me-2" /> : null}
-                Guardar borrador
+                {t('buttons.save')}
               </CButton>
               <CButton color="info" onClick={handleSimulate} disabled={isSimulating}>
                 {isSimulating ? <CSpinner size="sm" className="me-2" /> : null}
-                Probar
+                {t('buttons.test')}
               </CButton>
               {/* Sprint 8: import/export bundles. Export is client-side
                   (Blob + <a download>), import POSTs to /import which
                   validates the AST and auto-renames on collision. */}
               <CButton color="secondary" variant="outline" onClick={handleExport}>
-                Exportar JSON
+                {t('buttons.exportJson')}
               </CButton>
               <CButton
                 color="secondary"
@@ -762,7 +845,7 @@ const StrategyEditor = () => {
                 disabled={isImporting}
               >
                 {isImporting && <CSpinner size="sm" className="me-2" />}
-                Importar JSON
+                {t('buttons.importJson')}
               </CButton>
               {/* Sprint 9: only meaningful for already-persisted
                   strategies — for a brand-new draft there's nothing
@@ -772,8 +855,9 @@ const StrategyEditor = () => {
                   color="secondary"
                   variant="outline"
                   onClick={() => setHistoryOpen(true)}
+                  data-tour="editor-history"
                 >
-                  Ver historial
+                  {t('buttons.history')}
                 </CButton>
               )}
               <input
@@ -798,27 +882,31 @@ const StrategyEditor = () => {
         {mode === 'DSL_EXTEND' && parentSchema && (
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>Padre: {parentSchema.name || parentSchema.id}</strong>
+              <strong>
+                {t('parentSchema.title', {
+                  name: parentSchema.name || parentSchema.id,
+                })}
+              </strong>
               <CBadge color="info" className="ms-2">
-                v{parentSchema.version}
+                {t('parentSchema.version', { version: parentSchema.version })}
               </CBadge>
             </CCardHeader>
             <CCardBody>
               {parentSchema.description && (
                 <p className="text-medium-emphasis">{parentSchema.description}</p>
               )}
-              <h6>Variables</h6>
+              <h6>{t('parentSchema.variables')}</h6>
               {parentSchema.variables.length === 0 ? (
                 <small className="text-medium-emphasis">
-                  Esta estrategia no expone variables editables.
+                  {t('parentSchema.noVariables')}
                 </small>
               ) : (
                 <table className="table table-sm table-borderless mb-0">
                   <thead>
                     <tr>
-                      <th>Nombre</th>
-                      <th>Tipo</th>
-                      <th>Valor por defecto</th>
+                      <th>{t('parentSchema.name')}</th>
+                      <th>{t('parentSchema.type')}</th>
+                      <th>{t('parentSchema.defaultValue')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -843,8 +931,7 @@ const StrategyEditor = () => {
                 </table>
               )}
               <small className="text-medium-emphasis d-block mt-2">
-                Usa los bloques de la categoría &quot;Overrides padre&quot; para ajustar estos
-                valores.
+                {t('parentSchema.hint')}
               </small>
             </CCardBody>
           </CCard>
@@ -852,14 +939,14 @@ const StrategyEditor = () => {
       </CCol>
 
       <CCol md={4}>
-        <CCard className="mb-4">
+        <CCard className="mb-4" data-tour="editor-simulate">
           <CCardHeader>
-            <strong>Probar estrategia</strong>
+            <strong>{t('simulate.title')}</strong>
           </CCardHeader>
           <CCardBody>
             <CForm>
               <div className="mb-2">
-                <CFormLabel>externalGameId</CFormLabel>
+                <CFormLabel>{t('simulate.externalGameId')}</CFormLabel>
                 <CFormInput
                   type="text"
                   value={simForm.externalGameId}
@@ -867,7 +954,7 @@ const StrategyEditor = () => {
                 />
               </div>
               <div className="mb-2">
-                <CFormLabel>externalTaskId</CFormLabel>
+                <CFormLabel>{t('simulate.externalTaskId')}</CFormLabel>
                 <CFormInput
                   type="text"
                   value={simForm.externalTaskId}
@@ -875,7 +962,7 @@ const StrategyEditor = () => {
                 />
               </div>
               <div className="mb-2">
-                <CFormLabel>externalUserId</CFormLabel>
+                <CFormLabel>{t('simulate.externalUserId')}</CFormLabel>
                 <CFormInput
                   type="text"
                   value={simForm.externalUserId}
@@ -883,7 +970,7 @@ const StrategyEditor = () => {
                 />
               </div>
               <div className="mb-2">
-                <CFormLabel>data (JSON)</CFormLabel>
+                <CFormLabel>{t('simulate.data')}</CFormLabel>
                 <CFormTextarea
                   rows={3}
                   value={simForm.dataJson}
@@ -891,15 +978,18 @@ const StrategyEditor = () => {
                 />
               </div>
               <div className="mb-2">
-                <CFormLabel>mockState (JSON)</CFormLabel>
+                <CFormLabel>{t('simulate.mockState')}</CFormLabel>
                 <CFormTextarea
                   rows={5}
                   value={simForm.mockStateJson}
                   onChange={(e) => setSimForm({ ...simForm, mockStateJson: e.target.value })}
                 />
                 <div className="form-text">
-                  Sustituye campos del whitelist por valores fijos, por ejemplo
-                  <code> {'{"task.measurements_count": 1}'}</code>.
+                  <Trans
+                    i18nKey="simulate.mockHint"
+                    ns="editor"
+                    components={{ code: <code /> }}
+                  />
                 </div>
               </div>
             </CForm>
@@ -912,20 +1002,25 @@ const StrategyEditor = () => {
 
             {simResult && (
               <div className="mt-3">
-                <h6>Resultado</h6>
+                <h6>{t('simulate.result')}</h6>
                 <ul>
                   <li>
-                    <strong>points:</strong> {simResult.points}
+                    <strong>{t('result.points')}:</strong> {simResult.points}
                   </li>
                   <li>
-                    <strong>caseName:</strong> {simResult.caseName ?? '—'}
+                    <strong>{t('result.caseName')}:</strong>{' '}
+                    {simResult.caseName ?? t('simulate.noTrace')}
                   </li>
                   <li>
-                    <strong>callbackData:</strong>{' '}
+                    <strong>{t('result.callbackData')}:</strong>{' '}
                     <code>{JSON.stringify(simResult.callbackData)}</code>
                   </li>
                 </ul>
-                <h6 className="mt-3">Trace ({simResult.executionTrace?.length ?? 0} nodos)</h6>
+                <h6 className="mt-3">
+                  {t('simulate.trace', {
+                    count: simResult.executionTrace?.length ?? 0,
+                  })}
+                </h6>
                 <pre
                   style={{
                     maxHeight: 240,
@@ -962,8 +1057,17 @@ const StrategyEditor = () => {
 // Best-effort extractor for axios errors. The endpoints raise FastAPI
 // HTTPExceptions whose body is { detail: "..." }; bare network errors get
 // the raw message instead.
-function extractError(err) {
-  return err?.response?.data?.detail || err?.message || 'Error desconocido al contactar el backend.'
+// Sprint 10: ``t`` is optional so the function still works in non-React
+// callers (e.g. tests). When provided, the unknown-error fallback is
+// localised; without it we degrade to the Spanish wording.
+function extractError(err, t) {
+  const detail = err?.response?.data?.detail
+  if (typeof detail === 'string' && detail) return detail
+  if (detail && typeof detail === 'object' && detail.message) return detail.message
+  if (err?.message) return err.message
+  return t
+    ? t('alerts.unknownError', { defaultValue: 'Error desconocido al contactar el backend.' })
+    : 'Error desconocido al contactar el backend.'
 }
 
 // Sprint 8: the ``blocklyXml`` column in StrategyDefinition has carried

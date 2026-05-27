@@ -227,19 +227,72 @@ class BadRequestError(HTTPException):
 # without an extra exception handler. We keep them as distinct types so the
 # simulate/CRUD endpoints can map specific failure modes to clear messages and
 # tests can assert on the precise class.
+#
+# Sprint 10: each DSL error optionally carries a stable ``code`` plus a
+# ``params`` map. When ``code`` is supplied the ``detail`` body becomes a
+# dict ``{"code": ..., "params": ..., "message": ...}`` so the frontend
+# can render a localised message via i18n while servers, logs, and pytest
+# assertions keep using the English ``message`` fallback. Legacy callers
+# that pass a bare string keep their existing shape — FastAPI returns
+# ``{"detail": "<string>"}`` exactly as before.
 
 
-class DslValidationError(BadRequestError):
+def _build_dsl_detail(
+    *,
+    detail: Any,
+    code: Optional[str],
+    params: Optional[Dict[str, Any]],
+) -> Any:
+    """
+    Compose the ``detail`` body for a DSL error.
+
+    When ``code`` is provided, return a structured dict the frontend can
+    translate. Otherwise return ``detail`` unchanged so legacy raises
+    that still pass a bare string serialise identically to pre-Sprint-10.
+    """
+    if code is None:
+        return detail
+    message = detail if isinstance(detail, str) else None
+    return {
+        "code": code,
+        "params": dict(params or {}),
+        "message": message,
+    }
+
+
+class _DslErrorMixin:
+    """
+    Shared init for DSL errors. Subclasses inherit from this *plus* the
+    HTTP base class so FastAPI continues to see them as HTTPExceptions.
+    """
+
+    def __init__(
+        self,
+        detail: Any = None,
+        headers: Optional[Dict[str, Any]] = None,
+        *,
+        code: Optional[str] = None,
+        params: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        body = _build_dsl_detail(detail=detail, code=code, params=params)
+        # The HTTP base class lives next in the MRO; let it run the
+        # actual HTTPException init with the composed detail.
+        super().__init__(detail=body, headers=headers)  # type: ignore[misc]
+        self.code = code
+        self.params = dict(params or {})
+
+
+class DslValidationError(_DslErrorMixin, BadRequestError):
     """AST is structurally invalid or references a path outside the whitelist."""
 
 
-class DslExecutionError(BadRequestError):
+class DslExecutionError(_DslErrorMixin, BadRequestError):
     """Runtime DSL failure (division by zero, type mismatch, etc.)."""
 
 
-class DslLimitExceededError(PreconditionFailedError):
+class DslLimitExceededError(_DslErrorMixin, PreconditionFailedError):
     """AST tried to evaluate more nodes or recurse deeper than configured."""
 
 
-class DslTimeoutError(PreconditionFailedError):
+class DslTimeoutError(_DslErrorMixin, PreconditionFailedError):
     """AST execution exceeded the configured wall-clock budget."""

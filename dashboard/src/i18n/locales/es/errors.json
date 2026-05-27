@@ -1,0 +1,19 @@
+{
+  "fallback": "Error en la estrategia: {{message}}",
+  "DSL_ARITH_DIV_BY_ZERO": "División por cero en una operación aritmética (nodo {{nodeId}}).",
+  "DSL_ARITH_OP_NOT_ALLOWED": "El operador aritmético '{{op}}' no está permitido (nodo {{nodeId}}).",
+  "DSL_ARITH_TYPE_MISMATCH": "No se puede aplicar '{{op}}' entre {{leftType}} y {{rightType}} (nodo {{nodeId}}).",
+  "DSL_ASSIGN_POINTS_NOT_NUMBER": "El valor de 'asignar puntos' debe ser un número (recibido: {{actualType}}, nodo {{nodeId}}).",
+  "DSL_COMPARE_OP_NOT_ALLOWED": "El operador de comparación '{{op}}' no está permitido (nodo {{nodeId}}).",
+  "DSL_COMPARE_TYPE_MISMATCH": "No se puede comparar {{leftType}} con {{rightType}} usando '{{op}}' (nodo {{nodeId}}).",
+  "DSL_FIELD_NOT_PRECOMPUTED": "El campo '{{path}}' no se calculó antes de ejecutar la estrategia (nodo {{nodeId}}).",
+  "DSL_FIELD_PATH_NOT_ALLOWED": "El campo '{{path}}' no está en la lista permitida. Usa un campo de la analítica o 'data.<clave>'.",
+  "DSL_FUNC_ARITY_MISMATCH": "La función '{{name}}' espera {{expected}} argumentos pero recibió {{actual}}.",
+  "DSL_FUNC_NAME_NOT_ALLOWED": "La función '{{name}}' no está permitida.",
+  "DSL_NO_AST_TO_SIMULATE": "Esta estrategia no tiene un AST guardado todavía. Guárdala antes de probar.",
+  "DSL_PARENT_FIELD_OUTSIDE_POST": "El campo '{{path}}' sólo se puede usar dentro de las reglas POST.",
+  "DSL_SET_CASE_NAME_NOT_STRING": "El nuevo caseName debe ser texto (recibido: {{actualType}}, nodo {{nodeId}}).",
+  "DSL_SET_POINTS_NOT_NUMBER": "El valor de 'set puntos' debe ser un número (recibido: {{actualType}}, nodo {{nodeId}}).",
+  "DSL_TIMEOUT": "La simulación tardó más de {{timeoutMs}}ms y fue interrumpida.",
+  "DSL_UNKNOWN_STATEMENT": "Tipo de instrucción desconocido: '{{nodeType}}' (nodo {{nodeId}})."
+}

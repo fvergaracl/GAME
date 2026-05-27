@@ -134,7 +134,9 @@ class DslInterpreter:
         if parent_result is not None:
             state.points = float(parent_result.get("points") or 0)
             state.case_name = parent_result.get("case_name")
-            state.callback_data = dict(parent_result.get("callback_data") or {})
+            state.callback_data = dict(
+                parent_result.get("callback_data") or {}
+            )
             state.matched = True
         try:
             await self._run_program(ast, ctx, state, mode=mode)
@@ -232,6 +234,11 @@ class DslInterpreter:
                 raise DslExecutionError(
                     detail="assign_points.value must evaluate to a number.",
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_ASSIGN_POINTS_NOT_NUMBER",
+                    params={
+                        "nodeId": node.get("id"),
+                        "actualType": type(value).__name__,
+                    },
                 )
             state.points = value
             state.case_name = node["case_name"]
@@ -307,6 +314,11 @@ class DslInterpreter:
                 raise DslExecutionError(
                     detail="set_points.value must evaluate to a number.",
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_SET_POINTS_NOT_NUMBER",
+                    params={
+                        "nodeId": node.get("id"),
+                        "actualType": type(value).__name__,
+                    },
                 )
             state.points = value
             state.matched = True
@@ -329,6 +341,11 @@ class DslInterpreter:
                         "set_case_name.value must evaluate to a string."
                     ),
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_SET_CASE_NAME_NOT_STRING",
+                    params={
+                        "nodeId": node.get("id"),
+                        "actualType": type(value).__name__,
+                    },
                 )
             state.case_name = value
             state.matched = True
@@ -355,6 +372,8 @@ class DslInterpreter:
         raise DslValidationError(
             detail=f"Unknown statement node type: '{ntype}'.",
             headers={"X-Node-Id": str(node.get("id"))},
+            code="DSL_UNKNOWN_STATEMENT",
+            params={"nodeId": node.get("id"), "nodeType": ntype},
         )
 
     # ----- conditions ------------------------------------------------------
@@ -435,6 +454,8 @@ class DslInterpreter:
                 raise DslValidationError(
                     detail=f"compare.op '{op}' is not allowed.",
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_COMPARE_OP_NOT_ALLOWED",
+                    params={"nodeId": node.get("id"), "op": op},
                 )
             try:
                 result = _apply_compare(op, left, right)
@@ -445,6 +466,13 @@ class DslInterpreter:
                         f"{type(left).__name__} and {type(right).__name__}."
                     ),
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_COMPARE_TYPE_MISMATCH",
+                    params={
+                        "nodeId": node.get("id"),
+                        "op": op,
+                        "leftType": type(left).__name__,
+                        "rightType": type(right).__name__,
+                    },
                 ) from exc
             state.trace.append(
                 {"nodeId": node.get("id"), "type": ntype, "value": result}
@@ -486,6 +514,8 @@ class DslInterpreter:
                         "usually means the validator was bypassed."
                     ),
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_FIELD_NOT_PRECOMPUTED",
+                    params={"nodeId": node.get("id"), "path": path},
                 )
             value = ctx.resolved_fields[path]
             state.trace.append(
@@ -505,6 +535,8 @@ class DslInterpreter:
                 raise DslValidationError(
                     detail=f"arith.op '{op}' is not allowed.",
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_ARITH_OP_NOT_ALLOWED",
+                    params={"nodeId": node.get("id"), "op": op},
                 )
             try:
                 result = _apply_arith(op, left, right)
@@ -512,6 +544,8 @@ class DslInterpreter:
                 raise DslExecutionError(
                     detail="division by zero",
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_ARITH_DIV_BY_ZERO",
+                    params={"nodeId": node.get("id"), "op": op},
                 ) from exc
             except TypeError as exc:
                 raise DslExecutionError(
@@ -520,6 +554,13 @@ class DslInterpreter:
                         f"{type(left).__name__} and {type(right).__name__}."
                     ),
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_ARITH_TYPE_MISMATCH",
+                    params={
+                        "nodeId": node.get("id"),
+                        "op": op,
+                        "leftType": type(left).__name__,
+                        "rightType": type(right).__name__,
+                    },
                 ) from exc
             state.trace.append(
                 {"nodeId": node.get("id"), "type": ntype, "value": result}
@@ -535,6 +576,8 @@ class DslInterpreter:
                 raise DslValidationError(
                     detail=f"func_call.name '{name}' is not allowed.",
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_FUNC_NAME_NOT_ALLOWED",
+                    params={"nodeId": node.get("id"), "name": name},
                 )
             args_nodes = node.get("args") or []
             if len(args_nodes) != FUNC_ARITY[name]:
@@ -544,6 +587,13 @@ class DslInterpreter:
                         f"{FUNC_ARITY[name]} args, got {len(args_nodes)}."
                     ),
                     headers={"X-Node-Id": str(node.get("id"))},
+                    code="DSL_FUNC_ARITY_MISMATCH",
+                    params={
+                        "nodeId": node.get("id"),
+                        "name": name,
+                        "expected": FUNC_ARITY[name],
+                        "actual": len(args_nodes),
+                    },
                 )
             args = [
                 await self._eval_expression(

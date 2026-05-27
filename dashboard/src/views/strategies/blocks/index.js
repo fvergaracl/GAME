@@ -4,11 +4,10 @@
 // dropdowns are sourced from the whitelists mirror so they always show
 // the same options the backend will accept.
 //
-// Why so many blocks (11) when the roadmap says "6-8"? The roadmap's
-// 6-8 refers to *categories shown to the designer in the toolbox*
-// (grouped via the toolbox XML). Internally Blockly needs a block per
-// AST concept; combining them would require complex mutators that hurt
-// edit-time UX. We trade a longer block list for simpler bindings.
+// Sprint 10: tooltips and inline labels read from the i18n ``blocks``
+// namespace. ``registerDslBlocks`` accepts the i18next ``t`` function so
+// the language-switcher can re-register (idempotent) blocks with the
+// current locale.
 
 import * as Blockly from 'blockly'
 
@@ -22,13 +21,95 @@ import {
 // Helper: build a [[label, value], ...] options list from a string array.
 const optionsFromArray = (arr) => arr.map((v) => [v, v])
 
+// Module-scoped slot for the live ``t`` function. ``registerDslBlocks``
+// writes here on first call; subsequent calls update the reference so
+// future block ``init()`` invocations (Blockly re-runs init on every
+// toolbox open via the prototype) pick up the new locale.
+let _t = null
+
+// Documentation URLs per block. Used as helpUrl so the right-click menu
+// surfaces a "Help" entry. Internal hash links are placeholders — when
+// the docs site exists they should be swapped for real URLs.
+const HELP_URLS = {
+  gd_rule: '#/docs/strategy-blocks/rule',
+  gd_compare: '#/docs/strategy-blocks/compare',
+  gd_and: '#/docs/strategy-blocks/and',
+  gd_or: '#/docs/strategy-blocks/or',
+  gd_not: '#/docs/strategy-blocks/not',
+  gd_field: '#/docs/strategy-blocks/field',
+  gd_field_data: '#/docs/strategy-blocks/field-data',
+  gd_literal_number: '#/docs/strategy-blocks/literal-number',
+  gd_literal_text: '#/docs/strategy-blocks/literal-text',
+  gd_arith: '#/docs/strategy-blocks/arith',
+  gd_func_call: '#/docs/strategy-blocks/func-call',
+  gd_assign_points: '#/docs/strategy-blocks/assign-points',
+  gd_set_callback_data: '#/docs/strategy-blocks/set-callback-data',
+  gd_pre_rule: '#/docs/strategy-blocks/pre-rule',
+  gd_post_rule: '#/docs/strategy-blocks/post-rule',
+  gd_set_data: '#/docs/strategy-blocks/set-data',
+  gd_veto: '#/docs/strategy-blocks/veto',
+  gd_set_points: '#/docs/strategy-blocks/set-points',
+  gd_set_case_name: '#/docs/strategy-blocks/set-case-name',
+  gd_field_parent: '#/docs/strategy-blocks/field-parent',
+  gd_parent_variable_override: '#/docs/strategy-blocks/parent-variable-override',
+}
+
+// Look up a localised label / tooltip with a Spanish fallback so the
+// blocks render usable text even before i18next has initialised (e.g.
+// during a unit-test snapshot).
+const FALLBACK_LABELS = {
+  when: 'cuando',
+  then: 'entonces',
+  and: 'y',
+  andAlso: 'y también',
+  or: 'o',
+  orAlso: 'o también',
+  not: 'no',
+  field: 'campo',
+  data: 'data.',
+  value: 'valor',
+  min: 'min',
+  max: 'max',
+  assignPoints: 'asignar puntos',
+  case: 'caso',
+  setCallback: 'guardar dato',
+  equals: '=',
+  preWhen: 'PRE — cuando',
+  postWhen: 'POST — cuando',
+  setData: 'set data',
+  vetoCase: 'VETO — caso',
+  setPoints: 'set puntos',
+  setCaseName: 'set caseName',
+  parent: 'padre.',
+  override: 'override',
+}
+
+const label = (key) => {
+  if (_t) {
+    const out = _t(`blocks:labels.${key}`, { defaultValue: '' })
+    if (out) return out
+  }
+  return FALLBACK_LABELS[key] ?? key
+}
+
+const tooltip = (blockKey) => {
+  if (_t) {
+    const out = _t(`blocks:tooltips.${blockKey}`, { defaultValue: '' })
+    if (out) return out
+  }
+  return ''
+}
+
 let _registered = false
 
 /**
  * Register all DSL blocks with the Blockly registry. Idempotent — calling
- * this twice is a no-op (Blockly throws on duplicate block names).
+ * this twice is a no-op for the registry but DOES update the cached
+ * ``t`` reference so future Blockly ``init`` calls reflect the new
+ * locale (used by the language switcher).
  */
-export function registerDslBlocks() {
+export function registerDslBlocks(tFn) {
+  if (tFn) _t = tFn
   if (_registered) return
   _registered = true
 
@@ -45,12 +126,13 @@ export function registerDslBlocks() {
       // as conditions").
       this.appendValueInput('WHEN')
         .setCheck(['Boolean', 'Number'])
-        .appendField('cuando')
+        .appendField(label('when'))
       this.appendStatementInput('THEN')
         .setCheck('Statement')
-        .appendField('entonces')
+        .appendField(label('then'))
       this.setColour(210)
-      this.setTooltip('Una regla del scoring: si la condición se cumple, ejecuta las acciones.')
+      this.setTooltip(tooltip('gd_rule'))
+      this.setHelpUrl(HELP_URLS.gd_rule)
     },
   }
 
@@ -64,39 +146,43 @@ export function registerDslBlocks() {
       this.setInputsInline(true)
       this.setOutput(true, 'Boolean')
       this.setColour(180)
-      this.setTooltip('Compara dos valores.')
+      this.setTooltip(tooltip('gd_compare'))
+      this.setHelpUrl(HELP_URLS.gd_compare)
     },
   }
 
   // ---- gd_and / gd_or (binary for MVP — mutator for variadic in S7) ------
   Blockly.Blocks.gd_and = {
     init() {
-      this.appendValueInput('A').setCheck('Boolean').appendField('y')
-      this.appendValueInput('B').setCheck('Boolean').appendField('y también')
+      this.appendValueInput('A').setCheck('Boolean').appendField(label('and'))
+      this.appendValueInput('B').setCheck('Boolean').appendField(label('andAlso'))
       this.setOutput(true, 'Boolean')
       this.setInputsInline(true)
       this.setColour(150)
-      this.setTooltip('Ambas condiciones deben cumplirse.')
+      this.setTooltip(tooltip('gd_and'))
+      this.setHelpUrl(HELP_URLS.gd_and)
     },
   }
   Blockly.Blocks.gd_or = {
     init() {
-      this.appendValueInput('A').setCheck('Boolean').appendField('o')
-      this.appendValueInput('B').setCheck('Boolean').appendField('o también')
+      this.appendValueInput('A').setCheck('Boolean').appendField(label('or'))
+      this.appendValueInput('B').setCheck('Boolean').appendField(label('orAlso'))
       this.setOutput(true, 'Boolean')
       this.setInputsInline(true)
       this.setColour(150)
-      this.setTooltip('Al menos una condición debe cumplirse.')
+      this.setTooltip(tooltip('gd_or'))
+      this.setHelpUrl(HELP_URLS.gd_or)
     },
   }
 
   // ---- gd_not ------------------------------------------------------------
   Blockly.Blocks.gd_not = {
     init() {
-      this.appendValueInput('ARG').setCheck('Boolean').appendField('no')
+      this.appendValueInput('ARG').setCheck('Boolean').appendField(label('not'))
       this.setOutput(true, 'Boolean')
       this.setColour(150)
-      this.setTooltip('Niega la condición.')
+      this.setTooltip(tooltip('gd_not'))
+      this.setHelpUrl(HELP_URLS.gd_not)
     },
   }
 
@@ -107,14 +193,15 @@ export function registerDslBlocks() {
   Blockly.Blocks.gd_field = {
     init() {
       this.appendDummyInput()
-        .appendField('campo')
+        .appendField(label('field'))
         .appendField(
           new Blockly.FieldDropdown(optionsFromArray(FIELD_PATHS)),
           'PATH',
         )
       this.setOutput(true, 'Number')
       this.setColour(290)
-      this.setTooltip('Lee un campo precalculado de la analítica o del request.')
+      this.setTooltip(tooltip('gd_field'))
+      this.setHelpUrl(HELP_URLS.gd_field)
     },
   }
 
@@ -123,7 +210,7 @@ export function registerDslBlocks() {
   Blockly.Blocks.gd_field_data = {
     init() {
       this.appendDummyInput()
-        .appendField('data.')
+        .appendField(label('data'))
         .appendField(
           new Blockly.FieldTextInput('my_key', (value) => {
             // Mirror the backend regex: [A-Za-z0-9_]+
@@ -133,7 +220,8 @@ export function registerDslBlocks() {
         )
       this.setOutput(true, ['Number', 'String', 'Boolean'])
       this.setColour(290)
-      this.setTooltip('Lee data.<clave> del payload del evento.')
+      this.setTooltip(tooltip('gd_field_data'))
+      this.setHelpUrl(HELP_URLS.gd_field_data)
     },
   }
 
@@ -144,7 +232,8 @@ export function registerDslBlocks() {
         .appendField(new Blockly.FieldNumber(0), 'VALUE')
       this.setOutput(true, 'Number')
       this.setColour(330)
-      this.setTooltip('Un número fijo.')
+      this.setTooltip(tooltip('gd_literal_number'))
+      this.setHelpUrl(HELP_URLS.gd_literal_number)
     },
   }
   Blockly.Blocks.gd_literal_text = {
@@ -155,7 +244,8 @@ export function registerDslBlocks() {
         .appendField('"')
       this.setOutput(true, 'String')
       this.setColour(330)
-      this.setTooltip('Un texto fijo.')
+      this.setTooltip(tooltip('gd_literal_text'))
+      this.setHelpUrl(HELP_URLS.gd_literal_text)
     },
   }
 
@@ -169,7 +259,8 @@ export function registerDslBlocks() {
       this.setInputsInline(true)
       this.setOutput(true, 'Number')
       this.setColour(230)
-      this.setTooltip('Operación aritmética (+, -, *, /, min, max).')
+      this.setTooltip(tooltip('gd_arith'))
+      this.setHelpUrl(HELP_URLS.gd_arith)
     },
   }
 
@@ -195,7 +286,8 @@ export function registerDslBlocks() {
         )
       this.setOutput(true, 'Number')
       this.setColour(230)
-      this.setTooltip('Función: int(x) o clamp(value, lo, hi).')
+      this.setTooltip(tooltip('gd_func_call'))
+      this.setHelpUrl(HELP_URLS.gd_func_call)
       this._rebuildArgs('int')
     },
     _rebuildArgs(name) {
@@ -204,11 +296,11 @@ export function registerDslBlocks() {
         if (this.getInput(inputName)) this.removeInput(inputName)
       }
       if (name === 'int') {
-        this.appendValueInput('VALUE').setCheck('Number').appendField('valor')
+        this.appendValueInput('VALUE').setCheck('Number').appendField(label('value'))
       } else if (name === 'clamp') {
-        this.appendValueInput('VALUE').setCheck('Number').appendField('valor')
-        this.appendValueInput('LO').setCheck('Number').appendField('min')
-        this.appendValueInput('HI').setCheck('Number').appendField('max')
+        this.appendValueInput('VALUE').setCheck('Number').appendField(label('value'))
+        this.appendValueInput('LO').setCheck('Number').appendField(label('min'))
+        this.appendValueInput('HI').setCheck('Number').appendField(label('max'))
       }
       this.setInputsInline(true)
     },
@@ -221,14 +313,15 @@ export function registerDslBlocks() {
     init() {
       this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendField('asignar puntos')
+        .appendField(label('assignPoints'))
       this.appendDummyInput()
-        .appendField('caso')
+        .appendField(label('case'))
         .appendField(new Blockly.FieldTextInput('default'), 'CASE_NAME')
       this.setPreviousStatement(true, 'Statement')
       // No nextStatement: assign_points halts the rule.
       this.setColour(60)
-      this.setTooltip('Asigna puntos y etiqueta el resultado con un caso.')
+      this.setTooltip(tooltip('gd_assign_points'))
+      this.setHelpUrl(HELP_URLS.gd_assign_points)
     },
   }
 
@@ -236,16 +329,17 @@ export function registerDslBlocks() {
   Blockly.Blocks.gd_set_callback_data = {
     init() {
       this.appendDummyInput()
-        .appendField('guardar dato')
+        .appendField(label('setCallback'))
         .appendField(new Blockly.FieldTextInput('clave'), 'KEY')
       this.appendValueInput('VALUE')
         .setCheck(['Number', 'String', 'Boolean'])
-        .appendField('=')
+        .appendField(label('equals'))
       this.setInputsInline(true)
       this.setPreviousStatement(true, 'Statement')
       this.setNextStatement(true, 'Statement')
       this.setColour(0)
-      this.setTooltip('Adjunta dato adicional al resultado.')
+      this.setTooltip(tooltip('gd_set_callback_data'))
+      this.setHelpUrl(HELP_URLS.gd_set_callback_data)
     },
   }
 
@@ -265,12 +359,13 @@ export function registerDslBlocks() {
     init() {
       this.appendValueInput('WHEN')
         .setCheck(['Boolean', 'Number'])
-        .appendField('PRE — cuando')
+        .appendField(label('preWhen'))
       this.appendStatementInput('THEN')
         .setCheck('Statement')
-        .appendField('entonces')
+        .appendField(label('then'))
       this.setColour(330)
-      this.setTooltip('Se ejecuta ANTES del padre. Puede mutar data o vetar.')
+      this.setTooltip(tooltip('gd_pre_rule'))
+      this.setHelpUrl(HELP_URLS.gd_pre_rule)
     },
   }
 
@@ -279,14 +374,13 @@ export function registerDslBlocks() {
     init() {
       this.appendValueInput('WHEN')
         .setCheck(['Boolean', 'Number'])
-        .appendField('POST — cuando')
+        .appendField(label('postWhen'))
       this.appendStatementInput('THEN')
         .setCheck('Statement')
-        .appendField('entonces')
+        .appendField(label('then'))
       this.setColour(60)
-      this.setTooltip(
-        'Se ejecuta DESPUÉS del padre. Lee parent.points / parent.case_name.',
-      )
+      this.setTooltip(tooltip('gd_post_rule'))
+      this.setHelpUrl(HELP_URLS.gd_post_rule)
     },
   }
 
@@ -296,16 +390,17 @@ export function registerDslBlocks() {
   Blockly.Blocks.gd_set_data = {
     init() {
       this.appendDummyInput()
-        .appendField('set data')
+        .appendField(label('setData'))
         .appendField(new Blockly.FieldTextInput('mi_clave'), 'KEY')
       this.appendValueInput('VALUE')
         .setCheck(['Number', 'String', 'Boolean'])
-        .appendField('=')
+        .appendField(label('equals'))
       this.setInputsInline(true)
       this.setPreviousStatement(true, 'Statement')
       this.setNextStatement(true, 'Statement')
       this.setColour(330)
-      this.setTooltip('Escribe data.<clave> antes de llamar al padre.')
+      this.setTooltip(tooltip('gd_set_data'))
+      this.setHelpUrl(HELP_URLS.gd_set_data)
     },
   }
 
@@ -315,14 +410,13 @@ export function registerDslBlocks() {
   Blockly.Blocks.gd_veto = {
     init() {
       this.appendDummyInput()
-        .appendField('VETO — caso')
+        .appendField(label('vetoCase'))
         .appendField(new Blockly.FieldTextInput('TooEarly'), 'CASE_NAME')
       this.setPreviousStatement(true, 'Statement')
       // No nextStatement: veto halts the entire pipeline.
       this.setColour(0)
-      this.setTooltip(
-        'Aborta toda la asignación. Padre y post-reglas no se ejecutan.',
-      )
+      this.setTooltip(tooltip('gd_veto'))
+      this.setHelpUrl(HELP_URLS.gd_veto)
     },
   }
 
@@ -334,11 +428,12 @@ export function registerDslBlocks() {
     init() {
       this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendField('set puntos')
+        .appendField(label('setPoints'))
       this.setPreviousStatement(true, 'Statement')
       this.setNextStatement(true, 'Statement')
       this.setColour(60)
-      this.setTooltip('Sobrescribe los puntos del padre.')
+      this.setTooltip(tooltip('gd_set_points'))
+      this.setHelpUrl(HELP_URLS.gd_set_points)
     },
   }
 
@@ -347,11 +442,12 @@ export function registerDslBlocks() {
     init() {
       this.appendValueInput('VALUE')
         .setCheck('String')
-        .appendField('set caseName')
+        .appendField(label('setCaseName'))
       this.setPreviousStatement(true, 'Statement')
       this.setNextStatement(true, 'Statement')
       this.setColour(60)
-      this.setTooltip('Sobrescribe el caseName del padre.')
+      this.setTooltip(tooltip('gd_set_case_name'))
+      this.setHelpUrl(HELP_URLS.gd_set_case_name)
     },
   }
 
@@ -361,7 +457,7 @@ export function registerDslBlocks() {
   Blockly.Blocks.gd_field_parent = {
     init() {
       this.appendDummyInput()
-        .appendField('padre.')
+        .appendField(label('parent'))
         .appendField(
           new Blockly.FieldDropdown([
             ['points', 'parent.points'],
@@ -374,9 +470,8 @@ export function registerDslBlocks() {
       // name → String).
       this.setOutput(true, ['Number', 'String'])
       this.setColour(290)
-      this.setTooltip(
-        'Lee el resultado del padre. Sólo válido dentro de POST.',
-      )
+      this.setTooltip(tooltip('gd_field_parent'))
+      this.setHelpUrl(HELP_URLS.gd_field_parent)
     },
   }
 
@@ -389,17 +484,16 @@ export function registerDslBlocks() {
   Blockly.Blocks.gd_parent_variable_override = {
     init() {
       this.appendDummyInput()
-        .appendField('override')
+        .appendField(label('override'))
         .appendField(
           new Blockly.FieldTextInput('variable_basic_points'),
           'VARIABLE',
         )
-        .appendField('=')
+        .appendField(label('equals'))
         .appendField(new Blockly.FieldTextInput('1'), 'VALUE')
       this.setColour(20)
-      this.setTooltip(
-        'Sobrescribe un variable_* del padre antes de su ejecución.',
-      )
+      this.setTooltip(tooltip('gd_parent_variable_override'))
+      this.setHelpUrl(HELP_URLS.gd_parent_variable_override)
     },
   }
 }
@@ -491,3 +585,19 @@ export const EXTEND_TOOLBOX_XML = `
   </category>
 </xml>
 `.trim()
+
+/**
+ * Sprint 10: refresh the cached ``t`` reference and re-tooltip every
+ * existing block. Called by the editor when the language changes.
+ * Updates the prototype's tooltip via re-running each ``init()``-like
+ * setter on the live blocks, which is the cheapest way to push the
+ * new strings into Blockly without re-injecting the workspace.
+ */
+export function refreshBlockI18n(workspace, tFn) {
+  if (tFn) _t = tFn
+  if (!workspace) return
+  for (const block of workspace.getAllBlocks(false)) {
+    const tip = tooltip(block.type)
+    if (tip) block.setTooltip(tip)
+  }
+}

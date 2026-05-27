@@ -420,6 +420,8 @@ def _validate_expression(
                     "'data.<key>' where <key> is [A-Za-z0-9_]+."
                 ),
                 headers={"X-Node-Id": nid},
+                code="DSL_FIELD_PATH_NOT_ALLOWED",
+                params={"nodeId": nid, "path": path},
             )
         # Sprint 7: parent.points / parent.case_name are only meaningful
         # inside post_rules — using them in main rules or pre_rules
@@ -432,6 +434,8 @@ def _validate_expression(
                     "post_rules (DSL_EXTEND mode)."
                 ),
                 headers={"X-Node-Id": nid},
+                code="DSL_PARENT_FIELD_OUTSIDE_POST",
+                params={"nodeId": nid, "path": path, "context": context},
             )
         return
 
@@ -442,6 +446,8 @@ def _validate_expression(
             raise DslValidationError(
                 detail=f"arith.op '{op}' is not allowed.",
                 headers={"X-Node-Id": nid},
+                code="DSL_ARITH_OP_NOT_ALLOWED",
+                params={"nodeId": nid, "op": op},
             )
         _validate_expression(
             node["left"], parent_id=nid, index=0, state=state, depth=depth + 1,
@@ -460,6 +466,8 @@ def _validate_expression(
             raise DslValidationError(
                 detail=f"func_call.name '{name}' is not allowed.",
                 headers={"X-Node-Id": nid},
+                code="DSL_FUNC_NAME_NOT_ALLOWED",
+                params={"nodeId": nid, "name": name},
             )
         args = node["args"]
         expected_arity = FUNC_ARITY[name]
@@ -471,6 +479,13 @@ def _validate_expression(
                     f"got {actual}."
                 ),
                 headers={"X-Node-Id": nid},
+                code="DSL_FUNC_ARITY_MISMATCH",
+                params={
+                    "nodeId": nid,
+                    "name": name,
+                    "expected": expected_arity,
+                    "actual": actual,
+                },
             )
         for i, arg in enumerate(args):
             _validate_expression(
