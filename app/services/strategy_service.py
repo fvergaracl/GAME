@@ -239,8 +239,33 @@ class StrategyService(BaseService):
         definition = await self._strategy_definition_service.get_strategy(
             id=uuid_part, realmId=realmId
         )
+
+        # Sprint 7: DSL_EXTEND wraps a built-in parent with pre/post
+        # rules. Resolve the parent here (sync registry lookup) and
+        # hand it to DslStrategy as a constructor dependency. If the
+        # parent id stored in the row no longer references an existing
+        # built-in (e.g. removed from the registry between persist and
+        # execution), ``get_Class_by_id`` raises NotFoundError with a
+        # clear message — better than a silent KeyError at run time.
+        parent_strategy = None
+        if definition.type == "DSL_EXTEND":
+            if not definition.parentStrategyId:
+                # The CRUD validator (_validate_payload) enforces this
+                # at write time, but defend in depth in case an older
+                # row predates the rule.
+                raise InternalServerError(
+                    detail=(
+                        f"Custom strategy {strategy_id} is DSL_EXTEND "
+                        "but has no parentStrategyId set."
+                    )
+                )
+            parent_strategy = self.get_Class_by_id(
+                definition.parentStrategyId
+            )
+
         return DslStrategy(
             definition=definition,
             interpreter=self._dsl_interpreter,
             analytics_service=self._analytics_service,
+            parent_strategy=parent_strategy,
         )

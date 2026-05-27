@@ -46,10 +46,26 @@ NODE_COMPARE = "compare"
 NODE_LITERAL = "literal"
 NODE_FIELD = "field"
 NODE_ARITH = "arith"
+# Sprint 6: dedicated node for non-binary built-ins (unary ``int``,
+# ternary ``clamp``). Binary ``min`` / ``max`` stay in ``arith`` because
+# they fit the existing left/right dispatch table cleanly.
+NODE_FUNC_CALL = "func_call"
 
 NODE_ASSIGN_POINTS = "assign_points"
 NODE_SET_CALLBACK_DATA = "set_callback_data"
 NODE_RETURN = "return"
+
+# Sprint 7: statements for DSL_EXTEND mode (pre_rules / post_rules).
+# - set_data + veto are pre-only (they affect what the parent sees / whether
+#   it runs at all).
+# - set_points + set_case_name are post-only (they mutate the parent's result).
+# The context whitelist below (STATEMENT_ALLOWED_CONTEXTS) is what the
+# validator consults to reject misplaced statements; the interpreter has
+# matching dispatch entries.
+NODE_SET_DATA = "set_data"
+NODE_VETO = "veto"
+NODE_SET_POINTS = "set_points"
+NODE_SET_CASE_NAME = "set_case_name"
 
 
 ALL_NODE_TYPES: Set[str] = {
@@ -62,9 +78,14 @@ ALL_NODE_TYPES: Set[str] = {
     NODE_LITERAL,
     NODE_FIELD,
     NODE_ARITH,
+    NODE_FUNC_CALL,
     NODE_ASSIGN_POINTS,
     NODE_SET_CALLBACK_DATA,
     NODE_RETURN,
+    NODE_SET_DATA,
+    NODE_VETO,
+    NODE_SET_POINTS,
+    NODE_SET_CASE_NAME,
 }
 
 CONDITION_NODE_TYPES: Set[str] = {
@@ -72,20 +93,62 @@ CONDITION_NODE_TYPES: Set[str] = {
 }
 
 EXPRESSION_NODE_TYPES: Set[str] = {
-    NODE_LITERAL, NODE_FIELD, NODE_ARITH,
+    NODE_LITERAL, NODE_FIELD, NODE_ARITH, NODE_FUNC_CALL,
 }
 
 STATEMENT_NODE_TYPES: Set[str] = {
-    NODE_ASSIGN_POINTS, NODE_SET_CALLBACK_DATA, NODE_RETURN,
+    NODE_ASSIGN_POINTS,
+    NODE_SET_CALLBACK_DATA,
+    NODE_RETURN,
+    NODE_SET_DATA,
+    NODE_VETO,
+    NODE_SET_POINTS,
+    NODE_SET_CASE_NAME,
+}
+
+
+# Sprint 7: which statements are allowed inside which AST section.
+# Context strings: "rule" (main rules[]), "default" (program.default),
+# "pre" (program.pre_rules[]), "post" (program.post_rules[]).
+#
+# IMPORTANT: dashboard/src/views/strategies/dsl/whitelists.js mirrors
+# this map for client-side validation — keep them in sync.
+STATEMENT_ALLOWED_CONTEXTS: Dict[str, Set[str]] = {
+    NODE_ASSIGN_POINTS:     {"rule", "default"},
+    NODE_SET_CALLBACK_DATA: {"rule", "default", "pre", "post"},
+    NODE_RETURN:            {"rule", "default", "pre", "post"},
+    NODE_SET_DATA:          {"pre"},
+    NODE_VETO:              {"pre"},
+    NODE_SET_POINTS:        {"post"},
+    NODE_SET_CASE_NAME:     {"post"},
 }
 
 
 ALLOWED_COMPARE_OPS: Set[str] = {"<", "<=", "==", "!=", ">=", ">"}
-ALLOWED_ARITH_OPS: Set[str] = {"+", "-", "*", "/"}
+# Sprint 6: ``min`` / ``max`` added as binary arith ops so they reuse the
+# existing _ARITH_HANDLERS table. Unary ``int`` and ternary ``clamp`` are
+# expressed through ``NODE_FUNC_CALL`` instead.
+ALLOWED_ARITH_OPS: Set[str] = {"+", "-", "*", "/", "min", "max"}
 
-# Reserved for Sprint 7. The validator allows the keys to exist (empty
-# arrays only) so a forward-compatible Blockly export does not break.
+# Whitelist of non-binary built-ins addressable through ``NODE_FUNC_CALL``.
+# Keeping the arity explicit so the validator can reject bad call shapes
+# without consulting the interpreter handler table.
+# IMPORTANT: dashboard/src/views/strategies/dsl/whitelists.js mirrors
+# this set for client-side validation — keep them in sync.
+ALLOWED_FUNC_NAMES: Set[str] = {"int", "clamp"}
+FUNC_ARITY: Dict[str, int] = {"int": 1, "clamp": 3}
+
+# Sprint 7: program may carry pre_rules and post_rules (DSL_EXTEND mode).
+# The validator now treats both as optional-but-can-be-non-empty lists of
+# rule-shaped nodes; Sprint 6 used to require they be empty.
 RESERVED_PROGRAM_KEYS: Set[str] = {"pre_rules", "post_rules"}
+
+# Sprint 7: declarative override map applied to a fresh copy of the
+# parent built-in before its calculate_points runs. Keys must be present
+# in ``parent.get_variables()`` (validated against the registry at
+# create/update time, see strategy_definition_service); values must be
+# JSON scalars. Lives under ``program.parent_variables``.
+PARENT_VARIABLES_KEY = "parent_variables"
 
 
 # Field whitelist -----------------------------------------------------------
@@ -145,6 +208,15 @@ FIELD_RESOLVERS: Dict[str, FieldResolution] = dict([
         "get_user_task_measurements_count",
         lambda ctx: (ctx.externalTaskId, ctx.externalUserId),
     ),
+    # Sprint 6: rolling-window count used by ``constantEffortStrategy``.
+    # The window in seconds is currently hard-coded to 300 (5 minutes,
+    # the strategy's default). Parametrising the window per-AST requires
+    # variable substitution support which lands in Sprint 7.
+    _analytics(
+        "user.recent_measurements_count",
+        "get_user_task_measurements_count_the_last_seconds",
+        lambda ctx: (ctx.externalTaskId, ctx.externalUserId, 300),
+    ),
     _analytics(
         "task.measurements_count",
         "count_measurements_by_external_task_id",
@@ -173,6 +245,14 @@ FIELD_RESOLVERS: Dict[str, FieldResolution] = dict([
 ])
 
 
+# Sprint 7: paths exposed only inside ``post_rules`` — they carry the
+# parent built-in's result after the pre→parent→post pipeline. They are
+# NOT in FIELD_RESOLVERS because their value is injected directly into
+# ExecutionContext.resolved_fields by ``DslStrategy`` after the parent
+# call, not eagerly precomputed alongside analytics fields.
+PARENT_FIELD_PATHS: Set[str] = {"parent.points", "parent.case_name"}
+
+
 def is_valid_data_path(path: str) -> bool:
     """``data.<key>`` where ``<key>`` is ``[A-Za-z0-9_]+``."""
     if not path.startswith(DATA_FIELD_PREFIX):
@@ -181,9 +261,19 @@ def is_valid_data_path(path: str) -> bool:
     return bool(_DATA_KEY_RE.match(suffix))
 
 
+def is_parent_field_path(path: str) -> bool:
+    """``parent.points`` / ``parent.case_name`` — only valid in post_rules."""
+    return path in PARENT_FIELD_PATHS
+
+
 def is_known_field_path(path: str) -> bool:
-    """Either a whitelisted analytic/static path or a well-formed data.* key."""
-    return path in FIELD_RESOLVERS or is_valid_data_path(path)
+    """Either a whitelisted analytic/static path, a parent.* path (Sprint 7,
+    context-restricted by validator), or a well-formed data.* key."""
+    return (
+        path in FIELD_RESOLVERS
+        or is_parent_field_path(path)
+        or is_valid_data_path(path)
+    )
 
 
 def is_valid_case_name(value: Any) -> bool:

@@ -239,3 +239,111 @@ async def test_update_passes_payload_through():
     assert call_kwargs["payload"].description == "new"
     assert call_kwargs["realmId"] == "api-key-xyz"
     assert result.description == "new"
+
+
+# ---------------------------------------------------------------- parent check
+#
+# Sprint 7: when type=DSL_EXTEND, the endpoint must verify the
+# referenced parentStrategyId exists in the built-in registry BEFORE
+# the row gets persisted. Without this check, designers could persist
+# DSL_EXTEND rows that crash at execution time with a confusing
+# NotFoundError deep in StrategyService.get_strategy_instance.
+
+
+from app.core.exceptions import NotFoundError  # noqa: E402
+
+
+@pytest.mark.asyncio
+async def test_create_with_dsl_extend_rejects_unknown_parent():
+    """A DSL_EXTEND payload whose parentStrategyId is not in the
+    registry must 404 before the service.create call — proves the
+    new ``_ensure_parent_strategy_exists`` guard is wired correctly."""
+    service = MagicMock()
+    service.create = AsyncMock()
+    strategy_service = MagicMock()
+    strategy_service.get_strategy_by_id.side_effect = NotFoundError(
+        detail="Strategy not found with id: ghost"
+    )
+
+    payload = StrategyDefinitionCreate(
+        name="extend_ghost",
+        type=StrategyDefinitionType.DSL_EXTEND,
+        parentStrategyId="ghost",
+    )
+    auth = _auth(api_key="api-key-xyz")
+
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
+        with pytest.raises(NotFoundError, match="ghost"):
+            await endpoint.create_custom_strategy(
+                payload=payload,
+                auth=auth,
+                service=service,
+                strategy_service=strategy_service,
+                audit=_audit(auth),
+            )
+
+    strategy_service.get_strategy_by_id.assert_called_once_with("ghost")
+    # The persistence layer is never reached.
+    service.create.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_create_with_dsl_extend_passes_when_parent_exists():
+    """Happy path: a real built-in id allows the DSL_EXTEND row to
+    be persisted normally."""
+    service = MagicMock()
+    service.create = AsyncMock(return_value=_read_stub(type="DSL_EXTEND"))
+    strategy_service = MagicMock()
+    strategy_service.get_strategy_by_id.return_value = {
+        "id": "default", "name": "Default",
+    }
+
+    payload = StrategyDefinitionCreate(
+        name="extend_default",
+        type=StrategyDefinitionType.DSL_EXTEND,
+        parentStrategyId="default",
+    )
+    auth = _auth(api_key="api-key-xyz")
+
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
+        result = await endpoint.create_custom_strategy(
+            payload=payload,
+            auth=auth,
+            service=service,
+            strategy_service=strategy_service,
+            audit=_audit(auth),
+        )
+
+    strategy_service.get_strategy_by_id.assert_called_once_with("default")
+    service.create.assert_awaited_once()
+    assert result.type == "DSL_EXTEND"
+
+
+@pytest.mark.asyncio
+async def test_create_with_dsl_full_skips_parent_check():
+    """For DSL_FULL payloads the parent check is a no-op — confirms
+    the early-return guard in _ensure_parent_strategy_exists."""
+    service = MagicMock()
+    service.create = AsyncMock(return_value=_read_stub())
+    strategy_service = MagicMock()
+    # If this ever runs, ``get_strategy_by_id`` would explode the test.
+    strategy_service.get_strategy_by_id.side_effect = AssertionError(
+        "Parent check should not run for DSL_FULL"
+    )
+
+    payload = StrategyDefinitionCreate(
+        name="full_only", type=StrategyDefinitionType.DSL_FULL,
+    )
+    auth = _auth(api_key="api-key-xyz")
+
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
+        await endpoint.create_custom_strategy(
+            payload=payload,
+            auth=auth,
+            service=service,
+            strategy_service=strategy_service,
+            audit=_audit(auth),
+        )
+
+    strategy_service.get_strategy_by_id.assert_not_called()
+    service.create.assert_awaited_once()

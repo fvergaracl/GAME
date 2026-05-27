@@ -1,0 +1,65 @@
+{
+  "type": "program",
+  "id": "constant_effort_v0_0_1",
+  "rules": [
+    {
+      "type": "rule",
+      "id": "r_constant_effort_reward",
+      "when": {
+        "type": "compare",
+        "id": "c_recent_gt_zero",
+        "op": ">",
+        "left":  {"type": "field",   "id": "f_recent_count",   "path": "user.recent_measurements_count"},
+        "right": {"type": "literal", "id": "l_zero_threshold", "value": 0}
+      },
+      "then": [
+        {
+          "type": "assign_points",
+          "id": "a_constant_effort_reward",
+          "value": {
+            "type": "func_call",
+            "id": "fc_clamp_points",
+            "name": "clamp",
+            "args": [
+              {
+                "type": "func_call",
+                "id": "fc_int_cast",
+                "name": "int",
+                "args": [
+                  {
+                    "type": "arith",
+                    "id": "arith_normalize_scale",
+                    "op": "*",
+                    "left": {
+                      "type": "arith",
+                      "id": "arith_normalize_div",
+                      "op": "/",
+                      "left": {
+                        "type": "arith",
+                        "id": "arith_count_plus_one",
+                        "op": "+",
+                        "left":  {"type": "field",   "id": "f_recent_count_b", "path": "user.recent_measurements_count"},
+                        "right": {"type": "literal", "id": "l_plus_one",       "value": 1}
+                      },
+                      "right": {"type": "literal", "id": "l_max_points_div", "value": 100}
+                    },
+                    "right": {"type": "literal", "id": "l_scale_100", "value": 100}
+                  }
+                ]
+              },
+              {"type": "literal", "id": "l_clamp_low",  "value": 1},
+              {"type": "literal", "id": "l_clamp_high", "value": 100}
+            ]
+          },
+          "case_name": "ConstantEffortReward"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "type": "assign_points",
+    "id": "a_basic_reward",
+    "value": {"type": "literal", "id": "l_basic_reward_points", "value": 1},
+    "case_name": "BasicReward"
+  }
+}

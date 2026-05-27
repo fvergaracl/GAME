@@ -318,3 +318,156 @@ async def test_runtime_rejects_unknown_node_if_validator_bypassed():
     interpreter = DslInterpreter(max_nodes=100, max_depth=10)
     with pytest.raises(DslValidationError, match="Unknown statement"):
         await interpreter.execute(ast, ctx)
+
+
+# ---------------------------------------------------------------------------
+# Sprint 6: NODE_FUNC_CALL adversarial coverage.
+#
+# The new func_call node carries a string ``name`` that selects a handler;
+# the validator must refuse any name outside ALLOWED_FUNC_NAMES and any
+# arity mismatch — both happen *before* the value reaches the interpreter
+# dispatch table, so a malicious tenant can't smuggle in
+# ``func_call os.system`` and have the runtime try to honour it.
+# ---------------------------------------------------------------------------
+
+
+def _wrap_expression_as_assign_program(expr):
+    """Bury ``expr`` inside an assign_points.value of a single rule, so
+    we exercise the validator on the expression while still landing a
+    structurally complete program."""
+    return {
+        "type": "program",
+        "id": "p",
+        "rules": [
+            {
+                "type": "rule",
+                "id": "r",
+                "when": {"type": "literal", "id": "lt", "value": True},
+                "then": [
+                    {
+                        "type": "assign_points",
+                        "id": "a",
+                        "value": expr,
+                        "case_name": "WrappedExpr",
+                    }
+                ],
+            }
+        ],
+    }
+
+
+@pytest.mark.parametrize(
+    "bad_name",
+    ["eval", "exec", "os.system", "__import__", "open", "round"],
+)
+def test_validator_rejects_func_call_with_unknown_name(bad_name):
+    ast = _wrap_expression_as_assign_program(
+        {
+            "type": "func_call",
+            "id": "fc",
+            "name": bad_name,
+            "args": [{"type": "literal", "id": "l", "value": 1}],
+        }
+    )
+    with pytest.raises(DslValidationError, match="is not allowed"):
+        validate_ast(ast)
+
+
+@pytest.mark.parametrize(
+    "name,args_count,expected_arity",
+    [
+        ("int", 0, 1),
+        ("int", 2, 1),
+        ("int", 3, 1),
+        ("clamp", 1, 3),
+        ("clamp", 2, 3),
+        ("clamp", 4, 3),
+    ],
+)
+def test_validator_rejects_func_call_with_wrong_arity(
+    name, args_count, expected_arity
+):
+    args = [
+        {"type": "literal", "id": f"a{i}", "value": i}
+        for i in range(args_count)
+    ]
+    ast = _wrap_expression_as_assign_program(
+        {"type": "func_call", "id": "fc", "name": name, "args": args}
+    )
+    with pytest.raises(
+        DslValidationError,
+        match=f"expects {expected_arity} args",
+    ):
+        validate_ast(ast)
+
+
+def test_validator_rejects_func_call_with_non_list_args():
+    ast = _wrap_expression_as_assign_program(
+        {
+            "type": "func_call",
+            "id": "fc",
+            "name": "int",
+            "args": "not a list",
+        }
+    )
+    with pytest.raises(DslValidationError, match="expects 1 args"):
+        validate_ast(ast)
+
+
+@pytest.mark.asyncio
+async def test_runtime_rejects_func_call_with_unknown_name_if_bypassed():
+    """
+    Same defence-in-depth shape as the unknown-statement test above. If a
+    corrupt func_call somehow reaches the interpreter without validation,
+    the runtime whitelist check must still reject it instead of
+    KeyError-ing into the handler table.
+    """
+    ast = _wrap_expression_as_assign_program(
+        {
+            "type": "func_call",
+            "id": "fc",
+            "name": "exec",
+            "args": [{"type": "literal", "id": "l", "value": "print(1)"}],
+        }
+    )
+    ctx = await ExecutionContext.build_for_ast(
+        ast,
+        externalGameId="g",
+        externalTaskId="t",
+        externalUserId="u",
+        data=None,
+        analytics_service=MagicMock(),
+    )
+    interpreter = DslInterpreter(max_nodes=100, max_depth=10)
+    with pytest.raises(DslValidationError, match="is not allowed"):
+        await interpreter.execute(ast, ctx)
+
+
+@pytest.mark.asyncio
+async def test_runtime_rejects_arith_min_between_incompatible_types():
+    """``min``/``max`` were added in Sprint 6. Confirm the existing
+    incompatible-types path still produces a clean DslExecutionError
+    instead of a stray Python TypeError."""
+    from app.core.exceptions import DslExecutionError
+
+    ast = _wrap_expression_as_assign_program(
+        {
+            "type": "arith",
+            "id": "ar",
+            "op": "min",
+            "left":  {"type": "literal", "id": "ll", "value": "hello"},
+            "right": {"type": "literal", "id": "lr", "value": 5},
+        }
+    )
+    validate_ast(ast)  # structurally valid
+    ctx = await ExecutionContext.build_for_ast(
+        ast,
+        externalGameId="g",
+        externalTaskId="t",
+        externalUserId="u",
+        data=None,
+        analytics_service=MagicMock(),
+    )
+    interpreter = DslInterpreter(max_nodes=100, max_depth=10)
+    with pytest.raises(DslExecutionError, match="incompatible types"):
+        await interpreter.execute(ast, ctx)

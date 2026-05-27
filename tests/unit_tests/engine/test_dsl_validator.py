@@ -193,15 +193,49 @@ def test_validator_assigns_ids_when_missing():
     assert (ast["id"], rule["id"], rule["then"][0]["id"]) == snapshot
 
 
-def test_validator_rejects_non_empty_pre_rules():
+def test_validator_rejects_assign_points_inside_pre_rules():
+    # Sprint 7: pre_rules are no longer reserved-empty. They CAN be
+    # non-empty, but only statements valid in the 'pre' context
+    # (set_data, veto, set_callback_data, return) are accepted.
+    # ``_basic_rule`` builds an assign_points inside, which belongs to
+    # main rules and must be rejected when placed in pre_rules.
     ast = {
         "type": "program",
         "id": "p",
         "rules": [_basic_rule()],
         "pre_rules": [_basic_rule()],
     }
-    with pytest.raises(DslValidationError, match="reserved"):
+    with pytest.raises(
+        DslValidationError,
+        match="'assign_points' is not allowed inside 'pre'",
+    ):
         validate_ast(ast)
+
+
+def test_validator_accepts_pre_rules_with_set_data_statement():
+    # Sprint 7: a pre-rule with a context-appropriate statement
+    # (set_data) is valid. This is the happy path that lets DSL_EXTEND
+    # mutate ``data`` before the parent built-in runs.
+    pre_rule = {
+        "type": "rule",
+        "id": "pr1",
+        "when": {"type": "literal", "id": "lt", "value": True},
+        "then": [
+            {
+                "type": "set_data",
+                "id": "sd1",
+                "key": "is_first_time",
+                "value": {"type": "literal", "id": "lv", "value": True},
+            }
+        ],
+    }
+    ast = {
+        "type": "program",
+        "id": "p",
+        "rules": [_basic_rule()],
+        "pre_rules": [pre_rule],
+    }
+    validate_ast(ast)
 
 
 def test_validator_rejects_unexpected_keys_on_node():

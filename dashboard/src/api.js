@@ -125,3 +125,86 @@ export const getExportHistory = async ({ scope = 'mine', limit = 50 } = {}) => {
 }
 
 
+// ---------------------------------------------------------------------------
+// Custom Strategies (/v1/strategies/custom/*)
+//
+// Endpoints introduced in Sprints 3-5. The dashboard's Strategy Editor uses
+// these to persist Blockly-authored DSL programs and dry-run them via the
+// simulate endpoint. All requests are tenant-scoped server-side via the
+// Bearer token or X-API-Key header; the realm is never sent from the client.
+// ---------------------------------------------------------------------------
+
+export const listCustomStrategies = async ({ status, type, limit = 100 } = {}) => {
+  const params = new URLSearchParams({ limit: String(limit) })
+  if (status) params.set('status', status)
+  if (type) params.set('type', type)
+  return getRequest(`/strategies/custom?${params.toString()}`)
+}
+
+export const getCustomStrategy = async (id) => {
+  return getRequest(`/strategies/custom/${encodeURIComponent(id)}`)
+}
+
+export const createCustomStrategy = async (payload) => {
+  // payload: { name, description?, type, parentStrategyId?, astJson, blocklyXml? }
+  return postRequest('/strategies/custom', payload)
+}
+
+export const updateCustomStrategy = async (id, payload) => {
+  // PUT mutates a DRAFT in place; on a PUBLISHED row the backend forks
+  // a new version+1 draft and returns that one.
+  try {
+    const response = await apiClient.put(
+      `/strategies/custom/${encodeURIComponent(id)}`, payload,
+    )
+    return response.data
+  } catch (error) {
+    console.error('PUT request failed:', error)
+    throw error
+  }
+}
+
+export const publishCustomStrategy = async (id) => {
+  return postRequest(
+    `/strategies/custom/${encodeURIComponent(id)}/publish`, {},
+  )
+}
+
+export const archiveCustomStrategy = async (id) => {
+  return postRequest(
+    `/strategies/custom/${encodeURIComponent(id)}/archive`, {},
+  )
+}
+
+export const simulateCustomStrategy = async (id, request) => {
+  // request: { externalGameId, externalTaskId, externalUserId, data?, mockState? }
+  return postRequest(
+    `/strategies/custom/${encodeURIComponent(id)}/simulate`, request,
+  )
+}
+
+
+// ---------------------------------------------------------------------------
+// Sprint 7 — DSL_EXTEND editor helpers
+//
+// The editor in DSL_EXTEND mode needs two things from the public
+// /v1/strategies endpoints:
+//
+//   1. The list of built-ins available as parents (populates the
+//      "parent picker" dropdown). Reuses the existing GET /strategies
+//      list since the payload size is small (~6 built-ins).
+//
+//   2. A typed schema of a single built-in (populates the dynamic
+//      "Parent overrides" toolbox category). The schema endpoint is
+//      a Sprint 7 addition that returns variables as an ORDERED LIST
+//      with explicit Python type names, so the editor can choose the
+//      right input widget per variable.
+// ---------------------------------------------------------------------------
+
+export const listBuiltInStrategies = async () => {
+  return getRequest('/strategies')
+}
+
+export const getStrategySchema = async (id) => {
+  return getRequest(`/strategies/${encodeURIComponent(id)}/schema`)
+}

@@ -38,15 +38,18 @@ from app.core.exceptions import DslValidationError
 from app.engine.dsl_ast import (
     ALLOWED_ARITH_OPS,
     ALLOWED_COMPARE_OPS,
+    ALLOWED_FUNC_NAMES,
     ALL_NODE_TYPES,
     CASE_NAME_MAX_LEN,
     CONDITION_NODE_TYPES,
     EXPRESSION_NODE_TYPES,
+    FUNC_ARITY,
     NODE_AND,
     NODE_ARITH,
     NODE_ASSIGN_POINTS,
     NODE_COMPARE,
     NODE_FIELD,
+    NODE_FUNC_CALL,
     NODE_LITERAL,
     NODE_NOT,
     NODE_OR,
@@ -54,10 +57,17 @@ from app.engine.dsl_ast import (
     NODE_RETURN,
     NODE_RULE,
     NODE_SET_CALLBACK_DATA,
-    RESERVED_PROGRAM_KEYS,
+    NODE_SET_CASE_NAME,
+    NODE_SET_DATA,
+    NODE_SET_POINTS,
+    NODE_VETO,
+    PARENT_VARIABLES_KEY,
+    STATEMENT_ALLOWED_CONTEXTS,
     STATEMENT_NODE_TYPES,
     is_known_field_path,
+    is_parent_field_path,
     is_valid_case_name,
+    is_valid_data_path,
 )
 
 
@@ -167,7 +177,9 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
         node,
         ("rules",),
         node_id=nid,
-        allowed_extra=("pre_rules", "post_rules", "default"),
+        allowed_extra=(
+            "pre_rules", "post_rules", "default", PARENT_VARIABLES_KEY,
+        ),
     )
 
     rules = node.get("rules")
@@ -177,31 +189,80 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
             headers={"X-Node-Id": nid},
         )
     for index, rule in enumerate(rules):
-        _validate_rule(rule, parent_id=nid, index=index, state=state, depth=1)
+        _validate_rule(
+            rule, parent_id=nid, index=index, state=state, depth=1,
+            context="rule",
+        )
 
-    # Reserved sections — must be empty arrays until Sprint 7.
-    for key in RESERVED_PROGRAM_KEYS:
-        value = node.get(key)
-        if value is None:
+    # Sprint 7: pre_rules and post_rules are real now. Each entry is a
+    # rule-shaped node, but the contained statements are restricted to
+    # the section's allowed set (set_data/veto in pre, set_points/
+    # set_case_name in post, set_callback_data in both).
+    for section_key, ctx in (("pre_rules", "pre"), ("post_rules", "post")):
+        section = node.get(section_key)
+        if section is None:
             continue
-        if not isinstance(value, list) or len(value) > 0:
+        if not isinstance(section, list):
             raise DslValidationError(
-                detail=(
-                    f"program.{key} is reserved for future use; only empty "
-                    "arrays are accepted in this version."
-                ),
+                detail=f"program.{section_key} must be an array.",
                 headers={"X-Node-Id": nid},
             )
+        for index, rule in enumerate(section):
+            _validate_rule(
+                rule, parent_id=nid, index=index, state=state, depth=1,
+                context=ctx,
+            )
+
+    # Sprint 7: parent_variables is an optional declarative override map
+    # applied to a fresh copy of the parent built-in before its
+    # calculate_points runs. Keys must be strings, values must be JSON
+    # scalars (the registry-level "does this variable exist?" check
+    # happens at create/update time in StrategyDefinitionService — here
+    # we only enforce the AST shape).
+    parent_vars = node.get(PARENT_VARIABLES_KEY)
+    if parent_vars is not None:
+        if not isinstance(parent_vars, dict):
+            raise DslValidationError(
+                detail=f"program.{PARENT_VARIABLES_KEY} must be an object.",
+                headers={"X-Node-Id": nid},
+            )
+        for key, value in parent_vars.items():
+            if not isinstance(key, str) or not key.startswith("variable_"):
+                raise DslValidationError(
+                    detail=(
+                        f"program.{PARENT_VARIABLES_KEY} key '{key}' must "
+                        "be a string starting with 'variable_'."
+                    ),
+                    headers={"X-Node-Id": nid},
+                )
+            if (
+                not isinstance(value, _LITERAL_TYPES)
+                or isinstance(value, bytes)
+            ):
+                raise DslValidationError(
+                    detail=(
+                        f"program.{PARENT_VARIABLES_KEY}['{key}'] must be "
+                        "a JSON scalar (string, number, boolean, or null)."
+                    ),
+                    headers={"X-Node-Id": nid},
+                )
 
     default = node.get("default")
     if default is not None:
         _validate_statement(
-            default, parent_id=nid, index=0, state=state, depth=1
+            default, parent_id=nid, index=0, state=state, depth=1,
+            context="default",
         )
 
 
 def _validate_rule(
-    node: Any, *, parent_id: str, index: int, state: _State, depth: int
+    node: Any,
+    *,
+    parent_id: str,
+    index: int,
+    state: _State,
+    depth: int,
+    context: str = "rule",
 ) -> None:
     if not isinstance(node, dict):
         raise DslValidationError(
@@ -215,7 +276,10 @@ def _validate_rule(
     _check_depth(depth, nid, state)
 
     when = node["when"]
-    _validate_condition(when, parent_id=nid, index=0, state=state, depth=depth + 1)
+    _validate_condition(
+        when, parent_id=nid, index=0, state=state, depth=depth + 1,
+        context=context,
+    )
 
     then = node["then"]
     if not isinstance(then, list) or not then:
@@ -225,12 +289,19 @@ def _validate_rule(
         )
     for i, stmt in enumerate(then):
         _validate_statement(
-            stmt, parent_id=nid, index=i, state=state, depth=depth + 1
+            stmt, parent_id=nid, index=i, state=state, depth=depth + 1,
+            context=context,
         )
 
 
 def _validate_condition(
-    node: Any, *, parent_id: str, index: int, state: _State, depth: int
+    node: Any,
+    *,
+    parent_id: str,
+    index: int,
+    state: _State,
+    depth: int,
+    context: str = "rule",
 ) -> None:
     if not isinstance(node, dict):
         raise DslValidationError(
@@ -257,14 +328,16 @@ def _validate_condition(
             )
         for i, arg in enumerate(args):
             _validate_condition(
-                arg, parent_id=nid, index=i, state=state, depth=depth + 1
+                arg, parent_id=nid, index=i, state=state, depth=depth + 1,
+                context=context,
             )
         return
 
     if ntype == NODE_NOT:
         _assert_keys(node, ("arg",), node_id=nid)
         _validate_condition(
-            node["arg"], parent_id=nid, index=0, state=state, depth=depth + 1
+            node["arg"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            context=context,
         )
         return
 
@@ -277,22 +350,31 @@ def _validate_condition(
                 headers={"X-Node-Id": nid},
             )
         _validate_expression(
-            node["left"], parent_id=nid, index=0, state=state, depth=depth + 1
+            node["left"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            context=context,
         )
         _validate_expression(
-            node["right"], parent_id=nid, index=1, state=state, depth=depth + 1
+            node["right"], parent_id=nid, index=1, state=state, depth=depth + 1,
+            context=context,
         )
         return
 
     # Conditions can be raw booleans/expressions too (literal true/false,
     # or a field that resolves to a number used as truthy). Delegate.
     _validate_expression(
-        node, parent_id=parent_id, index=index, state=state, depth=depth
+        node, parent_id=parent_id, index=index, state=state, depth=depth,
+        context=context,
     )
 
 
 def _validate_expression(
-    node: Any, *, parent_id: str, index: int, state: _State, depth: int
+    node: Any,
+    *,
+    parent_id: str,
+    index: int,
+    state: _State,
+    depth: int,
+    context: str = "rule",
 ) -> None:
     if not isinstance(node, dict):
         raise DslValidationError(
@@ -339,6 +421,18 @@ def _validate_expression(
                 ),
                 headers={"X-Node-Id": nid},
             )
+        # Sprint 7: parent.points / parent.case_name are only meaningful
+        # inside post_rules — using them in main rules or pre_rules
+        # would read uninitialised state. Reject early with a clear
+        # message rather than letting the interpreter return None.
+        if is_parent_field_path(path) and context != "post":
+            raise DslValidationError(
+                detail=(
+                    f"field.path '{path}' is only available inside "
+                    "post_rules (DSL_EXTEND mode)."
+                ),
+                headers={"X-Node-Id": nid},
+            )
         return
 
     if ntype == NODE_ARITH:
@@ -350,16 +444,50 @@ def _validate_expression(
                 headers={"X-Node-Id": nid},
             )
         _validate_expression(
-            node["left"], parent_id=nid, index=0, state=state, depth=depth + 1
+            node["left"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            context=context,
         )
         _validate_expression(
-            node["right"], parent_id=nid, index=1, state=state, depth=depth + 1
+            node["right"], parent_id=nid, index=1, state=state, depth=depth + 1,
+            context=context,
         )
+        return
+
+    if ntype == NODE_FUNC_CALL:
+        _assert_keys(node, ("name", "args"), node_id=nid)
+        name = node["name"]
+        if name not in ALLOWED_FUNC_NAMES:
+            raise DslValidationError(
+                detail=f"func_call.name '{name}' is not allowed.",
+                headers={"X-Node-Id": nid},
+            )
+        args = node["args"]
+        expected_arity = FUNC_ARITY[name]
+        if not isinstance(args, list) or len(args) != expected_arity:
+            actual = len(args) if isinstance(args, list) else "non-list"
+            raise DslValidationError(
+                detail=(
+                    f"func_call '{name}' expects {expected_arity} args, "
+                    f"got {actual}."
+                ),
+                headers={"X-Node-Id": nid},
+            )
+        for i, arg in enumerate(args):
+            _validate_expression(
+                arg, parent_id=nid, index=i, state=state, depth=depth + 1,
+                context=context,
+            )
         return
 
 
 def _validate_statement(
-    node: Any, *, parent_id: str, index: int, state: _State, depth: int
+    node: Any,
+    *,
+    parent_id: str,
+    index: int,
+    state: _State,
+    depth: int,
+    context: str = "rule",
 ) -> None:
     if not isinstance(node, dict):
         raise DslValidationError(
@@ -373,13 +501,28 @@ def _validate_statement(
             raise DslValidationError(
                 detail=(
                     f"Node type '{ntype}' is not a valid statement "
-                    "(expected assign_points, set_callback_data, or return)."
+                    "(expected one of: "
+                    + ", ".join(sorted(STATEMENT_NODE_TYPES))
+                    + ")."
                 ),
                 headers={"X-Node-Id": parent_id},
             )
         raise DslValidationError(
             detail=f"Unknown statement node type: '{ntype}'.",
             headers={"X-Node-Id": parent_id},
+        )
+    # Sprint 7: enforce per-section statement whitelisting BEFORE any
+    # shape validation so the error message points the designer at the
+    # real problem ("you can't veto from a main rule") rather than a
+    # generic structural mismatch downstream.
+    allowed = STATEMENT_ALLOWED_CONTEXTS.get(ntype, set())
+    if context not in allowed:
+        raise DslValidationError(
+            detail=(
+                f"Statement '{ntype}' is not allowed inside "
+                f"'{context}' section (allowed: {sorted(allowed)})."
+            ),
+            headers={"X-Node-Id": _node_id(node, parent_id, ntype, index)},
         )
     nid = _node_id(node, parent_id, ntype, index)
     state.step(nid)
@@ -388,7 +531,8 @@ def _validate_statement(
     if ntype == NODE_ASSIGN_POINTS:
         _assert_keys(node, ("value", "case_name"), node_id=nid)
         _validate_expression(
-            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1
+            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            context=context,
         )
         case_name = node["case_name"]
         if not is_valid_case_name(case_name):
@@ -411,7 +555,76 @@ def _validate_statement(
             )
         # value may be a full expression — the interpreter will resolve it.
         _validate_expression(
-            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1
+            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            context=context,
+        )
+        return
+
+    if ntype == NODE_SET_DATA:
+        # Sprint 7: writes into the working_data dict passed to the
+        # parent built-in. The interpreter mutates a copy of data, so
+        # pre-rule mutations are local to this request.
+        _assert_keys(node, ("key", "value"), node_id=nid)
+        key = node["key"]
+        if not isinstance(key, str) or not key:
+            raise DslValidationError(
+                detail="set_data.key must be a non-empty string.",
+                headers={"X-Node-Id": nid},
+            )
+        # Keep the data namespace consistent with the field-path regex:
+        # only alphanumeric + underscore, no dots/dashes.
+        if not is_valid_data_path(f"data.{key}"):
+            raise DslValidationError(
+                detail=(
+                    "set_data.key must match [A-Za-z0-9_]+ so it is "
+                    "addressable via 'data.<key>' from the AST."
+                ),
+                headers={"X-Node-Id": nid},
+            )
+        _validate_expression(
+            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            context=context,
+        )
+        return
+
+    if ntype == NODE_VETO:
+        # Sprint 7: halts the whole DSL_EXTEND pipeline (parent is NOT
+        # invoked, post_rules are NOT run). Final result is
+        # (0, case_name, current callback_data).
+        _assert_keys(node, ("case_name",), node_id=nid)
+        case_name = node["case_name"]
+        if not is_valid_case_name(case_name):
+            raise DslValidationError(
+                detail=(
+                    "veto.case_name must be 1-"
+                    f"{CASE_NAME_MAX_LEN} printable ASCII characters."
+                ),
+                headers={"X-Node-Id": nid},
+            )
+        return
+
+    if ntype == NODE_SET_POINTS:
+        # Sprint 7: post-rule override of the parent's points. Unlike
+        # assign_points (which halts the rule), set_points lets the
+        # remaining statements in the post-rule keep running, so a
+        # designer can chain set_points + set_callback_data.
+        _assert_keys(node, ("value",), node_id=nid)
+        _validate_expression(
+            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            context=context,
+        )
+        return
+
+    if ntype == NODE_SET_CASE_NAME:
+        # Sprint 7: post-rule override of the parent's caseName. The
+        # value is an expression so it can be computed (e.g. a literal
+        # text block, or even derived from data.* — though the latter
+        # is unusual). The runtime checks the resolved value is a
+        # printable ASCII string.
+        _assert_keys(node, ("value",), node_id=nid)
+        _validate_expression(
+            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            context=context,
         )
         return
 

@@ -8,7 +8,11 @@ from fastapi.responses import StreamingResponse
 from app.core.container import Container
 from app.core.exceptions import NotFoundError
 from app.middlewares.auth_context import AuditLogger, audit_log
-from app.schema.strategy_schema import Strategy
+from app.schema.strategy_schema import (
+    Strategy,
+    StrategySchema,
+    StrategyVariableInfo,
+)
 from app.services.strategy_service import StrategyService
 
 router = APIRouter(
@@ -218,6 +222,128 @@ async def get_strategy_by_id(
     except Exception as e:
         await audit.error("Get strategy by ID failed", {"id": id, "error": str(e)})
         raise e
+
+
+# --------------------------------------------------------------------------
+# Sprint 7: /v1/strategies/{id}/schema
+#
+# Editor-facing endpoint that returns built-in metadata enriched with a
+# typed, ordered variables list. The DSL_EXTEND editor (Blockly) uses
+# this to populate the "Parent overrides" toolbox category and the
+# read-only side panel describing the parent strategy.
+# --------------------------------------------------------------------------
+
+summary_get_strategy_schema_by_id = "Retrieve Strategy Schema by ID"
+responses_get_strategy_schema_by_id = {
+    200: {
+        "description": (
+            "Built-in strategy schema with typed variable metadata, "
+            "consumed by the DSL_EXTEND editor."
+        ),
+    },
+    401: {
+        "description": "Unauthorized: invalid bearer token when provided",
+    },
+    404: {
+        "description": "Strategy id not found in the built-in registry",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Strategy not found with id: unknown"}
+            }
+        },
+    },
+    500: {"description": "Internal server error while building schema"},
+}
+
+description_get_strategy_schema_by_id = """
+Returns an editor-friendly schema of a built-in strategy.
+
+Difference vs ``GET /v1/strategies/{id}``:
+* ``variables`` is an **ordered list** (by name) instead of a dict so
+  UI rendering is stable across calls.
+* Each variable carries its Python type name (``int``, ``float``,
+  ``str``, ``bool``, ``dict``, ``list``) so the editor can pick the
+  right input widget when the DSL_EXTEND mode allows overriding it.
+
+### Path Parameter
+- `id` (`string`): Built-in strategy identifier (e.g. `default`).
+
+### Authentication
+- Supports `Authorization: Bearer <access_token>` and `X-API-Key`.
+
+<sub>**Id_endpoint:** `get_strategy_schema_by_id`</sub>
+"""  # noqa
+
+
+# Python type → JSON-ish name we expose to the editor. We deliberately
+# map ``NoneType`` to ``"null"`` because that's what JS callers will
+# read it as; bool maps to itself (Python's bool inherits from int but
+# we want the editor to render a checkbox, not a number input).
+_TYPE_NAME_MAP = {
+    bool: "bool",
+    int: "int",
+    float: "float",
+    str: "str",
+    dict: "dict",
+    list: "list",
+    type(None): "null",
+}
+
+
+def _variable_type_name(value) -> str:
+    """Stable, JSON-friendly name for the variable's Python type."""
+    return _TYPE_NAME_MAP.get(type(value), type(value).__name__)
+
+
+@router.get(
+    "/{id}/schema",
+    response_model=StrategySchema,
+    summary=summary_get_strategy_schema_by_id,
+    description=description_get_strategy_schema_by_id,
+    responses=responses_get_strategy_schema_by_id,
+)
+@inject
+async def get_strategy_schema_by_id(
+    id: str,
+    service: StrategyService = Depends(Provide[Container.strategy_service]),
+    audit: AuditLogger = Depends(audit_log("strategies")),
+):
+    """
+    Retrieve the editor schema for a built-in strategy.
+
+    The lookup hits the in-process registry via ``get_Class_by_id`` (no
+    DB round-trip) and inspects ``instance.get_variables()`` so the
+    editor sees exactly what the built-in's ``__init__`` set up.
+    """
+    await audit.info("Get strategy schema by ID", {"id": id})
+    try:
+        instance = service.get_Class_by_id(id)
+        variables_dict = instance.get_variables()
+        variables = sorted(
+            (
+                StrategyVariableInfo(
+                    name=name,
+                    type=_variable_type_name(value),
+                    currentValue=value,
+                )
+                for name, value in variables_dict.items()
+            ),
+            key=lambda v: v.name,
+        )
+        return StrategySchema(
+            id=getattr(instance, "id", id),
+            name=instance.get_strategy_name(),
+            description=instance.get_strategy_description(),
+            version=instance.get_strategy_version(),
+            variables=variables,
+            hash_version=instance._generate_hash_of_calculate_points(),
+        )
+    except Exception as e:
+        await audit.error(
+            "Get strategy schema by ID failed",
+            {"id": id, "error": str(e)},
+        )
+        raise
 
 
 summary_get_strategy_graph_by_id = "Retrieve Strategy Graph by ID"

@@ -45,25 +45,38 @@ from app.core.exceptions import (
 from app.engine.dsl_ast import (
     ALLOWED_ARITH_OPS,
     ALLOWED_COMPARE_OPS,
+    ALLOWED_FUNC_NAMES,
+    FUNC_ARITY,
     NODE_AND,
     NODE_ARITH,
     NODE_ASSIGN_POINTS,
     NODE_COMPARE,
     NODE_FIELD,
+    NODE_FUNC_CALL,
     NODE_LITERAL,
     NODE_NOT,
     NODE_OR,
     NODE_RETURN,
     NODE_SET_CALLBACK_DATA,
+    NODE_SET_CASE_NAME,
+    NODE_SET_DATA,
+    NODE_SET_POINTS,
+    NODE_VETO,
 )
 from app.engine.dsl_execution_context import ExecutionContext
 
 
-class DslExecutionResult(TypedDict):
+class DslExecutionResult(TypedDict, total=False):
     points: float
     case_name: Optional[str]
     callback_data: Dict[str, Any]
     trace: List[Dict[str, Any]]
+    # Sprint 7: DSL_EXTEND-only outputs. ``working_data`` is the dict
+    # that pre-rules mutated via set_data — the orchestrator hands it
+    # to the parent built-in. ``vetoed`` signals that a pre-rule veto
+    # fired so the orchestrator skips parent + post entirely.
+    working_data: Dict[str, Any]
+    vetoed: bool
 
 
 class _DslHalt(Exception):
@@ -83,12 +96,48 @@ class DslInterpreter:
         self._yield_every = max(yield_every, 1)
 
     async def execute(
-        self, ast: Dict[str, Any], ctx: ExecutionContext
+        self,
+        ast: Dict[str, Any],
+        ctx: ExecutionContext,
+        *,
+        mode: str = "full",
+        initial_data: Optional[Dict[str, Any]] = None,
+        parent_result: Optional[Dict[str, Any]] = None,
     ) -> DslExecutionResult:
-        """Walk ``ast`` to completion and return the result."""
+        """
+        Walk ``ast`` to completion and return the result.
+
+        ``mode`` selects which section of the program runs:
+
+        * ``"full"`` — main ``rules`` + ``default`` (DSL_FULL behaviour;
+          this is the unchanged Sprint 5 path).
+        * ``"pre"`` — only ``pre_rules`` (DSL_EXTEND phase 1). The
+          ``initial_data`` dict is cloned into ``state.working_data`` so
+          ``set_data`` statements can mutate it; the orchestrator
+          (``DslStrategy``) reads ``state.working_data`` back out to
+          pass to the parent built-in.
+        * ``"post"`` — only ``post_rules`` (DSL_EXTEND phase 3). The
+          ``parent_result`` dict bootstraps the run state (points,
+          case_name, callback_data) so ``set_points`` /
+          ``set_case_name`` / ``set_callback_data`` mutate from the
+          parent's output as the starting point. The corresponding
+          ``parent.points`` / ``parent.case_name`` field paths are
+          expected to be already present in ``ctx.resolved_fields``
+          (injected by ``ExecutionContext.build_for_ast``).
+        """
         state = _RunState()
+        if initial_data is not None:
+            # Shallow copy is intentional: set_data only writes scalars
+            # via expression evaluation. Nested mutation is not part of
+            # the AST grammar.
+            state.working_data = dict(initial_data)
+        if parent_result is not None:
+            state.points = float(parent_result.get("points") or 0)
+            state.case_name = parent_result.get("case_name")
+            state.callback_data = dict(parent_result.get("callback_data") or {})
+            state.matched = True
         try:
-            await self._run_program(ast, ctx, state)
+            await self._run_program(ast, ctx, state, mode=mode)
         except _DslHalt:
             pass
 
@@ -97,20 +146,42 @@ class DslInterpreter:
             "case_name": state.case_name,
             "callback_data": state.callback_data,
             "trace": state.trace,
+            # Sprint 7 outputs. They are no-ops for DSL_FULL callers
+            # (working_data stays empty, vetoed stays False) so the
+            # existing Sprint 5 contract is unchanged.
+            "working_data": state.working_data,
+            "vetoed": state.vetoed,
         }
 
     # ----- top-level dispatch ----------------------------------------------
 
     async def _run_program(
-        self, node: Dict[str, Any], ctx: ExecutionContext, state: _RunState
+        self,
+        node: Dict[str, Any],
+        ctx: ExecutionContext,
+        state: _RunState,
+        *,
+        mode: str = "full",
     ) -> None:
         self._step(state, node)
-        for rule in node.get("rules") or []:
-            await self._run_rule(rule, ctx, state, depth=1)
 
-        default = node.get("default")
-        if default is not None and not state.matched:
-            await self._run_statement(default, ctx, state, depth=1)
+        if mode == "full":
+            for rule in node.get("rules") or []:
+                await self._run_rule(rule, ctx, state, depth=1)
+
+            default = node.get("default")
+            if default is not None and not state.matched:
+                await self._run_statement(default, ctx, state, depth=1)
+            return
+
+        # Sprint 7: DSL_EXTEND phases. ``pre`` and ``post`` walk a
+        # distinct section of the program and ignore the others — the
+        # main ``rules`` + ``default`` are exclusively the DSL_FULL
+        # path. This keeps the two execution models from accidentally
+        # mixing state ("set_data" leaking into a DSL_FULL run, etc.).
+        section_key = "pre_rules" if mode == "pre" else "post_rules"
+        for rule in node.get(section_key) or []:
+            await self._run_rule(rule, ctx, state, depth=1)
 
     async def _run_rule(
         self,
@@ -180,6 +251,87 @@ class DslInterpreter:
                 node["value"], ctx, state, depth=depth + 1
             )
             state.callback_data[node["key"]] = value
+            state.trace.append(
+                {
+                    "nodeId": node.get("id"),
+                    "type": ntype,
+                    "value": value,
+                }
+            )
+            return
+
+        # Sprint 7: DSL_EXTEND pre-rule statements. set_data writes into
+        # ``state.working_data`` — the dict the orchestrator hands to the
+        # parent built-in's ``calculate_points``. veto raises _DslHalt
+        # with state.vetoed=True so the orchestrator skips both the
+        # parent call and the entire post_rules phase.
+        if ntype == NODE_SET_DATA:
+            value = await self._eval_expression(
+                node["value"], ctx, state, depth=depth + 1
+            )
+            state.working_data[node["key"]] = value
+            state.trace.append(
+                {
+                    "nodeId": node.get("id"),
+                    "type": ntype,
+                    "value": value,
+                }
+            )
+            return
+
+        if ntype == NODE_VETO:
+            state.points = 0
+            state.case_name = node["case_name"]
+            state.matched = True
+            state.vetoed = True
+            state.trace.append(
+                {
+                    "nodeId": node.get("id"),
+                    "type": ntype,
+                    "value": node["case_name"],
+                    "branch": "veto",
+                }
+            )
+            raise _DslHalt()
+
+        # Sprint 7: DSL_EXTEND post-rule statements. set_points mutates
+        # ``state.points`` WITHOUT halting (unlike assign_points) so a
+        # designer can chain set_points + set_callback_data inside a
+        # single post-rule. set_case_name overrides the caseName
+        # accumulated from the parent.
+        if ntype == NODE_SET_POINTS:
+            value = await self._eval_expression(
+                node["value"], ctx, state, depth=depth + 1
+            )
+            if not isinstance(value, (int, float)) or isinstance(value, bool):
+                raise DslExecutionError(
+                    detail="set_points.value must evaluate to a number.",
+                    headers={"X-Node-Id": str(node.get("id"))},
+                )
+            state.points = value
+            state.matched = True
+            state.trace.append(
+                {
+                    "nodeId": node.get("id"),
+                    "type": ntype,
+                    "value": value,
+                }
+            )
+            return
+
+        if ntype == NODE_SET_CASE_NAME:
+            value = await self._eval_expression(
+                node["value"], ctx, state, depth=depth + 1
+            )
+            if not isinstance(value, str):
+                raise DslExecutionError(
+                    detail=(
+                        "set_case_name.value must evaluate to a string."
+                    ),
+                    headers={"X-Node-Id": str(node.get("id"))},
+                )
+            state.case_name = value
+            state.matched = True
             state.trace.append(
                 {
                     "nodeId": node.get("id"),
@@ -374,6 +526,43 @@ class DslInterpreter:
             )
             return result
 
+        if ntype == NODE_FUNC_CALL:
+            # Whitelist + arity are enforced by the validator before we
+            # get here, but we re-check defensively so a bypassed AST
+            # can't reach the handler table with an unknown name.
+            name = node.get("name")
+            if name not in ALLOWED_FUNC_NAMES:
+                raise DslValidationError(
+                    detail=f"func_call.name '{name}' is not allowed.",
+                    headers={"X-Node-Id": str(node.get("id"))},
+                )
+            args_nodes = node.get("args") or []
+            if len(args_nodes) != FUNC_ARITY[name]:
+                raise DslValidationError(
+                    detail=(
+                        f"func_call '{name}' expects "
+                        f"{FUNC_ARITY[name]} args, got {len(args_nodes)}."
+                    ),
+                    headers={"X-Node-Id": str(node.get("id"))},
+                )
+            args = [
+                await self._eval_expression(
+                    arg, ctx, state, depth=depth + 1
+                )
+                for arg in args_nodes
+            ]
+            try:
+                result = _apply_func(name, args)
+            except (TypeError, ValueError, ZeroDivisionError) as exc:
+                raise DslExecutionError(
+                    detail=f"func_call '{name}' failed: {exc}",
+                    headers={"X-Node-Id": str(node.get("id"))},
+                ) from exc
+            state.trace.append(
+                {"nodeId": node.get("id"), "type": ntype, "value": result}
+            )
+            return result
+
         raise DslValidationError(
             detail=f"Unknown expression node type: '{ntype}'.",
             headers={"X-Node-Id": str(node.get("id"))},
@@ -415,6 +604,13 @@ class _RunState:
         "case_name",
         "callback_data",
         "matched",
+        # Sprint 7: DSL_EXTEND state. ``working_data`` is the dict that
+        # set_data writes to during pre_rules — the orchestrator reads
+        # it back to hand to the parent built-in's calculate_points.
+        # ``vetoed`` signals that a pre_rules veto fired so the
+        # orchestrator skips parent + post entirely.
+        "working_data",
+        "vetoed",
     )
 
     def __init__(self) -> None:
@@ -424,6 +620,8 @@ class _RunState:
         self.case_name: Optional[str] = None
         self.callback_data: Dict[str, Any] = {}
         self.matched: bool = False
+        self.working_data: Dict[str, Any] = {}
+        self.vetoed: bool = False
 
 
 _COMPARE_HANDLERS = {
@@ -445,8 +643,25 @@ _ARITH_HANDLERS = {
     "-": lambda a, b: a - b,
     "*": lambda a, b: a * b,
     "/": lambda a, b: a / b,
+    "min": lambda a, b: min(a, b),
+    "max": lambda a, b: max(a, b),
 }
 
 
 def _apply_arith(op: str, left: Any, right: Any) -> Any:
     return _ARITH_HANDLERS[op](left, right)
+
+
+# Sprint 6: handlers for the ``func_call`` node. Kept separate from the
+# binary arith table because the arities and signatures differ. ``int``
+# truncates toward zero (mirroring Python's built-in and matching
+# ``constantEffortStrategy.py:53`` semantics — not rounding). ``clamp``
+# is (value, lo, hi) → max(lo, min(value, hi)).
+_FUNC_HANDLERS = {
+    "int": lambda args: int(args[0]),
+    "clamp": lambda args: max(args[1], min(args[0], args[2])),
+}
+
+
+def _apply_func(name: str, args: List[Any]) -> Any:
+    return _FUNC_HANDLERS[name](args)

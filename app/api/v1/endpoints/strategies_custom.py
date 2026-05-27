@@ -28,6 +28,7 @@ from app.middlewares.auth_context import (
     get_auth_context,
 )
 from app.schema.dsl_schema import SimulationRequest, SimulationResponse
+from app.model.strategy_definition import StrategyDefinitionType
 from app.schema.strategy_definition_schema import (
     StrategyDefinitionCreate,
     StrategyDefinitionRead,
@@ -37,6 +38,7 @@ from app.services.dsl_simulation_service import DslSimulationService
 from app.services.strategy_definition_service import (
     StrategyDefinitionService,
 )
+from app.services.strategy_service import StrategyService
 
 router = APIRouter(
     prefix="/strategies/custom",
@@ -99,6 +101,32 @@ async def require_admin(
     return auth
 
 
+def _ensure_parent_strategy_exists(
+    payload_type,
+    parent_strategy_id,
+    strategy_service: StrategyService,
+) -> None:
+    """Sprint 7: when a DSL_EXTEND row is created/updated, verify the
+    referenced parentStrategyId actually resolves to a built-in. The
+    service-level _validate_payload only checks presence/absence;
+    cross-checking the registry has to live at the endpoint layer
+    because StrategyDefinitionService can't import StrategyService
+    without creating a circular dep (see comment at
+    strategy_definition_service.py:85-88).
+
+    Raises NotFoundError (404) with a clear message when the parent
+    doesn't exist; no-op for non-EXTEND payloads or missing
+    parentStrategyId (the service validator will reject that earlier).
+    """
+    if payload_type != StrategyDefinitionType.DSL_EXTEND:
+        return
+    if not parent_strategy_id:
+        return
+    # ``get_strategy_by_id`` raises NotFoundError(404) when the id is
+    # not in the registry; we let that bubble up as the HTTP response.
+    strategy_service.get_strategy_by_id(parent_strategy_id)
+
+
 @router.post(
     "",
     response_model=StrategyDefinitionRead,
@@ -112,6 +140,9 @@ async def create_custom_strategy(
     service: StrategyDefinitionService = Depends(
         Provide[Container.strategy_definition_service]
     ),
+    strategy_service: StrategyService = Depends(
+        Provide[Container.strategy_service]
+    ),
     audit: AuditLogger = Depends(audit_log("strategies_custom")),
 ) -> StrategyDefinitionRead:
     realm = _resolve_realm_id(auth)
@@ -120,6 +151,9 @@ async def create_custom_strategy(
         {"name": payload.name, "type": payload.type.value},
     )
     try:
+        _ensure_parent_strategy_exists(
+            payload.type, payload.parentStrategyId, strategy_service,
+        )
         return await service.create(
             payload=payload,
             realmId=realm,
@@ -199,11 +233,19 @@ async def update_custom_strategy(
     service: StrategyDefinitionService = Depends(
         Provide[Container.strategy_definition_service]
     ),
+    strategy_service: StrategyService = Depends(
+        Provide[Container.strategy_service]
+    ),
     audit: AuditLogger = Depends(audit_log("strategies_custom")),
 ) -> StrategyDefinitionRead:
     realm = _resolve_realm_id(auth)
     await audit.info("Update custom strategy", {"id": id})
     try:
+        # Sprint 7: same registry check as create — only relevant when
+        # the PUT explicitly carries type+parentStrategyId.
+        _ensure_parent_strategy_exists(
+            payload.type, payload.parentStrategyId, strategy_service,
+        )
         return await service.update(
             id=id,
             payload=payload,

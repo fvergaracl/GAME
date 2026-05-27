@@ -165,3 +165,60 @@ class BaseStrategy(ModelBaseInfo):
         ...,
         description="Structured strategy data including tags, constants, and rules.",
     )
+
+
+# Sprint 7 — schema endpoint payload --------------------------------------
+#
+# ``/v1/strategies/{id}/schema`` returns a richer representation of a
+# built-in than ``GET /v1/strategies/{id}``: the variables list is
+# ordered (stable for UI rendering) and each variable carries its
+# Python type so the Blockly editor can pick the right input widget
+# (number vs text vs checkbox). This is consumed by the DSL_EXTEND
+# editor to populate the "Parent overrides" toolbox category.
+
+
+class StrategyVariableInfo(BaseModel):
+    """One row of the variables table returned by ``/strategies/{id}/schema``."""
+
+    name: str = Field(
+        ...,
+        description="Variable name as exposed by the built-in strategy.",
+        examples=["variable_basic_points"],
+    )
+    type: str = Field(
+        ...,
+        description=(
+            "Python type name of the default value (int, float, str, "
+            "bool, dict, list, NoneType). The editor uses this to pick "
+            "the right input widget."
+        ),
+        examples=["int"],
+    )
+    currentValue: Any = Field(
+        default=None,
+        description="Default value baked into the built-in's __init__.",
+        examples=[10],
+    )
+
+
+class StrategySchema(BaseModel):
+    """Editor-facing schema of a built-in strategy.
+
+    Returned by ``GET /v1/strategies/{id}/schema``. Mirrors ``Strategy``
+    fields plus an ordered, typed view of the variables — designed so
+    the DSL_EXTEND editor can render the "Parent overrides" category
+    of the Blockly toolbox without inspecting Python objects from JS.
+    """
+
+    id: str = Field(..., examples=["default"])
+    name: Optional[str] = Field(default=None)
+    description: Optional[str] = Field(default=None)
+    version: str = Field(..., examples=["0.0.2"])
+    variables: List[StrategyVariableInfo] = Field(
+        ...,
+        description=(
+            "Variables exposed by the built-in, ordered by name so UI "
+            "rendering is stable across calls."
+        ),
+    )
+    hash_version: Optional[str] = Field(default=None)

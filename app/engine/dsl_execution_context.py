@@ -25,7 +25,9 @@ from typing import Any, Dict, Mapping, Optional, Set
 from app.engine.dsl_ast import (
     DATA_FIELD_PREFIX,
     FIELD_RESOLVERS,
+    PARENT_FIELD_PATHS,
     enumerate_field_paths,
+    is_parent_field_path,
     is_valid_data_path,
 )
 
@@ -49,6 +51,7 @@ class ExecutionContext:
         data: Optional[Dict[str, Any]],
         analytics_service: Any,
         mock_state: Optional[Dict[str, Any]] = None,
+        parent_result: Optional[Dict[str, Any]] = None,
     ) -> "ExecutionContext":
         """
         Precompute every field referenced by ``ast`` and return a frozen
@@ -94,9 +97,31 @@ class ExecutionContext:
                 key = path[len(DATA_FIELD_PREFIX):]
                 resolved[path] = data_payload.get(key)
                 continue
+            if is_parent_field_path(path):
+                # Sprint 7: parent.* fields land here only when the
+                # caller provided ``parent_result`` (DSL_EXTEND post
+                # phase). Outside of that the validator should have
+                # rejected the AST already (parent.* paths are only
+                # valid inside post_rules). If parent_result is missing
+                # we leave the slot unset so the interpreter surfaces a
+                # clean error.
+                continue
             # Validator should have caught this — if it didn't, leave the
             # field unresolved and let the interpreter surface a clean
             # error rather than silently returning None.
+
+        # Sprint 7: inject parent.* AFTER the regular resolution loop so
+        # post-rule execution can read the parent built-in's output via
+        # the same ``ctx.resolved_fields`` lookup used for analytics.
+        # Mock state still wins (mocks were already applied above) —
+        # this only fills in slots the simulation didn't override.
+        if parent_result is not None:
+            for parent_path in PARENT_FIELD_PATHS:
+                if parent_path in mocks:
+                    continue
+                # parent.<attr> → result["<attr>"] (case_name, points).
+                attr = parent_path.split(".", 1)[1]
+                resolved[parent_path] = parent_result.get(attr)
 
         return cls(
             externalGameId=externalGameId,

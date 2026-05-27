@@ -276,6 +276,117 @@ async def test_arith_addition_and_field_resolution():
     assert result["points"] == 15
 
 
+# ---------------------------------------------------------------------------
+# Sprint 6: positive coverage for the new arith ops (min/max) and the
+# func_call node (int, clamp). The adversarial suite covers the rejection
+# paths; these tests pin the happy-path numeric outputs.
+# ---------------------------------------------------------------------------
+
+
+def _wrap_value_into_assign_program(value_expr):
+    """Single-rule program whose only ``then`` is ``assign_points value``."""
+    return {
+        "type": "program",
+        "id": "p",
+        "rules": [
+            {
+                "type": "rule",
+                "id": "r",
+                "when": {"type": "literal", "id": "lt", "value": True},
+                "then": [
+                    {
+                        "type": "assign_points",
+                        "id": "a",
+                        "value": value_expr,
+                        "case_name": "computed",
+                    }
+                ],
+            }
+        ],
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "op,left,right,expected",
+    [
+        ("min", 3, 5, 3),
+        ("min", 5, 3, 3),
+        ("max", 3, 5, 5),
+        ("max", 5, 3, 5),
+        ("min", 2.5, 2.5, 2.5),  # equal values resolve to either; min picks left
+    ],
+)
+async def test_arith_min_max(op, left, right, expected):
+    ast = _wrap_value_into_assign_program(
+        {
+            "type": "arith",
+            "id": "ar",
+            "op": op,
+            "left":  {"type": "literal", "id": "ll", "value": left},
+            "right": {"type": "literal", "id": "lr", "value": right},
+        }
+    )
+    validate_ast(ast)
+    ctx = await _build_ctx(ast)
+
+    result = await _interpreter().execute(ast, ctx)
+
+    assert result["points"] == expected
+
+
+@pytest.mark.asyncio
+async def test_func_call_int_truncates_toward_zero():
+    """int() in Python truncates (not rounds). Mirrors ``int(2.7) == 2``
+    semantics in constantEffortStrategy.py:53."""
+    ast = _wrap_value_into_assign_program(
+        {
+            "type": "func_call",
+            "id": "fc",
+            "name": "int",
+            "args": [{"type": "literal", "id": "l", "value": 2.7}],
+        }
+    )
+    validate_ast(ast)
+    ctx = await _build_ctx(ast)
+
+    result = await _interpreter().execute(ast, ctx)
+
+    assert result["points"] == 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "value,lo,hi,expected",
+    [
+        (50, 1, 100, 50),    # value within range
+        (-5, 1, 100, 1),     # below floor
+        (150, 1, 100, 100),  # above ceiling
+        (1, 1, 100, 1),      # at floor (inclusive)
+        (100, 1, 100, 100),  # at ceiling (inclusive)
+    ],
+)
+async def test_func_call_clamp(value, lo, hi, expected):
+    ast = _wrap_value_into_assign_program(
+        {
+            "type": "func_call",
+            "id": "fc",
+            "name": "clamp",
+            "args": [
+                {"type": "literal", "id": "lv", "value": value},
+                {"type": "literal", "id": "llo", "value": lo},
+                {"type": "literal", "id": "lhi", "value": hi},
+            ],
+        }
+    )
+    validate_ast(ast)
+    ctx = await _build_ctx(ast)
+
+    result = await _interpreter().execute(ast, ctx)
+
+    assert result["points"] == expected
+
+
 @pytest.mark.asyncio
 async def test_division_by_zero_raises_execution_error():
     ast = {

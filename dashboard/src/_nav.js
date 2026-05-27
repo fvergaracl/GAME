@@ -69,6 +69,20 @@ const _nav_administrator = [
   },
   {
     component: CNavTitle,
+    name: 'Strategies',
+  },
+  {
+    component: CNavItem,
+    name: 'Strategy Editor',
+    to: '/strategies/editor',
+    icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+    badge: {
+      color: 'info',
+      text: 'NEW',
+    },
+  },
+  {
+    component: CNavTitle,
     name: 'Admin',
   },
   {
