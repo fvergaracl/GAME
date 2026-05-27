@@ -26,6 +26,7 @@ from app.core.exceptions import (
     DuplicatedError,
     NotFoundError,
 )
+from app.engine.dsl_validator import validate_ast
 from app.model.strategy_definition import (
     StrategyDefinition,
     StrategyDefinitionStatus,
@@ -139,6 +140,8 @@ class StrategyDefinitionService(BaseService):
     ) -> StrategyDefinitionRead:
         type_value = payload.type.value
         self._validate_payload(type_value, payload.parentStrategyId)
+        if payload.astJson is not None:
+            validate_ast(payload.astJson)
 
         existing_max = (
             await self.strategy_definition_repository.get_max_version(
@@ -241,6 +244,8 @@ class StrategyDefinitionService(BaseService):
             ),
         }
         self._validate_payload(merged["type"], merged["parentStrategyId"])
+        if merged["astJson"] is not None:
+            validate_ast(merged["astJson"])
 
         if row.status == StrategyDefinitionStatus.DRAFT.value:
             patch = StrategyDefinitionUpdate(

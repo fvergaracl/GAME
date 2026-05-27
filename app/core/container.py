@@ -31,6 +31,7 @@ from app.services import (
     AbusePreventionService,
     ApiKeyService,
     ApiRequestsService,
+    DslSimulationService,
     ExportService,
     GameParamsService,
     GameService,
@@ -269,6 +270,9 @@ class Container(containers.DeclarativeContainer):
         strategy_definition_service=strategy_definition_service,
     )
 
+    # DSL simulation service uses the analytics provider declared further
+    # down; the Factory binds lazily so the forward reference is fine.
+
     game_service = providers.Factory(
         GameService,
         game_repository=game_repository,
@@ -407,4 +411,10 @@ class Container(containers.DeclarativeContainer):
     export_service = providers.Factory(
         ExportService,
         export_audit_log_repository=export_audit_log_repository,
+    )
+
+    dsl_simulation_service = providers.Factory(
+        DslSimulationService,
+        strategy_definition_service=strategy_definition_service,
+        user_points_analytics_service=user_points_analytics_service,
     )

@@ -220,3 +220,26 @@ class BadRequestError(HTTPException):
               exception response.
         """
         super().__init__(status.HTTP_400_BAD_REQUEST, detail, headers)
+
+
+# DSL interpreter errors (Sprint 4) ------------------------------------------
+# These inherit from the right HTTP base classes so FastAPI serialises them
+# without an extra exception handler. We keep them as distinct types so the
+# simulate/CRUD endpoints can map specific failure modes to clear messages and
+# tests can assert on the precise class.
+
+
+class DslValidationError(BadRequestError):
+    """AST is structurally invalid or references a path outside the whitelist."""
+
+
+class DslExecutionError(BadRequestError):
+    """Runtime DSL failure (division by zero, type mismatch, etc.)."""
+
+
+class DslLimitExceededError(PreconditionFailedError):
+    """AST tried to evaluate more nodes or recurse deeper than configured."""
+
+
+class DslTimeoutError(PreconditionFailedError):
+    """AST execution exceeded the configured wall-clock budget."""

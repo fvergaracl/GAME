@@ -157,7 +157,7 @@ class TestCreate(_Base):
             name="onboarding-boost",
             description="Reward new users for first task.",
             type=StrategyDefinitionType.DSL_FULL,
-            astJson={"program": []},
+            astJson={"type": "program", "rules": []},
         )
 
         result = await self.service.create(
@@ -175,7 +175,10 @@ class TestCreate(_Base):
         )
         self.assertEqual(result.realmId, "realm-a")
         self.assertEqual(result.type, StrategyDefinitionType.DSL_FULL.value)
-        self.assertEqual(result.astJson, {"program": []})
+        # validate_ast may have backfilled `id` deterministically; assert
+        # on the shape, not on byte-for-byte equality.
+        self.assertEqual(result.astJson["type"], "program")
+        self.assertEqual(result.astJson["rules"], [])
 
     async def test_create_rejects_duplicate_name_in_same_realm(self):
         payload = StrategyDefinitionCreate(
@@ -294,7 +297,7 @@ class TestVersioning(_Base):
             payload=StrategyDefinitionCreate(
                 name="evolving",
                 type=StrategyDefinitionType.DSL_FULL,
-                astJson={"program": ["v1"]},
+                astJson={"type": "program", "rules": []},
             ),
             realmId="realm-a",
             createdBy=None,
@@ -337,11 +340,18 @@ class TestVersioning(_Base):
     async def test_updating_published_forks_new_draft(self):
         published_id = await self._create_and_publish()
 
+        v2_ast = {
+            "type": "program",
+            "rules": [],
+            "default": {
+                "type": "assign_points",
+                "value": {"type": "literal", "value": 2},
+                "case_name": "v2",
+            },
+        }
         forked = await self.service.update(
             id=published_id,
-            payload=StrategyDefinitionUpdate(
-                astJson={"program": ["v2"]}
-            ),
+            payload=StrategyDefinitionUpdate(astJson=v2_ast),
             realmId="realm-a",
             createdBy=None,
             apiKey_used=None,
@@ -353,7 +363,8 @@ class TestVersioning(_Base):
         self.assertEqual(
             forked.status, StrategyDefinitionStatus.DRAFT.value
         )
-        self.assertEqual(forked.astJson, {"program": ["v2"]})
+        # The fork carries the new AST (validator auto-assigned ids).
+        self.assertEqual(forked.astJson["default"]["case_name"], "v2")
 
         # Published row is untouched.
         original = await self.service.get_strategy(
@@ -362,7 +373,7 @@ class TestVersioning(_Base):
         self.assertEqual(
             original.status, StrategyDefinitionStatus.PUBLISHED.value
         )
-        self.assertEqual(original.astJson, {"program": ["v1"]})
+        self.assertNotIn("default", original.astJson)
 
     async def test_archived_rows_are_immutable(self):
         created = await self.service.create(

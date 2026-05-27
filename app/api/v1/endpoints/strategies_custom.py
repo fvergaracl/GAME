@@ -27,11 +27,13 @@ from app.middlewares.auth_context import (
     audit_log,
     get_auth_context,
 )
+from app.schema.dsl_schema import SimulationRequest, SimulationResponse
 from app.schema.strategy_definition_schema import (
     StrategyDefinitionCreate,
     StrategyDefinitionRead,
     StrategyDefinitionUpdate,
 )
+from app.services.dsl_simulation_service import DslSimulationService
 from app.services.strategy_definition_service import (
     StrategyDefinitionService,
 )
@@ -265,6 +267,42 @@ async def archive_custom_strategy(
     except Exception as e:
         await audit.error(
             "Archive custom strategy failed",
+            {"id": id, "error": str(e)},
+        )
+        raise
+
+
+@router.post(
+    "/{id}/simulate",
+    response_model=SimulationResponse,
+    summary="Dry-run a strategy AST against synthetic or real inputs",
+)
+@inject
+async def simulate_custom_strategy(
+    id: str,
+    payload: SimulationRequest,
+    auth: AuthContext = Depends(require_authenticated),
+    service: DslSimulationService = Depends(
+        Provide[Container.dsl_simulation_service]
+    ),
+    audit: AuditLogger = Depends(audit_log("strategies_custom")),
+) -> SimulationResponse:
+    """
+    Run the strategy's AST through the sandbox without persisting any
+    UserPoints/Wallet rows. ``mockState`` keys override individual field
+    paths (e.g. ``{"user.measurements_count": 5}``) so designers can
+    iterate on logic without depending on real production analytics.
+    """
+    realm = _resolve_realm_id(auth)
+    await audit.info(
+        "Simulate custom strategy",
+        {"id": id, "externalUserId": payload.externalUserId},
+    )
+    try:
+        return await service.simulate(id=id, realmId=realm, request=payload)
+    except Exception as e:
+        await audit.error(
+            "Simulate custom strategy failed",
             {"id": id, "error": str(e)},
         )
         raise

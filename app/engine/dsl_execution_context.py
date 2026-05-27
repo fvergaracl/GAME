@@ -1,0 +1,116 @@
+"""
+ExecutionContext: precomputes everything a strategy AST will need so the
+interpreter walk is pure CPU and never makes a database call.
+
+The precompute strategy is deliberately lazy at the AST level: we walk
+the tree once, collect the set of ``field`` paths it actually reads, and
+only fetch (or mock) those. A strategy that ignores ``user.avg_time``
+pays no cost for it. A malicious AST that tries to reference an unknown
+path is rejected by the validator long before we get here.
+
+``mock_state`` is the back door used by the ``/simulate`` endpoint: keys
+are dotted-path strings matching ``FIELD_RESOLVERS`` entries (or ``data.*``
+prefixes). When present, the precompute uses the mock value verbatim and
+never calls the analytics service. This is what lets a designer iterate
+on logic against synthetic inputs while still hitting real production
+analytics methods when ``mock_state`` is left unset.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from types import MappingProxyType
+from typing import Any, Dict, Mapping, Optional, Set
+
+from app.engine.dsl_ast import (
+    DATA_FIELD_PREFIX,
+    FIELD_RESOLVERS,
+    enumerate_field_paths,
+    is_valid_data_path,
+)
+
+
+@dataclass(frozen=True)
+class ExecutionContext:
+    externalGameId: str
+    externalTaskId: str
+    externalUserId: str
+    data: Mapping[str, Any]
+    resolved_fields: Mapping[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    async def build_for_ast(
+        cls,
+        ast: Dict[str, Any],
+        *,
+        externalGameId: str,
+        externalTaskId: str,
+        externalUserId: str,
+        data: Optional[Dict[str, Any]],
+        analytics_service: Any,
+        mock_state: Optional[Dict[str, Any]] = None,
+    ) -> "ExecutionContext":
+        """
+        Precompute every field referenced by ``ast`` and return a frozen
+        context the interpreter can walk synchronously.
+
+        The static paths are computed without any I/O. Analytics paths
+        each trigger at most one awaited call to the analytics service,
+        and only when the AST actually references them. ``mock_state``
+        short-circuits both, useful for the simulate endpoint and for
+        tests that don't want a real DB.
+        """
+        data_payload: Dict[str, Any] = dict(data or {})
+        mocks = mock_state or {}
+
+        # We materialise a NamedSpace-style minimal object for the
+        # FieldResolution lambdas; building a tiny dataclass instance
+        # would create a second source of truth for the same three
+        # fields. A SimpleNamespace is the smallest thing that works.
+        ctx_for_args = _IdsOnly(
+            externalGameId=externalGameId,
+            externalTaskId=externalTaskId,
+            externalUserId=externalUserId,
+        )
+
+        referenced: Set[str] = enumerate_field_paths(ast)
+        resolved: Dict[str, Any] = {}
+
+        for path in referenced:
+            if path in mocks:
+                resolved[path] = mocks[path]
+                continue
+            if path in FIELD_RESOLVERS:
+                resolution = FIELD_RESOLVERS[path]
+                if resolution.kind == "static":
+                    resolved[path] = resolution.arg_fn(ctx_for_args)
+                    continue
+                if resolution.kind == "analytics":
+                    method = getattr(analytics_service, resolution.method)
+                    args = resolution.arg_fn(ctx_for_args)
+                    resolved[path] = await method(*args)
+                    continue
+            if is_valid_data_path(path):
+                key = path[len(DATA_FIELD_PREFIX):]
+                resolved[path] = data_payload.get(key)
+                continue
+            # Validator should have caught this — if it didn't, leave the
+            # field unresolved and let the interpreter surface a clean
+            # error rather than silently returning None.
+
+        return cls(
+            externalGameId=externalGameId,
+            externalTaskId=externalTaskId,
+            externalUserId=externalUserId,
+            data=MappingProxyType(data_payload),
+            resolved_fields=MappingProxyType(resolved),
+        )
+
+
+@dataclass(frozen=True)
+class _IdsOnly:
+    """Minimal record passed to ``FieldResolution.arg_fn`` builders."""
+
+    externalGameId: str
+    externalTaskId: str
+    externalUserId: str

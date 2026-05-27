@@ -292,6 +292,16 @@ class Configs(BaseSettings):
         "APIKEY_CACHE_REDIS_KEY_PREFIX", "game:apikey:"
     )
 
+    # DSL interpreter limits (Sprint 4). The validator rejects ASTs whose
+    # static node count or depth exceeds these thresholds, so runtime should
+    # never hit them — they are belt-and-braces guards in case future changes
+    # introduce dynamic expansion. The wall-clock timeout is the backstop
+    # against a CPU-bound walk; the interpreter yields cooperatively every
+    # ~64 nodes so asyncio.wait_for can actually cancel it.
+    DSL_EXECUTION_TIMEOUT_MS: int = _env_to_int("DSL_EXECUTION_TIMEOUT_MS", 500)
+    DSL_MAX_NODES: int = _env_to_int("DSL_MAX_NODES", 1000)
+    DSL_MAX_DEPTH: int = _env_to_int("DSL_MAX_DEPTH", 32)
+
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
     def _coerce_cors_origins(
