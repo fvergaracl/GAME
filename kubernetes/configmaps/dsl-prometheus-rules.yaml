@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-dsl-prometheus-rules
+  labels:
+    app: game
+    component: dsl
+data:
+  # Sprint 11: alerting rules for the DSL strategy engine. Mount this
+  # ConfigMap into the Prometheus operator's rule discovery directory
+  # (or include via a PrometheusRule CRD if the operator is in use).
+  #
+  # The buckets in app/engine/dsl_metrics.py (0.005..5s with explicit
+  # 0.25 boundary) are tuned so histogram_quantile linearly interpolates
+  # the p99 around the SLO without needing custom buckets per realm.
+  dsl-rules.yml: |
+    groups:
+      - name: game-dsl
+        interval: 30s
+        rules:
+          - alert: DslExecutionLatencyHigh
+            # p99 of DslStrategy.calculate_points exceeds the 250 ms SLO
+            # for any (realm, strategy_type) for more than 5 minutes.
+            # The histogram_quantile is computed off a 5 min rate to
+            # smooth bursty traffic; the ``status="ok"`` filter prevents
+            # error-path long runs (which are bounded by the timeout) from
+            # dragging the alert.
+            expr: |
+              histogram_quantile(
+                0.99,
+                sum by (le, realm, strategy_type) (
+                  rate(
+                    dsl_execution_duration_seconds_bucket{status="ok"}[5m]
+                  )
+                )
+              ) > 0.25
+            for: 5m
+            labels:
+              severity: warning
+              service: game
+              component: dsl
+            annotations:
+              summary: >-
+                DSL p99 latency above SLO for realm {{ $labels.realm }}
+              description: |
+                The 99th percentile of dsl_execution_duration_seconds for
+                realm={{ $labels.realm }} strategy_type={{ $labels.strategy_type }}
+                has been above 250 ms for 5 minutes (current value:
+                {{ $value | humanizeDuration }}).
+
+                Runbook: docs/dsl/runbook.md#latency
+
+          - alert: DslExecutionErrorRateHigh
+            # More than 1 % of executions in a realm fail over a 10 min
+            # window. The numerator is the per-realm error counter; the
+            # denominator is total executions (sum of all histogram
+            # observations regardless of status).
+            expr: |
+              (
+                sum by (realm) (
+                  rate(dsl_execution_errors_total[10m])
+                )
+                /
+                sum by (realm) (
+                  rate(dsl_execution_duration_seconds_count[10m])
+                )
+              ) > 0.01
+            for: 10m
+            labels:
+              severity: warning
+              service: game
+              component: dsl
+            annotations:
+              summary: >-
+                DSL error rate above 1% for realm {{ $labels.realm }}
+              description: |
+                More than 1 % of DSL strategy executions are failing
+                in realm={{ $labels.realm }} (current value: {{ $value
+                | humanizePercentage }}).
+
+                Runbook: docs/dsl/runbook.md#errors

@@ -75,6 +75,7 @@ class StrategyService(BaseService):
         *,
         dsl_interpreter: Optional[DslInterpreter] = None,
         analytics_service: Optional[Any] = None,
+        execution_observer: Optional[Any] = None,
     ) -> None:
         """
         Initializes the StrategyService.
@@ -97,6 +98,10 @@ class StrategyService(BaseService):
         self._strategy_definition_service = strategy_definition_service
         self._dsl_interpreter = dsl_interpreter
         self._analytics_service = analytics_service
+        # Sprint 11: passed straight through to ``DslStrategy``. Optional
+        # so the legacy two-arg construction style in tests still works
+        # — metrics + persistence become no-ops in that case.
+        self._execution_observer = execution_observer
 
     def list_all_strategies(self) -> list[dict[str, Any]]:
         """
@@ -268,4 +273,5 @@ class StrategyService(BaseService):
             interpreter=self._dsl_interpreter,
             analytics_service=self._analytics_service,
             parent_strategy=parent_strategy,
+            observer=self._execution_observer,
         )

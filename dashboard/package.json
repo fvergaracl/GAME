@@ -35,7 +35,7 @@
     "classnames": "^2.5.1",
     "core-js": "^3.37.1",
     "dotenv": "^16.4.5",
-    "i18next": "^23.15.1",
+    "i18next": "^26.3.0",
     "i18next-browser-languagedetector": "^8.0.0",
     "keycloak-js": "^25.0.5",
     "prop-types": "^15.8.1",

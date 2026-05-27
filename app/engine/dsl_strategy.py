@@ -20,10 +20,16 @@ import asyncio
 import copy
 import hashlib
 import json
+import time
 from typing import Any, Optional, Tuple
 
 from app.core.config import configs
-from app.core.exceptions import DslTimeoutError
+from app.core.exceptions import (
+    DslExecutionError,
+    DslLimitExceededError,
+    DslTimeoutError,
+    DslValidationError,
+)
 from app.engine.base_strategy import BaseStrategy
 from app.engine.dsl_execution_context import ExecutionContext
 from app.engine.dsl_interpreter import DslInterpreter
@@ -38,6 +44,7 @@ class DslStrategy(BaseStrategy):
         analytics_service: Any,
         *,
         parent_strategy: Optional[BaseStrategy] = None,
+        observer: Optional[Any] = None,
     ) -> None:
         # Skip the parent ``__init__`` because it eagerly computes the
         # hash from ``inspect.getsource(self.calculate_points)``, which
@@ -57,6 +64,17 @@ class DslStrategy(BaseStrategy):
         # Injected by StrategyService.get_strategy_instance only when
         # the definition is DSL_EXTEND.
         self._parent_strategy = parent_strategy
+        # Sprint 11: observer sink for metrics + sampled persistence.
+        # Optional so unit tests instantiating DslStrategy without the
+        # container keep working unchanged. The container wires the
+        # real DslExecutionObserver in production.
+        self._observer = observer
+        # Sprint 11: filled by _run_phase on every interpreter call so
+        # the calculate_points wrapper can hand the observer a trace
+        # without threading return values through DSL_EXTEND's three
+        # phases. Reset at the top of every calculate_points entry.
+        self._last_trace: Optional[list] = None
+        self._last_nodes_executed: int = 0
         self.hash_version = self._generate_hash_of_calculate_points()
 
     def _generate_hash_of_calculate_points(self) -> str:
@@ -77,13 +95,97 @@ class DslStrategy(BaseStrategy):
         if self._definition.astJson is None:
             return 0, None
 
-        if self._parent_strategy is None:
-            return await self._calculate_dsl_full(
-                externalGameId, externalTaskId, externalUserId, data,
-            )
-        return await self._calculate_dsl_extend(
-            externalGameId, externalTaskId, externalUserId, data,
-        )
+        # Reset per-call observability state so a previous run's trace
+        # (e.g. from a re-used strategy instance) doesn't leak into
+        # this one's observer payload.
+        self._last_trace = None
+        self._last_nodes_executed = 0
+
+        # Sprint 11: every execution gets a single observation envelope
+        # so metrics + sampled persistence cover both DSL_FULL and
+        # DSL_EXTEND (and both success and failure) on one code path.
+        # The envelope is intentionally outside _calculate_dsl_* so it
+        # captures precompute + interpreter time both.
+        start = time.perf_counter()
+        status = "ok"
+        error_code: Optional[str] = None
+        trace: Optional[list] = None
+        nodes_executed = 0
+        points_emitted: Optional[float] = None
+        case_name_emitted: Optional[str] = None
+        try:
+            if self._parent_strategy is None:
+                result = await self._calculate_dsl_full(
+                    externalGameId, externalTaskId, externalUserId, data,
+                )
+            else:
+                result = await self._calculate_dsl_extend(
+                    externalGameId, externalTaskId, externalUserId, data,
+                )
+            # ``result`` is the 2- or 3-tuple
+            # (points, case_name [, callback_data]). Normalise for the
+            # observer; the caller still gets the original tuple back.
+            padded = result + (None,)
+            points_emitted, case_name_emitted, _cb = padded[:3]
+            # Pull the last-run trace / node count off the strategy so
+            # we don't have to thread them through every return path.
+            trace = self._last_trace
+            nodes_executed = self._last_nodes_executed
+            return result
+        except DslTimeoutError as exc:
+            status = "timeout"
+            error_code = getattr(exc, "code", None) or "DSL_TIMEOUT"
+            raise
+        except DslLimitExceededError as exc:
+            status = "limit"
+            error_code = getattr(exc, "code", None) or "DSL_LIMIT_EXCEEDED"
+            raise
+        except (DslExecutionError, DslValidationError) as exc:
+            status = "error"
+            error_code = getattr(exc, "code", None) or exc.__class__.__name__
+            raise
+        except Exception:
+            status = "error"
+            error_code = "DSL_UNEXPECTED"
+            raise
+        finally:
+            duration_ms = (time.perf_counter() - start) * 1000.0
+            if self._observer is not None:
+                # The observer never raises -- it logs internally if
+                # the metrics or insert blow up. Awaiting it here is
+                # safe because the only awaitable inside is a fast
+                # repository write.
+                try:
+                    await self._observer.record(
+                        strategyId=str(self._definition.id),
+                        strategyVersion=self._definition.version,
+                        strategyType=self._definition.type,
+                        realmId=self._definition.realmId,
+                        externalGameId=externalGameId,
+                        externalTaskId=externalTaskId,
+                        externalUserId=externalUserId,
+                        status=status,
+                        errorCode=error_code,
+                        points=(
+                            float(points_emitted)
+                            if isinstance(
+                                points_emitted, (int, float)
+                            ) and not isinstance(points_emitted, bool)
+                            else None
+                        ),
+                        caseName=case_name_emitted,
+                        durationMs=duration_ms,
+                        nodesExecuted=nodes_executed,
+                        trace=trace,
+                        parentStrategyId=(
+                            self._definition.parentStrategyId
+                        ),
+                    )
+                except Exception:  # pragma: no cover - defensive
+                    # Never let observability bubble up. The observer
+                    # already logs; swallowing here protects the
+                    # scoring path from a broken sink.
+                    pass
 
     # ----- DSL_FULL (Sprint 5) ----------------------------------------------
 
@@ -226,9 +328,16 @@ class DslStrategy(BaseStrategy):
     ) -> dict:
         """Run one phase under the per-call timeout and return the raw
         DslExecutionResult dict (which carries working_data and vetoed
-        for pre/post phases — see the TypedDict in dsl_interpreter)."""
+        for pre/post phases — see the TypedDict in dsl_interpreter).
+
+        Sprint 11: the trace produced by each phase is appended to
+        ``self._last_trace`` so the calculate_points wrapper hands the
+        observer a single sequential trace for the whole pipeline (pre
+        + post for DSL_EXTEND, just the full run for DSL_FULL). Node
+        counts are summed for the same reason.
+        """
         try:
-            return await asyncio.wait_for(
+            result = await asyncio.wait_for(
                 self._interpreter.execute(
                     self._definition.astJson, ctx,
                     mode=mode,
@@ -244,6 +353,14 @@ class DslStrategy(BaseStrategy):
                     f"{configs.DSL_EXECUTION_TIMEOUT_MS}ms time limit."
                 )
             ) from exc
+
+        phase_trace = result.get("trace") or []
+        if self._last_trace is None:
+            self._last_trace = list(phase_trace)
+        else:
+            self._last_trace.extend(phase_trace)
+        self._last_nodes_executed += len(phase_trace)
+        return dict(result)
 
     def _format_result(self, run: dict) -> Tuple:
         cb = run.get("callback_data") or {}

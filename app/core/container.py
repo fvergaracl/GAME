@@ -14,6 +14,7 @@ from app.repository import (
     GameRepository,
     KpiMetricsRepository,
     StrategyDefinitionRepository,
+    StrategyExecutionLogRepository,
     TaskParamsRepository,
     TaskRepository,
     UptimeLogsRepository,
@@ -32,6 +33,7 @@ from app.services import (
     AbusePreventionService,
     ApiKeyService,
     ApiRequestsService,
+    DslExecutionObserver,
     DslSimulationService,
     ExportService,
     GameParamsService,
@@ -255,6 +257,11 @@ class Container(containers.DeclarativeContainer):
         StrategyDefinitionRepository, session_factory=db.provided.session
     )
 
+    strategy_execution_log_repository = providers.Factory(
+        StrategyExecutionLogRepository,
+        session_factory=db.provided.session,
+    )
+
     # Services (Add in here)
 
     game_params_service = providers.Factory(
@@ -289,11 +296,22 @@ class Container(containers.DeclarativeContainer):
         max_depth=configs.DSL_MAX_DEPTH,
     )
 
+    # Sprint 11: observer for DSL execution metrics + sampled
+    # persistence. Singleton because it carries the per-process
+    # random.Random for sampling decisions; Factory-built ``DslStrategy``
+    # instances all reach into the same one so the sample rate applies
+    # globally rather than per-instantiation.
+    dsl_execution_observer = providers.Singleton(
+        DslExecutionObserver,
+        execution_log_repository=strategy_execution_log_repository,
+    )
+
     strategy_service = providers.Factory(
         StrategyService,
         strategy_definition_service=strategy_definition_service,
         dsl_interpreter=dsl_interpreter,
         analytics_service=user_points_analytics_service,
+        execution_observer=dsl_execution_observer,
     )
 
     game_service = providers.Factory(
