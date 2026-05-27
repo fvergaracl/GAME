@@ -27,6 +27,8 @@ depends_on = None
 FK_TABLES = (
     "games",
     "gamesparams",
+    "logs",
+    "oauthusers",
     "tasks",
     "tasksparams",
     "useractions",

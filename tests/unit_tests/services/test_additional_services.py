@@ -3,6 +3,9 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
+from app.services.rate_limit_counter_backend import (
+    DatabaseRateLimitCounterBackend,
+)
 from app.repository.api_requests_repository import ApiRequestsRepository
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.kpi_metrics_repository import KpiMetricsRepository
@@ -29,7 +32,10 @@ def test_light_services_set_expected_repository_attributes():
     uptime_logs_repository = MagicMock(spec=UptimeLogsRepository)
     user_interactions_repository = MagicMock(spec=UserInteractionsRepository)
 
-    abuse_prevention_service = AbusePreventionService(abuse_limit_counter_repository)
+    abuse_counter_backend = DatabaseRateLimitCounterBackend(
+        abuse_limit_counter_repository
+    )
+    abuse_prevention_service = AbusePreventionService(abuse_counter_backend)
     api_requests_service = ApiRequestsService(api_requests_repository)
     game_params_service = GameParamsService(game_params_repository)
     kpi_metrics_service = KpiMetricsService(kpi_metrics_repository)
@@ -37,10 +43,8 @@ def test_light_services_set_expected_repository_attributes():
     uptime_logs_service = UptimeLogsService(uptime_logs_repository)
     user_interactions_service = UserInteractionsService(user_interactions_repository)
 
-    assert (
-        abuse_prevention_service.abuse_limit_counter_repository
-        is abuse_limit_counter_repository
-    )
+    assert abuse_prevention_service.counter_backend is abuse_counter_backend
+    assert abuse_counter_backend._repository is abuse_limit_counter_repository
     assert api_requests_service.api_requests_repository is api_requests_repository
     assert api_requests_service._repository is api_requests_repository
     assert game_params_service.game_params_repository is game_params_repository

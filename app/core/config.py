@@ -211,6 +211,19 @@ class Configs(BaseSettings):
     ABUSE_DAILY_QUOTA_PER_API_KEY: int = _env_to_int(
         "ABUSE_DAILY_QUOTA_PER_API_KEY", 10000
     )
+    # "database" keeps the original abuse_limit_counter writes; "redis" uses
+    # INCR + EXPIRE against REDIS_URL (atomic, ~50 us vs ~5 ms for the UPDATE
+    # on a hot Postgres row, and naturally distributed across instances).
+    ABUSE_PREVENTION_BACKEND: str = os.getenv(
+        "ABUSE_PREVENTION_BACKEND", "database"
+    )
+    REDIS_URL: Optional[str] = os.getenv("REDIS_URL")
+    RATE_LIMIT_REDIS_KEY_PREFIX: str = os.getenv(
+        "RATE_LIMIT_REDIS_KEY_PREFIX", "game:rl:"
+    )
+    RATE_LIMIT_TTL_BUFFER_SECONDS: int = _env_to_int(
+        "RATE_LIMIT_TTL_BUFFER_SECONDS", 5
+    )
 
     SQLALCHEMY_ECHO: bool = _env_to_bool("SQLALCHEMY_ECHO", False)
     DB_POOL_PRE_PING: bool = _env_to_bool("DB_POOL_PRE_PING", True)

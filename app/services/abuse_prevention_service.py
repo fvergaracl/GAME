@@ -5,7 +5,7 @@ from fastapi import Request
 
 from app.core.config import configs
 from app.core.exceptions import TooManyRequestsError
-from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
+from app.services.rate_limit_counter_backend import RateLimitCounterBackend
 
 
 class AbusePreventionService:
@@ -13,8 +13,8 @@ class AbusePreventionService:
     Service responsible for abuse prevention checks on sensitive endpoints.
     """
 
-    def __init__(self, abuse_limit_counter_repository: AbuseLimitCounterRepository):
-        self.abuse_limit_counter_repository = abuse_limit_counter_repository
+    def __init__(self, counter_backend: RateLimitCounterBackend):
+        self.counter_backend = counter_backend
 
     @staticmethod
     def extract_client_ip(request: Optional[Request]) -> Optional[str]:
@@ -57,6 +57,7 @@ class AbusePreventionService:
         window_seconds = max(1, int(configs.ABUSE_RATE_LIMIT_WINDOW_SECONDS))
         short_window_name = f"task_mutation_short_{window_seconds}s"
         short_window_start = self._get_window_bucket_start(now, window_seconds)
+        short_ttl = self._ttl_for_seconds(window_seconds)
 
         normalized_api_key = self._normalize_scope_value(api_key)
         normalized_ip = self._normalize_scope_value(client_ip)
@@ -67,6 +68,7 @@ class AbusePreventionService:
             scope_value=normalized_api_key,
             window_name=short_window_name,
             window_start=short_window_start,
+            ttl_seconds=short_ttl,
             max_allowed=int(configs.ABUSE_RATE_LIMIT_PER_API_KEY),
             error_detail="API key rate limit exceeded for sensitive task operations.",
         )
@@ -75,6 +77,7 @@ class AbusePreventionService:
             scope_value=normalized_ip,
             window_name=short_window_name,
             window_start=short_window_start,
+            ttl_seconds=short_ttl,
             max_allowed=int(configs.ABUSE_RATE_LIMIT_PER_IP),
             error_detail="IP rate limit exceeded for sensitive task operations.",
         )
@@ -83,17 +86,20 @@ class AbusePreventionService:
             scope_value=normalized_external_user,
             window_name=short_window_name,
             window_start=short_window_start,
+            ttl_seconds=short_ttl,
             max_allowed=int(configs.ABUSE_RATE_LIMIT_PER_EXTERNAL_USER),
             error_detail="externalUserId rate limit exceeded for sensitive task operations.",
         )
 
         daily_window_name = "task_mutation_daily"
         daily_window_start = self._get_daily_bucket_start(now)
+        daily_ttl = self._ttl_for_seconds(86400)
         await self._enforce_limit(
             scope_type="api_key",
             scope_value=normalized_api_key,
             window_name=daily_window_name,
             window_start=daily_window_start,
+            ttl_seconds=daily_ttl,
             max_allowed=int(configs.ABUSE_DAILY_QUOTA_PER_API_KEY),
             error_detail="Daily API key quota exceeded for sensitive task operations.",
         )
@@ -104,6 +110,7 @@ class AbusePreventionService:
         scope_value: Optional[str],
         window_name: str,
         window_start: datetime,
+        ttl_seconds: int,
         max_allowed: int,
         error_detail: str,
     ) -> None:
@@ -112,11 +119,12 @@ class AbusePreventionService:
         if max_allowed <= 0:
             return
 
-        counter = await self.abuse_limit_counter_repository.increment_and_get(
+        counter = await self.counter_backend.increment_and_get(
             scope_type=scope_type,
             scope_value=scope_value,
             window_name=window_name,
             window_start=window_start,
+            ttl_seconds=ttl_seconds,
         )
         if counter > max_allowed:
             raise TooManyRequestsError(detail=error_detail)
@@ -154,3 +162,10 @@ class AbusePreventionService:
             day=now.day,
             tzinfo=timezone.utc,
         )
+
+    @staticmethod
+    def _ttl_for_seconds(window_seconds: int) -> int:
+        # Extra buffer absorbs clock skew between API instances and Redis so
+        # a bucket cannot die just before the next request promotes it.
+        buffer = max(1, int(configs.RATE_LIMIT_TTL_BUFFER_SECONDS))
+        return max(1, int(window_seconds)) + buffer

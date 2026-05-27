@@ -43,6 +43,7 @@ from app.services import (
     UserService,
     WalletService,
     WalletTransactionService,
+    build_rate_limit_counter_backend,
     dashboard_service,
     logs_service,
     oauth_users_service,
@@ -319,9 +320,17 @@ class Container(containers.DeclarativeContainer):
         api_requests_repository=api_requests_repository,
     )
 
+    rate_limit_counter_backend = providers.Singleton(
+        build_rate_limit_counter_backend,
+        repository=abuse_limit_counter_repository,
+        backend_name=configs.ABUSE_PREVENTION_BACKEND,
+        redis_url=configs.REDIS_URL,
+        redis_key_prefix=configs.RATE_LIMIT_REDIS_KEY_PREFIX,
+    )
+
     abuse_prevention_service = providers.Factory(
         AbusePreventionService,
-        abuse_limit_counter_repository=abuse_limit_counter_repository,
+        counter_backend=rate_limit_counter_backend,
     )
 
     kpi_metrics_service = providers.Factory(
