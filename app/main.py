@@ -4,8 +4,6 @@ from contextlib import asynccontextmanager
 
 import sentry_sdk
 import toml
-from alembic import command
-from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import RedirectResponse
@@ -19,24 +17,8 @@ from app.util.class_object import singleton
 logger = logging.getLogger(__name__)
 
 
-def run_migrations():
-    """Run alembic upgrade head on startup.
-
-    Creates all tables if the DB is fresh, or upgrades to the latest
-    migration if the DB is behind. Safe to call multiple times (idempotent).
-    """
-    try:
-        alembic_cfg = Config("alembic.ini")
-        command.upgrade(alembic_cfg, "head")
-        logger.info("Alembic migrations applied successfully.")
-    except Exception as e:
-        logger.error("Alembic migration failed: %s", e)
-        raise
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    run_migrations()
     yield
 
 
