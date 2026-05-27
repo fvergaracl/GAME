@@ -2,6 +2,7 @@ from dependency_injector import containers, providers
 
 from app.core.config import configs
 from app.core.database import Database
+from app.engine.dsl_interpreter import DslInterpreter
 
 # pylint: disable=unused-wildcard-import
 from app.repository import (
@@ -265,13 +266,28 @@ class Container(containers.DeclarativeContainer):
         strategy_definition_repository=strategy_definition_repository,
     )
 
+    # Declared before strategy_service so the latter can inject it for
+    # DslStrategy construction without a forward reference. The factory
+    # itself is otherwise unchanged from its original position below.
+    user_points_analytics_service = providers.Factory(
+        UserPointsAnalyticsService,
+        user_points_repository=user_points_repository,
+    )
+
+    # Shared DSL interpreter — stateless apart from per-call walk state, so a
+    # single Factory-built instance is safe to reuse across requests.
+    dsl_interpreter = providers.Factory(
+        DslInterpreter,
+        max_nodes=configs.DSL_MAX_NODES,
+        max_depth=configs.DSL_MAX_DEPTH,
+    )
+
     strategy_service = providers.Factory(
         StrategyService,
         strategy_definition_service=strategy_definition_service,
+        dsl_interpreter=dsl_interpreter,
+        analytics_service=user_points_analytics_service,
     )
-
-    # DSL simulation service uses the analytics provider declared further
-    # down; the Factory binds lazily so the forward reference is fine.
 
     game_service = providers.Factory(
         GameService,
@@ -310,11 +326,7 @@ class Container(containers.DeclarativeContainer):
         task_repository=task_repository,
         wallet_repository=wallet_repository,
         wallet_transaction_repository=wallet_transaction_repository,
-    )
-
-    user_points_analytics_service = providers.Factory(
-        UserPointsAnalyticsService,
-        user_points_repository=user_points_repository,
+        strategy_service=strategy_service,
     )
 
     user_service = providers.Factory(

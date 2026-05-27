@@ -34,7 +34,11 @@ from app.schema.user_points_schema import (AllPointsByGame, GameDetail,
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
-from app.services.strategy_service import StrategyService
+from app.services.strategy_service import (
+    StrategyService,
+    is_custom_strategy_id,
+    resolve_realm_id,
+)
 from app.util.is_valid_slug import is_valid_slug
 
 logger = logging.getLogger(__name__)
@@ -50,6 +54,7 @@ class UserPointsService(BaseService):
         task_repository: TaskRepository,
         wallet_repository: WalletRepository,
         wallet_transaction_repository: WalletTransactionRepository,
+        strategy_service: "StrategyService | None" = None,
     ) -> None:
         self.user_points_repository = user_points_repository
         self.users_repository = users_repository
@@ -58,7 +63,12 @@ class UserPointsService(BaseService):
         self.task_repository = task_repository
         self.wallet_repository = wallet_repository
         self.wallet_transaction_repository = wallet_transaction_repository
-        self.strategy_service = StrategyService()
+        # When constructed via DI (the production path) the container
+        # injects a fully-wired StrategyService that can resolve
+        # ``custom:<uuid>`` ids against the DB. The no-arg fallback
+        # preserves the pre-Sprint-5 behaviour for tests that build this
+        # service positionally and monkey-patch ``self.strategy_service``.
+        self.strategy_service = strategy_service or StrategyService()
         super().__init__(user_points_repository)
 
     @staticmethod
@@ -500,7 +510,16 @@ class UserPointsService(BaseService):
             raise NotFoundError(f"Task not found with externalTaskId: {externalTaskId}")
 
         strategyId = task.strategyId
-        strategy_instance = self.strategy_service.get_Class_by_id(strategyId)
+        # Same async resolver used by ``assign_points_to_user``. This
+        # endpoint doesn't actually invoke ``calculate_points`` — it just
+        # verifies the strategy exists for the realm — but using the
+        # same resolver keeps custom and built-in ids consistent.
+        realm_id = resolve_realm_id(
+            api_key=api_key, oauth_user_id=oauth_user_id
+        )
+        strategy_instance = await self.strategy_service.get_strategy_instance(
+            strategyId, realmId=realm_id
+        )
 
         if not strategy_instance:
             raise NotFoundError(f"Strategy not found with id: {strategyId}")
@@ -602,11 +621,15 @@ class UserPointsService(BaseService):
         if not task:
             raise NotFoundError(f"Task not found with externalTaskId: {externalTaskId}")
         strategyId = task.strategyId
-        strategy = self.strategy_service.get_strategy_by_id(strategyId)
-        if not strategy:
-            raise NotFoundError(
-                f"Strategy not found with id: {strategyId} for task with externalTaskId: {externalTaskId}"  # noqa
-            )
+        # Sprint 5: a single async resolver handles both built-in
+        # registry ids and ``custom:<uuid>`` DSL strategies (scoped by
+        # realmId so a tenant can't invoke another tenant's strategy).
+        # The resolver raises NotFoundError itself when the strategy is
+        # missing, so the previous separate ``get_strategy_by_id`` guard
+        # is redundant and has been removed.
+        realm_id = resolve_realm_id(
+            api_key=api_key, oauth_user_id=oauth_user_id
+        )
         user = await self.users_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=False
         )
@@ -622,7 +645,9 @@ class UserPointsService(BaseService):
                 externalUserId=externalUserId
             )
             is_a_created_user = True
-        strategy_instance = self.strategy_service.get_Class_by_id(strategyId)
+        strategy_instance = await self.strategy_service.get_strategy_instance(
+            strategyId, realmId=realm_id
+        )
         data_to_add = schema.data
         try:
             if data_to_add is None:
@@ -753,10 +778,17 @@ class UserPointsService(BaseService):
         if not all_tasks:
             raise NotFoundError(detail=f"Tasks not found by gameId: {game.id}")
 
-        # First: Check if all strategies exist
+        # First: Check if all strategies exist. Custom DSL strategies
+        # (``custom:<uuid>``) live in the DB and have their own
+        # ``/v1/strategies/custom/{id}/simulate`` endpoint; the legacy
+        # simulator only operates on built-ins, so we just skip the
+        # existence check for custom ids here. They will be filtered out
+        # again in the per-strategy loop below.
         strategy = None
         for task in all_tasks:
             strategyId = task.strategyId
+            if is_custom_strategy_id(strategyId):
+                continue
             strategy = self.strategy_service.get_strategy_by_id(strategyId)
 
             if not strategy:
@@ -822,6 +854,12 @@ class UserPointsService(BaseService):
         externalUserId = user.externalUserId
 
         for strategy_id_applied, tasks in grouped_by_strategyId.items():
+            # Custom DSL strategies don't implement ``simulate_strategy``
+            # — they use the dedicated DSL simulate endpoint. Skip them
+            # here so a game that mixes built-in and custom strategies
+            # still returns sensible simulator output for the built-ins.
+            if is_custom_strategy_id(strategy_id_applied):
+                continue
             strategy_instance = self.strategy_service.get_Class_by_id(
                 strategy_id_applied
             )

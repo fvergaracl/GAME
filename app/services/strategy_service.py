@@ -1,7 +1,11 @@
 from typing import Any, Optional
 
-from app.core.exceptions import NotFoundError
+from app.core.config import configs
+from app.core.exceptions import InternalServerError, NotFoundError
 from app.engine.all_engine_strategies import all_engine_strategies
+from app.engine.base_strategy import BaseStrategy
+from app.engine.dsl_interpreter import DslInterpreter
+from app.engine.dsl_strategy import DslStrategy
 from app.services.base_service import BaseService
 from app.services.strategy_definition_service import (
     StrategyDefinitionService,
@@ -25,6 +29,30 @@ def parse_custom_strategy_id(strategy_id: str) -> str:
     return strategy_id[len(CUSTOM_STRATEGY_PREFIX):]
 
 
+def resolve_realm_id(
+    *,
+    api_key: Optional[str] = None,
+    oauth_user_id: Optional[str] = None,
+) -> Optional[str]:
+    """
+    Tenant-boundary resolver shared by call sites that don't have an
+    ``AuthContext`` handy (e.g. ``UserPointsService``).
+
+    Same convention as ``_resolve_realm_id`` in
+    ``app/api/v1/endpoints/strategies_custom.py``:
+      * API key present → its value *is* the realm.
+      * OAuth admin     → falls back to ``configs.KEYCLOAK_REALM``.
+      * Neither         → ``None`` (legacy unauthenticated path; any
+        attempt to load a ``custom:`` strategy will then 404, which is
+        the desired tenant-isolation behaviour).
+    """
+    if api_key:
+        return api_key
+    if oauth_user_id:
+        return configs.KEYCLOAK_REALM
+    return None
+
+
 class StrategyService(BaseService):
     """
     Service class for managing strategies.
@@ -44,6 +72,9 @@ class StrategyService(BaseService):
         strategy_definition_service: Optional[
             StrategyDefinitionService
         ] = None,
+        *,
+        dsl_interpreter: Optional[DslInterpreter] = None,
+        analytics_service: Optional[Any] = None,
     ) -> None:
         """
         Initializes the StrategyService.
@@ -53,9 +84,19 @@ class StrategyService(BaseService):
         When it's omitted, attempting to resolve a ``custom:`` id raises
         ``NotFoundError`` with a clear message rather than silently
         crashing.
+
+        ``dsl_interpreter`` and ``analytics_service`` are required to
+        instantiate ``DslStrategy`` for ``custom:`` ids (Sprint 5 wiring).
+        They are optional kwargs to preserve the legacy
+        ``StrategyService()`` no-arg call style still in use by tests and
+        by ``UserPointsService.__init__`` until the container injection
+        lands; when missing, ``get_strategy_instance`` raises a precise
+        ``InternalServerError`` instead of crashing with ``AttributeError``.
         """
         super().__init__(None)
         self._strategy_definition_service = strategy_definition_service
+        self._dsl_interpreter = dsl_interpreter
+        self._analytics_service = analytics_service
 
     def list_all_strategies(self) -> list[dict[str, Any]]:
         """
@@ -152,3 +193,54 @@ class StrategyService(BaseService):
             "id": strategy_id,
             "instance": instance,
         }
+
+    async def get_strategy_instance(
+        self,
+        strategy_id: str,
+        *,
+        realmId: Optional[str] = None,
+    ) -> BaseStrategy:
+        """
+        Single async entrypoint that returns something with
+        ``calculate_points(...)`` — either a built-in registry singleton
+        or a freshly-constructed ``DslStrategy`` wrapping a DB-persisted
+        AST.
+
+        For non-``custom:`` ids this delegates to the sync
+        ``get_Class_by_id`` so existing test patches on that method keep
+        intercepting. For ``custom:<uuid>`` it fetches the definition
+        scoped by ``realmId`` (multi-tenant isolation is enforced at the
+        repository layer in ``StrategyDefinitionService.get_strategy``)
+        and wires the same shared ``DslInterpreter`` + analytics service
+        injected at construction.
+
+        Raises ``InternalServerError`` if the DSL collaborators were not
+        wired — a clearer signal than ``AttributeError`` for ops.
+        """
+        if not is_custom_strategy_id(strategy_id):
+            return self.get_Class_by_id(strategy_id)
+
+        if self._strategy_definition_service is None:
+            raise NotFoundError(
+                detail=(
+                    "Custom strategy resolution is unavailable: "
+                    "StrategyDefinitionService not wired."
+                )
+            )
+        if self._dsl_interpreter is None or self._analytics_service is None:
+            raise InternalServerError(
+                detail=(
+                    "DslStrategy dependencies (interpreter / analytics) "
+                    "are not wired into StrategyService."
+                )
+            )
+
+        uuid_part = parse_custom_strategy_id(strategy_id)
+        definition = await self._strategy_definition_service.get_strategy(
+            id=uuid_part, realmId=realmId
+        )
+        return DslStrategy(
+            definition=definition,
+            interpreter=self._dsl_interpreter,
+            analytics_service=self._analytics_service,
+        )

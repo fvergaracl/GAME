@@ -1,0 +1,226 @@
+{
+  "type": "program",
+  "id": "default_v0_0_2",
+  "rules": [
+    {
+      "type": "rule",
+      "id": "r_basic_engagement",
+      "when": {
+        "type": "compare",
+        "id": "c_basic_engagement",
+        "op": "<",
+        "left":  {"type": "field",   "id": "f_task_count_be",   "path": "task.measurements_count"},
+        "right": {"type": "literal", "id": "l_two_be",          "value": 2}
+      },
+      "then": [
+        {
+          "type": "assign_points",
+          "id": "a_basic_engagement",
+          "value": {"type": "literal", "id": "l_basic_engagement_points", "value": 1},
+          "case_name": "BasicEngagement"
+        }
+      ]
+    },
+    {
+      "type": "rule",
+      "id": "r_user_low_count_default",
+      "when": {
+        "type": "compare",
+        "id": "c_user_low_count",
+        "op": "<=",
+        "left":  {"type": "field",   "id": "f_user_count_le2",  "path": "user.measurements_count"},
+        "right": {"type": "literal", "id": "l_two_user_le2",    "value": 2}
+      },
+      "then": [
+        {
+          "type": "assign_points",
+          "id": "a_user_low_count_default",
+          "value": {"type": "literal", "id": "l_user_low_default_points", "value": 1},
+          "case_name": "default"
+        }
+      ]
+    },
+    {
+      "type": "rule",
+      "id": "r_performance_bonus",
+      "when": {
+        "type": "compare",
+        "id": "c_performance_bonus",
+        "op": "<",
+        "left":  {"type": "field", "id": "f_user_avg_perf",  "path": "user.avg_time"},
+        "right": {"type": "field", "id": "f_all_avg_perf",   "path": "all.avg_time"}
+      },
+      "then": [
+        {
+          "type": "assign_points",
+          "id": "a_performance_bonus",
+          "value": {"type": "literal", "id": "l_performance_bonus_points", "value": 11},
+          "case_name": "PerformanceBonus"
+        }
+      ]
+    },
+    {
+      "type": "rule",
+      "id": "r_individual_over_global",
+      "when": {
+        "type": "and",
+        "id": "and_individual_over_global",
+        "args": [
+          {
+            "type": "compare",
+            "id": "c_iog_diff_pos",
+            "op": ">",
+            "left": {
+              "type": "arith",
+              "id": "arith_iog_diff_a",
+              "op": "-",
+              "left":  {"type": "field", "id": "f_new_iog_a", "path": "user.new_last_window_diff"},
+              "right": {"type": "field", "id": "f_last_iog_a", "path": "user.last_window_diff"}
+            },
+            "right": {"type": "literal", "id": "l_zero_iog", "value": 0}
+          },
+          {
+            "type": "compare",
+            "id": "c_iog_lt_all_avg",
+            "op": "<",
+            "left": {
+              "type": "arith",
+              "id": "arith_iog_diff_b",
+              "op": "-",
+              "left":  {"type": "field", "id": "f_new_iog_b", "path": "user.new_last_window_diff"},
+              "right": {"type": "field", "id": "f_last_iog_b", "path": "user.last_window_diff"}
+            },
+            "right": {"type": "field", "id": "f_all_avg_iog", "path": "all.avg_time"}
+          }
+        ]
+      },
+      "then": [
+        {
+          "type": "assign_points",
+          "id": "a_individual_over_global",
+          "value": {"type": "literal", "id": "l_iog_points", "value": 3},
+          "case_name": "IndividualOverGlobal"
+        }
+      ]
+    },
+    {
+      "type": "rule",
+      "id": "r_peak_performer",
+      "when": {
+        "type": "and",
+        "id": "and_peak_performer",
+        "args": [
+          {
+            "type": "compare",
+            "id": "c_peak_diff_pos",
+            "op": ">",
+            "left": {
+              "type": "arith",
+              "id": "arith_peak_diff_a",
+              "op": "-",
+              "left":  {"type": "field", "id": "f_new_peak_a", "path": "user.new_last_window_diff"},
+              "right": {"type": "field", "id": "f_last_peak_a", "path": "user.last_window_diff"}
+            },
+            "right": {"type": "literal", "id": "l_zero_peak", "value": 0}
+          },
+          {
+            "type": "compare",
+            "id": "c_peak_lt_user_avg",
+            "op": "<",
+            "left": {
+              "type": "arith",
+              "id": "arith_peak_diff_b",
+              "op": "-",
+              "left":  {"type": "field", "id": "f_new_peak_b", "path": "user.new_last_window_diff"},
+              "right": {"type": "field", "id": "f_last_peak_b", "path": "user.last_window_diff"}
+            },
+            "right": {"type": "field", "id": "f_user_avg_peak", "path": "user.avg_time"}
+          }
+        ]
+      },
+      "then": [
+        {
+          "type": "assign_points",
+          "id": "a_peak_performer",
+          "value": {"type": "literal", "id": "l_peak_points", "value": 15},
+          "case_name": "PeakPerformerBonus"
+        }
+      ]
+    },
+    {
+      "type": "rule",
+      "id": "r_global_advantage",
+      "when": {
+        "type": "and",
+        "id": "and_global_advantage",
+        "args": [
+          {
+            "type": "compare",
+            "id": "c_ga_diff_pos",
+            "op": ">",
+            "left": {
+              "type": "arith",
+              "id": "arith_ga_diff_a",
+              "op": "-",
+              "left":  {"type": "field", "id": "f_new_ga_a", "path": "user.new_last_window_diff"},
+              "right": {"type": "field", "id": "f_last_ga_a", "path": "user.last_window_diff"}
+            },
+            "right": {"type": "literal", "id": "l_zero_ga", "value": 0}
+          },
+          {
+            "type": "compare",
+            "id": "c_ga_gt_user_avg",
+            "op": ">",
+            "left": {
+              "type": "arith",
+              "id": "arith_ga_diff_b",
+              "op": "-",
+              "left":  {"type": "field", "id": "f_new_ga_b", "path": "user.new_last_window_diff"},
+              "right": {"type": "field", "id": "f_last_ga_b", "path": "user.last_window_diff"}
+            },
+            "right": {"type": "field", "id": "f_user_avg_ga", "path": "user.avg_time"}
+          }
+        ]
+      },
+      "then": [
+        {
+          "type": "assign_points",
+          "id": "a_global_advantage",
+          "value": {"type": "literal", "id": "l_ga_points", "value": 7},
+          "case_name": "GlobalAdvantageAdjustment"
+        }
+      ]
+    },
+    {
+      "type": "rule",
+      "id": "r_individual_adjustment",
+      "when": {
+        "type": "compare",
+        "id": "c_individual_adjustment",
+        "op": "<",
+        "left": {
+          "type": "arith",
+          "id": "arith_ia_diff",
+          "op": "-",
+          "left":  {"type": "field", "id": "f_new_ia", "path": "user.new_last_window_diff"},
+          "right": {"type": "field", "id": "f_last_ia", "path": "user.last_window_diff"}
+        },
+        "right": {"type": "literal", "id": "l_zero_ia", "value": 0}
+      },
+      "then": [
+        {
+          "type": "assign_points",
+          "id": "a_individual_adjustment",
+          "value": {"type": "literal", "id": "l_ia_points", "value": 8},
+          "case_name": "IndividualAdjustment"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "type": "assign_points",
+    "id": "a_program_default",
+    "value": {"type": "literal", "id": "l_program_default_points", "value": 1},
+    "case_name": "default"
+  }
+}
