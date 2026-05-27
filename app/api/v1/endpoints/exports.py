@@ -10,7 +10,7 @@ should not be able to dump cross-tenant data).
 """
 
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query
@@ -25,6 +25,7 @@ from app.middlewares.auth_context import (
     get_auth_context,
 )
 from app.schema.export_schema import (
+    ExportAuditLogEntry,
     ExportDatasetType,
     ExportFilters,
     ExportFormat,
@@ -184,6 +185,41 @@ _limit_query = Query(
     le=100_000,
     description="Maximum number of rows to emit (hard cap: 100,000).",
 )
+
+
+@router.get(
+    "/history",
+    summary="List recent export requests",
+    description=(
+        "Return the most recent rows from the export audit log. "
+        "When ``scope=mine`` (default) only exports triggered by the "
+        "calling admin are returned; ``scope=all`` returns the full feed "
+        "(admin-only, same role gate as the data endpoints). "
+        "Capped at 200 rows."
+    ),
+    response_model=List[ExportAuditLogEntry],
+)
+@inject
+async def list_export_history(
+    scope: str = Query(
+        default="mine",
+        pattern="^(mine|all)$",
+        description="``mine`` (default) limits to the caller; ``all`` "
+        "returns every audit row.",
+    ),
+    limit: int = Query(
+        default=50,
+        ge=1,
+        le=200,
+        description="Maximum number of rows to return (hard cap: 200).",
+    ),
+    auth: AuthContext = Depends(require_admin),
+    service: ExportService = Depends(Provide[Container.export_service]),
+) -> List[ExportAuditLogEntry]:
+    oauth_user_id = auth.oauth_user_id if scope == "mine" else None
+    return await service.list_history(
+        limit=limit, oauth_user_id=oauth_user_id
+    )
 
 
 @router.get(

@@ -4,9 +4,11 @@ import {
   cilBell,
   cilCalculator,
   cilChartPie,
+  cilCloudDownload,
   cilCursor,
   cilDescription,
   cilDrop,
+  cilHistory,
   cilNotes,
   cilPencil,
   cilPuzzle,
@@ -45,6 +47,26 @@ const _nav = [
 
 const _nav_administrator = [
   ..._nav,
+  {
+    component: CNavTitle,
+    name: 'Data',
+  },
+  {
+    component: CNavItem,
+    name: 'Data export',
+    to: '/admin/exports',
+    icon: <CIcon icon={cilCloudDownload} customClassName="nav-icon" />,
+    badge: {
+      color: 'info',
+      text: 'NEW',
+    },
+  },
+  {
+    component: CNavItem,
+    name: 'Export history',
+    to: '/admin/exports/history',
+    icon: <CIcon icon={cilHistory} customClassName="nav-icon" />,
+  },
   {
     component: CNavTitle,
     name: 'Admin',

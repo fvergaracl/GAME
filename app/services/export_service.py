@@ -31,6 +31,7 @@ from app.model.wallet_transactions import WalletTransactions
 from app.repository.export_audit_log_repository import ExportAuditLogRepository
 from app.schema.export_schema import (
     CreateExportAuditLog,
+    ExportAuditLogEntry,
     ExportDatasetType,
     ExportFilters,
     ExportFormat,
@@ -162,6 +163,35 @@ class ExportService(BaseService):
         await self.export_audit_log_repository.mark_finished(
             audit_id, row_count=row_count, status=status
         )
+
+    async def list_history(
+        self,
+        *,
+        limit: int = 50,
+        oauth_user_id: Optional[str] = None,
+    ) -> List[ExportAuditLogEntry]:
+        """
+        Return recent audit rows mapped onto the public entry schema, hiding
+        internal fields (raw apiKey/oauth_user_id are dropped — only the
+        ``requestedBy`` display string survives).
+        """
+        rows = await self.export_audit_log_repository.list_recent(
+            limit=limit, oauth_user_id=oauth_user_id
+        )
+        return [
+            ExportAuditLogEntry(
+                id=str(row.id),
+                datasetType=row.datasetType,
+                format=row.format,
+                filters=row.filters,
+                rowLimit=row.rowLimit,
+                rowCount=row.rowCount,
+                status=row.status,
+                requestedBy=row.requestedBy,
+                created_at=row.created_at,
+            )
+            for row in rows
+        ]
 
     # ------------------------------------------------------------------
     # Query helpers

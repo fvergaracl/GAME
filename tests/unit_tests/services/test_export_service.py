@@ -105,6 +105,37 @@ class TestExportServiceAudit(unittest.IsolatedAsyncioTestCase):
             status=ExportStatus.COMPLETED.value,
         )
 
+    async def test_list_history_maps_rows_to_public_schema(self):
+        self.repo.list_recent = AsyncMock(
+            return_value=[
+                SimpleNamespace(
+                    id="row-1",
+                    datasetType="users",
+                    format="csv",
+                    filters={"limit": 10},
+                    rowLimit=10,
+                    rowCount=5,
+                    status="completed",
+                    requestedBy="alice@example.com",
+                    created_at=datetime(2026, 5, 1, 12),
+                )
+            ]
+        )
+        result = await self.service.list_history(
+            limit=10, oauth_user_id="user-x"
+        )
+        self.repo.list_recent.assert_awaited_once_with(
+            limit=10, oauth_user_id="user-x"
+        )
+        self.assertEqual(len(result), 1)
+        entry = result[0]
+        self.assertEqual(entry.id, "row-1")
+        self.assertEqual(entry.datasetType, "users")
+        self.assertEqual(entry.requestedBy, "alice@example.com")
+        # No raw apiKey/oauth_user_id leaks to the public schema.
+        self.assertFalse(hasattr(entry, "apiKey_used"))
+        self.assertFalse(hasattr(entry, "oauth_user_id"))
+
 
 class TestExportServiceFormatters(unittest.IsolatedAsyncioTestCase):
     def setUp(self):

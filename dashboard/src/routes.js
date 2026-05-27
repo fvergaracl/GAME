@@ -52,10 +52,14 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const Apikeys = React.lazy(() => import('./views/admin/apikeys/Apikeys'))
+const ExportData = React.lazy(() => import('./views/exports/ExportData'))
+const ExportHistory = React.lazy(() => import('./views/exports/ExportHistory'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/admin/api-keys', name: 'API keys', element: Apikeys },
+  { path: '/admin/exports', name: 'Data export', element: ExportData },
+  { path: '/admin/exports/history', name: 'Export history', element: ExportHistory },
 
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },

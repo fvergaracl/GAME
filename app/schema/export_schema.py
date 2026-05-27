@@ -58,6 +58,25 @@ class ExportFilters(BaseModel):
     )
 
 
+class ExportAuditLogEntry(BaseModel):
+    """
+    Public-facing audit log entry returned by /v1/exports/history.
+
+    Drops sensitive fields (raw apiKey, internal oauth_user_id) and keeps
+    only what the UI needs to render the history table.
+    """
+
+    id: str
+    datasetType: str
+    format: str
+    filters: Optional[dict] = None
+    rowLimit: int
+    rowCount: int
+    status: str
+    requestedBy: Optional[str] = None
+    created_at: Optional[datetime] = None
+
+
 class CreateExportAuditLog(BaseModel):
     """
     Internal schema used to persist a new ExportAuditLog row when the export

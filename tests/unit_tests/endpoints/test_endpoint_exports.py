@@ -202,6 +202,92 @@ def test_export_rejects_limit_above_cap(test_client, monkeypatch):
     mock_service.audit_start.assert_not_called()
 
 
+def test_export_history_returns_mapped_rows(test_client, monkeypatch):
+    _patch_admin_auth(monkeypatch, is_admin=True)
+    from app.schema.export_schema import ExportAuditLogEntry
+
+    entries = [
+        ExportAuditLogEntry(
+            id="audit-1",
+            datasetType="users",
+            format="csv",
+            filters={"limit": 100},
+            rowLimit=100,
+            rowCount=42,
+            status="completed",
+            requestedBy="admin@example.com",
+            created_at=None,
+        )
+    ]
+    mock_service = AsyncMock()
+    mock_service.list_history = AsyncMock(return_value=entries)
+    container.export_service.override(providers.Object(mock_service))
+
+    try:
+        response = test_client.get(
+            "/api/v1/exports/history?scope=mine&limit=25",
+            headers={"Authorization": "Bearer mocked"},
+        )
+    finally:
+        container.export_service.reset_override()
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload == [
+        {
+            "id": "audit-1",
+            "datasetType": "users",
+            "format": "csv",
+            "filters": {"limit": 100},
+            "rowLimit": 100,
+            "rowCount": 42,
+            "status": "completed",
+            "requestedBy": "admin@example.com",
+            "created_at": None,
+        }
+    ]
+    # scope=mine must scope to the calling admin's oauth_user_id
+    call_kwargs = mock_service.list_history.await_args.kwargs
+    assert call_kwargs["limit"] == 25
+    assert call_kwargs["oauth_user_id"] == "admin-user"
+
+
+def test_export_history_scope_all_drops_user_filter(test_client, monkeypatch):
+    _patch_admin_auth(monkeypatch, is_admin=True)
+    mock_service = AsyncMock()
+    mock_service.list_history = AsyncMock(return_value=[])
+    container.export_service.override(providers.Object(mock_service))
+
+    try:
+        response = test_client.get(
+            "/api/v1/exports/history?scope=all",
+            headers={"Authorization": "Bearer mocked"},
+        )
+    finally:
+        container.export_service.reset_override()
+
+    assert response.status_code == 200
+    assert mock_service.list_history.await_args.kwargs["oauth_user_id"] is None
+
+
+def test_export_history_rejects_non_admin(test_client, monkeypatch):
+    _patch_admin_auth(monkeypatch, is_admin=False)
+    mock_service = AsyncMock()
+    mock_service.list_history = AsyncMock(return_value=[])
+    container.export_service.override(providers.Object(mock_service))
+
+    try:
+        response = test_client.get(
+            "/api/v1/exports/history",
+            headers={"Authorization": "Bearer mocked"},
+        )
+    finally:
+        container.export_service.reset_override()
+
+    assert response.status_code == 403
+    mock_service.list_history.assert_not_called()
+
+
 def test_export_invalid_format_returns_422(test_client, monkeypatch):
     _patch_admin_auth(monkeypatch, is_admin=True)
     mock_service = _make_mock_service([])
