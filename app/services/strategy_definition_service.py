@@ -49,6 +49,9 @@ from app.schema.strategy_definition_schema import (
     StrategyDefinitionPersist,
     StrategyDefinitionRead,
     StrategyDefinitionUpdate,
+    StrategyUsageGame,
+    StrategyUsageRead,
+    StrategyUsageTask,
 )
 from app.services.base_service import BaseService
 
@@ -421,6 +424,87 @@ class StrategyDefinitionService(BaseService):
             realmId=realmId, name=row.name
         )
         return [self._to_read(r) for r in rows]
+
+    async def get_usage(
+        self,
+        *,
+        id: str,
+        realmId: Optional[str],
+    ) -> StrategyUsageRead:
+        """
+        Reverse lookup: which games/tasks are assigned to this exact
+        strategy version (Sprint 6).
+
+        Consumers store the assignable id ``custom:<uuid>``, so usage is
+        an exact match on that string — the same value the rollback
+        cascade rewrites. We report per-version (not per-family) because
+        each published version is a distinct uuid that games point at
+        individually; that matches what an admin needs to see before
+        reassigning, archiving or rolling back *this* version.
+
+        Tenant-scoped via ``get_for_realm``: a cross-realm id 404s.
+        No cross-tenant leak through the usage lists either — a game can
+        only be assigned a strategy validated to live in its own realm,
+        so every consumer of ``custom:<uuid>`` shares the strategy's
+        realm.
+        """
+        if self.game_repository is None or self.task_repository is None:
+            raise BadRequestError(
+                detail=(
+                    "Usage lookup requires game/task repositories wired "
+                    "into StrategyDefinitionService."
+                )
+            )
+
+        row = await self.strategy_definition_repository.get_for_realm(
+            id=id, realmId=realmId
+        )
+        if row is None:
+            raise NotFoundError(detail=f"Custom strategy not found: {id}")
+
+        assignable_id = f"{_CUSTOM_STRATEGY_PREFIX}{row.id}"
+        game_rows = await self.game_repository.list_by_strategy_id(
+            assignable_id
+        )
+        task_rows = await self.task_repository.list_by_strategy_id(
+            assignable_id
+        )
+
+        # Resolve each task's parent game external id in one batched query
+        # so the UI can show "task X of game Y" rather than a raw UUID.
+        parent_ids = {t.gameId for t in task_rows if t.gameId is not None}
+        external_by_game = await self.game_repository.list_external_ids(
+            parent_ids
+        )
+
+        games = [
+            StrategyUsageGame(
+                gameId=str(g.id),
+                externalGameId=g.externalGameId,
+                platform=g.platform,
+            )
+            for g in game_rows
+        ]
+        tasks = [
+            StrategyUsageTask(
+                taskId=str(t.id),
+                externalTaskId=t.externalTaskId,
+                gameId=str(t.gameId) if t.gameId is not None else None,
+                externalGameId=external_by_game.get(t.gameId),
+            )
+            for t in task_rows
+        ]
+
+        return StrategyUsageRead(
+            strategyId=assignable_id,
+            name=row.name,
+            version=row.version,
+            status=row.status,
+            gameCount=len(games),
+            taskCount=len(tasks),
+            games=games,
+            tasks=tasks,
+        )
 
     async def rollback(
         self,

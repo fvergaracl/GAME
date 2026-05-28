@@ -862,5 +862,131 @@ class TestSprint9LifecycleEndToEnd(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.tasks.rows, [f"custom:{v1.id}"])
 
 
+class FakeUsageGameRepository:
+    """
+    Richer stand-in than :class:`FakeAssignmentRepository` for the usage
+    lookup: rows expose the columns ``get_usage`` reads (id /
+    externalGameId / platform) and the helper resolves external ids by id.
+    """
+
+    def __init__(self, games: Optional[List[SimpleNamespace]] = None):
+        self.games: List[SimpleNamespace] = list(games or [])
+
+    async def list_by_strategy_id(self, strategy_id: str):
+        return [g for g in self.games if g.strategyId == strategy_id]
+
+    async def list_external_ids(self, ids) -> Dict:
+        wanted = {i for i in ids if i is not None}
+        return {
+            g.id: g.externalGameId for g in self.games if g.id in wanted
+        }
+
+
+class FakeUsageTaskRepository:
+    def __init__(self, tasks: Optional[List[SimpleNamespace]] = None):
+        self.tasks: List[SimpleNamespace] = list(tasks or [])
+
+    async def list_by_strategy_id(self, strategy_id: str):
+        return [t for t in self.tasks if t.strategyId == strategy_id]
+
+
+class TestGetUsage(unittest.IsolatedAsyncioTestCase):
+    """Sprint 6 reverse lookup: which games/tasks run this exact strategy
+    version, with counts, for the blast-radius preview + bulk reassign."""
+
+    def setUp(self):
+        self.repo = FakeStrategyDefinitionRepository()
+        self.games = FakeUsageGameRepository()
+        self.tasks = FakeUsageTaskRepository()
+        self.service = StrategyDefinitionService(
+            strategy_definition_repository=self.repo,
+            game_repository=self.games,
+            task_repository=self.tasks,
+        )
+
+    async def _create(self, *, realm="realm-a", name="usage-strat"):
+        return await self.service.create(
+            payload=StrategyDefinitionCreate(
+                name=name,
+                type=StrategyDefinitionType.DSL_FULL,
+                astJson={"type": "program", "rules": []},
+            ),
+            realmId=realm,
+            createdBy=None,
+            apiKey_used=None,
+            oauth_user_id=None,
+        )
+
+    async def test_lists_consumers_with_counts_and_parent_labels(self):
+        strat = await self._create()
+        assignable = f"custom:{strat.id}"
+        game_a = SimpleNamespace(
+            id=uuid.uuid4(),
+            externalGameId="game-a",
+            platform="web",
+            strategyId=assignable,
+        )
+        game_other = SimpleNamespace(
+            id=uuid.uuid4(),
+            externalGameId="game-other",
+            platform="web",
+            strategyId="default",
+        )
+        self.games.games = [game_a, game_other]
+        # A task overriding its parent game's default onto our strategy.
+        self.tasks.tasks = [
+            SimpleNamespace(
+                id=uuid.uuid4(),
+                externalTaskId="task-1",
+                gameId=game_a.id,
+                strategyId=assignable,
+            ),
+            SimpleNamespace(
+                id=uuid.uuid4(),
+                externalTaskId="task-other",
+                gameId=game_other.id,
+                strategyId="default",
+            ),
+        ]
+
+        usage = await self.service.get_usage(id=strat.id, realmId="realm-a")
+
+        # Only the consumers of THIS strategy are reported.
+        self.assertEqual(usage.strategyId, assignable)
+        self.assertEqual(usage.gameCount, 1)
+        self.assertEqual(usage.taskCount, 1)
+        self.assertEqual(usage.games[0].externalGameId, "game-a")
+        self.assertEqual(usage.tasks[0].externalTaskId, "task-1")
+        # Parent game external id is resolved for the task row.
+        self.assertEqual(usage.tasks[0].externalGameId, "game-a")
+        self.assertEqual(usage.version, strat.version)
+        self.assertEqual(usage.status, strat.status)
+
+    async def test_empty_when_no_consumers(self):
+        strat = await self._create()
+        usage = await self.service.get_usage(id=strat.id, realmId="realm-a")
+        self.assertEqual(usage.gameCount, 0)
+        self.assertEqual(usage.taskCount, 0)
+        self.assertEqual(usage.games, [])
+        self.assertEqual(usage.tasks, [])
+
+    async def test_404_on_unknown_id(self):
+        with self.assertRaises(NotFoundError):
+            await self.service.get_usage(id="nope", realmId="realm-a")
+
+    async def test_tenant_scoped(self):
+        strat = await self._create()
+        with self.assertRaises(NotFoundError):
+            await self.service.get_usage(id=strat.id, realmId="realm-b")
+
+    async def test_requires_assignment_repositories(self):
+        bare = StrategyDefinitionService(
+            strategy_definition_repository=self.repo,
+        )
+        strat = await self._create()
+        with self.assertRaises(BadRequestError):
+            await bare.get_usage(id=strat.id, realmId="realm-a")
+
+
 if __name__ == "__main__":
     unittest.main()

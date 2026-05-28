@@ -1,17 +1,18 @@
 // Sprint 9 — strategy assignments admin view.
+// Sprint 6 — reworked for scale: server-side pagination + search instead
+// of pulling every game with page_size=all, plus multi-select bulk
+// reassignment with a confirmation/impact step.
 //
-// Lists every Game in the realm with its current strategyId. Expanding
-// a row reveals the tasks for that game so the same picker can be used
-// to reassign a strategy at task granularity.
+// Lists Games in the realm with their current strategyId. Expanding a
+// row reveals its tasks so the same picker can reassign a strategy at
+// task granularity. Checkboxes select games on the current page for a
+// single bulk reassignment.
 //
-// We don't build full Games/Tasks CRUD here — only what's needed to
-// answer "which Game/Task runs which strategy" and "swap that strategy
-// for another one". The flow:
-//
-//   1. Load games via /v1/games and customs/built-ins for label resolution.
-//   2. On "Cambiar" → open StrategyPickerModal pre-seeded with current id.
-//   3. On select → PATCH /games/{id} or /games/{id}/tasks/{tid} and patch
-//      the row in local state so the user sees the change instantly.
+//   1. Load a page of games via /v1/games (page/search) + the label
+//      index (built-ins + customs) once for resolving "custom:<uuid>".
+//   2. On "Cambiar" / "Reasignar N" → open StrategyPickerModal.
+//   3. On select → confirmation step → PATCH the game(s)/task and patch
+//      local state so the change is visible without a full reload.
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
@@ -22,6 +23,15 @@ import {
   CCardBody,
   CCardHeader,
   CCollapse,
+  CFormCheck,
+  CFormInput,
+  CFormSelect,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
+  CProgress,
   CSpinner,
   CTable,
   CTableBody,
@@ -41,8 +51,9 @@ import {
 } from '../../api'
 import StrategyPickerModal from './StrategyPickerModal'
 
-const extractError = (err, fallback) =>
-  err?.response?.data?.detail || err?.message || fallback
+const PAGE_SIZE_OPTIONS = [10, 20, 50]
+
+const extractError = (err, fallback) => err?.response?.data?.detail || err?.message || fallback
 
 // Pre-build a lookup so rendering "custom:<uuid>" reads as
 // "MyStrategy v3" without doing N round-trips per row.
@@ -63,6 +74,12 @@ const buildStrategyLabelIndex = (builtIns, customs) => {
 
 const StrategyAssignmentsView = () => {
   const [games, setGames] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
+
   const [labelIndex, setLabelIndex] = useState(new Map())
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -72,36 +89,66 @@ const StrategyAssignmentsView = () => {
   const [expanded, setExpanded] = useState(() => new Set())
   const [tasksByGame, setTasksByGame] = useState({})
   const [tasksLoading, setTasksLoading] = useState({})
-  const [pickerTarget, setPickerTarget] = useState(null)
   const [actionError, setActionError] = useState(null)
+  const [actionSuccess, setActionSuccess] = useState(null)
 
-  const reloadAssignments = useCallback(() => {
+  // Selection is scoped to the current page: it resets on page/search
+  // changes so the skip-already-assigned filter always has the current
+  // strategyId of every selected game in hand.
+  const [selected, setSelected] = useState(() => new Set())
+
+  // pickerTarget drives the picker modal; on select we stash the chosen
+  // id in pendingReassign and surface a confirmation before writing.
+  const [pickerTarget, setPickerTarget] = useState(null)
+  const [pendingReassign, setPendingReassign] = useState(null)
+  const [bulkProgress, setBulkProgress] = useState(null)
+
+  // Debounce the search box so typing doesn't fire a request per keystroke.
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setSearch(searchInput.trim())
+      setPage(1)
+    }, 300)
+    return () => clearTimeout(handle)
+  }, [searchInput])
+
+  // Label index: built-ins + customs (PUBLISHED for assignability, plus
+  // the rest so a game still pointing at a DRAFT/ARCHIVED id renders a
+  // name instead of a raw UUID). Loaded once, independent of pagination.
+  useEffect(() => {
     let cancelled = false
-    setIsLoading(true)
-    setError(null)
     Promise.all([
-      // page_size=all because the admin view wants the full assignment
-      // map; pagination here would just hide assignments behind a "next
-      // page" click without solving anything for the use case.
-      listGames({ pageSize: 'all' }),
       listBuiltInStrategies(),
-      // Status filter applied so the label index doesn't carry
-      // not-assignable entries; the picker uses the same filter so the
-      // two views agree.
       listCustomStrategies({ status: 'PUBLISHED', limit: 500 }),
-      // Also pull DRAFT/ARCHIVED for label resolution — a game may
-      // still point at one (e.g. before someone reassigned). Without
-      // these the column would render the raw UUID.
       listCustomStrategies({ limit: 500 }),
     ])
-      .then(([gameList, builtIns, publishedCustoms, allCustoms]) => {
+      .then(([builtIns, publishedCustoms, allCustoms]) => {
         if (cancelled) return
-        const items = gameList?.items || []
-        setGames(items)
         const merged = new Map()
         for (const row of allCustoms || []) merged.set(row.id, row)
         for (const row of publishedCustoms || []) merged.set(row.id, row)
         setLabelIndex(buildStrategyLabelIndex(builtIns || [], [...merged.values()]))
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setError(extractError(err, 'No se pudo cargar el índice de estrategias.'))
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const reloadGames = useCallback(() => {
+    let cancelled = false
+    setIsLoading(true)
+    setError(null)
+    listGames({ page, pageSize, externalGameId: search || undefined })
+      .then((result) => {
+        if (cancelled) return
+        setGames(result?.items || [])
+        setTotalCount(result?.search_options?.total_count || 0)
+        // New page / new search → drop the previous page's selection.
+        setSelected(new Set())
       })
       .catch((err) => {
         if (cancelled) return
@@ -113,12 +160,12 @@ const StrategyAssignmentsView = () => {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [page, pageSize, search])
 
   useEffect(() => {
-    const cleanup = reloadAssignments()
+    const cleanup = reloadGames()
     return cleanup
-  }, [reloadAssignments])
+  }, [reloadGames])
 
   const loadTasksForGame = useCallback(async (gameId) => {
     setTasksLoading((prev) => ({ ...prev, [gameId]: true }))
@@ -151,6 +198,30 @@ const StrategyAssignmentsView = () => {
     [loadTasksForGame, tasksByGame],
   )
 
+  const toggleSelect = useCallback((gameId) => {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(gameId)) next.delete(gameId)
+      else next.add(gameId)
+      return next
+    })
+  }, [])
+
+  const allOnPageSelected = games.length > 0 && games.every((g) => selected.has(g.gameId))
+
+  const toggleSelectAllOnPage = useCallback(() => {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      const everySelected = games.length > 0 && games.every((g) => next.has(g.gameId))
+      if (everySelected) {
+        for (const g of games) next.delete(g.gameId)
+      } else {
+        for (const g of games) next.add(g.gameId)
+      }
+      return next
+    })
+  }, [games])
+
   const renderStrategyLabel = useCallback(
     (strategyId) => {
       if (!strategyId) return <span className="text-medium-emphasis">—</span>
@@ -159,9 +230,7 @@ const StrategyAssignmentsView = () => {
         return (
           <span>
             <code className="me-2">{entry.label}</code>
-            <CBadge color={entry.kind === 'BUILT_IN' ? 'info' : 'success'}>
-              {entry.kind}
-            </CBadge>
+            <CBadge color={entry.kind === 'BUILT_IN' ? 'info' : 'success'}>{entry.kind}</CBadge>
             {entry.status && entry.status !== 'PUBLISHED' && (
               <CBadge color="warning" className="ms-1">
                 {entry.status}
@@ -180,89 +249,223 @@ const StrategyAssignmentsView = () => {
     [labelIndex],
   )
 
+  const labelFor = useCallback(
+    (strategyId) => {
+      if (!strategyId) return '—'
+      return labelIndex.get(strategyId)?.label || strategyId
+    },
+    [labelIndex],
+  )
+
+  // Picker → stash the chosen id and raise a confirmation instead of
+  // writing immediately, so the admin sees what's about to change.
   const handlePickerSelect = useCallback(
-    async (newStrategyId) => {
+    (newStrategyId) => {
       if (!pickerTarget) return
-      setActionError(null)
-      try {
-        if (pickerTarget.kind === 'game') {
-          await patchGameStrategy(pickerTarget.gameId, newStrategyId)
-          setGames((prev) =>
-            prev.map((g) =>
-              g.gameId === pickerTarget.gameId
-                ? { ...g, strategyId: newStrategyId }
-                : g,
-            ),
-          )
-        } else {
-          await patchTaskStrategy(
-            pickerTarget.gameId,
-            pickerTarget.taskId,
-            newStrategyId,
-          )
-          setTasksByGame((prev) => ({
-            ...prev,
-            [pickerTarget.gameId]: (prev[pickerTarget.gameId] || []).map((t) =>
-              t.id === pickerTarget.taskId
-                ? { ...t, strategyId: newStrategyId }
-                : t,
-            ),
-          }))
-        }
-      } catch (err) {
-        setActionError(extractError(err, 'No se pudo actualizar la asignación.'))
-      } finally {
-        setPickerTarget(null)
-      }
+      setPendingReassign({ ...pickerTarget, newStrategyId })
     },
     [pickerTarget],
   )
 
-  const summary = useMemo(() => {
-    const total = games.length
-    const customCount = games.filter((g) =>
-      String(g.strategyId || '').startsWith('custom:'),
-    ).length
-    return { total, customCount }
-  }, [games])
+  const applySingleGame = useCallback(async (gameId, newStrategyId) => {
+    await patchGameStrategy(gameId, newStrategyId)
+    setGames((prev) =>
+      prev.map((g) => (g.gameId === gameId ? { ...g, strategyId: newStrategyId } : g)),
+    )
+  }, [])
+
+  const applyTask = useCallback(async (gameId, taskId, newStrategyId) => {
+    await patchTaskStrategy(gameId, taskId, newStrategyId)
+    setTasksByGame((prev) => ({
+      ...prev,
+      [gameId]: (prev[gameId] || []).map((t) =>
+        t.id === taskId ? { ...t, strategyId: newStrategyId } : t,
+      ),
+    }))
+  }, [])
+
+  const executeReassign = useCallback(async () => {
+    if (!pendingReassign) return
+    const { kind, newStrategyId } = pendingReassign
+    setActionError(null)
+    setActionSuccess(null)
+
+    if (kind === 'game') {
+      try {
+        await applySingleGame(pendingReassign.gameId, newStrategyId)
+        setActionSuccess('Estrategia del game actualizada.')
+      } catch (err) {
+        setActionError(extractError(err, 'No se pudo actualizar la asignación.'))
+      } finally {
+        setPendingReassign(null)
+      }
+      return
+    }
+
+    if (kind === 'task') {
+      try {
+        await applyTask(pendingReassign.gameId, pendingReassign.taskId, newStrategyId)
+        setActionSuccess('Estrategia de la task actualizada.')
+      } catch (err) {
+        setActionError(extractError(err, 'No se pudo actualizar la asignación.'))
+      } finally {
+        setPendingReassign(null)
+      }
+      return
+    }
+
+    // Bulk: skip games already on the target so the backend's
+    // "no difference" guard doesn't report them as failures.
+    const targets = games.filter((g) => selected.has(g.gameId) && g.strategyId !== newStrategyId)
+    const skipped = selected.size - targets.length
+    const failed = []
+    setBulkProgress({ total: targets.length, done: 0 })
+    for (let i = 0; i < targets.length; i += 1) {
+      const game = targets[i]
+      try {
+        await applySingleGame(game.gameId, newStrategyId)
+      } catch (err) {
+        failed.push({
+          externalGameId: game.externalGameId,
+          error: extractError(err, 'error'),
+        })
+      }
+      setBulkProgress({ total: targets.length, done: i + 1 })
+    }
+    setBulkProgress(null)
+    setPendingReassign(null)
+    setSelected(new Set())
+    const ok = targets.length - failed.length
+    const parts = [`${ok} game${ok === 1 ? '' : 's'} reasignado${ok === 1 ? '' : 's'}.`]
+    if (skipped > 0) parts.push(`${skipped} ya tenían esa estrategia.`)
+    if (failed.length > 0) {
+      setActionError(
+        `${failed.length} fallaron: ${failed
+          .map((f) => `${f.externalGameId} (${f.error})`)
+          .join('; ')}`,
+      )
+    }
+    setActionSuccess(parts.join(' '))
+  }, [pendingReassign, games, selected, applySingleGame, applyTask])
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize))
+  const customCountOnPage = useMemo(
+    () => games.filter((g) => String(g.strategyId || '').startsWith('custom:')).length,
+    [games],
+  )
+
+  const confirmTargetLabel = pendingReassign ? labelFor(pendingReassign.newStrategyId) : ''
 
   return (
     <CCard>
       <CCardHeader>
         <h4 className="mb-1">Asignación de estrategias</h4>
         <small className="text-medium-emphasis">
-          Cambia la estrategia activa de un Game o de una Task. Las custom
-          strategies disponibles son las que están publicadas en tu realm.
+          Cambia la estrategia activa de un Game o de una Task. Selecciona varios games para
+          reasignarlos en bloque. Las custom strategies disponibles son las publicadas en tu realm.
         </small>
       </CCardHeader>
       <CCardBody>
-        {isLoading && (
-          <div className="d-flex justify-content-center py-4">
-            <CSpinner />
+        <div className="d-flex flex-wrap gap-2 align-items-end mb-3">
+          <div style={{ minWidth: 240, flex: '1 1 240px' }}>
+            <label className="form-label small text-medium-emphasis">
+              Buscar por External Game ID
+            </label>
+            <CFormInput
+              type="search"
+              placeholder="game-readme-001…"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
           </div>
-        )}
+          <div style={{ width: 130 }}>
+            <label className="form-label small text-medium-emphasis">Por página</label>
+            <CFormSelect
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value))
+                setPage(1)
+              }}
+            >
+              {PAGE_SIZE_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </CFormSelect>
+          </div>
+        </div>
+
         {error && <CAlert color="danger">{error}</CAlert>}
         {actionError && (
           <CAlert color="warning" dismissible onClose={() => setActionError(null)}>
             {actionError}
           </CAlert>
         )}
-        {!isLoading && !error && games.length === 0 && (
-          <CAlert color="info">No hay games en este realm.</CAlert>
+        {actionSuccess && (
+          <CAlert color="success" dismissible onClose={() => setActionSuccess(null)}>
+            {actionSuccess}
+          </CAlert>
         )}
+
+        {selected.size > 0 && (
+          <CAlert
+            color="primary"
+            className="d-flex flex-wrap justify-content-between align-items-center gap-2"
+          >
+            <span>
+              {selected.size} game{selected.size === 1 ? '' : 's'} seleccionado
+              {selected.size === 1 ? '' : 's'} en esta página.
+            </span>
+            <span className="d-flex gap-2">
+              <CButton size="sm" color="primary" onClick={() => setPickerTarget({ kind: 'bulk' })}>
+                Reasignar seleccionados
+              </CButton>
+              <CButton
+                size="sm"
+                color="secondary"
+                variant="outline"
+                onClick={() => setSelected(new Set())}
+              >
+                Limpiar
+              </CButton>
+            </span>
+          </CAlert>
+        )}
+
+        {isLoading && (
+          <div className="d-flex justify-content-center py-4">
+            <CSpinner />
+          </div>
+        )}
+
+        {!isLoading && !error && totalCount === 0 && (
+          <CAlert color="info">
+            {search ? 'Ningún game coincide con la búsqueda.' : 'No hay games en este realm.'}
+          </CAlert>
+        )}
+
         {!isLoading && games.length > 0 && (
           <>
-            <p className="text-medium-emphasis mb-3">
-              {summary.total} games · {summary.customCount} con custom strategy.
+            <p className="text-medium-emphasis mb-2">
+              {totalCount} game{totalCount === 1 ? '' : 's'} en total · {customCountOnPage} con
+              custom strategy en esta página.
             </p>
-            <CTable hover responsive>
+            <CTable hover responsive align="middle">
               <CTableHead>
                 <CTableRow>
+                  <CTableHeaderCell style={{ width: 36 }}>
+                    <CFormCheck
+                      checked={allOnPageSelected}
+                      onChange={toggleSelectAllOnPage}
+                      aria-label="Seleccionar todos en la página"
+                    />
+                  </CTableHeaderCell>
                   <CTableHeaderCell style={{ width: 40 }} />
                   <CTableHeaderCell>External Game ID</CTableHeaderCell>
                   <CTableHeaderCell>Platform</CTableHeaderCell>
                   <CTableHeaderCell>Estrategia</CTableHeaderCell>
-                  <CTableHeaderCell style={{ width: 140 }}>Acción</CTableHeaderCell>
+                  <CTableHeaderCell style={{ width: 120 }}>Acción</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
@@ -273,6 +476,13 @@ const StrategyAssignmentsView = () => {
                   return (
                     <React.Fragment key={game.gameId}>
                       <CTableRow>
+                        <CTableDataCell>
+                          <CFormCheck
+                            checked={selected.has(game.gameId)}
+                            onChange={() => toggleSelect(game.gameId)}
+                            aria-label={`Seleccionar ${game.externalGameId}`}
+                          />
+                        </CTableDataCell>
                         <CTableDataCell>
                           <CButton
                             size="sm"
@@ -288,9 +498,7 @@ const StrategyAssignmentsView = () => {
                           <code>{game.externalGameId}</code>
                         </CTableDataCell>
                         <CTableDataCell>{game.platform}</CTableDataCell>
-                        <CTableDataCell>
-                          {renderStrategyLabel(game.strategyId)}
-                        </CTableDataCell>
+                        <CTableDataCell>{renderStrategyLabel(game.strategyId)}</CTableDataCell>
                         <CTableDataCell>
                           <CButton
                             size="sm"
@@ -299,6 +507,7 @@ const StrategyAssignmentsView = () => {
                               setPickerTarget({
                                 kind: 'game',
                                 gameId: game.gameId,
+                                externalGameId: game.externalGameId,
                                 currentStrategyId: game.strategyId,
                               })
                             }
@@ -308,7 +517,7 @@ const StrategyAssignmentsView = () => {
                         </CTableDataCell>
                       </CTableRow>
                       <CTableRow>
-                        <CTableDataCell colSpan={5} className="p-0 border-0">
+                        <CTableDataCell colSpan={6} className="p-0 border-0">
                           <CCollapse visible={isOpen}>
                             <div className="p-3 bg-body-tertiary">
                               {isLoadingTasks && (
@@ -317,19 +526,15 @@ const StrategyAssignmentsView = () => {
                                 </div>
                               )}
                               {!isLoadingTasks && taskRows.length === 0 && (
-                                <small className="text-medium-emphasis">
-                                  Sin tasks asociadas.
-                                </small>
+                                <small className="text-medium-emphasis">Sin tasks asociadas.</small>
                               )}
                               {!isLoadingTasks && taskRows.length > 0 && (
                                 <CTable size="sm" responsive className="mb-0">
                                   <CTableHead>
                                     <CTableRow>
-                                      <CTableHeaderCell>
-                                        External Task ID
-                                      </CTableHeaderCell>
+                                      <CTableHeaderCell>External Task ID</CTableHeaderCell>
                                       <CTableHeaderCell>Estrategia</CTableHeaderCell>
-                                      <CTableHeaderCell style={{ width: 140 }}>
+                                      <CTableHeaderCell style={{ width: 120 }}>
                                         Acción
                                       </CTableHeaderCell>
                                     </CTableRow>
@@ -353,6 +558,7 @@ const StrategyAssignmentsView = () => {
                                                 kind: 'task',
                                                 gameId: game.gameId,
                                                 taskId: task.id,
+                                                externalTaskId: task.externalTaskId,
                                                 currentStrategyId: task.strategyId,
                                               })
                                             }
@@ -374,15 +580,93 @@ const StrategyAssignmentsView = () => {
                 })}
               </CTableBody>
             </CTable>
+
+            <div className="d-flex justify-content-between align-items-center mt-2">
+              <CButton
+                color="secondary"
+                variant="outline"
+                size="sm"
+                disabled={page <= 1 || isLoading}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                ← Anterior
+              </CButton>
+              <span className="text-medium-emphasis small">
+                Página {page} de {totalPages}
+              </span>
+              <CButton
+                color="secondary"
+                variant="outline"
+                size="sm"
+                disabled={page >= totalPages || isLoading}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              >
+                Siguiente →
+              </CButton>
+            </div>
           </>
         )}
       </CCardBody>
+
       <StrategyPickerModal
         visible={!!pickerTarget}
         currentStrategyId={pickerTarget?.currentStrategyId}
         onClose={() => setPickerTarget(null)}
         onSelect={handlePickerSelect}
       />
+
+      <CModal
+        visible={!!pendingReassign}
+        onClose={() => (bulkProgress ? null : setPendingReassign(null))}
+      >
+        <CModalHeader>
+          <CModalTitle>Confirmar reasignación</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {pendingReassign?.kind === 'bulk' ? (
+            <>
+              Vas a reasignar <strong>{selected.size}</strong> game
+              {selected.size === 1 ? '' : 's'} seleccionado
+              {selected.size === 1 ? '' : 's'} a <code>{confirmTargetLabel}</code>. Los que ya
+              tengan esa estrategia se omiten.
+            </>
+          ) : pendingReassign?.kind === 'task' ? (
+            <>
+              La task <code>{pendingReassign?.externalTaskId}</code> pasará a{' '}
+              <code>{confirmTargetLabel}</code>.
+            </>
+          ) : (
+            <>
+              El game <code>{pendingReassign?.externalGameId}</code> pasará a{' '}
+              <code>{confirmTargetLabel}</code>.
+            </>
+          )}
+          {bulkProgress && (
+            <div className="mt-3">
+              <CProgress
+                value={bulkProgress.total ? (bulkProgress.done / bulkProgress.total) * 100 : 100}
+              />
+              <small className="text-medium-emphasis">
+                {bulkProgress.done} / {bulkProgress.total}
+              </small>
+            </div>
+          )}
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            variant="outline"
+            disabled={!!bulkProgress}
+            onClick={() => setPendingReassign(null)}
+          >
+            Cancelar
+          </CButton>
+          <CButton color="primary" disabled={!!bulkProgress} onClick={executeReassign}>
+            {bulkProgress && <CSpinner size="sm" className="me-2" />}
+            Reasignar
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </CCard>
   )
 }

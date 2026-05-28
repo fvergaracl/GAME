@@ -42,6 +42,7 @@ from app.schema.strategy_definition_schema import (
     StrategyDefinitionRead,
     StrategyDefinitionUpdate,
     StrategyTemplateRead,
+    StrategyUsageRead,
 )
 from app.services.dsl_simulation_service import DslSimulationService
 from app.services.strategy_definition_service import (
@@ -479,6 +480,31 @@ async def list_strategy_versions(
     """
     realm = _resolve_realm_id(auth)
     return await service.list_versions(id=id, realmId=realm)
+
+
+@router.get(
+    "/{id}/usage",
+    response_model=StrategyUsageRead,
+    summary="List games/tasks assigned to this strategy (Sprint 6)",
+)
+@inject
+async def get_custom_strategy_usage(
+    id: str,
+    auth: AuthContext = Depends(require_authenticated),
+    service: StrategyDefinitionService = Depends(
+        Provide[Container.strategy_definition_service]
+    ),
+) -> StrategyUsageRead:
+    """
+    Reverse lookup of a strategy's consumers (Sprint 6).
+
+    Returns the games and tasks currently assigned to this exact
+    strategy version plus their counts, so the dashboard can preview the
+    blast radius before reassigning, archiving or rolling back — and
+    drive a bulk reassignment of all of them.
+    """
+    realm = _resolve_realm_id(auth)
+    return await service.get_usage(id=id, realmId=realm)
 
 
 @router.post(

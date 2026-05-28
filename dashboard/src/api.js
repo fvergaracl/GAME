@@ -260,13 +260,30 @@ export const rollbackStrategy = async (id, version) => {
   )
 }
 
-export const listGames = async ({ page = 1, pageSize = 100, ordering = '-id' } = {}) => {
+export const listGames = async ({
+  page = 1,
+  pageSize = 100,
+  ordering = '-id',
+  externalGameId,
+  platform,
+} = {}) => {
   const params = new URLSearchParams({
     page: String(page),
     page_size: String(pageSize),
     ordering,
   })
+  // Server-side substring filters (LIKE) so the assignment view searches
+  // at scale instead of pulling every game with page_size=all.
+  if (externalGameId) params.set('externalGameId', externalGameId)
+  if (platform) params.set('platform', platform)
   return getRequest(`/games?${params.toString()}`)
+}
+
+// Sprint 6 — reverse lookup: which games/tasks run this exact strategy
+// version. Feeds the library's "¿Dónde se usa?" modal (blast-radius
+// preview) and the bulk-reassign-all-consumers flow.
+export const getStrategyUsage = async (id) => {
+  return getRequest(`/strategies/custom/${encodeURIComponent(id)}/usage`)
 }
 
 export const listGameTasks = async (gameId) => {

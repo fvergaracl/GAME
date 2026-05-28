@@ -53,6 +53,7 @@ import {
   publishCustomStrategy,
 } from '../../api'
 import keycloak from '../../keycloak'
+import StrategyUsageModal from './StrategyUsageModal'
 import StrategyVersionHistoryModal from './StrategyVersionHistoryModal'
 
 // Generous page size — real pagination/search is Sprint 6. This keeps the
@@ -122,6 +123,8 @@ const StrategyLibraryView = () => {
   // { id, action: 'publish' | 'archive', name, version }
   const [confirmAction, setConfirmAction] = useState(null)
   const [historyTarget, setHistoryTarget] = useState(null)
+  // { id, name } of the strategy whose consumers we're inspecting.
+  const [usageTarget, setUsageTarget] = useState(null)
 
   const reload = useCallback(() => {
     let cancelled = false
@@ -458,6 +461,12 @@ const StrategyLibraryView = () => {
                               >
                                 Ver historial
                               </CDropdownItem>
+                              <CDropdownItem
+                                component="button"
+                                onClick={() => setUsageTarget({ id: row.id, name: row.name })}
+                              >
+                                ¿Dónde se usa?
+                              </CDropdownItem>
                               <CDropdownItem component="button" onClick={() => handleExport(row)}>
                                 Exportar JSON
                               </CDropdownItem>
@@ -559,6 +568,14 @@ const StrategyLibraryView = () => {
           setHistoryTarget(null)
           reload()
         }}
+      />
+
+      <StrategyUsageModal
+        visible={!!usageTarget}
+        strategyId={usageTarget?.id}
+        strategyName={usageTarget?.name}
+        onClose={() => setUsageTarget(null)}
+        onReassigned={() => reload()}
       />
     </CCard>
   )

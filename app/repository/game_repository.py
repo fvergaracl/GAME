@@ -1,10 +1,11 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy import delete as sa_delete, or_, select, update as sa_update
+from sqlalchemy import and_, func, or_, select
+from sqlalchemy import delete as sa_delete
+from sqlalchemy import update as sa_update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
 
 from app.core.config import configs
 from app.core.exceptions import DuplicatedError, NotFoundError
@@ -60,26 +61,9 @@ class GameRepository(BaseRepository):
                 self.model, schema_as_dict
             )
 
-            stmt = select(
-                Games.id.label("id"),
-                Games.updated_at.label("updated_at"),
-                Games.strategyId.label("strategyId"),
-                Games.created_at.label("created_at"),
-                Games.platform.label("platform"),
-                Games.externalGameId.label("externalGameId"),
-                GamesParams,
-            )
-
-            eager_loading = schema_as_dict.get("eager", False)
-            if eager_loading:
-                for relation in getattr(self.model, "eagers", []):
-                    stmt = stmt.options(joinedload(relation))
-
-            stmt = stmt.filter(filter_options).order_by(order_query)
-            stmt = stmt.outerjoin(
-                GamesParams, Games.id == GamesParams.gameId
-            )
-
+            # Build the column/scope predicate once and reuse it for both
+            # the COUNT and the page query so the two never disagree.
+            where_clause = filter_options
             if not is_admin:
                 scope_filters = []
                 if api_key:
@@ -97,39 +81,71 @@ class GameRepository(BaseRepository):
                             "total_count": 0,
                         },
                     )
-                stmt = stmt.filter(or_(*scope_filters))
+                where_clause = and_(filter_options, or_(*scope_filters))
 
-            if page_size != "all":
-                stmt = stmt.limit(page_size).offset((page - 1) * page_size)
-
-            rows = (await session.execute(stmt)).all()
-
-            game_results = {}
-            for row in rows:
-                game_id = row.id
-                if game_id not in game_results:
-                    game_results[game_id] = BaseGameResult(
-                        gameId=row.id,
-                        updated_at=row.updated_at,
-                        strategyId=row.strategyId,
-                        created_at=row.created_at,
-                        externalGameId=row.externalGameId,
-                        platform=row.platform,
-                        params=[],
+            # total_count is the number of matching *games*, independent of
+            # the current page — the dashboard needs it to render page
+            # controls. Counting here (not len(items)) is what makes real
+            # pagination possible.
+            total_count = int(
+                (
+                    await session.execute(
+                        select(func.count())
+                        .select_from(Games)
+                        .filter(where_clause)
                     )
-                if row.GamesParams:
-                    game_results[game_id].params.append(
+                ).scalar()
+                or 0
+            )
+
+            # Paginate distinct games first. The previous implementation
+            # applied LIMIT/OFFSET to a Games⋈GamesParams join, so a game
+            # with N params consumed N rows of the page budget and the page
+            # held fewer than page_size games. Selecting games on their own
+            # keeps the page sized in games; params are fetched separately.
+            games_stmt = (
+                select(Games).filter(where_clause).order_by(order_query)
+            )
+            if page_size != "all":
+                games_stmt = games_stmt.limit(page_size).offset(
+                    (page - 1) * page_size
+                )
+            game_rows = (await session.execute(games_stmt)).scalars().all()
+
+            params_by_game = {}
+            game_ids = [g.id for g in game_rows]
+            if game_ids:
+                params_rows = (
+                    await session.execute(
+                        select(GamesParams).filter(
+                            GamesParams.gameId.in_(game_ids)
+                        )
+                    )
+                ).scalars().all()
+                for param in params_rows:
+                    params_by_game.setdefault(param.gameId, []).append(
                         {
-                            "id": row.GamesParams.id,
-                            "key": row.GamesParams.key,
-                            "value": row.GamesParams.value,
+                            "id": param.id,
+                            "key": param.key,
+                            "value": param.value,
                         }
                     )
 
-            total_count = len(game_results)
+            items = [
+                BaseGameResult(
+                    gameId=game.id,
+                    updated_at=game.updated_at,
+                    strategyId=game.strategyId,
+                    created_at=game.created_at,
+                    externalGameId=game.externalGameId,
+                    platform=game.platform,
+                    params=params_by_game.get(game.id, []),
+                )
+                for game in game_rows
+            ]
 
             return FindGameResult(
-                items=list(game_results.values()),
+                items=items,
                 search_options={
                     "page": page,
                     "page_size": page_size,
@@ -204,6 +220,26 @@ class GameRepository(BaseRepository):
             return list(
                 (await session.execute(stmt)).scalars().all()
             )
+
+    async def list_external_ids(self, ids) -> dict:
+        """
+        Map internal game ``id`` → ``externalGameId`` for the given ids.
+
+        Used by the Sprint 6 strategy-usage view to render the parent game
+        of a task-level assignment by its human-readable external id
+        instead of a raw UUID, in a single query rather than N reads.
+        """
+        unique_ids = list({i for i in ids if i is not None})
+        if not unique_ids:
+            return {}
+        async with self.session_factory() as session:
+            stmt = select(self.model.id, self.model.externalGameId).filter(
+                self.model.id.in_(unique_ids)
+            )
+            return {
+                row.id: row.externalGameId
+                for row in (await session.execute(stmt)).all()
+            }
 
     async def bulk_update_strategy_id(
         self, *, old_strategy_id: str, new_strategy_id: str

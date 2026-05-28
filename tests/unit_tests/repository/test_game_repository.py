@@ -193,3 +193,68 @@ async def test_get_all_games_groups_params_under_each_game(
 
     assert result.search_options.total_count == 1
     assert len(result.items[0].params) == 2
+
+
+@pytest.mark.asyncio
+async def test_get_all_games_total_count_spans_all_pages(
+    repository, db_session
+):
+    for i in range(5):
+        await _seed_game(db_session, external_id=f"ext-{i}")
+
+    schema = PostFindGame(ordering="externalGameId", page=1, page_size=2)
+    result = await repository.get_all_games(schema, is_admin=True)
+
+    # total_count reflects every matching game, not just the current page,
+    # so the dashboard can render page controls.
+    assert result.search_options.total_count == 5
+    assert len(result.items) == 2
+    assert [item.externalGameId for item in result.items] == [
+        "ext-0",
+        "ext-1",
+    ]
+
+
+@pytest.mark.asyncio
+async def test_get_all_games_page_size_counts_games_not_param_rows(
+    repository, db_session
+):
+    # Regression: pagination used to LIMIT a Games⋈GamesParams join, so a
+    # game with several params ate the whole page budget and crowded other
+    # games off the page. With page_size=2 and a 3-param game, the old code
+    # returned a single game; the page must contain two distinct games.
+    game_a = await _seed_game(db_session, external_id="ext-a")
+    db_session.add(GamesParams(gameId=game_a.id, key="k1", value="1"))
+    db_session.add(GamesParams(gameId=game_a.id, key="k2", value="2"))
+    db_session.add(GamesParams(gameId=game_a.id, key="k3", value="3"))
+    await _seed_game(db_session, external_id="ext-b")
+    await db_session.commit()
+
+    schema = PostFindGame(ordering="externalGameId", page=1, page_size=2)
+    result = await repository.get_all_games(schema, is_admin=True)
+
+    assert result.search_options.total_count == 2
+    assert [item.externalGameId for item in result.items] == [
+        "ext-a",
+        "ext-b",
+    ]
+    params_by_ext = {
+        item.externalGameId: len(item.params) for item in result.items
+    }
+    assert params_by_ext == {"ext-a": 3, "ext-b": 0}
+
+
+@pytest.mark.asyncio
+async def test_list_external_ids_maps_ids_to_external(repository, db_session):
+    game_a = await _seed_game(db_session, external_id="ext-a")
+    game_b = await _seed_game(db_session, external_id="ext-b")
+
+    mapping = await repository.list_external_ids([game_a.id, game_b.id])
+
+    assert mapping == {game_a.id: "ext-a", game_b.id: "ext-b"}
+
+
+@pytest.mark.asyncio
+async def test_list_external_ids_empty_for_no_ids(repository):
+    assert await repository.list_external_ids([]) == {}
+    assert await repository.list_external_ids([None]) == {}

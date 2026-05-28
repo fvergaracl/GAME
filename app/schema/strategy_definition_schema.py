@@ -88,6 +88,44 @@ class StrategyDefinitionRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class StrategyUsageGame(BaseModel):
+    """A game directly assigned to the strategy (Sprint 6 reverse lookup)."""
+
+    gameId: str
+    externalGameId: Optional[str] = None
+    platform: Optional[str] = None
+
+
+class StrategyUsageTask(BaseModel):
+    """A task whose strategy overrides its game's default (Sprint 6)."""
+
+    taskId: str
+    externalTaskId: Optional[str] = None
+    gameId: Optional[str] = None
+    externalGameId: Optional[str] = None
+
+
+class StrategyUsageRead(BaseModel):
+    """
+    Reverse-lookup payload for ``GET /strategies/custom/{id}/usage``.
+
+    Answers "which games/tasks run this exact strategy version" so the
+    dashboard can show the blast radius before an admin reassigns,
+    archives or rolls back a strategy. ``strategyId`` is the assignable
+    id (``custom:<uuid>``) — the value actually stored on the consumers,
+    not the bare definition id.
+    """
+
+    strategyId: str
+    name: str
+    version: int
+    status: str
+    gameCount: int
+    taskCount: int
+    games: list[StrategyUsageGame] = Field(default_factory=list)
+    tasks: list[StrategyUsageTask] = Field(default_factory=list)
+
+
 class StrategyTemplateRead(BaseModel):
     """
     Outbound view of a built-in user-facing template (Sprint 8).

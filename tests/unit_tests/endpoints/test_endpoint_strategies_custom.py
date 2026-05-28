@@ -22,6 +22,7 @@ from app.schema.strategy_definition_schema import (
     StrategyDefinitionCreate,
     StrategyDefinitionRead,
     StrategyDefinitionUpdate,
+    StrategyUsageRead,
 )
 
 
@@ -588,6 +589,40 @@ async def test_list_versions_passes_resolved_realm():
     assert [v.version for v in result] == [2, 1]
     service.list_versions.assert_awaited_once_with(
         id="v2", realmId="api-key-xyz",
+    )
+
+
+# ------------------------------------------------------------------- usage
+
+
+@pytest.mark.asyncio
+async def test_get_usage_passes_resolved_realm():
+    """``GET /{id}/usage`` resolves the realm from the auth context and
+    delegates to the service. Read-only — no admin gate (an author needs
+    to see the blast radius before asking an admin to reassign)."""
+    service = MagicMock()
+    service.get_usage = AsyncMock(
+        return_value=StrategyUsageRead(
+            strategyId="custom:v1",
+            name="usage-strat",
+            version=1,
+            status="PUBLISHED",
+            gameCount=2,
+            taskCount=0,
+            games=[],
+            tasks=[],
+        )
+    )
+    auth = _auth(api_key="api-key-xyz")
+
+    result = await endpoint.get_custom_strategy_usage(
+        id="v1", auth=auth, service=service,
+    )
+
+    assert result.strategyId == "custom:v1"
+    assert result.gameCount == 2
+    service.get_usage.assert_awaited_once_with(
+        id="v1", realmId="api-key-xyz",
     )
 
 
