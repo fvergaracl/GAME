@@ -11,6 +11,10 @@ const StrategyEditor = React.lazy(() => import('./views/strategies/StrategyEdito
 // Sprint 2: strategy library (discoverability). No Blockly dependency, so
 // it stays out of the editor's heavy chunk.
 const StrategyLibraryView = React.lazy(() => import('./views/strategies/StrategyLibraryView'))
+// Sprint 3 (fix C5): per-block reference docs, opened from the editor's
+// right-click "Help". Lazy + Blockly-free so it loads instantly in the
+// new tab without pulling the editor bundle.
+const BlockHelpView = React.lazy(() => import('./views/strategies/BlockHelpView'))
 // Sprint 9: assignments view doesn't need Blockly but reuses the same
 // lazy pattern to keep the assignments table out of the initial bundle.
 const StrategyAssignmentsView = React.lazy(
@@ -24,6 +28,7 @@ const routes = [
   { path: '/admin/exports', name: 'Data export', element: ExportData },
   { path: '/admin/exports/history', name: 'Export history', element: ExportHistory },
   { path: '/strategies/library', name: 'My Strategies', element: StrategyLibraryView },
+  { path: '/strategies/blocks-help/:slug', name: 'Block Help', element: BlockHelpView },
   { path: '/strategies/editor', name: 'Strategy Editor', element: StrategyEditor },
   { path: '/strategies/editor/:id', name: 'Edit Strategy', element: StrategyEditor },
   {

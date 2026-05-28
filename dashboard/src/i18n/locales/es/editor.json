@@ -22,7 +22,13 @@
   "header": {
     "title": "Editor de estrategia",
     "id": "id",
-    "version": "v{{version}}"
+    "version": "v{{version}}",
+    "unsaved": "Cambios sin guardar"
+  },
+  "autosave": {
+    "saving": "Guardando automáticamente…",
+    "savedAt": "Autoguardado a las {{time}}",
+    "error": "Falló el autoguardado — usa Guardar para reintentar."
   },
   "form": {
     "name": "Nombre",

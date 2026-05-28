@@ -121,6 +121,16 @@ const INITIAL_SIM_FORM = {
 // backend with sequential simulate calls.
 const MAX_CUMULATIVE_RUNS = 50
 
+// Sprint 3: idle delay before autosaving a dirty DRAFT. Long enough that
+// it fires on a real pause, not mid-typing.
+const AUTOSAVE_DELAY_MS = 4000
+
+// Sprint 3: the "clean" snapshot is the AST plus the editable metadata
+// (name / description), so renaming a strategy also counts as an unsaved
+// change. Stable key order via JSON makes string comparison reliable.
+const composeClean = (ast, name, description) =>
+  JSON.stringify({ ast, name: (name || '').trim(), description: (description || '').trim() })
+
 const StrategyEditor = () => {
   const { t, i18n } = useTranslation('editor')
 
@@ -222,6 +232,20 @@ const StrategyEditor = () => {
   const [lifecycleAction, setLifecycleAction] = useState(null)
   const [isLifecycleBusy, setIsLifecycleBusy] = useState(false)
 
+  // Sprint 3: unsaved-changes tracking + autosave. ``cleanAstRef`` holds
+  // the composite (AST + name + description) of the last saved/loaded
+  // state; a single effect compares the live composite against it to
+  // derive ``isDirty``. We compare the semantic AST (not Blockly
+  // coordinates) so a pure block reposition doesn't count as a change.
+  // ``workspaceRev`` bumps on every block edit so that effect re-runs and
+  // the autosave debounce resets off the *last* change.
+  const cleanAstRef = useRef(null)
+  const [isDirty, setIsDirty] = useState(false)
+  const [workspaceRev, setWorkspaceRev] = useState(0)
+  const [isAutosaving, setIsAutosaving] = useState(false)
+  const [autosaveError, setAutosaveError] = useState(null)
+  const [lastAutosaveAt, setLastAutosaveAt] = useState(null)
+
   // Sprint 7: toolbox swaps wholesale when the mode changes. We track
   // it as state (not just useMemo) because the Blockly workspace needs
   // to be re-injected when the toolbox changes — see the useEffect
@@ -277,11 +301,17 @@ const StrategyEditor = () => {
               changed = true
             }
           }
-          return changed ? next : prev
+            return changed ? next : prev
         })
       } catch {
         // Malformed AST mid-edit — keep the last known field set.
       }
+      // Sprint 3: signal "the workspace changed" so the dirty/autosave
+      // effect recomputes against the clean baseline. We bump a counter
+      // rather than computing dirtiness here because this closure can't
+      // see the latest name/description (it's registered once per
+      // injection); the effect, which depends on them, owns that logic.
+      setWorkspaceRev((rev) => rev + 1)
     }
     workspace.addChangeListener(() => {
       if (usedFieldsTimerRef.current) clearTimeout(usedFieldsTimerRef.current)
@@ -308,6 +338,19 @@ const StrategyEditor = () => {
     // Initial pass so the guided inputs reflect any hydrated blocks even
     // if the change listener's debounce hasn't fired yet.
     refreshUsedFields()
+
+    // Sprint 3: capture the clean baseline AFTER hydration so the first
+    // real edit flips ``isDirty``. An empty/invalid canvas (e.g. the
+    // "extend existing" start) gets a sentinel so dropping the first
+    // block still registers as an unsaved change. Uses the name/
+    // description from the render that mounted this workspace (the load
+    // effect sets them alongside the queued blocks, so they're current).
+    try {
+      cleanAstRef.current = composeClean(workspaceToAst(workspace), strategyName, description)
+    } catch {
+      cleanAstRef.current = '__EMPTY__'
+    }
+    setIsDirty(false)
 
     return () => {
       if (usedFieldsTimerRef.current) clearTimeout(usedFieldsTimerRef.current)
@@ -520,6 +563,19 @@ const StrategyEditor = () => {
     [navigate, t],
   )
 
+  // Sprint 3: record a "clean" baseline after a successful save/autosave.
+  // ``cleanComposite`` is the exact (AST + name + description) that was
+  // persisted — NOT the live workspace — so edits made *during* an
+  // in-flight save aren't swallowed. Bumping ``workspaceRev`` re-runs the
+  // dirty effect, which re-derives ``isDirty`` by comparing the live
+  // composite against this new baseline (so it stays dirty if the user
+  // kept editing while the request was in flight).
+  const markClean = useCallback((cleanComposite) => {
+    cleanAstRef.current = cleanComposite
+    setAutosaveError(null)
+    setWorkspaceRev((rev) => rev + 1)
+  }, [])
+
   // ----- Save (create or update) -------------------------------------------
   const buildAndValidateAst = useCallback(() => {
     if (!workspaceRef.current) return null
@@ -593,12 +649,71 @@ const StrategyEditor = () => {
           }),
         )
       }
+      // Sprint 3: the saved AST + metadata are now the clean baseline.
+      markClean(composeClean(ast, strategyName, description))
     } catch (err) {
       setSaveError(translateDslError(t, err) || extractError(err, t))
     } finally {
       setIsSaving(false)
     }
-  }, [strategyName, description, strategyId, mode, parentId, buildAndValidateAst, t])
+  }, [strategyName, description, strategyId, mode, parentId, buildAndValidateAst, markClean, t])
+
+  // ----- Autosave (Sprint 3) -----------------------------------------------
+  // Conservative on purpose: only an EXISTING, named DRAFT is autosaved.
+  //   * No strategyId  → never auto-create a row (that's what spawns the
+  //     orphan drafts flagged as C7; the first persist stays a deliberate
+  //     Save/Test).
+  //   * status !== DRAFT → a PUT on a PUBLISHED row forks a new version,
+  //     so autosaving published strategies would spam the version history.
+  //   * invalid/empty name → skip silently; the manual Save surfaces the
+  //     validation error instead of autosave doing it behind the user.
+  const doAutosave = useCallback(async () => {
+    if (!workspaceRef.current) return
+    if (!strategyId || status !== 'DRAFT') return
+    if (isSaving || isAutosaving) return
+    if (!strategyName.trim()) return
+    if (mode === 'DSL_EXTEND' && !parentId) return
+    let ast
+    try {
+      ast = workspaceToAst(workspaceRef.current)
+      if (!validateAst(ast).ok) return
+    } catch {
+      return
+    }
+    const blocklyJson = Blockly.serialization.workspaces.save(workspaceRef.current)
+    setIsAutosaving(true)
+    setAutosaveError(null)
+    try {
+      const updated = await updateCustomStrategy(strategyId, {
+        name: strategyName.trim(),
+        description: description.trim() || null,
+        type: mode,
+        parentStrategyId: mode === 'DSL_EXTEND' ? parentId : null,
+        astJson: ast,
+        blocklyXml: JSON.stringify(blocklyJson),
+      })
+      setStrategyId(updated.id)
+      setLoadedVersion(updated.version ?? null)
+      setStatus(updated.status ?? 'DRAFT')
+      markClean(composeClean(ast, strategyName, description))
+      setLastAutosaveAt(new Date())
+    } catch (err) {
+      setAutosaveError(translateDslError(t, err) || extractError(err, t))
+    } finally {
+      setIsAutosaving(false)
+    }
+  }, [
+    strategyId,
+    status,
+    isSaving,
+    isAutosaving,
+    strategyName,
+    description,
+    mode,
+    parentId,
+    markClean,
+    t,
+  ])
 
   // ----- Simulate ----------------------------------------------------------
   const handleSimulate = useCallback(async () => {
@@ -746,6 +861,42 @@ const StrategyEditor = () => {
   const canArchive =
     isAdmin && Boolean(strategyId) && (status === 'DRAFT' || status === 'PUBLISHED')
 
+  // Sprint 3: single source of truth for "unsaved changes" + autosave
+  // timing. Re-runs whenever the blocks change (``workspaceRev``), the
+  // name/description change, or ``doAutosave`` is recreated. It compares
+  // the live composite against the clean baseline to set ``isDirty``, then
+  // (when dirty and parseable) arms the debounced autosave. ``doAutosave``
+  // self-gates on DRAFT/strategyId, so non-autosaveable edits still flip
+  // the dirty flag (and the beforeunload guard) without persisting.
+  useEffect(() => {
+    if (cleanAstRef.current === null) return undefined
+    let current = null
+    try {
+      current = composeClean(workspaceToAst(workspaceRef.current), strategyName, description)
+    } catch {
+      current = null
+    }
+    const dirty = current === null || current !== cleanAstRef.current
+    setIsDirty(dirty)
+    if (!dirty || current === null) return undefined
+    const timer = setTimeout(doAutosave, AUTOSAVE_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [workspaceRev, strategyName, description, doAutosave])
+
+  // Sprint 3: warn before a full-page unload (tab close / reload / typing a
+  // new URL) when there's unsaved work. In-app route changes (sidebar
+  // clicks) aren't covered here — react-router's useBlocker needs a data
+  // router, which this app's BrowserRouter setup doesn't use.
+  useEffect(() => {
+    if (!isDirty) return undefined
+    const handler = (e) => {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [isDirty])
+
   // ----- Render ------------------------------------------------------------
   // Sprint 8: render the empty-state chooser as a stand-alone card when
   // we don't have an id or an explicit user choice yet. The Blockly
@@ -879,6 +1030,11 @@ const StrategyEditor = () => {
               {status && (
                 <CBadge color={STATUS_BADGE[status] || 'secondary'} className="ms-2">
                   {t(`status.${status}`, { defaultValue: status })}
+                </CBadge>
+              )}
+              {isDirty && (
+                <CBadge color="warning" className="ms-2">
+                  {t('header.unsaved')}
                 </CBadge>
               )}
             </div>
@@ -1113,6 +1269,26 @@ const StrategyEditor = () => {
                 }}
               />
             </div>
+
+            {/* Sprint 3: autosave / unsaved-changes status line. */}
+            {(isAutosaving || autosaveError || (lastAutosaveAt && !isDirty)) && (
+              <div className="mt-2 small">
+                {isAutosaving && (
+                  <span className="text-medium-emphasis">
+                    <CSpinner size="sm" className="me-1" />
+                    {t('autosave.saving')}
+                  </span>
+                )}
+                {!isAutosaving && autosaveError && (
+                  <span className="text-danger">{t('autosave.error')}</span>
+                )}
+                {!isAutosaving && !autosaveError && lastAutosaveAt && !isDirty && (
+                  <span className="text-medium-emphasis">
+                    {t('autosave.savedAt', { time: lastAutosaveAt.toLocaleTimeString() })}
+                  </span>
+                )}
+              </div>
+            )}
           </CCardBody>
         </CCard>
 

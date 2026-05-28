@@ -22,7 +22,13 @@
   "header": {
     "title": "Strategy editor",
     "id": "id",
-    "version": "v{{version}}"
+    "version": "v{{version}}",
+    "unsaved": "Unsaved changes"
+  },
+  "autosave": {
+    "saving": "Autosaving…",
+    "savedAt": "Autosaved at {{time}}",
+    "error": "Autosave failed — use Save to retry."
   },
   "form": {
     "name": "Name",

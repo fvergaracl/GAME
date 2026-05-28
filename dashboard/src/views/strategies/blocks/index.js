@@ -27,34 +27,44 @@ const optionsFromArray = (arr) => arr.map((v) => [v, v])
 // toolbox open via the prototype) pick up the new locale.
 let _t = null
 
-// Documentation URLs per block. Used as helpUrl so the right-click menu
-// surfaces a "Help" entry. Internal hash links are placeholders — when
-// the docs site exists they should be swapped for real URLs.
-const HELP_URLS = {
-  gd_rule: '#/docs/strategy-blocks/rule',
-  gd_rule_elseif: '#/docs/strategy-blocks/rule',
-  gd_rule_else: '#/docs/strategy-blocks/rule',
-  gd_compare: '#/docs/strategy-blocks/compare',
-  gd_and: '#/docs/strategy-blocks/and',
-  gd_or: '#/docs/strategy-blocks/or',
-  gd_not: '#/docs/strategy-blocks/not',
-  gd_field: '#/docs/strategy-blocks/field',
-  gd_field_data: '#/docs/strategy-blocks/field-data',
-  gd_literal_number: '#/docs/strategy-blocks/literal-number',
-  gd_literal_text: '#/docs/strategy-blocks/literal-text',
-  gd_arith: '#/docs/strategy-blocks/arith',
-  gd_func_call: '#/docs/strategy-blocks/func-call',
-  gd_assign_points: '#/docs/strategy-blocks/assign-points',
-  gd_set_callback_data: '#/docs/strategy-blocks/set-callback-data',
-  gd_pre_rule: '#/docs/strategy-blocks/pre-rule',
-  gd_post_rule: '#/docs/strategy-blocks/post-rule',
-  gd_set_data: '#/docs/strategy-blocks/set-data',
-  gd_veto: '#/docs/strategy-blocks/veto',
-  gd_set_points: '#/docs/strategy-blocks/set-points',
-  gd_set_case_name: '#/docs/strategy-blocks/set-case-name',
-  gd_field_parent: '#/docs/strategy-blocks/field-parent',
-  gd_parent_variable_override: '#/docs/strategy-blocks/parent-variable-override',
+// Sprint 3 (fix C5): per-block documentation route. Used as helpUrl so
+// the right-click "Help" opens the real reference doc (the same content
+// as docs/dsl/blocks/<slug>.md, bundled via blockDocs.js and rendered by
+// BlockHelpView at /strategies/blocks-help/:slug).
+//
+// helpUrl MUST be a string, never a function: Blockly evaluates a
+// function helpUrl on *every* context-menu open (to decide whether the
+// Help item is enabled), which would fire a side effect on each right
+// click. A plain string is opened with window.open only when clicked.
+const HELP_DOC_BASE = '/strategies/blocks-help'
+const HELP_SLUGS = {
+  gd_rule: 'rule',
+  gd_rule_elseif: 'rule',
+  gd_rule_else: 'rule',
+  gd_compare: 'compare',
+  gd_and: 'and',
+  gd_or: 'or',
+  gd_not: 'not',
+  gd_field: 'field',
+  gd_field_data: 'field-data',
+  gd_literal_number: 'literal-number',
+  gd_literal_text: 'literal-text',
+  gd_arith: 'arith',
+  gd_func_call: 'func-call',
+  gd_assign_points: 'assign-points',
+  gd_set_callback_data: 'set-callback-data',
+  gd_pre_rule: 'pre-rule',
+  gd_post_rule: 'post-rule',
+  gd_set_data: 'set-data',
+  gd_veto: 'veto',
+  gd_set_points: 'set-points',
+  gd_set_case_name: 'set-case-name',
+  gd_field_parent: 'field-parent',
+  gd_parent_variable_override: 'parent-variable-override',
 }
+const HELP_URLS = Object.fromEntries(
+  Object.entries(HELP_SLUGS).map(([blockType, slug]) => [blockType, `${HELP_DOC_BASE}/${slug}`]),
+)
 
 // Look up a localised label / tooltip with a Spanish fallback so the
 // blocks render usable text even before i18next has initialised (e.g.
