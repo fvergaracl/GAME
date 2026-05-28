@@ -39,8 +39,24 @@
     "exportJson": "Exportar JSON",
     "importJson": "Importar JSON",
     "history": "Ver historial",
+    "publish": "Publicar",
+    "archive": "Archivar",
     "startTour": "Volver a ver tutorial",
     "languageLabel": "Idioma"
+  },
+  "status": {
+    "DRAFT": "Borrador",
+    "PUBLISHED": "Publicada",
+    "ARCHIVED": "Archivada"
+  },
+  "lifecycle": {
+    "publishTitle": "¿Publicar esta versión?",
+    "publishBody": "Al publicar, la v{{version}} pasa a ser la versión en producción asignada a juegos y tareas. Cualquier versión publicada anterior de «{{name}}» se archiva automáticamente.",
+    "archiveTitle": "¿Archivar esta estrategia?",
+    "archiveBody": "Al archivar, la estrategia queda fuera de circulación: ya no se podrá editar ni publicar, aunque su historial seguirá disponible.",
+    "confirmPublish": "Sí, publicar",
+    "confirmArchive": "Sí, archivar",
+    "cancel": "Cancelar"
   },
   "simulate": {
     "title": "Probar estrategia",
@@ -142,6 +158,8 @@
     "invalidMockJson": "mockState: JSON inválido ({{error}}).",
     "saveSuccessUpdate": "Estrategia actualizada (v{{version}}, {{status}}).",
     "saveSuccessCreate": "Estrategia creada (id {{id}}, v{{version}}).",
+    "publishSuccess": "Estrategia publicada (v{{version}}). Ahora es la versión en producción.",
+    "archiveSuccess": "Estrategia archivada (v{{version}}).",
     "unknownError": "Error desconocido al contactar el backend."
   },
   "tour": {

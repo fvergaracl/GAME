@@ -58,8 +58,8 @@ const Dashboard = () => {
                     position: 'absolute',
                     top: '100%', // Justo debajo del botón
                     right: '0', 
-                    zIndex: 9999, 
-                    background: 'white',
+                    zIndex: 9999,
+                    background: 'var(--cui-body-bg)',
                     boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
                     borderRadius: '8px',
                     padding: '10px',

@@ -2,7 +2,7 @@ import axios from 'axios'
 import keycloak from './keycloak'
 // Base configuration for Axios
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000/api/v1',
+  baseURL: import.meta.env.VITE_GAME_API_URL || 'http://localhost:8000/api/v1',
   headers: {
     'Content-Type': 'application/json',
     accept: 'application/json',

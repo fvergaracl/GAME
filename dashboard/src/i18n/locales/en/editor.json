@@ -39,8 +39,24 @@
     "exportJson": "Export JSON",
     "importJson": "Import JSON",
     "history": "View history",
+    "publish": "Publish",
+    "archive": "Archive",
     "startTour": "Show tour again",
     "languageLabel": "Language"
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "PUBLISHED": "Published",
+    "ARCHIVED": "Archived"
+  },
+  "lifecycle": {
+    "publishTitle": "Publish this version?",
+    "publishBody": "Publishing makes v{{version}} the live version assigned to games and tasks. Any previously published version of \"{{name}}\" is archived automatically.",
+    "archiveTitle": "Archive this strategy?",
+    "archiveBody": "Archiving takes the strategy out of circulation: it can no longer be edited or published, though its history stays available.",
+    "confirmPublish": "Yes, publish",
+    "confirmArchive": "Yes, archive",
+    "cancel": "Cancel"
   },
   "simulate": {
     "title": "Test strategy",
@@ -142,6 +158,8 @@
     "invalidMockJson": "mockState: invalid JSON ({{error}}).",
     "saveSuccessUpdate": "Strategy updated (v{{version}}, {{status}}).",
     "saveSuccessCreate": "Strategy created (id {{id}}, v{{version}}).",
+    "publishSuccess": "Strategy published (v{{version}}). It is now the live version.",
+    "archiveSuccess": "Strategy archived (v{{version}}).",
     "unknownError": "Unknown error when contacting the backend."
   },
   "tour": {

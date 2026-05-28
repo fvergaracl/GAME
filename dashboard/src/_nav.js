@@ -1,19 +1,12 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
-  cilBell,
-  cilCalculator,
-  cilChartPie,
   cilCloudDownload,
-  cilCursor,
-  cilDescription,
-  cilDrop,
   cilHistory,
   cilNotes,
   cilPencil,
   cilPuzzle,
   cilSpeedometer,
-  cilStar,
 } from '@coreui/icons'
 import { TbClockPin } from 'react-icons/tb'
 
@@ -30,19 +23,6 @@ const _nav = [
       text: 'NEW',
     },
   },
-  {
-    component: CNavItem,
-    name: 'Games',
-    to: '/games',
-    icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
-  },
-
-  // {
-  //   component: CNavItem,
-  //   name: 'Colors',
-  //   to: '/theme/colors',
-  //   icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
-  // },
 ]
 
 const _nav_administrator = [

@@ -41,11 +41,13 @@ import {
 } from '@coreui/react'
 
 import {
+  archiveCustomStrategy,
   createCustomStrategy,
   getCustomStrategy,
   getStrategySchema,
   importCustomStrategy,
   listBuiltInStrategies,
+  publishCustomStrategy,
   simulateCustomStrategy,
   updateCustomStrategy,
 } from '../../api'
@@ -97,6 +99,14 @@ const isCurrentUserAdmin = () => {
   } catch {
     return false
   }
+}
+
+// Maps the backend lifecycle status to a CoreUI badge colour. Kept in
+// sync with StrategyVersionHistoryModal's STATUS_BADGE.
+const STATUS_BADGE = {
+  DRAFT: 'secondary',
+  PUBLISHED: 'success',
+  ARCHIVED: 'dark',
 }
 
 const INITIAL_SIM_FORM = {
@@ -202,6 +212,15 @@ const StrategyEditor = () => {
   // otherwise there's no family to walk back through.
   const [historyOpen, setHistoryOpen] = useState(false)
   const isAdmin = useMemo(() => isCurrentUserAdmin(), [])
+
+  // Lifecycle (publish / archive). ``status`` mirrors the backend's
+  // DRAFT→PUBLISHED→ARCHIVED state machine so the toolbar can gate which
+  // CTA is offered. ``lifecycleAction`` drives an inline confirmation
+  // step (mirrors the rollback confirm in the history modal) so an admin
+  // can't publish/archive with a single stray click.
+  const [status, setStatus] = useState(null)
+  const [lifecycleAction, setLifecycleAction] = useState(null)
+  const [isLifecycleBusy, setIsLifecycleBusy] = useState(false)
 
   // Sprint 7: toolbox swaps wholesale when the mode changes. We track
   // it as state (not just useMemo) because the Blockly workspace needs
@@ -313,6 +332,7 @@ const StrategyEditor = () => {
         setStrategyName(row.name || '')
         setDescription(row.description || '')
         setLoadedVersion(row.version ?? null)
+        setStatus(row.status ?? null)
         if (row.type === 'DSL_EXTEND' || row.type === 'DSL_FULL') {
           setMode(row.type)
         }
@@ -553,6 +573,8 @@ const StrategyEditor = () => {
         // The backend forks PUBLISHED rows into a new DRAFT version+1;
         // grab whatever id came back so subsequent saves target it.
         setStrategyId(updated.id)
+        setLoadedVersion(updated.version ?? null)
+        setStatus(updated.status ?? null)
         setSaveSuccess(
           t('alerts.saveSuccessUpdate', {
             version: updated.version,
@@ -562,6 +584,8 @@ const StrategyEditor = () => {
       } else {
         const created = await createCustomStrategy(payload)
         setStrategyId(created.id)
+        setLoadedVersion(created.version ?? null)
+        setStatus(created.status ?? 'DRAFT')
         setSaveSuccess(
           t('alerts.saveSuccessCreate', {
             id: created.id,
@@ -627,6 +651,8 @@ const StrategyEditor = () => {
         })
         targetId = draft.id
         setStrategyId(targetId)
+        setLoadedVersion(draft.version ?? null)
+        setStatus(draft.status ?? 'DRAFT')
       } catch (err) {
         setSimError(translateDslError(t, err) || extractError(err, t))
         return
@@ -684,6 +710,41 @@ const StrategyEditor = () => {
     parentId,
     t,
   ])
+
+  // ----- Publish / Archive (Sprint 1 fix C2) -------------------------------
+  // The lifecycle endpoints are admin-only server-side (``require_admin``);
+  // ``isAdmin`` here just hides the CTAs so a non-admin never sees a button
+  // that would 403. The confirm step lives in the toolbar as an inline
+  // CAlert (same pattern as the rollback confirm in the history modal).
+  const handleLifecycle = useCallback(async () => {
+    if (!lifecycleAction || !strategyId) return
+    setSaveError(null)
+    setSaveSuccess(null)
+    setIsLifecycleBusy(true)
+    try {
+      const updated =
+        lifecycleAction === 'publish'
+          ? await publishCustomStrategy(strategyId)
+          : await archiveCustomStrategy(strategyId)
+      if (updated.id) setStrategyId(updated.id)
+      if (updated.version != null) setLoadedVersion(updated.version)
+      setStatus(updated.status ?? null)
+      setSaveSuccess(
+        t(lifecycleAction === 'publish' ? 'alerts.publishSuccess' : 'alerts.archiveSuccess', {
+          version: updated.version,
+        }),
+      )
+    } catch (err) {
+      setSaveError(translateDslError(t, err) || extractError(err, t))
+    } finally {
+      setIsLifecycleBusy(false)
+      setLifecycleAction(null)
+    }
+  }, [lifecycleAction, strategyId, t])
+
+  const canPublish = isAdmin && Boolean(strategyId) && status === 'DRAFT'
+  const canArchive =
+    isAdmin && Boolean(strategyId) && (status === 'DRAFT' || status === 'PUBLISHED')
 
   // ----- Render ------------------------------------------------------------
   // Sprint 8: render the empty-state chooser as a stand-alone card when
@@ -815,6 +876,11 @@ const StrategyEditor = () => {
                   {t('header.version', { version: loadedVersion })}
                 </CBadge>
               )}
+              {status && (
+                <CBadge color={STATUS_BADGE[status] || 'secondary'} className="ms-2">
+                  {t(`status.${status}`, { defaultValue: status })}
+                </CBadge>
+              )}
             </div>
             <div className="d-flex align-items-center gap-2">
               <CButton
@@ -900,7 +966,7 @@ const StrategyEditor = () => {
               style={{
                 height: '60vh',
                 minHeight: 420,
-                border: '1px solid #d8dbe0',
+                border: '1px solid var(--cui-border-color)',
                 borderRadius: 4,
               }}
             />
@@ -923,6 +989,50 @@ const StrategyEditor = () => {
             {saveSuccess && (
               <CAlert color="success" className="mt-3">
                 {saveSuccess}
+              </CAlert>
+            )}
+
+            {lifecycleAction && (
+              <CAlert color="warning" className="mt-3">
+                <strong>
+                  {t(
+                    lifecycleAction === 'publish'
+                      ? 'lifecycle.publishTitle'
+                      : 'lifecycle.archiveTitle',
+                  )}
+                </strong>
+                <p className="mb-2">
+                  {t(
+                    lifecycleAction === 'publish'
+                      ? 'lifecycle.publishBody'
+                      : 'lifecycle.archiveBody',
+                    { version: loadedVersion, name: strategyName },
+                  )}
+                </p>
+                <div className="d-flex gap-2">
+                  <CButton
+                    color={lifecycleAction === 'publish' ? 'success' : 'dark'}
+                    size="sm"
+                    onClick={handleLifecycle}
+                    disabled={isLifecycleBusy}
+                  >
+                    {isLifecycleBusy && <CSpinner size="sm" className="me-2" />}
+                    {t(
+                      lifecycleAction === 'publish'
+                        ? 'lifecycle.confirmPublish'
+                        : 'lifecycle.confirmArchive',
+                    )}
+                  </CButton>
+                  <CButton
+                    color="secondary"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setLifecycleAction(null)}
+                    disabled={isLifecycleBusy}
+                  >
+                    {t('lifecycle.cancel')}
+                  </CButton>
+                </div>
               </CAlert>
             )}
 
@@ -966,6 +1076,29 @@ const StrategyEditor = () => {
                   data-tour="editor-history"
                 >
                   {t('buttons.history')}
+                </CButton>
+              )}
+              {/* Sprint 1 fix C2: admin-only lifecycle controls. Gated by
+                  role (UX hint; the server enforces require_admin) and by
+                  the backend state machine — Publish only from DRAFT,
+                  Archive from DRAFT or PUBLISHED. */}
+              {canPublish && (
+                <CButton
+                  color="success"
+                  onClick={() => setLifecycleAction('publish')}
+                  disabled={isLifecycleBusy || Boolean(lifecycleAction)}
+                >
+                  {t('buttons.publish')}
+                </CButton>
+              )}
+              {canArchive && (
+                <CButton
+                  color="dark"
+                  variant="outline"
+                  onClick={() => setLifecycleAction('archive')}
+                  disabled={isLifecycleBusy || Boolean(lifecycleAction)}
+                >
+                  {t('buttons.archive')}
                 </CButton>
               )}
               <input
@@ -1279,10 +1412,10 @@ const StrategyEditor = () => {
                     {t('result.showTechnical')}
                   </summary>
                   <pre
+                    className="bg-body-tertiary"
                     style={{
                       maxHeight: 240,
                       overflow: 'auto',
-                      background: '#f5f5f5',
                       padding: 8,
                       borderRadius: 4,
                       fontSize: 12,
