@@ -561,3 +561,68 @@ describe('validateAst — Sprint 7 parent_variables', () => {
     ).toBe(true)
   })
 })
+
+describe('validateAst — else-if / else branches', () => {
+  const assign = (id, caseName) => ({
+    type: 'assign_points', id,
+    value: { type: 'literal', id: `${id}_v`, value: 1 }, case_name: caseName,
+  })
+  const ruleWith = (extra) => ({
+    type: 'program', id: 'p',
+    rules: [{
+      type: 'rule', id: 'r1',
+      when: { type: 'literal', id: 'w', value: true },
+      then: [assign('a1', 'A')],
+      ...extra,
+    }],
+  })
+
+  it('accepts a rule with else_if and else branches', () => {
+    _ok(ruleWith({
+      else_if: [{
+        when: { type: 'literal', id: 'w2', value: true },
+        then: [assign('a2', 'B')],
+      }],
+      else: [assign('a3', 'C')],
+    }))
+  })
+
+  it('rejects an else_if branch with an empty then', () => {
+    const errs = _errors(ruleWith({
+      else_if: [{ when: { type: 'literal', id: 'w2', value: true }, then: [] }],
+    }))
+    expect(errs.some((e) => /non-empty array of statements/.test(e.message))).toBe(true)
+  })
+
+  it('rejects an else_if branch missing when', () => {
+    const errs = _errors(ruleWith({
+      else_if: [{ then: [assign('a2', 'B')] }],
+    }))
+    expect(errs.some((e) => /when is required/.test(e.message))).toBe(true)
+  })
+
+  it('rejects an empty else branch', () => {
+    const errs = _errors(ruleWith({ else: [] }))
+    expect(errs.some((e) => /non-empty array of statements/.test(e.message))).toBe(true)
+  })
+
+  it('rejects else_if that is not an array', () => {
+    const errs = _errors(ruleWith({ else_if: { when: {}, then: [] } }))
+    expect(errs.some((e) => /else_if must be an array/.test(e.message))).toBe(true)
+  })
+
+  it('enforces section context inside else / else_if (veto only in pre)', () => {
+    // A veto statement is only valid in pre-rules; placing it in a main
+    // rule's else branch must be rejected just like in its then.
+    const errs = _errors({
+      type: 'program', id: 'p',
+      rules: [{
+        type: 'rule', id: 'r1',
+        when: { type: 'literal', id: 'w', value: true },
+        then: [assign('a1', 'A')],
+        else: [{ type: 'veto', id: 'v1', case_name: 'Nope' }],
+      }],
+    })
+    expect(errs.some((e) => /not allowed inside 'rule'/.test(e.message))).toBe(true)
+  })
+})

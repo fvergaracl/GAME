@@ -36,6 +36,12 @@ from typing import Any, Callable, Dict, Iterable, Optional, Set, Tuple
 # validator (unknown type) — the constants are intentionally exhaustive.
 
 NODE_PROGRAM = "program"
+# A rule node carries ``when`` (condition) + ``then`` (statement list) and,
+# optionally, ``else_if`` (a list of ``{when, then}`` branch objects) and
+# ``else`` (a statement list). The interpreter evaluates the base ``when``,
+# then each ``else_if`` in order, and finally ``else`` if nothing matched.
+# The else_if branches are plain objects, not typed nodes, so no new node
+# type is needed. Both extra keys are omitted when empty.
 NODE_RULE = "rule"
 
 NODE_AND = "and"

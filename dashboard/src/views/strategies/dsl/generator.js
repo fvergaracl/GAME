@@ -119,12 +119,33 @@ function _coerceOverrideValue(raw) {
 function blockToRule(block) {
   const whenBlock = block.getInputTargetBlock('WHEN')
   const thenBlock = block.getInputTargetBlock('THEN')
-  return {
+  const node = {
     type: 'rule',
     id: block.id,
     when: whenBlock ? blockToCondition(whenBlock) : null,
     then: collectStatements(thenBlock),
   }
+
+  // Sprint 12: optional else-if / else branches added via the rule
+  // mutator. Extra branches use IF{i}/DO{i} (i >= 1) value+statement
+  // input pairs; the else clause is a single ELSE statement input. We
+  // probe by input presence (block.getInput) rather than the private
+  // elseifCount_ counter so the AST stays correct even if a branch was
+  // re-shaped without updating the counter. The keys are omitted when
+  // empty so rules without branches produce the exact pre-Sprint-12 AST.
+  const elseIf = []
+  for (let i = 1; block.getInput(`IF${i}`); i++) {
+    const branchWhen = block.getInputTargetBlock(`IF${i}`)
+    elseIf.push({
+      when: branchWhen ? blockToCondition(branchWhen) : null,
+      then: collectStatements(block.getInputTargetBlock(`DO${i}`)),
+    })
+  }
+  if (elseIf.length > 0) node.else_if = elseIf
+  if (block.getInput('ELSE')) {
+    node.else = collectStatements(block.getInputTargetBlock('ELSE'))
+  }
+  return node
 }
 
 function collectStatements(firstBlock) {

@@ -298,6 +298,52 @@ export function validateAst(ast) {
           (stmt) => validateStatement(stmt, errors, nodeCount, context),
         )
       }
+      // Sprint 12: optional else-if branches. Each is a {when, then}
+      // object; ``then`` is validated exactly like the main branch so an
+      // empty else-if body surfaces the same RULE_THEN_EMPTY error.
+      if (rule.else_if != null) {
+        if (!Array.isArray(rule.else_if)) {
+          fail(errors, rule.id, 'rule.else_if must be an array.')
+        } else {
+          rule.else_if.forEach((branch, j) => {
+            nodeCount.value += 1
+            if (!branch || typeof branch !== 'object' || Array.isArray(branch)) {
+              fail(errors, rule.id, `rule.else_if[${j}] must be an object.`)
+              return
+            }
+            if (!branch.when) {
+              fail(errors, rule.id, 'rule.else_if[].when is required.', 'RULE_WHEN_REQUIRED')
+            } else {
+              validateCondition(branch.when, errors, nodeCount, context)
+            }
+            if (!Array.isArray(branch.then) || branch.then.length === 0) {
+              fail(
+                errors, rule.id,
+                'rule.else_if[].then must be a non-empty array of statements.',
+                'RULE_THEN_EMPTY',
+              )
+            } else {
+              branch.then.forEach(
+                (stmt) => validateStatement(stmt, errors, nodeCount, context),
+              )
+            }
+          })
+        }
+      }
+      // Sprint 12: optional else branch — a non-empty statement list.
+      if (rule.else != null) {
+        if (!Array.isArray(rule.else) || rule.else.length === 0) {
+          fail(
+            errors, rule.id,
+            'rule.else must be a non-empty array of statements.',
+            'RULE_THEN_EMPTY',
+          )
+        } else {
+          rule.else.forEach(
+            (stmt) => validateStatement(stmt, errors, nodeCount, context),
+          )
+        }
+      }
     })
   }
 

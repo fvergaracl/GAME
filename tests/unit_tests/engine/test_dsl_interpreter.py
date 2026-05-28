@@ -525,3 +525,185 @@ async def test_timeout_cancels_interpreter():
 
     with pytest.raises(asyncio.TimeoutError):
         await asyncio.wait_for(interpreter.execute(ast, ctx), timeout=0.05)
+
+
+# --- else / else-if branches ------------------------------------------------
+
+
+def _assign(node_id, value, case_name):
+    return {
+        "type": "assign_points",
+        "id": node_id,
+        "value": {"type": "literal", "id": f"{node_id}_v", "value": value},
+        "case_name": case_name,
+    }
+
+
+def _branching_rule_program(when_value):
+    """One rule: when→THEN, two else_ifs, and an else. Conditions are bare
+    literals so the chosen branch is fully controlled by the test."""
+    return {
+        "type": "program",
+        "id": "p",
+        "rules": [
+            {
+                "type": "rule",
+                "id": "r1",
+                "when": {"type": "literal", "id": "w", "value": when_value},
+                "then": [_assign("a_then", 1, "THEN")],
+                "else_if": [
+                    {
+                        "when": {"type": "literal", "id": "e0", "value": False},
+                        "then": [_assign("a_e0", 2, "ELIF0")],
+                    },
+                    {
+                        "when": {"type": "literal", "id": "e1", "value": True},
+                        "then": [_assign("a_e1", 3, "ELIF1")],
+                    },
+                ],
+                "else": [_assign("a_else", 4, "ELSE")],
+            }
+        ],
+    }
+
+
+@pytest.mark.asyncio
+async def test_then_branch_runs_when_condition_true():
+    ast = _branching_rule_program(when_value=True)
+    validate_ast(ast)
+    ctx = await _build_ctx(ast)
+
+    result = await _interpreter().execute(ast, ctx)
+
+    assert result["points"] == 1
+    assert result["case_name"] == "THEN"
+    assert any(
+        e["type"] == "rule" and e["branch"] == "match" for e in result["trace"]
+    )
+    # No else / else_if statement ran.
+    assert not any(e["nodeId"] == "a_e1" for e in result["trace"])
+
+
+@pytest.mark.asyncio
+async def test_first_matching_else_if_wins():
+    # when=False → else_if[0] (False) skipped → else_if[1] (True) runs.
+    ast = _branching_rule_program(when_value=False)
+    validate_ast(ast)
+    ctx = await _build_ctx(ast)
+
+    result = await _interpreter().execute(ast, ctx)
+
+    assert result["points"] == 3
+    assert result["case_name"] == "ELIF1"
+    assert any(
+        e["type"] == "rule" and e["branch"] == "elseif:1"
+        for e in result["trace"]
+    )
+    # The else branch must NOT run once an else_if matched.
+    assert not any(e["nodeId"] == "a_else" for e in result["trace"])
+
+
+@pytest.mark.asyncio
+async def test_else_runs_when_nothing_matches():
+    ast = {
+        "type": "program",
+        "id": "p",
+        "rules": [
+            {
+                "type": "rule",
+                "id": "r1",
+                "when": {"type": "literal", "id": "w", "value": False},
+                "then": [_assign("a_then", 1, "THEN")],
+                "else_if": [
+                    {
+                        "when": {"type": "literal", "id": "e0", "value": False},
+                        "then": [_assign("a_e0", 2, "ELIF0")],
+                    },
+                ],
+                "else": [_assign("a_else", 4, "ELSE")],
+            }
+        ],
+    }
+    validate_ast(ast)
+    ctx = await _build_ctx(ast)
+
+    result = await _interpreter().execute(ast, ctx)
+
+    assert result["points"] == 4
+    assert result["case_name"] == "ELSE"
+    assert any(
+        e["type"] == "rule" and e["branch"] == "else" for e in result["trace"]
+    )
+
+
+@pytest.mark.asyncio
+async def test_no_match_without_else_is_noop():
+    ast = {
+        "type": "program",
+        "id": "p",
+        "rules": [
+            {
+                "type": "rule",
+                "id": "r1",
+                "when": {"type": "literal", "id": "w", "value": False},
+                "then": [_assign("a_then", 1, "THEN")],
+                "else_if": [
+                    {
+                        "when": {"type": "literal", "id": "e0", "value": False},
+                        "then": [_assign("a_e0", 2, "ELIF0")],
+                    },
+                ],
+            }
+        ],
+    }
+    validate_ast(ast)
+    ctx = await _build_ctx(ast)
+
+    result = await _interpreter().execute(ast, ctx)
+
+    assert result["points"] == 0
+    assert result["case_name"] is None
+    assert any(
+        e["type"] == "rule" and e["branch"] == "skip" for e in result["trace"]
+    )
+
+
+@pytest.mark.asyncio
+async def test_else_branch_falls_through_to_next_rule_when_non_halting():
+    """An else branch that only sets callback data (no assign_points) must
+    not halt — execution falls through to the next rule, exactly like a
+    non-halting then branch does."""
+    ast = {
+        "type": "program",
+        "id": "p",
+        "rules": [
+            {
+                "type": "rule",
+                "id": "r1",
+                "when": {"type": "literal", "id": "w", "value": False},
+                "then": [_assign("a_then", 1, "THEN")],
+                "else": [
+                    {
+                        "type": "set_callback_data",
+                        "id": "cb",
+                        "key": "note",
+                        "value": {"type": "literal", "id": "cbv", "value": "x"},
+                    }
+                ],
+            },
+            {
+                "type": "rule",
+                "id": "r2",
+                "when": {"type": "literal", "id": "w2", "value": True},
+                "then": [_assign("a2", 9, "SECOND")],
+            },
+        ],
+    }
+    validate_ast(ast)
+    ctx = await _build_ctx(ast)
+
+    result = await _interpreter().execute(ast, ctx)
+
+    assert result["points"] == 9
+    assert result["case_name"] == "SECOND"
+    assert result["callback_data"]["note"] == "x"

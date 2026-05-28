@@ -20,11 +20,15 @@
     "gd_set_points": "Sobrescribe los puntos calculados por el padre. No termina la regla.",
     "gd_set_case_name": "Sobrescribe el caseName del padre.",
     "gd_field_parent": "Lee el resultado del padre. Sólo válido dentro de las reglas POST.",
-    "gd_parent_variable_override": "Sobrescribe una variable_* del padre antes de su ejecución."
+    "gd_parent_variable_override": "Sobrescribe una variable_* del padre antes de su ejecución.",
+    "gd_rule_elseif": "Agrega una rama 'si no, si': una condición extra que se evalúa cuando las anteriores no se cumplen.",
+    "gd_rule_else": "Agrega una rama 'si no': se ejecuta cuando ninguna condición anterior se cumplió."
   },
   "labels": {
     "when": "cuando",
     "then": "entonces",
+    "elseIf": "si no, si",
+    "else": "si no",
     "and": "y",
     "andAlso": "y también",
     "or": "o",

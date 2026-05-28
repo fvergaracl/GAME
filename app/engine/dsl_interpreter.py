@@ -195,21 +195,83 @@ class DslInterpreter:
     ) -> None:
         self._step(state, node)
         self._check_depth(depth, node)
+
+        # if / else-if / else cascade. The base branch (``when``/``then``)
+        # is evaluated first; if it matches, ``then`` runs and the rule
+        # ends. Otherwise each ``else_if`` branch is tried in order, and the
+        # first whose condition is truthy runs its ``then`` and ends the
+        # rule. If none match and an ``else`` body exists, it runs. This
+        # only decides which statement stack runs inside the rule — the
+        # program-level rule chaining and ``default`` are unchanged (a
+        # non-halting branch still falls through to the next rule).
         matched = await self._eval_condition(
             node["when"], ctx, state, depth=depth + 1
         )
+        if matched:
+            state.trace.append(
+                {
+                    "nodeId": node.get("id"),
+                    "type": "rule",
+                    "value": True,
+                    "branch": "match",
+                }
+            )
+            await self._run_branch(
+                node.get("then"), ctx, state, depth=depth + 1
+            )
+            return
+
+        for i, branch in enumerate(node.get("else_if") or []):
+            self._step(state, branch)
+            branch_matched = await self._eval_condition(
+                branch["when"], ctx, state, depth=depth + 1
+            )
+            if branch_matched:
+                state.trace.append(
+                    {
+                        "nodeId": node.get("id"),
+                        "type": "rule",
+                        "value": True,
+                        "branch": f"elseif:{i}",
+                    }
+                )
+                await self._run_branch(
+                    branch.get("then"), ctx, state, depth=depth + 1
+                )
+                return
+
+        else_stmts = node.get("else")
+        if else_stmts:
+            state.trace.append(
+                {
+                    "nodeId": node.get("id"),
+                    "type": "rule",
+                    "value": False,
+                    "branch": "else",
+                }
+            )
+            await self._run_branch(else_stmts, ctx, state, depth=depth + 1)
+            return
+
         state.trace.append(
             {
                 "nodeId": node.get("id"),
                 "type": "rule",
-                "value": bool(matched),
-                "branch": "match" if matched else "skip",
+                "value": False,
+                "branch": "skip",
             }
         )
-        if not matched:
-            return
-        for stmt in node.get("then") or []:
-            await self._run_statement(stmt, ctx, state, depth=depth + 1)
+
+    async def _run_branch(
+        self,
+        statements: Optional[List[Dict[str, Any]]],
+        ctx: ExecutionContext,
+        state: _RunState,
+        *,
+        depth: int,
+    ) -> None:
+        for stmt in statements or []:
+            await self._run_statement(stmt, ctx, state, depth=depth)
 
     # ----- statements ------------------------------------------------------
 

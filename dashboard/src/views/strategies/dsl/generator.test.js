@@ -356,3 +356,75 @@ describe('workspaceToAst — invalid output still validates structurally', () =>
     ).toBe(true)
   })
 })
+
+
+describe('workspaceToAst — else-if / else branches (mutator)', () => {
+  // Small helper: an assign_points statement with a literal number value.
+  function assignBlock(ws, id, value, caseName) {
+    const assign = newBlock(ws, 'gd_assign_points', id)
+    assign.setFieldValue(caseName, 'CASE_NAME')
+    const lit = newBlock(ws, 'gd_literal_number', `${id}_v`)
+    lit.setFieldValue(String(value), 'VALUE')
+    connectChildToInput(assign, 'VALUE', lit)
+    return assign
+  }
+
+  it('a rule with no branches omits else_if / else entirely', () => {
+    const ws = makeWorkspace()
+    const rule = newBlock(ws, 'gd_rule', 'r1')
+    const lit = newBlock(ws, 'gd_literal_number', 'wl')
+    lit.setFieldValue('1', 'VALUE')
+    connectChildToInput(rule, 'WHEN', lit)
+    connectChildStatement(rule, 'THEN', assignBlock(ws, 'a1', 1, 'A'))
+
+    const ast = workspaceToAst(ws)
+
+    expect(ast.rules[0]).not.toHaveProperty('else_if')
+    expect(ast.rules[0]).not.toHaveProperty('else')
+  })
+
+  it('emits else_if[] and else from the mutator-expanded inputs', () => {
+    const ws = makeWorkspace()
+    const rule = newBlock(ws, 'gd_rule', 'r1')
+
+    // Expand the shape: one else-if branch + an else branch. This is the
+    // same JSON shape Blockly's serializer round-trips via loadExtraState.
+    rule.loadExtraState({ elseIfCount: 1, hasElse: true })
+
+    // Base branch: when true → assign 1 / "A".
+    const whenLit = newBlock(ws, 'gd_literal_number', 'wl')
+    whenLit.setFieldValue('1', 'VALUE')
+    connectChildToInput(rule, 'WHEN', whenLit)
+    connectChildStatement(rule, 'THEN', assignBlock(ws, 'a1', 1, 'A'))
+
+    // else-if branch: when true → assign 2 / "B".
+    const elifLit = newBlock(ws, 'gd_literal_number', 'el')
+    elifLit.setFieldValue('1', 'VALUE')
+    connectChildToInput(rule, 'IF1', elifLit)
+    connectChildStatement(rule, 'DO1', assignBlock(ws, 'a2', 2, 'B'))
+
+    // else branch: assign 3 / "C".
+    connectChildStatement(rule, 'ELSE', assignBlock(ws, 'a3', 3, 'C'))
+
+    const ast = workspaceToAst(ws)
+    const r = ast.rules[0]
+
+    expect(r.then).toEqual([
+      { type: 'assign_points', id: 'a1', value: { type: 'literal', id: 'a1_v', value: 1 }, case_name: 'A' },
+    ])
+    expect(r.else_if).toEqual([
+      {
+        when: { type: 'literal', id: 'el', value: 1 },
+        then: [
+          { type: 'assign_points', id: 'a2', value: { type: 'literal', id: 'a2_v', value: 2 }, case_name: 'B' },
+        ],
+      },
+    ])
+    expect(r.else).toEqual([
+      { type: 'assign_points', id: 'a3', value: { type: 'literal', id: 'a3_v', value: 3 }, case_name: 'C' },
+    ])
+
+    // The full thing must pass the client validator.
+    expect(validateAst(ast).ok).toBe(true)
+  })
+})

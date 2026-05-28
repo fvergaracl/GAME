@@ -255,6 +255,32 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
         )
 
 
+def _validate_then(
+    then: Any,
+    *,
+    parent_id: str,
+    state: _State,
+    depth: int,
+    context: str,
+    label: str,
+) -> None:
+    """Validate a statement-list body (a rule's then / else / else_if then).
+
+    All three share the same contract: a non-empty list of statements,
+    each validated in the surrounding section ``context``.
+    """
+    if not isinstance(then, list) or not then:
+        raise DslValidationError(
+            detail=f"{label} must be a non-empty array of statements.",
+            headers={"X-Node-Id": parent_id},
+        )
+    for i, stmt in enumerate(then):
+        _validate_statement(
+            stmt, parent_id=parent_id, index=i, state=state,
+            depth=depth + 1, context=context,
+        )
+
+
 def _validate_rule(
     node: Any,
     *,
@@ -272,7 +298,9 @@ def _validate_rule(
     nid = _node_id(node, parent_id, NODE_RULE, index)
     state.step(nid)
     _require_type(node, NODE_RULE, parent_id=parent_id)
-    _assert_keys(node, ("when", "then"), node_id=nid)
+    _assert_keys(
+        node, ("when", "then"), node_id=nid, allowed_extra=("else_if", "else"),
+    )
     _check_depth(depth, nid, state)
 
     when = node["when"]
@@ -281,16 +309,57 @@ def _validate_rule(
         context=context,
     )
 
-    then = node["then"]
-    if not isinstance(then, list) or not then:
-        raise DslValidationError(
-            detail="rule.then must be a non-empty array of statements.",
-            headers={"X-Node-Id": nid},
-        )
-    for i, stmt in enumerate(then):
-        _validate_statement(
-            stmt, parent_id=nid, index=i, state=state, depth=depth + 1,
-            context=context,
+    _validate_then(
+        node.get("then"), parent_id=nid, state=state, depth=depth,
+        context=context, label="rule.then",
+    )
+
+    # else_if / else share the rule's section context (a post-rule's else
+    # branch is still a post-rule statement, etc.). They are optional; an
+    # empty/missing list leaves the pre-else_if AST shape unchanged.
+    else_if = node.get("else_if")
+    if else_if is not None:
+        if not isinstance(else_if, list):
+            raise DslValidationError(
+                detail="rule.else_if must be an array.",
+                headers={"X-Node-Id": nid},
+            )
+        for j, branch in enumerate(else_if):
+            branch_id = f"{nid}.else_if.{j}"
+            state.step(branch_id)
+            if not isinstance(branch, dict):
+                raise DslValidationError(
+                    detail="rule.else_if[*] must be objects.",
+                    headers={"X-Node-Id": branch_id},
+                )
+            extras = set(branch.keys()) - {"when", "then", "id"}
+            if extras:
+                raise DslValidationError(
+                    detail=(
+                        f"rule.else_if[{j}] has unexpected keys: "
+                        f"{sorted(extras)}."
+                    ),
+                    headers={"X-Node-Id": branch_id},
+                )
+            if "when" not in branch:
+                raise DslValidationError(
+                    detail="rule.else_if[*] missing required key 'when'.",
+                    headers={"X-Node-Id": branch_id},
+                )
+            _validate_condition(
+                branch["when"], parent_id=branch_id, index=0, state=state,
+                depth=depth + 1, context=context,
+            )
+            _validate_then(
+                branch.get("then"), parent_id=branch_id, state=state,
+                depth=depth, context=context, label="rule.else_if[*].then",
+            )
+
+    else_stmts = node.get("else")
+    if else_stmts is not None:
+        _validate_then(
+            else_stmts, parent_id=nid, state=state, depth=depth,
+            context=context, label="rule.else",
         )
 
 

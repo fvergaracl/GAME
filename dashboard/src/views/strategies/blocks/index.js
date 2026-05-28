@@ -32,6 +32,8 @@ let _t = null
 // the docs site exists they should be swapped for real URLs.
 const HELP_URLS = {
   gd_rule: '#/docs/strategy-blocks/rule',
+  gd_rule_elseif: '#/docs/strategy-blocks/rule',
+  gd_rule_else: '#/docs/strategy-blocks/rule',
   gd_compare: '#/docs/strategy-blocks/compare',
   gd_and: '#/docs/strategy-blocks/and',
   gd_or: '#/docs/strategy-blocks/or',
@@ -60,6 +62,8 @@ const HELP_URLS = {
 const FALLBACK_LABELS = {
   when: 'cuando',
   then: 'entonces',
+  elseIf: 'si no, si',
+  else: 'si no',
   and: 'y',
   andAlso: 'y también',
   or: 'o',
@@ -100,6 +104,265 @@ const tooltip = (blockKey) => {
   return ''
 }
 
+// ---------------------------------------------------------------------------
+// Rule else / else-if mutator
+// ---------------------------------------------------------------------------
+// Adapted from Blockly's built-in ``controls_if`` mutator. The three rule
+// blocks share this single mutator so the generator/validator/interpreter
+// see a uniform shape:
+//
+//   base branch  → WHEN (value) + THEN (statement)   [names unchanged]
+//   else-if i    → IF{i} (value) + DO{i} (statement) [i = 1..elseifCount_]
+//   else         → ELSE (statement)                  [when hasElse_]
+//
+// ``saveExtraState`` / ``loadExtraState`` serialise the branch counts so
+// Blockly's JSON workspace serialisation round-trips the branches. The
+// legacy ``mutationToDom`` / ``domToMutation`` pair is kept so old
+// XML-format workspaces (templates) still load.
+const RULE_MUTATOR_MIXIN = {
+  elseifCount_: 0,
+  elseCount_: 0,
+
+  mutationToDom() {
+    if (!this.elseifCount_ && !this.elseCount_) return null
+    const container = Blockly.utils.xml.createElement('mutation')
+    if (this.elseifCount_) {
+      container.setAttribute('elseif', String(this.elseifCount_))
+    }
+    if (this.elseCount_) container.setAttribute('else', '1')
+    return container
+  },
+
+  domToMutation(xmlElement) {
+    this.elseifCount_ = parseInt(xmlElement.getAttribute('elseif'), 10) || 0
+    this.elseCount_ = parseInt(xmlElement.getAttribute('else'), 10) || 0
+    this.rebuildShape_()
+  },
+
+  saveExtraState() {
+    if (!this.elseifCount_ && !this.elseCount_) return null
+    const state = Object.create(null)
+    if (this.elseifCount_) state.elseIfCount = this.elseifCount_
+    if (this.elseCount_) state.hasElse = true
+    return state
+  },
+
+  loadExtraState(state) {
+    this.elseifCount_ = state.elseIfCount || 0
+    this.elseCount_ = state.hasElse ? 1 : 0
+    this.updateShape_()
+  },
+
+  decompose(workspace) {
+    const containerBlock = workspace.newBlock('gd_rule_if')
+    containerBlock.initSvg()
+    let connection = containerBlock.nextConnection
+    for (let i = 1; i <= this.elseifCount_; i++) {
+      const elseifBlock = workspace.newBlock('gd_rule_elseif')
+      elseifBlock.initSvg()
+      connection.connect(elseifBlock.previousConnection)
+      connection = elseifBlock.nextConnection
+    }
+    if (this.elseCount_) {
+      const elseBlock = workspace.newBlock('gd_rule_else')
+      elseBlock.initSvg()
+      connection.connect(elseBlock.previousConnection)
+    }
+    return containerBlock
+  },
+
+  compose(containerBlock) {
+    let clauseBlock = containerBlock.nextConnection.targetBlock()
+    this.elseifCount_ = 0
+    this.elseCount_ = 0
+    const valueConnections = [null]
+    const statementConnections = [null]
+    let elseStatementConnection = null
+    while (clauseBlock) {
+      if (!clauseBlock.isInsertionMarker()) {
+        switch (clauseBlock.type) {
+          case 'gd_rule_elseif':
+            this.elseifCount_++
+            valueConnections.push(clauseBlock.valueConnection_)
+            statementConnections.push(clauseBlock.statementConnection_)
+            break
+          case 'gd_rule_else':
+            this.elseCount_++
+            elseStatementConnection = clauseBlock.statementConnection_
+            break
+          default:
+            throw new TypeError('Unknown block type: ' + clauseBlock.type)
+        }
+      }
+      clauseBlock = clauseBlock.getNextBlock()
+    }
+    this.updateShape_()
+    this.reconnectChildBlocks_(
+      valueConnections, statementConnections, elseStatementConnection,
+    )
+  },
+
+  saveConnections(containerBlock) {
+    let clauseBlock = containerBlock.nextConnection.targetBlock()
+    let i = 1
+    while (clauseBlock) {
+      if (!clauseBlock.isInsertionMarker()) {
+        switch (clauseBlock.type) {
+          case 'gd_rule_elseif': {
+            const inputIf = this.getInput('IF' + i)
+            const inputDo = this.getInput('DO' + i)
+            clauseBlock.valueConnection_ =
+              inputIf && inputIf.connection.targetConnection
+            clauseBlock.statementConnection_ =
+              inputDo && inputDo.connection.targetConnection
+            i++
+            break
+          }
+          case 'gd_rule_else': {
+            const inputElse = this.getInput('ELSE')
+            clauseBlock.statementConnection_ =
+              inputElse && inputElse.connection.targetConnection
+            break
+          }
+          default:
+            throw new TypeError('Unknown block type: ' + clauseBlock.type)
+        }
+      }
+      clauseBlock = clauseBlock.getNextBlock()
+    }
+  },
+
+  rebuildShape_() {
+    const valueConnections = [null]
+    const statementConnections = [null]
+    let elseStatementConnection = null
+    if (this.getInput('ELSE')) {
+      elseStatementConnection = this.getInput('ELSE').connection.targetConnection
+    }
+    for (let i = 1; this.getInput('IF' + i); i++) {
+      const inputIf = this.getInput('IF' + i)
+      const inputDo = this.getInput('DO' + i)
+      valueConnections.push(inputIf.connection.targetConnection)
+      statementConnections.push(inputDo.connection.targetConnection)
+    }
+    this.updateShape_()
+    this.reconnectChildBlocks_(
+      valueConnections, statementConnections, elseStatementConnection,
+    )
+  },
+
+  updateShape_() {
+    if (this.getInput('ELSE')) this.removeInput('ELSE')
+    for (let i = 1; this.getInput('IF' + i); i++) {
+      this.removeInput('IF' + i)
+      this.removeInput('DO' + i)
+    }
+    for (let i = 1; i <= this.elseifCount_; i++) {
+      this.appendValueInput('IF' + i)
+        .setCheck(['Boolean', 'Number'])
+        .appendField(label('elseIf'))
+      this.appendStatementInput('DO' + i)
+        .setCheck('Statement')
+        .appendField(label('then'))
+    }
+    if (this.elseCount_) {
+      this.appendStatementInput('ELSE')
+        .setCheck('Statement')
+        .appendField(label('else'))
+    }
+  },
+
+  reconnectChildBlocks_(
+    valueConnections, statementConnections, elseStatementConnection,
+  ) {
+    for (let i = 1; i <= this.elseifCount_; i++) {
+      if (valueConnections[i]) valueConnections[i].reconnect(this, 'IF' + i)
+      if (statementConnections[i]) {
+        statementConnections[i].reconnect(this, 'DO' + i)
+      }
+    }
+    if (elseStatementConnection) {
+      elseStatementConnection.reconnect(this, 'ELSE')
+    }
+  },
+}
+
+/**
+ * Register the rule mutator extension plus its three popup sub-blocks
+ * (container + draggable else-if / else clauses). Idempotent: guarded so a
+ * dev-server hot reload doesn't throw on a duplicate registration.
+ */
+function registerRuleMutator(Blockly) {
+  // Sub-blocks shown inside the mutator popup. ``gd_rule_if`` is the
+  // immovable container (the base when/then branch); the other two are
+  // draggable into the stack to add clauses.
+  Blockly.Blocks.gd_rule_if = {
+    init() {
+      this.appendDummyInput().appendField(label('when'))
+      this.setNextStatement(true)
+      this.setColour(210)
+      this.setTooltip(tooltip('gd_rule_if'))
+      this.contextMenu = false
+    },
+  }
+  Blockly.Blocks.gd_rule_elseif = {
+    init() {
+      this.appendDummyInput().appendField(label('elseIf'))
+      this.setPreviousStatement(true)
+      this.setNextStatement(true)
+      this.setColour(210)
+      this.setTooltip(tooltip('gd_rule_elseif'))
+      this.contextMenu = false
+    },
+  }
+  Blockly.Blocks.gd_rule_else = {
+    init() {
+      this.appendDummyInput().appendField(label('else'))
+      this.setPreviousStatement(true)
+      this.setNextStatement(true)
+      this.setColour(210)
+      this.setTooltip(tooltip('gd_rule_else'))
+      this.contextMenu = false
+    },
+  }
+
+  if (!Blockly.Extensions.isRegistered('gd_rule_mutator')) {
+    Blockly.Extensions.registerMutator(
+      'gd_rule_mutator',
+      RULE_MUTATOR_MIXIN,
+      null,
+      ['gd_rule_elseif', 'gd_rule_else'],
+    )
+  }
+}
+
+/**
+ * Define a rule-shaped block (base WHEN/THEN branch + else / else-if
+ * mutator). Shared by gd_rule, gd_pre_rule and gd_post_rule which differ
+ * only in their ``when`` label, colour, tooltip and help URL.
+ */
+function defineRuleBlock(Blockly, name, { whenLabel, colour, tooltipKey, helpUrl }) {
+  Blockly.Blocks[name] = {
+    init() {
+      // ``WHEN`` accepts Boolean OR Number so a bare ``literal true`` or
+      // a numeric field (used as truthy) can be plugged directly without
+      // a compare wrapper, mirroring the backend interpreter at
+      // app/engine/dsl_interpreter.py ("Allow bare expressions as
+      // conditions").
+      this.appendValueInput('WHEN')
+        .setCheck(['Boolean', 'Number'])
+        .appendField(label(whenLabel))
+      this.appendStatementInput('THEN')
+        .setCheck('Statement')
+        .appendField(label('then'))
+      this.setColour(colour)
+      this.setTooltip(tooltip(tooltipKey))
+      this.setHelpUrl(helpUrl)
+      Blockly.Extensions.apply('gd_rule_mutator', this, true)
+    },
+  }
+}
+
 let _registered = false
 
 /**
@@ -113,28 +376,27 @@ export function registerDslBlocks(tFn) {
   if (_registered) return
   _registered = true
 
+  // ---- rule mutator ------------------------------------------------------
+  // ``gd_rule`` / ``gd_pre_rule`` / ``gd_post_rule`` all share the same
+  // ``cuando``/``entonces`` shape AND the same else / else-if mutator, so
+  // the branching logic lives once here and is applied to each block via
+  // ``defineRuleBlock``. The mixin is adapted from Blockly's built-in
+  // ``controls_if`` mutator: the base branch keeps the existing WHEN/THEN
+  // input names (so previously-saved workspaces still load), and extra
+  // branches use IF{n}/DO{n} (n>=1) plus a single ELSE statement input —
+  // exactly the names controls_if uses for its dynamic clauses.
+  registerRuleMutator(Blockly)
+
   // ---- gd_rule -----------------------------------------------------------
-  // Statement-shaped root that holds one ``when`` condition and a stack of
-  // ``then`` statements. Top-level on the workspace; not connectable to
-  // anything else.
-  Blockly.Blocks.gd_rule = {
-    init() {
-      // ``WHEN`` accepts Boolean OR Number so a bare ``literal true`` or
-      // a numeric field (used as truthy) can be plugged directly without
-      // a compare wrapper, mirroring the backend interpreter at
-      // app/engine/dsl_interpreter.py:302-304 ("Allow bare expressions
-      // as conditions").
-      this.appendValueInput('WHEN')
-        .setCheck(['Boolean', 'Number'])
-        .appendField(label('when'))
-      this.appendStatementInput('THEN')
-        .setCheck('Statement')
-        .appendField(label('then'))
-      this.setColour(210)
-      this.setTooltip(tooltip('gd_rule'))
-      this.setHelpUrl(HELP_URLS.gd_rule)
-    },
-  }
+  // Statement-shaped root that holds one ``when`` condition, a stack of
+  // ``then`` statements, and optional else-if / else branches added via the
+  // mutator. Top-level on the workspace; not connectable to anything else.
+  defineRuleBlock(Blockly, 'gd_rule', {
+    whenLabel: 'when',
+    colour: 210,
+    tooltipKey: 'gd_rule',
+    helpUrl: HELP_URLS.gd_rule,
+  })
 
   // ---- gd_compare --------------------------------------------------------
   Blockly.Blocks.gd_compare = {
@@ -352,37 +614,23 @@ export function registerDslBlocks(tFn) {
   // ========================================================================
 
   // ---- gd_pre_rule -------------------------------------------------------
-  // Same shape as gd_rule but emits into pre_rules[]. Visually
-  // distinguished by colour so the designer sees at a glance which
-  // section a rule belongs to.
-  Blockly.Blocks.gd_pre_rule = {
-    init() {
-      this.appendValueInput('WHEN')
-        .setCheck(['Boolean', 'Number'])
-        .appendField(label('preWhen'))
-      this.appendStatementInput('THEN')
-        .setCheck('Statement')
-        .appendField(label('then'))
-      this.setColour(330)
-      this.setTooltip(tooltip('gd_pre_rule'))
-      this.setHelpUrl(HELP_URLS.gd_pre_rule)
-    },
-  }
+  // Same shape (and else / else-if mutator) as gd_rule but emits into
+  // pre_rules[]. Visually distinguished by colour so the designer sees at
+  // a glance which section a rule belongs to.
+  defineRuleBlock(Blockly, 'gd_pre_rule', {
+    whenLabel: 'preWhen',
+    colour: 330,
+    tooltipKey: 'gd_pre_rule',
+    helpUrl: HELP_URLS.gd_pre_rule,
+  })
 
   // ---- gd_post_rule ------------------------------------------------------
-  Blockly.Blocks.gd_post_rule = {
-    init() {
-      this.appendValueInput('WHEN')
-        .setCheck(['Boolean', 'Number'])
-        .appendField(label('postWhen'))
-      this.appendStatementInput('THEN')
-        .setCheck('Statement')
-        .appendField(label('then'))
-      this.setColour(60)
-      this.setTooltip(tooltip('gd_post_rule'))
-      this.setHelpUrl(HELP_URLS.gd_post_rule)
-    },
-  }
+  defineRuleBlock(Blockly, 'gd_post_rule', {
+    whenLabel: 'postWhen',
+    colour: 60,
+    tooltipKey: 'gd_post_rule',
+    helpUrl: HELP_URLS.gd_post_rule,
+  })
 
   // ---- gd_set_data -------------------------------------------------------
   // Mutates the working_data dict the parent built-in will receive. Key

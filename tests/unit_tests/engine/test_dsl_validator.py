@@ -244,3 +244,112 @@ def test_validator_rejects_unexpected_keys_on_node():
     ast = {"type": "program", "id": "p", "rules": [rule]}
     with pytest.raises(DslValidationError, match="unexpected keys"):
         validate_ast(ast)
+
+
+# --- else / else-if branches ------------------------------------------------
+
+
+def _assign_stmt(node_id, case_name="Reward"):
+    return {
+        "type": "assign_points",
+        "id": node_id,
+        "value": {"type": "literal", "id": f"{node_id}_v", "value": 1},
+        "case_name": case_name,
+    }
+
+
+def test_validator_accepts_rule_with_else_if_and_else():
+    rule = _basic_rule()
+    rule["else_if"] = [
+        {
+            "when": {"type": "literal", "id": "w2", "value": True},
+            "then": [_assign_stmt("a2", "B")],
+        }
+    ]
+    rule["else"] = [_assign_stmt("a3", "C")]
+    ast = {"type": "program", "id": "p", "rules": [rule]}
+    validate_ast(ast)
+
+
+def test_validator_rejects_empty_then_in_else_if_branch():
+    rule = _basic_rule()
+    rule["else_if"] = [
+        {"when": {"type": "literal", "id": "w2", "value": True}, "then": []}
+    ]
+    ast = {"type": "program", "id": "p", "rules": [rule]}
+    with pytest.raises(DslValidationError, match="non-empty array"):
+        validate_ast(ast)
+
+
+def test_validator_rejects_else_if_branch_missing_when():
+    rule = _basic_rule()
+    rule["else_if"] = [{"then": [_assign_stmt("a2", "B")]}]
+    ast = {"type": "program", "id": "p", "rules": [rule]}
+    with pytest.raises(DslValidationError, match="required key 'when'"):
+        validate_ast(ast)
+
+
+def test_validator_rejects_unexpected_keys_in_else_if_branch():
+    rule = _basic_rule()
+    rule["else_if"] = [
+        {
+            "when": {"type": "literal", "id": "w2", "value": True},
+            "then": [_assign_stmt("a2", "B")],
+            "sneaky": 1,
+        }
+    ]
+    ast = {"type": "program", "id": "p", "rules": [rule]}
+    with pytest.raises(DslValidationError, match="unexpected keys"):
+        validate_ast(ast)
+
+
+def test_validator_rejects_else_if_not_a_list():
+    rule = _basic_rule()
+    rule["else_if"] = {"when": {}, "then": []}
+    ast = {"type": "program", "id": "p", "rules": [rule]}
+    with pytest.raises(DslValidationError, match="else_if must be an array"):
+        validate_ast(ast)
+
+
+def test_validator_rejects_empty_else():
+    rule = _basic_rule()
+    rule["else"] = []
+    ast = {"type": "program", "id": "p", "rules": [rule]}
+    with pytest.raises(DslValidationError, match="non-empty array"):
+        validate_ast(ast)
+
+
+def test_validator_enforces_section_context_inside_else():
+    # veto is pre-only; placing it in a main rule's else must be rejected
+    # the same way it is inside a then.
+    rule = _basic_rule()
+    rule["else"] = [{"type": "veto", "id": "v", "case_name": "Nope"}]
+    ast = {"type": "program", "id": "p", "rules": [rule]}
+    with pytest.raises(DslValidationError, match="not allowed inside"):
+        validate_ast(ast)
+
+
+def test_validator_counts_else_branch_nodes_toward_limit():
+    # A minimal rule is 6 nodes (a bare-literal ``when`` is counted by both
+    # the condition and expression walkers). It validates under a 6-node
+    # budget...
+    def _minimal_rule():
+        return {
+            "type": "rule",
+            "id": "r1",
+            "when": {"type": "literal", "id": "w", "value": True},
+            "then": [_assign_stmt("a1", "A")],
+        }
+
+    validate_ast(
+        {"type": "program", "id": "p", "rules": [_minimal_rule()]},
+        max_nodes=6,
+    )
+
+    # ...but adding an else branch (2 more nodes) tips it over, proving the
+    # new branch is counted against the node-count guard.
+    rule = _minimal_rule()
+    rule["else"] = [_assign_stmt("a_else", "C")]
+    ast = {"type": "program", "id": "p", "rules": [rule]}
+    with pytest.raises(DslValidationError, match="node count"):
+        validate_ast(ast, max_nodes=6)
