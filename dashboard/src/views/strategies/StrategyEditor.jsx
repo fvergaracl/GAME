@@ -61,6 +61,7 @@ import {
 } from './blocks'
 import { workspaceToAst } from './dsl/generator'
 import { validateAst } from './dsl/validator'
+import { buildMockState, usedAccumulationFields } from './dsl/simFields'
 import EditorTour from './EditorTour'
 import StrategyVersionHistoryModal from './StrategyVersionHistoryModal'
 import TemplatePickerModal from './TemplatePickerModal'
@@ -103,8 +104,12 @@ const INITIAL_SIM_FORM = {
   externalTaskId: 'task-1',
   externalUserId: 'user-1',
   dataJson: '{}',
-  mockStateJson: '{\n  "task.measurements_count": 1\n}',
+  mockStateJson: '{}',
 }
+
+// Upper bound on cumulative runs so a stray "999" can't hammer the
+// backend with sequential simulate calls.
+const MAX_CUMULATIVE_RUNS = 50
 
 const StrategyEditor = () => {
   const { t, i18n } = useTranslation('editor')
@@ -140,6 +145,9 @@ const StrategyEditor = () => {
   // closes over a ref so it always sees the latest schema without
   // forcing a workspace re-injection on every parent change.
   const parentSchemaRef = useRef(null)
+  // Debounce timer for recomputing which accumulated fields the strategy
+  // reads as the designer edits blocks (see the change listener below).
+  const usedFieldsTimerRef = useRef(null)
 
   const [strategyName, setStrategyName] = useState('Mi estrategia')
   const [description, setDescription] = useState('')
@@ -177,6 +185,17 @@ const StrategyEditor = () => {
   const [simResult, setSimResult] = useState(null)
   const [simError, setSimError] = useState(null)
   const [isSimulating, setIsSimulating] = useState(false)
+
+  // Guided "accumulated values" panel. ``simMode`` toggles a single
+  // dry-run vs. a cumulative sequence of submissions. ``usedFields`` is
+  // the subset of analytics fields the current AST reads, recomputed via
+  // a debounced workspace change listener. ``simFieldValues`` holds the
+  // per-path { value, step }; ``simRuns`` is the cumulative result table.
+  const [simMode, setSimMode] = useState('single')
+  const [usedFields, setUsedFields] = useState([])
+  const [simFieldValues, setSimFieldValues] = useState({})
+  const [cumulativeRuns, setCumulativeRuns] = useState(5)
+  const [simRuns, setSimRuns] = useState(null)
 
   // Sprint 9: history modal visibility. Only meaningful when the editor
   // is loaded with an existing strategy (i.e. ``strategyId`` is set);
@@ -220,6 +239,36 @@ const StrategyEditor = () => {
       _buildParentOverrideFlyout(ws, parentSchemaRef.current),
     )
 
+    // Keep the guided "accumulated values" inputs in sync with the
+    // blocks: each edit re-derives which analytics fields the AST reads
+    // so the test panel only shows inputs the strategy actually uses.
+    // Debounced because Blockly fires a change event per drag tick, and
+    // wrapped in try/catch since the AST is often half-built mid-edit.
+    const refreshUsedFields = () => {
+      try {
+        const ast = workspaceToAst(workspace)
+        const fields = usedAccumulationFields(ast)
+        setUsedFields(fields)
+        setSimFieldValues((prev) => {
+          let changed = false
+          const next = { ...prev }
+          for (const meta of fields) {
+            if (!next[meta.path]) {
+              next[meta.path] = { value: meta.default, step: meta.step }
+              changed = true
+            }
+          }
+          return changed ? next : prev
+        })
+      } catch {
+        // Malformed AST mid-edit — keep the last known field set.
+      }
+    }
+    workspace.addChangeListener(() => {
+      if (usedFieldsTimerRef.current) clearTimeout(usedFieldsTimerRef.current)
+      usedFieldsTimerRef.current = setTimeout(refreshUsedFields, 300)
+    })
+
     // Sprint 8: a template / imported bundle queued by the chooser is
     // hydrated AFTER the workspace exists. Doing it inside this effect
     // — instead of synchronously from the chooser handler — guarantees
@@ -237,7 +286,12 @@ const StrategyEditor = () => {
       setPendingSeed(false)
     }
 
+    // Initial pass so the guided inputs reflect any hydrated blocks even
+    // if the change listener's debounce hasn't fired yet.
+    refreshUsedFields()
+
     return () => {
+      if (usedFieldsTimerRef.current) clearTimeout(usedFieldsTimerRef.current)
       workspace.dispose()
       workspaceRef.current = null
     }
@@ -526,11 +580,12 @@ const StrategyEditor = () => {
   const handleSimulate = useCallback(async () => {
     setSimError(null)
     setSimResult(null)
+    setSimRuns(null)
     const ast = buildAndValidateAst()
     if (!ast) return
 
     let dataParsed
-    let mockStateParsed
+    let advancedMock
     try {
       dataParsed = simForm.dataJson ? JSON.parse(simForm.dataJson) : {}
     } catch (err) {
@@ -538,11 +593,19 @@ const StrategyEditor = () => {
       return
     }
     try {
-      mockStateParsed = simForm.mockStateJson ? JSON.parse(simForm.mockStateJson) : {}
+      advancedMock = simForm.mockStateJson ? JSON.parse(simForm.mockStateJson) : {}
     } catch (err) {
       setSimError(t('alerts.invalidMockJson', { error: err.message }))
       return
     }
+
+    const usedPaths = usedFields.map((m) => m.path)
+    // Advanced JSON overrides win over the guided inputs, so designers can
+    // still force any field (including data.* paths the inputs don't cover).
+    const mockForRun = (runIndex) => ({
+      ...buildMockState(simFieldValues, usedPaths, runIndex),
+      ...advancedMock,
+    })
 
     // /simulate requires a persisted strategy id. If the designer hasn't
     // saved yet, persist as a hidden draft first so they can iterate
@@ -570,22 +633,57 @@ const StrategyEditor = () => {
       }
     }
 
-    setIsSimulating(true)
-    try {
-      const response = await simulateCustomStrategy(targetId, {
+    const runOnce = (runIndex) =>
+      simulateCustomStrategy(targetId, {
         externalGameId: simForm.externalGameId,
         externalTaskId: simForm.externalTaskId,
         externalUserId: simForm.externalUserId,
         data: dataParsed,
-        mockState: mockStateParsed,
+        mockState: mockForRun(runIndex),
       })
-      setSimResult(response)
+
+    setIsSimulating(true)
+    try {
+      if (simMode === 'cumulative') {
+        const total = Math.max(1, Math.min(MAX_CUMULATIVE_RUNS, Number(cumulativeRuns) || 1))
+        const runs = []
+        let last = null
+        for (let i = 0; i < total; i += 1) {
+          // Sequential on purpose: keeps the order deterministic and avoids
+          // firing N parallel requests at the backend.
+          // eslint-disable-next-line no-await-in-loop
+          last = await runOnce(i)
+          runs.push({
+            run: i + 1,
+            points: last.points,
+            caseName: last.caseName,
+          })
+        }
+        setSimRuns(runs)
+        setSimResult(last)
+      } else {
+        const response = await runOnce(0)
+        setSimResult(response)
+      }
     } catch (err) {
       setSimError(translateDslError(t, err) || extractError(err, t))
     } finally {
       setIsSimulating(false)
     }
-  }, [buildAndValidateAst, simForm, strategyId, strategyName, description, mode, parentId, t])
+  }, [
+    buildAndValidateAst,
+    simForm,
+    simMode,
+    simFieldValues,
+    usedFields,
+    cumulativeRuns,
+    strategyId,
+    strategyName,
+    description,
+    mode,
+    parentId,
+    t,
+  ])
 
   // ----- Render ------------------------------------------------------------
   // Sprint 8: render the empty-state chooser as a stand-alone card when
@@ -990,19 +1088,111 @@ const StrategyEditor = () => {
                 <div className="form-text">{t('simulate.dataHint')}</div>
               </div>
               <div className="mb-2">
-                <CFormLabel>{t('simulate.mockState')}</CFormLabel>
-                <CFormTextarea
-                  rows={5}
-                  value={simForm.mockStateJson}
-                  onChange={(e) => setSimForm({ ...simForm, mockStateJson: e.target.value })}
-                />
-                <div className="form-text">
-                  <Trans
-                    i18nKey="simulate.mockHint"
-                    ns="editor"
-                    components={{ code: <code /> }}
+                <CFormLabel>{t('simulate.mode.label')}</CFormLabel>
+                <CFormSelect value={simMode} onChange={(e) => setSimMode(e.target.value)}>
+                  <option value="single">{t('simulate.mode.single')}</option>
+                  <option value="cumulative">{t('simulate.mode.cumulative')}</option>
+                </CFormSelect>
+              </div>
+
+              {simMode === 'cumulative' && (
+                <div className="mb-2">
+                  <CFormLabel>{t('simulate.runs')}</CFormLabel>
+                  <CFormInput
+                    type="number"
+                    min={1}
+                    max={MAX_CUMULATIVE_RUNS}
+                    value={cumulativeRuns}
+                    onChange={(e) => setCumulativeRuns(e.target.value)}
                   />
+                  <div className="form-text">{t('simulate.runsHint')}</div>
                 </div>
+              )}
+
+              <div className="mb-2">
+                <CFormLabel className="fw-semibold">{t('simulate.fieldsTitle')}</CFormLabel>
+                {usedFields.length === 0 ? (
+                  <div className="form-text">{t('simulate.noFields')}</div>
+                ) : (
+                  <>
+                    <div className="form-text mb-2">{t('simulate.fieldsHint')}</div>
+                    {usedFields.map((meta) => (
+                      <div className="mb-3" key={meta.path}>
+                        <CFormLabel className="small mb-1">
+                          {t(`simulate.fields.${meta.path}`, { defaultValue: meta.path })}
+                        </CFormLabel>
+                        <CFormInput
+                          type="number"
+                          value={simFieldValues[meta.path]?.value ?? meta.default}
+                          onChange={(e) =>
+                            setSimFieldValues((prev) => ({
+                              ...prev,
+                              [meta.path]: {
+                                value: e.target.value,
+                                step: prev[meta.path]?.step ?? meta.step,
+                              },
+                            }))
+                          }
+                        />
+                        {simMode === 'cumulative' && (
+                          <div className="mt-1">
+                            <CFormLabel className="small text-medium-emphasis mb-1">
+                              {t('simulate.stepLabel')}
+                            </CFormLabel>
+                            <CFormInput
+                              type="number"
+                              value={simFieldValues[meta.path]?.step ?? meta.step}
+                              onChange={(e) =>
+                                setSimFieldValues((prev) => ({
+                                  ...prev,
+                                  [meta.path]: {
+                                    value: prev[meta.path]?.value ?? meta.default,
+                                    step: e.target.value,
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+
+              <details className="mb-2">
+                <summary className="small text-medium-emphasis" style={{ cursor: 'pointer' }}>
+                  {t('simulate.advanced')}
+                </summary>
+                <div className="mt-2">
+                  <CFormLabel>{t('simulate.mockState')}</CFormLabel>
+                  <CFormTextarea
+                    rows={4}
+                    value={simForm.mockStateJson}
+                    onChange={(e) => setSimForm({ ...simForm, mockStateJson: e.target.value })}
+                  />
+                  <div className="form-text">
+                    <Trans
+                      i18nKey="simulate.mockHint"
+                      ns="editor"
+                      components={{ code: <code /> }}
+                    />
+                  </div>
+                </div>
+              </details>
+
+              <div className="d-grid mb-2">
+                <CButton color="info" onClick={handleSimulate} disabled={isSimulating}>
+                  {isSimulating ? <CSpinner size="sm" className="me-2" /> : null}
+                  {simMode === 'cumulative'
+                    ? t('simulate.runCumulative', {
+                        count: Math.max(
+                          1,
+                          Math.min(MAX_CUMULATIVE_RUNS, Number(cumulativeRuns) || 1),
+                        ),
+                      })
+                    : t('simulate.run')}
+                </CButton>
               </div>
             </CForm>
 
@@ -1012,9 +1202,40 @@ const StrategyEditor = () => {
               </CAlert>
             )}
 
+            {simRuns && simRuns.length > 0 && (
+              <div className="mt-3">
+                <h6>{t('simulate.cumulativeResult')}</h6>
+                <table className="table table-sm small mb-2">
+                  <thead>
+                    <tr>
+                      <th>{t('simulate.runColumn')}</th>
+                      <th>{t('simulate.pointsColumn')}</th>
+                      <th>{t('simulate.ruleColumn')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {simRuns.map((r) => (
+                      <tr key={r.run}>
+                        <td>{r.run}</td>
+                        <td>{r.points}</td>
+                        <td>{r.caseName || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="small">
+                  <strong>
+                    {t('simulate.totalPoints', {
+                      points: simRuns.reduce((sum, r) => sum + (Number(r.points) || 0), 0),
+                    })}
+                  </strong>
+                </div>
+              </div>
+            )}
+
             {simResult && (
               <div className="mt-3">
-                <h6>{t('simulate.result')}</h6>
+                <h6>{simRuns ? t('simulate.lastRunDetail') : t('simulate.result')}</h6>
                 <CAlert color="success" className="py-2 mb-2">
                   <div>
                     <strong>{t('result.summaryPoints', { points: simResult.points })}</strong>
