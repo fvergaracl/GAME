@@ -39,8 +39,14 @@ const STATEMENT_TYPES = new Set([
 
 const PARENT_FIELD_PATH_SET = new Set(PARENT_FIELD_PATHS)
 
-function fail(errors, nodeId, message) {
-  errors.push({ nodeId: nodeId || null, message })
+// ``code``/``params`` are optional and power the editor's localised,
+// actionable messages (see friendlyValidationMessage in
+// StrategyEditor.jsx). ``message`` stays the English machine string so
+// it remains in lockstep with the backend validator and the existing
+// validator.test.js regex assertions keep passing; the UI falls back to
+// it when a code has no translation.
+function fail(errors, nodeId, message, code = null, params = undefined) {
+  errors.push({ nodeId: nodeId || null, message, code, params })
 }
 
 function isKnownFieldPath(path) {
@@ -82,6 +88,8 @@ function validateExpression(node, errors, nodeCount, context = 'rule') {
         errors,
         node.id,
         `field.path '${node.path}' is not in the allowed set.`,
+        'FIELD_PATH_NOT_ALLOWED',
+        { path: node.path },
       )
       return
     }
@@ -255,6 +263,7 @@ export function validateAst(ast) {
       errors,
       ast.id,
       'program must have at least one rule or a default statement.',
+      'PROGRAM_NO_RULES',
     )
   }
 
@@ -274,7 +283,7 @@ export function validateAst(ast) {
         return
       }
       if (!rule.when) {
-        fail(errors, rule.id, 'rule.when is required.')
+        fail(errors, rule.id, 'rule.when is required.', 'RULE_WHEN_REQUIRED')
       } else {
         validateCondition(rule.when, errors, nodeCount, context)
       }
@@ -282,6 +291,7 @@ export function validateAst(ast) {
         fail(
           errors, rule.id,
           'rule.then must be a non-empty array of statements.',
+          'RULE_THEN_EMPTY',
         )
       } else {
         rule.then.forEach(

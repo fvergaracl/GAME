@@ -55,6 +55,7 @@ import { translateDslError } from '../../i18n/errorMap'
 import {
   DEFAULT_TOOLBOX_XML,
   EXTEND_TOOLBOX_XML,
+  STARTER_RULE_XML,
   refreshBlockI18n,
   registerDslBlocks,
 } from './blocks'
@@ -159,6 +160,10 @@ const StrategyEditor = () => {
   const [templateModalOpen, setTemplateModalOpen] = useState(false)
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [pendingImportBundle, setPendingImportBundle] = useState(null)
+  // Sprint 11: queue a starter rule for the "Crear estrategia vacía"
+  // path so the freshly-injected workspace lands on a valid example
+  // instead of a blank canvas that fails validation on first save/test.
+  const [pendingSeed, setPendingSeed] = useState(false)
   const [loadError, setLoadError] = useState(null)
   const fileInputRef = useRef(null)
 
@@ -226,13 +231,17 @@ const StrategyEditor = () => {
     } else if (pendingImportBundle) {
       loadWorkspaceFromSerialized(workspace, pendingImportBundle.blocklyXml)
       setPendingImportBundle(null)
+    } else if (pendingSeed) {
+      // Sprint 11: seed a valid starter rule for the from-scratch path.
+      loadWorkspaceFromSerialized(workspace, STARTER_RULE_XML)
+      setPendingSeed(false)
     }
 
     return () => {
       workspace.dispose()
       workspaceRef.current = null
     }
-  }, [stage, toolboxXml, pendingTemplate, pendingImportBundle])
+  }, [stage, toolboxXml, pendingTemplate, pendingImportBundle, pendingSeed])
 
   // ----- Load existing strategy by id (Sprint 8) ---------------------------
   // When the route carries an id we fetch the row, prime the editor's
@@ -325,6 +334,7 @@ const StrategyEditor = () => {
   const startFromScratch = useCallback(() => {
     setMode('DSL_FULL')
     setParentId('')
+    setPendingSeed(true)
     setStage('editing')
   }, [])
 
@@ -443,11 +453,13 @@ const StrategyEditor = () => {
     const result = validateAst(ast)
     if (!result.ok) {
       setValidationErrors(result.errors)
+      highlightErrorBlocks(workspaceRef.current, result.errors, t)
       return null
     }
     setValidationErrors([])
+    clearBlockWarnings(workspaceRef.current)
     return ast
-  }, [])
+  }, [t])
 
   const handleSave = useCallback(async () => {
     setSaveError(null)
@@ -800,9 +812,7 @@ const StrategyEditor = () => {
                 <strong>{t('alerts.astErrors')}</strong>
                 <ul className="mb-0">
                   {validationErrors.map((err, i) => (
-                    <li key={i}>
-                      {err.nodeId ? <code>{err.nodeId}</code> : null} {err.message}
-                    </li>
+                    <li key={i}>{friendlyValidationMessage(t, err)}</li>
                   ))}
                 </ul>
               </CAlert>
@@ -944,13 +954,14 @@ const StrategyEditor = () => {
             <strong>{t('simulate.title')}</strong>
           </CCardHeader>
           <CCardBody>
+            <p className="text-medium-emphasis small">{t('simulate.intro')}</p>
             <CForm>
               <div className="mb-2">
-                <CFormLabel>{t('simulate.externalGameId')}</CFormLabel>
+                <CFormLabel>{t('simulate.externalUserId')}</CFormLabel>
                 <CFormInput
                   type="text"
-                  value={simForm.externalGameId}
-                  onChange={(e) => setSimForm({ ...simForm, externalGameId: e.target.value })}
+                  value={simForm.externalUserId}
+                  onChange={(e) => setSimForm({ ...simForm, externalUserId: e.target.value })}
                 />
               </div>
               <div className="mb-2">
@@ -962,11 +973,11 @@ const StrategyEditor = () => {
                 />
               </div>
               <div className="mb-2">
-                <CFormLabel>{t('simulate.externalUserId')}</CFormLabel>
+                <CFormLabel>{t('simulate.externalGameId')}</CFormLabel>
                 <CFormInput
                   type="text"
-                  value={simForm.externalUserId}
-                  onChange={(e) => setSimForm({ ...simForm, externalUserId: e.target.value })}
+                  value={simForm.externalGameId}
+                  onChange={(e) => setSimForm({ ...simForm, externalGameId: e.target.value })}
                 />
               </div>
               <div className="mb-2">
@@ -976,6 +987,7 @@ const StrategyEditor = () => {
                   value={simForm.dataJson}
                   onChange={(e) => setSimForm({ ...simForm, dataJson: e.target.value })}
                 />
+                <div className="form-text">{t('simulate.dataHint')}</div>
               </div>
               <div className="mb-2">
                 <CFormLabel>{t('simulate.mockState')}</CFormLabel>
@@ -1003,36 +1015,61 @@ const StrategyEditor = () => {
             {simResult && (
               <div className="mt-3">
                 <h6>{t('simulate.result')}</h6>
-                <ul>
-                  <li>
-                    <strong>{t('result.points')}:</strong> {simResult.points}
-                  </li>
-                  <li>
-                    <strong>{t('result.caseName')}:</strong>{' '}
-                    {simResult.caseName ?? t('simulate.noTrace')}
-                  </li>
-                  <li>
-                    <strong>{t('result.callbackData')}:</strong>{' '}
-                    <code>{JSON.stringify(simResult.callbackData)}</code>
-                  </li>
-                </ul>
+                <CAlert color="success" className="py-2 mb-2">
+                  <div>
+                    <strong>{t('result.summaryPoints', { points: simResult.points })}</strong>
+                  </div>
+                  <div className="small">
+                    {simResult.caseName
+                      ? t('result.ruleApplied', { caseName: simResult.caseName })
+                      : t('result.noRuleMatched')}
+                  </div>
+                </CAlert>
+                {simResult.callbackData &&
+                  Object.keys(simResult.callbackData).length > 0 && (
+                    <div className="small mb-2">
+                      <strong>{t('result.callbackData')}:</strong>{' '}
+                      <code>{JSON.stringify(simResult.callbackData)}</code>
+                    </div>
+                  )}
                 <h6 className="mt-3">
                   {t('simulate.trace', {
                     count: simResult.executionTrace?.length ?? 0,
                   })}
                 </h6>
-                <pre
-                  style={{
-                    maxHeight: 240,
-                    overflow: 'auto',
-                    background: '#f5f5f5',
-                    padding: 8,
-                    borderRadius: 4,
-                    fontSize: 12,
-                  }}
-                >
-                  {JSON.stringify(simResult.executionTrace, null, 2)}
-                </pre>
+                {simResult.executionTrace?.length > 0 ? (
+                  <ol className="ps-3 mb-2 small" style={{ maxHeight: 220, overflow: 'auto' }}>
+                    {simResult.executionTrace.map((entry, i) => (
+                      <li key={entry.nodeId ?? i}>
+                        {t(`trace.types.${entry.type}`, { defaultValue: entry.type })}
+                        {' → '}
+                        <code>{JSON.stringify(entry.value)}</code>
+                        {entry.branch != null && (
+                          <span className="text-medium-emphasis"> ({String(entry.branch)})</span>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="small text-medium-emphasis">{t('simulate.noTrace')}</p>
+                )}
+                <details>
+                  <summary className="small text-medium-emphasis" style={{ cursor: 'pointer' }}>
+                    {t('result.showTechnical')}
+                  </summary>
+                  <pre
+                    style={{
+                      maxHeight: 240,
+                      overflow: 'auto',
+                      background: '#f5f5f5',
+                      padding: 8,
+                      borderRadius: 4,
+                      fontSize: 12,
+                    }}
+                  >
+                    {JSON.stringify(simResult.executionTrace, null, 2)}
+                  </pre>
+                </details>
               </div>
             )}
           </CCardBody>
@@ -1068,6 +1105,48 @@ function extractError(err, t) {
   return t
     ? t('alerts.unknownError', { defaultValue: 'Error desconocido al contactar el backend.' })
     : 'Error desconocido al contactar el backend.'
+}
+
+// Sprint 11: turn a validator error into a localised, actionable
+// string. Falls back to the English machine ``message`` when the code
+// has no translation (or the error carries no code at all).
+function friendlyValidationMessage(t, err) {
+  if (err?.code) {
+    return t(`validation.${err.code}`, {
+      ...(err.params || {}),
+      defaultValue: err.message,
+    })
+  }
+  return err?.message || ''
+}
+
+// Sprint 11: clear every block warning bubble so a previous failed
+// validation doesn't leave stale markers after the designer fixes it.
+function clearBlockWarnings(workspace) {
+  if (!workspace) return
+  for (const block of workspace.getAllBlocks(false)) {
+    block.setWarningText(null)
+  }
+}
+
+// Sprint 11: attach the friendly message as a warning bubble on the
+// offending block and focus the first one, so the designer sees WHICH
+// block is wrong on the canvas instead of decoding a cryptic node id.
+function highlightErrorBlocks(workspace, errors, t) {
+  if (!workspace) return
+  clearBlockWarnings(workspace)
+  let firstBlock = null
+  for (const err of errors) {
+    if (!err.nodeId) continue
+    const block = workspace.getBlockById(err.nodeId)
+    if (!block) continue
+    block.setWarningText(friendlyValidationMessage(t, err))
+    if (!firstBlock) firstBlock = block
+  }
+  if (firstBlock) {
+    firstBlock.select()
+    workspace.centerOnBlock(firstBlock.id)
+  }
 }
 
 // Sprint 8: the ``blocklyXml`` column in StrategyDefinition has carried

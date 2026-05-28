@@ -534,6 +534,52 @@ export const DEFAULT_TOOLBOX_XML = `
 
 
 /**
+ * Sprint 11: starter rule seeded into a brand-new DSL_FULL workspace
+ * ("Crear estrategia vacía"). A blank canvas made every first
+ * Save/Test fail with "rule.then must be a non-empty array of
+ * statements" because the designer hadn't connected an action yet.
+ * Seeding a working example (when user.measurements_count <= 2 →
+ * assign 1 point) gives them a valid, editable skeleton from frame one.
+ *
+ * Structure is copied from the vetted engagement_basico.json template
+ * (all field paths are whitelisted). Block ``id`` attributes are
+ * intentionally omitted so Blockly mints fresh ones — avoids any id
+ * collision and matches a genuinely new rule.
+ */
+export const STARTER_RULE_XML = `
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="gd_rule" x="40" y="40">
+    <value name="WHEN">
+      <block type="gd_compare">
+        <field name="OP">&lt;=</field>
+        <value name="LEFT">
+          <block type="gd_field">
+            <field name="PATH">user.measurements_count</field>
+          </block>
+        </value>
+        <value name="RIGHT">
+          <block type="gd_literal_number">
+            <field name="VALUE">2</field>
+          </block>
+        </value>
+      </block>
+    </value>
+    <statement name="THEN">
+      <block type="gd_assign_points">
+        <value name="VALUE">
+          <block type="gd_literal_number">
+            <field name="VALUE">1</field>
+          </block>
+        </value>
+        <field name="CASE_NAME">default</field>
+      </block>
+    </statement>
+  </block>
+</xml>
+`.trim()
+
+
+/**
  * Sprint 7: extended toolbox XML used in "Extender existente"
  * (DSL_EXTEND) mode. Adds three categories sourced from the Sprint 7
  * blocks plus a callback-backed "Parent overrides" category whose

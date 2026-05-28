@@ -44,20 +44,51 @@
   },
   "simulate": {
     "title": "Test strategy",
-    "externalGameId": "externalGameId",
-    "externalTaskId": "externalTaskId",
-    "externalUserId": "externalUserId",
-    "data": "data (JSON)",
-    "mockState": "mockState (JSON)",
-    "mockHint": "Override whitelisted fields with fixed values, e.g. <code>{\"task.measurements_count\": 1}</code>.",
+    "intro": "Run your strategy with fictitious data to see how many points it would award. Nothing is persisted to production.",
+    "externalGameId": "Test game",
+    "externalTaskId": "Test task",
+    "externalUserId": "Test user",
+    "data": "Event data (optional)",
+    "dataHint": "Extra data your app would send when awarding points. Leave it as {} if you don't use data.<key> fields.",
+    "mockState": "Simulated field values",
+    "mockHint": "Override analytics fields with fixed values just for this test, e.g. <code>{\"task.measurements_count\": 1}</code>.",
     "result": "Result",
-    "trace": "Trace ({{count}} nodes)",
-    "noTrace": "—"
+    "trace": "Execution steps ({{count}})",
+    "noTrace": "The strategy ran no steps."
   },
   "result": {
     "points": "points",
     "caseName": "caseName",
-    "callbackData": "callbackData"
+    "callbackData": "Callback data",
+    "summaryPoints": "Awarded {{points}} points",
+    "ruleApplied": "Rule applied: {{caseName}}",
+    "noRuleMatched": "No rule matched (0 points).",
+    "showTechnical": "Show technical detail (JSON)"
+  },
+  "validation": {
+    "RULE_THEN_EMPTY": "The rule needs at least one action. Drag a block from the 'Assign' category (e.g. 'assign points') and snap it into the 'then' slot.",
+    "RULE_WHEN_REQUIRED": "The rule needs a condition. Connect a block into the 'when' slot.",
+    "PROGRAM_NO_RULES": "Add at least one rule to the canvas before saving or testing.",
+    "FIELD_PATH_NOT_ALLOWED": "Field '{{path}}' is not allowed. Pick a field from the dropdown or use 'data.<key>'."
+  },
+  "trace": {
+    "types": {
+      "rule": "Rule evaluated",
+      "compare": "Comparison",
+      "and": "Logical AND",
+      "or": "Logical OR",
+      "not": "Negation",
+      "field": "Field",
+      "literal": "Fixed value",
+      "arith": "Arithmetic operation",
+      "func_call": "Function",
+      "assign_points": "Assign points",
+      "set_callback_data": "Set callback data",
+      "set_data": "Set data",
+      "veto": "Veto",
+      "set_points": "Set points",
+      "set_case_name": "Set caseName"
+    }
   },
   "parentSchema": {
     "title": "Parent: {{name}}",

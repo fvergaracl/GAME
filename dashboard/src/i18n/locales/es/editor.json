@@ -44,20 +44,51 @@
   },
   "simulate": {
     "title": "Probar estrategia",
-    "externalGameId": "externalGameId",
-    "externalTaskId": "externalTaskId",
-    "externalUserId": "externalUserId",
-    "data": "data (JSON)",
-    "mockState": "mockState (JSON)",
-    "mockHint": "Sustituye campos del whitelist por valores fijos, por ejemplo <code>{\"task.measurements_count\": 1}</code>.",
+    "intro": "Ejecuta tu estrategia con datos ficticios para ver cuántos puntos otorgaría. No se guarda nada en producción.",
+    "externalGameId": "Juego de prueba",
+    "externalTaskId": "Tarea de prueba",
+    "externalUserId": "Usuario de prueba",
+    "data": "Datos del evento (opcional)",
+    "dataHint": "Datos extra que tu app enviaría al otorgar puntos. Déjalo en {} si no usas campos data.<clave>.",
+    "mockState": "Valores simulados de campos",
+    "mockHint": "Sustituye campos de la analítica por valores fijos solo para esta prueba, por ejemplo <code>{\"task.measurements_count\": 1}</code>.",
     "result": "Resultado",
-    "trace": "Trace ({{count}} nodos)",
-    "noTrace": "—"
+    "trace": "Pasos de ejecución ({{count}})",
+    "noTrace": "La estrategia no ejecutó ningún paso."
   },
   "result": {
     "points": "points",
     "caseName": "caseName",
-    "callbackData": "callbackData"
+    "callbackData": "Datos de callback",
+    "summaryPoints": "Otorgó {{points}} puntos",
+    "ruleApplied": "Regla aplicada: {{caseName}}",
+    "noRuleMatched": "Ninguna regla coincidió (0 puntos).",
+    "showTechnical": "Ver detalle técnico (JSON)"
+  },
+  "validation": {
+    "RULE_THEN_EMPTY": "La regla necesita al menos una acción. Arrastra un bloque de la categoría 'Asigna' (por ejemplo 'asignar puntos') y conéctalo al hueco 'entonces'.",
+    "RULE_WHEN_REQUIRED": "La regla necesita una condición. Conecta un bloque en el hueco 'cuando'.",
+    "PROGRAM_NO_RULES": "Añade al menos una regla al lienzo antes de guardar o probar.",
+    "FIELD_PATH_NOT_ALLOWED": "El campo '{{path}}' no está permitido. Elige un campo del desplegable o usa 'data.<clave>'."
+  },
+  "trace": {
+    "types": {
+      "rule": "Regla evaluada",
+      "compare": "Comparación",
+      "and": "Y lógico",
+      "or": "O lógico",
+      "not": "Negación",
+      "field": "Campo",
+      "literal": "Valor fijo",
+      "arith": "Operación aritmética",
+      "func_call": "Función",
+      "assign_points": "Asignar puntos",
+      "set_callback_data": "Guardar dato de callback",
+      "set_data": "Set data",
+      "veto": "Veto",
+      "set_points": "Set puntos",
+      "set_case_name": "Set caseName"
+    }
   },
   "parentSchema": {
     "title": "Padre: {{name}}",
