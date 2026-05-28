@@ -37,6 +37,25 @@ class SimulationRequest(BaseModel):
     )
 
 
+class InlineSimulationRequest(SimulationRequest):
+    """Sprint 5 (fix C7): dry-run an AST supplied inline.
+
+    The id-based ``/{id}/simulate`` route loads a *persisted* strategy,
+    which forced the editor to save a hidden DRAFT on every "Probar"
+    click just to get an id — accumulating orphan rows in the DB. This
+    request carries the AST directly so the designer can test the exact
+    blocks on the canvas (including unsaved edits) without persisting
+    anything.
+    """
+
+    astJson: Dict[str, Any] = Field(
+        description=(
+            "The strategy AST to dry-run, supplied inline so the designer "
+            "can test unsaved edits without persisting a draft."
+        )
+    )
+
+
 class SimulationResponse(BaseModel):
     points: float
     caseName: Optional[str] = None

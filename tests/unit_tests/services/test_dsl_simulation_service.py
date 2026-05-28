@@ -19,7 +19,7 @@ from app.core.exceptions import (
     DslValidationError,
     NotFoundError,
 )
-from app.schema.dsl_schema import SimulationRequest
+from app.schema.dsl_schema import InlineSimulationRequest, SimulationRequest
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
 from app.services.dsl_simulation_service import DslSimulationService
 
@@ -252,3 +252,63 @@ async def test_simulate_translates_timeout_to_dsl_timeout_error():
                     mockState={"user.measurements_count": 1},
                 ),
             )
+
+
+# ----- Inline simulate (Sprint 5, fix C7) ----------------------------------
+
+
+@pytest.mark.asyncio
+async def test_simulate_inline_runs_ast_without_db_lookup():
+    """Inline simulate must NOT touch the strategy definition service —
+    that's the whole point of fix C7 (no orphan DRAFT rows)."""
+    svc, strategy_service, _ = _service()
+
+    response = await svc.simulate_inline(
+        realmId="realm-a",
+        request=InlineSimulationRequest(
+            externalGameId="g",
+            externalTaskId="t",
+            externalUserId="u",
+            astJson=_ast_basic(),
+            mockState={"user.measurements_count": 1},
+        ),
+    )
+
+    assert response.points == 1.0
+    assert response.caseName == "BasicEngagement"
+    strategy_service.get_strategy.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_simulate_inline_falls_through_like_id_based():
+    svc, _, _ = _service()
+
+    response = await svc.simulate_inline(
+        realmId="realm-a",
+        request=InlineSimulationRequest(
+            externalGameId="g",
+            externalTaskId="t",
+            externalUserId="u",
+            astJson=_ast_basic(),
+            mockState={"user.measurements_count": 5},
+        ),
+    )
+
+    assert response.points == 10.0
+    assert response.caseName == "PerformanceBonus"
+
+
+@pytest.mark.asyncio
+async def test_simulate_inline_rejects_invalid_ast():
+    svc, _, _ = _service()
+
+    with pytest.raises(DslValidationError):
+        await svc.simulate_inline(
+            realmId="realm-a",
+            request=InlineSimulationRequest(
+                externalGameId="g",
+                externalTaskId="t",
+                externalUserId="u",
+                astJson={"type": "program", "id": "p"},
+            ),
+        )

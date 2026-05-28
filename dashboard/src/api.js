@@ -184,6 +184,14 @@ export const simulateCustomStrategy = async (id, request) => {
   return postRequest(`/strategies/custom/${encodeURIComponent(id)}/simulate`, request)
 }
 
+// Sprint 5 (fix C7): dry-run an AST supplied inline — no persisted id, so
+// "Probar" never spawns an orphan DRAFT and always tests the exact blocks
+// on the canvas (unsaved edits included).
+// request: { astJson, externalGameId, externalTaskId, externalUserId, data?, mockState? }
+export const simulateInlineStrategy = async (request) => {
+  return postRequest(`/strategies/custom/simulate`, request)
+}
+
 // ---------------------------------------------------------------------------
 // Sprint 7 — DSL_EXTEND editor helpers
 //

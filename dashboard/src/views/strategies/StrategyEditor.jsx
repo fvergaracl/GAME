@@ -48,7 +48,7 @@ import {
   importCustomStrategy,
   listBuiltInStrategies,
   publishCustomStrategy,
-  simulateCustomStrategy,
+  simulateInlineStrategy,
   updateCustomStrategy,
 } from '../../api'
 import keycloak from '../../keycloak'
@@ -66,6 +66,9 @@ import { workspaceToAst } from './dsl/generator'
 import { validateAst } from './dsl/validator'
 import { buildMockState, usedAccumulationFields } from './dsl/simFields'
 import EditorTour from './EditorTour'
+import SimulationRunsChart from './SimulationRunsChart'
+import SimulationScenarios from './SimulationScenarios'
+import SimulationTracePanel from './SimulationTracePanel'
 import StrategyVersionHistoryModal from './StrategyVersionHistoryModal'
 import TemplatePickerModal from './TemplatePickerModal'
 
@@ -206,6 +209,12 @@ const StrategyEditor = () => {
   const [simResult, setSimResult] = useState(null)
   const [simError, setSimError] = useState(null)
   const [isSimulating, setIsSimulating] = useState(false)
+  // Sprint 5: the exact AST that produced ``simResult`` — kept so the trace
+  // panel can walk the same tree the interpreter ran (node ids line up 1:1).
+  const [simAst, setSimAst] = useState(null)
+  // Sprint 5: a pinned previous run, shown side-by-side with the current
+  // result so a designer can compare two tweaks of the same strategy.
+  const [comparison, setComparison] = useState(null)
 
   // Guided "accumulated values" panel. ``simMode`` toggles a single
   // dry-run vs. a cumulative sequence of submissions. ``usedFields`` is
@@ -756,11 +765,18 @@ const StrategyEditor = () => {
     t,
   ])
 
-  // ----- Simulate ----------------------------------------------------------
+  // ----- Simulate (Sprint 5: inline, fix C7) -------------------------------
+  // Previously "Probar" had to persist a hidden DRAFT just to obtain an id
+  // for /{id}/simulate, leaving orphan rows after every test iteration.
+  // We now POST the AST inline, so simulation:
+  //   * never writes to the DB, and
+  //   * always tests the EXACT blocks on the canvas (unsaved edits included)
+  //     rather than the last-saved version.
   const handleSimulate = useCallback(async () => {
     setSimError(null)
     setSimResult(null)
     setSimRuns(null)
+    setSimAst(null)
     const ast = buildAndValidateAst()
     if (!ast) return
 
@@ -779,6 +795,13 @@ const StrategyEditor = () => {
       return
     }
 
+    // DSL_EXTEND only makes sense against a parent; keep the same guard the
+    // old draft-creating path had so the designer gets a clear message.
+    if (mode === 'DSL_EXTEND' && !parentId) {
+      setSimError(t('alerts.noParentSim'))
+      return
+    }
+
     const usedPaths = usedFields.map((m) => m.path)
     // Advanced JSON overrides win over the guided inputs, so designers can
     // still force any field (including data.* paths the inputs don't cover).
@@ -787,36 +810,9 @@ const StrategyEditor = () => {
       ...advancedMock,
     })
 
-    // /simulate requires a persisted strategy id. If the designer hasn't
-    // saved yet, persist as a hidden draft first so they can iterate
-    // without remembering to click Save before Test.
-    let targetId = strategyId
-    if (!targetId) {
-      try {
-        if (mode === 'DSL_EXTEND' && !parentId) {
-          setSimError(t('alerts.noParentSim'))
-          return
-        }
-        const draft = await createCustomStrategy({
-          name: strategyName.trim() || 'Borrador',
-          description: description.trim() || null,
-          type: mode,
-          parentStrategyId: mode === 'DSL_EXTEND' ? parentId : null,
-          astJson: ast,
-          blocklyXml: null,
-        })
-        targetId = draft.id
-        setStrategyId(targetId)
-        setLoadedVersion(draft.version ?? null)
-        setStatus(draft.status ?? 'DRAFT')
-      } catch (err) {
-        setSimError(translateDslError(t, err) || extractError(err, t))
-        return
-      }
-    }
-
     const runOnce = (runIndex) =>
-      simulateCustomStrategy(targetId, {
+      simulateInlineStrategy({
+        astJson: ast,
         externalGameId: simForm.externalGameId,
         externalTaskId: simForm.externalTaskId,
         externalUserId: simForm.externalUserId,
@@ -847,6 +843,7 @@ const StrategyEditor = () => {
         const response = await runOnce(0)
         setSimResult(response)
       }
+      setSimAst(ast)
     } catch (err) {
       setSimError(translateDslError(t, err) || extractError(err, t))
     } finally {
@@ -859,13 +856,52 @@ const StrategyEditor = () => {
     simFieldValues,
     usedFields,
     cumulativeRuns,
-    strategyId,
-    strategyName,
-    description,
     mode,
     parentId,
     t,
   ])
+
+  // Sprint 5: snapshot the current result as the comparison baseline ("A").
+  // The next run renders beside it so two tweaks can be compared directly.
+  const pinComparison = useCallback(() => {
+    if (!simResult) return
+    setComparison({
+      points: simResult.points,
+      caseName: simResult.caseName,
+      total: simRuns ? simRuns.reduce((sum, r) => sum + (Number(r.points) || 0), 0) : null,
+      runs: simRuns ? simRuns.length : null,
+    })
+  }, [simResult, simRuns])
+
+  // Sprint 5: collect the current test inputs into a serializable scenario
+  // (for SimulationScenarios) and apply a loaded one back onto the form.
+  const currentScenario = useMemo(
+    () => ({
+      externalGameId: simForm.externalGameId,
+      externalTaskId: simForm.externalTaskId,
+      externalUserId: simForm.externalUserId,
+      dataJson: simForm.dataJson,
+      mockStateJson: simForm.mockStateJson,
+      simMode,
+      cumulativeRuns,
+      simFieldValues,
+    }),
+    [simForm, simMode, cumulativeRuns, simFieldValues],
+  )
+
+  const loadScenario = useCallback((scenario) => {
+    if (!scenario) return
+    setSimForm({
+      externalGameId: scenario.externalGameId ?? INITIAL_SIM_FORM.externalGameId,
+      externalTaskId: scenario.externalTaskId ?? INITIAL_SIM_FORM.externalTaskId,
+      externalUserId: scenario.externalUserId ?? INITIAL_SIM_FORM.externalUserId,
+      dataJson: scenario.dataJson ?? INITIAL_SIM_FORM.dataJson,
+      mockStateJson: scenario.mockStateJson ?? INITIAL_SIM_FORM.mockStateJson,
+    })
+    if (scenario.simMode) setSimMode(scenario.simMode)
+    if (scenario.cumulativeRuns != null) setCumulativeRuns(scenario.cumulativeRuns)
+    if (scenario.simFieldValues) setSimFieldValues(scenario.simFieldValues)
+  }, [])
 
   // ----- Publish / Archive (Sprint 1 fix C2) -------------------------------
   // The lifecycle endpoints are admin-only server-side (``require_admin``);
@@ -1455,6 +1491,7 @@ const StrategyEditor = () => {
           </CCardHeader>
           <CCardBody>
             <p className="text-medium-emphasis small">{t('simulate.intro')}</p>
+            <SimulationScenarios current={currentScenario} onLoad={loadScenario} />
             <CForm>
               <div className="mb-2">
                 <CFormLabel>{t('simulate.externalUserId')}</CFormLabel>
@@ -1632,6 +1669,7 @@ const StrategyEditor = () => {
                     })}
                   </strong>
                 </div>
+                <SimulationRunsChart runs={simRuns} />
               </div>
             )}
 
@@ -1648,6 +1686,74 @@ const StrategyEditor = () => {
                       : t('result.noRuleMatched')}
                   </div>
                 </CAlert>
+
+                {/* Sprint 5: pin this run and compare it with the next one
+                    side-by-side, so a designer can see the effect of a tweak. */}
+                <div className="d-flex align-items-center gap-2 mb-2">
+                  <CButton size="sm" color="secondary" variant="outline" onClick={pinComparison}>
+                    {t('simulate.compare.pin')}
+                  </CButton>
+                  {comparison && (
+                    <CButton
+                      size="sm"
+                      color="link"
+                      className="p-0"
+                      onClick={() => setComparison(null)}
+                    >
+                      {t('simulate.compare.clear')}
+                    </CButton>
+                  )}
+                </div>
+
+                {comparison && (
+                  <div className="mb-2">
+                    <h6>{t('simulate.compare.title')}</h6>
+                    <table className="table table-sm small mb-0">
+                      <thead>
+                        <tr>
+                          <th />
+                          <th>{t('simulate.compare.pinned')}</th>
+                          <th>{t('simulate.compare.current')}</th>
+                          <th>{t('simulate.compare.delta')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>{t('simulate.pointsColumn')}</td>
+                          <td>{comparison.points}</td>
+                          <td>{simResult.points}</td>
+                          <td className={deltaClass(simResult.points - comparison.points)}>
+                            {formatDelta(simResult.points - comparison.points)}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>{t('simulate.ruleColumn')}</td>
+                          <td>{comparison.caseName || '—'}</td>
+                          <td>{simResult.caseName || '—'}</td>
+                          <td />
+                        </tr>
+                        {comparison.total != null && simRuns && (
+                          <tr>
+                            <td>{t('simulate.compare.totalRow')}</td>
+                            <td>{comparison.total}</td>
+                            <td>{simRuns.reduce((sum, r) => sum + (Number(r.points) || 0), 0)}</td>
+                            <td
+                              className={deltaClass(
+                                simRuns.reduce((sum, r) => sum + (Number(r.points) || 0), 0) -
+                                  comparison.total,
+                              )}
+                            >
+                              {formatDelta(
+                                simRuns.reduce((sum, r) => sum + (Number(r.points) || 0), 0) -
+                                  comparison.total,
+                              )}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
                 {simResult.callbackData &&
                   Object.keys(simResult.callbackData).length > 0 && (
                     <div className="small mb-2">
@@ -1660,22 +1766,9 @@ const StrategyEditor = () => {
                     count: simResult.executionTrace?.length ?? 0,
                   })}
                 </h6>
-                {simResult.executionTrace?.length > 0 ? (
-                  <ol className="ps-3 mb-2 small" style={{ maxHeight: 220, overflow: 'auto' }}>
-                    {simResult.executionTrace.map((entry, i) => (
-                      <li key={entry.nodeId ?? i}>
-                        {t(`trace.types.${entry.type}`, { defaultValue: entry.type })}
-                        {' → '}
-                        <code>{JSON.stringify(entry.value)}</code>
-                        {entry.branch != null && (
-                          <span className="text-medium-emphasis"> ({String(entry.branch)})</span>
-                        )}
-                      </li>
-                    ))}
-                  </ol>
-                ) : (
-                  <p className="small text-medium-emphasis">{t('simulate.noTrace')}</p>
-                )}
+                <div className="mb-2 small" style={{ maxHeight: 340, overflow: 'auto' }}>
+                  <SimulationTracePanel ast={simAst} trace={simResult.executionTrace} />
+                </div>
                 <details>
                   <summary className="small text-medium-emphasis" style={{ cursor: 'pointer' }}>
                     {t('result.showTechnical')}
@@ -1728,6 +1821,22 @@ function extractError(err, t) {
   return t
     ? t('alerts.unknownError', { defaultValue: 'Error desconocido al contactar el backend.' })
     : 'Error desconocido al contactar el backend.'
+}
+
+// Sprint 5: format a points delta for the compare table with an explicit
+// sign so "+3" / "-2" read at a glance.
+function formatDelta(n) {
+  const v = Number(n) || 0
+  return v > 0 ? `+${v}` : String(v)
+}
+
+// Colour the delta: green when the current run scores higher than the
+// pinned baseline, red when lower, neutral when equal.
+function deltaClass(n) {
+  const v = Number(n) || 0
+  if (v > 0) return 'text-success'
+  if (v < 0) return 'text-danger'
+  return 'text-medium-emphasis'
 }
 
 // Sprint 11: turn a validator error into a localised, actionable

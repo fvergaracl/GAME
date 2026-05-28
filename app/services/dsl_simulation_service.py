@@ -27,6 +27,7 @@ from app.engine.dsl_interpreter import DslInterpreter
 from app.engine.dsl_validator import validate_ast
 from app.schema.dsl_schema import (
     ExecutionTraceEntry,
+    InlineSimulationRequest,
     SimulationRequest,
     SimulationResponse,
 )
@@ -68,12 +69,40 @@ class DslSimulationService(BaseService):
                 params={"strategyId": id},
             )
 
+        return await self._run_ast(definition.astJson, request)
+
+    async def simulate_inline(
+        self,
+        *,
+        realmId: Any,
+        request: InlineSimulationRequest,
+    ) -> SimulationResponse:
+        """Sprint 5 (fix C7): dry-run an AST supplied inline.
+
+        No DB lookup and nothing persisted, so "Probar" no longer spawns
+        orphan DRAFT rows and tests the exact AST on the editor canvas
+        (including unsaved edits). ``realmId`` is accepted for symmetry
+        with :meth:`simulate` and to keep the door open for per-tenant
+        analytics scoping; the sandbox run itself is bounded by the same
+        node/depth/timeout limits regardless of tenant.
+        """
+        return await self._run_ast(request.astJson, request)
+
+    async def _run_ast(
+        self,
+        astJson: Any,
+        request: SimulationRequest,
+    ) -> SimulationResponse:
+        """Validate ``astJson`` and run it through the timeout-wrapped
+        interpreter, returning the structured simulation response. Shared
+        by the id-based and inline simulate paths so both stay in lockstep.
+        """
         # Idempotent guard: drafts saved before validator changes still
         # need to fail loudly rather than half-run.
-        validate_ast(definition.astJson)
+        validate_ast(astJson)
 
         ctx = await ExecutionContext.build_for_ast(
-            definition.astJson,
+            astJson,
             externalGameId=request.externalGameId,
             externalTaskId=request.externalTaskId,
             externalUserId=request.externalUserId,
@@ -89,7 +118,7 @@ class DslSimulationService(BaseService):
 
         try:
             result = await asyncio.wait_for(
-                interpreter.execute(definition.astJson, ctx),
+                interpreter.execute(astJson, ctx),
                 timeout=configs.DSL_EXECUTION_TIMEOUT_MS / 1000,
             )
         except asyncio.TimeoutError as exc:

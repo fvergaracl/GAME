@@ -30,7 +30,11 @@ from app.middlewares.auth_context import (
     audit_log,
     get_auth_context,
 )
-from app.schema.dsl_schema import SimulationRequest, SimulationResponse
+from app.schema.dsl_schema import (
+    InlineSimulationRequest,
+    SimulationRequest,
+    SimulationResponse,
+)
 from app.model.strategy_definition import StrategyDefinitionType
 from app.schema.strategy_definition_schema import (
     StrategyDefinitionCreate,
@@ -297,6 +301,46 @@ async def import_custom_strategy(
         await audit.error(
             "Import custom strategy failed",
             {"name": payload.name, "error": str(e)},
+        )
+        raise
+
+
+@router.post(
+    "/simulate",
+    response_model=SimulationResponse,
+    summary="Dry-run an inline AST without persisting a draft (Sprint 5)",
+)
+@inject
+async def simulate_inline_strategy(
+    payload: InlineSimulationRequest,
+    auth: AuthContext = Depends(require_authenticated),
+    service: DslSimulationService = Depends(
+        Provide[Container.dsl_simulation_service]
+    ),
+    audit: AuditLogger = Depends(audit_log("strategies_custom")),
+) -> SimulationResponse:
+    """
+    Run an AST supplied inline through the sandbox without any DB lookup
+    or persistence (fix C7).
+
+    The editor's "Probar" button previously had to create a hidden DRAFT
+    just to obtain an id for ``/{id}/simulate``, leaving orphan rows after
+    every test iteration. This route takes the AST directly so simulation
+    tests the exact blocks on the canvas — unsaved edits included — and
+    leaves no trace in the database. Declared before the ``/{id}`` routes
+    so the literal ``/simulate`` path is matched first.
+    """
+    realm = _resolve_realm_id(auth)
+    await audit.info(
+        "Simulate inline strategy",
+        {"externalUserId": payload.externalUserId},
+    )
+    try:
+        return await service.simulate_inline(realmId=realm, request=payload)
+    except Exception as e:
+        await audit.error(
+            "Simulate inline strategy failed",
+            {"error": str(e)},
         )
         raise
 
