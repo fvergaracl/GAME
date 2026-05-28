@@ -8,6 +8,9 @@ const ExportHistory = React.lazy(() => import('./views/exports/ExportHistory'))
 // Sprint 6: lazy-loaded so Blockly's ~1.5MB bundle is downloaded only
 // when an admin actually opens the editor.
 const StrategyEditor = React.lazy(() => import('./views/strategies/StrategyEditor'))
+// Sprint 2: strategy library (discoverability). No Blockly dependency, so
+// it stays out of the editor's heavy chunk.
+const StrategyLibraryView = React.lazy(() => import('./views/strategies/StrategyLibraryView'))
 // Sprint 9: assignments view doesn't need Blockly but reuses the same
 // lazy pattern to keep the assignments table out of the initial bundle.
 const StrategyAssignmentsView = React.lazy(
@@ -20,6 +23,7 @@ const routes = [
   { path: '/admin/api-keys', name: 'API keys', element: Apikeys },
   { path: '/admin/exports', name: 'Data export', element: ExportData },
   { path: '/admin/exports/history', name: 'Export history', element: ExportHistory },
+  { path: '/strategies/library', name: 'My Strategies', element: StrategyLibraryView },
   { path: '/strategies/editor', name: 'Strategy Editor', element: StrategyEditor },
   { path: '/strategies/editor/:id', name: 'Edit Strategy', element: StrategyEditor },
   {

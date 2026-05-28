@@ -3,6 +3,7 @@ import CIcon from '@coreui/icons-react'
 import {
   cilCloudDownload,
   cilHistory,
+  cilLibrary,
   cilNotes,
   cilPencil,
   cilPuzzle,
@@ -50,6 +51,16 @@ const _nav_administrator = [
   {
     component: CNavTitle,
     name: 'Strategies',
+  },
+  {
+    component: CNavItem,
+    name: 'Mis estrategias',
+    to: '/strategies/library',
+    icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
+    badge: {
+      color: 'info',
+      text: 'NEW',
+    },
   },
   {
     component: CNavItem,
