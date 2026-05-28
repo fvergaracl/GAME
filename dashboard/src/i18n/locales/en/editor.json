@@ -55,6 +55,53 @@
     "PUBLISHED": "Published",
     "ARCHIVED": "Archived"
   },
+  "toolbox": {
+    "search": {
+      "placeholder": "Search block…",
+      "ariaLabel": "Search block by name",
+      "resultsLabel": "Search results",
+      "noResults": "No results for \"{{query}}\"",
+      "inCategory": "in {{category}}",
+      "hint": "Click a result to add it to the canvas."
+    },
+    "categories": {
+      "when": "When",
+      "compare": "Compare",
+      "fields": "Fields",
+      "calc": "Calculate",
+      "values": "Values",
+      "assign": "Assign",
+      "preWhen": "Pre — When",
+      "preActions": "Pre — Actions",
+      "postWhen": "Post — When",
+      "postActions": "Post — Actions",
+      "parent": "Parent",
+      "parentOverrides": "Parent overrides",
+      "assignCallback": "Assign (callback)"
+    },
+    "blocks": {
+      "gd_rule": "Rule (when → then)",
+      "gd_compare": "Comparison",
+      "gd_and": "Logical AND",
+      "gd_or": "Logical OR",
+      "gd_not": "Negation (not)",
+      "gd_field": "Analytics field",
+      "gd_field_data": "data.<key> field",
+      "gd_arith": "Arithmetic operation",
+      "gd_func_call": "Function (int, clamp)",
+      "gd_literal_number": "Fixed number",
+      "gd_literal_text": "Fixed text",
+      "gd_assign_points": "Assign points",
+      "gd_set_callback_data": "Set callback data",
+      "gd_pre_rule": "PRE rule",
+      "gd_post_rule": "POST rule",
+      "gd_set_data": "Set data",
+      "gd_veto": "Veto",
+      "gd_set_points": "Set points",
+      "gd_set_case_name": "Set caseName",
+      "gd_field_parent": "Parent field"
+    }
+  },
   "lifecycle": {
     "publishTitle": "Publish this version?",
     "publishBody": "Publishing makes v{{version}} the live version assigned to games and tasks. Any previously published version of \"{{name}}\" is archived automatically.",

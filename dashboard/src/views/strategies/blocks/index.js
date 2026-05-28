@@ -16,6 +16,7 @@ import {
   COMPARE_OPS,
   FIELD_PATHS,
   FUNC_NAMES,
+  PARENT_FIELD_PATHS,
 } from '../dsl/whitelists'
 
 // Helper: build a [[label, value], ...] options list from a string array.
@@ -113,6 +114,31 @@ const tooltip = (blockKey) => {
   }
   return ''
 }
+
+// Sprint 4: human-readable field catalog. The whitelisted analytic paths
+// (``user.measurements_count``, ``all.avg_time``, …) are cryptic, so the
+// dropdown shows a localised label with the canonical path in parens —
+// e.g. "Mediciones del usuario (user.measurements_count)". The path stays
+// the stored value so the generated AST and the docs/whitelist are
+// unaffected. Falls back to the bare path before i18next initialises (and
+// in headless unit tests), which keeps the dropdown values identical to
+// the pre-Sprint-4 ``optionsFromArray(FIELD_PATHS)`` shape.
+const fieldLabel = (path) => {
+  if (_t) {
+    const human = _t(`blocks:fields.${path}.label`, { defaultValue: '' })
+    if (human) return `${human} (${path})`
+  }
+  return path
+}
+
+// Dropdown option generators. Passed as functions (not static arrays) so
+// Blockly re-runs them every time the menu opens AND when rendering the
+// selected label — that's what makes the labels re-localise live when the
+// language switcher fires, without re-injecting the workspace. The stored
+// value is always the path, so a label change never invalidates a saved
+// selection.
+const fieldOptions = () => FIELD_PATHS.map((path) => [fieldLabel(path), path])
+const parentFieldOptions = () => PARENT_FIELD_PATHS.map((path) => [fieldLabel(path), path])
 
 // ---------------------------------------------------------------------------
 // Rule else / else-if mutator
@@ -466,10 +492,7 @@ export function registerDslBlocks(tFn) {
     init() {
       this.appendDummyInput()
         .appendField(label('field'))
-        .appendField(
-          new Blockly.FieldDropdown(optionsFromArray(FIELD_PATHS)),
-          'PATH',
-        )
+        .appendField(new Blockly.FieldDropdown(fieldOptions), 'PATH')
       this.setOutput(true, 'Number')
       this.setColour(290)
       this.setTooltip(tooltip('gd_field'))
@@ -716,13 +739,7 @@ export function registerDslBlocks(tFn) {
     init() {
       this.appendDummyInput()
         .appendField(label('parent'))
-        .appendField(
-          new Blockly.FieldDropdown([
-            ['points', 'parent.points'],
-            ['case_name', 'parent.case_name'],
-          ]),
-          'PATH',
-        )
+        .appendField(new Blockly.FieldDropdown(parentFieldOptions), 'PATH')
       // Output type allows both Number and String so it can plug into
       // arith blocks (points → Number) or compare-with-string (case
       // name → String).
@@ -756,39 +773,105 @@ export function registerDslBlocks(tFn) {
   }
 }
 
+// ===========================================================================
+// Sprint 4 (fix C6): data-driven, localised toolbox.
+//
+// The toolbox used to be two hand-written XML strings with hard-coded
+// Spanish category names ("Cuándo", "Compara", …), so an English-locale
+// designer saw an English editor with Spanish category labels. We now
+// describe each mode's toolbox as data — category ``key`` (an i18n key
+// under ``editor:toolbox.categories``), ``colour`` and the list of block
+// types — and build the XML from ``t()`` at render time. The same data
+// drives the block-search catalog so the two never drift.
+// ===========================================================================
+
+const TOOLBOX_CATEGORIES_FULL = [
+  { key: 'when', colour: 210, blocks: ['gd_rule'] },
+  { key: 'compare', colour: 180, blocks: ['gd_compare', 'gd_and', 'gd_or', 'gd_not'] },
+  { key: 'fields', colour: 290, blocks: ['gd_field', 'gd_field_data'] },
+  { key: 'calc', colour: 230, blocks: ['gd_arith', 'gd_func_call'] },
+  { key: 'values', colour: 330, blocks: ['gd_literal_number', 'gd_literal_text'] },
+  { key: 'assign', colour: 60, blocks: ['gd_assign_points', 'gd_set_callback_data'] },
+]
+
+const TOOLBOX_CATEGORIES_EXTEND = [
+  { key: 'preWhen', colour: 330, blocks: ['gd_pre_rule'] },
+  { key: 'preActions', colour: 330, blocks: ['gd_set_data', 'gd_veto'] },
+  { key: 'postWhen', colour: 60, blocks: ['gd_post_rule'] },
+  { key: 'postActions', colour: 60, blocks: ['gd_set_points', 'gd_set_case_name'] },
+  { key: 'parent', colour: 290, blocks: ['gd_field_parent'] },
+  { key: 'parentOverrides', colour: 20, custom: 'PARENT_OVERRIDES' },
+  { key: 'compare', colour: 180, blocks: ['gd_compare', 'gd_and', 'gd_or', 'gd_not'] },
+  { key: 'fields', colour: 290, blocks: ['gd_field', 'gd_field_data'] },
+  { key: 'calc', colour: 230, blocks: ['gd_arith', 'gd_func_call'] },
+  { key: 'values', colour: 330, blocks: ['gd_literal_number', 'gd_literal_text'] },
+  { key: 'assignCallback', colour: 0, blocks: ['gd_set_callback_data'] },
+]
+
+// Minimal XML attribute escaping for the localised category names (a
+// translation could contain & or quotes). Block types are internal
+// constants and never need escaping.
+const escapeXmlAttr = (s) =>
+  String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+
+// Resolve a category's display name via the editor namespace, falling
+// back to the key itself so the toolbox stays usable before i18next has
+// loaded (or if a translation is missing).
+const categoryName = (t, key) => (t && t(`toolbox.categories.${key}`, { defaultValue: '' })) || key
+
+function buildToolboxXml(categories, t) {
+  const body = categories
+    .map((cat) => {
+      const name = escapeXmlAttr(categoryName(t, cat.key))
+      if (cat.custom) {
+        return `<category name="${name}" colour="${cat.colour}" custom="${cat.custom}"></category>`
+      }
+      const blocks = (cat.blocks || []).map((type) => `<block type="${type}"></block>`).join('')
+      return `<category name="${name}" colour="${cat.colour}">${blocks}</category>`
+    })
+    .join('')
+  return `<xml xmlns="https://developers.google.com/blockly/xml">${body}</xml>`
+}
+
 /**
- * Default toolbox XML — groups the Sprint 6 blocks into 6 designer-facing
- * categories. Used in "Crear desde cero" (DSL_FULL) mode.
+ * Build the "Crear desde cero" (DSL_FULL) toolbox with category names
+ * localised via the supplied i18next ``t`` (editor namespace).
  */
-export const DEFAULT_TOOLBOX_XML = `
-<xml xmlns="https://developers.google.com/blockly/xml">
-  <category name="Cuándo" colour="210">
-    <block type="gd_rule"></block>
-  </category>
-  <category name="Compara" colour="180">
-    <block type="gd_compare"></block>
-    <block type="gd_and"></block>
-    <block type="gd_or"></block>
-    <block type="gd_not"></block>
-  </category>
-  <category name="Campos" colour="290">
-    <block type="gd_field"></block>
-    <block type="gd_field_data"></block>
-  </category>
-  <category name="Calcula" colour="230">
-    <block type="gd_arith"></block>
-    <block type="gd_func_call"></block>
-  </category>
-  <category name="Valores" colour="330">
-    <block type="gd_literal_number"></block>
-    <block type="gd_literal_text"></block>
-  </category>
-  <category name="Asigna" colour="60">
-    <block type="gd_assign_points"></block>
-    <block type="gd_set_callback_data"></block>
-  </category>
-</xml>
-`.trim()
+export const buildDefaultToolbox = (t) => buildToolboxXml(TOOLBOX_CATEGORIES_FULL, t)
+
+/**
+ * Build the "Extender existente" (DSL_EXTEND) toolbox.
+ */
+export const buildExtendToolbox = (t) => buildToolboxXml(TOOLBOX_CATEGORIES_EXTEND, t)
+
+/**
+ * Flat, deduplicated catalog of the user-insertable blocks for a given
+ * mode, used by the editor's block-search box. Each entry carries the
+ * block ``type`` plus its localised search ``label`` and owning
+ * ``category`` name so results can be filtered by free text and shown
+ * with context. Custom/dynamic categories (PARENT_OVERRIDES) are skipped
+ * — their blocks are pre-filled from the parent schema, not searched.
+ */
+export function buildBlockCatalog(mode, t) {
+  const categories = mode === 'DSL_EXTEND' ? TOOLBOX_CATEGORIES_EXTEND : TOOLBOX_CATEGORIES_FULL
+  const seen = new Set()
+  const catalog = []
+  for (const cat of categories) {
+    if (!cat.blocks) continue
+    const category = categoryName(t, cat.key)
+    for (const type of cat.blocks) {
+      if (seen.has(type)) continue
+      seen.add(type)
+      const blockLabel = (t && t(`toolbox.blocks.${type}`, { defaultValue: '' })) || type
+      catalog.push({ type, label: blockLabel, category })
+    }
+  }
+  return catalog
+}
 
 
 /**
@@ -836,59 +919,6 @@ export const STARTER_RULE_XML = `
 </xml>
 `.trim()
 
-
-/**
- * Sprint 7: extended toolbox XML used in "Extender existente"
- * (DSL_EXTEND) mode. Adds three categories sourced from the Sprint 7
- * blocks plus a callback-backed "Parent overrides" category whose
- * flyout is populated dynamically from the parent's schema via
- * ``workspace.registerToolboxCategoryCallback('PARENT_OVERRIDES', ...)``
- * in StrategyEditor.jsx.
- */
-export const EXTEND_TOOLBOX_XML = `
-<xml xmlns="https://developers.google.com/blockly/xml">
-  <category name="Pre — Cuándo" colour="330">
-    <block type="gd_pre_rule"></block>
-  </category>
-  <category name="Pre — Acciones" colour="330">
-    <block type="gd_set_data"></block>
-    <block type="gd_veto"></block>
-  </category>
-  <category name="Post — Cuándo" colour="60">
-    <block type="gd_post_rule"></block>
-  </category>
-  <category name="Post — Acciones" colour="60">
-    <block type="gd_set_points"></block>
-    <block type="gd_set_case_name"></block>
-  </category>
-  <category name="Padre" colour="290">
-    <block type="gd_field_parent"></block>
-  </category>
-  <category name="Overrides padre" colour="20" custom="PARENT_OVERRIDES">
-  </category>
-  <category name="Compara" colour="180">
-    <block type="gd_compare"></block>
-    <block type="gd_and"></block>
-    <block type="gd_or"></block>
-    <block type="gd_not"></block>
-  </category>
-  <category name="Campos" colour="290">
-    <block type="gd_field"></block>
-    <block type="gd_field_data"></block>
-  </category>
-  <category name="Calcula" colour="230">
-    <block type="gd_arith"></block>
-    <block type="gd_func_call"></block>
-  </category>
-  <category name="Valores" colour="330">
-    <block type="gd_literal_number"></block>
-    <block type="gd_literal_text"></block>
-  </category>
-  <category name="Asigna (callback)" colour="0">
-    <block type="gd_set_callback_data"></block>
-  </category>
-</xml>
-`.trim()
 
 /**
  * Sprint 10: refresh the cached ``t`` reference and re-tooltip every

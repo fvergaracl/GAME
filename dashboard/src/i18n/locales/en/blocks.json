@@ -51,5 +51,61 @@
     "setCaseName": "set caseName",
     "parent": "parent.",
     "override": "override"
+  },
+  "fieldsTable": {
+    "title": "Available fields",
+    "path": "Field",
+    "name": "Name",
+    "desc": "Description"
+  },
+  "fields": {
+    "externalGameId": {
+      "label": "Game ID",
+      "desc": "External identifier of the game sending the event."
+    },
+    "externalTaskId": {
+      "label": "Task ID",
+      "desc": "External identifier of the task."
+    },
+    "externalUserId": {
+      "label": "User ID",
+      "desc": "External identifier of the user."
+    },
+    "user.measurements_count": {
+      "label": "User measurements",
+      "desc": "How many times this user already submitted this task."
+    },
+    "task.measurements_count": {
+      "label": "Task measurements",
+      "desc": "Total submissions for the task across all users."
+    },
+    "user.avg_time": {
+      "label": "User average time",
+      "desc": "Average time (s) this user takes between tasks."
+    },
+    "all.avg_time": {
+      "label": "Global average time",
+      "desc": "Average time (s) between tasks across all users."
+    },
+    "user.last_window_diff": {
+      "label": "Δ last window",
+      "desc": "Time difference (s) vs. the user's last window."
+    },
+    "user.new_last_window_diff": {
+      "label": "Δ new window",
+      "desc": "New time difference (s) vs. the last window."
+    },
+    "user.recent_measurements_count": {
+      "label": "Recent measurements",
+      "desc": "User's submissions in the last 5 minutes (rolling window)."
+    },
+    "parent.points": {
+      "label": "Parent points",
+      "desc": "Points computed by the parent strategy (POST rules only)."
+    },
+    "parent.case_name": {
+      "label": "Parent case",
+      "desc": "Case name returned by the parent strategy (POST rules only)."
+    }
   }
 }

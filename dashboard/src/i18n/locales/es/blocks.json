@@ -51,5 +51,61 @@
     "setCaseName": "set caseName",
     "parent": "padre.",
     "override": "override"
+  },
+  "fieldsTable": {
+    "title": "Campos disponibles",
+    "path": "Campo",
+    "name": "Nombre",
+    "desc": "Descripción"
+  },
+  "fields": {
+    "externalGameId": {
+      "label": "ID del juego",
+      "desc": "Identificador externo del juego que envía el evento."
+    },
+    "externalTaskId": {
+      "label": "ID de la tarea",
+      "desc": "Identificador externo de la tarea."
+    },
+    "externalUserId": {
+      "label": "ID del usuario",
+      "desc": "Identificador externo del usuario."
+    },
+    "user.measurements_count": {
+      "label": "Mediciones del usuario",
+      "desc": "Cuántas veces este usuario ya envió esta tarea."
+    },
+    "task.measurements_count": {
+      "label": "Mediciones de la tarea",
+      "desc": "Envíos totales de la tarea, sumando todos los usuarios."
+    },
+    "user.avg_time": {
+      "label": "Tiempo medio del usuario",
+      "desc": "Tiempo promedio (s) que tarda este usuario entre tareas."
+    },
+    "all.avg_time": {
+      "label": "Tiempo medio global",
+      "desc": "Tiempo promedio (s) entre tareas de todos los usuarios."
+    },
+    "user.last_window_diff": {
+      "label": "Δ ventana anterior",
+      "desc": "Diferencia de tiempo (s) respecto a la última ventana del usuario."
+    },
+    "user.new_last_window_diff": {
+      "label": "Δ ventana nueva",
+      "desc": "Nueva diferencia de tiempo (s) respecto a la última ventana."
+    },
+    "user.recent_measurements_count": {
+      "label": "Mediciones recientes",
+      "desc": "Envíos del usuario en los últimos 5 minutos (ventana móvil)."
+    },
+    "parent.points": {
+      "label": "Puntos del padre",
+      "desc": "Puntos calculados por la estrategia padre (solo en reglas POST)."
+    },
+    "parent.case_name": {
+      "label": "Caso del padre",
+      "desc": "Nombre de caso devuelto por la estrategia padre (solo en POST)."
+    }
   }
 }

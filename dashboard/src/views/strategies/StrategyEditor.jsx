@@ -55,9 +55,10 @@ import keycloak from '../../keycloak'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import { translateDslError } from '../../i18n/errorMap'
 import {
-  DEFAULT_TOOLBOX_XML,
-  EXTEND_TOOLBOX_XML,
   STARTER_RULE_XML,
+  buildBlockCatalog,
+  buildDefaultToolbox,
+  buildExtendToolbox,
   refreshBlockI18n,
   registerDslBlocks,
 } from './blocks'
@@ -246,14 +247,54 @@ const StrategyEditor = () => {
   const [autosaveError, setAutosaveError] = useState(null)
   const [lastAutosaveAt, setLastAutosaveAt] = useState(null)
 
-  // Sprint 7: toolbox swaps wholesale when the mode changes. We track
-  // it as state (not just useMemo) because the Blockly workspace needs
-  // to be re-injected when the toolbox changes — see the useEffect
-  // dependency below.
+  // Sprint 7: toolbox swaps wholesale when the mode changes.
+  // Sprint 4 (fix C6): category names are now localised — the toolbox is
+  // rebuilt from ``t()`` so it also recomputes when the language changes.
+  // We DON'T want a language switch to re-inject the workspace (that would
+  // wipe the canvas), so the injection effect reads the latest XML via a
+  // ref and a separate effect pushes the rebuilt toolbox in-place with
+  // ``workspace.updateToolbox`` (which preserves the blocks).
   const toolboxXml = useMemo(
-    () => (mode === 'DSL_EXTEND' ? EXTEND_TOOLBOX_XML : DEFAULT_TOOLBOX_XML),
-    [mode],
+    () => (mode === 'DSL_EXTEND' ? buildExtendToolbox(t) : buildDefaultToolbox(t)),
+    [mode, t],
   )
+  const toolboxXmlRef = useRef(toolboxXml)
+  useEffect(() => {
+    toolboxXmlRef.current = toolboxXml
+    if (workspaceRef.current) {
+      workspaceRef.current.updateToolbox(toolboxXml)
+    }
+  }, [toolboxXml])
+
+  // Sprint 4: block-search box. The catalog is mode + language aware and
+  // drives the dropdown of matches; clicking one inserts that block on the
+  // canvas (the toolbox has 20+ blocks, so scanning categories is slow).
+  const [blockSearch, setBlockSearch] = useState('')
+  const blockCatalog = useMemo(() => buildBlockCatalog(mode, t), [mode, t])
+  const blockSearchResults = useMemo(() => {
+    const q = blockSearch.trim().toLowerCase()
+    if (!q) return []
+    return blockCatalog.filter(
+      (b) =>
+        b.label.toLowerCase().includes(q) ||
+        b.category.toLowerCase().includes(q) ||
+        b.type.toLowerCase().includes(q),
+    )
+  }, [blockSearch, blockCatalog])
+
+  // Insert a searched block at the centre of the current viewport, select
+  // it so it's obvious where it landed, then clear the query. Returns
+  // silently if the workspace isn't mounted yet.
+  const insertBlockFromSearch = useCallback((type) => {
+    const workspace = workspaceRef.current
+    if (!workspace) return
+    const block = Blockly.serialization.blocks.append({ type }, workspace)
+    if (block?.id) {
+      workspace.centerOnBlock(block.id)
+      block.select?.()
+    }
+    setBlockSearch('')
+  }, [])
 
   // ----- Blockly workspace lifecycle ---------------------------------------
   // Sprint 8: the workspace only mounts when ``stage === 'editing'``.
@@ -264,7 +305,7 @@ const StrategyEditor = () => {
     if (stage !== 'editing') return
     if (!workspaceDivRef.current) return
     const workspace = Blockly.inject(workspaceDivRef.current, {
-      toolbox: toolboxXml,
+      toolbox: toolboxXmlRef.current,
       trashcan: true,
       scrollbars: true,
       sounds: false,
@@ -357,7 +398,7 @@ const StrategyEditor = () => {
       workspace.dispose()
       workspaceRef.current = null
     }
-  }, [stage, toolboxXml, pendingTemplate, pendingImportBundle, pendingSeed])
+  }, [stage, mode, pendingTemplate, pendingImportBundle, pendingSeed])
 
   // ----- Load existing strategy by id (Sprint 8) ---------------------------
   // When the route carries an id we fetch the row, prime the editor's
@@ -1115,6 +1156,58 @@ const StrategyEditor = () => {
                 )}
               </CRow>
             </CForm>
+
+            {/* Sprint 4: block search. With 20+ blocks across categories,
+                scanning the toolbox is slow; typing here filters by block
+                name/category and a click drops the block on the canvas. */}
+            <div className="position-relative mb-2" data-tour="editor-search">
+              <CFormInput
+                type="search"
+                size="sm"
+                value={blockSearch}
+                placeholder={t('toolbox.search.placeholder')}
+                aria-label={t('toolbox.search.ariaLabel')}
+                onChange={(e) => setBlockSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && blockSearchResults.length > 0) {
+                    e.preventDefault()
+                    insertBlockFromSearch(blockSearchResults[0].type)
+                  } else if (e.key === 'Escape') {
+                    setBlockSearch('')
+                  }
+                }}
+              />
+              {blockSearch.trim() && (
+                <div
+                  className="position-absolute w-100 mt-1 border rounded shadow-sm bg-body"
+                  style={{ zIndex: 1050, maxHeight: 260, overflowY: 'auto' }}
+                  role="listbox"
+                  aria-label={t('toolbox.search.resultsLabel')}
+                >
+                  {blockSearchResults.length === 0 ? (
+                    <div className="px-3 py-2 text-body-secondary small">
+                      {t('toolbox.search.noResults', { query: blockSearch.trim() })}
+                    </div>
+                  ) : (
+                    blockSearchResults.map((b) => (
+                      <button
+                        key={b.type}
+                        type="button"
+                        role="option"
+                        aria-selected="false"
+                        className="d-flex justify-content-between align-items-center w-100 px-3 py-2 border-0 bg-transparent text-start"
+                        onClick={() => insertBlockFromSearch(b.type)}
+                      >
+                        <span>{b.label}</span>
+                        <small className="text-body-secondary ms-2">
+                          {t('toolbox.search.inCategory', { category: b.category })}
+                        </small>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
 
             <div
               ref={workspaceDivRef}

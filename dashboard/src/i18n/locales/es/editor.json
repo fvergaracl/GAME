@@ -55,6 +55,53 @@
     "PUBLISHED": "Publicada",
     "ARCHIVED": "Archivada"
   },
+  "toolbox": {
+    "search": {
+      "placeholder": "Buscar bloque…",
+      "ariaLabel": "Buscar bloque por nombre",
+      "resultsLabel": "Resultados de búsqueda",
+      "noResults": "Sin resultados para «{{query}}»",
+      "inCategory": "en {{category}}",
+      "hint": "Haz clic en un resultado para añadirlo al lienzo."
+    },
+    "categories": {
+      "when": "Cuándo",
+      "compare": "Compara",
+      "fields": "Campos",
+      "calc": "Calcula",
+      "values": "Valores",
+      "assign": "Asigna",
+      "preWhen": "Pre — Cuándo",
+      "preActions": "Pre — Acciones",
+      "postWhen": "Post — Cuándo",
+      "postActions": "Post — Acciones",
+      "parent": "Padre",
+      "parentOverrides": "Overrides padre",
+      "assignCallback": "Asigna (callback)"
+    },
+    "blocks": {
+      "gd_rule": "Regla (cuando → entonces)",
+      "gd_compare": "Comparación",
+      "gd_and": "Y lógico",
+      "gd_or": "O lógico",
+      "gd_not": "Negación (no)",
+      "gd_field": "Campo de analítica",
+      "gd_field_data": "Campo data.<clave>",
+      "gd_arith": "Operación aritmética",
+      "gd_func_call": "Función (int, clamp)",
+      "gd_literal_number": "Número fijo",
+      "gd_literal_text": "Texto fijo",
+      "gd_assign_points": "Asignar puntos",
+      "gd_set_callback_data": "Guardar dato de callback",
+      "gd_pre_rule": "Regla PRE",
+      "gd_post_rule": "Regla POST",
+      "gd_set_data": "Set data",
+      "gd_veto": "Veto",
+      "gd_set_points": "Set puntos",
+      "gd_set_case_name": "Set caseName",
+      "gd_field_parent": "Campo del padre"
+    }
+  },
   "lifecycle": {
     "publishTitle": "¿Publicar esta versión?",
     "publishBody": "Al publicar, la v{{version}} pasa a ser la versión en producción asignada a juegos y tareas. Cualquier versión publicada anterior de «{{name}}» se archiva automáticamente.",

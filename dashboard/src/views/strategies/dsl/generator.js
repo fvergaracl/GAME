@@ -99,6 +99,13 @@ export function workspaceToAst(workspace) {
 // strings parse to numbers, "true"/"false"/"null" map to those
 // literals, anything else stays a string. The validator and backend
 // will reject non-scalars like arrays/objects.
+// Accepts integers, decimals (incl. leading-dot / trailing-dot) and
+// scientific notation, with an optional sign — e.g. 42, -1.5, .5, 1.,
+// 1e3, -2.5E-4. Deliberately excludes hex/octal/Infinity/NaN so a stray
+// "0x10" or "Infinity" stays a string the backend will reject loudly
+// rather than silently coercing to something unexpected.
+const _NUMERIC_RE = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/
+
 function _coerceOverrideValue(raw) {
   if (raw === undefined || raw === null) return null
   const trimmed = String(raw).trim()
@@ -107,8 +114,8 @@ function _coerceOverrideValue(raw) {
   if (trimmed === 'null') return null
   if (trimmed === '') return ''
   // Prefer numeric coercion if the string parses cleanly as a number.
-  if (/^-?\d+$/.test(trimmed)) return parseInt(trimmed, 10)
-  if (/^-?\d*\.\d+$/.test(trimmed)) return parseFloat(trimmed)
+  // The regex guarantees Number() yields a finite value (no hex/Infinity).
+  if (_NUMERIC_RE.test(trimmed)) return Number(trimmed)
   return trimmed
 }
 
