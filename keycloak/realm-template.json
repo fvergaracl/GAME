@@ -1,6 +1,9 @@
 {
   "realm": "${KEYCLOAK_REALM}",
   "enabled": true,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 28800,
+  "ssoSessionMaxLifespan": 36000,
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
   "clients": [
