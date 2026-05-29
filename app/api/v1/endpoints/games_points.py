@@ -571,7 +571,7 @@ async def get_points_simulated_of_user_in_game(
             detail="SECRET_KEY is not set. Please set the SECRET_KEY in the environment variables"
         )
     auth = audit.auth
-    if auth.is_admin and (not (auth.oauth_user_id == externalUserId)):
+    if not auth.is_admin and auth.oauth_user_id != externalUserId:
         raise ForbiddenError(detail="You are not authorized to access this resource.")
 
     tasks_simulated, externalGameId = (
