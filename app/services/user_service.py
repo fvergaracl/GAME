@@ -17,6 +17,7 @@ from app.schema.user_schema import (PostPointsConversionRequest,
 from app.schema.wallet_schema import CreateWallet
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
+from app.services.game_access import get_authorized_user
 from app.util.serialize_wallet import serialize_wallet
 
 
@@ -393,7 +394,15 @@ class UserService(BaseService):
         )
         return user
 
-    async def get_wallet_by_externalUserId(self, externalUserId) -> UserWallet:
+    async def get_wallet_by_externalUserId(
+        self,
+        externalUserId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ) -> UserWallet:
         """
         Retrieves the wallet associated with a user by their external user ID.
 
@@ -403,9 +412,18 @@ class UserService(BaseService):
         Returns:
             UserWallet: The wallet details.
         """
-        user = await self.user_repository.read_by_column(
-            "externalUserId", externalUserId, not_found_raise_exception=True
-        )
+        if enforce_scope:
+            user = await get_authorized_user(
+                self.user_repository,
+                externalUserId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            user = await self.user_repository.read_by_column(
+                "externalUserId", externalUserId, not_found_raise_exception=True
+            )
         response = await self.get_wallet_by_user_id(str(user.id))
         return response
 

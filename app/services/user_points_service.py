@@ -33,7 +33,7 @@ from app.schema.user_points_schema import (AllPointsByGame, GameDetail,
                                            UserPointsAssign)
 from app.schema.wallet_transaction_schema import BaseWalletTransaction
 from app.services.base_service import BaseService
-from app.services.game_access import get_authorized_game
+from app.services.game_access import get_authorized_game, get_authorized_user
 from app.services.strategy_service import (
     StrategyService,
     is_custom_strategy_id,
@@ -238,22 +238,49 @@ class UserPointsService(BaseService):
         return ListTasksWithUsers(gameId=gameId, tasks=response)
 
     async def get_points_by_user_list(
-        self, users_list
+        self,
+        users_list,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
     ) -> list[UserGamePoints]:
         semaphore = asyncio.Semaphore(_FANOUT_LIMIT)
 
         async def _fetch(user) -> UserGamePoints:
             async with semaphore:
-                return await self.get_all_points_by_externalUserId(user)
+                return await self.get_all_points_by_externalUserId(
+                    user,
+                    api_key=api_key,
+                    oauth_user_id=oauth_user_id,
+                    is_admin=is_admin,
+                    enforce_scope=enforce_scope,
+                )
 
         return list(await asyncio.gather(*[_fetch(u) for u in users_list]))
 
     async def get_points_by_externalUserId(
-        self, externalUserId
+        self,
+        externalUserId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
     ) -> list[AllPointsByGame]:
-        user = await self.users_repository.read_by_column(
-            "externalUserId", externalUserId, not_found_raise_exception=True
-        )
+        if enforce_scope:
+            user = await get_authorized_user(
+                self.users_repository,
+                externalUserId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            user = await self.users_repository.read_by_column(
+                "externalUserId", externalUserId, not_found_raise_exception=True
+            )
         if not user:
             raise NotFoundError(
                 detail=f"User not found by externalUserId: {externalUserId}"
@@ -270,7 +297,13 @@ class UserPointsService(BaseService):
                 game = await self.game_repository.read_by_column(
                     "id", task.gameId, not_found_raise_exception=True
                 )
-                return await self.get_points_by_gameId_with_details(game.id)
+                return await self.get_points_by_gameId_with_details(
+                    game.id,
+                    api_key=api_key,
+                    oauth_user_id=oauth_user_id,
+                    is_admin=is_admin,
+                    enforce_scope=enforce_scope,
+                )
 
         response = list(
             await asyncio.gather(*[_fetch(task) for task in tasks_of_users])
@@ -975,14 +1008,29 @@ class UserPointsService(BaseService):
         return points
 
     async def get_all_points_by_externalUserId(
-        self, externalUserId
+        self,
+        externalUserId,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
     ) -> UserGamePoints:
-        user_data = await self.users_repository.read_by_column(
-            column="externalUserId",
-            value=externalUserId,
-            not_found_message=(f"User with externalUserId {externalUserId} not found"),
-            not_found_raise_exception=False,
-        )
+        if enforce_scope:
+            user_data = await get_authorized_user(
+                self.users_repository,
+                externalUserId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            user_data = await self.users_repository.read_by_column(
+                column="externalUserId",
+                value=externalUserId,
+                not_found_message=(f"User with externalUserId {externalUserId} not found"),
+                not_found_raise_exception=False,
+            )
         if not user_data:
             return UserGamePoints(
                 externalUserId=externalUserId,
@@ -999,7 +1047,15 @@ class UserPointsService(BaseService):
             game = await self.game_repository.read_by_column(
                 "id", task.gameId, not_found_raise_exception=True
             )
-            response.append(await self.get_points_by_gameId_with_details(game.id))
+            response.append(
+                await self.get_points_by_gameId_with_details(
+                    game.id,
+                    api_key=api_key,
+                    oauth_user_id=oauth_user_id,
+                    is_admin=is_admin,
+                    enforce_scope=enforce_scope,
+                )
+            )
 
         total_points = 0
         total_times_awarded = 0

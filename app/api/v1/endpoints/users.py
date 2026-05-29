@@ -3,6 +3,7 @@ from typing import List
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Body, Depends, Query
 
+from app.api.v1.endpoints.games_common import _game_access_kwargs
 from app.core.container import Container
 from app.middlewares.auth_context import AuditLogger, audit_log
 from app.middlewares.authentication import auth_api_key_or_oauth2
@@ -225,9 +226,13 @@ async def query_user_points(
     Returns:
         List[UserGamePoints]: The point details for each user.
     """
+    auth = audit.auth
     await audit.info("Query user points", {"externalUserIds": schema})
     try:
-        return await service.get_points_by_user_list(schema)
+        return await service.get_points_by_user_list(
+            schema,
+            **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
+        )
     except Exception as e:
         await audit.error("Query user points failed", {"error": str(e)})
         raise e
@@ -353,9 +358,13 @@ async def get_points_by_user_id(
     Returns:
         List[AllPointsByGame]: The points details for the specified user.
     """
+    auth = audit.auth
     await audit.info("Get user points", {"externalUserId": externalUserId})
     try:
-        return await service.get_points_by_externalUserId(externalUserId)
+        return await service.get_points_by_externalUserId(
+            externalUserId,
+            **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
+        )
     except Exception as e:
         await audit.error("Get user points failed", {"error": str(e)})
         raise e
@@ -483,9 +492,13 @@ async def get_wallet_by_user_id(
     Returns:
         UserWallet: The wallet details for the specified user.
     """
+    auth = audit.auth
     await audit.info("Get user wallet", {"externalUserId": externalUserId})
     try:
-        return await service.get_wallet_by_externalUserId(externalUserId)
+        return await service.get_wallet_by_externalUserId(
+            externalUserId,
+            **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
+        )
     except Exception as e:
         await audit.error("Get user wallet failed", {"error": str(e)})
         raise e
