@@ -25,6 +25,71 @@ check: ## Verify docker compose is available
 	@echo "Using compose command: $(DC)"
 	@echo "Using compose file:    $(FILE)"
 
+.PHONY: setup
+setup: ## First-time setup: install Docker if needed, create .env if needed
+	@if [ -z "$(DC)" ]; then \
+		echo ""; \
+		echo "  Docker Compose not found. Installing automatically..."; \
+		echo ""; \
+		if command -v apt-get >/dev/null 2>&1; then \
+			echo "  [apt] Installing docker.io and docker-compose-v2 ..."; \
+			sudo apt-get update -qq && \
+			sudo apt-get install -y docker.io docker-compose-v2 && \
+			sudo usermod -aG docker $$USER 2>/dev/null || true && \
+			( sudo service docker start 2>/dev/null || sudo systemctl start docker 2>/dev/null || true ); \
+		elif command -v dnf >/dev/null 2>&1; then \
+			echo "  [dnf] Installing docker and docker-compose-plugin ..."; \
+			sudo dnf install -y docker docker-compose-plugin && \
+			sudo systemctl enable --now docker && \
+			sudo usermod -aG docker $$USER 2>/dev/null || true; \
+		elif command -v brew >/dev/null 2>&1; then \
+			echo "  [brew] Installing Docker via Homebrew ..."; \
+			brew install --cask docker && \
+			open /Applications/Docker.app && \
+			echo "  Waiting for Docker Desktop to start (30 s) ..." && \
+			sleep 30; \
+		else \
+			echo ""; \
+			echo "  ERROR: Cannot auto-install Docker on this system."; \
+			echo "  Please install it manually: https://docs.docker.com/get-docker/"; \
+			echo ""; \
+			exit 1; \
+		fi; \
+		echo ""; \
+		echo "  Docker installed. Restarting..."; \
+		echo ""; \
+		exec $(MAKE) dev; \
+	fi
+	@if [ ! -f .env ]; then \
+		echo ""; \
+		echo "================================================"; \
+		echo "  First run detected -- no .env file found     "; \
+		echo "================================================"; \
+		echo ""; \
+		printf "  Choose setup mode:\n"; \
+		printf "    [A] Automatic  -- use defaults from .env.sample (recommended)\n"; \
+		printf "    [C] Customize  -- open .env in your editor before starting\n"; \
+		echo ""; \
+		printf "  Your choice [A/c]: "; \
+		read -r CHOICE; \
+		cp .env.sample .env; \
+		case "$$CHOICE" in \
+			[Cc]*) \
+				echo ""; \
+				echo "  Opening .env for editing ..."; \
+				$${EDITOR:-vi} .env; \
+				echo ""; \
+				echo "  Configuration saved."; \
+				;; \
+			*) \
+				echo ""; \
+				echo "  Auto-configured: .env created from .env.sample."; \
+				echo "  You can edit .env at any time to change settings."; \
+				;; \
+		esac; \
+		echo ""; \
+	fi
+
 #######################
 ## BUILD IMAGES
 #######################
@@ -57,7 +122,7 @@ integrated: down ## Start integrated dev stack (docker-compose.devintegrated.yml
 	$(DC) -f docker-compose.devintegrated.yml up -d
 
 .PHONY: dev
-dev: down ## Start dev stack (docker-compose-dev.yml)
+dev: setup down ## Start dev stack (docker-compose-dev.yml)
 	docker network create traefik-public 2>/dev/null || true
 	$(DC) -f docker-compose-dev.yml up -d
 
