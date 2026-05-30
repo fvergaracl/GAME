@@ -49,7 +49,9 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, expected)
-        service.get_points_by_user_list.assert_called_once_with(["u1"])
+        service.get_points_by_user_list.assert_called_once_with(
+            ["u1"], api_key="k-1", oauth_user_id="oauth-user-1", is_admin=False, enforce_scope=True
+        )
         self.mock_add_log.assert_awaited_once()
 
     async def test_query_user_points_error_logs_and_raises(self):
@@ -75,7 +77,9 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, expected)
-        service.get_points_by_externalUserId.assert_called_once_with("u1")
+        service.get_points_by_externalUserId.assert_called_once_with(
+            "u1", api_key="api-key-1", oauth_user_id="oauth-user-1", is_admin=False, enforce_scope=True
+        )
 
     async def test_get_points_by_user_id_error_logs_and_raises(self):
         service = AsyncMock()
@@ -102,7 +106,9 @@ class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, expected)
-        service.get_wallet_by_externalUserId.assert_awaited_once_with("u1")
+        service.get_wallet_by_externalUserId.assert_awaited_once_with(
+            "u1", api_key="api-key-1", oauth_user_id="oauth-user-1", is_admin=False, enforce_scope=True
+        )
 
     async def test_get_wallet_by_user_id_error_logs_and_raises(self):
         service = AsyncMock()
