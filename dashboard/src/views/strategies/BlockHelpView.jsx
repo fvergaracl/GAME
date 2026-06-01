@@ -20,6 +20,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   CAlert,
+  CButton,
   CCard,
   CCardBody,
   CCardHeader,
@@ -33,6 +34,8 @@ import {
 
 import { getBlockDoc } from './blocks/blockDocs'
 import { FIELD_PATHS, PARENT_FIELD_PATHS } from './dsl/whitelists'
+import { GLOSSARY_INDEX, SLUG_TO_TERM } from './glossary'
+import { useGlossary } from './glossary/GlossaryContext'
 
 // Which slugs get an auto-generated catalog table, and from which
 // whitelist. ``field-data`` is intentionally absent: it reads an
@@ -45,8 +48,18 @@ const FIELD_CATALOGS = {
 const BlockHelpView = () => {
   const { slug } = useParams()
   const { t } = useTranslation('blocks')
+  const { t: tGlossary } = useTranslation('glossary')
+  const { openGlossary } = useGlossary()
   const doc = getBlockDoc(slug)
   const catalogPaths = FIELD_CATALOGS[slug]
+
+  // Sprint 8: cross-link from the per-block doc into the glossary so a
+  // designer reading "what is gd_veto?" can jump to the conceptual
+  // explanation (veto → callbackData → post-rule …) without going back
+  // to the editor.
+  const primaryTermId = slug ? SLUG_TO_TERM[slug] : null
+  const primaryTerm = primaryTermId ? GLOSSARY_INDEX[primaryTermId] : null
+  const relatedTerms = (primaryTerm?.related || []).map((id) => GLOSSARY_INDEX[id]).filter(Boolean)
 
   return (
     <CCard className="mb-4">
@@ -66,6 +79,25 @@ const BlockHelpView = () => {
           <CAlert color="warning" className="mb-0">
             No hay documentación disponible para «{slug}».
           </CAlert>
+        )}
+        {primaryTerm && (
+          <div className="mt-4">
+            <h6>{tGlossary('modal.relatedHeader')}</h6>
+            <ul className="mb-0">
+              <li>
+                <CButton color="link" className="p-0" onClick={() => openGlossary(primaryTerm.id)}>
+                  {tGlossary(`terms.${primaryTerm.id}.title`)}
+                </CButton>
+              </li>
+              {relatedTerms.map((term) => (
+                <li key={term.id}>
+                  <CButton color="link" className="p-0" onClick={() => openGlossary(term.id)}>
+                    {tGlossary(`terms.${term.id}.title`)}
+                  </CButton>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
         {catalogPaths && (
           <div className="mt-4">

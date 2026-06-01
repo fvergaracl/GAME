@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import {
+  CButton,
   CContainer,
   CDropdown,
   CDropdownItem,
@@ -13,16 +14,19 @@ import {
   useColorModes,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilContrast, cilMenu, cilMoon, cilSun } from '@coreui/icons'
+import { cilContrast, cilLifeRing, cilMenu, cilMoon, cilSun } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 import LanguageSwitcher from './LanguageSwitcher'
+import { useGlossary } from '../views/strategies/glossary/GlossaryContext'
 
 const AppHeader = () => {
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
   const { t } = useTranslation('app')
+  const { t: tGlossary } = useTranslation('glossary')
+  const { openGlossary } = useGlossary()
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
@@ -45,6 +49,22 @@ const AppHeader = () => {
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
         <CHeaderNav className="ms-auto">
+          <li className="nav-item py-1 d-flex align-items-center">
+            <CButton
+              color="link"
+              size="sm"
+              className="px-2 py-1 text-decoration-none d-inline-flex align-items-center"
+              onClick={() => openGlossary(null)}
+              aria-label={tGlossary('helpButton.ariaLabel')}
+              title={tGlossary('helpButton.ariaLabel')}
+            >
+              <CIcon icon={cilLifeRing} className="me-1" />
+              {tGlossary('helpButton.label')}
+            </CButton>
+          </li>
+          <li className="nav-item py-1">
+            <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
+          </li>
           <li className="nav-item py-1 d-flex align-items-center">
             <LanguageSwitcher />
           </li>

@@ -35,6 +35,7 @@ import esStrategies from './locales/es/strategies.json'
 import esDashboard from './locales/es/dashboard.json'
 import esExports from './locales/es/exports.json'
 import esApikeys from './locales/es/apikeys.json'
+import esGlossary from './locales/es/glossary.json'
 import enEditor from './locales/en/editor.json'
 import enErrors from './locales/en/errors.json'
 import enBlocks from './locales/en/blocks.json'
@@ -44,6 +45,7 @@ import enStrategies from './locales/en/strategies.json'
 import enDashboard from './locales/en/dashboard.json'
 import enExports from './locales/en/exports.json'
 import enApikeys from './locales/en/apikeys.json'
+import enGlossary from './locales/en/glossary.json'
 
 export const SUPPORTED_LANGUAGES = ['es', 'en']
 export const LOCALSTORAGE_LANG_KEY = 'gd-locale'
@@ -59,6 +61,7 @@ const resources = {
     dashboard: esDashboard,
     exports: esExports,
     apikeys: esApikeys,
+    glossary: esGlossary,
   },
   en: {
     editor: enEditor,
@@ -70,6 +73,7 @@ const resources = {
     dashboard: enDashboard,
     exports: enExports,
     apikeys: enApikeys,
+    glossary: enGlossary,
   },
 }
 
@@ -86,7 +90,18 @@ i18n
     // ``editor`` is the default ns so unprefixed ``t('chooser.title')``
     // resolves against editor.json; the rest are addressed with an
     // explicit ``ns:key`` prefix (e.g. ``common:status.DRAFT``).
-    ns: ['editor', 'errors', 'blocks', 'common', 'app', 'strategies', 'dashboard', 'exports', 'apikeys'],
+    ns: [
+      'editor',
+      'errors',
+      'blocks',
+      'common',
+      'app',
+      'strategies',
+      'dashboard',
+      'exports',
+      'apikeys',
+      'glossary',
+    ],
     defaultNS: 'editor',
     interpolation: {
       // CoreUI renders strings as text by default; we only inject HTML

@@ -2,6 +2,24 @@
   "assignments": {
     "title": "Strategy assignment",
     "subtitle": "Change the active strategy of a Game or a Task. Select several games to reassign them in bulk. The available custom strategies are the ones published in your realm.",
+    "showTour": "Show the tour again",
+    "empty": {
+      "tourLink": "First time on this view? Take a quick tour."
+    },
+    "tour": {
+      "back": "Back",
+      "next": "Next",
+      "last": "Got it",
+      "skip": "Skip",
+      "steps": {
+        "welcome": "Welcome to strategy assignments.",
+        "intro": "Each row is a Game in your realm with the strategy it uses for scoring. Expand a row to see its tasks and reassign them individually.",
+        "search": "Filter by external_game_id when you have many games. Pagination is real (it doesn't load everything in memory).",
+        "selection": "Tick several games to bulk-reassign them to the same strategy — you'll see an impact preview before applying.",
+        "change": "Click «Change» to open the picker: built-ins + published custom strategies. Drafts and archived strategies are filtered out — only published ones are assignable.",
+        "help": "If you're unsure what «parent strategy» or other DSL terms mean, open Help from the top bar."
+      }
+    },
     "searchLabel": "Search by External Game ID",
     "searchPlaceholder": "game-readme-001…",
     "col": {
@@ -111,9 +129,26 @@
     "countFiltered_one": "{{count}} of {{total}} strategy.",
     "countFiltered_other": "{{count}} of {{total}} strategies.",
     "noResultsFiltered": "No strategies match the filters.",
+    "showTour": "Show the tour again",
     "empty": {
       "text": "You haven't created any strategy yet. Start from scratch or from a template.",
-      "cta": "Create my first strategy"
+      "cta": "Create my first strategy",
+      "tourLink": "Not sure where to start? Take the tour of this view."
+    },
+    "tour": {
+      "back": "Back",
+      "next": "Next",
+      "last": "Got it",
+      "skip": "Skip",
+      "steps": {
+        "welcome": "Welcome to the strategy library.",
+        "intro": "This is every custom strategy in your realm. Each row is a version: draft, published or archived.",
+        "filters": "Filter by status or type, or search by name once you have many.",
+        "newCta": "Create a new strategy from scratch, from a template, or by extending a built-in.",
+        "rowActions": "Per-row actions: open, duplicate, view history, where is it used? — and, if you're an admin, publish/archive.",
+        "statusBadge": "Status controls the lifecycle: only published strategies can be assigned to games and tasks.",
+        "help": "If you bump into a term you don't recognise (pre-rule, veto, parent override…), open Help in the top bar for the glossary."
+      }
     },
     "action": {
       "history": "View history",

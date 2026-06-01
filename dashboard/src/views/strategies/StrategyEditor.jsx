@@ -66,6 +66,7 @@ import { workspaceToAst } from './dsl/generator'
 import { validateAst } from './dsl/validator'
 import { buildMockState, usedAccumulationFields } from './dsl/simFields'
 import EditorTour from './EditorTour'
+import GlossaryHint from './glossary/GlossaryHint'
 import SimulationRunsChart from './SimulationRunsChart'
 import SimulationScenarios from './SimulationScenarios'
 import SimulationTracePanel from './SimulationTracePanel'
@@ -96,10 +97,7 @@ const isCurrentUserAdmin = () => {
     if (!token) return false
     const payload = token.split('.')[1]
     const decoded = JSON.parse(atob(payload))
-    return (
-      decoded?.resource_access?.account?.roles?.includes('AdministratorGAME') ||
-      false
-    )
+    return decoded?.resource_access?.account?.roles?.includes('AdministratorGAME') || false
   } catch {
     return false
   }
@@ -351,7 +349,7 @@ const StrategyEditor = () => {
               changed = true
             }
           }
-            return changed ? next : prev
+          return changed ? next : prev
         })
       } catch {
         // Malformed AST mid-edit — keep the last known field set.
@@ -1019,7 +1017,10 @@ const StrategyEditor = () => {
                 <CCol md={4}>
                   <CCard className="h-100">
                     <CCardBody className="d-flex flex-column">
-                      <CCardTitle>{t('chooser.extend.title')}</CCardTitle>
+                      <CCardTitle>
+                        {t('chooser.extend.title')}
+                        <GlossaryHint term="dslExtend" />
+                      </CCardTitle>
                       <CCardText className="flex-grow-1">
                         <Trans
                           i18nKey="chooser.extend.description"
@@ -1045,9 +1046,7 @@ const StrategyEditor = () => {
                   {isImporting && <CSpinner size="sm" className="me-2" />}
                   {t('chooser.importJson')}
                 </CButton>
-                <small className="text-medium-emphasis">
-                  {t('chooser.importHint')}
-                </small>
+                <small className="text-medium-emphasis">{t('chooser.importHint')}</small>
               </div>
               <input
                 ref={fileInputRef}
@@ -1105,9 +1104,20 @@ const StrategyEditor = () => {
                 </CBadge>
               )}
               {status && (
-                <CBadge color={STATUS_BADGE[status] || 'secondary'} className="ms-2">
-                  {t(`status.${status}`, { defaultValue: status })}
-                </CBadge>
+                <>
+                  <CBadge color={STATUS_BADGE[status] || 'secondary'} className="ms-2">
+                    {t(`status.${status}`, { defaultValue: status })}
+                  </CBadge>
+                  <GlossaryHint
+                    term={
+                      status === 'PUBLISHED'
+                        ? 'published'
+                        : status === 'ARCHIVED'
+                          ? 'archived'
+                          : 'draft'
+                    }
+                  />
+                </>
               )}
               {isDirty && (
                 <CBadge color="warning" className="ms-2">
@@ -1116,11 +1126,7 @@ const StrategyEditor = () => {
               )}
             </div>
             <div className="d-flex align-items-center gap-2">
-              <CButton
-                color="link"
-                size="sm"
-                onClick={() => setTourRunRequest('manual')}
-              >
+              <CButton color="link" size="sm" onClick={() => setTourRunRequest('manual')}>
                 {t('buttons.startTour')}
               </CButton>
               <LanguageSwitcher />
@@ -1154,7 +1160,10 @@ const StrategyEditor = () => {
                   them) but the toolbox flyout changes. */}
               <CRow className="mb-2">
                 <CCol md={6} data-tour="editor-mode">
-                  <CFormLabel>{t('form.mode')}</CFormLabel>
+                  <CFormLabel>
+                    {t('form.mode')}
+                    <GlossaryHint term={mode === 'DSL_EXTEND' ? 'dslExtend' : 'dslFull'} />
+                  </CFormLabel>
                   <div>
                     <CFormCheck
                       type="radio"
@@ -1178,7 +1187,10 @@ const StrategyEditor = () => {
                 </CCol>
                 {mode === 'DSL_EXTEND' && (
                   <CCol md={6}>
-                    <CFormLabel>{t('form.parent')}</CFormLabel>
+                    <CFormLabel>
+                      {t('form.parent')}
+                      <GlossaryHint term="parentStrategy" />
+                    </CFormLabel>
                     <CFormSelect value={parentId} onChange={(e) => setParentId(e.target.value)}>
                       <option value="">{t('form.selectParent')}</option>
                       {builtIns.map((b) => (
@@ -1443,9 +1455,7 @@ const StrategyEditor = () => {
               )}
               <h6>{t('parentSchema.variables')}</h6>
               {parentSchema.variables.length === 0 ? (
-                <small className="text-medium-emphasis">
-                  {t('parentSchema.noVariables')}
-                </small>
+                <small className="text-medium-emphasis">{t('parentSchema.noVariables')}</small>
               ) : (
                 <table className="table table-sm table-borderless mb-0">
                   <thead>
@@ -1476,9 +1486,7 @@ const StrategyEditor = () => {
                   </tbody>
                 </table>
               )}
-              <small className="text-medium-emphasis d-block mt-2">
-                {t('parentSchema.hint')}
-              </small>
+              <small className="text-medium-emphasis d-block mt-2">{t('parentSchema.hint')}</small>
             </CCardBody>
           </CCard>
         )}
@@ -1518,7 +1526,10 @@ const StrategyEditor = () => {
                 />
               </div>
               <div className="mb-2">
-                <CFormLabel>{t('simulate.data')}</CFormLabel>
+                <CFormLabel>
+                  {t('simulate.data')}
+                  <GlossaryHint term="dataField" />
+                </CFormLabel>
                 <CFormTextarea
                   rows={3}
                   value={simForm.dataJson}
@@ -1754,13 +1765,12 @@ const StrategyEditor = () => {
                     </table>
                   </div>
                 )}
-                {simResult.callbackData &&
-                  Object.keys(simResult.callbackData).length > 0 && (
-                    <div className="small mb-2">
-                      <strong>{t('result.callbackData')}:</strong>{' '}
-                      <code>{JSON.stringify(simResult.callbackData)}</code>
-                    </div>
-                  )}
+                {simResult.callbackData && Object.keys(simResult.callbackData).length > 0 && (
+                  <div className="small mb-2">
+                    <strong>{t('result.callbackData')}:</strong>{' '}
+                    <code>{JSON.stringify(simResult.callbackData)}</code>
+                  </div>
+                )}
                 <h6 className="mt-3">
                   {t('simulate.trace', {
                     count: simResult.executionTrace?.length ?? 0,

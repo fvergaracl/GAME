@@ -14,6 +14,8 @@ import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
 import { CBadge } from '@coreui/react'
 
+import GlossaryHint from './glossary/GlossaryHint'
+
 // Shared prop shapes. ``byId`` is a Map(nodeId → trace entry); the AST/trace
 // node objects are free-form (the DSL grammar is open-ended), so they're
 // typed as plain objects.
@@ -319,7 +321,12 @@ export default function SimulationTracePanel({ ast, trace }) {
   const hasAnything = rules.length || preRules.length || postRules.length || ast.default
 
   if (!hasAnything) {
-    return <p className="small text-medium-emphasis">{t('simulate.noTrace')}</p>
+    return (
+      <p className="small text-medium-emphasis">
+        {t('simulate.noTrace')}
+        <GlossaryHint term="rule" />
+      </p>
+    )
   }
 
   const renderRuleList = (list) =>

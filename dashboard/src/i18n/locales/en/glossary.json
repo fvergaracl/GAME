@@ -1,0 +1,86 @@
+{
+  "modal": {
+    "title": "DSL glossary",
+    "subtitle": "Concepts that show up while designing strategies.",
+    "indexHeader": "Concepts",
+    "relatedHeader": "Related",
+    "blockHintLabel": "See related block",
+    "closeAria": "Close glossary",
+    "backToIndex": "← Back to index",
+    "noTerm": "Pick a concept from the index."
+  },
+  "hint": {
+    "ariaLabel": "See definition of «{{term}}»",
+    "ariaLabelGeneric": "See definition"
+  },
+  "helpButton": {
+    "label": "Help",
+    "ariaLabel": "Open the DSL glossary"
+  },
+  "terms": {
+    "rule": {
+      "title": "Rule (when → then)",
+      "body": "The basic unit of the DSL. A rule evaluates a condition (\"when\") and, if it matches, runs its actions (\"then\") — typically assigning points. You can chain several with \"else if\" / \"else\" branches."
+    },
+    "preRule": {
+      "title": "Pre-rule",
+      "body": "Only in DSL_EXTEND strategies. Runs BEFORE the parent strategy. Useful to adjust the parent's variables (overrides) or, in the extreme, to veto the event. Leave them empty if you don't need to touch the parent."
+    },
+    "postRule": {
+      "title": "Post-rule",
+      "body": "Only in DSL_EXTEND strategies. Runs AFTER the parent strategy and can read its result (parent.points, parent.case_name). Handy to multiply/cap the parent's points or rename its case."
+    },
+    "veto": {
+      "title": "Veto",
+      "body": "A post-rule can veto a scoring: the program returns 0 points, keeps the callback data accumulated so far, and reports your case_name. Useful for anti-abuse rules or to override the parent under a specific condition."
+    },
+    "caseName": {
+      "title": "Case (case_name)",
+      "body": "Stable label per scenario, surfaced in analytics. Dashboards bucket events by case_name, so renaming it splits the time series. Pick one per rule with measurement in mind."
+    },
+    "callbackData": {
+      "title": "Callback data",
+      "body": "Key/value pairs the strategy attaches to the scoring result for your app to read. They can come from the input (data.<key>) or be computed inside a rule with \"set callback data\"."
+    },
+    "dataField": {
+      "title": "data.<key> fields",
+      "body": "Arbitrary values your integration sends with each event (e.g. data.score, data.distance_km). Only valid if your strategy explicitly reads them; in the simulator you set them in the \"event data\" block."
+    },
+    "parentStrategy": {
+      "title": "Parent strategy",
+      "body": "Base strategy that a DSL_EXTEND builds on. Usually a built-in (engagement, performance…) whose behaviour you want to keep but tweak. You pick it in the form when creating or editing."
+    },
+    "parentOverride": {
+      "title": "Parent override",
+      "body": "Changes the value of a variable exposed by the parent strategy (e.g. its multiplier or threshold) without rewriting it. It's applied before the parent runs its logic."
+    },
+    "dslFull": {
+      "title": "DSL_FULL — From scratch",
+      "body": "Self-contained strategy: you define every rule. Pick this when you already know what you want to model and don't need to reuse anything from the built-ins."
+    },
+    "dslExtend": {
+      "title": "DSL_EXTEND — Extend",
+      "body": "Strategy that wraps another one: adds pre-rules and/or post-rules around a parent without rewriting it. You inherit its behaviour and only change what you need."
+    },
+    "lifecycle": {
+      "title": "Lifecycle",
+      "body": "Every custom strategy moves through three states: Draft (editable, not assignable), Published (in production, assignable to games and tasks) and Archived (out of circulation, history only)."
+    },
+    "draft": {
+      "title": "Draft (DRAFT)",
+      "body": "Initial state. Editable freely, but does NOT appear in the assignment picker: it won't be assigned to games until it's published. Autosaves create drafts."
+    },
+    "published": {
+      "title": "Published (PUBLISHED)",
+      "body": "Active production version. Appears in the picker and is referenced by the games/tasks that use it. Publishing a new version automatically archives the previously published one with the same name."
+    },
+    "archived": {
+      "title": "Archived (ARCHIVED)",
+      "body": "Terminal state: cannot be edited or re-published (but you can roll back from the version history). Games that used it keep working until they're reassigned."
+    },
+    "assignment": {
+      "title": "Assignment",
+      "body": "1-to-1 relationship between a Game (or a Task) and the strategy it uses for scoring. Only published strategies can be assigned. Changing the assignment redirects from the next event onward — it does not recompute past events."
+    }
+  }
+}

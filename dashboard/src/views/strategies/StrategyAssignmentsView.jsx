@@ -15,6 +15,7 @@
 //      local state so the change is visible without a full reload.
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CAlert,
   CBadge,
@@ -49,7 +50,20 @@ import {
   patchGameStrategy,
   patchTaskStrategy,
 } from '../../api'
+import GlossaryHint from './glossary/GlossaryHint'
+import OnboardingTour from './OnboardingTour'
 import StrategyPickerModal from './StrategyPickerModal'
+
+// Sprint 8: per-view tour storage key (mirror of the Library one).
+export const ASSIGNMENTS_TOUR_STORAGE_KEY = 'gd-assignments-tour-seen'
+
+const ASSIGNMENTS_TOUR_STEPS = [
+  { target: '[data-tour="assignments-intro"]', i18n: 'intro', placement: 'bottom' },
+  { target: '[data-tour="assignments-search"]', i18n: 'search', placement: 'bottom' },
+  { target: '[data-tour="assignments-selection"]', i18n: 'selection', placement: 'right' },
+  { target: '[data-tour="assignments-change"]', i18n: 'change', placement: 'left' },
+  { target: '[data-tour="assignments-help"]', i18n: 'help', placement: 'bottom' },
+]
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50]
 
@@ -73,6 +87,8 @@ const buildStrategyLabelIndex = (builtIns, customs) => {
 }
 
 const StrategyAssignmentsView = () => {
+  const { t } = useTranslation('strategies')
+  const [tourRunRequest, setTourRunRequest] = useState('auto')
   const [games, setGames] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [page, setPage] = useState(1)
@@ -358,15 +374,37 @@ const StrategyAssignmentsView = () => {
 
   return (
     <CCard>
-      <CCardHeader>
-        <h4 className="mb-1">Asignación de estrategias</h4>
-        <small className="text-medium-emphasis">
-          Cambia la estrategia activa de un Game o de una Task. Selecciona varios games para
-          reasignarlos en bloque. Las custom strategies disponibles son las publicadas en tu realm.
-        </small>
+      <OnboardingTour
+        storageKey={ASSIGNMENTS_TOUR_STORAGE_KEY}
+        steps={ASSIGNMENTS_TOUR_STEPS}
+        i18nNamespace="strategies"
+        keyPrefix="assignments."
+        welcomeKey="welcome"
+        runRequest={tourRunRequest}
+        onFinished={() => setTourRunRequest(null)}
+      />
+      <CCardHeader className="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+        <div data-tour="assignments-intro">
+          <h4 className="mb-1">Asignación de estrategias</h4>
+          <small className="text-medium-emphasis">
+            Cambia la estrategia activa de un Game o de una Task. Selecciona varios games para
+            reasignarlos en bloque. Las custom strategies disponibles son las publicadas en tu
+            realm.
+          </small>
+        </div>
+        <div data-tour="assignments-help">
+          <CButton
+            color="link"
+            size="sm"
+            className="px-1 text-decoration-none"
+            onClick={() => setTourRunRequest('manual')}
+          >
+            {t('assignments.showTour')}
+          </CButton>
+        </div>
       </CCardHeader>
       <CCardBody>
-        <div className="d-flex flex-wrap gap-2 align-items-end mb-3">
+        <div className="d-flex flex-wrap gap-2 align-items-end mb-3" data-tour="assignments-search">
           <div style={{ minWidth: 240, flex: '1 1 240px' }}>
             <label className="form-label small text-medium-emphasis">
               Buscar por External Game ID
@@ -441,7 +479,16 @@ const StrategyAssignmentsView = () => {
 
         {!isLoading && !error && totalCount === 0 && (
           <CAlert color="info">
-            {search ? 'Ningún game coincide con la búsqueda.' : 'No hay games en este realm.'}
+            <p className="mb-2">
+              {search ? 'Ningún game coincide con la búsqueda.' : 'No hay games en este realm.'}
+            </p>
+            <CButton
+              color="link"
+              className="px-1 text-decoration-none"
+              onClick={() => setTourRunRequest('manual')}
+            >
+              {t('assignments.empty.tourLink')}
+            </CButton>
           </CAlert>
         )}
 
@@ -454,7 +501,7 @@ const StrategyAssignmentsView = () => {
             <CTable hover responsive align="middle">
               <CTableHead>
                 <CTableRow>
-                  <CTableHeaderCell style={{ width: 36 }}>
+                  <CTableHeaderCell style={{ width: 36 }} data-tour="assignments-selection">
                     <CFormCheck
                       checked={allOnPageSelected}
                       onChange={toggleSelectAllOnPage}
@@ -464,15 +511,19 @@ const StrategyAssignmentsView = () => {
                   <CTableHeaderCell style={{ width: 40 }} />
                   <CTableHeaderCell>External Game ID</CTableHeaderCell>
                   <CTableHeaderCell>Platform</CTableHeaderCell>
-                  <CTableHeaderCell>Estrategia</CTableHeaderCell>
+                  <CTableHeaderCell>
+                    Estrategia
+                    <GlossaryHint term="assignment" />
+                  </CTableHeaderCell>
                   <CTableHeaderCell style={{ width: 120 }}>Acción</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                {games.map((game) => {
+                {games.map((game, gameIdx) => {
                   const isOpen = expanded.has(game.gameId)
                   const taskRows = tasksByGame[game.gameId] || []
                   const isLoadingTasks = !!tasksLoading[game.gameId]
+                  const isFirstGame = gameIdx === 0
                   return (
                     <React.Fragment key={game.gameId}>
                       <CTableRow>
@@ -499,7 +550,9 @@ const StrategyAssignmentsView = () => {
                         </CTableDataCell>
                         <CTableDataCell>{game.platform}</CTableDataCell>
                         <CTableDataCell>{renderStrategyLabel(game.strategyId)}</CTableDataCell>
-                        <CTableDataCell>
+                        <CTableDataCell
+                          {...(isFirstGame ? { 'data-tour': 'assignments-change' } : {})}
+                        >
                           <CButton
                             size="sm"
                             color="primary"

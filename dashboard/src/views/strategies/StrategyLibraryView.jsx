@@ -13,6 +13,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   CAlert,
   CBadge,
@@ -53,8 +54,24 @@ import {
   publishCustomStrategy,
 } from '../../api'
 import keycloak from '../../keycloak'
+import GlossaryHint from './glossary/GlossaryHint'
+import OnboardingTour from './OnboardingTour'
 import StrategyUsageModal from './StrategyUsageModal'
 import StrategyVersionHistoryModal from './StrategyVersionHistoryModal'
+
+// Sprint 8: per-view tour storage key. Setting this key from devtools to
+// '' makes the tour auto-trigger again on the next mount, which is the
+// supported way to replay an onboarding without code changes.
+export const LIBRARY_TOUR_STORAGE_KEY = 'gd-library-tour-seen'
+
+const LIBRARY_TOUR_STEPS = [
+  { target: '[data-tour="library-intro"]', i18n: 'intro', placement: 'bottom' },
+  { target: '[data-tour="library-filters"]', i18n: 'filters', placement: 'bottom' },
+  { target: '[data-tour="library-new"]', i18n: 'newCta', placement: 'left' },
+  { target: '[data-tour="library-row-actions"]', i18n: 'rowActions', placement: 'top' },
+  { target: '[data-tour="library-status-header"]', i18n: 'statusBadge', placement: 'bottom' },
+  { target: '[data-tour="library-help"]', i18n: 'help', placement: 'bottom' },
+]
 
 // Generous page size — real pagination/search is Sprint 6. This keeps the
 // library usable for the hundreds-of-strategies range without a "next page".
@@ -77,8 +94,7 @@ const TYPE_LABEL = {
   DSL_EXTEND: 'Extiende',
 }
 
-const extractError = (err, fallback) =>
-  err?.response?.data?.detail || err?.message || fallback
+const extractError = (err, fallback) => err?.response?.data?.detail || err?.message || fallback
 
 // UX-only admin hint (the server enforces require_admin on publish/archive).
 // Mirrors the decoder in StrategyEditor.jsx.
@@ -106,6 +122,12 @@ const formatDate = (iso) => {
 const StrategyLibraryView = () => {
   const navigate = useNavigate()
   const isAdmin = useMemo(() => isCurrentUserAdmin(), [])
+  const { t } = useTranslation('strategies')
+
+  // 'auto' on mount honours the localStorage flag (only first-time
+  // visitors see the tour); 'manual' is triggered from the
+  // "Volver a ver el tour" link in the header and on the empty state.
+  const [tourRunRequest, setTourRunRequest] = useState('auto')
 
   const [strategies, setStrategies] = useState([])
   const [builtInIndex, setBuiltInIndex] = useState(new Map())
@@ -247,9 +269,7 @@ const StrategyLibraryView = () => {
     setBusyId(id)
     try {
       const updated =
-        action === 'publish'
-          ? await publishCustomStrategy(id)
-          : await archiveCustomStrategy(id)
+        action === 'publish' ? await publishCustomStrategy(id) : await archiveCustomStrategy(id)
       setActionSuccess(
         action === 'publish'
           ? `«${updated.name}» publicada (v${updated.version}). Ahora es la versión en producción.`
@@ -278,21 +298,44 @@ const StrategyLibraryView = () => {
 
   return (
     <CCard>
+      <OnboardingTour
+        storageKey={LIBRARY_TOUR_STORAGE_KEY}
+        steps={LIBRARY_TOUR_STEPS}
+        i18nNamespace="strategies"
+        keyPrefix="library."
+        welcomeKey="welcome"
+        runRequest={tourRunRequest}
+        onFinished={() => setTourRunRequest(null)}
+      />
       <CCardHeader className="d-flex justify-content-between align-items-center">
-        <div>
+        <div data-tour="library-intro">
           <h4 className="mb-1">Mis estrategias</h4>
           <small className="text-medium-emphasis">
-            Todas las estrategias personalizadas de tu realm. Ábrelas para
-            seguir editando, duplícalas como punto de partida o publícalas
-            para que puedan asignarse a juegos y tareas.
+            Todas las estrategias personalizadas de tu realm. Ábrelas para seguir editando,
+            duplícalas como punto de partida o publícalas para que puedan asignarse a juegos y
+            tareas.
           </small>
         </div>
-        <CButton color="primary" onClick={() => navigate('/strategies/editor')}>
-          Nueva estrategia
-        </CButton>
+        <div className="d-flex align-items-center gap-2" data-tour="library-help">
+          <CButton
+            color="link"
+            size="sm"
+            className="px-1 text-decoration-none"
+            onClick={() => setTourRunRequest('manual')}
+          >
+            {t('library.showTour')}
+          </CButton>
+          <CButton
+            color="primary"
+            data-tour="library-new"
+            onClick={() => navigate('/strategies/editor')}
+          >
+            Nueva estrategia
+          </CButton>
+        </div>
       </CCardHeader>
       <CCardBody>
-        <CForm className="mb-3">
+        <CForm className="mb-3" data-tour="library-filters">
           <CRow className="g-2 align-items-end">
             <CCol md={4}>
               <label className="form-label small text-medium-emphasis">Buscar por nombre</label>
@@ -359,12 +402,21 @@ const StrategyLibraryView = () => {
         {noResults && !hasFiltersActive && (
           <CAlert color="info">
             <p className="mb-2">
-              Todavía no has creado ninguna estrategia. Empieza desde cero o a
-              partir de una plantilla.
+              Todavía no has creado ninguna estrategia. Empieza desde cero o a partir de una
+              plantilla.
             </p>
-            <CButton color="primary" onClick={() => navigate('/strategies/editor')}>
-              Crear mi primera estrategia
-            </CButton>
+            <div className="d-flex flex-wrap gap-2 align-items-center">
+              <CButton color="primary" onClick={() => navigate('/strategies/editor')}>
+                Crear mi primera estrategia
+              </CButton>
+              <CButton
+                color="link"
+                className="px-1 text-decoration-none"
+                onClick={() => setTourRunRequest('manual')}
+              >
+                {t('library.empty.tourLink')}
+              </CButton>
+            </div>
           </CAlert>
         )}
 
@@ -379,21 +431,33 @@ const StrategyLibraryView = () => {
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell>Nombre</CTableHeaderCell>
-                  <CTableHeaderCell>Tipo</CTableHeaderCell>
-                  <CTableHeaderCell>Estado</CTableHeaderCell>
+                  <CTableHeaderCell>
+                    Tipo
+                    <GlossaryHint term="dslFull" />
+                  </CTableHeaderCell>
+                  <CTableHeaderCell data-tour="library-status-header">
+                    Estado
+                    <GlossaryHint term="lifecycle" />
+                  </CTableHeaderCell>
                   <CTableHeaderCell style={{ width: 70 }}>Versión</CTableHeaderCell>
-                  <CTableHeaderCell>Padre</CTableHeaderCell>
+                  <CTableHeaderCell>
+                    Padre
+                    <GlossaryHint term="parentStrategy" />
+                  </CTableHeaderCell>
                   <CTableHeaderCell>Fecha</CTableHeaderCell>
                   <CTableHeaderCell>Autor</CTableHeaderCell>
                   <CTableHeaderCell style={{ width: 200 }}>Acciones</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                {visibleRows.map((row) => {
+                {visibleRows.map((row, rowIdx) => {
                   const canPublish = isAdmin && row.status === 'DRAFT'
                   const canArchive =
                     isAdmin && (row.status === 'DRAFT' || row.status === 'PUBLISHED')
                   const isRowBusy = busyId === row.id
+                  // Anchor the row-actions tour step on the first row so it
+                  // exists even when only one strategy has been created.
+                  const isFirst = rowIdx === 0
                   return (
                     <CTableRow key={row.id}>
                       <CTableDataCell>
@@ -406,11 +470,21 @@ const StrategyLibraryView = () => {
                         <CBadge color={row.type === 'DSL_EXTEND' ? 'warning' : 'info'}>
                           {TYPE_LABEL[row.type] || row.type}
                         </CBadge>
+                        <GlossaryHint term={row.type === 'DSL_EXTEND' ? 'dslExtend' : 'dslFull'} />
                       </CTableDataCell>
                       <CTableDataCell>
                         <CBadge color={STATUS_BADGE[row.status] || 'secondary'}>
                           {STATUS_LABEL[row.status] || row.status}
                         </CBadge>
+                        <GlossaryHint
+                          term={
+                            row.status === 'PUBLISHED'
+                              ? 'published'
+                              : row.status === 'ARCHIVED'
+                                ? 'archived'
+                                : 'draft'
+                          }
+                        />
                       </CTableDataCell>
                       <CTableDataCell>v{row.version}</CTableDataCell>
                       <CTableDataCell>
@@ -430,7 +504,7 @@ const StrategyLibraryView = () => {
                           <span className="text-medium-emphasis">—</span>
                         )}
                       </CTableDataCell>
-                      <CTableDataCell>
+                      <CTableDataCell {...(isFirst ? { 'data-tour': 'library-row-actions' } : {})}>
                         <div className="d-flex gap-2 align-items-center">
                           <CButton
                             size="sm"
@@ -526,16 +600,15 @@ const StrategyLibraryView = () => {
         <CModalBody>
           {confirmAction?.action === 'publish' ? (
             <>
-              Al publicar, la <strong>v{confirmAction?.version}</strong> de «
-              {confirmAction?.name}» pasa a ser la versión en producción
-              asignable a juegos y tareas. Cualquier versión publicada anterior
-              con el mismo nombre se archivará automáticamente.
+              Al publicar, la <strong>v{confirmAction?.version}</strong> de «{confirmAction?.name}»
+              pasa a ser la versión en producción asignable a juegos y tareas. Cualquier versión
+              publicada anterior con el mismo nombre se archivará automáticamente.
             </>
           ) : (
             <>
-              Al archivar «{confirmAction?.name}» (v{confirmAction?.version})
-              queda fuera de circulación: ya no se podrá editar ni publicar,
-              aunque su historial seguirá disponible.
+              Al archivar «{confirmAction?.name}» (v{confirmAction?.version}) queda fuera de
+              circulación: ya no se podrá editar ni publicar, aunque su historial seguirá
+              disponible.
             </>
           )}
         </CModalBody>

@@ -2,6 +2,24 @@
   "assignments": {
     "title": "Asignación de estrategias",
     "subtitle": "Cambia la estrategia activa de un Game o de una Task. Selecciona varios games para reasignarlos en bloque. Las custom strategies disponibles son las publicadas en tu realm.",
+    "showTour": "Volver a ver el tour",
+    "empty": {
+      "tourLink": "¿Primera vez en esta vista? Echa un vistazo al tour."
+    },
+    "tour": {
+      "back": "Atrás",
+      "next": "Siguiente",
+      "last": "Entendido",
+      "skip": "Saltar",
+      "steps": {
+        "welcome": "Bienvenido a la asignación de estrategias.",
+        "intro": "Cada fila es un Game de tu realm con la estrategia que usa para puntuar. Expande la fila para ver sus tasks y reasignarlas individualmente.",
+        "search": "Filtra por external_game_id si tienes muchos juegos. La paginación es real (no carga todo en memoria).",
+        "selection": "Marca varios games para reasignarlos en bloque a la misma estrategia, con preview de impacto.",
+        "change": "Pulsa «Cambiar» para abrir el picker: built-ins + custom strategies publicadas. Las borrador/archivadas no aparecen — sólo las publicadas se asignan.",
+        "help": "Si dudas qué significa «estrategia padre» u otros términos del DSL, abre la Ayuda de la barra superior."
+      }
+    },
     "searchLabel": "Buscar por External Game ID",
     "searchPlaceholder": "game-readme-001…",
     "col": {
@@ -111,9 +129,26 @@
     "countFiltered_one": "{{count}} de {{total}} estrategia.",
     "countFiltered_other": "{{count}} de {{total}} estrategias.",
     "noResultsFiltered": "No hay estrategias que coincidan con los filtros.",
+    "showTour": "Volver a ver el tour",
     "empty": {
       "text": "Todavía no has creado ninguna estrategia. Empieza desde cero o a partir de una plantilla.",
-      "cta": "Crear mi primera estrategia"
+      "cta": "Crear mi primera estrategia",
+      "tourLink": "¿No sabes por dónde empezar? Mira el tour de esta vista."
+    },
+    "tour": {
+      "back": "Atrás",
+      "next": "Siguiente",
+      "last": "Entendido",
+      "skip": "Saltar",
+      "steps": {
+        "welcome": "Bienvenido a la biblioteca de estrategias.",
+        "intro": "Aquí encuentras todas las estrategias personalizadas de tu realm. Cada fila es una versión: borrador, publicada o archivada.",
+        "filters": "Filtra por estado o tipo, o busca por nombre cuando tengas muchas.",
+        "newCta": "Crea una estrategia nueva desde cero, desde una plantilla o extendiendo una built-in.",
+        "rowActions": "Sobre cada fila: abrir, duplicar, ver historial, ¿dónde se usa? y, si eres admin, publicar/archivar.",
+        "statusBadge": "El estado controla el ciclo de vida: sólo las publicadas se pueden asignar a juegos y tareas.",
+        "help": "Si encuentras un término que no conoces (pre-regla, veto, override de padre…), pulsa Ayuda en la barra superior para abrir el glosario."
+      }
     },
     "action": {
       "history": "Ver historial",

@@ -33,12 +33,12 @@ import {
 } from '@coreui/react'
 
 import { listBuiltInStrategies, listCustomStrategies } from '../../api'
+import GlossaryHint from './glossary/GlossaryHint'
 
 const TAB_BUILTIN = 'builtin'
 const TAB_CUSTOM = 'custom'
 
-const extractError = (err, fallback) =>
-  err?.response?.data?.detail || err?.message || fallback
+const extractError = (err, fallback) => err?.response?.data?.detail || err?.message || fallback
 
 const StrategyPickerModal = ({ visible, currentStrategyId, onClose, onSelect }) => {
   const [activeTab, setActiveTab] = useState(TAB_BUILTIN)
@@ -107,7 +107,10 @@ const StrategyPickerModal = ({ visible, currentStrategyId, onClose, onSelect }) 
   return (
     <CModal visible={visible} onClose={onClose} size="lg">
       <CModalHeader>
-        <CModalTitle>Elige una estrategia</CModalTitle>
+        <CModalTitle>
+          Elige una estrategia
+          <GlossaryHint term="assignment" />
+        </CModalTitle>
       </CModalHeader>
       <CModalBody>
         <CNav variant="tabs" className="mb-3">
@@ -139,9 +142,14 @@ const StrategyPickerModal = ({ visible, currentStrategyId, onClose, onSelect }) 
         {error && <CAlert color="danger">{error}</CAlert>}
         {!isLoading && !error && rows.length === 0 && (
           <CAlert color="info">
-            {activeTab === TAB_CUSTOM
-              ? 'No hay custom strategies publicadas. Crea una desde el editor y publícala.'
-              : 'No hay built-ins registradas.'}
+            {activeTab === TAB_CUSTOM ? (
+              <>
+                No hay custom strategies publicadas. Crea una desde el editor y publícala.
+                <GlossaryHint term="published" />
+              </>
+            ) : (
+              'No hay built-ins registradas.'
+            )}
           </CAlert>
         )}
 
