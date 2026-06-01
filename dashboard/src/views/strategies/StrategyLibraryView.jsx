@@ -54,6 +54,7 @@ import {
   publishCustomStrategy,
 } from '../../api'
 import keycloak from '../../keycloak'
+import { extractError } from '../../utils/errors'
 import GlossaryHint from './glossary/GlossaryHint'
 import OnboardingTour from './OnboardingTour'
 import StrategyUsageModal from './StrategyUsageModal'
@@ -93,8 +94,6 @@ const TYPE_LABEL = {
   DSL_FULL: 'Desde cero',
   DSL_EXTEND: 'Extiende',
 }
-
-const extractError = (err, fallback) => err?.response?.data?.detail || err?.message || fallback
 
 // UX-only admin hint (the server enforces require_admin on publish/archive).
 // Mirrors the decoder in StrategyEditor.jsx.

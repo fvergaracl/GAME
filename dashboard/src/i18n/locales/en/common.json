@@ -13,7 +13,9 @@
     "search": "Search",
     "clear": "Clear",
     "use": "Use",
-    "actions": "Actions"
+    "actions": "Actions",
+    "retry": "Retry",
+    "reload": "Reload page"
   },
   "status": {
     "DRAFT": "Draft",
@@ -50,6 +52,13 @@
     "next": "Next →",
     "prev": "Previous",
     "nextShort": "Next"
+  },
+  "alerts": {
+    "unknownError": "Unknown error while contacting the backend.",
+    "forbidden": "You don't have permission for this action.",
+    "requestFailedStatus": "Request failed (HTTP {{status}}).",
+    "sectionFailedTitle": "Something went wrong in this section.",
+    "sectionFailedBody": "We couldn't render this block. The rest of the dashboard is still working."
   },
   "loading": "Loading…",
   "none": "—",

@@ -13,7 +13,9 @@
     "search": "Buscar",
     "clear": "Limpiar",
     "use": "Usar",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "retry": "Reintentar",
+    "reload": "Recargar la página"
   },
   "status": {
     "DRAFT": "Borrador",
@@ -50,6 +52,13 @@
     "next": "Siguiente →",
     "prev": "Anterior",
     "nextShort": "Siguiente"
+  },
+  "alerts": {
+    "unknownError": "Error desconocido al contactar el backend.",
+    "forbidden": "No tienes permiso para esta acción.",
+    "requestFailedStatus": "La petición falló (HTTP {{status}}).",
+    "sectionFailedTitle": "Algo ha fallado en esta sección.",
+    "sectionFailedBody": "No hemos podido renderizar este bloque. El resto del dashboard sigue funcionando."
   },
   "loading": "Cargando…",
   "none": "—",

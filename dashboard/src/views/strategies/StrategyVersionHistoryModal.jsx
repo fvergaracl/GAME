@@ -31,6 +31,7 @@ import {
 } from '@coreui/react'
 
 import { listStrategyVersions, rollbackStrategy } from '../../api'
+import { extractError } from '../../utils/errors'
 import { DIFF_KINDS, diffPrograms } from './dsl/diffAst'
 
 const STATUS_BADGE = {
@@ -52,9 +53,6 @@ const KIND_COLOR = {
   [DIFF_KINDS.MODIFIED]: 'warning',
   [DIFF_KINDS.UNCHANGED]: 'secondary',
 }
-
-const extractError = (err, fallback) =>
-  err?.response?.data?.detail || err?.message || fallback
 
 const formatDate = (iso) => {
   if (!iso) return '—'

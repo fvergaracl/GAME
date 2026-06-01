@@ -1,1 +1,54 @@
-// Here you can add other styles
+// Sprint 9 — shared resilience primitives.
+//
+// Skeletons replace the "blank space then content pops in" pattern that
+// shipped in Sprint 6 (a CSpinner inside an otherwise empty card). They
+// are driven entirely from CoreUI tokens so they pick up dark mode for
+// free via ``--cui-tertiary-bg`` / ``--cui-secondary-bg``.
+
+@keyframes gd-skeleton-pulse {
+  0% { opacity: 0.55; }
+  50% { opacity: 1; }
+  100% { opacity: 0.55; }
+}
+
+.gd-skeleton {
+  display: block;
+  background-color: var(--cui-tertiary-bg);
+  border-radius: var(--cui-border-radius, 0.375rem);
+  animation: gd-skeleton-pulse 1.4s ease-in-out infinite;
+  // Prevent the line collapsing when the parent uses inline layout.
+  min-height: 0.75rem;
+}
+
+.gd-skeleton--text {
+  height: 0.85rem;
+  margin-bottom: 0.5rem;
+  &:last-child { margin-bottom: 0; }
+}
+
+.gd-skeleton--title {
+  height: 1.25rem;
+  width: 40%;
+  margin-bottom: 0.75rem;
+}
+
+.gd-skeleton--block {
+  height: 100%;
+  min-height: 6rem;
+}
+
+.gd-skeleton--circle {
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+}
+
+// Section-level fallback used by ErrorBoundary so a single broken chunk
+// doesn't tear down the whole dashboard.
+.gd-section-error {
+  border: 1px dashed var(--cui-border-color);
+  background-color: var(--cui-tertiary-bg);
+  border-radius: var(--cui-border-radius, 0.375rem);
+  padding: 1.25rem;
+  color: var(--cui-body-color);
+}

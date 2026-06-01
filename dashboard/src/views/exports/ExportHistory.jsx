@@ -18,6 +18,7 @@ import {
   CTableRow,
 } from '@coreui/react'
 import { getExportHistory } from '../../api'
+import { extractError } from '../../utils/errors'
 
 const STATUS_COLORS = {
   completed: 'success',
@@ -38,7 +39,12 @@ const ExportHistory = () => {
       const data = await getExportHistory({ scope: nextScope, limit: 100 })
       setRows(Array.isArray(data) ? data : [])
     } catch (err) {
-      setError(extractErrorMessage(err))
+      setError(
+        extractError(err, {
+          fallback: 'Network error',
+          forbidden: 'Forbidden. You need the AdministratorGAME role.',
+        }),
+      )
       setRows([])
     } finally {
       setLoading(false)
@@ -167,17 +173,6 @@ function summarizeFilters(filters) {
   return entries
     .map(([k, v]) => `${k}=${typeof v === 'object' ? JSON.stringify(v) : v}`)
     .join(', ')
-}
-
-function extractErrorMessage(err) {
-  if (!err) return 'Unknown error'
-  if (err.response) {
-    if (err.response.status === 403) {
-      return 'Forbidden. You need the AdministratorGAME role.'
-    }
-    return err.response.data?.detail || `Request failed (${err.response.status}).`
-  }
-  return err.message || 'Network error'
 }
 
 export default ExportHistory

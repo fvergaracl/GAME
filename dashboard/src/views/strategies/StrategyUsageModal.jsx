@@ -24,9 +24,8 @@ import {
 } from '@coreui/react'
 
 import { getStrategyUsage, patchGameStrategy, patchTaskStrategy } from '../../api'
+import { extractError } from '../../utils/errors'
 import StrategyPickerModal from './StrategyPickerModal'
-
-const extractError = (err, fallback) => err?.response?.data?.detail || err?.message || fallback
 
 const StrategyUsageModal = ({ visible, strategyId, strategyName, onClose, onReassigned }) => {
   const [usage, setUsage] = useState(null)

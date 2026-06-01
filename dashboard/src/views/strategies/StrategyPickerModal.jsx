@@ -33,12 +33,11 @@ import {
 } from '@coreui/react'
 
 import { listBuiltInStrategies, listCustomStrategies } from '../../api'
+import { extractError } from '../../utils/errors'
 import GlossaryHint from './glossary/GlossaryHint'
 
 const TAB_BUILTIN = 'builtin'
 const TAB_CUSTOM = 'custom'
-
-const extractError = (err, fallback) => err?.response?.data?.detail || err?.message || fallback
 
 const StrategyPickerModal = ({ visible, currentStrategyId, onClose, onSelect }) => {
   const [activeTab, setActiveTab] = useState(TAB_BUILTIN)

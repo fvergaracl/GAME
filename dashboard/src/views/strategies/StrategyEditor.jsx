@@ -54,6 +54,7 @@ import {
 import keycloak from '../../keycloak'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import { translateDslError } from '../../i18n/errorMap'
+import { extractError } from '../../utils/errors'
 import {
   STARTER_RULE_XML,
   buildBlockCatalog,
@@ -1817,21 +1818,6 @@ const StrategyEditor = () => {
   )
 }
 
-// Best-effort extractor for axios errors. The endpoints raise FastAPI
-// HTTPExceptions whose body is { detail: "..." }; bare network errors get
-// the raw message instead.
-// Sprint 10: ``t`` is optional so the function still works in non-React
-// callers (e.g. tests). When provided, the unknown-error fallback is
-// localised; without it we degrade to the Spanish wording.
-function extractError(err, t) {
-  const detail = err?.response?.data?.detail
-  if (typeof detail === 'string' && detail) return detail
-  if (detail && typeof detail === 'object' && detail.message) return detail.message
-  if (err?.message) return err.message
-  return t
-    ? t('alerts.unknownError', { defaultValue: 'Error desconocido al contactar el backend.' })
-    : 'Error desconocido al contactar el backend.'
-}
 
 // Sprint 5: format a points delta for the compare table with an explicit
 // sign so "+3" / "-2" read at a glance.

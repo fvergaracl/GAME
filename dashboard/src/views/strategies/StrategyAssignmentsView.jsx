@@ -50,6 +50,7 @@ import {
   patchGameStrategy,
   patchTaskStrategy,
 } from '../../api'
+import { extractError } from '../../utils/errors'
 import GlossaryHint from './glossary/GlossaryHint'
 import OnboardingTour from './OnboardingTour'
 import StrategyPickerModal from './StrategyPickerModal'
@@ -66,8 +67,6 @@ const ASSIGNMENTS_TOUR_STEPS = [
 ]
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50]
-
-const extractError = (err, fallback) => err?.response?.data?.detail || err?.message || fallback
 
 // Pre-build a lookup so rendering "custom:<uuid>" reads as
 // "MyStrategy v3" without doing N round-trips per row.

@@ -15,6 +15,7 @@ import {
   CSpinner,
 } from '@coreui/react'
 import { downloadExport } from '../../api'
+import { extractError } from '../../utils/errors'
 
 const DATASETS = [
   { value: 'users', label: 'Users' },
@@ -78,7 +79,7 @@ const ExportData = () => {
       })
       setSuccess(`Downloaded ${result.filename} (${formatBytes(result.size)}).`)
     } catch (err) {
-      setError(extractErrorMessage(err))
+      setError(extractDownloadError(err))
     } finally {
       setIsDownloading(false)
     }
@@ -252,27 +253,18 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-// axios with responseType: 'blob' delivers error bodies as Blobs too, which
-// makes the usual err.response.data.detail unreadable. Best effort: try the
-// blob.text() path, fall back to status text.
-function extractErrorMessage(err) {
-  if (!err) return 'Unknown error'
-  if (err.response) {
-    if (err.response.status === 403) {
-      return 'Forbidden. You need the AdministratorGAME role to download data.'
-    }
-    if (err.response.status === 422) {
-      return 'Invalid parameters. Check the date range, limit, and format.'
-    }
-    if (err.response.data instanceof Blob) {
-      // Return a generic message; the actual JSON detail is in a Blob we
-      // could read asynchronously, but doing so here would complicate the
-      // sync error path. The status code already tells most of the story.
-      return `Request failed with status ${err.response.status}.`
-    }
-    return err.response.data?.detail || `Request failed (${err.response.status}).`
+// Sprint 9: download-specific wrapper around the shared extractError.
+// Carries the dataset-specific 403 and 422 messages that the generic
+// helper doesn't know about; everything else (Blob bodies, generic
+// fallback, network errors) routes through the shared helper.
+function extractDownloadError(err) {
+  if (err?.response?.status === 422) {
+    return 'Invalid parameters. Check the date range, limit, and format.'
   }
-  return err.message || 'Network error'
+  return extractError(err, {
+    fallback: 'Network error',
+    forbidden: 'Forbidden. You need the AdministratorGAME role to download data.',
+  })
 }
 
 export default ExportData
