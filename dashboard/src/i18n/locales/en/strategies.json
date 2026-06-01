@@ -208,5 +208,86 @@
     "errors": {
       "load": "Could not load the templates."
     }
+  },
+  "observability": {
+    "title": "Observability",
+    "subtitle": "Real execution metrics for «{{name}}» (v{{version}}). Numbers are computed from the engine's sampled log; errors are always kept, OK runs are sampled at 5%.",
+    "subtitleEmpty": "Pick a strategy to see its live execution metrics.",
+    "pickerLabel": "Strategy",
+    "pickerPlaceholder": "Select a strategy…",
+    "windowLabel": "Time window",
+    "window": {
+      "all": "All-time",
+      "24h": "Last 24h",
+      "7d": "Last 7 days",
+      "30d": "Last 30 days"
+    },
+    "compareCta": "Compare against another",
+    "refresh": "Refresh",
+    "noData": "No executions recorded for this strategy in the selected window yet.",
+    "cards": {
+      "statusTitle": "Execution status",
+      "latencyTitle": "Latency",
+      "errorsTitle": "Top errors",
+      "casesTitle": "Cases fired",
+      "pointsTitle": "Points distribution",
+      "nodesTitle": "Nodes executed"
+    },
+    "labels": {
+      "total": "Total",
+      "ok": "Ok",
+      "error": "Error",
+      "timeout": "Timeout",
+      "limit": "Limit",
+      "other": "Other",
+      "successRate": "Success rate",
+      "errorRate": "Error rate",
+      "avg": "Avg",
+      "p50": "p50",
+      "p95": "p95",
+      "p99": "p99",
+      "max": "Max",
+      "samples": "Samples",
+      "noErrors": "No errors in this window.",
+      "noCases": "No cases recorded.",
+      "noPoints": "No OK runs awarded points.",
+      "defaultCase": "(default)",
+      "code": "Code",
+      "case": "Case",
+      "count": "Executions",
+      "nodesAvg": "Avg nodes",
+      "nodesMax": "Max nodes",
+      "pointsSum": "Total points",
+      "buckets": "Buckets"
+    },
+    "errors": {
+      "load": "Could not load the metrics.",
+      "loadList": "Could not load the strategy list."
+    }
+  },
+  "compare": {
+    "title": "A/B Compare",
+    "subtitle": "Compare two published or draft strategies side by side. Useful for validating variants (static vs adaptive, baseline vs experimental) before promoting them.",
+    "pickA": "Strategy A (baseline)",
+    "pickB": "Strategy B (variant)",
+    "pickerPlaceholder": "Select…",
+    "swap": "Swap A ↔ B",
+    "windowLabel": "Time window",
+    "run": "Compare",
+    "deltaLabel": "Delta (B − A)",
+    "betterLabel": "Better",
+    "worseLabel": "Worse",
+    "summary": {
+      "successRate": "Success rate",
+      "errorRate": "Error rate",
+      "p95": "p95 latency",
+      "avg": "Avg latency",
+      "pointsAvg": "Avg points per run"
+    },
+    "missingInputs": "Pick two strategies to compare.",
+    "sameStrategy": "Comparing a strategy with itself doesn't yield useful information.",
+    "errors": {
+      "load": "Could not load the comparison."
+    }
   }
 }

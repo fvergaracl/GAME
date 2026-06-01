@@ -20,6 +20,13 @@ const BlockHelpView = React.lazy(() => import('./views/strategies/BlockHelpView'
 const StrategyAssignmentsView = React.lazy(
   () => import('./views/strategies/StrategyAssignmentsView'),
 )
+// Sprint 10: observability + A/B comparison views. Both render
+// aggregations from the sampled execution log and don't depend on
+// Blockly, so they stay in their own small chunks.
+const StrategyObservabilityView = React.lazy(
+  () => import('./views/strategies/StrategyObservabilityView'),
+)
+const StrategyComparisonView = React.lazy(() => import('./views/strategies/StrategyComparisonView'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -35,6 +42,16 @@ const routes = [
     path: '/admin/strategies/assignments',
     name: 'Strategy Assignments',
     element: StrategyAssignmentsView,
+  },
+  {
+    path: '/strategies/observability',
+    name: 'Strategy Observability',
+    element: StrategyObservabilityView,
+  },
+  {
+    path: '/strategies/compare',
+    name: 'Strategy Comparison',
+    element: StrategyComparisonView,
   },
 ]
 

@@ -40,6 +40,7 @@ from app.services import (
     GameService,
     KpiMetricsService,
     StrategyDefinitionService,
+    StrategyObservabilityService,
     StrategyService,
     TaskService,
     UptimeLogsService,
@@ -156,6 +157,7 @@ class Container(containers.DeclarativeContainer):
             "app.api.v1.endpoints.dashboard",
             "app.api.v1.endpoints.exports",
             "app.api.v1.endpoints.strategies_custom",
+            "app.api.v1.endpoints.strategy_observability",
             "app.middlewares.auth_context",
         ]
     )
@@ -459,4 +461,13 @@ class Container(containers.DeclarativeContainer):
         DslSimulationService,
         strategy_definition_service=strategy_definition_service,
         user_points_analytics_service=user_points_analytics_service,
+    )
+
+    # Sprint 10: aggregates rows from ``strategyexecutionlog`` into the
+    # observability dashboard view (status mix, latency percentiles,
+    # case-name and error-code breakdowns) and the A/B comparison view.
+    strategy_observability_service = providers.Factory(
+        StrategyObservabilityService,
+        execution_log_repository=strategy_execution_log_repository,
+        strategy_definition_service=strategy_definition_service,
     )

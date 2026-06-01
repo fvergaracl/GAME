@@ -1,6 +1,8 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
+  cilChartLine,
+  cilChartPie,
   cilCloudDownload,
   cilHistory,
   cilLibrary,
@@ -64,6 +66,18 @@ const _nav_administrator = [
     name: 'nav.assignments',
     to: '/admin/strategies/assignments',
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'nav.observability',
+    to: '/strategies/observability',
+    icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'nav.compare',
+    to: '/strategies/compare',
+    icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,

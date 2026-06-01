@@ -208,5 +208,86 @@
     "errors": {
       "load": "No se pudieron cargar las plantillas."
     }
+  },
+  "observability": {
+    "title": "Observabilidad",
+    "subtitle": "Métricas de ejecución reales para «{{name}}» (v{{version}}). Las cifras se calculan sobre el log muestreado del motor; los errores se conservan siempre, los OK al 5 %.",
+    "subtitleEmpty": "Elige una estrategia para ver sus métricas reales de ejecución.",
+    "pickerLabel": "Estrategia",
+    "pickerPlaceholder": "Selecciona una estrategia…",
+    "windowLabel": "Ventana de tiempo",
+    "window": {
+      "all": "Todo el tiempo",
+      "24h": "Últimas 24 h",
+      "7d": "Últimos 7 días",
+      "30d": "Últimos 30 días"
+    },
+    "compareCta": "Comparar con otra",
+    "refresh": "Refrescar",
+    "noData": "Aún no se han registrado ejecuciones para esta estrategia en la ventana seleccionada.",
+    "cards": {
+      "statusTitle": "Estado de las ejecuciones",
+      "latencyTitle": "Latencia",
+      "errorsTitle": "Errores frecuentes",
+      "casesTitle": "Casos disparados",
+      "pointsTitle": "Distribución de puntos",
+      "nodesTitle": "Nodos ejecutados"
+    },
+    "labels": {
+      "total": "Total",
+      "ok": "Ok",
+      "error": "Error",
+      "timeout": "Timeout",
+      "limit": "Límite",
+      "other": "Otro",
+      "successRate": "Tasa de éxito",
+      "errorRate": "Tasa de error",
+      "avg": "Media",
+      "p50": "p50",
+      "p95": "p95",
+      "p99": "p99",
+      "max": "Máx",
+      "samples": "Muestras",
+      "noErrors": "Sin errores en la ventana.",
+      "noCases": "Sin casos registrados.",
+      "noPoints": "Sin runs OK que hayan otorgado puntos.",
+      "defaultCase": "(default)",
+      "code": "Código",
+      "case": "Caso",
+      "count": "Ejecuciones",
+      "nodesAvg": "Media de nodos",
+      "nodesMax": "Máx de nodos",
+      "pointsSum": "Suma de puntos",
+      "buckets": "Cubos"
+    },
+    "errors": {
+      "load": "No se pudieron cargar las métricas.",
+      "loadList": "No se pudieron cargar las estrategias."
+    }
+  },
+  "compare": {
+    "title": "Comparar A/B",
+    "subtitle": "Compara dos estrategias publicadas o borradores lado a lado. Útil para validar variantes (static vs adaptive, baseline vs experimental) antes de promoverlas.",
+    "pickA": "Estrategia A (baseline)",
+    "pickB": "Estrategia B (variante)",
+    "pickerPlaceholder": "Selecciona…",
+    "swap": "Intercambiar A ↔ B",
+    "windowLabel": "Ventana de tiempo",
+    "run": "Comparar",
+    "deltaLabel": "Delta (B − A)",
+    "betterLabel": "Mejor",
+    "worseLabel": "Peor",
+    "summary": {
+      "successRate": "Tasa de éxito",
+      "errorRate": "Tasa de error",
+      "p95": "p95 latencia",
+      "avg": "Media latencia",
+      "pointsAvg": "Media de puntos por ejecución"
+    },
+    "missingInputs": "Selecciona dos estrategias para comparar.",
+    "sameStrategy": "Comparar una estrategia consigo misma no aporta información útil.",
+    "errors": {
+      "load": "No se pudo cargar la comparación."
+    }
   }
 }

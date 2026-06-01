@@ -12,6 +12,9 @@ from app.api.v1.endpoints.strategies_custom import (
     router as strategies_custom_router,
 )
 from app.api.v1.endpoints.strategy import router as strategy_router
+from app.api.v1.endpoints.strategy_observability import (
+    router as strategy_observability_router,
+)
 from app.api.v1.endpoints.tasks import router as task_router
 from app.api.v1.endpoints.userPoints import router as user_points_router
 from app.api.v1.endpoints.users import router as user_router
@@ -20,6 +23,13 @@ from app.api.v1.endpoints.wallet import router as wallet_router
 routers = APIRouter()
 router_list = [
     apikey_router,
+    # Sprint 10: the observability router shares the
+    # ``/strategies/custom`` prefix with strategies_custom_router and
+    # owns a literal ``/compare`` path. FastAPI matches routes in
+    # include-order, so this router has to come first — otherwise the
+    # ``/{id}`` route on strategies_custom_router would swallow
+    # ``/compare`` and 404 with "Custom strategy not found: compare".
+    strategy_observability_router,
     strategies_custom_router,
     strategy_router,
     game_router,

@@ -300,3 +300,34 @@ export const patchTaskStrategy = async (gameId, taskId, strategyId) => {
     { strategyId },
   )
 }
+
+// ---------------------------------------------------------------------------
+// Sprint 10 — observability endpoints (metrics + A/B comparison)
+//
+// The backend aggregates the sampled execution log into a single payload per
+// strategy version (status mix, latency percentiles, top errors, case-name
+// breakdown, points distribution). The comparison endpoint runs the same
+// aggregation against two ids and includes the B - A deltas server-side so
+// the UI doesn't need to recompute them.
+// ---------------------------------------------------------------------------
+
+const _buildWindowParams = ({ since, until } = {}) => {
+  const params = new URLSearchParams()
+  if (since) params.set('since', new Date(since).toISOString())
+  if (until) params.set('until', new Date(until).toISOString())
+  return params
+}
+
+export const getStrategyMetrics = async (id, { since, until } = {}) => {
+  const params = _buildWindowParams({ since, until })
+  const qs = params.toString()
+  const path = `/strategies/custom/${encodeURIComponent(id)}/metrics${qs ? `?${qs}` : ''}`
+  return getRequest(path)
+}
+
+export const compareStrategies = async (idA, idB, { since, until } = {}) => {
+  const params = _buildWindowParams({ since, until })
+  params.set('a', idA)
+  params.set('b', idB)
+  return getRequest(`/strategies/custom/compare?${params.toString()}`)
+}

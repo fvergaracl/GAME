@@ -7,6 +7,8 @@
     "strategiesTitle": "Strategies",
     "myStrategies": "My strategies",
     "strategyEditor": "Strategy editor",
+    "observability": "Observability",
+    "compare": "A/B compare",
     "assignments": "Assignment",
     "adminTitle": "Admin",
     "apiKeys": "API keys",
@@ -25,6 +27,8 @@
     "Block Help": "Block help",
     "Strategy Editor": "Strategy editor",
     "Edit Strategy": "Edit strategy",
+    "Strategy Observability": "Strategy observability",
+    "Strategy Comparison": "Strategy comparison",
     "Strategy Assignments": "Strategy assignments"
   },
   "header": {
