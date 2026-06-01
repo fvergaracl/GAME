@@ -1,0 +1,21 @@
+{
+  "range": {
+    "30days": "30 days",
+    "90days": "90 days",
+    "custom": "Custom range"
+  },
+  "widgets": {
+    "newUsers": "New users",
+    "gamesOpened": "Games opened",
+    "pointsRewarded": "Points rewarded",
+    "actionsPerformed": "Actions performed",
+    "actionsTooltip": "This is the total number of actions performed by users in tasks."
+  },
+  "activity": {
+    "title": "API activity logs",
+    "loading": "Loading…",
+    "info": "Info",
+    "success": "Success",
+    "error": "Error"
+  }
+}

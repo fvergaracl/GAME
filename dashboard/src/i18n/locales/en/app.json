@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "dataTitle": "Data",
+    "dataExport": "Data export",
+    "exportHistory": "Export history",
+    "strategiesTitle": "Strategies",
+    "myStrategies": "My strategies",
+    "strategyEditor": "Strategy editor",
+    "assignments": "Assignment",
+    "adminTitle": "Admin",
+    "apiKeys": "API keys",
+    "kpi": "KPI"
+  },
+  "breadcrumb": {
+    "home": "Home"
+  },
+  "routes": {
+    "Home": "Home",
+    "Dashboard": "Dashboard",
+    "API keys": "API keys",
+    "Data export": "Data export",
+    "Export history": "Export history",
+    "My Strategies": "My strategies",
+    "Block Help": "Block help",
+    "Strategy Editor": "Strategy editor",
+    "Edit Strategy": "Edit strategy",
+    "Strategy Assignments": "Strategy assignments"
+  },
+  "header": {
+    "toggleSidebar": "Toggle sidebar",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeAuto": "Auto",
+    "languageLabel": "Language"
+  },
+  "userMenu": {
+    "notSignedIn": "Not signed in",
+    "loginKeycloak": "Log in with Keycloak",
+    "profile": "Profile",
+    "logout": "Log out",
+    "account": "Account"
+  },
+  "footer": {
+    "copyright": "Dashboard.",
+    "sourceAvailable": "Source available"
+  },
+  "page404": {
+    "title": "Oops! You're lost.",
+    "description": "The page you are looking for was not found."
+  }
+}

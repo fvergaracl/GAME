@@ -1,0 +1,21 @@
+{
+  "range": {
+    "30days": "30 días",
+    "90days": "90 días",
+    "custom": "Rango personalizado"
+  },
+  "widgets": {
+    "newUsers": "Usuarios nuevos",
+    "gamesOpened": "Juegos abiertos",
+    "pointsRewarded": "Puntos otorgados",
+    "actionsPerformed": "Acciones realizadas",
+    "actionsTooltip": "Es el número total de acciones realizadas por los usuarios en las tareas."
+  },
+  "activity": {
+    "title": "Registros de actividad de la API",
+    "loading": "Cargando…",
+    "info": "Info",
+    "success": "Éxito",
+    "error": "Error"
+  }
+}

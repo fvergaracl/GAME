@@ -1,0 +1,62 @@
+{
+  "data": {
+    "headerTitle": "Exportar datos",
+    "headerSubtitle": "Descarga un conjunto de datos",
+    "intro": "Elige un conjunto de datos, un formato y filtros opcionales. La descarga empieza en tu navegador en cuanto el servidor esté listo — sin correo ni tareas en segundo plano. Cada solicitud queda registrada en Historial de exportaciones.",
+    "dataset": "Conjunto de datos",
+    "datasets": {
+      "users": "Usuarios",
+      "userPoints": "Puntos de usuario",
+      "userInteractions": "Interacciones de usuario",
+      "walletTransactions": "Transacciones de cartera"
+    },
+    "format": "Formato",
+    "gameId": "ID de juego",
+    "gameIdPlaceholder": "externalGameId (opcional)",
+    "taskId": "ID de tarea",
+    "taskIdPlaceholder": "externalTaskId (opcional)",
+    "dateFrom": "Desde",
+    "dateTo": "Hasta",
+    "limit": "Límite",
+    "limitHint": "Tope máximo: {{limit}} filas por solicitud.",
+    "download": "Descargar",
+    "preparing": "Preparando descarga…",
+    "success": "Descargado {{filename}} ({{size}}).",
+    "errors": {
+      "limit": "El límite debe ser un entero entre 1 y {{max}}.",
+      "dateOrder": "«Desde» debe ser anterior a «Hasta».",
+      "forbidden": "Prohibido. Necesitas el rol AdministratorGAME para descargar datos.",
+      "invalidParams": "Parámetros inválidos. Revisa el rango de fechas, el límite y el formato.",
+      "failedStatus": "La solicitud falló con estado {{status}}.",
+      "failed": "La solicitud falló ({{status}}).",
+      "network": "Error de red",
+      "unknown": "Error desconocido"
+    }
+  },
+  "history": {
+    "headerTitle": "Historial de exportaciones",
+    "headerSubtitle": "Solicitudes de descarga recientes",
+    "scopeAria": "Ámbito del historial",
+    "scope": {
+      "mine": "Mías",
+      "all": "Todos los admins"
+    },
+    "empty": "Aún no hay exportaciones registradas. Cuando descargues un conjunto de datos desde la página Exportar datos aparecerá aquí.",
+    "col": {
+      "when": "Cuándo",
+      "dataset": "Conjunto de datos",
+      "format": "Formato",
+      "status": "Estado",
+      "rows": "Filas",
+      "limit": "Límite",
+      "by": "Por",
+      "filters": "Filtros"
+    },
+    "errors": {
+      "forbidden": "Prohibido. Necesitas el rol AdministratorGAME.",
+      "failed": "La solicitud falló ({{status}}).",
+      "network": "Error de red",
+      "unknown": "Error desconocido"
+    }
+  }
+}

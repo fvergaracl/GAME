@@ -1,0 +1,58 @@
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "open": "Open",
+    "duplicate": "Duplicate",
+    "export": "Export",
+    "exportJson": "Export JSON",
+    "refresh": "Refresh",
+    "search": "Search",
+    "clear": "Clear",
+    "use": "Use",
+    "actions": "Actions"
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "PUBLISHED": "Published",
+    "ARCHIVED": "Archived"
+  },
+  "type": {
+    "DSL_FULL": "From scratch",
+    "DSL_EXTEND": "Extends"
+  },
+  "badge": {
+    "builtIn": "Built-in",
+    "custom": "Custom",
+    "unknown": "unknown",
+    "current": "Current"
+  },
+  "fields": {
+    "name": "Name",
+    "description": "Description",
+    "type": "Type",
+    "status": "Status",
+    "version": "Version",
+    "parent": "Parent",
+    "date": "Date",
+    "author": "Author",
+    "platform": "Platform",
+    "actions": "Actions",
+    "all": "All"
+  },
+  "pagination": {
+    "page": "Page {{page}} of {{total}}",
+    "perPage": "Per page",
+    "previous": "← Previous",
+    "next": "Next →",
+    "prev": "Previous",
+    "nextShort": "Next"
+  },
+  "loading": "Loading…",
+  "none": "—",
+  "noDescription": "No description.",
+  "unknownError": "Unknown error while contacting the backend."
+}

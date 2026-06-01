@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "dashboard": "Panel",
+    "dataTitle": "Datos",
+    "dataExport": "Exportar datos",
+    "exportHistory": "Historial de exportaciones",
+    "strategiesTitle": "Estrategias",
+    "myStrategies": "Mis estrategias",
+    "strategyEditor": "Editor de estrategias",
+    "assignments": "Asignación",
+    "adminTitle": "Administración",
+    "apiKeys": "Claves API",
+    "kpi": "KPI"
+  },
+  "breadcrumb": {
+    "home": "Inicio"
+  },
+  "routes": {
+    "Home": "Inicio",
+    "Dashboard": "Panel",
+    "API keys": "Claves API",
+    "Data export": "Exportar datos",
+    "Export history": "Historial de exportaciones",
+    "My Strategies": "Mis estrategias",
+    "Block Help": "Ayuda de bloques",
+    "Strategy Editor": "Editor de estrategias",
+    "Edit Strategy": "Editar estrategia",
+    "Strategy Assignments": "Asignación de estrategias"
+  },
+  "header": {
+    "toggleSidebar": "Mostrar/ocultar menú lateral",
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeAuto": "Automático",
+    "languageLabel": "Idioma"
+  },
+  "userMenu": {
+    "notSignedIn": "Sin sesión iniciada",
+    "loginKeycloak": "Iniciar sesión con Keycloak",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "account": "Cuenta"
+  },
+  "footer": {
+    "copyright": "Panel.",
+    "sourceAvailable": "Código disponible"
+  },
+  "page404": {
+    "title": "¡Vaya! Te has perdido.",
+    "description": "No se encontró la página que buscas."
+  }
+}

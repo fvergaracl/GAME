@@ -1,0 +1,38 @@
+{
+  "creation": {
+    "headerTitle": "Clave API",
+    "headerSubtitle": "Crear una nueva clave API",
+    "intro": "Crea una nueva clave API",
+    "client": "Cliente",
+    "clientPlaceholder": "Introduce el nombre del cliente",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Introduce la descripción",
+    "submit": "Crear clave API",
+    "submitting": "Creando…",
+    "validation": {
+      "clientRequired": "El nombre del cliente es obligatorio",
+      "clientMin": "El nombre del cliente debe tener al menos 6 caracteres",
+      "descriptionRequired": "La descripción es obligatoria",
+      "descriptionMin": "La descripción debe tener al menos 6 caracteres"
+    },
+    "success": {
+      "client": "Cliente:",
+      "key": "Tu clave API es:"
+    },
+    "error": "Error:"
+  },
+  "table": {
+    "headerTitle": "Clave API",
+    "headerSubtitle": "Tabla de claves API",
+    "intro": "Tabla de claves API; puedes gestionarlas aquí.",
+    "col": {
+      "apiKey": "Clave API",
+      "client": "Cliente",
+      "description": "Descripción",
+      "createdAt": "Creada",
+      "actions": "Acciones"
+    },
+    "previous": "Anterior",
+    "next": "Siguiente"
+  }
+}

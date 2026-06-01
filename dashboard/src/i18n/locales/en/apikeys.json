@@ -1,0 +1,38 @@
+{
+  "creation": {
+    "headerTitle": "API key",
+    "headerSubtitle": "Create a new API key",
+    "intro": "Create a new API key",
+    "client": "Client",
+    "clientPlaceholder": "Enter your client name",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter your description",
+    "submit": "Create API key",
+    "submitting": "Creating…",
+    "validation": {
+      "clientRequired": "Client name is required",
+      "clientMin": "Client name must be at least 6 characters long",
+      "descriptionRequired": "Description is required",
+      "descriptionMin": "Description must be at least 6 characters long"
+    },
+    "success": {
+      "client": "Client:",
+      "key": "Your API key is:"
+    },
+    "error": "Error:"
+  },
+  "table": {
+    "headerTitle": "API key",
+    "headerSubtitle": "Table of API keys",
+    "intro": "Table of API keys, you can manage them here.",
+    "col": {
+      "apiKey": "API key",
+      "client": "Client",
+      "description": "Description",
+      "createdAt": "Created at",
+      "actions": "Actions"
+    },
+    "previous": "Previous",
+    "next": "Next"
+  }
+}

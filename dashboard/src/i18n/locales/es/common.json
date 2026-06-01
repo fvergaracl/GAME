@@ -1,0 +1,58 @@
+{
+  "actions": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "delete": "Borrar",
+    "open": "Abrir",
+    "duplicate": "Duplicar",
+    "export": "Exportar",
+    "exportJson": "Exportar JSON",
+    "refresh": "Refrescar",
+    "search": "Buscar",
+    "clear": "Limpiar",
+    "use": "Usar",
+    "actions": "Acciones"
+  },
+  "status": {
+    "DRAFT": "Borrador",
+    "PUBLISHED": "Publicada",
+    "ARCHIVED": "Archivada"
+  },
+  "type": {
+    "DSL_FULL": "Desde cero",
+    "DSL_EXTEND": "Extiende"
+  },
+  "badge": {
+    "builtIn": "Built-in",
+    "custom": "Custom",
+    "unknown": "desconocida",
+    "current": "Actual"
+  },
+  "fields": {
+    "name": "Nombre",
+    "description": "Descripción",
+    "type": "Tipo",
+    "status": "Estado",
+    "version": "Versión",
+    "parent": "Padre",
+    "date": "Fecha",
+    "author": "Autor",
+    "platform": "Plataforma",
+    "actions": "Acciones",
+    "all": "Todos"
+  },
+  "pagination": {
+    "page": "Página {{page}} de {{total}}",
+    "perPage": "Por página",
+    "previous": "← Anterior",
+    "next": "Siguiente →",
+    "prev": "Anterior",
+    "nextShort": "Siguiente"
+  },
+  "loading": "Cargando…",
+  "none": "—",
+  "noDescription": "Sin descripción.",
+  "unknownError": "Error desconocido al contactar el backend."
+}

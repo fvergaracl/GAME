@@ -1,0 +1,177 @@
+{
+  "assignments": {
+    "title": "Asignación de estrategias",
+    "subtitle": "Cambia la estrategia activa de un Game o de una Task. Selecciona varios games para reasignarlos en bloque. Las custom strategies disponibles son las publicadas en tu realm.",
+    "searchLabel": "Buscar por External Game ID",
+    "searchPlaceholder": "game-readme-001…",
+    "col": {
+      "externalGameId": "External Game ID",
+      "externalTaskId": "External Task ID",
+      "strategy": "Estrategia",
+      "action": "Acción"
+    },
+    "selectAllAria": "Seleccionar todos los games de la página",
+    "selectAria": "Seleccionar {{id}}",
+    "selected_one": "{{count}} game seleccionado en esta página.",
+    "selected_other": "{{count}} games seleccionados en esta página.",
+    "reassignSelected": "Reasignar seleccionados",
+    "totalSummary_one": "{{count}} game en total · {{custom}} con custom strategy en esta página.",
+    "totalSummary_other": "{{count}} games en total · {{custom}} con custom strategy en esta página.",
+    "expandTasks": "Ver tasks de {{id}}",
+    "collapseTasks": "Colapsar tasks de {{id}}",
+    "loadingTasks": "Cargando tasks…",
+    "noTasks": "Sin tasks asociadas.",
+    "change": "Cambiar",
+    "noMatch": "Ningún game coincide con la búsqueda.",
+    "noGames": "No hay games en este realm.",
+    "confirm": {
+      "title": "Confirmar reasignación",
+      "bulk_one": "Vas a reasignar <strong>{{count}}</strong> game a <code>{{target}}</code>. Si ya tiene esa estrategia, se omite.",
+      "bulk_other": "Vas a reasignar <strong>{{count}}</strong> games a <code>{{target}}</code>. Los que ya tengan esa estrategia se omiten.",
+      "task": "La task <code>{{task}}</code> pasará a <code>{{target}}</code>.",
+      "game": "El game <code>{{game}}</code> pasará a <code>{{target}}</code>.",
+      "reassign": "Reasignar"
+    },
+    "errors": {
+      "loadIndex": "No se pudo cargar el índice de estrategias.",
+      "loadGames": "No se pudieron cargar las asignaciones.",
+      "loadTasks": "No se pudieron cargar las tasks de {{id}}.",
+      "reassign": "No se pudo actualizar la asignación."
+    },
+    "success": {
+      "game": "Estrategia del game actualizada.",
+      "task": "Estrategia de la task actualizada."
+    },
+    "result": {
+      "reassigned_one": "{{count}} game reasignado.",
+      "reassigned_other": "{{count}} games reasignados.",
+      "skipped": "{{count}} ya tenían esa estrategia.",
+      "failed": "{{count}} fallaron: {{detail}}"
+    }
+  },
+  "picker": {
+    "title": "Elige una estrategia",
+    "tabBuiltin": "Built-in ({{count}})",
+    "tabCustom": "Custom (tu realm) ({{count}})",
+    "emptyCustom": "No hay custom strategies publicadas. Crea una desde el editor y publícala.",
+    "emptyBuiltin": "No hay built-ins registradas.",
+    "alreadyAssigned": "Ya asignada",
+    "errors": {
+      "loadBuiltIns": "No se pudo cargar built-ins.",
+      "loadCustoms": "No se pudieron cargar las custom strategies."
+    }
+  },
+  "history": {
+    "title": "Historial de versiones",
+    "versions": "Versiones",
+    "empty": "Esta estrategia no tiene versiones.",
+    "by": "Por {{user}}",
+    "versionA": "Versión A (origen)",
+    "versionB": "Versión B (comparar contra)",
+    "before": "Antes",
+    "after": "Después",
+    "added": "añadidas",
+    "removed": "eliminadas",
+    "modified": "modificadas",
+    "unchanged": "{{count}} sin cambios",
+    "identical": "Las dos versiones son estructuralmente idénticas.",
+    "section": {
+      "rules": "Reglas",
+      "preRules": "Pre-reglas",
+      "postRules": "Post-reglas",
+      "parentVariables": "Variables del padre",
+      "default": "Por defecto"
+    },
+    "kind": {
+      "added": "Añadida",
+      "removed": "Eliminada",
+      "modified": "Modificada",
+      "unchanged": "Sin cambios"
+    },
+    "selected": "Seleccionada: <strong>v{{version}}</strong> · {{status}}",
+    "rollbackCta": "Hacer rollback a v{{version}}",
+    "confirm": {
+      "body": "Vas a re-publicar <strong>v{{version}}</strong> y archivar la versión actualmente publicada. Todos los Games y Tasks que apuntaban a la versión activa se redirigirán automáticamente. ¿Continuar?",
+      "apply": "Sí, hacer rollback",
+      "applying": "Aplicando…"
+    },
+    "errors": {
+      "load": "No se pudo cargar el historial.",
+      "rollback": "No se pudo hacer el rollback."
+    }
+  },
+  "library": {
+    "title": "Mis estrategias",
+    "subtitle": "Todas las estrategias personalizadas de tu realm. Ábrelas para seguir editando, duplícalas como punto de partida o publícalas para que puedan asignarse a juegos y tareas.",
+    "new": "Nueva estrategia",
+    "searchByName": "Buscar por nombre",
+    "searchPlaceholder": "Nombre de la estrategia…",
+    "count_one": "{{count}} estrategia.",
+    "count_other": "{{count}} estrategias.",
+    "countFiltered_one": "{{count}} de {{total}} estrategia.",
+    "countFiltered_other": "{{count}} de {{total}} estrategias.",
+    "noResultsFiltered": "No hay estrategias que coincidan con los filtros.",
+    "empty": {
+      "text": "Todavía no has creado ninguna estrategia. Empieza desde cero o a partir de una plantilla.",
+      "cta": "Crear mi primera estrategia"
+    },
+    "action": {
+      "history": "Ver historial",
+      "usage": "¿Dónde se usa?",
+      "publish": "Publicar",
+      "archive": "Archivar"
+    },
+    "confirm": {
+      "publishTitle": "¿Publicar esta versión?",
+      "archiveTitle": "¿Archivar esta estrategia?",
+      "publishBody": "Al publicar, la <strong>v{{version}}</strong> de «{{name}}» pasa a ser la versión en producción asignable a juegos y tareas. Cualquier versión publicada anterior con el mismo nombre se archivará automáticamente.",
+      "archiveBody": "Al archivar «{{name}}» (v{{version}}) queda fuera de circulación: ya no se podrá editar ni publicar, aunque su historial seguirá disponible.",
+      "publishYes": "Sí, publicar",
+      "archiveYes": "Sí, archivar"
+    },
+    "errors": {
+      "load": "No se pudieron cargar las estrategias.",
+      "duplicate": "No se pudo duplicar la estrategia.",
+      "export": "No se pudo exportar la estrategia.",
+      "publish": "No se pudo publicar la estrategia.",
+      "archive": "No se pudo archivar la estrategia."
+    },
+    "success": {
+      "duplicate": "Duplicada como «{{name}}» (borrador v{{version}}).",
+      "publish": "«{{name}}» publicada (v{{version}}). Ahora es la versión en producción.",
+      "archive": "«{{name}}» archivada (v{{version}})."
+    },
+    "duplicateSuffix": "(copia)"
+  },
+  "usage": {
+    "title": "¿Dónde se usa «{{name}}»?",
+    "titleNoName": "¿Dónde se usa?",
+    "gameCount_one": "{{count}} game",
+    "gameCount_other": "{{count}} games",
+    "taskCount_one": "{{count}} task",
+    "taskCount_other": "{{count}} tasks",
+    "assignedTo": "Esta versión está asignada a {{games}} y {{tasks}}.",
+    "tailReassign": " Reasignarlos los moverá a otra estrategia.",
+    "tailSafe": " Nadie la usa: es seguro archivarla.",
+    "gamesHeader": "Games",
+    "tasksHeader": "Tasks",
+    "inGame": "en {{game}}",
+    "reassignConsumers": "Reasignar consumidores",
+    "errors": {
+      "load": "No se pudo cargar el uso de la estrategia."
+    },
+    "result": {
+      "reassigned": "{{ok}} de {{total}} consumidores reasignados.",
+      "failed": "{{count}} fallaron: {{detail}}"
+    }
+  },
+  "templates": {
+    "title": "Elige una plantilla",
+    "empty": "No hay plantillas disponibles. Pide al administrador que añada archivos en <code>app/engine/dsl_templates/user/</code>.",
+    "extends": "Extiende: ",
+    "use": "Usar plantilla",
+    "errors": {
+      "load": "No se pudieron cargar las plantillas."
+    }
+  }
+}

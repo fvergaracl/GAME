@@ -29,16 +29,48 @@ import { initReactI18next } from 'react-i18next'
 import esEditor from './locales/es/editor.json'
 import esErrors from './locales/es/errors.json'
 import esBlocks from './locales/es/blocks.json'
+import esCommon from './locales/es/common.json'
+import esApp from './locales/es/app.json'
+import esStrategies from './locales/es/strategies.json'
+import esDashboard from './locales/es/dashboard.json'
+import esExports from './locales/es/exports.json'
+import esApikeys from './locales/es/apikeys.json'
 import enEditor from './locales/en/editor.json'
 import enErrors from './locales/en/errors.json'
 import enBlocks from './locales/en/blocks.json'
+import enCommon from './locales/en/common.json'
+import enApp from './locales/en/app.json'
+import enStrategies from './locales/en/strategies.json'
+import enDashboard from './locales/en/dashboard.json'
+import enExports from './locales/en/exports.json'
+import enApikeys from './locales/en/apikeys.json'
 
 export const SUPPORTED_LANGUAGES = ['es', 'en']
 export const LOCALSTORAGE_LANG_KEY = 'gd-locale'
 
 const resources = {
-  es: { editor: esEditor, errors: esErrors, blocks: esBlocks },
-  en: { editor: enEditor, errors: enErrors, blocks: enBlocks },
+  es: {
+    editor: esEditor,
+    errors: esErrors,
+    blocks: esBlocks,
+    common: esCommon,
+    app: esApp,
+    strategies: esStrategies,
+    dashboard: esDashboard,
+    exports: esExports,
+    apikeys: esApikeys,
+  },
+  en: {
+    editor: enEditor,
+    errors: enErrors,
+    blocks: enBlocks,
+    common: enCommon,
+    app: enApp,
+    strategies: enStrategies,
+    dashboard: enDashboard,
+    exports: enExports,
+    apikeys: enApikeys,
+  },
 }
 
 // Initialise once per page load. We intentionally don't expose the
@@ -51,10 +83,10 @@ i18n
     resources,
     fallbackLng: 'es',
     supportedLngs: SUPPORTED_LANGUAGES,
-    // Editor / errors / blocks are the three loaded namespaces. The
-    // ``editor`` ns is the default so unprefixed ``t('chooser.title')``
-    // resolves against editor.json.
-    ns: ['editor', 'errors', 'blocks'],
+    // ``editor`` is the default ns so unprefixed ``t('chooser.title')``
+    // resolves against editor.json; the rest are addressed with an
+    // explicit ``ns:key`` prefix (e.g. ``common:status.DRAFT``).
+    ns: ['editor', 'errors', 'blocks', 'common', 'app', 'strategies', 'dashboard', 'exports', 'apikeys'],
     defaultNS: 'editor',
     interpolation: {
       // CoreUI renders strings as text by default; we only inject HTML

@@ -13,16 +13,15 @@ import { TbClockPin } from 'react-icons/tb'
 
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
+// ``name`` holds an i18next key under the ``app:nav.*`` namespace; it is
+// translated at render time in AppSidebarNav so switching languages
+// relabels the sidebar without rebuilding this config.
 const _nav = [
   {
     component: CNavItem,
-    name: 'Dashboard',
+    name: 'nav.dashboard',
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
   },
 ]
 
@@ -30,77 +29,51 @@ const _nav_administrator = [
   ..._nav,
   {
     component: CNavTitle,
-    name: 'Data',
+    name: 'nav.dataTitle',
   },
   {
     component: CNavItem,
-    name: 'Data export',
+    name: 'nav.dataExport',
     to: '/admin/exports',
     icon: <CIcon icon={cilCloudDownload} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
   },
   {
     component: CNavItem,
-    name: 'Export history',
+    name: 'nav.exportHistory',
     to: '/admin/exports/history',
     icon: <CIcon icon={cilHistory} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
-    name: 'Strategies',
+    name: 'nav.strategiesTitle',
   },
   {
     component: CNavItem,
-    name: 'Mis estrategias',
+    name: 'nav.myStrategies',
     to: '/strategies/library',
     icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
   },
   {
     component: CNavItem,
-    name: 'Strategy Editor',
+    name: 'nav.strategyEditor',
     to: '/strategies/editor',
     icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
   },
   {
     component: CNavItem,
-    name: 'Asignación',
+    name: 'nav.assignments',
     to: '/admin/strategies/assignments',
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
   },
   {
     component: CNavTitle,
-    name: 'Admin',
+    name: 'nav.adminTitle',
   },
   {
     component: CNavItem,
-    name: 'API keys',
+    name: 'nav.apiKeys',
     to: '/admin/api-keys',
     icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
-  },
-  {
-    component: CNavItem,
-    name: 'KPI',
-    to: '/admin/KPI',
-    icon: <TbClockPin style={{ fontSize: '1.5em', marginRight: '10px' }} />,
   },
 ]
 
