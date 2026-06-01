@@ -19,6 +19,7 @@ import {
 } from '@coreui/react'
 import { getExportHistory } from '../../api'
 import { extractError } from '../../utils/errors'
+import { SkeletonTable } from '../../components/Skeleton'
 
 const STATUS_COLORS = {
   completed: 'success',
@@ -97,6 +98,12 @@ const ExportHistory = () => {
           <CCardBody>
             {error && <CAlert color="danger">{error}</CAlert>}
 
+            {loading && rows.length === 0 && (
+              // Sprint 9: skeleton instead of an empty card. Columns
+              // match the real table so the swap is jump-free.
+              <SkeletonTable columns={8} rows={4} />
+            )}
+
             {!error && rows.length === 0 && !loading && (
               <p className="text-body-secondary mb-0">
                 No exports recorded yet. Once you download a dataset from the
@@ -170,9 +177,7 @@ function summarizeFilters(filters) {
   if (!filters || typeof filters !== 'object') return '{}'
   const entries = Object.entries(filters)
   if (entries.length === 0) return '{}'
-  return entries
-    .map(([k, v]) => `${k}=${typeof v === 'object' ? JSON.stringify(v) : v}`)
-    .join(', ')
+  return entries.map(([k, v]) => `${k}=${typeof v === 'object' ? JSON.stringify(v) : v}`).join(', ')
 }
 
 export default ExportHistory

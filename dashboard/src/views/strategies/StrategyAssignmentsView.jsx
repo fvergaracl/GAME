@@ -51,6 +51,7 @@ import {
   patchTaskStrategy,
 } from '../../api'
 import { extractError } from '../../utils/errors'
+import { SkeletonTable } from '../../components/Skeleton'
 import GlossaryHint from './glossary/GlossaryHint'
 import OnboardingTour from './OnboardingTour'
 import StrategyPickerModal from './StrategyPickerModal'
@@ -471,9 +472,10 @@ const StrategyAssignmentsView = () => {
         )}
 
         {isLoading && (
-          <div className="d-flex justify-content-center py-4">
-            <CSpinner />
-          </div>
+          // Sprint 9: skeleton matches the Games table (checkbox +
+          // expand + 3 columns + action) so the layout stays stable
+          // across the loading-to-loaded transition.
+          <SkeletonTable columns={5} rows={pageSize > 10 ? 8 : pageSize} hasActions />
         )}
 
         {!isLoading && !error && totalCount === 0 && (

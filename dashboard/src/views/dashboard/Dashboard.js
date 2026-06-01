@@ -28,7 +28,7 @@ const Dashboard = () => {
       <CCardBody>
         <CRow>
           <CCol sm={12}>
-            <div style={{ position: 'relative', marginBottom: '20px', float: 'right' }}>
+            <div className="gd-range-toolbar position-relative float-end mb-3">
               <CButtonGroup>
                 <CButton
                   color="primary"
@@ -53,18 +53,7 @@ const Dashboard = () => {
                 </CButton>
               </CButtonGroup>
               {range === 'custom' && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '100%', // Justo debajo del botón
-                    right: '0', 
-                    zIndex: 9999,
-                    background: 'var(--cui-body-bg)',
-                    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px',
-                  }}
-                >
+                <div className="gd-date-popover position-absolute end-0 bg-body shadow rounded p-2">
                   <DateRangePicker customRange={customRange} setCustomRange={setCustomRange} />
                 </div>
               )}

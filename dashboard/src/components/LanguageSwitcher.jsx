@@ -38,7 +38,7 @@ const LanguageSwitcher = ({ size }) => {
       value={i18n.resolvedLanguage || 'es'}
       onChange={onChange}
       aria-label={t('buttons.languageLabel')}
-      style={{ width: 'auto', display: 'inline-block' }}
+      className="w-auto d-inline-block"
     >
       {SUPPORTED_LANGUAGES.map((lng) => (
         <option key={lng} value={lng}>

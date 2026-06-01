@@ -61,12 +61,7 @@ Skeleton.propTypes = {
 export const SkeletonText = ({ lines = 3, lastWidth = '60%' }) => (
   <div role="status" aria-busy="true" aria-label="Loading">
     {Array.from({ length: lines }).map((_, i) => (
-      <Skeleton
-        key={i}
-        variant="text"
-        width={i === lines - 1 ? lastWidth : '100%'}
-        ariaLabel=""
-      />
+      <Skeleton key={i} variant="text" width={i === lines - 1 ? lastWidth : '100%'} ariaLabel="" />
     ))}
   </div>
 )
@@ -96,11 +91,7 @@ export const SkeletonTable = ({ columns = 4, rows = 5, hasActions = false }) => 
           <CTableRow key={rowIdx}>
             {Array.from({ length: totalCols }).map((_, colIdx) => (
               <CTableDataCell key={colIdx}>
-                <Skeleton
-                  variant="text"
-                  width={colIdx === 0 ? '70%' : '50%'}
-                  ariaLabel=""
-                />
+                <Skeleton variant="text" width={colIdx === 0 ? '70%' : '50%'} ariaLabel="" />
               </CTableDataCell>
             ))}
           </CTableRow>

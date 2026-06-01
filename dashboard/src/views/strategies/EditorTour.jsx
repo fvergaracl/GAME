@@ -63,18 +63,16 @@ const EditorTour = ({ runRequest, onFinished, hasHistory }) => {
   }, [runRequest])
 
   const steps = useMemo(() => {
-    return TOUR_STEP_KEYS
-      .filter((s) => hasHistory || s.i18n !== 'history')
-      .map((s) => ({
-        target: s.target,
-        placement: s.placement,
-        content: t(`tour.steps.${s.i18n}`),
-        // Welcome on the first step so it has a leading paragraph
-        // instead of jumping straight into the form.
-        title: s.i18n === 'name' ? t('tour.steps.welcome') : undefined,
-        disableBeacon: s.i18n === 'name',
-        spotlightClicks: s.spotlightClicks ?? false,
-      }))
+    return TOUR_STEP_KEYS.filter((s) => hasHistory || s.i18n !== 'history').map((s) => ({
+      target: s.target,
+      placement: s.placement,
+      content: t(`tour.steps.${s.i18n}`),
+      // Welcome on the first step so it has a leading paragraph
+      // instead of jumping straight into the form.
+      title: s.i18n === 'name' ? t('tour.steps.welcome') : undefined,
+      disableBeacon: s.i18n === 'name',
+      spotlightClicks: s.spotlightClicks ?? false,
+    }))
   }, [t, hasHistory])
 
   const locale = useMemo(
@@ -97,11 +95,7 @@ const EditorTour = ({ runRequest, onFinished, hasHistory }) => {
         setStepIndex(index + (action === ACTIONS.PREV ? -1 : 1))
         return
       }
-      if (
-        status === STATUS.FINISHED ||
-        status === STATUS.SKIPPED ||
-        action === ACTIONS.CLOSE
-      ) {
+      if (status === STATUS.FINISHED || status === STATUS.SKIPPED || action === ACTIONS.CLOSE) {
         setRun(false)
         setStepIndex(0)
         window.localStorage.setItem(TOUR_LOCALSTORAGE_KEY, '1')
@@ -123,10 +117,14 @@ const EditorTour = ({ runRequest, onFinished, hasHistory }) => {
       callback={handleCallback}
       locale={locale}
       styles={{
+        // Sprint 9: same dark-mode-friendly token-driven palette as
+        // OnboardingTour — the colour is no longer hardcoded.
         options: {
           zIndex: 10000,
-          primaryColor: '#321fdb',
-          textColor: '#1c1c1c',
+          primaryColor: 'var(--cui-primary, #321fdb)',
+          textColor: 'var(--cui-body-color, #1c1c1c)',
+          backgroundColor: 'var(--cui-body-bg, #ffffff)',
+          arrowColor: 'var(--cui-body-bg, #ffffff)',
         },
       }}
     />

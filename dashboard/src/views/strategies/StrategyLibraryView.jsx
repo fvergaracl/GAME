@@ -55,6 +55,7 @@ import {
 } from '../../api'
 import keycloak from '../../keycloak'
 import { extractError } from '../../utils/errors'
+import { SkeletonTable } from '../../components/Skeleton'
 import GlossaryHint from './glossary/GlossaryHint'
 import OnboardingTour from './OnboardingTour'
 import StrategyUsageModal from './StrategyUsageModal'
@@ -389,9 +390,9 @@ const StrategyLibraryView = () => {
         {error && <CAlert color="danger">{error}</CAlert>}
 
         {isLoading && (
-          <div className="d-flex justify-content-center py-4">
-            <CSpinner />
-          </div>
+          // Sprint 9: skeleton preserves the table layout so the swap to
+          // real rows doesn't shift the viewport.
+          <SkeletonTable columns={7} rows={5} hasActions />
         )}
 
         {noResults && hasFiltersActive && (

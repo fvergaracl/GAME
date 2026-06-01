@@ -1818,7 +1818,6 @@ const StrategyEditor = () => {
   )
 }
 
-
 // Sprint 5: format a points delta for the compare table with an explicit
 // sign so "+3" / "-2" read at a glance.
 function formatDelta(n) {

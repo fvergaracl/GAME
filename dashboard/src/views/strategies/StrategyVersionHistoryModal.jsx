@@ -109,8 +109,7 @@ const RuleDiffPanel = ({ section, entries }) => {
               </CCol>
             </CRow>
           )}
-          {(entry.kind === DIFF_KINDS.ADDED ||
-            entry.kind === DIFF_KINDS.REMOVED) && (
+          {(entry.kind === DIFF_KINDS.ADDED || entry.kind === DIFF_KINDS.REMOVED) && (
             <pre
               className="small mb-0 p-2 bg-body rounded"
               style={{ maxHeight: '12rem', overflow: 'auto' }}
@@ -164,13 +163,7 @@ const ParentVariablesPanel = ({ entries }) => {
 ParentVariablesPanel.propTypes = { entries: PropTypes.array }
 ParentVariablesPanel.defaultProps = { entries: [] }
 
-const StrategyVersionHistoryModal = ({
-  visible,
-  strategyId,
-  isAdmin,
-  onClose,
-  onRollbackDone,
-}) => {
+const StrategyVersionHistoryModal = ({ visible, strategyId, isAdmin, onClose, onRollbackDone }) => {
   const [versions, setVersions] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -200,10 +193,7 @@ const StrategyVersionHistoryModal = ({
         // one row.
         setSelectedAId(strategyId || newest?.id || null)
         setSelectedBId(
-          published?.id ||
-            (newest?.id !== strategyId ? newest?.id : null) ||
-            newest?.id ||
-            null,
+          published?.id || (newest?.id !== strategyId ? newest?.id : null) || newest?.id || null,
         )
       })
       .catch((err) => {
@@ -233,10 +223,7 @@ const StrategyVersionHistoryModal = ({
   }, [selectedA, selectedB])
 
   const rollbackEligible =
-    isAdmin &&
-    selectedA &&
-    selectedA.status !== 'PUBLISHED' &&
-    versions.length > 1
+    isAdmin && selectedA && selectedA.status !== 'PUBLISHED' && versions.length > 1
 
   const handleRollback = async () => {
     if (!selectedA) return
@@ -246,9 +233,7 @@ const StrategyVersionHistoryModal = ({
       const promoted = await rollbackStrategy(selectedA.id, selectedA.version)
       if (onRollbackDone) onRollbackDone(promoted)
     } catch (err) {
-      setRollbackError(
-        extractError(err, 'No se pudo hacer el rollback.'),
-      )
+      setRollbackError(extractError(err, 'No se pudo hacer el rollback.'))
     } finally {
       setIsRollingBack(false)
       setConfirming(false)
@@ -284,13 +269,9 @@ const StrategyVersionHistoryModal = ({
                   >
                     <div className="d-flex justify-content-between align-items-start">
                       <strong>v{v.version}</strong>
-                      <CBadge color={STATUS_BADGE[v.status] || 'secondary'}>
-                        {v.status}
-                      </CBadge>
+                      <CBadge color={STATUS_BADGE[v.status] || 'secondary'}>{v.status}</CBadge>
                     </div>
-                    <div className="small text-medium-emphasis">
-                      {formatDate(v.created_at)}
-                    </div>
+                    <div className="small text-medium-emphasis">{formatDate(v.created_at)}</div>
                     {v.createdBy && (
                       <div className="small text-medium-emphasis">
                         Por <code>{v.createdBy}</code>
@@ -340,10 +321,9 @@ const StrategyVersionHistoryModal = ({
               )}
               {confirming && (
                 <CAlert color="warning">
-                  Vas a re-publicar <strong>v{selectedA?.version}</strong> y
-                  archivar la versión actualmente publicada. Todos los Games y
-                  Tasks que apuntaban a la versión activa se redirigirán
-                  automáticamente. ¿Continuar?
+                  Vas a re-publicar <strong>v{selectedA?.version}</strong> y archivar la versión
+                  actualmente publicada. Todos los Games y Tasks que apuntaban a la versión activa
+                  se redirigirán automáticamente. ¿Continuar?
                   <div className="mt-2 d-flex gap-2">
                     <CButton
                       color="danger"
@@ -369,16 +349,13 @@ const StrategyVersionHistoryModal = ({
                 <>
                   <div className="mb-3 d-flex gap-3 small">
                     <span>
-                      <CBadge color="success">+{diff.summary.added}</CBadge>{' '}
-                      añadidas
+                      <CBadge color="success">+{diff.summary.added}</CBadge> añadidas
                     </span>
                     <span>
-                      <CBadge color="danger">-{diff.summary.removed}</CBadge>{' '}
-                      eliminadas
+                      <CBadge color="danger">-{diff.summary.removed}</CBadge> eliminadas
                     </span>
                     <span>
-                      <CBadge color="warning">~{diff.summary.modified}</CBadge>{' '}
-                      modificadas
+                      <CBadge color="warning">~{diff.summary.modified}</CBadge> modificadas
                     </span>
                     <span className="text-medium-emphasis">
                       ={diff.summary.unchanged} sin cambios
@@ -411,18 +388,13 @@ const StrategyVersionHistoryModal = ({
         <div className="small text-medium-emphasis">
           {selectedA && (
             <>
-              Seleccionada: <strong>v{selectedA.version}</strong> ·{' '}
-              {selectedA.status}
+              Seleccionada: <strong>v{selectedA.version}</strong> · {selectedA.status}
             </>
           )}
         </div>
         <div className="d-flex gap-2">
           {rollbackEligible && !confirming && (
-            <CButton
-              color="warning"
-              onClick={() => setConfirming(true)}
-              disabled={isRollingBack}
-            >
+            <CButton color="warning" onClick={() => setConfirming(true)} disabled={isRollingBack}>
               Hacer rollback a v{selectedA.version}
             </CButton>
           )}

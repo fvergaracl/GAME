@@ -37,11 +37,7 @@ class ErrorBoundary extends React.Component {
     // ``console.error`` is the right escape hatch — it goes to the
     // browser devtools and to any in-page error overlay during dev.
     // eslint-disable-next-line no-console
-    console.error(
-      `[ErrorBoundary:${this.props.section || 'unknown'}]`,
-      error,
-      info?.componentStack,
-    )
+    console.error(`[ErrorBoundary:${this.props.section || 'unknown'}]`, error, info?.componentStack)
   }
 
   handleReset() {

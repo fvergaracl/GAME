@@ -111,10 +111,15 @@ const OnboardingTour = ({
       callback={handleCallback}
       locale={locale}
       styles={{
+        // Sprint 9: drive the tour off CoreUI tokens so dark mode and any
+        // future theming stay in sync. Joyride consumes these as inline
+        // styles, which accept ``var()`` values.
         options: {
           zIndex: 10000,
-          primaryColor: '#321fdb',
-          textColor: '#1c1c1c',
+          primaryColor: 'var(--cui-primary, #321fdb)',
+          textColor: 'var(--cui-body-color, #1c1c1c)',
+          backgroundColor: 'var(--cui-body-bg, #ffffff)',
+          arrowColor: 'var(--cui-body-bg, #ffffff)',
         },
       }}
     />

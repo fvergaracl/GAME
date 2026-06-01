@@ -52,3 +52,11 @@
   padding: 1.25rem;
   color: var(--cui-body-color);
 }
+
+// Range-picker popover anchored under the "Custom Range" button on the
+// dashboard. Lives in CSS so the inline-style stack from Sprint 6
+// (which broke dark mode) is fully retired.
+.gd-date-popover {
+  top: 100%;
+  z-index: 1050;
+}

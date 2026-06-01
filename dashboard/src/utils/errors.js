@@ -73,12 +73,9 @@ export function extractError(err, opts) {
     if (typeof Blob !== 'undefined' && data instanceof Blob) {
       return (
         fallback ||
-        localise(
-          t,
-          'requestFailedStatus',
-          `La petición falló (HTTP ${response.status}).`,
-          { status: response.status },
-        )
+        localise(t, 'requestFailedStatus', `La petición falló (HTTP ${response.status}).`, {
+          status: response.status,
+        })
       )
     }
 
@@ -91,12 +88,9 @@ export function extractError(err, opts) {
 
     return (
       fallback ||
-      localise(
-        t,
-        'requestFailedStatus',
-        `La petición falló (HTTP ${response.status}).`,
-        { status: response.status },
-      )
+      localise(t, 'requestFailedStatus', `La petición falló (HTTP ${response.status}).`, {
+        status: response.status,
+      })
     )
   }
 
