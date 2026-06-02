@@ -4,6 +4,8 @@ import logging
 
 from graphviz import Digraph
 
+from app.core.config import configs
+
 logger = logging.getLogger(__name__)
 
 
@@ -51,7 +53,11 @@ class BaseStrategy:
             variable_bonus_points (int, optional): The bonus points variable
               for the strategy. Default is 1.
         """
-        self.debug = False
+        # Debug tracing (debug_print) follows the environment: ON in dev,
+        # OFF everywhere else. Concrete strategies no longer hardcode this to
+        # True, which previously emitted ANSI-coloured debug lines to stdout
+        # in production. Tests override .debug per-instance as needed.
+        self.debug = configs.ENV == "dev"
         self.strategy_name = strategy_name
         self.strategy_description = strategy_description
         self.strategy_name_slug = strategy_name_slug

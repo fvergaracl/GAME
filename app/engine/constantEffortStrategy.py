@@ -22,8 +22,6 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
         self.user_points_service = Container.user_points_service()
         self.user_points_analytics_service = Container.user_points_analytics_service()
 
-        self.debug = True
-
         self.default_points_task_campaign = 1
         self.variable_basic_points = 1
         self.variable_bonus_points = 10

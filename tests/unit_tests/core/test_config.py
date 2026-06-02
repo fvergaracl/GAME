@@ -9,23 +9,37 @@ import app.core.config as config_module
 
 @pytest.fixture(autouse=True)
 def restore_config_module():
-    original_env = os.getenv("ENV")
-    original_cors = os.getenv("BACKEND_CORS_ORIGINS")
-    original_db_name = os.getenv("DB_NAME")
+    saved = {
+        key: os.getenv(key)
+        for key in (
+            "ENV",
+            "BACKEND_CORS_ORIGINS",
+            "DB_NAME",
+            "DB_PORT",
+            "SECRET_KEY",
+            "KEYCLOAK_CLIENT_SECRET",
+        )
+    }
     yield
-    if original_env is None:
-        os.environ.pop("ENV", None)
-    else:
-        os.environ["ENV"] = original_env
-    if original_cors is None:
-        os.environ.pop("BACKEND_CORS_ORIGINS", None)
-    else:
-        os.environ["BACKEND_CORS_ORIGINS"] = original_cors
-    if original_db_name is None:
-        os.environ.pop("DB_NAME", None)
-    else:
-        os.environ["DB_NAME"] = original_db_name
+    for key, value in saved.items():
+        if value is None:
+            os.environ.pop(key, None)
+        else:
+            os.environ[key] = value
     importlib.reload(config_module)
+
+
+def _neutralize_dotenv(monkeypatch):
+    """
+    Stop ``load_dotenv()`` from repopulating env vars off a developer's local
+    ``.env`` when the module body re-runs on reload, so each test asserts the
+    behaviour of the *environment it sets*, not the checkout's .env. Patching
+    the module attribute would not survive reload (which re-executes
+    ``from dotenv import load_dotenv``), so patch it at the source.
+    """
+    import dotenv
+
+    monkeypatch.setattr(dotenv, "load_dotenv", lambda *a, **k: False)
 
 
 @pytest.mark.parametrize(
@@ -41,7 +55,13 @@ def test_config_prints_banner_for_environment(
 ):
     monkeypatch.setenv("ENV", env_value)
     if env_value in {"prod", "stage"}:
+        # Protected envs now boot-block without DB_NAME and without real
+        # secrets (see _validate_required_secrets); supply them so this test
+        # is self-contained and does not depend on a local .env (which is
+        # gitignored and absent in CI).
         monkeypatch.setenv("DB_NAME", "game_test_db")
+        monkeypatch.setenv("SECRET_KEY", "test-secret")
+        monkeypatch.setenv("KEYCLOAK_CLIENT_SECRET", "test-kc-secret")
 
     with caplog.at_level(logging.INFO, logger="app.core.config"):
         reloaded = importlib.reload(config_module)
@@ -100,3 +120,63 @@ def test_cors_origins_wildcard_allowed_in_dev(monkeypatch):
     reloaded = importlib.reload(config_module)
 
     assert reloaded.configs.BACKEND_CORS_ORIGINS == ["*"]
+
+
+def test_secret_key_defaults_to_empty_string_when_unset(monkeypatch):
+    # Q4: previously str(os.getenv("SECRET_KEY", None)) -> the literal "None"
+    # (truthy), so `if not configs.SECRET_KEY` never fired. It must resolve to
+    # a falsy empty string when nothing is configured.
+    monkeypatch.setenv("ENV", "dev")
+    monkeypatch.delenv("SECRET_KEY", raising=False)
+    _neutralize_dotenv(monkeypatch)
+
+    reloaded = importlib.reload(config_module)
+
+    assert reloaded.configs.SECRET_KEY == ""
+
+
+def test_db_port_defaults_to_postgres_port(monkeypatch):
+    # Q5: the old default was 3306 (MySQL) despite DB_ENGINE=postgresql.
+    monkeypatch.setenv("ENV", "dev")
+    monkeypatch.delenv("DB_PORT", raising=False)
+    _neutralize_dotenv(monkeypatch)
+
+    reloaded = importlib.reload(config_module)
+
+    assert reloaded.configs.DB_PORT == "5432"
+
+
+def test_missing_secret_key_rejected_in_protected_envs(monkeypatch):
+    monkeypatch.setenv("ENV", "prod")
+    monkeypatch.setenv("DB_NAME", "game_test_db")
+    monkeypatch.setenv("KEYCLOAK_CLIENT_SECRET", "real-kc-secret")
+    monkeypatch.delenv("SECRET_KEY", raising=False)
+    _neutralize_dotenv(monkeypatch)
+
+    with pytest.raises(ValueError, match="SECRET_KEY"):
+        importlib.reload(config_module)
+
+
+def test_placeholder_keycloak_secret_rejected_in_protected_envs(monkeypatch):
+    monkeypatch.setenv("ENV", "stage")
+    monkeypatch.setenv("DB_NAME", "game_test_db")
+    monkeypatch.setenv("SECRET_KEY", "real-secret")
+    # The shipped dev convenience default must never reach prod/stage.
+    monkeypatch.setenv("KEYCLOAK_CLIENT_SECRET", "admin-client-secret")
+    _neutralize_dotenv(monkeypatch)
+
+    with pytest.raises(ValueError, match="KEYCLOAK_CLIENT_SECRET"):
+        importlib.reload(config_module)
+
+
+def test_secrets_not_required_outside_protected_envs(monkeypatch):
+    # Dev/test must still boot with no secrets configured.
+    monkeypatch.setenv("ENV", "dev")
+    monkeypatch.delenv("SECRET_KEY", raising=False)
+    monkeypatch.delenv("KEYCLOAK_CLIENT_SECRET", raising=False)
+    _neutralize_dotenv(monkeypatch)
+
+    reloaded = importlib.reload(config_module)
+
+    assert reloaded.configs.ENV == "dev"
+    assert reloaded.configs.SECRET_KEY == ""

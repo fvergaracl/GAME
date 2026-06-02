@@ -32,8 +32,6 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
         self.user_points_service = Container.user_points_service()
         self.user_points_analytics_service = Container.user_points_analytics_service()
 
-        self.debug = True
-
         self.variable_default_points = 10
         self.variable_minutes_to_check = 1  # minutes if is case 1.1 or 1.2
         self.time_ranges = [0, 1, 15, 30, 60, float("inf")]
@@ -111,7 +109,7 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
         # Add Legend nodes
         dot.node(
             "leyend",
-            label="m: Minutes \nDP: Default Points \nBP: Bonus Points \nPBP: Personal Bonus Points \nDPTE: Default Points Time Elapsed \DC=Development Complexity [0,100] \nEC=Exploitation Complexity [0,100] \nMC=Management Complexity [0,100] \nTC=Total Complexity [100,300]",
+            label="m: Minutes \nDP: Default Points \nBP: Bonus Points \nPBP: Personal Bonus Points \nDPTE: Default Points Time Elapsed \\DC=Development Complexity [0,100] \nEC=Exploitation Complexity [0,100] \nMC=Management Complexity [0,100] \nTC=Total Complexity [100,300]",
             fillcolor="yellowgreen",
         )
 

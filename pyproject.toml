@@ -102,3 +102,36 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 release = "cz.cli:main"
+
+# Single source of truth for linting. Replaces the near-empty .pylintrc
+# (pylint was not even installed) and supersedes the ad-hoc flake8 defaults
+# the IDE was applying at 79 columns -- which conflicted with the black
+# formatter the repo runs in CI. Ruff (already a dev dependency) now owns
+# pycodestyle (E/W) + pyflakes (F). Line length is delegated to the
+# formatter: black wraps code to 88 columns and long URLs/strings it cannot
+# wrap must not fail lint. Import ordering stays with the standalone isort
+# run in CI, so rule "I" is intentionally left unselected to avoid a second,
+# divergent ordering; known-first-party is preconfigured for when it is
+# enabled. Pre-existing E/F/W findings outside this scope are tracked as an
+# incremental cleanup backlog (mirrors the progressive typing rollout).
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-exclude = [
+    ".venv",
+    "migrations",
+    "node_modules",
+    "dashboard",
+    "healthcheck_service",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# __init__.py modules deliberately re-export names as the package API.
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]

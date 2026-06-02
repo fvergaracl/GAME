@@ -95,6 +95,11 @@ _NON_PROD_DB_NAME_DEFAULTS = {
     "test": "test_game_dev_db",
 }
 
+# Convenience default for local/dev Keycloak realms. It is explicitly
+# rejected in prod/stage by ``_validate_required_secrets`` so the placeholder
+# can never reach a protected deployment.
+_INSECURE_KEYCLOAK_CLIENT_SECRET_DEFAULT = "admin-client-secret"
+
 
 def _resolve_db_name(env: str, db_name: Optional[str]) -> str:
     """
@@ -112,6 +117,36 @@ def _resolve_db_name(env: str, db_name: Optional[str]) -> str:
             "database literally named 'dev' when DB_HOST points elsewhere."
         )
     return _NON_PROD_DB_NAME_DEFAULTS.get(env, "game_dev_db")
+
+
+def _validate_required_secrets(
+    env: str, secret_key: str, keycloak_client_secret: str
+) -> None:
+    """
+    Fail fast in protected environments (``prod``/``stage``) when
+    security-critical secrets are missing or left at their insecure
+    development defaults. Previously ``SECRET_KEY`` fell back to the literal
+    string ``"None"`` -- truthy, so the ``if not configs.SECRET_KEY`` guard in
+    the simulation endpoint never fired and the app signed payloads with the
+    word "None"; and ``KEYCLOAK_CLIENT_SECRET`` shipped a known placeholder.
+    Both now boot-block before serving a single request when misconfigured.
+    """
+    if env not in {"prod", "stage"}:
+        return
+    missing: List[str] = []
+    if not secret_key:
+        missing.append("SECRET_KEY")
+    if (
+        not keycloak_client_secret
+        or keycloak_client_secret == _INSECURE_KEYCLOAK_CLIENT_SECRET_DEFAULT
+    ):
+        missing.append("KEYCLOAK_CLIENT_SECRET")
+    if missing:
+        raise ValueError(
+            "The following secrets must be set to non-default values when "
+            f"ENV={env!r}: {', '.join(missing)}. Configure them via the "
+            "environment (never commit real secrets)."
+        )
 
 
 class Configs(BaseSettings):
@@ -198,7 +233,10 @@ class Configs(BaseSettings):
     DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
         "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100
     )
-    SECRET_KEY: str = str(os.getenv("SECRET_KEY", None))
+    # Resolve to an empty string (falsy) when unset rather than the literal
+    # string "None": the simulation endpoint guards on ``if not SECRET_KEY``
+    # and prod/stage boot is blocked by ``_validate_required_secrets`` below.
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
     # CORS -- comma-separated allow-list from BACKEND_CORS_ORIGINS env var
     # (see Config.parse_env_var below). Defaults to ``[]`` (no origins) so
     # the middleware is only attached when explicit origins are configured.
@@ -222,7 +260,7 @@ class Configs(BaseSettings):
     KEYCLOAK_AUDIENCE: str = os.getenv("KEYCLOAK_AUDIENCE", "account")
     KEYCLOAK_CLIENT_ID: str = os.getenv("KEYCLOAK_CLIENT_ID", "admin-cli")
     KEYCLOAK_CLIENT_SECRET: str = os.getenv(
-        "KEYCLOAK_CLIENT_SECRET", "admin-client-secret"
+        "KEYCLOAK_CLIENT_SECRET", _INSECURE_KEYCLOAK_CLIENT_SECRET_DEFAULT
     )
     KEYCLOAK_URL: str = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
     KEYCLOAK_URL_DOCKER: str = os.getenv(
@@ -232,7 +270,9 @@ class Configs(BaseSettings):
     DB_USER: Optional[str] = os.getenv("DB_USER")
     DB_PASSWORD: Optional[str] = os.getenv("DB_PASSWORD")
     DB_HOST: Optional[str] = os.getenv("DB_HOST")
-    DB_PORT: str = os.getenv("DB_PORT", "3306")
+    # Default to the PostgreSQL port (5432) to match DB_ENGINE; the previous
+    # 3306 default was MySQL's and silently mismatched the engine.
+    DB_PORT: str = os.getenv("DB_PORT", "5432")
     DB_ENGINE: str = os.getenv("DB_ENGINE", "postgresql")
 
     DATABASE_URI: str = (
@@ -381,6 +421,9 @@ class TestConfigs(Configs):
 configs = TestConfigs() if os.getenv("ENV") == "test" else Configs()
 
 _validate_cors_origins(configs.ENV, configs.BACKEND_CORS_ORIGINS)
+_validate_required_secrets(
+    configs.ENV, configs.SECRET_KEY, configs.KEYCLOAK_CLIENT_SECRET
+)
 
 logger.info("Environment: %s", configs.ENV)
 
