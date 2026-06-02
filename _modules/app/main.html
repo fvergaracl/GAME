@@ -304,7 +304,19 @@
 <a class="viewcode-back" href="../../app/app.html#app.main.lifespan">[docs]</a>
 <span class="nd">@asynccontextmanager</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>
-    <span class="k">yield</span></div>
+    <span class="k">yield</span>
+    <span class="c1"># Sprint 13: flush the DSL execution-log queue so a graceful</span>
+    <span class="c1"># shutdown doesn't drop buffered audit rows. ``aclose`` is</span>
+    <span class="c1"># idempotent and tolerant of an observer that never enqueued.</span>
+    <span class="n">observer</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">"dsl_execution_observer"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">observer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">observer</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover - shutdown best-effort</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">"Failed to flush DSL execution-log queue on shutdown"</span><span class="p">,</span>
+                <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span></div>
 
 
 
@@ -445,6 +457,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">db</span><span class="p">()</span>
+        <span class="c1"># Sprint 13: expose the singleton execution-log observer so the</span>
+        <span class="c1"># lifespan shutdown hook can flush its background queue.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">dsl_execution_observer</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dsl_execution_observer</span><span class="p">()</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">configs</span><span class="o">.</span><span class="n">BACKEND_CORS_ORIGINS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
                 <span class="n">CORSMiddleware</span><span class="p">,</span>
