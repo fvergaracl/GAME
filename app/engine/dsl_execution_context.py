@@ -52,6 +52,7 @@ class ExecutionContext:
         analytics_service: Any,
         mock_state: Optional[Dict[str, Any]] = None,
         parent_result: Optional[Dict[str, Any]] = None,
+        analytics_cache: Optional[Dict[str, Any]] = None,
     ) -> "ExecutionContext":
         """
         Precompute every field referenced by ``ast`` and return a frozen
@@ -62,6 +63,16 @@ class ExecutionContext:
         and only when the AST actually references them. ``mock_state``
         short-circuits both, useful for the simulate endpoint and for
         tests that don't want a real DB.
+
+        Sprint 13 — ``analytics_cache`` is an optional caller-owned dict
+        memoising analytics-field values *within a single scoring call*.
+        DSL_EXTEND builds two contexts (pre + post) for the same user and
+        request window; passing the same dict to both means each analytics
+        method (a DB round-trip) runs once instead of twice. Only
+        ``analytics``-kind fields are cached: static fields are pure CPU,
+        and ``data.*`` fields legitimately differ between phases because
+        pre-rules may mutate ``data``. Pass ``None`` (the default) to opt
+        out — DSL_FULL builds a single context and gains nothing.
         """
         data_payload: Dict[str, Any] = dict(data or {})
         mocks = mock_state or {}
@@ -89,9 +100,15 @@ class ExecutionContext:
                     resolved[path] = resolution.arg_fn(ctx_for_args)
                     continue
                 if resolution.kind == "analytics":
+                    if analytics_cache is not None and path in analytics_cache:
+                        resolved[path] = analytics_cache[path]
+                        continue
                     method = getattr(analytics_service, resolution.method)
                     args = resolution.arg_fn(ctx_for_args)
-                    resolved[path] = await method(*args)
+                    value = await method(*args)
+                    resolved[path] = value
+                    if analytics_cache is not None:
+                        analytics_cache[path] = value
                     continue
             if is_valid_data_path(path):
                 key = path[len(DATA_FIELD_PREFIX):]

@@ -81,6 +81,9 @@ class TestObserverPersistence(unittest.IsolatedAsyncioTestCase):
                 nodesExecuted=999,
                 trace=[{"nodeId": "x"}],
             )
+            # Sprint 13: persistence is now drained by a background
+            # worker; wait for it before asserting on the rows.
+            await observer.drain()
             self.assertEqual(len(repo.rows), 1)
             row = repo.rows[0]
             self.assertEqual(row.status, "timeout")
@@ -122,6 +125,7 @@ class TestObserverPersistence(unittest.IsolatedAsyncioTestCase):
                 trace=[{"nodeId": "x"}],
                 parentStrategyId="default",
             )
+            await observer.drain()
             self.assertEqual(len(repo.rows), 1)
             row = repo.rows[0]
             self.assertEqual(row.status, "ok")
@@ -243,9 +247,83 @@ class TestObserverPersistence(unittest.IsolatedAsyncioTestCase):
                 nodesExecuted=4,
                 trace=None,
             )
+            # Drain so the worker attempts (and swallows) the insert.
+            await observer.drain()
             repo.insert_row.assert_awaited_once()
         finally:
             live.DSL_EXECUTION_LOG_SAMPLE_RATE = original
+
+
+class TestObserverQueue(unittest.IsolatedAsyncioTestCase):
+    """Sprint 13 — the DB write is drained off the hot-path by a
+    background worker fed from a bounded queue."""
+
+    async def _record_error(self, observer, *, strategyId="q1"):
+        # Errors are always persisted, so this reliably enqueues a row
+        # without depending on the sampler.
+        await observer.record(
+            strategyId=strategyId,
+            strategyVersion=1,
+            strategyType="DSL_FULL",
+            realmId="realm-q",
+            externalGameId=None,
+            externalTaskId=None,
+            externalUserId=None,
+            status="error",
+            errorCode="DSL_TEST",
+            points=None,
+            caseName=None,
+            durationMs=1.0,
+            nodesExecuted=1,
+            trace=None,
+        )
+
+    async def test_record_does_not_block_on_db(self):
+        # The worker drains asynchronously; record returns before the
+        # insert has run. Only after draining are the rows present.
+        repo = _RecordingRepo()
+        observer = DslExecutionObserver(
+            execution_log_repository=repo, rng=random.Random(0),
+        )
+        await self._record_error(observer)
+        # No await point yielded to the worker yet → not persisted.
+        self.assertEqual(repo.rows, [])
+        await observer.drain()
+        self.assertEqual(len(repo.rows), 1)
+        await observer.aclose()
+
+    async def test_full_queue_drops_and_counts(self):
+        before = _scrape_dropped().get(("realm-q", "DSL_FULL"), 0)
+        repo = _RecordingRepo()
+        observer = DslExecutionObserver(
+            execution_log_repository=repo,
+            rng=random.Random(0),
+            queue_maxsize=1,
+        )
+        # Two enqueues back-to-back with no yielding await between them:
+        # the worker never gets scheduled, so the second hits a full
+        # queue and is dropped + counted.
+        await self._record_error(observer, strategyId="keep")
+        await self._record_error(observer, strategyId="dropped")
+        after = _scrape_dropped().get(("realm-q", "DSL_FULL"), 0)
+        self.assertEqual(after - before, 1)
+        await observer.drain()
+        # Exactly the first row survived.
+        self.assertEqual([r.strategyId for r in repo.rows], ["keep"])
+        await observer.aclose()
+
+    async def test_aclose_flushes_and_is_idempotent(self):
+        repo = _RecordingRepo()
+        observer = DslExecutionObserver(
+            execution_log_repository=repo, rng=random.Random(0),
+        )
+        await self._record_error(observer)
+        await observer.aclose()
+        self.assertEqual(len(repo.rows), 1)
+        # Second close is a no-op and further records are dropped.
+        await observer.aclose()
+        await self._record_error(observer)
+        self.assertEqual(len(repo.rows), 1)
 
 
 class TestObserverMetrics(unittest.IsolatedAsyncioTestCase):
@@ -311,6 +389,26 @@ def _scrape(metric_name: str):
             labels = tuple(
                 sample.labels.get(k)
                 for k in ("realm", "strategy_type", "code")
+            )
+            out[labels] = sample.value
+    return out
+
+
+def _scrape_dropped():
+    """Read ``dsl_execution_log_dropped_total`` into a
+    {(realm, strategy_type): value} dict."""
+    from prometheus_client import REGISTRY
+
+    out = {}
+    for metric in REGISTRY.collect():
+        if metric.name != "dsl_execution_log_dropped":
+            continue
+        for sample in metric.samples:
+            if not sample.name.endswith("_total"):
+                continue
+            labels = (
+                sample.labels.get("realm"),
+                sample.labels.get("strategy_type"),
             )
             out[labels] = sample.value
     return out

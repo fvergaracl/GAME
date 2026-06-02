@@ -78,6 +78,19 @@ dsl_execution_errors_total = Counter(
     labelnames=("realm", "strategy_type", "code"),
 )
 
+# Sprint 13: persistence is now drained off the scoring hot-path by a
+# background worker fed from a bounded queue. When the queue is full
+# (a slow/unavailable DB causing the worker to fall behind) the observer
+# drops the audit row rather than applying backpressure to scoring. This
+# counter makes those drops visible so ops can alert on a saturated sink
+# instead of silently losing execution logs.
+dsl_execution_log_dropped_total = Counter(
+    "dsl_execution_log_dropped_total",
+    "StrategyExecutionLog rows dropped because the persistence queue "
+    "was full (scoring is never blocked on the audit log).",
+    labelnames=("realm", "strategy_type"),
+)
+
 
 def _label(value: str | None) -> str:
     """
@@ -118,3 +131,18 @@ def observe(
             strategy_type=type_label,
             code=_label(error_code),
         ).inc()
+
+
+def observe_log_dropped(
+    *,
+    realm: str | None,
+    strategy_type: str,
+) -> None:
+    """
+    Record that one StrategyExecutionLog row was dropped because the
+    background persistence queue was full. Kept separate from
+    :func:`observe` so the hot path only touches it on the rare drop.
+    """
+    dsl_execution_log_dropped_total.labels(
+        realm=_label(realm), strategy_type=_label(strategy_type),
+    ).inc()

@@ -123,6 +123,61 @@ async def test_data_path_missing_key_resolves_to_none():
 
 
 @pytest.mark.asyncio
+async def test_analytics_cache_shared_across_builds_resolves_once():
+    # Sprint 13: DSL_EXTEND builds two contexts (pre + post) for the same
+    # user/request. A shared analytics_cache means each analytics method
+    # runs once, not once per build.
+    svc = _analytics_stub()
+    ast = _ast_referencing("user.measurements_count")
+    cache: dict = {}
+
+    ctx1 = await ExecutionContext.build_for_ast(
+        ast,
+        externalGameId="g",
+        externalTaskId="t",
+        externalUserId="u",
+        data=None,
+        analytics_service=svc,
+        analytics_cache=cache,
+    )
+    ctx2 = await ExecutionContext.build_for_ast(
+        ast,
+        externalGameId="g",
+        externalTaskId="t",
+        externalUserId="u",
+        data=None,
+        analytics_service=svc,
+        analytics_cache=cache,
+    )
+
+    # One DB round-trip total, despite two builds.
+    svc.get_user_task_measurements_count.assert_awaited_once_with("t", "u")
+    assert ctx1.resolved_fields["user.measurements_count"] == 7
+    assert ctx2.resolved_fields["user.measurements_count"] == 7
+    assert cache["user.measurements_count"] == 7
+
+
+@pytest.mark.asyncio
+async def test_without_cache_each_build_calls_analytics():
+    # No shared cache → the second build re-fetches (the pre-Sprint-13
+    # behaviour, still the default for DSL_FULL).
+    svc = _analytics_stub()
+    ast = _ast_referencing("user.measurements_count")
+
+    for _ in range(2):
+        await ExecutionContext.build_for_ast(
+            ast,
+            externalGameId="g",
+            externalTaskId="t",
+            externalUserId="u",
+            data=None,
+            analytics_service=svc,
+        )
+
+    assert svc.get_user_task_measurements_count.await_count == 2
+
+
+@pytest.mark.asyncio
 async def test_static_paths_resolve_without_analytics():
     svc = _analytics_stub()
     ast = _ast_referencing("externalGameId", "externalUserId")

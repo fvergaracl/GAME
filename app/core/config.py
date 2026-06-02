@@ -327,6 +327,17 @@ class Configs(BaseSettings):
         "DSL_EXECUTION_LOG_TRACE_LIMIT", 200
     )
 
+    # Sprint 13: the execution-log DB write is drained off the scoring
+    # hot-path by a background worker fed from a bounded in-process queue
+    # (see DslExecutionObserver). This caps how many pending rows the
+    # queue holds before it starts dropping (and counting via
+    # dsl_execution_log_dropped_total) rather than applying backpressure
+    # to scoring. Sized for a burst: at the default 5% sample rate this is
+    # ~minutes of buffer for a busy realm while the DB catches up.
+    DSL_EXECUTION_LOG_QUEUE_MAXSIZE: int = _env_to_int(
+        "DSL_EXECUTION_LOG_QUEUE_MAXSIZE", 1000
+    )
+
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
     def _coerce_cors_origins(

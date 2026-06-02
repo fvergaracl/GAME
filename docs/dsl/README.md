@@ -104,3 +104,12 @@ Every execution of a custom strategy in production:
 This lets the on-call team and the strategy author both look back at
 what a strategy did weeks after the fact without having to re-run
 production traffic.
+
+The persistence write is drained off the scoring hot-path by a
+background worker fed from a bounded in-process queue
+(`DSL_EXECUTION_LOG_QUEUE_MAXSIZE`, default 1000). Scoring only pays the
+enqueue, never the DB round-trip. If the database falls behind and the
+queue fills, rows are dropped — counted by
+`dsl_execution_log_dropped_total` — rather than slowing down scoring. A
+non-zero drop rate means the sink is saturated, not that scoring is at
+risk. On shutdown the queue is flushed so no buffered rows are lost.

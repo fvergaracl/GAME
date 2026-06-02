@@ -65,6 +65,18 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
+    # Sprint 13: flush the DSL execution-log queue so a graceful
+    # shutdown doesn't drop buffered audit rows. ``aclose`` is
+    # idempotent and tolerant of an observer that never enqueued.
+    observer = getattr(app.state, "dsl_execution_observer", None)
+    if observer is not None:
+        try:
+            await observer.aclose()
+        except Exception:  # pragma: no cover - shutdown best-effort
+            logger.warning(
+                "Failed to flush DSL execution-log queue on shutdown",
+                exc_info=True,
+            )
 
 
 def get_project_data():
@@ -192,6 +204,11 @@ class AppCreator:
 
         self.container = Container()
         self.db = self.container.db()
+        # Sprint 13: expose the singleton execution-log observer so the
+        # lifespan shutdown hook can flush its background queue.
+        self.app.state.dsl_execution_observer = (
+            self.container.dsl_execution_observer()
+        )
         if configs.BACKEND_CORS_ORIGINS:
             self.app.add_middleware(
                 CORSMiddleware,

@@ -21,6 +21,7 @@ import copy
 import hashlib
 import json
 import time
+from collections import OrderedDict
 from typing import Any, Optional, Tuple
 
 from app.core.config import configs
@@ -34,6 +35,45 @@ from app.engine.base_strategy import BaseStrategy
 from app.engine.dsl_execution_context import ExecutionContext
 from app.engine.dsl_interpreter import DslInterpreter
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
+
+# Sprint 13: the idempotency hash is a canonical-JSON dump of the AST
+# plus a SHA-256 — pure CPU, but ``UserPointsService`` constructs a fresh
+# ``DslStrategy`` on every scoring call, so a busy strategy re-hashes the
+# same multi-KB AST thousands of times a minute. We memoise the result
+# keyed by ``(strategyId, version)``.
+#
+# Only PUBLISHED definitions are cached: editing a DRAFT patches the row
+# *in place* without bumping the version (see
+# ``StrategyDefinitionService.update_strategy``), so ``(id, version)`` is
+# not a stable key for drafts. PUBLISHED rows are immutable — an edit
+# forks a new version — so the key is 1:1 with the AST, and scoring only
+# ever runs published strategies anyway. The simulate path (drafts)
+# recomputes, which is fine: it isn't the hot path.
+#
+# The cache is a small bounded LRU; cardinality is (published strategies ×
+# versions) for the realms hot in this process.
+_PUBLISHED_HASH_CACHE: "OrderedDict[Tuple[str, int], str]" = OrderedDict()
+_PUBLISHED_HASH_CACHE_MAXSIZE = 512
+
+
+def _compute_ast_hash(ast: Optional[dict]) -> str:
+    canonical = json.dumps(ast or {}, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def _cached_published_ast_hash(
+    strategy_id: str, version: int, ast: Optional[dict]
+) -> str:
+    key = (strategy_id, version)
+    cached = _PUBLISHED_HASH_CACHE.get(key)
+    if cached is not None:
+        _PUBLISHED_HASH_CACHE.move_to_end(key)
+        return cached
+    value = _compute_ast_hash(ast)
+    _PUBLISHED_HASH_CACHE[key] = value
+    if len(_PUBLISHED_HASH_CACHE) > _PUBLISHED_HASH_CACHE_MAXSIZE:
+        _PUBLISHED_HASH_CACHE.popitem(last=False)
+    return value
 
 
 class DslStrategy(BaseStrategy):
@@ -78,9 +118,16 @@ class DslStrategy(BaseStrategy):
         self.hash_version = self._generate_hash_of_calculate_points()
 
     def _generate_hash_of_calculate_points(self) -> str:
-        payload = self._definition.astJson or {}
-        canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
-        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        # Sprint 13: published definitions hit the process-wide LRU so the
+        # same AST isn't re-hashed on every scoring call; drafts (whose
+        # (id, version) key is not stable) always recompute.
+        if getattr(self._definition, "status", None) == "PUBLISHED":
+            return _cached_published_ast_hash(
+                str(self._definition.id),
+                self._definition.version,
+                self._definition.astJson,
+            )
+        return _compute_ast_hash(self._definition.astJson)
 
     def get_strategy_id(self) -> str:
         return f"custom:{self._definition.id}"
@@ -238,6 +285,14 @@ class DslStrategy(BaseStrategy):
         ast_post = ast.get("post_rules") or []
         parent_variable_overrides = ast.get("parent_variables") or {}
 
+        # Sprint 13: DSL_EXTEND builds up to two ExecutionContexts (pre +
+        # post) for the same user and request window. Share one analytics
+        # memo across both so each analytics field (a DB round-trip)
+        # resolves once instead of twice. Static and data.* fields are not
+        # cached (cheap / phase-dependent), so this is safe even though
+        # pre-rules mutate ``data`` between the two builds.
+        analytics_cache: dict = {}
+
         # Phase 1 — pre_rules. We build a context that doesn't carry
         # parent.* fields (those paths are validator-rejected outside
         # post_rules anyway). The interpreter copies ``data`` into
@@ -252,6 +307,7 @@ class DslStrategy(BaseStrategy):
                 externalUserId=externalUserId,
                 data=working_data,
                 analytics_service=self._analytics,
+                analytics_cache=analytics_cache,
             )
             pre_result = await self._run_phase(
                 pre_ctx, mode="pre",
@@ -309,6 +365,7 @@ class DslStrategy(BaseStrategy):
             data=working_data,
             analytics_service=self._analytics,
             parent_result=parent_result,
+            analytics_cache=analytics_cache,
         )
         post_result = await self._run_phase(
             post_ctx, mode="post",

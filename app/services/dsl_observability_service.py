@@ -1,5 +1,5 @@
 """
-Observability sink for DSL strategy executions (Sprint 11).
+Observability sink for DSL strategy executions (Sprint 11, Sprint 13).
 
 This service does *two* things for every ``DslStrategy.calculate_points``
 call (the wiring lives in :mod:`app.engine.dsl_strategy`):
@@ -14,6 +14,16 @@ call (the wiring lives in :mod:`app.engine.dsl_strategy`):
    after the incident. OK runs are sampled at
    :data:`_config_module.configs.DSL_EXECUTION_LOG_SAMPLE_RATE` (default 5 %).
 
+Sprint 13 — hot-path: ``record`` no longer ``await``\\s the DB write.
+The metrics emit + sampling decision stay synchronous (microseconds),
+and the chosen row is handed to a bounded in-process queue drained by a
+background worker task. Scoring therefore pays only the enqueue, never a
+DB round-trip. If the worker falls behind and the queue fills (a slow or
+down database), rows are dropped and counted via
+``dsl_execution_log_dropped_total`` rather than blocking the scoring
+call — the audit log is best-effort by design. Call :meth:`aclose`
+on shutdown to flush the queue and stop the worker cleanly.
+
 The service is wired with ``random.Random`` so tests can pass a
 seeded instance and assert on exact rows persisted. In production the
 default ``random`` module instance is used.
@@ -25,6 +35,7 @@ scoring call because a metrics row couldn't be written.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import random
 from typing import Any, Dict, List, Optional
@@ -58,9 +69,22 @@ class DslExecutionObserver:
         ] = None,
         *,
         rng: Optional[random.Random] = None,
+        queue_maxsize: Optional[int] = None,
     ) -> None:
         self._repository = execution_log_repository
         self._rng = rng or random
+        # Sprint 13: lazily-created bounded queue + drain worker. Both are
+        # created on the first enqueue (which always happens inside the
+        # running event loop), so constructing the observer outside a loop
+        # — as the DI container Singleton does at import time — is safe.
+        self._queue_maxsize = (
+            queue_maxsize
+            if queue_maxsize is not None
+            else _config_module.configs.DSL_EXECUTION_LOG_QUEUE_MAXSIZE
+        )
+        self._queue: Optional["asyncio.Queue[StrategyExecutionLog]"] = None
+        self._worker: Optional[asyncio.Task] = None
+        self._closed = False
 
     async def record(
         self,
@@ -154,18 +178,95 @@ class DslExecutionObserver:
             notes=notes,
         )
 
+        # Sprint 13: hand off to the background worker instead of awaiting
+        # the DB write here. ``_enqueue`` never blocks and never raises —
+        # a full queue drops the row (counted) so a slow database can't
+        # apply backpressure to the scoring hot-path.
+        self._enqueue(row, realmId=realmId, strategyType=strategyType)
+
+    # ------------------------------------------------------------------
+    # Sprint 13 — background drain worker.
+    # ------------------------------------------------------------------
+
+    def _enqueue(
+        self,
+        row: StrategyExecutionLog,
+        *,
+        realmId: Optional[str],
+        strategyType: str,
+    ) -> None:
+        """Best-effort, non-blocking handoff to the drain worker."""
+        if self._closed:
+            return
+        self._ensure_worker()
         try:
-            await self._repository.insert_row(row)
-        except Exception:
-            # Persistence failure must never break scoring. Logged at
-            # WARNING so it surfaces in dashboards but doesn't page.
-            logger.warning(
-                "Failed to persist StrategyExecutionLog for "
-                "strategyId=%s status=%s",
-                strategyId,
-                status,
-                exc_info=True,
+            self._queue.put_nowait(row)
+        except asyncio.QueueFull:
+            # The worker is behind (DB slow/down). Drop rather than wait:
+            # scoring must never block on the audit log. Surface the drop
+            # so a saturated sink is visible instead of silent data loss.
+            dsl_metrics.observe_log_dropped(
+                realm=realmId, strategy_type=strategyType,
             )
+            logger.warning(
+                "DSL execution-log queue full (maxsize=%s); dropped a "
+                "row for realm=%s type=%s",
+                self._queue_maxsize,
+                realmId,
+                strategyType,
+            )
+
+    def _ensure_worker(self) -> None:
+        """Create the queue + drain task on first use, inside the loop."""
+        if self._queue is None:
+            self._queue = asyncio.Queue(maxsize=max(self._queue_maxsize, 1))
+        if self._worker is None or self._worker.done():
+            self._worker = asyncio.ensure_future(self._drain_loop())
+
+    async def _drain_loop(self) -> None:
+        assert self._queue is not None
+        while True:
+            row = await self._queue.get()
+            try:
+                await self._repository.insert_row(row)
+            except Exception:
+                # Persistence failure must never escape the worker.
+                # Logged at WARNING so it surfaces in dashboards but
+                # doesn't page; the next row keeps draining.
+                logger.warning(
+                    "Failed to persist StrategyExecutionLog for "
+                    "strategyId=%s status=%s",
+                    getattr(row, "strategyId", None),
+                    getattr(row, "status", None),
+                    exc_info=True,
+                )
+            finally:
+                self._queue.task_done()
+
+    async def drain(self) -> None:
+        """Block until every queued row has been processed.
+
+        Mainly for tests and graceful shutdown — production scoring never
+        calls this. No-op if nothing has been enqueued yet.
+        """
+        if self._queue is not None:
+            await self._queue.join()
+
+    async def aclose(self) -> None:
+        """Flush pending rows and stop the worker. Idempotent.
+
+        Wired into the FastAPI lifespan so an orderly shutdown doesn't
+        lose buffered execution logs.
+        """
+        self._closed = True
+        await self.drain()
+        if self._worker is not None and not self._worker.done():
+            self._worker.cancel()
+            try:
+                await self._worker
+            except (asyncio.CancelledError, Exception):
+                pass
+        self._worker = None
 
 
 def _truncate_trace(
