@@ -60,6 +60,16 @@
     "sectionFailedTitle": "Algo ha fallado en esta sección.",
     "sectionFailedBody": "No hemos podido renderizar este bloque. El resto del dashboard sigue funcionando."
   },
+  "toasts": {
+    "regionLabel": "Notificaciones",
+    "dismiss": "Cerrar notificación",
+    "title": {
+      "success": "Éxito",
+      "danger": "Error",
+      "warning": "Aviso",
+      "info": "Información"
+    }
+  },
   "loading": "Cargando…",
   "none": "—",
   "noDescription": "Sin descripción.",

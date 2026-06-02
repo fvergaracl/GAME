@@ -21,10 +21,11 @@ export default defineConfig({
     setupFiles: ['./src/test-setup.js'],
     // Keep the matcher tight: the strategies editor surface (S6), the
     // i18n bundles (S10) and the Sprint 9 shared resilience primitives
-    // (errors helper, Skeleton, ErrorBoundary) ship with tests. Other
-    // dirs are intentionally skipped until they grow test coverage.
+    // (errors helper, Skeleton, ErrorBoundary) ship with tests. Sprint
+    // 11 adds component/integration tests for the library + assignments
+    // surfaces, hence the .jsx glob under views/strategies.
     include: [
-      'src/views/strategies/**/*.test.js',
+      'src/views/strategies/**/*.test.{js,jsx}',
       'src/i18n/**/*.test.js',
       'src/utils/**/*.test.js',
       'src/components/**/*.test.{js,jsx}',

@@ -60,6 +60,16 @@
     "sectionFailedTitle": "Something went wrong in this section.",
     "sectionFailedBody": "We couldn't render this block. The rest of the dashboard is still working."
   },
+  "toasts": {
+    "regionLabel": "Notifications",
+    "dismiss": "Dismiss notification",
+    "title": {
+      "success": "Success",
+      "danger": "Error",
+      "warning": "Warning",
+      "info": "Info"
+    }
+  },
   "loading": "Loading…",
   "none": "—",
   "noDescription": "No description.",

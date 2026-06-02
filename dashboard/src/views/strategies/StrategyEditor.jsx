@@ -14,7 +14,7 @@
 //   * Errors / success / last simulation result go through useState so
 //     CAlert and the trace panel re-render reactively.
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import * as Blockly from 'blockly'
@@ -55,6 +55,7 @@ import keycloak from '../../keycloak'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import { translateDslError } from '../../i18n/errorMap'
 import { extractError } from '../../utils/errors'
+import { useToast } from '../../components/Toast'
 import {
   STARTER_RULE_XML,
   buildBlockCatalog,
@@ -68,11 +69,23 @@ import { validateAst } from './dsl/validator'
 import { buildMockState, usedAccumulationFields } from './dsl/simFields'
 import EditorTour from './EditorTour'
 import GlossaryHint from './glossary/GlossaryHint'
-import SimulationRunsChart from './SimulationRunsChart'
-import SimulationScenarios from './SimulationScenarios'
-import SimulationTracePanel from './SimulationTracePanel'
-import StrategyVersionHistoryModal from './StrategyVersionHistoryModal'
-import TemplatePickerModal from './TemplatePickerModal'
+import { SkeletonCard } from '../../components/Skeleton'
+
+// Sprint 11: split the heavy on-demand surfaces out of the editor's
+// main chunk. None of these are reachable on first paint:
+//   * SimulationRunsChart pulls chart.js — only loaded when the user
+//     runs a cumulative simulation.
+//   * SimulationScenarios + SimulationTracePanel render under the
+//     simulate side panel after the first run.
+//   * StrategyVersionHistoryModal carries the AST diff algorithm and
+//     only opens via "Ver historial".
+//   * TemplatePickerModal fetches built-in template fixtures and is
+//     only opened from the empty-state chooser.
+const SimulationRunsChart = React.lazy(() => import('./SimulationRunsChart'))
+const SimulationScenarios = React.lazy(() => import('./SimulationScenarios'))
+const SimulationTracePanel = React.lazy(() => import('./SimulationTracePanel'))
+const StrategyVersionHistoryModal = React.lazy(() => import('./StrategyVersionHistoryModal'))
+const TemplatePickerModal = React.lazy(() => import('./TemplatePickerModal'))
 
 // Sprint 10: feed Blockly's own UI strings (right-click menu, trash
 // confirmations, etc.) the user's locale. Defaults to Spanish to match
@@ -136,6 +149,9 @@ const composeClean = (ast, name, description) =>
 
 const StrategyEditor = () => {
   const { t, i18n } = useTranslation('editor')
+  // Sprint 11: shared feedback channel. No-op outside a ToastProvider
+  // (e.g. test harness) so callers don't have to guard.
+  const toast = useToast()
 
   // Sprint 10: lock in the active language for Blockly's own UI
   // (right-click menus, trash dialog, etc.) and re-tooltip every
@@ -920,18 +936,21 @@ const StrategyEditor = () => {
       if (updated.id) setStrategyId(updated.id)
       if (updated.version != null) setLoadedVersion(updated.version)
       setStatus(updated.status ?? null)
-      setSaveSuccess(
-        t(lifecycleAction === 'publish' ? 'alerts.publishSuccess' : 'alerts.archiveSuccess', {
-          version: updated.version,
-        }),
+      const msg = t(
+        lifecycleAction === 'publish' ? 'alerts.publishSuccess' : 'alerts.archiveSuccess',
+        { version: updated.version },
       )
+      setSaveSuccess(msg)
+      toast.success(msg)
     } catch (err) {
-      setSaveError(translateDslError(t, err) || extractError(err, t))
+      const msg = translateDslError(t, err) || extractError(err, t)
+      setSaveError(msg)
+      toast.error(msg)
     } finally {
       setIsLifecycleBusy(false)
       setLifecycleAction(null)
     }
-  }, [lifecycleAction, strategyId, t])
+  }, [lifecycleAction, strategyId, t, toast])
 
   const canPublish = isAdmin && Boolean(strategyId) && status === 'DRAFT'
   const canArchive =
@@ -1068,11 +1087,15 @@ const StrategyEditor = () => {
             </CCardBody>
           </CCard>
         </CCol>
-        <TemplatePickerModal
-          visible={templateModalOpen}
-          onClose={() => setTemplateModalOpen(false)}
-          onSelect={handleTemplateSelected}
-        />
+        {templateModalOpen && (
+          <Suspense fallback={<SkeletonCard lines={4} />}>
+            <TemplatePickerModal
+              visible={templateModalOpen}
+              onClose={() => setTemplateModalOpen(false)}
+              onSelect={handleTemplateSelected}
+            />
+          </Suspense>
+        )}
       </CRow>
     )
   }
@@ -1500,7 +1523,9 @@ const StrategyEditor = () => {
           </CCardHeader>
           <CCardBody>
             <p className="text-medium-emphasis small">{t('simulate.intro')}</p>
-            <SimulationScenarios current={currentScenario} onLoad={loadScenario} />
+            <Suspense fallback={<SkeletonCard lines={2} />}>
+              <SimulationScenarios current={currentScenario} onLoad={loadScenario} />
+            </Suspense>
             <CForm>
               <div className="mb-2">
                 <CFormLabel>{t('simulate.externalUserId')}</CFormLabel>
@@ -1681,7 +1706,9 @@ const StrategyEditor = () => {
                     })}
                   </strong>
                 </div>
-                <SimulationRunsChart runs={simRuns} />
+                <Suspense fallback={<SkeletonCard lines={3} />}>
+                  <SimulationRunsChart runs={simRuns} />
+                </Suspense>
               </div>
             )}
 
@@ -1778,7 +1805,9 @@ const StrategyEditor = () => {
                   })}
                 </h6>
                 <div className="mb-2 small" style={{ maxHeight: 340, overflow: 'auto' }}>
-                  <SimulationTracePanel ast={simAst} trace={simResult.executionTrace} />
+                  <Suspense fallback={<SkeletonCard lines={3} />}>
+                    <SimulationTracePanel ast={simAst} trace={simResult.executionTrace} />
+                  </Suspense>
                 </div>
                 <details>
                   <summary className="small text-medium-emphasis" style={{ cursor: 'pointer' }}>
@@ -1802,18 +1831,22 @@ const StrategyEditor = () => {
           </CCardBody>
         </CCard>
       </CCol>
-      <StrategyVersionHistoryModal
-        visible={historyOpen}
-        strategyId={strategyId}
-        isAdmin={isAdmin}
-        onClose={() => setHistoryOpen(false)}
-        onRollbackDone={(promoted) => {
-          // Server rolled back; navigate the editor onto the newly
-          // published version so the workspace reflects the cascade.
-          setHistoryOpen(false)
-          if (promoted?.id) navigate(`/strategies/editor/${promoted.id}`)
-        }}
-      />
+      {historyOpen && (
+        <Suspense fallback={null}>
+          <StrategyVersionHistoryModal
+            visible={historyOpen}
+            strategyId={strategyId}
+            isAdmin={isAdmin}
+            onClose={() => setHistoryOpen(false)}
+            onRollbackDone={(promoted) => {
+              // Server rolled back; navigate the editor onto the newly
+              // published version so the workspace reflects the cascade.
+              setHistoryOpen(false)
+              if (promoted?.id) navigate(`/strategies/editor/${promoted.id}`)
+            }}
+          />
+        </Suspense>
+      )}
     </CRow>
   )
 }

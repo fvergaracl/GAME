@@ -56,6 +56,7 @@ import {
 import keycloak from '../../keycloak'
 import { extractError } from '../../utils/errors'
 import { SkeletonTable } from '../../components/Skeleton'
+import { useToast } from '../../components/Toast'
 import GlossaryHint from './glossary/GlossaryHint'
 import OnboardingTour from './OnboardingTour'
 import StrategyUsageModal from './StrategyUsageModal'
@@ -123,6 +124,10 @@ const StrategyLibraryView = () => {
   const navigate = useNavigate()
   const isAdmin = useMemo(() => isCurrentUserAdmin(), [])
   const { t } = useTranslation('strategies')
+  // Sprint 11: useToast() returns no-op handlers when no ToastProvider
+  // is mounted (e.g. test harnesses), so this is safe to call
+  // unconditionally without forcing every caller to opt-in.
+  const toast = useToast()
 
   // 'auto' on mount honours the localStorage flag (only first-time
   // visitors see the tour); 'manual' is triggered from the
@@ -216,15 +221,19 @@ const StrategyLibraryView = () => {
           astJson: full.astJson,
           blocklyXml: full.blocklyXml || null,
         })
-        setActionSuccess(`Duplicada como «${created.name}» (borrador v${created.version}).`)
+        const msg = `Duplicada como «${created.name}» (borrador v${created.version}).`
+        setActionSuccess(msg)
+        toast.success(msg)
         reload()
       } catch (err) {
-        setActionError(extractError(err, 'No se pudo duplicar la estrategia.'))
+        const msg = extractError(err, 'No se pudo duplicar la estrategia.')
+        setActionError(msg)
+        toast.error(msg)
       } finally {
         setBusyId(null)
       }
     },
-    [reload],
+    [reload, toast],
   )
 
   const handleExport = useCallback(async (row) => {
@@ -255,11 +264,13 @@ const StrategyLibraryView = () => {
       link.remove()
       window.URL.revokeObjectURL(url)
     } catch (err) {
-      setActionError(extractError(err, 'No se pudo exportar la estrategia.'))
+      const msg = extractError(err, 'No se pudo exportar la estrategia.')
+      setActionError(msg)
+      toast.error(msg)
     } finally {
       setBusyId(null)
     }
-  }, [])
+  }, [toast])
 
   const handleConfirmLifecycle = useCallback(async () => {
     if (!confirmAction) return
@@ -270,26 +281,27 @@ const StrategyLibraryView = () => {
     try {
       const updated =
         action === 'publish' ? await publishCustomStrategy(id) : await archiveCustomStrategy(id)
-      setActionSuccess(
+      const msg =
         action === 'publish'
           ? `«${updated.name}» publicada (v${updated.version}). Ahora es la versión en producción.`
-          : `«${updated.name}» archivada (v${updated.version}).`,
-      )
+          : `«${updated.name}» archivada (v${updated.version}).`
+      setActionSuccess(msg)
+      toast.success(msg)
       reload()
     } catch (err) {
-      setActionError(
-        extractError(
-          err,
-          action === 'publish'
-            ? 'No se pudo publicar la estrategia.'
-            : 'No se pudo archivar la estrategia.',
-        ),
+      const msg = extractError(
+        err,
+        action === 'publish'
+          ? 'No se pudo publicar la estrategia.'
+          : 'No se pudo archivar la estrategia.',
       )
+      setActionError(msg)
+      toast.error(msg)
     } finally {
       setBusyId(null)
       setConfirmAction(null)
     }
-  }, [confirmAction, reload])
+  }, [confirmAction, reload, toast])
 
   // Server-side filters (re-query) vs. the full client-side filter set.
   const serverFiltersActive = Boolean(statusFilter || typeFilter)

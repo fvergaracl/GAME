@@ -52,6 +52,7 @@ import {
 } from '../../api'
 import { extractError } from '../../utils/errors'
 import { SkeletonTable } from '../../components/Skeleton'
+import { useToast } from '../../components/Toast'
 import GlossaryHint from './glossary/GlossaryHint'
 import OnboardingTour from './OnboardingTour'
 import StrategyPickerModal from './StrategyPickerModal'
@@ -88,6 +89,9 @@ const buildStrategyLabelIndex = (builtIns, customs) => {
 
 const StrategyAssignmentsView = () => {
   const { t } = useTranslation('strategies')
+  // Sprint 11: shared feedback channel — see ToastProvider in
+  // DefaultLayout. Falls back to no-ops outside a provider.
+  const toast = useToast()
   const [tourRunRequest, setTourRunRequest] = useState('auto')
   const [games, setGames] = useState([])
   const [totalCount, setTotalCount] = useState(0)
@@ -309,9 +313,13 @@ const StrategyAssignmentsView = () => {
     if (kind === 'game') {
       try {
         await applySingleGame(pendingReassign.gameId, newStrategyId)
-        setActionSuccess('Estrategia del game actualizada.')
+        const msg = 'Estrategia del game actualizada.'
+        setActionSuccess(msg)
+        toast.success(msg)
       } catch (err) {
-        setActionError(extractError(err, 'No se pudo actualizar la asignación.'))
+        const msg = extractError(err, 'No se pudo actualizar la asignación.')
+        setActionError(msg)
+        toast.error(msg)
       } finally {
         setPendingReassign(null)
       }
@@ -321,9 +329,13 @@ const StrategyAssignmentsView = () => {
     if (kind === 'task') {
       try {
         await applyTask(pendingReassign.gameId, pendingReassign.taskId, newStrategyId)
-        setActionSuccess('Estrategia de la task actualizada.')
+        const msg = 'Estrategia de la task actualizada.'
+        setActionSuccess(msg)
+        toast.success(msg)
       } catch (err) {
-        setActionError(extractError(err, 'No se pudo actualizar la asignación.'))
+        const msg = extractError(err, 'No se pudo actualizar la asignación.')
+        setActionError(msg)
+        toast.error(msg)
       } finally {
         setPendingReassign(null)
       }
@@ -361,8 +373,11 @@ const StrategyAssignmentsView = () => {
           .join('; ')}`,
       )
     }
-    setActionSuccess(parts.join(' '))
-  }, [pendingReassign, games, selected, applySingleGame, applyTask])
+    const summary = parts.join(' ')
+    setActionSuccess(summary)
+    if (failed.length === 0) toast.success(summary)
+    else toast.warning(summary)
+  }, [pendingReassign, games, selected, applySingleGame, applyTask, toast])
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize))
   const customCountOnPage = useMemo(
