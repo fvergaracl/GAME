@@ -1,0 +1,56 @@
+name: pip-audit (dependency security)
+
+# Audits the *resolved* Poetry environment against the PyPI Advisory Database.
+# Runs on pushes/PRs to main and weekly so freshly disclosed CVEs surface even
+# without a code change.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "23 5 * * 1" # every Monday at 05:23 UTC
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pip-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pip-audit:
+    runs-on: ubuntu-latest
+    env:
+      ENV: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # pygraphviz (a transitive build dep) needs the graphviz headers to install.
+      - name: Install Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz graphviz-dev
+
+      - name: Install Poetry
+        run: curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install dependencies
+        run: poetry install
+
+      # pip-audit is installed into the Poetry venv at CI time (no lockfile churn)
+      # and audits exactly the packages this project resolves.
+      - name: Run pip-audit
+        # Advisory-only for now: the backend still pins a few dependencies with
+        # known, separately-tracked CVEs (python-jose, cryptography — see M7 in
+        # internal_notes/mejoras.md). Flip `continue-on-error` to false once the
+        # dependency-modernization sprint lands so this becomes a hard gate.
+        continue-on-error: true
+        run: |
+          poetry run pip install pip-audit
+          poetry run pip-audit --desc --progress-spinner off

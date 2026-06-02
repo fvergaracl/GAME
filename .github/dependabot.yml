@@ -1,0 +1,110 @@
+# Dependabot configuration — automated dependency & supply-chain updates.
+# Covers every ecosystem present in the repo: the Poetry backend, the React
+# dashboard, the GitHub Actions used by CI, and the Docker base images.
+# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates
+version: 2
+updates:
+  # ---------------------------------------------------------------------------
+  # Python backend (Poetry — reads pyproject.toml + poetry.lock)
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Madrid"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "python"]
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+    groups:
+      # Batch low-risk minor/patch bumps into a single PR to reduce noise;
+      # majors still open individually so they can be reviewed on their own.
+      python-minor-patch:
+        update-types: ["minor", "patch"]
+
+  # ---------------------------------------------------------------------------
+  # Dashboard (npm — reads dashboard/package.json + package-lock.json)
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "npm"
+    directory: "/dashboard"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Madrid"
+    open-pull-requests-limit: 10
+    labels: ["dependencies", "javascript"]
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+    groups:
+      npm-minor-patch:
+        update-types: ["minor", "patch"]
+
+  # ---------------------------------------------------------------------------
+  # GitHub Actions (keeps CI action versions current — closes H11 long-term)
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Madrid"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "ci"]
+    commit-message:
+      prefix: "ci"
+    groups:
+      github-actions:
+        update-types: ["minor", "patch"]
+
+  # ---------------------------------------------------------------------------
+  # Docker base images (one entry per Dockerfile directory)
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Madrid"
+    labels: ["dependencies", "docker"]
+    commit-message:
+      prefix: "docker"
+
+  - package-ecosystem: "docker"
+    directory: "/dashboard"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Madrid"
+    labels: ["dependencies", "docker"]
+    commit-message:
+      prefix: "docker"
+
+  - package-ecosystem: "docker"
+    directory: "/healthcheck_service"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Madrid"
+    labels: ["dependencies", "docker"]
+    commit-message:
+      prefix: "docker"
+
+  - package-ecosystem: "docker"
+    directory: "/keycloak"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Madrid"
+    labels: ["dependencies", "docker"]
+    commit-message:
+      prefix: "docker"

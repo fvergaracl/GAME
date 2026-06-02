@@ -164,6 +164,15 @@ logs-api: check ## Tail logs from the api service
 	$(COMPOSE) logs -f --tail=100 api
 
 #######################
+## SECURITY / SUPPLY CHAIN
+#######################
+
+.PHONY: audit
+audit: ## Audit Python deps for known CVEs (local parity with the pip-audit CI job)
+	poetry run pip install --quiet pip-audit
+	poetry run pip-audit --desc --progress-spinner off
+
+#######################
 ## SHELL ACCESS
 #######################
 
