@@ -53,6 +53,15 @@ def test_config_prints_banner_for_environment(
 def test_cors_origins_default_to_empty_when_env_unset(monkeypatch):
     monkeypatch.setenv("ENV", "dev")
     monkeypatch.delenv("BACKEND_CORS_ORIGINS", raising=False)
+    # Neutralize load_dotenv at its source so a developer's local .env (which
+    # ships BACKEND_CORS_ORIGINS=http://localhost:3000) cannot repopulate the
+    # var when the module body re-runs ``load_dotenv()`` on reload and mask the
+    # secure default. Patching the module attribute would not survive reload,
+    # which re-executes ``from dotenv import load_dotenv``. This asserts the
+    # true M3 guarantee: with nothing configured, the allow-list is empty.
+    import dotenv
+
+    monkeypatch.setattr(dotenv, "load_dotenv", lambda *a, **k: False)
 
     reloaded = importlib.reload(config_module)
 
