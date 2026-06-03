@@ -248,9 +248,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_points_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserPointsRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserRepository</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CreateTask</span><span class="p">,</span> <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">,</span>
-                                    <span class="n">FindTask</span><span class="p">,</span> <span class="n">PatchTask</span><span class="p">,</span> <span class="n">ResponsePatchTask</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.tasks_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">InsertTaskParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CreateTask</span><span class="p">,</span> <span class="n">CreateTaskPost</span><span class="p">,</span>
+                                    <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">,</span> <span class="n">FindTask</span><span class="p">,</span>
+                                    <span class="n">PatchTask</span><span class="p">,</span> <span class="n">ResponseDeleteTask</span><span class="p">,</span> <span class="n">ResponsePatchTask</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.tasks_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateTaskParams</span><span class="p">,</span> <span class="n">InsertTaskParams</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.game_access</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_authorized_game</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_definition_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionService</span>
@@ -429,6 +430,145 @@
             <span class="n">strategyId</span><span class="o">=</span><span class="n">updated</span><span class="o">.</span><span class="n">strategyId</span><span class="p">,</span>
             <span class="n">status</span><span class="o">=</span><span class="n">updated</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
             <span class="n">message</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task with taskId: </span><span class="si">{</span><span class="n">taskId</span><span class="si">}</span><span class="s2"> updated successfully"</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_task_in_game</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+        <span class="n">taskId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Resolve a task that must belong to ``gameId``, honouring scope.</span>
+
+<span class="sd">        Shared guard for the Sprint 0 ``delete``/``duplicate`` task flows</span>
+<span class="sd">        (and a sibling of the inline checks in :meth:`patch_task_by_id`):</span>
+<span class="sd">        the game has to exist (and be in the caller's scope when</span>
+<span class="sd">        ``enforce_scope`` is set), the task has to exist, and it has to be</span>
+<span class="sd">        a child of that game. A mismatched parent is reported as 404 so we</span>
+<span class="sd">        don't leak which other game the task actually belongs to.</span>
+
+<span class="sd">        Returns the resolved task row.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
+                <span class="n">gameId</span><span class="p">,</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+                <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
+                <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found by gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
+            <span class="n">taskId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Task not found by taskId: </span><span class="si">{</span><span class="n">taskId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">gameId</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">gameId</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">taskId</span><span class="si">}</span><span class="s2"> does not belong to game </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">task</span>
+
+<div class="viewcode-block" id="TaskService.delete_task_by_id">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.delete_task_by_id">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_task_by_id</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+        <span class="n">taskId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResponseDeleteTask</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Delete a task (and its params/points) identified by</span>
+<span class="sd">        ``gameId`` + ``taskId``.</span>
+
+<span class="sd">        Sprint 0 full-stack addition mirroring</span>
+<span class="sd">        :meth:`GameService.delete_game_by_id`: the cascade lives in</span>
+<span class="sd">        :meth:`TaskRepository.delete_task_by_id` so task params and the</span>
+<span class="sd">        user-points rows that reference the task go before the task row.</span>
+<span class="sd">        """</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_task_in_game</span><span class="p">(</span>
+            <span class="n">gameId</span><span class="p">,</span>
+            <span class="n">taskId</span><span class="p">,</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+            <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="n">enforce_scope</span><span class="o">=</span><span class="n">enforce_scope</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">delete_task_by_id</span><span class="p">(</span><span class="n">taskId</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ResponseDeleteTask</span><span class="p">(</span>
+            <span class="n">taskId</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">gameId</span><span class="o">=</span><span class="n">gameId</span><span class="p">,</span>
+            <span class="n">externalTaskId</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">externalTaskId</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Task with taskId: </span><span class="si">{</span><span class="n">taskId</span><span class="si">}</span><span class="s2"> deleted successfully"</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TaskService.duplicate_task">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.task_service.TaskService.duplicate_task">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">duplicate_task</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+        <span class="n">taskId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+        <span class="n">externalTaskId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Duplicate a task within the same game under a new</span>
+<span class="sd">        ``externalTaskId``.</span>
+
+<span class="sd">        Deep-copies the source task's strategy and params onto the new</span>
+<span class="sd">        task. Reuses :meth:`create_task_by_game_id` for the heavy lifting</span>
+<span class="sd">        (uniqueness check on the new ``externalTaskId``, row + param</span>
+<span class="sd">        insertion, response shaping) so the duplicate path can't drift</span>
+<span class="sd">        from normal task creation.</span>
+<span class="sd">        """</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_task_in_game</span><span class="p">(</span>
+            <span class="n">gameId</span><span class="p">,</span>
+            <span class="n">taskId</span><span class="p">,</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+            <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="n">enforce_scope</span><span class="o">=</span><span class="n">enforce_scope</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">source_params</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
+            <span class="s2">"taskId"</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">only_one</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">copied_params</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">CreateTaskParams</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">(</span><span class="n">source_params</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="p">]</span>
+        <span class="n">create_query</span> <span class="o">=</span> <span class="n">CreateTaskPost</span><span class="p">(</span>
+            <span class="n">externalTaskId</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
+            <span class="n">strategyId</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">strategyId</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">copied_params</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_task_by_game_id</span><span class="p">(</span>
+            <span class="n">gameId</span><span class="p">,</span>
+            <span class="n">create_query</span><span class="p">,</span>
+            <span class="n">api_key</span><span class="p">,</span>
+            <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+            <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="n">enforce_scope</span><span class="o">=</span><span class="n">enforce_scope</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 

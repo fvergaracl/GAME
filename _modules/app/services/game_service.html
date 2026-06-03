@@ -244,11 +244,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.model.strategy_definition</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionStatus</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_params_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameParamsRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_params_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskParamsRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_points_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserPointsRepository</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">InsertGameParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateGameParams</span><span class="p">,</span> <span class="n">InsertGameParams</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BaseGameResult</span><span class="p">,</span> <span class="n">FindGameResult</span><span class="p">,</span> <span class="n">GameCreated</span><span class="p">,</span>
                                      <span class="n">PatchGame</span><span class="p">,</span> <span class="n">PostCreateGame</span><span class="p">,</span> <span class="n">ResponsePatchGame</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateTask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.tasks_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">InsertTaskParams</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.game_access</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_authorized_game</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_definition_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionService</span>
@@ -280,6 +283,7 @@
         <span class="n">user_points_repository</span><span class="p">:</span> <span class="n">UserPointsRepository</span><span class="p">,</span>
         <span class="n">strategy_service</span><span class="p">:</span> <span class="n">StrategyService</span><span class="p">,</span>
         <span class="n">strategy_definition_service</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StrategyDefinitionService</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">task_params_repository</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TaskParamsRepository</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initializes the GameService with the provided repositories and</span>
@@ -290,10 +294,16 @@
 <span class="sd">        working; when omitted, attempting to PATCH a game with a</span>
 <span class="sd">        ``custom:`` id raises a clear error instead of silently</span>
 <span class="sd">        accepting it.</span>
+
+<span class="sd">        ``task_params_repository`` is optional for the same backward-compat</span>
+<span class="sd">        reason; it is only needed by :meth:`duplicate_game` to deep-copy</span>
+<span class="sd">        each task's params. When omitted, duplication raises a clear error</span>
+<span class="sd">        instead of silently dropping params.</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span> <span class="o">=</span> <span class="n">game_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">game_params_repository</span> <span class="o">=</span> <span class="n">game_params_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span> <span class="o">=</span> <span class="n">task_repository</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span> <span class="o">=</span> <span class="n">task_params_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span> <span class="o">=</span> <span class="n">strategy_service</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_service</span> <span class="o">=</span> <span class="n">strategy_definition_service</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">game_repository</span><span class="p">)</span>
@@ -527,6 +537,105 @@
             <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game with gameId: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> created successfully"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="GameService.duplicate_game">
+<a class="viewcode-back" href="../../../app/app.services.html#app.services.game_service.GameService.duplicate_game">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">duplicate_game</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+        <span class="n">externalGameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GameCreated</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Deep-copy a game into a brand new one under ``externalGameId``.</span>
+
+<span class="sd">        Copies the source game's platform, strategy and params, then every</span>
+<span class="sd">        task with its own strategy and params. The new game's params are</span>
+<span class="sd">        recreated via :meth:`create` so all the creation guards (slug</span>
+<span class="sd">        validation, externalGameId uniqueness, strategy existence) run</span>
+<span class="sd">        against the copy exactly as they would for a fresh game. Tasks are</span>
+<span class="sd">        recreated directly through the repositories — the duplicate just</span>
+<span class="sd">        needs the rows, not the elaborate per-task response shaping.</span>
+
+<span class="sd">        Duplicated tasks start in the default ``open`` status: a copy is a</span>
+<span class="sd">        fresh task, not a resumption of the original's lifecycle.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadRequestError</span><span class="p">(</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">"Game duplication is unavailable: "</span>
+                    <span class="s2">"TaskParamsRepository not wired."</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
+                <span class="n">gameId</span><span class="p">,</span>
+                <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
+                <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
+                <span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">source</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Game not found by gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="n">source_params</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_params_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
+            <span class="s2">"gameId"</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">only_one</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">copied_params</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">CreateGameParams</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">(</span><span class="n">source_params</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="p">]</span>
+
+        <span class="c1"># ``create`` runs the slug + uniqueness + strategy guards for us and</span>
+        <span class="c1"># raises ConflictError if ``externalGameId`` is already taken.</span>
+        <span class="n">new_game_schema</span> <span class="o">=</span> <span class="n">PostCreateGame</span><span class="p">(</span>
+            <span class="n">externalGameId</span><span class="o">=</span><span class="n">externalGameId</span><span class="p">,</span>
+            <span class="n">platform</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">platform</span><span class="p">,</span>
+            <span class="n">strategyId</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">strategyId</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">copied_params</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">created</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">new_game_schema</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">oauth_user_id</span><span class="p">)</span>
+        <span class="n">new_game_id</span> <span class="o">=</span> <span class="n">created</span><span class="o">.</span><span class="n">gameId</span>
+
+        <span class="n">source_tasks</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
+            <span class="s2">"gameId"</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">only_one</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">source_tasks</span> <span class="ow">or</span> <span class="p">[]:</span>
+            <span class="n">new_task</span> <span class="o">=</span> <span class="n">CreateTask</span><span class="p">(</span>
+                <span class="n">externalTaskId</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">externalTaskId</span><span class="p">,</span>
+                <span class="n">gameId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">new_game_id</span><span class="p">),</span>
+                <span class="n">strategyId</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">strategyId</span><span class="p">,</span>
+                <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">created_task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">new_task</span><span class="p">)</span>
+
+            <span class="n">task_params</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
+                <span class="s2">"taskId"</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">only_one</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">task_params</span> <span class="ow">or</span> <span class="p">[]:</span>
+                <span class="n">params_to_insert</span> <span class="o">=</span> <span class="n">InsertTaskParams</span><span class="p">(</span>
+                    <span class="n">taskId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">created_task</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                    <span class="n">key</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                    <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params_to_insert</span><span class="p">)</span>
+
+        <span class="n">created</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Game with gameId: </span><span class="si">{</span><span class="n">new_game_id</span><span class="si">}</span><span class="s2"> duplicated successfully "</span>
+            <span class="sa">f</span><span class="s2">"from gameId: </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">created</span></div>
 
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_validate_strategy_assignment</span><span class="p">(</span>

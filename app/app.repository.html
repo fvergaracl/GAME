@@ -307,6 +307,8 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.bulk_update_strategy_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.bulk_update_strategy_id()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.delete_task_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.delete_task_by_id()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.get_points_and_users_by_taskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.get_points_and_users_by_taskId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.list_by_strategy_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.list_by_strategy_id()</span></code></a>
@@ -584,6 +586,8 @@
         <li class="md-nav__item"><a href="#app.repository.TaskRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.repository.TaskRepository.bulk_update_strategy_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.bulk_update_strategy_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.TaskRepository.delete_task_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.delete_task_by_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.TaskRepository.get_points_and_users_by_taskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.get_points_and_users_by_taskId()</span></code></a>
         </li>
@@ -900,7 +904,7 @@ instead of a raw UUID, in a single query rather than N reads.</p>
 <span id="app-repository-task-repository-module"></span><h2 id="module-app.repository.task_repository">app.repository.task_repository module<a class="headerlink" href="#module-app.repository.task_repository" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.task_repository.</span></span><span class="sig-name descname"><span class="pre">TaskRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractAsyncContextManager[~sqlalchemy.ext.asyncio.session.AsyncSession]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.task_repository.</span></span><span class="sig-name descname"><span class="pre">TaskRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractAsyncContextManager[~sqlalchemy.ext.asyncio.session.AsyncSession]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;,</span> <span class="pre">model_task_params=&lt;class</span> <span class="pre">'app.model.task_params.TasksParams'&gt;,</span> <span class="pre">model_user_points=&lt;class</span> <span class="pre">'app.model.user_points.UserPoints'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
 <p>Repository class for tasks.</p>
 <dl class="py method">
@@ -910,6 +914,17 @@ instead of a raw UUID, in a single query rather than N reads.</p>
 <code class="docutils literal notranslate"><span class="pre">new_strategy_id</span></code> in a single UPDATE. Returns the row count.</p>
 <p>Sprint 9 rollback cascade companion to
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">GameRepository.bulk_update_strategy_id()</span></code>.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository.delete_task_by_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_task_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.delete_task_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository.delete_task_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a single task and everything that hangs off it.</p>
+<p>Mirrors the per-task branch of
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">GameRepository.delete_game_by_id()</span></code>: task params and the
+user-points rows that reference the task are removed first so the
+FK constraints don’t block the final <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> on the task row.
+Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> on success.</p>
+<p>Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code> if the task does not exist.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository.get_points_and_users_by_taskId">
@@ -1585,7 +1600,7 @@ histogram. <code class="docutils literal notranslate"><span class="pre">points</
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.repository.TaskRepository">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">TaskRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractAsyncContextManager[~sqlalchemy.ext.asyncio.session.AsyncSession]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.TaskRepository" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.repository.</span></span><span class="sig-name descname"><span class="pre">TaskRepository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">session_factory:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~contextlib.AbstractAsyncContextManager[~sqlalchemy.ext.asyncio.session.AsyncSession]],</span> <span class="pre">model=&lt;class</span> <span class="pre">'app.model.tasks.Tasks'&gt;,</span> <span class="pre">model_task_params=&lt;class</span> <span class="pre">'app.model.task_params.TasksParams'&gt;,</span> <span class="pre">model_user_points=&lt;class</span> <span class="pre">'app.model.user_points.UserPoints'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.TaskRepository" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#app.repository.base_repository.BaseRepository" title="app.repository.base_repository.BaseRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRepository</span></code></a></p>
 <p>Repository class for tasks.</p>
 <dl class="py method">
@@ -1595,6 +1610,17 @@ histogram. <code class="docutils literal notranslate"><span class="pre">points</
 <code class="docutils literal notranslate"><span class="pre">new_strategy_id</span></code> in a single UPDATE. Returns the row count.</p>
 <p>Sprint 9 rollback cascade companion to
 <a class="reference internal" href="#app.repository.GameRepository.bulk_update_strategy_id" title="app.repository.GameRepository.bulk_update_strategy_id"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GameRepository.bulk_update_strategy_id()</span></code></a>.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.TaskRepository.delete_task_by_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_task_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.delete_task_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.TaskRepository.delete_task_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a single task and everything that hangs off it.</p>
+<p>Mirrors the per-task branch of
+<a class="reference internal" href="#app.repository.GameRepository.delete_game_by_id" title="app.repository.GameRepository.delete_game_by_id"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GameRepository.delete_game_by_id()</span></code></a>: task params and the
+user-points rows that reference the task are removed first so the
+FK constraints don’t block the final <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> on the task row.
+Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> on success.</p>
+<p>Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code> if the task does not exist.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.repository.TaskRepository.get_points_and_users_by_taskId">
