@@ -36,6 +36,7 @@ import esDashboard from './locales/es/dashboard.json'
 import esExports from './locales/es/exports.json'
 import esApikeys from './locales/es/apikeys.json'
 import esGlossary from './locales/es/glossary.json'
+import esManagement from './locales/es/management.json'
 import enEditor from './locales/en/editor.json'
 import enErrors from './locales/en/errors.json'
 import enBlocks from './locales/en/blocks.json'
@@ -46,6 +47,7 @@ import enDashboard from './locales/en/dashboard.json'
 import enExports from './locales/en/exports.json'
 import enApikeys from './locales/en/apikeys.json'
 import enGlossary from './locales/en/glossary.json'
+import enManagement from './locales/en/management.json'
 
 export const SUPPORTED_LANGUAGES = ['es', 'en']
 export const LOCALSTORAGE_LANG_KEY = 'gd-locale'
@@ -62,6 +64,7 @@ const resources = {
     exports: esExports,
     apikeys: esApikeys,
     glossary: esGlossary,
+    management: esManagement,
   },
   en: {
     editor: enEditor,
@@ -74,6 +77,7 @@ const resources = {
     exports: enExports,
     apikeys: enApikeys,
     glossary: enGlossary,
+    management: enManagement,
   },
 }
 
@@ -101,6 +105,7 @@ i18n
       'exports',
       'apikeys',
       'glossary',
+      'management',
     ],
     defaultNS: 'editor',
     interpolation: {

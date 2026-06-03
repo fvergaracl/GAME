@@ -1,14 +1,18 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
+from sqlalchemy import delete as sa_delete
 from sqlalchemy import func, select
 from sqlalchemy import update as sa_update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from app.core.config import configs
-from app.core.exceptions import NotFoundError
+from app.core.exceptions import DuplicatedError, NotFoundError
+from app.model.task_params import TasksParams
 from app.model.tasks import Tasks
+from app.model.user_points import UserPoints
 from app.repository.base_repository import BaseRepository
 from app.util.query_builder import dict_to_sqlalchemy_filter_options
 
@@ -22,7 +26,11 @@ class TaskRepository(BaseRepository):
         self,
         session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model=Tasks,
+        model_task_params=TasksParams,
+        model_user_points=UserPoints,
     ) -> None:
+        self.model_task_params = model_task_params
+        self.model_user_points = model_user_points
         super().__init__(session_factory, model)
 
     async def read_by_gameId(self, schema, eager: bool = False):
@@ -103,6 +111,52 @@ class TaskRepository(BaseRepository):
             await session.commit()
             await session.refresh(task)
             return task
+
+    async def delete_task_by_id(self, task_id):
+        """
+        Delete a single task and everything that hangs off it.
+
+        Mirrors the per-task branch of
+        :meth:`GameRepository.delete_game_by_id`: task params and the
+        user-points rows that reference the task are removed first so the
+        FK constraints don't block the final ``DELETE`` on the task row.
+        Returns ``True`` on success.
+
+        Raises :class:`NotFoundError` if the task does not exist.
+        """
+        try:
+            async with self.session_factory() as session:
+                task = (
+                    (
+                        await session.execute(
+                            select(self.model).filter(self.model.id == task_id)
+                        )
+                    )
+                    .scalars()
+                    .first()
+                )
+                if not task:
+                    raise NotFoundError(detail=f"Not found id : {task_id}")
+
+                await session.execute(
+                    sa_delete(self.model_task_params).where(
+                        self.model_task_params.taskId == task_id
+                    )
+                )
+                await session.execute(
+                    sa_delete(self.model_user_points).where(
+                        self.model_user_points.taskId == task_id
+                    )
+                )
+                await session.delete(task)
+                await session.commit()
+                return True
+        except IntegrityError as e:
+            raise DuplicatedError(detail=str(e.orig))
+        except NotFoundError:
+            raise
+        except Exception as e:
+            raise NotFoundError(detail=str(e))
 
     async def list_by_strategy_id(self, strategy_id: str):
         """

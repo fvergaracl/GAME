@@ -294,6 +294,9 @@ class Container(containers.DeclarativeContainer):
         # validate them against the DB-backed registry instead of refusing
         # everything that isn't a built-in id.
         strategy_definition_service=strategy_definition_service,
+        # Sprint 0 (CRUD): needed by duplicate_game to deep-copy each
+        # task's params into the new game.
+        task_params_repository=task_params_repository,
     )
 
     task_service = providers.Factory(

@@ -166,6 +166,26 @@ class PatchGame(BaseModel):
     )
 
 
+class DuplicateGame(BaseModel):
+    """
+    Request schema for duplicating a game (deep copy).
+
+    Attributes:
+        externalGameId (str): External identifier for the new (copied) game.
+          Must be unique; the source game's platform, strategy, params and
+          all of its tasks (with their params) are deep-copied onto it.
+    """
+
+    externalGameId: str = Field(
+        ...,
+        description="External identifier for the duplicated game.",
+        examples=["copy-of-game-readme-001"],
+    )
+
+    def example():
+        return {"externalGameId": "copy-of-game-readme-001"}
+
+
 class GameCreated(BaseGameResult):
     """
     Response schema returned after successful game creation.

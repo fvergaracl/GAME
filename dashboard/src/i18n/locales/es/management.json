@@ -1,0 +1,128 @@
+{
+  "actions": {
+    "create": "Crear",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "duplicate": "Duplicar",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "refresh": "Refrescar",
+    "rowActions": "Acciones",
+    "viewTasks": "Ver tareas"
+  },
+  "params": {
+    "title": "Parámetros",
+    "keyPlaceholder": "Clave",
+    "valuePlaceholder": "Valor",
+    "addRow": "Añadir parámetro",
+    "removeRow": "Eliminar parámetro",
+    "empty": "Todavía no hay parámetros."
+  },
+  "common": {
+    "loadError": "No se pudieron cargar los datos.",
+    "required": "Este campo es obligatorio",
+    "noResults": "No hay resultados que coincidan con los filtros.",
+    "unsavedChanges": "Hay cambios sin guardar. ¿Seguro que quieres cerrar?"
+  },
+  "games": {
+    "title": "Juegos",
+    "subtitle": "Crea, edita, duplica y elimina los juegos del motor de gamificación.",
+    "new": "Nuevo juego",
+    "editTitle": "Editar juego",
+    "createTitle": "Crear juego",
+    "searchPlaceholder": "Buscar por externalGameId o plataforma…",
+    "col": {
+      "externalGameId": "ID externo",
+      "platform": "Plataforma",
+      "strategyId": "Estrategia",
+      "createdAt": "Creado",
+      "actions": "Acciones"
+    },
+    "form": {
+      "externalGameId": "ID externo del juego",
+      "externalGameIdHelp": "Identificador único en tu sistema (slug alfanumérico).",
+      "platform": "Plataforma",
+      "strategyId": "Estrategia",
+      "params": "Parámetros del juego"
+    },
+    "delete": {
+      "title": "¿Eliminar este juego?",
+      "message": "Se eliminará «{{externalGameId}}» de forma permanente.",
+      "blastRadius": "Esto también eliminará {{count}} tarea y sus datos asociados.",
+      "blastRadius_plural": "Esto también eliminará {{count}} tareas y sus datos asociados.",
+      "confirm": "Sí, eliminar"
+    },
+    "duplicate": {
+      "title": "Duplicar juego",
+      "message": "Se creará una copia profunda de «{{externalGameId}}» con todas sus tareas y parámetros.",
+      "label": "ID externo del nuevo juego",
+      "placeholder": "copy-of-…",
+      "confirm": "Duplicar"
+    }
+  },
+  "tasks": {
+    "title": "Tareas",
+    "subtitle": "Tareas del juego «{{externalGameId}}».",
+    "new": "Nueva tarea",
+    "bulkNew": "Crear varias",
+    "editTitle": "Editar tarea",
+    "createTitle": "Crear tarea",
+    "col": {
+      "externalTaskId": "ID externo",
+      "strategyId": "Estrategia",
+      "status": "Estado",
+      "createdAt": "Creado",
+      "actions": "Acciones"
+    },
+    "form": {
+      "externalTaskId": "ID externo de la tarea",
+      "strategyId": "Estrategia",
+      "strategyHelp": "Si se deja vacío, hereda la del juego.",
+      "status": "Estado",
+      "params": "Parámetros de la tarea"
+    },
+    "delete": {
+      "title": "¿Eliminar esta tarea?",
+      "message": "Se eliminará «{{externalTaskId}}» y sus datos asociados de forma permanente.",
+      "confirm": "Sí, eliminar"
+    },
+    "duplicate": {
+      "title": "Duplicar tarea",
+      "message": "Se creará una copia de «{{externalTaskId}}» con su estrategia y parámetros.",
+      "label": "ID externo de la nueva tarea",
+      "placeholder": "copy-of-…",
+      "confirm": "Duplicar"
+    }
+  },
+  "apikeys": {
+    "revoke": {
+      "title": "¿Revocar esta clave API?",
+      "message": "La revocación es irreversible. Las integraciones que usen «{{prefix}}» dejarán de funcionar de inmediato.",
+      "confirm": "Sí, revocar"
+    }
+  },
+  "users": {
+    "title": "Usuarios",
+    "subtitle": "Consulta los puntos y el saldo de un usuario por su ID externo.",
+    "searchPlaceholder": "ID externo del usuario…",
+    "search": "Buscar",
+    "points": "Puntos",
+    "wallet": "Monedero",
+    "empty": "Introduce un ID externo para ver sus puntos y saldo.",
+    "notFound": "No se encontraron datos para «{{externalUserId}}»."
+  },
+  "feedback": {
+    "gameCreated": "Juego creado correctamente.",
+    "gameUpdated": "Juego actualizado correctamente.",
+    "gameDeleted": "Juego eliminado correctamente.",
+    "gameDuplicated": "Juego duplicado correctamente.",
+    "taskCreated": "Tarea creada correctamente.",
+    "taskUpdated": "Tarea actualizada correctamente.",
+    "taskDeleted": "Tarea eliminada correctamente.",
+    "taskDuplicated": "Tarea duplicada correctamente.",
+    "tasksBulkCreated": "{{count}} tareas creadas. {{failed}} con error.",
+    "apiKeyRevoked": "Clave API revocada correctamente."
+  }
+}

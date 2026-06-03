@@ -734,5 +734,91 @@ class TestGameServiceCustomStrategyAssignment(unittest.IsolatedAsyncioTestCase):
             )
 
 
+class TestGameServiceDuplicate(unittest.IsolatedAsyncioTestCase):
+    """Sprint 0 (CRUD): deep-copy a game with its tasks and params."""
+
+    def setUp(self):
+        from app.repository.task_params_repository import TaskParamsRepository
+
+        self.game_repository = MagicMock(spec=GameRepository)
+        self.game_params_repository = MagicMock(spec=GameParamsRepository)
+        self.task_repository = MagicMock(spec=TaskRepository)
+        self.user_points_repository = MagicMock(spec=UserPointsRepository)
+        self.task_params_repository = MagicMock(spec=TaskParamsRepository)
+        self.strategy_service = MagicMock(spec=StrategyService)
+
+        self.service = GameService(
+            game_repository=self.game_repository,
+            game_params_repository=self.game_params_repository,
+            task_repository=self.task_repository,
+            user_points_repository=self.user_points_repository,
+            strategy_service=self.strategy_service,
+            task_params_repository=self.task_params_repository,
+        )
+
+    async def test_duplicate_game_deep_copies_params_and_tasks(self):
+        game_id = uuid4()
+        new_game_id = uuid4()
+        source = SimpleNamespace(id=game_id, platform="web", strategyId="default")
+        self.game_repository.read_by_id.return_value = source
+        self.game_params_repository.read_by_column.return_value = [
+            SimpleNamespace(key="weight", value=5),
+        ]
+        # create() is exercised by its own tests; here we isolate the
+        # duplication orchestration and just assert the schema we pass it.
+        self.service.create = AsyncMock(
+            return_value=SimpleNamespace(gameId=new_game_id, message="")
+        )
+        source_task = SimpleNamespace(
+            id=uuid4(), externalTaskId="t-1", strategyId="default"
+        )
+        self.task_repository.read_by_column.return_value = [source_task]
+        self.task_repository.create = AsyncMock(
+            return_value=SimpleNamespace(id=uuid4())
+        )
+        self.task_params_repository.read_by_column.return_value = [
+            SimpleNamespace(key="bonus", value="3"),
+        ]
+        self.task_params_repository.create = AsyncMock()
+
+        result = await self.service.duplicate_game(game_id, "copy_game")
+
+        self.assertEqual(result.gameId, new_game_id)
+        self.assertIn("duplicated successfully", result.message)
+        # New game created from the source's platform/strategy + copied params.
+        created_schema = self.service.create.await_args.args[0]
+        self.assertEqual(created_schema.externalGameId, "copy_game")
+        self.assertEqual(created_schema.platform, "web")
+        self.assertEqual(created_schema.strategyId, "default")
+        self.assertEqual(len(created_schema.params), 1)
+        self.assertEqual(created_schema.params[0].key, "weight")
+        # One task recreated, with its param copied.
+        self.task_repository.create.assert_awaited_once()
+        new_task_schema = self.task_repository.create.await_args.args[0]
+        self.assertEqual(new_task_schema.externalTaskId, "t-1")
+        self.assertEqual(new_task_schema.gameId, str(new_game_id))
+        self.task_params_repository.create.assert_awaited_once()
+
+    async def test_duplicate_game_raises_when_source_missing(self):
+        self.game_repository.read_by_id.return_value = None
+
+        with self.assertRaises(NotFoundError):
+            await self.service.duplicate_game(uuid4(), "copy_game")
+
+    async def test_duplicate_game_raises_without_task_params_repository(self):
+        bare_service = GameService(
+            game_repository=self.game_repository,
+            game_params_repository=self.game_params_repository,
+            task_repository=self.task_repository,
+            user_points_repository=self.user_points_repository,
+            strategy_service=self.strategy_service,
+        )
+
+        from app.core.exceptions import BadRequestError
+
+        with self.assertRaises(BadRequestError):
+            await bare_service.duplicate_game(uuid4(), "copy_game")
+
+
 if __name__ == "__main__":
     unittest.main()

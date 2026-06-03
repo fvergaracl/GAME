@@ -10,9 +10,10 @@ from app.repository.task_params_repository import TaskParamsRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
-from app.schema.task_schema import (CreateTask, CreateTaskPostSuccesfullyCreated,
-                                    FindTask, PatchTask, ResponsePatchTask)
-from app.schema.tasks_params_schema import InsertTaskParams
+from app.schema.task_schema import (CreateTask, CreateTaskPost,
+                                    CreateTaskPostSuccesfullyCreated, FindTask,
+                                    PatchTask, ResponseDeleteTask, ResponsePatchTask)
+from app.schema.tasks_params_schema import CreateTaskParams, InsertTaskParams
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
 from app.services.strategy_definition_service import StrategyDefinitionService
@@ -187,6 +188,139 @@ class TaskService(BaseService):
             strategyId=updated.strategyId,
             status=updated.status,
             message=(f"Task with taskId: {taskId} updated successfully"),
+        )
+
+    async def _get_task_in_game(
+        self,
+        gameId: UUID,
+        taskId: UUID,
+        *,
+        api_key: Optional[str] = None,
+        oauth_user_id: Optional[str] = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ):
+        """
+        Resolve a task that must belong to ``gameId``, honouring scope.
+
+        Shared guard for the Sprint 0 ``delete``/``duplicate`` task flows
+        (and a sibling of the inline checks in :meth:`patch_task_by_id`):
+        the game has to exist (and be in the caller's scope when
+        ``enforce_scope`` is set), the task has to exist, and it has to be
+        a child of that game. A mismatched parent is reported as 404 so we
+        don't leak which other game the task actually belongs to.
+
+        Returns the resolved task row.
+        """
+        if enforce_scope:
+            game = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            game = await self.game_repository.read_by_id(
+                gameId, not_found_raise_exception=False
+            )
+        if not game:
+            raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
+
+        task = await self.task_repository.read_by_id(
+            taskId, not_found_raise_exception=False
+        )
+        if not task:
+            raise NotFoundError(detail=f"Task not found by taskId: {taskId}")
+        if str(task.gameId) != str(gameId):
+            raise NotFoundError(
+                detail=(f"Task {taskId} does not belong to game {gameId}.")
+            )
+        return task
+
+    async def delete_task_by_id(
+        self,
+        gameId: UUID,
+        taskId: UUID,
+        *,
+        api_key: Optional[str] = None,
+        oauth_user_id: Optional[str] = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ) -> ResponseDeleteTask:
+        """
+        Delete a task (and its params/points) identified by
+        ``gameId`` + ``taskId``.
+
+        Sprint 0 full-stack addition mirroring
+        :meth:`GameService.delete_game_by_id`: the cascade lives in
+        :meth:`TaskRepository.delete_task_by_id` so task params and the
+        user-points rows that reference the task go before the task row.
+        """
+        task = await self._get_task_in_game(
+            gameId,
+            taskId,
+            api_key=api_key,
+            oauth_user_id=oauth_user_id,
+            is_admin=is_admin,
+            enforce_scope=enforce_scope,
+        )
+        await self.task_repository.delete_task_by_id(taskId)
+        return ResponseDeleteTask(
+            taskId=task.id,
+            gameId=gameId,
+            externalTaskId=task.externalTaskId,
+            message=f"Task with taskId: {taskId} deleted successfully",
+        )
+
+    async def duplicate_task(
+        self,
+        gameId: UUID,
+        taskId: UUID,
+        externalTaskId: str,
+        *,
+        api_key: Optional[str] = None,
+        oauth_user_id: Optional[str] = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ) -> CreateTaskPostSuccesfullyCreated:
+        """
+        Duplicate a task within the same game under a new
+        ``externalTaskId``.
+
+        Deep-copies the source task's strategy and params onto the new
+        task. Reuses :meth:`create_task_by_game_id` for the heavy lifting
+        (uniqueness check on the new ``externalTaskId``, row + param
+        insertion, response shaping) so the duplicate path can't drift
+        from normal task creation.
+        """
+        source = await self._get_task_in_game(
+            gameId,
+            taskId,
+            api_key=api_key,
+            oauth_user_id=oauth_user_id,
+            is_admin=is_admin,
+            enforce_scope=enforce_scope,
+        )
+        source_params = await self.task_params_repository.read_by_column(
+            "taskId", source.id, not_found_raise_exception=False, only_one=False
+        )
+        copied_params = [
+            CreateTaskParams(key=param.key, value=param.value)
+            for param in (source_params or [])
+        ]
+        create_query = CreateTaskPost(
+            externalTaskId=externalTaskId,
+            strategyId=source.strategyId,
+            params=copied_params or None,
+        )
+        return await self.create_task_by_game_id(
+            gameId,
+            create_query,
+            api_key,
+            oauth_user_id=oauth_user_id,
+            is_admin=is_admin,
+            enforce_scope=enforce_scope,
         )
 
     async def get_tasks_list_by_externalGameId(

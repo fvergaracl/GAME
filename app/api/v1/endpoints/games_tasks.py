@@ -11,8 +11,8 @@ from app.middlewares.auth_context import AuditLogger, audit_log
 from app.middlewares.authentication import auth_api_key_or_oauth2
 from app.schema.task_schema import (CreateTaskPost, CreateTaskPostSuccesfullyCreated,
                                     CreateTasksPost, CreateTasksPostBulkCreated,
-                                    FoundTasks, PatchTask, PostFindTask,
-                                    ResponsePatchTask)
+                                    DuplicateTask, FoundTasks, PatchTask, PostFindTask,
+                                    ResponseDeleteTask, ResponsePatchTask)
 from app.services.task_service import TaskService
 
 router = APIRouter(
@@ -782,4 +782,162 @@ async def patch_task(
         return response
     except Exception as e:
         await audit.error("Task update failed", {"error": str(e)})
+        raise e
+
+
+summary_delete_task = "Delete a Task"
+description_delete_task = """
+Deletes a task identified by ``gameId`` + ``taskId`` and returns the
+deleted resource payload.
+
+### Path Parameters
+- `gameId` (`UUID`, required): Internal game identifier.
+- `taskId` (`UUID`, required): Internal task identifier.
+
+### Authentication
+- Requires either `X-API-Key` or `Authorization: Bearer <access_token>`.
+
+### Behaviour
+The delete cascades server-side: the task's params and the user-points
+rows that reference it are removed before the task row itself.
+
+### Success (200)
+Returns the deleted task identifiers plus a result ``message``.
+
+### Error Cases
+- `401`/`403`: missing/invalid auth or scope.
+- `404`: game/task not found or the task does not belong to the game.
+- `422`: malformed UUID.
+- `500`: deletion failure.
+
+<sub>**Id_endpoint:** `delete_task`</sub>
+"""
+
+
+@router.delete(
+    "/{gameId}/tasks/{taskId}",
+    response_model=ResponseDeleteTask,
+    summary=summary_delete_task,
+    description=description_delete_task,
+    dependencies=[Depends(auth_api_key_or_oauth2)],
+)
+@inject
+async def delete_task(
+    gameId: UUID,
+    taskId: UUID,
+    service: TaskService = Depends(Provide[Container.task_service]),
+    audit: AuditLogger = Depends(audit_log("task")),
+):
+    """
+    Delete a task by ``gameId`` + ``taskId``.
+
+    Sprint 0 (CRUD): the dashboard's task management view needs to retire
+    individual tasks. Mirrors ``delete_game_by_id`` — the cascade lives in
+    the repository so params/points go before the task row.
+    """
+    auth = audit.auth
+    await audit.info(
+        "Task deletion by ID",
+        {"gameId": str(gameId), "taskId": str(taskId)},
+    )
+    try:
+        response = await service.delete_task_by_id(
+            gameId,
+            taskId,
+            **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
+        )
+        await audit.success(
+            "Task deletion successful",
+            {"gameId": str(gameId), "taskId": str(taskId)},
+        )
+        return response
+    except Exception as e:
+        await audit.error("Task deletion failed", {"error": str(e)})
+        raise e
+
+
+summary_duplicate_task = "Duplicate a Task"
+request_example_duplicate_task = {"externalTaskId": "copy-of-task-login"}
+description_duplicate_task = """
+Duplicates a task within the same game under a new ``externalTaskId``.
+
+### Path Parameters
+- `gameId` (`UUID`, required): Internal game identifier.
+- `taskId` (`UUID`, required): Internal identifier of the task to copy.
+
+### Authentication
+- Requires either `X-API-Key` or `Authorization: Bearer <access_token>`.
+
+### Request Body
+- `externalTaskId` (`string`, required): External identifier for the new
+  task. Must be unique within the game.
+
+### Behaviour
+Deep-copies the source task's strategy and params onto the new task. The
+duplicate starts in the default ``open`` status.
+
+### Success (200)
+Returns the created task metadata (inherited game params, task params,
+effective strategy), same shape as ``create_task``.
+
+### Error Cases
+- `401`/`403`: missing/invalid auth or scope.
+- `404`: game/task not found or the task does not belong to the game.
+- `409`: a task with the new ``externalTaskId`` already exists.
+- `422`: malformed UUID or invalid request payload.
+- `500`: duplication failure.
+
+<sub>**Id_endpoint:** `duplicate_task`</sub>
+"""
+
+
+@router.post(
+    "/{gameId}/tasks/{taskId}/duplicate",
+    response_model=CreateTaskPostSuccesfullyCreated,
+    summary=summary_duplicate_task,
+    description=description_duplicate_task,
+    dependencies=[Depends(auth_api_key_or_oauth2)],
+)
+@inject
+async def duplicate_task(
+    gameId: UUID,
+    taskId: UUID,
+    schema: DuplicateTask = Body(..., examples=[request_example_duplicate_task]),
+    service: TaskService = Depends(Provide[Container.task_service]),
+    audit: AuditLogger = Depends(audit_log("task")),
+):
+    """
+    Duplicate a task within the same game.
+
+    Sprint 0 (CRUD): gives the dashboard a one-click "clone this task"
+    action. Reuses the task creation path under the hood so uniqueness and
+    param insertion behave exactly like a manual create.
+    """
+    auth = audit.auth
+    await audit.info(
+        "Task duplication",
+        {
+            "gameId": str(gameId),
+            "taskId": str(taskId),
+            "body": schema.model_dump(),
+        },
+    )
+    try:
+        response = await service.duplicate_task(
+            gameId,
+            taskId,
+            schema.externalTaskId,
+            **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
+        )
+        await audit.success(
+            "Task duplication successful",
+            {
+                "gameId": str(gameId),
+                "taskId": str(taskId),
+                "body": schema.model_dump(),
+            },
+        )
+        return response
+    except Exception as e:
+        await audit.error("Task duplication failed", {"error": str(e)})
         raise e

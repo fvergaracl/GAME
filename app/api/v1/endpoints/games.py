@@ -24,7 +24,8 @@ from app.api.v1.endpoints.games_common import (_extract_api_key_from_header,
                                                _resolve_idempotency_key)
 # CRUD endpoints
 from app.api.v1.endpoints.games_crud import (create_game, delete_game_by_id,
-                                             get_game_by_id, get_games_list, patch_game)
+                                             duplicate_game, get_game_by_id,
+                                             get_games_list, patch_game)
 # Points / actions
 from app.api.v1.endpoints.games_points import (assign_points_to_user,
                                                get_points_by_gameId,
@@ -39,6 +40,7 @@ from app.api.v1.endpoints.games_points import (assign_points_to_user,
 from app.api.v1.endpoints.games_strategy import get_strategy_by_gameId
 # Task management on a game
 from app.api.v1.endpoints.games_tasks import (create_task, create_tasks_bulk,
+                                              delete_task, duplicate_task,
                                               get_task_by_gameId_taskId, get_task_list)
 # Users in game
 from app.api.v1.endpoints.games_users import get_users_by_gameId
@@ -77,6 +79,9 @@ __all__ = [
     "create_task",
     "create_tasks_bulk",
     "delete_game_by_id",
+    "delete_task",
+    "duplicate_game",
+    "duplicate_task",
     "get_game_by_id",
     "get_games_list",
     "get_points_by_gameId",

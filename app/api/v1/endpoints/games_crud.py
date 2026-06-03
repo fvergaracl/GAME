@@ -8,9 +8,9 @@ from app.api.v1.endpoints.games_common import _game_access_kwargs
 from app.core.container import Container
 from app.middlewares.auth_context import AuditLogger, audit_log
 from app.middlewares.authentication import auth_api_key_or_oauth2
-from app.schema.games_schema import (BaseGameResult, FindGameResult, GameCreated,
-                                     PatchGame, PostCreateGame, PostFindGame,
-                                     ResponsePatchGame)
+from app.schema.games_schema import (BaseGameResult, DuplicateGame, FindGameResult,
+                                     GameCreated, PatchGame, PostCreateGame,
+                                     PostFindGame, ResponsePatchGame)
 from app.services.game_service import GameService
 
 router = APIRouter(
@@ -654,4 +654,129 @@ async def patch_game(
         return response
     except Exception as e:
         await audit.error("Game update failed", {"error": str(e)})
+        raise e
+
+
+summary_duplicate_game = "Duplicate a Game (deep copy)"
+request_example_duplicate_game = {"externalGameId": "copy-of-game-readme-001"}
+responses_duplicate_game = {
+    200: {
+        "description": "Game duplicated successfully",
+        "content": {"application/json": {"example": response_example_create_game}},
+    },
+    401: {
+        "description": "Unauthorized: missing/invalid credentials",
+        "content": {
+            "application/json": {
+                "example": {"detail": "Invalid authentication credentials"}
+            }
+        },
+    },
+    403: {
+        "description": "Forbidden: invalid or inactive API key",
+        "content": {
+            "application/json": {
+                "example": {"detail": "API key is invalid or does not exist."}
+            }
+        },
+    },
+    404: {
+        "description": "Source game not found for the provided id",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "Game not found by gameId: 4ce32be2-77f6-4ffc-8e07-78dc220f0521"
+                }
+            }
+        },
+    },
+    409: {
+        "description": "A game with the new externalGameId already exists",
+    },
+    422: {
+        "description": "Validation error in path/body payload",
+    },
+    500: {
+        "description": "Internal server error while duplicating game",
+    },
+}
+
+description_duplicate_game = """
+Deep-copies a game into a brand new one under the provided `externalGameId`.
+
+### Path Parameter
+- `gameId` (`UUID`, required): Internal identifier of the game to copy.
+
+### Authentication
+- Requires either `X-API-Key` or `Authorization: Bearer <access_token>`.
+
+### Request Body
+- `externalGameId` (`string`, required): External identifier for the new
+  game. Must be unique.
+
+### Behaviour
+Copies the source game's platform, strategy and params, then every task
+with its own strategy and params. The standard game-creation guards (slug
+validation, externalGameId uniqueness, strategy existence) run against the
+copy. Duplicated tasks start in the default `open` status.
+
+### Success (200)
+Returns the created game metadata and persisted parameters, same shape as
+`create_game`.
+
+### Error Cases
+- `401`/`403`: missing/invalid auth or scope.
+- `404`: source game not found.
+- `409`: a game with the new `externalGameId` already exists.
+- `422`: malformed UUID or invalid request payload.
+- `500`: duplication failure.
+
+<sub>**Id_endpoint:** `duplicate_game`</sub>
+"""  # noqa
+
+
+@router.post(
+    "/{gameId}/duplicate",
+    response_model=GameCreated,
+    summary=summary_duplicate_game,
+    description=description_duplicate_game,
+    responses=responses_duplicate_game,
+    dependencies=[Depends(auth_api_key_or_oauth2)],
+)
+@inject
+async def duplicate_game(
+    gameId: UUID,
+    schema: DuplicateGame = Body(..., examples=[request_example_duplicate_game]),
+    service: GameService = Depends(Provide[Container.game_service]),
+    audit: AuditLogger = Depends(audit_log("game")),
+):
+    """
+    Duplicate a game (deep copy) under a new externalGameId.
+
+    Sprint 0 (CRUD): backs the dashboard's "Duplicate" action so an admin
+    can clone an existing game — with all its tasks and params — as the
+    starting point for a new one.
+    """
+    auth = audit.auth
+    await audit.info(
+        "Game duplication",
+        {"gameId": str(gameId), "body": schema.model_dump()},
+    )
+    try:
+        response = await service.duplicate_game(
+            gameId,
+            schema.externalGameId,
+            **_game_access_kwargs(auth.api_key, auth.oauth_user_id, auth.is_admin),
+        )
+        await audit.success(
+            "Game duplication successful",
+            {
+                "gameId": str(gameId),
+                "newGameId": str(response.gameId),
+                "body": schema.model_dump(),
+            },
+        )
+        return response
+    except Exception as e:
+        await audit.error("Game duplication failed", {"error": str(e)})
         raise e

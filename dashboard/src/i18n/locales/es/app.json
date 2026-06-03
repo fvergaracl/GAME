@@ -10,6 +10,10 @@
     "observability": "Observabilidad",
     "compare": "Comparar A/B",
     "assignments": "Asignación",
+    "managementTitle": "Gestión",
+    "games": "Juegos",
+    "gameTasks": "Tareas",
+    "users": "Usuarios",
     "adminTitle": "Administración",
     "apiKeys": "Claves API",
     "kpi": "KPI"

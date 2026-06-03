@@ -645,5 +645,117 @@ class TestTaskServicePatch(unittest.IsolatedAsyncioTestCase):
             )
 
 
+class TestTaskServiceDeleteAndDuplicate(unittest.IsolatedAsyncioTestCase):
+    """Sprint 0 (CRUD): delete + duplicate of an individual task."""
+
+    def setUp(self):
+        self.strategy_service = MagicMock(spec=StrategyService)
+        self.task_repository = MagicMock(spec=TaskRepository)
+        self.game_repository = MagicMock(spec=GameRepository)
+        self.user_repository = MagicMock(spec=UserRepository)
+        self.user_points_repository = MagicMock(spec=UserPointsRepository)
+        self.game_params_repository = MagicMock(spec=GameParamsRepository)
+        self.task_params_repository = MagicMock(spec=TaskParamsRepository)
+
+        self.service = TaskService(
+            strategy_service=self.strategy_service,
+            task_repository=self.task_repository,
+            game_repository=self.game_repository,
+            user_repository=self.user_repository,
+            user_points_repository=self.user_points_repository,
+            game_params_repository=self.game_params_repository,
+            task_params_repository=self.task_params_repository,
+        )
+
+    def _make_task(self, task_id, game_id, strategy_id="default"):
+        return SimpleNamespace(
+            id=task_id,
+            gameId=game_id,
+            externalTaskId="task-1",
+            strategyId=strategy_id,
+            status="open",
+        )
+
+    async def test_delete_task_by_id_success(self):
+        game_id = uuid4()
+        task_id = uuid4()
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
+        self.task_repository.read_by_id.return_value = self._make_task(task_id, game_id)
+        self.task_repository.delete_task_by_id.return_value = True
+
+        result = await self.service.delete_task_by_id(game_id, task_id)
+
+        self.assertEqual(result.taskId, task_id)
+        self.assertEqual(result.gameId, game_id)
+        self.assertEqual(result.externalTaskId, "task-1")
+        self.task_repository.delete_task_by_id.assert_awaited_once_with(task_id)
+
+    async def test_delete_task_by_id_raises_when_game_missing(self):
+        self.game_repository.read_by_id.return_value = None
+
+        with self.assertRaises(NotFoundError):
+            await self.service.delete_task_by_id(uuid4(), uuid4())
+
+    async def test_delete_task_by_id_raises_when_task_missing(self):
+        game_id = uuid4()
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
+        self.task_repository.read_by_id.return_value = None
+
+        with self.assertRaises(NotFoundError):
+            await self.service.delete_task_by_id(game_id, uuid4())
+
+    async def test_delete_task_by_id_raises_when_task_belongs_to_other_game(self):
+        game_id = uuid4()
+        other_game_id = uuid4()
+        task_id = uuid4()
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
+        self.task_repository.read_by_id.return_value = self._make_task(
+            task_id, other_game_id
+        )
+
+        with self.assertRaises(NotFoundError):
+            await self.service.delete_task_by_id(game_id, task_id)
+        self.task_repository.delete_task_by_id.assert_not_called()
+
+    async def test_duplicate_task_copies_strategy_and_params(self):
+        game_id = uuid4()
+        task_id = uuid4()
+        source = self._make_task(task_id, game_id, strategy_id="strategy-x")
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
+        self.task_repository.read_by_id.return_value = source
+        self.task_params_repository.read_by_column.return_value = [
+            SimpleNamespace(key="bonus", value="5"),
+        ]
+        # Reuse path: assert we delegate to create_task_by_game_id with the
+        # copied payload rather than re-implementing creation here.
+        self.service.create_task_by_game_id = AsyncMock(return_value="duplicated")
+
+        result = await self.service.duplicate_task(game_id, task_id, "copy-task-1")
+
+        self.assertEqual(result, "duplicated")
+        self.service.create_task_by_game_id.assert_awaited_once()
+        call_args = self.service.create_task_by_game_id.await_args
+        passed_game_id, create_query = call_args.args[0], call_args.args[1]
+        self.assertEqual(passed_game_id, game_id)
+        self.assertEqual(create_query.externalTaskId, "copy-task-1")
+        self.assertEqual(create_query.strategyId, "strategy-x")
+        self.assertEqual(len(create_query.params), 1)
+        self.assertEqual(create_query.params[0].key, "bonus")
+
+    async def test_duplicate_task_with_no_params_passes_none(self):
+        game_id = uuid4()
+        task_id = uuid4()
+        source = self._make_task(task_id, game_id)
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
+        self.task_repository.read_by_id.return_value = source
+        self.task_params_repository.read_by_column.return_value = None
+        self.service.create_task_by_game_id = AsyncMock(return_value="duplicated")
+
+        await self.service.duplicate_task(game_id, task_id, "copy-task-2")
+
+        create_query = self.service.create_task_by_game_id.await_args.args[1]
+        self.assertIsNone(create_query.params)
+
+
 if __name__ == "__main__":
     unittest.main()

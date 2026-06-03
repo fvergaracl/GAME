@@ -66,6 +66,26 @@ export const patchRequest = async (url, data) => {
   }
 }
 
+export const putRequest = async (url, data) => {
+  try {
+    const response = await apiClient.put(url, data)
+    return response.data
+  } catch (error) {
+    console.error('PUT request failed:', error)
+    throw error
+  }
+}
+
+export const deleteRequest = async (url) => {
+  try {
+    const response = await apiClient.delete(url)
+    return response.data
+  } catch (error) {
+    console.error('DELETE request failed:', error)
+    throw error
+  }
+}
+
 export const createApiKey = async (client, description) => {
   const data = { client, description }
   return postRequest('/apikey/create', data)
@@ -299,6 +319,101 @@ export const patchTaskStrategy = async (gameId, taskId, strategyId) => {
     `/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(taskId)}`,
     { strategyId },
   )
+}
+
+// ---------------------------------------------------------------------------
+// Sprint 0 (CRUD management) — full lifecycle helpers for Games and Tasks.
+//
+// The dashboard already had read + strategy-reassign helpers (listGames,
+// listGameTasks, patchGameStrategy, patchTaskStrategy). These complete the
+// CRUD surface the management views need: create / read-one / update (full
+// PATCH incl. params) / delete / duplicate, mirroring the backend endpoints
+// added in the same sprint (DELETE task, POST game & task duplicate).
+// ---------------------------------------------------------------------------
+
+export const getGame = async (gameId) => {
+  return getRequest(`/games/${encodeURIComponent(gameId)}`)
+}
+
+export const createGame = async (payload) => {
+  // payload: { externalGameId, platform, strategyId?, params?: [{key, value}] }
+  return postRequest('/games', payload)
+}
+
+export const updateGame = async (gameId, payload) => {
+  // Full PATCH (not just strategy): any subset of
+  // { externalGameId, platform, strategyId, params: [{id, key, value}] }.
+  return patchRequest(`/games/${encodeURIComponent(gameId)}`, payload)
+}
+
+export const deleteGame = async (gameId) => {
+  return deleteRequest(`/games/${encodeURIComponent(gameId)}`)
+}
+
+export const duplicateGame = async (gameId, { externalGameId }) => {
+  // Deep copy server-side: the new game gets every task + params of the
+  // source under the supplied externalGameId.
+  return postRequest(`/games/${encodeURIComponent(gameId)}/duplicate`, {
+    externalGameId,
+  })
+}
+
+// Read one task by its EXTERNAL id (the backend GET-by-id route is keyed on
+// externalTaskId, not the internal UUID), e.g. to precharge an edit form.
+export const getTask = async (gameId, externalTaskId) => {
+  return getRequest(
+    `/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(externalTaskId)}`,
+  )
+}
+
+export const createTask = async (gameId, payload) => {
+  // payload: { externalTaskId, strategyId?, params?: [{key, value}] }
+  return postRequest(`/games/${encodeURIComponent(gameId)}/tasks`, payload)
+}
+
+export const bulkCreateTasks = async (gameId, tasks) => {
+  // Returns { succesfully_created: [...], failed_to_create: [{task, error}] }
+  // so the caller can report a mixed outcome instead of all-or-nothing.
+  return postRequest(`/games/${encodeURIComponent(gameId)}/tasks/bulk`, { tasks })
+}
+
+export const updateTask = async (gameId, taskId, payload) => {
+  // payload: any subset of { strategyId, status }.
+  return patchRequest(
+    `/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(taskId)}`,
+    payload,
+  )
+}
+
+export const deleteTask = async (gameId, taskId) => {
+  return deleteRequest(
+    `/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(taskId)}`,
+  )
+}
+
+export const duplicateTask = async (gameId, taskId, { externalTaskId }) => {
+  return postRequest(
+    `/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(taskId)}/duplicate`,
+    { externalTaskId },
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Sprint 0 (CRUD management) — API key revoke + read-only Users explorer.
+// ---------------------------------------------------------------------------
+
+export const deleteApiKey = async (prefix) => {
+  // Revoke by public prefix (the safe identifier shown in audit logs).
+  // Irreversible server-side — callers must confirm first.
+  return deleteRequest(`/apikey/${encodeURIComponent(prefix)}`)
+}
+
+export const getUserPoints = async (externalUserId) => {
+  return getRequest(`/users/${encodeURIComponent(externalUserId)}/points`)
+}
+
+export const getUserWallet = async (externalUserId) => {
+  return getRequest(`/users/${encodeURIComponent(externalUserId)}/wallet`)
 }
 
 // ---------------------------------------------------------------------------

@@ -302,6 +302,59 @@ class ResponsePatchTask(BaseModel):
     )
 
 
+class DuplicateTask(BaseModel):
+    """
+    Request schema for duplicating a task within the same game.
+
+    Attributes:
+        externalTaskId (str): External identifier for the new (copied) task.
+          Must be unique within the game; the source task's strategy and
+          params are deep-copied onto it.
+    """
+
+    externalTaskId: str = Field(
+        ...,
+        description="External identifier for the duplicated task.",
+        examples=["copy-of-task-login"],
+    )
+
+    def example():
+        return {"externalTaskId": "copy-of-task-login"}
+
+
+class ResponseDeleteTask(BaseModel):
+    """
+    Response schema returned after a successful ``DELETE`` on a task.
+
+    Attributes:
+        taskId (UUID): Internal task identifier of the deleted task.
+        gameId (UUID): Internal identifier of the owning game.
+        externalTaskId (Optional[str]): External task identifier.
+        message (Optional[str]): Operation result message.
+    """
+
+    taskId: UUID = Field(
+        ...,
+        description="Internal UUID of the deleted task.",
+        examples=["9ea6a77d-b540-4548-8f76-f23f3dce56bd"],
+    )
+    gameId: UUID = Field(
+        ...,
+        description="Internal UUID of the owning game.",
+        examples=["4ce32be2-77f6-4ffc-8e07-78dc220f0520"],
+    )
+    externalTaskId: Optional[str] = Field(
+        default=None,
+        description="External task identifier of the deleted task.",
+        examples=["task-login"],
+    )
+    message: Optional[str] = Field(
+        default="Successfully deleted",
+        description="Human-readable operation result message.",
+        examples=["Successfully deleted"],
+    )
+
+
 class CreateTaskPostError(BaseModel):
     """
     Error entry for a failed task creation in bulk operations.

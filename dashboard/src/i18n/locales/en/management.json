@@ -1,0 +1,128 @@
+{
+  "actions": {
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "duplicate": "Duplicate",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "refresh": "Refresh",
+    "rowActions": "Actions",
+    "viewTasks": "View tasks"
+  },
+  "params": {
+    "title": "Parameters",
+    "keyPlaceholder": "Key",
+    "valuePlaceholder": "Value",
+    "addRow": "Add parameter",
+    "removeRow": "Remove parameter",
+    "empty": "No parameters yet."
+  },
+  "common": {
+    "loadError": "Could not load the data.",
+    "required": "This field is required",
+    "noResults": "No results match the filters.",
+    "unsavedChanges": "You have unsaved changes. Are you sure you want to close?"
+  },
+  "games": {
+    "title": "Games",
+    "subtitle": "Create, edit, duplicate and delete the gamification engine's games.",
+    "new": "New game",
+    "editTitle": "Edit game",
+    "createTitle": "Create game",
+    "searchPlaceholder": "Search by externalGameId or platform…",
+    "col": {
+      "externalGameId": "External ID",
+      "platform": "Platform",
+      "strategyId": "Strategy",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "form": {
+      "externalGameId": "Game external ID",
+      "externalGameIdHelp": "Unique identifier in your system (alphanumeric slug).",
+      "platform": "Platform",
+      "strategyId": "Strategy",
+      "params": "Game parameters"
+    },
+    "delete": {
+      "title": "Delete this game?",
+      "message": "This will permanently delete “{{externalGameId}}”.",
+      "blastRadius": "It will also delete {{count}} task and its associated data.",
+      "blastRadius_plural": "It will also delete {{count}} tasks and their associated data.",
+      "confirm": "Yes, delete"
+    },
+    "duplicate": {
+      "title": "Duplicate game",
+      "message": "A deep copy of “{{externalGameId}}” will be created with all its tasks and parameters.",
+      "label": "New game external ID",
+      "placeholder": "copy-of-…",
+      "confirm": "Duplicate"
+    }
+  },
+  "tasks": {
+    "title": "Tasks",
+    "subtitle": "Tasks for game “{{externalGameId}}”.",
+    "new": "New task",
+    "bulkNew": "Create several",
+    "editTitle": "Edit task",
+    "createTitle": "Create task",
+    "col": {
+      "externalTaskId": "External ID",
+      "strategyId": "Strategy",
+      "status": "Status",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "form": {
+      "externalTaskId": "Task external ID",
+      "strategyId": "Strategy",
+      "strategyHelp": "If left empty, it inherits the game's strategy.",
+      "status": "Status",
+      "params": "Task parameters"
+    },
+    "delete": {
+      "title": "Delete this task?",
+      "message": "This will permanently delete “{{externalTaskId}}” and its associated data.",
+      "confirm": "Yes, delete"
+    },
+    "duplicate": {
+      "title": "Duplicate task",
+      "message": "A copy of “{{externalTaskId}}” will be created with its strategy and parameters.",
+      "label": "New task external ID",
+      "placeholder": "copy-of-…",
+      "confirm": "Duplicate"
+    }
+  },
+  "apikeys": {
+    "revoke": {
+      "title": "Revoke this API key?",
+      "message": "Revocation is irreversible. Integrations using “{{prefix}}” will stop working immediately.",
+      "confirm": "Yes, revoke"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Look up a user's points and wallet balance by external ID.",
+    "searchPlaceholder": "User external ID…",
+    "search": "Search",
+    "points": "Points",
+    "wallet": "Wallet",
+    "empty": "Enter an external ID to see its points and balance.",
+    "notFound": "No data found for “{{externalUserId}}”."
+  },
+  "feedback": {
+    "gameCreated": "Game created successfully.",
+    "gameUpdated": "Game updated successfully.",
+    "gameDeleted": "Game deleted successfully.",
+    "gameDuplicated": "Game duplicated successfully.",
+    "taskCreated": "Task created successfully.",
+    "taskUpdated": "Task updated successfully.",
+    "taskDeleted": "Task deleted successfully.",
+    "taskDuplicated": "Task duplicated successfully.",
+    "tasksBulkCreated": "{{count}} tasks created. {{failed}} failed.",
+    "apiKeyRevoked": "API key revoked successfully."
+  }
+}

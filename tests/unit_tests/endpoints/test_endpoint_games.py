@@ -10,10 +10,11 @@ from app.api.v1.endpoints import games
 from app.core.exceptions import (DuplicatedError, ForbiddenError, InternalServerError,
                                  PreconditionFailedError, TooManyRequestsError)
 from app.middlewares.auth_context import AuditLogger, AuthContext
-from app.schema.games_schema import PatchGame, PostCreateGame, PostFindGame
+from app.schema.games_schema import (DuplicateGame, PatchGame, PostCreateGame,
+                                     PostFindGame)
 from app.schema.task_schema import (AddActionDidByUserInTask,
                                     AsignPointsToExternalUserId, CreateTaskPost,
-                                    CreateTasksPost, PostFindTask)
+                                    CreateTasksPost, DuplicateTask, PostFindTask)
 from app.schema.tasks_params_schema import CreateTaskParams
 
 
@@ -363,6 +364,116 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
             await games.create_task(
                 gameId=game_id,
                 create_query=create_query,
+                service=service,
+                audit=self._audit(api_key="api-key-1", oauth_user_id=None),
+            )
+
+    async def test_delete_task_success(self):
+        game_id = uuid4()
+        task_id = uuid4()
+        service = AsyncMock()
+        service.delete_task_by_id.return_value = {"taskId": str(task_id)}
+
+        result = await games.delete_task(
+            gameId=game_id,
+            taskId=task_id,
+            service=service,
+            audit=self._audit(api_key="api-key-1", oauth_user_id="oauth-user-1"),
+        )
+
+        self.assertEqual(result, {"taskId": str(task_id)})
+        service.delete_task_by_id.assert_awaited_once_with(
+            game_id,
+            task_id,
+            **self._scope_kwargs(),
+        )
+
+    async def test_delete_task_error_logs_and_raises(self):
+        game_id = uuid4()
+        task_id = uuid4()
+        service = AsyncMock()
+        service.delete_task_by_id = AsyncMock(side_effect=RuntimeError("delete failed"))
+
+        with self.assertRaises(RuntimeError):
+            await games.delete_task(
+                gameId=game_id,
+                taskId=task_id,
+                service=service,
+                audit=self._audit(api_key="api-key-1", oauth_user_id=None),
+            )
+
+    async def test_duplicate_task_success(self):
+        game_id = uuid4()
+        task_id = uuid4()
+        schema = DuplicateTask(externalTaskId="copy-task")
+        service = AsyncMock()
+        service.duplicate_task = AsyncMock(return_value={"task": "duplicated"})
+
+        result = await games.duplicate_task(
+            gameId=game_id,
+            taskId=task_id,
+            schema=schema,
+            service=service,
+            audit=self._audit(api_key="api-key-1", oauth_user_id="oauth-user-1"),
+        )
+
+        self.assertEqual(result, {"task": "duplicated"})
+        service.duplicate_task.assert_awaited_once_with(
+            game_id,
+            task_id,
+            "copy-task",
+            **self._scope_kwargs(),
+        )
+
+    async def test_duplicate_task_error_logs_and_raises(self):
+        game_id = uuid4()
+        task_id = uuid4()
+        schema = DuplicateTask(externalTaskId="copy-task")
+        service = AsyncMock()
+        service.duplicate_task = AsyncMock(side_effect=RuntimeError("dup failed"))
+
+        with self.assertRaises(RuntimeError):
+            await games.duplicate_task(
+                gameId=game_id,
+                taskId=task_id,
+                schema=schema,
+                service=service,
+                audit=self._audit(api_key="api-key-1", oauth_user_id=None),
+            )
+
+    async def test_duplicate_game_success(self):
+        game_id = uuid4()
+        new_game_id = uuid4()
+        schema = DuplicateGame(externalGameId="copy-game")
+        service = AsyncMock()
+        service.duplicate_game = AsyncMock(
+            return_value=SimpleNamespace(gameId=new_game_id)
+        )
+
+        result = await games.duplicate_game(
+            gameId=game_id,
+            schema=schema,
+            service=service,
+            audit=self._audit(api_key="api-key-1", oauth_user_id="oauth-user-1"),
+        )
+
+        self.assertEqual(result.gameId, new_game_id)
+        service.duplicate_game.assert_awaited_once_with(
+            game_id,
+            "copy-game",
+            **self._scope_kwargs(),
+        )
+
+    async def test_duplicate_game_error_logs_and_raises(self):
+        game_id = uuid4()
+        schema = DuplicateGame(externalGameId="copy-game")
+        service = AsyncMock()
+        service.duplicate_game = AsyncMock(side_effect=RuntimeError("dup failed"))
+
+        with self.assertRaises(RuntimeError):
+            await games.duplicate_game(
+                gameId=game_id,
+                schema=schema,
                 service=service,
                 audit=self._audit(api_key="api-key-1", oauth_user_id=None),
             )

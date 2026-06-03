@@ -2,13 +2,15 @@
 Integration tests for ``TaskRepository`` against aiosqlite.
 """
 
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import pytest
 
 from app.core.exceptions import NotFoundError
 from app.model.games import Games
+from app.model.task_params import TasksParams
 from app.model.tasks import Tasks
+from app.model.user_points import UserPoints
 from app.repository.task_repository import TaskRepository
 from app.schema.task_schema import FindTask
 
@@ -122,3 +124,91 @@ async def test_get_points_and_users_by_task_id_raises_not_found_when_missing(
 
     with pytest.raises(NotFoundError):
         await repository.get_points_and_users_by_taskId(missing)
+
+
+async def _seed_task_param(db_session, task_id, key="k", value="v"):
+    param = TasksParams(taskId=task_id, key=key, value=value)
+    db_session.add(param)
+    await db_session.commit()
+    await db_session.refresh(param)
+    return param
+
+
+async def _seed_user_points(db_session, task_id, points=10):
+    up = UserPoints(points=points, userId=uuid4(), taskId=task_id)
+    db_session.add(up)
+    await db_session.commit()
+    await db_session.refresh(up)
+    return up
+
+
+@pytest.mark.asyncio
+async def test_delete_task_by_id_cascades_params_and_points(repository, db_session):
+    from sqlalchemy import select
+
+    game = await _seed_game(db_session, "game-del")
+    task = await _seed_task(db_session, game.id, "t-del")
+    await _seed_task_param(db_session, task.id, "bonus", "5")
+    await _seed_user_points(db_session, task.id, points=7)
+    # A sibling task whose params/points must survive the delete.
+    other = await _seed_task(db_session, game.id, "t-keep")
+    await _seed_task_param(db_session, other.id, "keep", "1")
+
+    result = await repository.delete_task_by_id(task.id)
+    assert result is True
+
+    # Task row gone.
+    remaining = (
+        (await db_session.execute(select(Tasks).filter(Tasks.id == task.id)))
+        .scalars()
+        .first()
+    )
+    assert remaining is None
+
+    # Its params and points gone.
+    params = (
+        (
+            await db_session.execute(
+                select(TasksParams).filter(TasksParams.taskId == task.id)
+            )
+        )
+        .scalars()
+        .all()
+    )
+    assert params == []
+    points = (
+        (
+            await db_session.execute(
+                select(UserPoints).filter(UserPoints.taskId == task.id)
+            )
+        )
+        .scalars()
+        .all()
+    )
+    assert points == []
+
+    # The sibling task and its param are untouched.
+    sibling = (
+        (await db_session.execute(select(Tasks).filter(Tasks.id == other.id)))
+        .scalars()
+        .first()
+    )
+    assert sibling is not None
+    sibling_params = (
+        (
+            await db_session.execute(
+                select(TasksParams).filter(TasksParams.taskId == other.id)
+            )
+        )
+        .scalars()
+        .all()
+    )
+    assert len(sibling_params) == 1
+
+
+@pytest.mark.asyncio
+async def test_delete_task_by_id_raises_not_found_when_missing(repository):
+    missing = UUID("00000000-0000-0000-0000-000000000000")
+
+    with pytest.raises(NotFoundError):
+        await repository.delete_task_by_id(missing)

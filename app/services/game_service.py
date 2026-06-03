@@ -6,11 +6,14 @@ from app.engine.all_engine_strategies import all_engine_strategies
 from app.model.strategy_definition import StrategyDefinitionStatus
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
+from app.repository.task_params_repository import TaskParamsRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
-from app.schema.games_params_schema import InsertGameParams
+from app.schema.games_params_schema import CreateGameParams, InsertGameParams
 from app.schema.games_schema import (BaseGameResult, FindGameResult, GameCreated,
                                      PatchGame, PostCreateGame, ResponsePatchGame)
+from app.schema.task_schema import CreateTask
+from app.schema.tasks_params_schema import InsertTaskParams
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
 from app.services.strategy_definition_service import StrategyDefinitionService
@@ -40,6 +43,7 @@ class GameService(BaseService):
         user_points_repository: UserPointsRepository,
         strategy_service: StrategyService,
         strategy_definition_service: Optional[StrategyDefinitionService] = None,
+        task_params_repository: Optional[TaskParamsRepository] = None,
     ) -> None:
         """
         Initializes the GameService with the provided repositories and
@@ -50,10 +54,16 @@ class GameService(BaseService):
         working; when omitted, attempting to PATCH a game with a
         ``custom:`` id raises a clear error instead of silently
         accepting it.
+
+        ``task_params_repository`` is optional for the same backward-compat
+        reason; it is only needed by :meth:`duplicate_game` to deep-copy
+        each task's params. When omitted, duplication raises a clear error
+        instead of silently dropping params.
         """
         self.game_repository = game_repository
         self.game_params_repository = game_params_repository
         self.task_repository = task_repository
+        self.task_params_repository = task_params_repository
         self.strategy_service = strategy_service
         self.strategy_definition_service = strategy_definition_service
         super().__init__(game_repository)
@@ -273,6 +283,102 @@ class GameService(BaseService):
             message=f"Game with gameId: {game.id} created successfully",
         )
         return response
+
+    async def duplicate_game(
+        self,
+        gameId: UUID,
+        externalGameId: str,
+        *,
+        api_key: str = None,
+        oauth_user_id: str = None,
+        is_admin: bool = False,
+        enforce_scope: bool = False,
+    ) -> GameCreated:
+        """
+        Deep-copy a game into a brand new one under ``externalGameId``.
+
+        Copies the source game's platform, strategy and params, then every
+        task with its own strategy and params. The new game's params are
+        recreated via :meth:`create` so all the creation guards (slug
+        validation, externalGameId uniqueness, strategy existence) run
+        against the copy exactly as they would for a fresh game. Tasks are
+        recreated directly through the repositories — the duplicate just
+        needs the rows, not the elaborate per-task response shaping.
+
+        Duplicated tasks start in the default ``open`` status: a copy is a
+        fresh task, not a resumption of the original's lifecycle.
+        """
+        if self.task_params_repository is None:
+            raise BadRequestError(
+                detail=(
+                    "Game duplication is unavailable: "
+                    "TaskParamsRepository not wired."
+                )
+            )
+
+        if enforce_scope:
+            source = await get_authorized_game(
+                self.game_repository,
+                gameId,
+                api_key=api_key,
+                oauth_user_id=oauth_user_id,
+                is_admin=is_admin,
+            )
+        else:
+            source = await self.game_repository.read_by_id(
+                gameId, not_found_raise_exception=False
+            )
+        if not source:
+            raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
+
+        source_params = await self.game_params_repository.read_by_column(
+            "gameId", source.id, not_found_raise_exception=False, only_one=False
+        )
+        copied_params = [
+            CreateGameParams(key=param.key, value=param.value)
+            for param in (source_params or [])
+        ]
+
+        # ``create`` runs the slug + uniqueness + strategy guards for us and
+        # raises ConflictError if ``externalGameId`` is already taken.
+        new_game_schema = PostCreateGame(
+            externalGameId=externalGameId,
+            platform=source.platform,
+            strategyId=source.strategyId,
+            params=copied_params or None,
+        )
+        created = await self.create(new_game_schema, api_key, oauth_user_id)
+        new_game_id = created.gameId
+
+        source_tasks = await self.task_repository.read_by_column(
+            "gameId", source.id, not_found_raise_exception=False, only_one=False
+        )
+        for task in source_tasks or []:
+            new_task = CreateTask(
+                externalTaskId=task.externalTaskId,
+                gameId=str(new_game_id),
+                strategyId=task.strategyId,
+                apiKey_used=api_key,
+            )
+            created_task = await self.task_repository.create(new_task)
+
+            task_params = await self.task_params_repository.read_by_column(
+                "taskId", task.id, not_found_raise_exception=False, only_one=False
+            )
+            for param in task_params or []:
+                params_to_insert = InsertTaskParams(
+                    taskId=str(created_task.id),
+                    key=param.key,
+                    value=str(param.value),
+                    apiKey_used=api_key,
+                )
+                await self.task_params_repository.create(params_to_insert)
+
+        created.message = (
+            f"Game with gameId: {new_game_id} duplicated successfully "
+            f"from gameId: {gameId}"
+        )
+        return created
 
     async def _validate_strategy_assignment(
         self,
