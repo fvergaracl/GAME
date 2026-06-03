@@ -6,7 +6,13 @@ import 'react-datepicker/dist/react-datepicker.css'
 import PropTypes from 'prop-types'
 import { API_URL, fetcher } from '@utils/api'
 
-const ApiActivityChart = ({ customRange, range }) => {
+const ApiActivityChart = ({
+  customRange = {
+    start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
+    end: new Date(),
+  },
+  range = '30',
+}) => {
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [],
@@ -123,15 +129,6 @@ ApiActivityChart.propTypes = {
     end: PropTypes.instanceOf(Date),
   }),
   range: PropTypes.string,
-}
-
-ApiActivityChart.defaultProps = {
-  withCharts: true,
-  customRange: {
-    start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
-    end: new Date(),
-  },
-  range: '30',
 }
 
 export default ApiActivityChart

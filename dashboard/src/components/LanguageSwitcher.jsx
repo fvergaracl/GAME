@@ -20,7 +20,7 @@ const LANGUAGE_LABELS = {
   en: 'English',
 }
 
-const LanguageSwitcher = ({ size }) => {
+const LanguageSwitcher = ({ size = 'sm' }) => {
   const { i18n, t } = useTranslation('editor')
 
   const onChange = (event) => {
@@ -51,10 +51,6 @@ const LanguageSwitcher = ({ size }) => {
 
 LanguageSwitcher.propTypes = {
   size: PropTypes.oneOf(['sm', 'lg']),
-}
-
-LanguageSwitcher.defaultProps = {
-  size: 'sm',
 }
 
 export default LanguageSwitcher

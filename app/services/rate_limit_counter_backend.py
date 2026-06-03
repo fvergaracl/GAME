@@ -134,7 +134,7 @@ def build_redis_client_from_url(url: str) -> Any:
     except ImportError as exc:  # pragma: no cover - import guard
         raise RuntimeError(
             "ABUSE_PREVENTION_BACKEND=redis requires the 'redis' package. "
-            "Install with `poetry add redis@^5.0` or set "
+            "Install with `poetry add redis@^8.0` or set "
             "ABUSE_PREVENTION_BACKEND=database to keep the DB-backed limiter."
         ) from exc
 

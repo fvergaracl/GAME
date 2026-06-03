@@ -70,8 +70,4 @@ WidgetsDropdown.propTypes = {
   withCharts: PropTypes.bool,
 }
 
-WidgetsDropdown.defaultProps = {
-  withCharts: true,
-}
-
 export default WidgetsDropdown

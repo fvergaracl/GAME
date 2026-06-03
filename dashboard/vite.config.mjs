@@ -16,20 +16,16 @@ export default defineConfig(() => {
         ],
       },
     },
-    esbuild: {
-      loader: 'jsx',
-      include: /src\/.*\.jsx?$/,
-      exclude: [],
-    },
+    // Many source modules carry JSX inside plain ``.js`` files. Vite 8
+    // (Rolldown/Oxc) no longer infers a JSX loader from the old
+    // ``esbuild.loader`` hack used under Vite 5, so we let
+    // @vitejs/plugin-react own the JSX transform for both ``.js`` and
+    // ``.jsx`` (it already includes ``.js`` by default; the explicit
+    // pattern keeps the intent obvious and survives plugin defaults).
     optimizeDeps: {
       force: true,
-      esbuildOptions: {
-        loader: {
-          '.js': 'jsx',
-        },
-      },
     },
-    plugins: [react()],
+    plugins: [react({ include: /\.(js|jsx|ts|tsx)$/ })],
     resolve: {
       alias: [
         {

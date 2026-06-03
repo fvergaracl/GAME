@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { GLOSSARY_INDEX } from './index'
 import { useGlossary } from './GlossaryContext'
 
-const GlossaryHint = ({ term, children, className, ariaLabel }) => {
+const GlossaryHint = ({ term, children = null, className = '', ariaLabel = '' }) => {
   const { openGlossary } = useGlossary()
   const { t } = useTranslation('glossary')
   const exists = !!GLOSSARY_INDEX[term]
@@ -70,12 +70,6 @@ GlossaryHint.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   ariaLabel: PropTypes.string,
-}
-
-GlossaryHint.defaultProps = {
-  children: null,
-  className: '',
-  ariaLabel: '',
 }
 
 export default GlossaryHint
