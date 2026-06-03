@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CChartLine } from '@coreui/react-chartjs'
-import { CButton, CButtonGroup } from '@coreui/react'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
 import PropTypes from 'prop-types'
 import { API_URL, fetcher } from '@utils/api'
 
@@ -13,14 +11,17 @@ const ApiActivityChart = ({
   },
   range = '30',
 }) => {
+  const { t } = useTranslation('dashboard')
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [],
   })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const fetchData = async (startDate, endDate) => {
     setLoading(true)
+    setError(null)
     try {
       let urlToFetch = `${API_URL}dashboard/summary/logs?group_by=day`
       if (startDate && endDate) {
@@ -29,40 +30,44 @@ const ApiActivityChart = ({
       const responseRequest = await fetcher(urlToFetch, { method: 'GET' })
       const response = await responseRequest.json()
 
-      const labels = response.info.map((item) => new Date(item.label).toLocaleDateString())
-      const infoData = response.info.map((item) => item.count)
-      const successData = response.success.map((item) => item.count)
-      const errorData = response.error.map((item) => item.count)
+      // Defensive: the backend may omit a series entirely when it has no
+      // rows for that severity, so default each one to an empty array.
+      const info = response.info || []
+      const success = response.success || []
+      const errorSeries = response.error || []
+
+      const labels = info.map((item) => new Date(item.label).toLocaleDateString())
 
       // Setting chart data
       setChartData({
         labels,
         datasets: [
           {
-            label: 'Info',
-            data: infoData,
+            label: t('activity.info'),
+            data: info.map((item) => item.count),
             borderColor: '#36A2EB',
             backgroundColor: 'rgba(54, 162, 235, 0.2)',
             fill: true,
           },
           {
-            label: 'Success',
-            data: successData,
+            label: t('activity.success'),
+            data: success.map((item) => item.count),
             borderColor: '#4CAF50',
             backgroundColor: 'rgba(76, 175, 80, 0.2)',
             fill: true,
           },
           {
-            label: 'Error',
-            data: errorData,
+            label: t('activity.error'),
+            data: errorSeries.map((item) => item.count),
             borderColor: '#F44336',
             backgroundColor: 'rgba(244, 67, 54, 0.2)',
             fill: true,
           },
         ],
       })
-    } catch (error) {
-      console.error('Error fetching data:', error)
+    } catch (err) {
+      console.error('Error fetching data:', err)
+      setError(err)
     } finally {
       setLoading(false)
     }
@@ -85,22 +90,17 @@ const ApiActivityChart = ({
     fetchData(startDate, endDate)
   }, [range, customRange])
 
-  const handleRangeChange = (newRange) => {
-    setRange(newRange)
-    if (newRange !== 'custom') {
-      const now = new Date()
-      setCustomRange({
-        start: new Date(now.setDate(now.getDate() - Number(newRange))),
-        end: new Date(),
-      })
-    }
-  }
+  const isEmpty = !chartData.labels.length
 
   return (
     <div style={{ height: '20rem' }}>
-      <h2 className="text-center">API activity logs</h2>
+      <h2 className="text-center">{t('activity.title')}</h2>
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-center text-body-secondary">{t('activity.loading')}</p>
+      ) : error ? (
+        <p className="text-center text-danger">{t('widgets.loadError')}</p>
+      ) : isEmpty ? (
+        <p className="text-center text-body-secondary">{t('activity.empty')}</p>
       ) : (
         <CChartLine
           style={{ height: '100%' }}

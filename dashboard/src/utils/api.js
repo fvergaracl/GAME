@@ -1,6 +1,12 @@
 import keycloak from '../keycloak'
 
-const API_URL = import.meta.env.VITE_GAME_API_URL
+// Callers build request URLs by concatenation, e.g. `${API_URL}dashboard/summary`,
+// so API_URL must end with exactly one slash. The env var is configured without a
+// trailing slash (VITE_GAME_API_URL=http://localhost:8000/api/v1), which otherwise
+// produces `/api/v1dashboard/...` → 404. Normalise it here so every fetcher caller
+// is correct regardless of how the env var is written.
+const RAW_API_URL = import.meta.env.VITE_GAME_API_URL || 'http://localhost:8000/api/v1'
+const API_URL = RAW_API_URL.endsWith('/') ? RAW_API_URL : `${RAW_API_URL}/`
 
 const fetcher = async (url, options) => {
   if (!keycloak.authenticated) {

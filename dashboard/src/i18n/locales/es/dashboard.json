@@ -9,11 +9,13 @@
     "gamesOpened": "Juegos abiertos",
     "pointsRewarded": "Puntos otorgados",
     "actionsPerformed": "Acciones realizadas",
-    "actionsTooltip": "Es el número total de acciones realizadas por los usuarios en las tareas."
+    "actionsTooltip": "Es el número total de acciones realizadas por los usuarios en las tareas.",
+    "loadError": "No se pudieron cargar las métricas del panel. Inténtalo de nuevo más tarde."
   },
   "activity": {
     "title": "Registros de actividad de la API",
     "loading": "Cargando…",
+    "empty": "No hay actividad de la API en el período seleccionado.",
     "info": "Info",
     "success": "Éxito",
     "error": "Error"

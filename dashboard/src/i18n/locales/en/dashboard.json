@@ -9,11 +9,13 @@
     "gamesOpened": "Games opened",
     "pointsRewarded": "Points rewarded",
     "actionsPerformed": "Actions performed",
-    "actionsTooltip": "This is the total number of actions performed by users in tasks."
+    "actionsTooltip": "This is the total number of actions performed by users in tasks.",
+    "loadError": "Couldn't load dashboard metrics. Please try again later."
   },
   "activity": {
     "title": "API activity logs",
     "loading": "Loading…",
+    "empty": "No API activity in the selected period.",
     "info": "Info",
     "success": "Success",
     "error": "Error"

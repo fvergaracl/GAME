@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CCardBody, CCol, CRow, CButton, CButtonGroup } from '@coreui/react'
 import WidgetsDropdown from './topDashboard/WidgetsDropdown'
 import ApiActivityChart from './bodyDashboard/ApiActivityChart'
 import DateRangePicker from '../../components/DateRangePicker'
 
 const Dashboard = () => {
+  const { t } = useTranslation('dashboard')
   const [range, setRange] = useState('30') // Default range: 30 days
   const [customRange, setCustomRange] = useState({
     start: new Date(),
@@ -35,21 +37,21 @@ const Dashboard = () => {
                   onClick={() => handleRangeChange('30')}
                   active={range === '30'}
                 >
-                  30 Days
+                  {t('range.30days')}
                 </CButton>
                 <CButton
                   color="primary"
                   onClick={() => handleRangeChange('90')}
                   active={range === '90'}
                 >
-                  90 Days
+                  {t('range.90days')}
                 </CButton>
                 <CButton
                   color="primary"
                   onClick={() => handleRangeChange('custom')}
                   active={range === 'custom'}
                 >
-                  Custom Range
+                  {t('range.custom')}
                 </CButton>
               </CButtonGroup>
               {range === 'custom' && (
