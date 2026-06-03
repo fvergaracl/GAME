@@ -239,8 +239,7 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BadRequestError</span><span class="p">,</span> <span class="n">ConflictError</span><span class="p">,</span>
-                                 <span class="n">NotFoundError</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">BadRequestError</span><span class="p">,</span> <span class="n">ConflictError</span><span class="p">,</span> <span class="n">NotFoundError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.all_engine_strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_engine_strategies</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.model.strategy_definition</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionStatus</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.game_params_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameParamsRepository</span>
@@ -248,17 +247,13 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_points_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserPointsRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">InsertGameParams</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BaseGameResult</span><span class="p">,</span> <span class="n">FindGameResult</span><span class="p">,</span>
-                                     <span class="n">GameCreated</span><span class="p">,</span> <span class="n">PatchGame</span><span class="p">,</span> <span class="n">PostCreateGame</span><span class="p">,</span>
-                                     <span class="n">ResponsePatchGame</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BaseGameResult</span><span class="p">,</span> <span class="n">FindGameResult</span><span class="p">,</span> <span class="n">GameCreated</span><span class="p">,</span>
+                                     <span class="n">PatchGame</span><span class="p">,</span> <span class="n">PostCreateGame</span><span class="p">,</span> <span class="n">ResponsePatchGame</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.game_access</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_authorized_game</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_definition_service</span><span class="w"> </span><span class="kn">import</span> \
-    <span class="n">StrategyDefinitionService</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_service</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">StrategyService</span><span class="p">,</span>
-                                           <span class="n">is_custom_strategy_id</span><span class="p">,</span>
-                                           <span class="n">parse_custom_strategy_id</span><span class="p">,</span>
-                                           <span class="n">resolve_realm_id</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_definition_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_service</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">StrategyService</span><span class="p">,</span> <span class="n">is_custom_strategy_id</span><span class="p">,</span>
+                                           <span class="n">parse_custom_strategy_id</span><span class="p">,</span> <span class="n">resolve_realm_id</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.util.are_variables_matching</span><span class="w"> </span><span class="kn">import</span> <span class="n">are_variables_matching</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.util.is_valid_slug</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_valid_slug</span>
 
@@ -284,9 +279,7 @@
         <span class="n">task_repository</span><span class="p">:</span> <span class="n">TaskRepository</span><span class="p">,</span>
         <span class="n">user_points_repository</span><span class="p">:</span> <span class="n">UserPointsRepository</span><span class="p">,</span>
         <span class="n">strategy_service</span><span class="p">:</span> <span class="n">StrategyService</span><span class="p">,</span>
-        <span class="n">strategy_definition_service</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">StrategyDefinitionService</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">strategy_definition_service</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StrategyDefinitionService</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initializes the GameService with the provided repositories and</span>
@@ -441,7 +434,9 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            object: The game details.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span><span class="s2">"externalGameId"</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
+            <span class="s2">"externalGameId"</span><span class="p">,</span> <span class="n">externalGameId</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GameService.create">
@@ -560,13 +555,9 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_custom_strategy_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">):</span>
             <span class="n">strategies</span> <span class="o">=</span> <span class="n">all_engine_strategies</span><span class="p">()</span>
-            <span class="n">strategy</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strategies</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">strategy_id</span><span class="p">),</span> <span class="kc">None</span>
-            <span class="p">)</span>
+            <span class="n">strategy</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strategies</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">strategy_id</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">strategy</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
-                    <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Strategy with id: </span><span class="si">{</span><span class="n">strategy_id</span><span class="si">}</span><span class="s2"> not found"</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Strategy with id: </span><span class="si">{</span><span class="n">strategy_id</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_service</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -576,9 +567,7 @@
                     <span class="s2">"StrategyDefinitionService not wired."</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-        <span class="n">realmId</span> <span class="o">=</span> <span class="n">resolve_realm_id</span><span class="p">(</span>
-            <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span>
-        <span class="p">)</span>
+        <span class="n">realmId</span> <span class="o">=</span> <span class="n">resolve_realm_id</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">)</span>
         <span class="n">uuid_part</span> <span class="o">=</span> <span class="n">parse_custom_strategy_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">)</span>
         <span class="n">definition</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_service</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="n">uuid_part</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span>
@@ -694,7 +683,9 @@
         <span class="n">updated_params</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_params_repository</span><span class="o">.</span><span class="n">patch_game_params_by_id</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_params_repository</span><span class="o">.</span><span class="n">patch_game_params_by_id</span><span class="p">(</span>
+                    <span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">param</span>
+                <span class="p">)</span>
                 <span class="n">updated_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
 
         <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">patch_game_by_id</span><span class="p">(</span><span class="n">gameId</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>

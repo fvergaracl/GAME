@@ -286,11 +286,27 @@
         <span class="s2">"root"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">]},</span>
         <span class="s2">"loggers"</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">"uvicorn"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-            <span class="s2">"uvicorn.error"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-            <span class="s2">"uvicorn.access"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="s2">"uvicorn.error"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span>
+                <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span>
+                <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">"uvicorn.access"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span>
+                <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span>
+                <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">},</span>
             <span class="s2">"gunicorn"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-            <span class="s2">"gunicorn.error"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-            <span class="s2">"gunicorn.access"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="s2">"gunicorn.error"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span>
+                <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span>
+                <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">"gunicorn.access"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"handlers"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"stdout"</span><span class="p">],</span>
+                <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span>
+                <span class="s2">"propagate"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">},</span>
     <span class="p">}</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
@@ -459,9 +475,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">db</span><span class="p">()</span>
         <span class="c1"># Sprint 13: expose the singleton execution-log observer so the</span>
         <span class="c1"># lifespan shutdown hook can flush its background queue.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">dsl_execution_observer</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dsl_execution_observer</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">dsl_execution_observer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dsl_execution_observer</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">configs</span><span class="o">.</span><span class="n">BACKEND_CORS_ORIGINS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
                 <span class="n">CORSMiddleware</span><span class="p">,</span>

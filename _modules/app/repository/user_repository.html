@@ -278,9 +278,7 @@
 <span class="sd">        raising IntegrityError to the caller.</span>
 <span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">user</span> <span class="o">=</span> <span class="n">Users</span><span class="p">(</span>
-                <span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span> <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span>
-            <span class="p">)</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">Users</span><span class="p">(</span><span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span> <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">)</span>
             <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
@@ -289,12 +287,14 @@
             <span class="k">except</span> <span class="n">IntegrityError</span><span class="p">:</span>
                 <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
                 <span class="n">existing</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                        <span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
-                            <span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span>
+                    <span class="p">(</span>
+                        <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                            <span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">externalUserId</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">)</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+                    <span class="o">.</span><span class="n">scalars</span><span class="p">()</span>
+                    <span class="o">.</span><span class="n">first</span><span class="p">()</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="n">existing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">existing</span>
                 <span class="k">raise</span></div>
@@ -349,10 +349,10 @@
             <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
         <span class="n">user</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                <span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span>
-            <span class="p">)</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)))</span>
+            <span class="o">.</span><span class="n">scalars</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"User not found after upsert by externalUserId: </span><span class="si">{</span><span class="n">externalUserId</span><span class="si">}</span><span class="s2">"</span>

@@ -444,9 +444,9 @@
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_measurement_count">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_measurement_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span>
-                <span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">)</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span><span class="p">)</span>
+            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span>
+            <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">measurement_count</span></div>
 
@@ -466,9 +466,9 @@
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_individual_calculation">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_individual_calculation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span>
-                <span class="n">func</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"average_points"</span><span class="p">)</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span><span class="p">)</span>
+            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"average_points"</span><span class="p">))</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span>
+            <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_points</span></div>
 
@@ -486,9 +486,9 @@
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_start_time_for_last_task">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_start_time_for_last_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span>
-                <span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"start_time"</span><span class="p">)</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span><span class="p">)</span>
+            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"start_time"</span><span class="p">))</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span>
+            <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">start_time</span></div>
 
@@ -498,9 +498,7 @@
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">count_measurements_by_external_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_task_id</span><span class="p">):</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">select</span><span class="p">(</span>
-                    <span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">external_task_id</span><span class="p">)</span>
             <span class="p">)</span>
@@ -510,9 +508,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
-    <span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"timestamp"</span><span class="p">))</span>
@@ -527,14 +523,10 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements_count">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements_count</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
-    <span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">select</span><span class="p">(</span>
-                    <span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
@@ -551,17 +543,12 @@
     <span class="p">):</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">select</span><span class="p">(</span>
-                    <span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                    <span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span>
-                    <span class="o">&gt;</span> <span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&gt;</span> <span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">))</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">measurement_count</span></div>
@@ -623,9 +610,7 @@
 
 <div class="viewcode-block" id="UserPointsRepository.get_last_window_time_diff">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.user_points_repository.UserPointsRepository.get_last_window_time_diff">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_last_window_time_diff</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
-    <span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_last_window_time_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">)</span>
@@ -641,9 +626,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">last_two_points</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="k">return</span> <span class="mi">0</span>
 
-            <span class="n">time_diff</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">last_two_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">created_at</span> <span class="o">-</span> <span class="n">last_two_points</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">created_at</span>
-            <span class="p">)</span>
+            <span class="n">time_diff</span> <span class="o">=</span> <span class="n">last_two_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">created_at</span> <span class="o">-</span> <span class="n">last_two_points</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">created_at</span>
             <span class="k">return</span> <span class="n">time_diff</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span></div>
 
 
@@ -668,17 +651,13 @@
             <span class="k">if</span> <span class="n">last_point</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="mi">0</span>
 
-            <span class="n">current_time</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">()))</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">())))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">current_time</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">current_time</span> <span class="o">=</span> <span class="n">current_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">last_point</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">last_created_at</span> <span class="o">=</span> <span class="n">last_point</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                    <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span>
-                <span class="p">)</span>
+                <span class="n">last_created_at</span> <span class="o">=</span> <span class="n">last_point</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">last_created_at</span> <span class="o">=</span> <span class="n">last_point</span><span class="o">.</span><span class="n">created_at</span>
 
@@ -716,10 +695,7 @@
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                    <span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span>
-                    <span class="o">&gt;</span> <span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">minutes</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&gt;</span> <span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">minutes</span><span class="p">))</span>
             <span class="p">)</span>
             <span class="n">count</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
@@ -741,11 +717,7 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"minutes"</span><span class="p">]</span><span class="o">.</span><span class="n">as_float</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span>
-                <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="UserPointsRepository.get_personal_avg_by_external_game_id">
@@ -768,11 +740,7 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"minutes"</span><span class="p">]</span><span class="o">.</span><span class="n">as_float</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span>
-                <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="UserPointsRepository.get_points_of_simulated_task">
@@ -785,9 +753,7 @@
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Tasks</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
-                <span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                    <span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"simulationHash"</span><span class="p">]</span><span class="o">.</span><span class="n">astext</span> <span class="o">==</span> <span class="n">simulationHash</span>
-                <span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"simulationHash"</span><span class="p">]</span><span class="o">.</span><span class="n">astext</span> <span class="o">==</span> <span class="n">simulationHash</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
@@ -803,9 +769,7 @@
 <span class="sd">        streaming via ``stream_scalars`` (caller decides).</span>
 <span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-                <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">task_list</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">task_list</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">withData</span><span class="p">:</span>
                 <span class="n">stmt</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">with_only_columns</span><span class="p">(</span>
