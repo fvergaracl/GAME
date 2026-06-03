@@ -1,7 +1,7 @@
+from pydantic import ConfigDict
 from sqlmodel import Column, Field, String
 
 from app.model.base_model import BaseModel
-from pydantic import ConfigDict
 
 
 class UptimeLogs(BaseModel, table=True):

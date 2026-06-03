@@ -1,6 +1,4 @@
 # Settings related with https://github.com/Greengage-project/interlink-project
-version: "3.7"
-
 services:
   api:
     container_name: "GAME_API_DEV"

@@ -7,22 +7,13 @@ import jwt
 from fastapi import HTTPException
 
 from app.api.v1.endpoints import games
-from app.core.exceptions import (
-    DuplicatedError,
-    ForbiddenError,
-    InternalServerError,
-    PreconditionFailedError,
-    TooManyRequestsError,
-)
+from app.core.exceptions import (DuplicatedError, ForbiddenError, InternalServerError,
+                                 PreconditionFailedError, TooManyRequestsError)
 from app.middlewares.auth_context import AuditLogger, AuthContext
 from app.schema.games_schema import PatchGame, PostCreateGame, PostFindGame
-from app.schema.task_schema import (
-    AddActionDidByUserInTask,
-    AsignPointsToExternalUserId,
-    CreateTaskPost,
-    CreateTasksPost,
-    PostFindTask,
-)
+from app.schema.task_schema import (AddActionDidByUserInTask,
+                                    AsignPointsToExternalUserId, CreateTaskPost,
+                                    CreateTasksPost, PostFindTask)
 from app.schema.tasks_params_schema import CreateTaskParams
 
 

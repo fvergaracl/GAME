@@ -27,7 +27,6 @@ from typing import List, Optional
 from app.engine.dsl_validator import validate_ast
 from app.schema.strategy_definition_schema import StrategyTemplateRead
 
-
 _TEMPLATES_DIR = Path(__file__).parent / "user"
 _CACHE: Optional[List[StrategyTemplateRead]] = None
 

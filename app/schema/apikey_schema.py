@@ -151,9 +151,7 @@ class ApiKeyCreated(ApiKeyCreateBase):
             "Full API key value. Returned **only** at creation time; the "
             "server does not store it and cannot retrieve it again."
         ),
-        examples=[(
-            "gme_live_3f6a9e0f.AbCdEfGhIjKlMnOpQrStUvWxYzAbCdEf"
-        )],
+        examples=["gme_live_3f6a9e0f.AbCdEfGhIjKlMnOpQrStUvWxYzAbCdEf"],
     )
     message: Optional[str] = Field(
         default="Successfully created",

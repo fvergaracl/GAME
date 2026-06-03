@@ -38,7 +38,6 @@ from app.engine.dsl_strategy import DslStrategy
 from app.engine.dsl_validator import validate_ast
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
 
-
 # Mirror of the analytics method set used by ``default.py``. Each
 # scenario specifies the subset of methods it cares about; defaults of
 # 0 keep the DSL's AsyncMock path from returning unawaitable values.
@@ -207,7 +206,8 @@ _SCENARIOS = [
 @pytest.mark.asyncio
 @pytest.mark.parametrize("analytics_returns,baseline_expected", _SCENARIOS)
 async def test_default_extended_with_first_time_bonus_matches_baseline_plus_bonus(
-    analytics_returns, baseline_expected,
+    analytics_returns,
+    baseline_expected,
 ):
     """For every default.py scenario, the DSL_EXTEND wrapper either
     matches the baseline (user_count > 0) or returns baseline+5 with
@@ -225,7 +225,9 @@ async def test_default_extended_with_first_time_bonus_matches_baseline_plus_bonu
     baseline_parent.debug = False
     baseline_parent.user_points_analytics_service = py_mock
     baseline_result = await baseline_parent.calculate_points(
-        "g", "t", "u",
+        "g",
+        "t",
+        "u",
     )
 
     # Sanity: the baseline equals the canonical Sprint 5 reference.

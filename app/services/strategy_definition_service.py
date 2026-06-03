@@ -21,12 +21,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import List, Optional
 
-from app.core.exceptions import (
-    BadRequestError,
-    ConflictError,
-    DuplicatedError,
-    NotFoundError,
-)
+from app.core.exceptions import (BadRequestError, ConflictError, DuplicatedError,
+                                 NotFoundError)
 
 # Kept in sync with ``CUSTOM_STRATEGY_PREFIX`` in
 # ``app/services/strategy_service.py``. We inline the literal here
@@ -36,23 +32,15 @@ from app.core.exceptions import (
 # resolve parent strategies; see comment below).
 _CUSTOM_STRATEGY_PREFIX = "custom:"
 from app.engine.dsl_validator import validate_ast
-from app.model.strategy_definition import (
-    StrategyDefinition,
-    StrategyDefinitionStatus,
-    StrategyDefinitionType,
-)
-from app.repository.strategy_definition_repository import (
-    StrategyDefinitionRepository,
-)
-from app.schema.strategy_definition_schema import (
-    StrategyDefinitionCreate,
-    StrategyDefinitionPersist,
-    StrategyDefinitionRead,
-    StrategyDefinitionUpdate,
-    StrategyUsageGame,
-    StrategyUsageRead,
-    StrategyUsageTask,
-)
+from app.model.strategy_definition import (StrategyDefinition, StrategyDefinitionStatus,
+                                           StrategyDefinitionType)
+from app.repository.strategy_definition_repository import StrategyDefinitionRepository
+from app.schema.strategy_definition_schema import (StrategyDefinitionCreate,
+                                                   StrategyDefinitionPersist,
+                                                   StrategyDefinitionRead,
+                                                   StrategyDefinitionUpdate,
+                                                   StrategyUsageGame, StrategyUsageRead,
+                                                   StrategyUsageTask)
 from app.services.base_service import BaseService
 
 
@@ -61,6 +49,7 @@ class RollbackResult:
     """Outcome of a rollback operation, returned by the service so the
     endpoint can include cascade counts in the audit log without re-hitting
     the DB."""
+
     strategy: StrategyDefinitionRead
     games_reassigned: int
     tasks_reassigned: int
@@ -111,9 +100,7 @@ class StrategyDefinitionService(BaseService):
         )
 
     @staticmethod
-    def _validate_payload(
-        type_value: str, parentStrategyId: Optional[str]
-    ) -> None:
+    def _validate_payload(type_value: str, parentStrategyId: Optional[str]) -> None:
         """
         DSL_EXTEND must carry a parent; DSL_FULL must not. We don't yet
         validate that ``parentStrategyId`` resolves to a real registry
@@ -147,10 +134,8 @@ class StrategyDefinitionService(BaseService):
         incoming bundle needs an auto-rename to avoid colliding with
         the ``UNIQUE(realmId, name, version)`` constraint.
         """
-        max_version = (
-            await self.strategy_definition_repository.get_max_version(
-                realmId=realmId, name=name
-            )
+        max_version = await self.strategy_definition_repository.get_max_version(
+            realmId=realmId, name=name
         )
         return max_version > 0
 
@@ -177,9 +162,7 @@ class StrategyDefinitionService(BaseService):
             id=id, realmId=realmId
         )
         if row is None:
-            raise NotFoundError(
-                detail=f"Custom strategy not found: {id}"
-            )
+            raise NotFoundError(detail=f"Custom strategy not found: {id}")
         return self._to_read(row)
 
     async def create(
@@ -196,10 +179,8 @@ class StrategyDefinitionService(BaseService):
         if payload.astJson is not None:
             validate_ast(payload.astJson)
 
-        existing_max = (
-            await self.strategy_definition_repository.get_max_version(
-                realmId=realmId, name=payload.name
-            )
+        existing_max = await self.strategy_definition_repository.get_max_version(
+            realmId=realmId, name=payload.name
         )
         if existing_max > 0:
             raise DuplicatedError(
@@ -252,9 +233,7 @@ class StrategyDefinitionService(BaseService):
             id=id, realmId=realmId
         )
         if row is None:
-            raise NotFoundError(
-                detail=f"Custom strategy not found: {id}"
-            )
+            raise NotFoundError(detail=f"Custom strategy not found: {id}")
 
         if row.status == StrategyDefinitionStatus.ARCHIVED.value:
             raise ConflictError(
@@ -272,23 +251,17 @@ class StrategyDefinitionService(BaseService):
                 if payload.description is not None
                 else row.description
             ),
-            "type": (
-                payload.type.value if payload.type is not None else row.type
-            ),
+            "type": (payload.type.value if payload.type is not None else row.type),
             "parentStrategyId": (
                 payload.parentStrategyId
                 if payload.parentStrategyId is not None
                 else row.parentStrategyId
             ),
             "astJson": (
-                payload.astJson
-                if payload.astJson is not None
-                else row.astJson
+                payload.astJson if payload.astJson is not None else row.astJson
             ),
             "blocklyXml": (
-                payload.blocklyXml
-                if payload.blocklyXml is not None
-                else row.blocklyXml
+                payload.blocklyXml if payload.blocklyXml is not None else row.blocklyXml
             ),
             "experimentTag": (
                 payload.experimentTag
@@ -310,9 +283,7 @@ class StrategyDefinitionService(BaseService):
                 blocklyXml=merged["blocklyXml"],
                 experimentTag=merged["experimentTag"],
             )
-            updated = await self.strategy_definition_repository.update(
-                id, patch
-            )
+            updated = await self.strategy_definition_repository.update(id, patch)
             return self._to_read(updated)
 
         # PUBLISHED → fork a new draft with the merged contents.
@@ -349,13 +320,9 @@ class StrategyDefinitionService(BaseService):
             id=id, realmId=realmId
         )
         if row is None:
-            raise NotFoundError(
-                detail=f"Custom strategy not found: {id}"
-            )
+            raise NotFoundError(detail=f"Custom strategy not found: {id}")
         if row.status == StrategyDefinitionStatus.ARCHIVED.value:
-            raise ConflictError(
-                detail="Cannot publish an archived strategy."
-            )
+            raise ConflictError(detail="Cannot publish an archived strategy.")
         if row.status == StrategyDefinitionStatus.PUBLISHED.value:
             # Idempotent: re-publishing the same row is a no-op.
             return self._to_read(row)
@@ -386,9 +353,7 @@ class StrategyDefinitionService(BaseService):
             id=id, realmId=realmId
         )
         if row is None:
-            raise NotFoundError(
-                detail=f"Custom strategy not found: {id}"
-            )
+            raise NotFoundError(detail=f"Custom strategy not found: {id}")
         if row.status == StrategyDefinitionStatus.ARCHIVED.value:
             return self._to_read(row)
 
@@ -417,9 +382,7 @@ class StrategyDefinitionService(BaseService):
             id=id, realmId=realmId
         )
         if row is None:
-            raise NotFoundError(
-                detail=f"Custom strategy not found: {id}"
-            )
+            raise NotFoundError(detail=f"Custom strategy not found: {id}")
         rows = await self.strategy_definition_repository.list_versions(
             realmId=realmId, name=row.name
         )
@@ -463,19 +426,13 @@ class StrategyDefinitionService(BaseService):
             raise NotFoundError(detail=f"Custom strategy not found: {id}")
 
         assignable_id = f"{_CUSTOM_STRATEGY_PREFIX}{row.id}"
-        game_rows = await self.game_repository.list_by_strategy_id(
-            assignable_id
-        )
-        task_rows = await self.task_repository.list_by_strategy_id(
-            assignable_id
-        )
+        game_rows = await self.game_repository.list_by_strategy_id(assignable_id)
+        task_rows = await self.task_repository.list_by_strategy_id(assignable_id)
 
         # Resolve each task's parent game external id in one batched query
         # so the UI can show "task X of game Y" rather than a raw UUID.
         parent_ids = {t.gameId for t in task_rows if t.gameId is not None}
-        external_by_game = await self.game_repository.list_external_ids(
-            parent_ids
-        )
+        external_by_game = await self.game_repository.list_external_ids(parent_ids)
 
         games = [
             StrategyUsageGame(
@@ -547,9 +504,7 @@ class StrategyDefinitionService(BaseService):
             id=id, realmId=realmId
         )
         if current is None:
-            raise NotFoundError(
-                detail=f"Custom strategy not found: {id}"
-            )
+            raise NotFoundError(detail=f"Custom strategy not found: {id}")
 
         target = await self.strategy_definition_repository.get_version(
             realmId=realmId,
@@ -598,26 +553,18 @@ class StrategyDefinitionService(BaseService):
         if displaced is not None:
             old_strategy_id = f"{_CUSTOM_STRATEGY_PREFIX}{displaced.id}"
             new_strategy_id = f"{_CUSTOM_STRATEGY_PREFIX}{target.id}"
-            games_reassigned = (
-                await self.game_repository.bulk_update_strategy_id(
-                    old_strategy_id=old_strategy_id,
-                    new_strategy_id=new_strategy_id,
-                )
+            games_reassigned = await self.game_repository.bulk_update_strategy_id(
+                old_strategy_id=old_strategy_id,
+                new_strategy_id=new_strategy_id,
             )
-            tasks_reassigned = (
-                await self.task_repository.bulk_update_strategy_id(
-                    old_strategy_id=old_strategy_id,
-                    new_strategy_id=new_strategy_id,
-                )
+            tasks_reassigned = await self.task_repository.bulk_update_strategy_id(
+                old_strategy_id=old_strategy_id,
+                new_strategy_id=new_strategy_id,
             )
 
-        promoted = await self.get_strategy(
-            id=str(target.id), realmId=realmId
-        )
+        promoted = await self.get_strategy(id=str(target.id), realmId=realmId)
         return RollbackResult(
             strategy=promoted,
             games_reassigned=games_reassigned,
             tasks_reassigned=tasks_reassigned,
         )
-
-

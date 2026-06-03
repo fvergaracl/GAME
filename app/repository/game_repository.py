@@ -1,8 +1,9 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy import and_, func, or_, select
+from sqlalchemy import and_
 from sqlalchemy import delete as sa_delete
+from sqlalchemy import func, or_, select
 from sqlalchemy import update as sa_update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -90,9 +91,7 @@ class GameRepository(BaseRepository):
             total_count = int(
                 (
                     await session.execute(
-                        select(func.count())
-                        .select_from(Games)
-                        .filter(where_clause)
+                        select(func.count()).select_from(Games).filter(where_clause)
                     )
                 ).scalar()
                 or 0
@@ -103,25 +102,23 @@ class GameRepository(BaseRepository):
             # with N params consumed N rows of the page budget and the page
             # held fewer than page_size games. Selecting games on their own
             # keeps the page sized in games; params are fetched separately.
-            games_stmt = (
-                select(Games).filter(where_clause).order_by(order_query)
-            )
+            games_stmt = select(Games).filter(where_clause).order_by(order_query)
             if page_size != "all":
-                games_stmt = games_stmt.limit(page_size).offset(
-                    (page - 1) * page_size
-                )
+                games_stmt = games_stmt.limit(page_size).offset((page - 1) * page_size)
             game_rows = (await session.execute(games_stmt)).scalars().all()
 
             params_by_game = {}
             game_ids = [g.id for g in game_rows]
             if game_ids:
                 params_rows = (
-                    await session.execute(
-                        select(GamesParams).filter(
-                            GamesParams.gameId.in_(game_ids)
+                    (
+                        await session.execute(
+                            select(GamesParams).filter(GamesParams.gameId.in_(game_ids))
                         )
                     )
-                ).scalars().all()
+                    .scalars()
+                    .all()
+                )
                 for param in params_rows:
                     params_by_game.setdefault(param.gameId, []).append(
                         {
@@ -157,22 +154,24 @@ class GameRepository(BaseRepository):
     async def get_game_by_id(self, id: str):
         async with self.session_factory() as session:
             game = (
-                await session.execute(
-                    select(self.model).filter(self.model.id == id)
-                )
-            ).scalars().first()
+                (await session.execute(select(self.model).filter(self.model.id == id)))
+                .scalars()
+                .first()
+            )
             if not game:
                 raise NotFoundError(detail=f"Not found id : {id}")
             params = (
-                await session.execute(
-                    select(self.model_game_params).filter(
-                        self.model_game_params.gameId == id
+                (
+                    await session.execute(
+                        select(self.model_game_params).filter(
+                            self.model_game_params.gameId == id
+                        )
                     )
                 )
-            ).scalars().all()
-            game_params = [
-                {"id": p.id, "key": p.key, "value": p.value} for p in params
-            ]
+                .scalars()
+                .all()
+            )
+            game_params = [{"id": p.id, "key": p.key, "value": p.value} for p in params]
 
             return BaseGameResult(
                 gameId=game.id,
@@ -186,10 +185,14 @@ class GameRepository(BaseRepository):
     async def patch_game_by_id(self, gameId: str, schema):
         async with self.session_factory() as session:
             game = (
-                await session.execute(
-                    select(self.model).filter(self.model.id == gameId)
+                (
+                    await session.execute(
+                        select(self.model).filter(self.model.id == gameId)
+                    )
                 )
-            ).scalars().first()
+                .scalars()
+                .first()
+            )
             if not game:
                 raise NotFoundError(detail=f"Not found id : {gameId}")
 
@@ -214,12 +217,8 @@ class GameRepository(BaseRepository):
         for audit logging and tests).
         """
         async with self.session_factory() as session:
-            stmt = select(self.model).filter(
-                self.model.strategyId == strategy_id
-            )
-            return list(
-                (await session.execute(stmt)).scalars().all()
-            )
+            stmt = select(self.model).filter(self.model.strategyId == strategy_id)
+            return list((await session.execute(stmt)).scalars().all())
 
     async def list_external_ids(self, ids) -> dict:
         """
@@ -267,12 +266,14 @@ class GameRepository(BaseRepository):
         try:
             async with self.session_factory() as session:
                 game = (
-                    await session.execute(
-                        select(self.model).filter(
-                            self.model.id == game_id
+                    (
+                        await session.execute(
+                            select(self.model).filter(self.model.id == game_id)
                         )
                     )
-                ).scalars().first()
+                    .scalars()
+                    .first()
+                )
                 if not game:
                     raise NotFoundError(detail=f"Not found id : {game_id}")
 
@@ -283,12 +284,16 @@ class GameRepository(BaseRepository):
                 )
 
                 tasks = (
-                    await session.execute(
-                        select(self.model_tasks).filter(
-                            self.model_tasks.gameId == game_id
+                    (
+                        await session.execute(
+                            select(self.model_tasks).filter(
+                                self.model_tasks.gameId == game_id
+                            )
                         )
                     )
-                ).scalars().all()
+                    .scalars()
+                    .all()
+                )
                 for task in tasks:
                     await session.execute(
                         sa_delete(self.model_tasks_params).where(

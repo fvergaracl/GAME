@@ -5,6 +5,7 @@ Revises: 3a7e5c1b9d2f
 Create Date: 2026-05-27 00:00:00.000000
 
 """
+
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
@@ -20,12 +21,8 @@ def upgrade():
     op.create_table(
         "exportauditlog",
         sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column(
-            "created_at", sa.DateTime(timezone=True), nullable=True
-        ),
-        sa.Column(
-            "updated_at", sa.DateTime(timezone=True), nullable=True
-        ),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("apiKey_used", sa.String(), nullable=True),
         sa.Column("oauth_user_id", sa.String(), nullable=True),
         sa.Column("datasetType", sa.String(), nullable=False),
@@ -50,9 +47,7 @@ def upgrade():
         ),
         sa.Column("requestedBy", sa.String(), nullable=True),
         sa.ForeignKeyConstraint(["apiKey_used"], ["apikey.apiKey"]),
-        sa.ForeignKeyConstraint(
-            ["oauth_user_id"], ["oauthusers.provider_user_id"]
-        ),
+        sa.ForeignKeyConstraint(["oauth_user_id"], ["oauthusers.provider_user_id"]),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(
@@ -70,10 +65,6 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_index(
-        "ix_exportauditlog_dataset_created", table_name="exportauditlog"
-    )
-    op.drop_index(
-        op.f("ix_exportauditlog_id"), table_name="exportauditlog"
-    )
+    op.drop_index("ix_exportauditlog_dataset_created", table_name="exportauditlog")
+    op.drop_index(op.f("ix_exportauditlog_id"), table_name="exportauditlog")
     op.drop_table("exportauditlog")

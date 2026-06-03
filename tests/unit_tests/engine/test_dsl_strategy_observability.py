@@ -118,7 +118,9 @@ class TestDslStrategyObserverWiring(unittest.IsolatedAsyncioTestCase):
                     "type": "rule",
                     "id": "r1",
                     "when": {
-                        "type": "literal", "id": "lt", "value": True,
+                        "type": "literal",
+                        "id": "lt",
+                        "value": True,
                     },
                     "then": [
                         {
@@ -162,9 +164,7 @@ class TestDslStrategyObserverWiring(unittest.IsolatedAsyncioTestCase):
         observer.record.assert_awaited_once()
         call_kwargs = observer.record.await_args.kwargs
         self.assertEqual(call_kwargs["status"], "error")
-        self.assertEqual(
-            call_kwargs["errorCode"], "DSL_ARITH_DIV_BY_ZERO"
-        )
+        self.assertEqual(call_kwargs["errorCode"], "DSL_ARITH_DIV_BY_ZERO")
         self.assertIsNone(call_kwargs["points"])
 
     async def test_missing_observer_does_not_break_scoring(self):

@@ -25,17 +25,11 @@ from app.core.exceptions import DslTimeoutError, DslValidationError
 from app.engine.dsl_execution_context import ExecutionContext
 from app.engine.dsl_interpreter import DslInterpreter
 from app.engine.dsl_validator import validate_ast
-from app.schema.dsl_schema import (
-    ExecutionTraceEntry,
-    InlineSimulationRequest,
-    SimulationRequest,
-    SimulationResponse,
-)
+from app.schema.dsl_schema import (ExecutionTraceEntry, InlineSimulationRequest,
+                                   SimulationRequest, SimulationResponse)
 from app.services.base_service import BaseService
 from app.services.strategy_definition_service import StrategyDefinitionService
-from app.services.user_points_analytics_service import (
-    UserPointsAnalyticsService,
-)
+from app.services.user_points_analytics_service import UserPointsAnalyticsService
 
 
 class DslSimulationService(BaseService):
@@ -135,7 +129,5 @@ class DslSimulationService(BaseService):
             points=float(result["points"]),
             caseName=result["case_name"],
             callbackData=dict(result["callback_data"]),
-            executionTrace=[
-                ExecutionTraceEntry(**entry) for entry in result["trace"]
-            ],
+            executionTrace=[ExecutionTraceEntry(**entry) for entry in result["trace"]],
         )

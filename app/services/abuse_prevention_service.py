@@ -33,17 +33,15 @@ class AbusePreventionService:
             return None
 
         direct_peer = (
-            request.client.host
-            if request.client and request.client.host
-            else None
+            request.client.host if request.client and request.client.host else None
         )
 
         if not AbusePreventionService._peer_is_trusted_proxy(direct_peer):
             return direct_peer
 
-        forwarded_for = request.headers.get(
-            "X-Forwarded-For"
-        ) or request.headers.get("x-forwarded-for")
+        forwarded_for = request.headers.get("X-Forwarded-For") or request.headers.get(
+            "x-forwarded-for"
+        )
         if forwarded_for:
             for raw in reversed(forwarded_for.split(",")):
                 candidate = raw.strip()
@@ -53,14 +51,10 @@ class AbusePreventionService:
                     ipaddress.ip_address(candidate)
                 except ValueError:
                     continue
-                if not AbusePreventionService._peer_is_trusted_proxy(
-                    candidate
-                ):
+                if not AbusePreventionService._peer_is_trusted_proxy(candidate):
                     return candidate
 
-        real_ip = request.headers.get("X-Real-IP") or request.headers.get(
-            "x-real-ip"
-        )
+        real_ip = request.headers.get("X-Real-IP") or request.headers.get("x-real-ip")
         if real_ip:
             candidate = real_ip.strip()
             if candidate:

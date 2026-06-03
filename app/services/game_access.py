@@ -48,9 +48,7 @@ async def get_authorized_user(
         oauth_user_id=oauth_user_id,
         is_admin=is_admin,
     ):
-        raise ForbiddenError(
-            detail="You do not have permission to access this user"
-        )
+        raise ForbiddenError(detail="You do not have permission to access this user")
     return user
 
 
@@ -100,8 +98,6 @@ async def get_authorized_game(
         oauth_user_id=oauth_user_id,
         is_admin=is_admin,
     ):
-        raise ForbiddenError(
-            detail="You do not have permission to access this game"
-        )
+        raise ForbiddenError(detail="You do not have permission to access this game")
 
     return game

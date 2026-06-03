@@ -41,9 +41,7 @@ class GameParamsRepository(BaseRepository):
         """
         async with self.session_factory() as session:
             stmt = select(self.model).filter(self.model.id == id)
-            game_params_model = (
-                await session.execute(stmt)
-            ).scalars().first()
+            game_params_model = (await session.execute(stmt)).scalars().first()
 
             if game_params_model:
                 for key, value in schema.model_dump(exclude_none=True).items():

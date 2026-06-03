@@ -47,9 +47,8 @@ from typing import Any, Dict, List, Optional
 from app.core import config as _config_module
 from app.engine import dsl_metrics
 from app.model.strategy_execution_log import StrategyExecutionLog
-from app.repository.strategy_execution_log_repository import (
-    StrategyExecutionLogRepository,
-)
+from app.repository.strategy_execution_log_repository import \
+    StrategyExecutionLogRepository
 
 logger = logging.getLogger(__name__)
 
@@ -64,9 +63,7 @@ class DslExecutionObserver:
 
     def __init__(
         self,
-        execution_log_repository: Optional[
-            StrategyExecutionLogRepository
-        ] = None,
+        execution_log_repository: Optional[StrategyExecutionLogRepository] = None,
         *,
         rng: Optional[random.Random] = None,
         queue_maxsize: Optional[int] = None,
@@ -142,8 +139,7 @@ class DslExecutionObserver:
         sample_rate = _config_module.configs.DSL_EXECUTION_LOG_SAMPLE_RATE
         # Always keep errors; sample OK runs.
         should_persist = is_error or (
-            sample_rate > 0
-            and self._rng.random() < sample_rate
+            sample_rate > 0 and self._rng.random() < sample_rate
         )
         if not should_persist:
             return
@@ -154,8 +150,7 @@ class DslExecutionObserver:
         notes = None
         if trace is not None and len(trace) > len(truncated_trace or []):
             notes = (
-                f"trace truncated: {len(trace)} -> "
-                f"{len(truncated_trace)} entries"
+                f"trace truncated: {len(trace)} -> " f"{len(truncated_trace)} entries"
             )
 
         row = StrategyExecutionLog(
@@ -206,7 +201,8 @@ class DslExecutionObserver:
             # scoring must never block on the audit log. Surface the drop
             # so a saturated sink is visible instead of silent data loss.
             dsl_metrics.observe_log_dropped(
-                realm=realmId, strategy_type=strategyType,
+                realm=realmId,
+                strategy_type=strategyType,
             )
             logger.warning(
                 "DSL execution-log queue full (maxsize=%s); dropped a "
@@ -270,7 +266,8 @@ class DslExecutionObserver:
 
 
 def _truncate_trace(
-    trace: Optional[List[Dict[str, Any]]], limit: int,
+    trace: Optional[List[Dict[str, Any]]],
+    limit: int,
 ) -> Optional[List[Dict[str, Any]]]:
     """
     Keep the head of the trace (where rule matching happens) and drop

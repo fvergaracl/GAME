@@ -4,7 +4,14 @@ import DatePicker from 'react-datepicker'
 import { CButton } from '@coreui/react'
 import 'react-datepicker/dist/react-datepicker.css'
 
-const DateRangePicker = ({ customRange, setCustomRange, onFilter }) => {
+const DateRangePicker = ({
+  customRange = {
+    start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
+    end: new Date(),
+  },
+  setCustomRange = () => {},
+  onFilter = () => {},
+}) => {
   const handleDateChange = (dates) => {
     const [start, end] = dates
     setCustomRange((prev) => ({
@@ -59,15 +66,6 @@ DateRangePicker.propTypes = {
   }),
   setCustomRange: PropTypes.func,
   onFilter: PropTypes.func,
-}
-
-DateRangePicker.defaultProps = {
-  customRange: {
-    start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
-    end: new Date(),
-  },
-  setCustomRange: () => {},
-  onFilter: () => {},
 }
 
 export default DateRangePicker

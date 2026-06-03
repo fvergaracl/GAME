@@ -20,9 +20,8 @@ import pytest_asyncio
 # import the ``strategyexecutionlog`` table wouldn't exist.
 import app.model.strategy_execution_log  # noqa: F401
 from app.model.strategy_execution_log import StrategyExecutionLog
-from app.repository.strategy_execution_log_repository import (
-    StrategyExecutionLogRepository,
-)
+from app.repository.strategy_execution_log_repository import \
+    StrategyExecutionLogRepository
 
 
 @pytest_asyncio.fixture
@@ -46,16 +45,31 @@ async def seeded(repo):
         ("s1", "ok", None, 50.0, 5.0, "CaseA", base + timedelta(minutes=4)),
         ("s1", "ok", None, 60.0, 6.0, "CaseA", base + timedelta(minutes=5)),
         (
-            "s1", "error", "DSL_ARITH_DIV_BY_ZERO",
-            5.0, None, None, base + timedelta(minutes=6),
+            "s1",
+            "error",
+            "DSL_ARITH_DIV_BY_ZERO",
+            5.0,
+            None,
+            None,
+            base + timedelta(minutes=6),
         ),
         (
-            "s1", "error", "DSL_FIELD_MISSING",
-            7.0, None, None, base + timedelta(minutes=7),
+            "s1",
+            "error",
+            "DSL_FIELD_MISSING",
+            7.0,
+            None,
+            None,
+            base + timedelta(minutes=7),
         ),
         (
-            "s1", "timeout", "DSL_TIMEOUT",
-            999.0, None, None, base + timedelta(minutes=8),
+            "s1",
+            "timeout",
+            "DSL_TIMEOUT",
+            999.0,
+            None,
+            None,
+            base + timedelta(minutes=8),
         ),
         # Unrelated strategy — must not bleed into s1's aggregates.
         ("s2", "ok", None, 1.0, 1.0, "Other", base),

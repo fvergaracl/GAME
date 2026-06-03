@@ -44,8 +44,8 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         self.users_repository.get_or_create_by_externalUserId.return_value = (
             SimpleNamespace(id=user_id, externalUserId="new_user")
         )
-        self.task_repository.read_by_gameId_and_externalTaskId.return_value = SimpleNamespace(
-            status="open"
+        self.task_repository.read_by_gameId_and_externalTaskId.return_value = (
+            SimpleNamespace(status="open")
         )
 
         created_action_data = {
@@ -90,8 +90,8 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         self.users_repository.get_or_create_by_externalUserId.return_value = (
             SimpleNamespace(id=user_id, externalUserId="existing_user")
         )
-        self.task_repository.read_by_gameId_and_externalTaskId.return_value = SimpleNamespace(
-            status="open"
+        self.task_repository.read_by_gameId_and_externalTaskId.return_value = (
+            SimpleNamespace(status="open")
         )
         self.user_actions_repository.create = AsyncMock(
             return_value=SimpleNamespace(
@@ -130,8 +130,8 @@ class TestUserActionsService(unittest.IsolatedAsyncioTestCase):
         self.users_repository.get_or_create_by_externalUserId.return_value = (
             SimpleNamespace(id=user_id)
         )
-        self.task_repository.read_by_gameId_and_externalTaskId.return_value = SimpleNamespace(
-            status="closed"
+        self.task_repository.read_by_gameId_and_externalTaskId.return_value = (
+            SimpleNamespace(status="closed")
         )
         action = AddActionDidByUserInTask(
             typeAction="click",

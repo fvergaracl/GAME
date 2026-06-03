@@ -15,11 +15,8 @@ from app.api.v1.endpoints import strategies_custom as endpoint
 from app.core.config import configs
 from app.core.exceptions import DslTimeoutError, DslValidationError, ForbiddenError
 from app.middlewares.auth_context import AuditLogger, AuthContext
-from app.schema.dsl_schema import (
-    InlineSimulationRequest,
-    SimulationRequest,
-    SimulationResponse,
-)
+from app.schema.dsl_schema import (InlineSimulationRequest, SimulationRequest,
+                                   SimulationResponse)
 
 
 def _auth(*, api_key=None, oauth_user_id=None, is_admin=False) -> AuthContext:
@@ -103,14 +100,10 @@ async def test_simulate_rejects_anonymous_caller():
 @pytest.mark.asyncio
 async def test_simulate_logs_error_when_validation_fails():
     service = MagicMock()
-    service.simulate = AsyncMock(
-        side_effect=DslValidationError(detail="bad ast")
-    )
+    service.simulate = AsyncMock(side_effect=DslValidationError(detail="bad ast"))
     auth = _auth(api_key="api-key-xyz")
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         with pytest.raises(DslValidationError):
             await endpoint.simulate_custom_strategy(
                 id="row-1",
@@ -211,8 +204,7 @@ async def test_simulate_inline_falls_back_to_keycloak_realm_for_oauth():
         )
 
     assert (
-        service.simulate_inline.await_args.kwargs["realmId"]
-        == configs.KEYCLOAK_REALM
+        service.simulate_inline.await_args.kwargs["realmId"] == configs.KEYCLOAK_REALM
     )
 
 
@@ -224,9 +216,7 @@ async def test_simulate_inline_logs_error_on_validation_failure():
     )
     auth = _auth(api_key="api-key-xyz")
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         with pytest.raises(DslValidationError):
             await endpoint.simulate_inline_strategy(
                 payload=_inline_request(),

@@ -20,17 +20,17 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
-import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride'
+import { Joyride, ACTIONS, EVENTS, STATUS } from 'react-joyride'
 import { useTranslation } from 'react-i18next'
 
 const OnboardingTour = ({
   storageKey,
   steps,
   i18nNamespace,
-  keyPrefix,
-  welcomeKey,
-  runRequest,
-  onFinished,
+  keyPrefix = '',
+  welcomeKey = 'welcome',
+  runRequest = 'auto',
+  onFinished = null,
 }) => {
   const { t } = useTranslation(i18nNamespace)
   const [run, setRun] = useState(false)
@@ -141,13 +141,6 @@ OnboardingTour.propTypes = {
   welcomeKey: PropTypes.string,
   runRequest: PropTypes.oneOf(['auto', 'manual', null]),
   onFinished: PropTypes.func,
-}
-
-OnboardingTour.defaultProps = {
-  keyPrefix: '',
-  welcomeKey: 'welcome',
-  runRequest: 'auto',
-  onFinished: null,
 }
 
 export default OnboardingTour

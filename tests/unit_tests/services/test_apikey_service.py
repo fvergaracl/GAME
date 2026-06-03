@@ -23,9 +23,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         )
 
     @patch("app.services.apikey_service.generate_api_key")
-    async def test_generate_api_key_returns_unique_triple(
-        self, mock_generate_api_key
-    ):
+    async def test_generate_api_key_returns_unique_triple(self, mock_generate_api_key):
         """
         The service skips colliding hashes/prefixes and returns a
         plaintext/prefix/hash triple that does not exist in the DB.
@@ -41,8 +39,8 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         # None, then prefix lookup also returns None.
         self.apikey_repository.read_by_column.side_effect = [
             MagicMock(),  # hash collision on first
-            None,         # hash miss on second
-            None,         # prefix miss on second
+            None,  # hash miss on second
+            None,  # prefix miss on second
         ]
 
         generated = await self.api_key_service.generate_api_key_service()
@@ -70,9 +68,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
 
         self.apikey_repository.create.return_value = api_key_data
 
-        created_api_key = await self.api_key_service.create_api_key(
-            api_key_data
-        )
+        created_api_key = await self.api_key_service.create_api_key(api_key_data)
 
         self.apikey_repository.create.assert_called_once_with(api_key_data)
         self.assertEqual(created_api_key, api_key_data)
@@ -131,9 +127,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
             id="row-1", active=False, apiKey="gme_live_aaaaaaaa"
         )
 
-        await self.api_key_service.revoke_api_key_by_prefix(
-            "gme_live_aaaaaaaa"
-        )
+        await self.api_key_service.revoke_api_key_by_prefix("gme_live_aaaaaaaa")
 
         self.assertIsNone(await self.cache_backend.get("hash-1"))
         survivor = await self.cache_backend.get("hash-2")
@@ -144,9 +138,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
         self.apikey_repository.read_by_column.return_value = None
 
         with self.assertRaises(NotFoundError):
-            await self.api_key_service.revoke_api_key_by_prefix(
-                "gme_live_missing0"
-            )
+            await self.api_key_service.revoke_api_key_by_prefix("gme_live_missing0")
 
         self.apikey_repository.update_attr.assert_not_called()
 
@@ -224,9 +216,7 @@ class TestApiKeyService(unittest.IsolatedAsyncioTestCase):
 
         repository.read_by_column.assert_called_once_with(
             "apiKeyHash",
-            hash_api_key(
-                "gme_live_abcdefgh.SECRET-SECRET-SECRET-SECRET-SECRE"
-            ),
+            hash_api_key("gme_live_abcdefgh.SECRET-SECRET-SECRET-SECRET-SECRE"),
             not_found_raise_exception=False,
         )
         self.assertTrue(response.sucess)

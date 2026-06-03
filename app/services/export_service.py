@@ -29,14 +29,9 @@ from app.model.users import Users
 from app.model.wallet import Wallet
 from app.model.wallet_transactions import WalletTransactions
 from app.repository.export_audit_log_repository import ExportAuditLogRepository
-from app.schema.export_schema import (
-    CreateExportAuditLog,
-    ExportAuditLogEntry,
-    ExportDatasetType,
-    ExportFilters,
-    ExportFormat,
-    ExportStatus,
-)
+from app.schema.export_schema import (CreateExportAuditLog, ExportAuditLogEntry,
+                                      ExportDatasetType, ExportFilters, ExportFormat,
+                                      ExportStatus)
 from app.services.base_service import BaseService
 
 # Column order for each dataset. Drives both CSV header row and XLSX columns.
@@ -214,9 +209,7 @@ class ExportService(BaseService):
     # ------------------------------------------------------------------
     # Dataset iterators (each yields plain dicts)
     # ------------------------------------------------------------------
-    async def iter_users(
-        self, filters: ExportFilters
-    ) -> AsyncIterator[Dict[str, Any]]:
+    async def iter_users(self, filters: ExportFilters) -> AsyncIterator[Dict[str, Any]]:
         stmt = select(
             Users.id,
             Users.externalUserId,
@@ -289,18 +282,15 @@ class ExportService(BaseService):
         # has no FK to tasks/games (related IDs, when present, live in the
         # JSONB ``data`` column). We keep them in the endpoint signature for
         # uniformity but ignore them on this dataset.
-        stmt = (
-            select(
-                UserActions.id,
-                UserActions.created_at,
-                Users.externalUserId.label("externalUserId"),
-                UserActions.typeAction,
-                UserActions.description,
-                UserActions.data,
-                UserActions.apiKey_used,
-            )
-            .outerjoin(Users, UserActions.userId == Users.id)
-        )
+        stmt = select(
+            UserActions.id,
+            UserActions.created_at,
+            Users.externalUserId.label("externalUserId"),
+            UserActions.typeAction,
+            UserActions.description,
+            UserActions.data,
+            UserActions.apiKey_used,
+        ).outerjoin(Users, UserActions.userId == Users.id)
         stmt = self._apply_date_filters(stmt, UserActions, filters)
         stmt = stmt.order_by(UserActions.created_at).limit(filters.limit)
         async for row in self._stream_rows(stmt):
@@ -335,9 +325,7 @@ class ExportService(BaseService):
             .join(Users, Wallet.userId == Users.id)
         )
         stmt = self._apply_date_filters(stmt, WalletTransactions, filters)
-        stmt = stmt.order_by(WalletTransactions.created_at).limit(
-            filters.limit
-        )
+        stmt = stmt.order_by(WalletTransactions.created_at).limit(filters.limit)
         async for row in self._stream_rows(stmt):
             yield {
                 "id": str(row.id),
@@ -365,9 +353,7 @@ class ExportService(BaseService):
         mapping = {
             ExportDatasetType.USERS.value: self.iter_users,
             ExportDatasetType.USER_POINTS.value: self.iter_user_points,
-            ExportDatasetType.USER_INTERACTIONS.value: (
-                self.iter_user_interactions
-            ),
+            ExportDatasetType.USER_INTERACTIONS.value: (self.iter_user_interactions),
             ExportDatasetType.WALLET_TRANSACTIONS.value: (
                 self.iter_wallet_transactions
             ),
@@ -393,17 +379,13 @@ class ExportService(BaseService):
         """
         # Write header.
         buffer = io.StringIO()
-        writer = csv.DictWriter(
-            buffer, fieldnames=columns, extrasaction="ignore"
-        )
+        writer = csv.DictWriter(buffer, fieldnames=columns, extrasaction="ignore")
         writer.writeheader()
         yield buffer.getvalue().encode("utf-8")
         async for row in rows:
             buffer.seek(0)
             buffer.truncate(0)
-            writer.writerow(
-                {k: _stringify_for_tabular(row.get(k)) for k in columns}
-            )
+            writer.writerow({k: _stringify_for_tabular(row.get(k)) for k in columns})
             yield buffer.getvalue().encode("utf-8")
 
     @staticmethod
@@ -453,9 +435,7 @@ class ExportService(BaseService):
         sheet = workbook.create_sheet(title="export")
         sheet.append(columns)
         async for row in rows:
-            sheet.append(
-                [_stringify_for_tabular(row.get(col)) for col in columns]
-            )
+            sheet.append([_stringify_for_tabular(row.get(col)) for col in columns])
         buffer = io.BytesIO()
         workbook.save(buffer)
         buffer.seek(0)
@@ -479,9 +459,7 @@ class ExportService(BaseService):
             return self.format_as_json(rows)
         if export_format == ExportFormat.XLSX.value:
             return self.format_as_xlsx(rows, columns)
-        raise InternalServerError(
-            detail=f"Unknown export format: {export_format}"
-        )
+        raise InternalServerError(detail=f"Unknown export format: {export_format}")
 
     @staticmethod
     def media_type_for(export_format: str) -> str:
@@ -489,8 +467,7 @@ class ExportService(BaseService):
             ExportFormat.CSV.value: "text/csv; charset=utf-8",
             ExportFormat.JSON.value: "application/json",
             ExportFormat.XLSX.value: (
-                "application/vnd.openxmlformats-officedocument."
-                "spreadsheetml.sheet"
+                "application/vnd.openxmlformats-officedocument." "spreadsheetml.sheet"
             ),
         }[export_format]
 

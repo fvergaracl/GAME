@@ -50,16 +50,12 @@ class DashboardService(BaseService):
         self.user_actions_repository = user_actions_repository
         super().__init__(dashboard_repository)
 
-    async def get_dashboard_summary(
-        self, start_date, end_date, group_by
-    ) -> Any:
+    async def get_dashboard_summary(self, start_date, end_date, group_by) -> Any:
         return await self.dashboard_repository.get_dashboard_summary(
             start_date, end_date, group_by
         )
 
-    async def get_dashboard_summary_logs(
-        self, start_date, end_date, group_by
-    ) -> Any:
+    async def get_dashboard_summary_logs(self, start_date, end_date, group_by) -> Any:
         return await self.dashboard_repository.get_dashboard_summary_logs(
             start_date, end_date, group_by
         )

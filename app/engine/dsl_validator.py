@@ -35,41 +35,18 @@ from typing import Any, Dict, Optional
 
 from app.core.config import configs
 from app.core.exceptions import DslValidationError
-from app.engine.dsl_ast import (
-    ALLOWED_ARITH_OPS,
-    ALLOWED_COMPARE_OPS,
-    ALLOWED_FUNC_NAMES,
-    ALL_NODE_TYPES,
-    CASE_NAME_MAX_LEN,
-    CONDITION_NODE_TYPES,
-    EXPRESSION_NODE_TYPES,
-    FUNC_ARITY,
-    NODE_AND,
-    NODE_ARITH,
-    NODE_ASSIGN_POINTS,
-    NODE_COMPARE,
-    NODE_FIELD,
-    NODE_FUNC_CALL,
-    NODE_LITERAL,
-    NODE_NOT,
-    NODE_OR,
-    NODE_PROGRAM,
-    NODE_RETURN,
-    NODE_RULE,
-    NODE_SET_CALLBACK_DATA,
-    NODE_SET_CASE_NAME,
-    NODE_SET_DATA,
-    NODE_SET_POINTS,
-    NODE_VETO,
-    PARENT_VARIABLES_KEY,
-    STATEMENT_ALLOWED_CONTEXTS,
-    STATEMENT_NODE_TYPES,
-    is_known_field_path,
-    is_parent_field_path,
-    is_valid_case_name,
-    is_valid_data_path,
-)
-
+from app.engine.dsl_ast import (ALL_NODE_TYPES, ALLOWED_ARITH_OPS, ALLOWED_COMPARE_OPS,
+                                ALLOWED_FUNC_NAMES, CASE_NAME_MAX_LEN,
+                                CONDITION_NODE_TYPES, EXPRESSION_NODE_TYPES, FUNC_ARITY,
+                                NODE_AND, NODE_ARITH, NODE_ASSIGN_POINTS, NODE_COMPARE,
+                                NODE_FIELD, NODE_FUNC_CALL, NODE_LITERAL, NODE_NOT,
+                                NODE_OR, NODE_PROGRAM, NODE_RETURN, NODE_RULE,
+                                NODE_SET_CALLBACK_DATA, NODE_SET_CASE_NAME,
+                                NODE_SET_DATA, NODE_SET_POINTS, NODE_VETO,
+                                PARENT_VARIABLES_KEY, STATEMENT_ALLOWED_CONTEXTS,
+                                STATEMENT_NODE_TYPES, is_known_field_path,
+                                is_parent_field_path, is_valid_case_name,
+                                is_valid_data_path)
 
 _LITERAL_TYPES = (bool, int, float, str, type(None))
 _CALLBACK_VALUE_LITERAL_TYPES = (bool, int, float, str, type(None))
@@ -162,8 +139,7 @@ def _assert_keys(
     if extras:
         raise DslValidationError(
             detail=(
-                f"Node '{node.get('type')}' has unexpected keys: "
-                f"{sorted(extras)}."
+                f"Node '{node.get('type')}' has unexpected keys: " f"{sorted(extras)}."
             ),
             headers={"X-Node-Id": node_id},
         )
@@ -178,7 +154,10 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
         ("rules",),
         node_id=nid,
         allowed_extra=(
-            "pre_rules", "post_rules", "default", PARENT_VARIABLES_KEY,
+            "pre_rules",
+            "post_rules",
+            "default",
+            PARENT_VARIABLES_KEY,
         ),
     )
 
@@ -190,7 +169,11 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
         )
     for index, rule in enumerate(rules):
         _validate_rule(
-            rule, parent_id=nid, index=index, state=state, depth=1,
+            rule,
+            parent_id=nid,
+            index=index,
+            state=state,
+            depth=1,
             context="rule",
         )
 
@@ -209,7 +192,11 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
             )
         for index, rule in enumerate(section):
             _validate_rule(
-                rule, parent_id=nid, index=index, state=state, depth=1,
+                rule,
+                parent_id=nid,
+                index=index,
+                state=state,
+                depth=1,
                 context=ctx,
             )
 
@@ -235,10 +222,7 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
                     ),
                     headers={"X-Node-Id": nid},
                 )
-            if (
-                not isinstance(value, _LITERAL_TYPES)
-                or isinstance(value, bytes)
-            ):
+            if not isinstance(value, _LITERAL_TYPES) or isinstance(value, bytes):
                 raise DslValidationError(
                     detail=(
                         f"program.{PARENT_VARIABLES_KEY}['{key}'] must be "
@@ -250,7 +234,11 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
     default = node.get("default")
     if default is not None:
         _validate_statement(
-            default, parent_id=nid, index=0, state=state, depth=1,
+            default,
+            parent_id=nid,
+            index=0,
+            state=state,
+            depth=1,
             context="default",
         )
 
@@ -276,8 +264,12 @@ def _validate_then(
         )
     for i, stmt in enumerate(then):
         _validate_statement(
-            stmt, parent_id=parent_id, index=i, state=state,
-            depth=depth + 1, context=context,
+            stmt,
+            parent_id=parent_id,
+            index=i,
+            state=state,
+            depth=depth + 1,
+            context=context,
         )
 
 
@@ -299,19 +291,30 @@ def _validate_rule(
     state.step(nid)
     _require_type(node, NODE_RULE, parent_id=parent_id)
     _assert_keys(
-        node, ("when", "then"), node_id=nid, allowed_extra=("else_if", "else"),
+        node,
+        ("when", "then"),
+        node_id=nid,
+        allowed_extra=("else_if", "else"),
     )
     _check_depth(depth, nid, state)
 
     when = node["when"]
     _validate_condition(
-        when, parent_id=nid, index=0, state=state, depth=depth + 1,
+        when,
+        parent_id=nid,
+        index=0,
+        state=state,
+        depth=depth + 1,
         context=context,
     )
 
     _validate_then(
-        node.get("then"), parent_id=nid, state=state, depth=depth,
-        context=context, label="rule.then",
+        node.get("then"),
+        parent_id=nid,
+        state=state,
+        depth=depth,
+        context=context,
+        label="rule.then",
     )
 
     # else_if / else share the rule's section context (a post-rule's else
@@ -336,8 +339,7 @@ def _validate_rule(
             if extras:
                 raise DslValidationError(
                     detail=(
-                        f"rule.else_if[{j}] has unexpected keys: "
-                        f"{sorted(extras)}."
+                        f"rule.else_if[{j}] has unexpected keys: " f"{sorted(extras)}."
                     ),
                     headers={"X-Node-Id": branch_id},
                 )
@@ -347,19 +349,31 @@ def _validate_rule(
                     headers={"X-Node-Id": branch_id},
                 )
             _validate_condition(
-                branch["when"], parent_id=branch_id, index=0, state=state,
-                depth=depth + 1, context=context,
+                branch["when"],
+                parent_id=branch_id,
+                index=0,
+                state=state,
+                depth=depth + 1,
+                context=context,
             )
             _validate_then(
-                branch.get("then"), parent_id=branch_id, state=state,
-                depth=depth, context=context, label="rule.else_if[*].then",
+                branch.get("then"),
+                parent_id=branch_id,
+                state=state,
+                depth=depth,
+                context=context,
+                label="rule.else_if[*].then",
             )
 
     else_stmts = node.get("else")
     if else_stmts is not None:
         _validate_then(
-            else_stmts, parent_id=nid, state=state, depth=depth,
-            context=context, label="rule.else",
+            else_stmts,
+            parent_id=nid,
+            state=state,
+            depth=depth,
+            context=context,
+            label="rule.else",
         )
 
 
@@ -397,7 +411,11 @@ def _validate_condition(
             )
         for i, arg in enumerate(args):
             _validate_condition(
-                arg, parent_id=nid, index=i, state=state, depth=depth + 1,
+                arg,
+                parent_id=nid,
+                index=i,
+                state=state,
+                depth=depth + 1,
                 context=context,
             )
         return
@@ -405,7 +423,11 @@ def _validate_condition(
     if ntype == NODE_NOT:
         _assert_keys(node, ("arg",), node_id=nid)
         _validate_condition(
-            node["arg"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            node["arg"],
+            parent_id=nid,
+            index=0,
+            state=state,
+            depth=depth + 1,
             context=context,
         )
         return
@@ -419,11 +441,19 @@ def _validate_condition(
                 headers={"X-Node-Id": nid},
             )
         _validate_expression(
-            node["left"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            node["left"],
+            parent_id=nid,
+            index=0,
+            state=state,
+            depth=depth + 1,
             context=context,
         )
         _validate_expression(
-            node["right"], parent_id=nid, index=1, state=state, depth=depth + 1,
+            node["right"],
+            parent_id=nid,
+            index=1,
+            state=state,
+            depth=depth + 1,
             context=context,
         )
         return
@@ -431,7 +461,11 @@ def _validate_condition(
     # Conditions can be raw booleans/expressions too (literal true/false,
     # or a field that resolves to a number used as truthy). Delegate.
     _validate_expression(
-        node, parent_id=parent_id, index=index, state=state, depth=depth,
+        node,
+        parent_id=parent_id,
+        index=index,
+        state=state,
+        depth=depth,
         context=context,
     )
 
@@ -519,11 +553,19 @@ def _validate_expression(
                 params={"nodeId": nid, "op": op},
             )
         _validate_expression(
-            node["left"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            node["left"],
+            parent_id=nid,
+            index=0,
+            state=state,
+            depth=depth + 1,
             context=context,
         )
         _validate_expression(
-            node["right"], parent_id=nid, index=1, state=state, depth=depth + 1,
+            node["right"],
+            parent_id=nid,
+            index=1,
+            state=state,
+            depth=depth + 1,
             context=context,
         )
         return
@@ -558,7 +600,11 @@ def _validate_expression(
             )
         for i, arg in enumerate(args):
             _validate_expression(
-                arg, parent_id=nid, index=i, state=state, depth=depth + 1,
+                arg,
+                parent_id=nid,
+                index=i,
+                state=state,
+                depth=depth + 1,
                 context=context,
             )
         return
@@ -615,7 +661,11 @@ def _validate_statement(
     if ntype == NODE_ASSIGN_POINTS:
         _assert_keys(node, ("value", "case_name"), node_id=nid)
         _validate_expression(
-            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            node["value"],
+            parent_id=nid,
+            index=0,
+            state=state,
+            depth=depth + 1,
             context=context,
         )
         case_name = node["case_name"]
@@ -639,7 +689,11 @@ def _validate_statement(
             )
         # value may be a full expression — the interpreter will resolve it.
         _validate_expression(
-            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            node["value"],
+            parent_id=nid,
+            index=0,
+            state=state,
+            depth=depth + 1,
             context=context,
         )
         return
@@ -666,7 +720,11 @@ def _validate_statement(
                 headers={"X-Node-Id": nid},
             )
         _validate_expression(
-            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            node["value"],
+            parent_id=nid,
+            index=0,
+            state=state,
+            depth=depth + 1,
             context=context,
         )
         return
@@ -694,7 +752,11 @@ def _validate_statement(
         # designer can chain set_points + set_callback_data.
         _assert_keys(node, ("value",), node_id=nid)
         _validate_expression(
-            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            node["value"],
+            parent_id=nid,
+            index=0,
+            state=state,
+            depth=depth + 1,
             context=context,
         )
         return
@@ -707,7 +769,11 @@ def _validate_statement(
         # printable ASCII string.
         _assert_keys(node, ("value",), node_id=nid)
         _validate_expression(
-            node["value"], parent_id=nid, index=0, state=state, depth=depth + 1,
+            node["value"],
+            parent_id=nid,
+            index=0,
+            state=state,
+            depth=depth + 1,
             context=context,
         )
         return

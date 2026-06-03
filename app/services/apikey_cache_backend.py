@@ -11,6 +11,7 @@ request.
 Selection is driven by ``configs.APIKEY_CACHE_BACKEND`` ("memory" or
 "redis") and wired in ``app/core/container.py``.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -29,19 +30,15 @@ logger = logging.getLogger(__name__)
 class ApiKeyCacheBackend(Protocol):
     """Cache the resolved ``(apiKey, active)`` tuple keyed by sha256 hash."""
 
-    async def get(self, cache_key: str) -> Optional[SimpleNamespace]:
-        ...
+    async def get(self, cache_key: str) -> Optional[SimpleNamespace]: ...
 
     async def set(
         self, cache_key: str, value: SimpleNamespace, ttl_seconds: int
-    ) -> None:
-        ...
+    ) -> None: ...
 
-    async def delete(self, cache_key: str) -> None:
-        ...
+    async def delete(self, cache_key: str) -> None: ...
 
-    async def clear(self) -> None:
-        ...
+    async def clear(self) -> None: ...
 
 
 class InMemoryApiKeyCacheBackend:

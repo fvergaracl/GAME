@@ -13,10 +13,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.core.exceptions import (
-    DslExecutionError,
-    DslLimitExceededError,
-)
+from app.core.exceptions import DslExecutionError, DslLimitExceededError
 from app.engine.dsl_execution_context import ExecutionContext
 from app.engine.dsl_interpreter import DslInterpreter
 from app.engine.dsl_validator import validate_ast
@@ -34,7 +31,11 @@ def _two_branch_program():
                     "type": "compare",
                     "id": "c1",
                     "op": "<",
-                    "left": {"type": "field", "id": "f1", "path": "user.measurements_count"},
+                    "left": {
+                        "type": "field",
+                        "id": "f1",
+                        "path": "user.measurements_count",
+                    },
                     "right": {"type": "literal", "id": "l1", "value": 2},
                 },
                 "then": [
@@ -93,7 +94,9 @@ async def test_first_rule_matches_returns_basic_engagement():
 
     assert result["points"] == 1
     assert result["case_name"] == "BasicEngagement"
-    assert any(e["nodeId"] == "a1" and e["type"] == "assign_points" for e in result["trace"])
+    assert any(
+        e["nodeId"] == "a1" and e["type"] == "assign_points" for e in result["trace"]
+    )
 
 
 @pytest.mark.asyncio
@@ -323,7 +326,7 @@ async def test_arith_min_max(op, left, right, expected):
             "type": "arith",
             "id": "ar",
             "op": op,
-            "left":  {"type": "literal", "id": "ll", "value": left},
+            "left": {"type": "literal", "id": "ll", "value": left},
             "right": {"type": "literal", "id": "lr", "value": right},
         }
     )
@@ -359,10 +362,10 @@ async def test_func_call_int_truncates_toward_zero():
 @pytest.mark.parametrize(
     "value,lo,hi,expected",
     [
-        (50, 1, 100, 50),    # value within range
-        (-5, 1, 100, 1),     # below floor
+        (50, 1, 100, 50),  # value within range
+        (-5, 1, 100, 1),  # below floor
         (150, 1, 100, 100),  # above ceiling
-        (1, 1, 100, 1),      # at floor (inclusive)
+        (1, 1, 100, 1),  # at floor (inclusive)
         (100, 1, 100, 100),  # at ceiling (inclusive)
     ],
 )
@@ -577,9 +580,7 @@ async def test_then_branch_runs_when_condition_true():
 
     assert result["points"] == 1
     assert result["case_name"] == "THEN"
-    assert any(
-        e["type"] == "rule" and e["branch"] == "match" for e in result["trace"]
-    )
+    assert any(e["type"] == "rule" and e["branch"] == "match" for e in result["trace"])
     # No else / else_if statement ran.
     assert not any(e["nodeId"] == "a_e1" for e in result["trace"])
 
@@ -596,8 +597,7 @@ async def test_first_matching_else_if_wins():
     assert result["points"] == 3
     assert result["case_name"] == "ELIF1"
     assert any(
-        e["type"] == "rule" and e["branch"] == "elseif:1"
-        for e in result["trace"]
+        e["type"] == "rule" and e["branch"] == "elseif:1" for e in result["trace"]
     )
     # The else branch must NOT run once an else_if matched.
     assert not any(e["nodeId"] == "a_else" for e in result["trace"])
@@ -631,9 +631,7 @@ async def test_else_runs_when_nothing_matches():
 
     assert result["points"] == 4
     assert result["case_name"] == "ELSE"
-    assert any(
-        e["type"] == "rule" and e["branch"] == "else" for e in result["trace"]
-    )
+    assert any(e["type"] == "rule" and e["branch"] == "else" for e in result["trace"])
 
 
 @pytest.mark.asyncio
@@ -663,9 +661,7 @@ async def test_no_match_without_else_is_noop():
 
     assert result["points"] == 0
     assert result["case_name"] is None
-    assert any(
-        e["type"] == "rule" and e["branch"] == "skip" for e in result["trace"]
-    )
+    assert any(e["type"] == "rule" and e["branch"] == "skip" for e in result["trace"])
 
 
 @pytest.mark.asyncio

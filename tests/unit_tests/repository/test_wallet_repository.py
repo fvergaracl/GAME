@@ -29,9 +29,7 @@ async def _seed_user(db_session, external_id="ext-w-1"):
 async def test_upsert_creates_wallet_when_missing(repository, db_session):
     user = await _seed_user(db_session)
 
-    wallet = await repository.upsert_points_balance(
-        user_id=user.id, points_delta=5
-    )
+    wallet = await repository.upsert_points_balance(user_id=user.id, points_delta=5)
 
     assert wallet.id is not None
     assert wallet.pointsBalance == 5
@@ -43,9 +41,7 @@ async def test_upsert_increments_existing_wallet(repository, db_session):
     user = await _seed_user(db_session, "ext-w-incr")
 
     await repository.upsert_points_balance(user_id=user.id, points_delta=3)
-    second = await repository.upsert_points_balance(
-        user_id=user.id, points_delta=7
-    )
+    second = await repository.upsert_points_balance(user_id=user.id, points_delta=7)
 
     assert second.pointsBalance == 10
 
@@ -94,7 +90,5 @@ async def test_upsert_with_external_session_flushes_only(
 
     # A subsequent insert from scratch must see the balance reset to delta
     # because the previous transaction rolled back.
-    fresh = await repository.upsert_points_balance(
-        user_id=user.id, points_delta=4
-    )
+    fresh = await repository.upsert_points_balance(user_id=user.id, points_delta=4)
     assert fresh.pointsBalance == 4

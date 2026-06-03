@@ -9,68 +9,68 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
-aiosqlite = "0.19.0"
-alembic = "1.13.1"
+aiosqlite = "0.22.1"
+alembic = "1.14.1"
 anyio = "3.6.1"
-asgiref = "3.7.2"
-asyncpg = "0.29.0"
+asgiref = "3.11.1"
+asyncpg = "0.31.0"
 attrs = "23.2.0"
 bcrypt = "4.1.2"
 certifi = "2024.2.2"
-cffi = "1.16.0"
-charset-normalizer = "3.3.2"
-click = "8.1.7"
+cffi = "2.0.0"
+charset-normalizer = "3.4.7"
+click = "8.4.1"
 cryptography = "44.0.1"
-dependency-injector = "^4.46.0"
-ecdsa = "0.18.0"
-greenlet = "3.0.3"
+dependency-injector = "^4.49.0"
+ecdsa = "0.19.2"
+greenlet = "3.5.1"
 h11 = "0.14.0"
 httpcore = "0.16.3"
-httptools = "0.6.1"
-httpx = "0.23.3"
-idna = "3.7"
-importlib-metadata = "7.0.1"
-importlib-resources = "6.1.1"
-mako = "1.3.2"
-markupsafe = "2.1.4"
+httptools = "0.8.0"
+httpx = "0.25.1"
+idna = "3.17"
+importlib-metadata = "8.4.0"
+importlib-resources = "7.1.0"
+mako = "1.3.12"
+markupsafe = "3.0.3"
 packaging = "23.2"
 passlib = "1.7.4"
-pyasn1 = "^0.4.8"
-pycparser = "2.21"
+pyasn1 = "^0.6.3"
+pycparser = "3.0"
 pydantic = "^2.7"
 pydantic-settings = "^2.3"
-pymysql = "1.1.1"
-pyparsing = "3.1.1"
-python-dotenv = "1.0.1"
+pymysql = "1.2.0"
+pyparsing = "3.3.2"
+python-dotenv = "1.2.2"
 pytz = "2024.1"
-pyyaml = "6.0.1"
-requests = "2.32.2"
+pyyaml = "6.0.3"
+requests = "2.34.2"
 rfc3986 = "1.5.0"
-rsa = "4.9"
-six = "1.16.0"
-sniffio = "1.3.0"
+rsa = "4.9.1"
+six = "1.17.0"
+sniffio = "1.3.1"
 sqlalchemy = "^2.0.30"
-sqlmodel = "^0.0.22"
-tomli = "2.0.1"
-typing-extensions = "4.9.0"
-urllib3 = "2.2.2"
-uvloop = "0.19.0"
-watchfiles = "0.21.0"
+sqlmodel = "^0.0.33"
+tomli = "2.4.1"
+typing-extensions = "4.15.0"
+urllib3 = "2.7.0"
+uvloop = "0.22.1"
+watchfiles = "1.2.0"
 watchgod = "0.8.2"
 websockets = "12.0"
 zipp = "3.17.0"
 toml = "^0.10.2"
-uvicorn = "^0.30.1"
+uvicorn = "^0.48.0"
 prettytable = "^3.11.0"
-fastapi = "^0.114.2"
+fastapi = "^0.115.2"
 starlette = "^0.38.5"
 gunicorn = "^23.0.0"
 prometheus-fastapi-instrumentator = "^7.0.0"
-graphviz = "^0.20.3"
-pyjwt = "^2.10.1"
-numpy = "^2.2.3"
-sentry-sdk = { extras = ["fastapi"], version = "^2.22.0" }
-redis = "^5.0"
+graphviz = "^0.21.0"
+pyjwt = "^2.13.0"
+numpy = "^2.4.6"
+sentry-sdk = { extras = ["fastapi"], version = "^2.61.1" }
+redis = "^8.0"
 python-json-logger = "^2.0.7"
 openpyxl = "^3.1"
 
@@ -83,18 +83,18 @@ sphinx-autobuild = "^2024.2.4"
 commitizen = "^3.25.0"
 flake8 = "^7.0.0"
 black = "^24.4.2"
-ruff = "^0.15.0"
+ruff = "^0.15.15"
 isort = "5.13.2"
-coverage = "7.4.1"
+coverage = "7.14.1"
 pytest = "8.0.0"
 pytest-asyncio = "0.19.0"
 pytest-cov = "4.1.0"
-pytest-mock = "3.12.0"
-pytest-xdist = "3.5.0"
+pytest-mock = "3.15.1"
+pytest-xdist = "3.8.0"
 freezegun = "^1.5.1"
-vulture = "^2.11"
-eralchemy = "^1.2.10"
-fakeredis = "^2.23"
+vulture = "^2.16"
+eralchemy = "^1.7.0"
+fakeredis = "^2.36"
 
 [build-system]
 requires = ["poetry-core"]
@@ -102,3 +102,36 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 release = "cz.cli:main"
+
+# Single source of truth for linting. Replaces the near-empty .pylintrc
+# (pylint was not even installed) and supersedes the ad-hoc flake8 defaults
+# the IDE was applying at 79 columns -- which conflicted with the black
+# formatter the repo runs in CI. Ruff (already a dev dependency) now owns
+# pycodestyle (E/W) + pyflakes (F). Line length is delegated to the
+# formatter: black wraps code to 88 columns and long URLs/strings it cannot
+# wrap must not fail lint. Import ordering stays with the standalone isort
+# run in CI, so rule "I" is intentionally left unselected to avoid a second,
+# divergent ordering; known-first-party is preconfigured for when it is
+# enabled. Pre-existing E/F/W findings outside this scope are tracked as an
+# incremental cleanup backlog (mirrors the progressive typing rollout).
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-exclude = [
+    ".venv",
+    "migrations",
+    "node_modules",
+    "dashboard",
+    "healthcheck_service",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# __init__.py modules deliberately re-export names as the package API.
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]

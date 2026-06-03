@@ -101,10 +101,7 @@ class TestMain(unittest.TestCase):
         )
 
         assert response.status_code == 200
-        assert (
-            response.headers["access-control-allow-origin"]
-            == "http://localhost"
-        )
+        assert response.headers["access-control-allow-origin"] == "http://localhost"
 
 
 if __name__ == "__main__":

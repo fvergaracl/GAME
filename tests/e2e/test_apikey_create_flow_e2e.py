@@ -15,7 +15,6 @@ from app.model.logs import Logs
 from app.model.oauth_users import OAuthUsers
 from app.util.generate_api_key import extract_prefix, hash_api_key
 
-
 pytestmark = [
     pytest.mark.e2e_real_http,
     pytest.mark.skipif(
@@ -68,7 +67,9 @@ def _fetch_keycloak_access_token(
     username: str,
     password: str,
 ) -> str:
-    token_url = f"{keycloak_url.rstrip('/')}/realms/{realm}/protocol/openid-connect/token"
+    token_url = (
+        f"{keycloak_url.rstrip('/')}/realms/{realm}/protocol/openid-connect/token"
+    )
     payload = {
         "grant_type": "password",
         "client_id": client_id,
@@ -97,9 +98,9 @@ def _decode_subject_without_verification(access_token: str) -> str:
         },
     )
     subject = decoded.get("sub")
-    assert isinstance(subject, str) and subject.strip(), (
-        "Decoded bearer token does not contain a valid `sub` claim."
-    )
+    assert (
+        isinstance(subject, str) and subject.strip()
+    ), "Decoded bearer token does not contain a valid `sub` claim."
     return subject
 
 
@@ -221,9 +222,7 @@ def apikey_create_context(
 
     run_id = uuid.uuid4().hex
     client_prefix = f"e2e-apikey-create-{run_id}"
-    bootstrap_api_key = (
-        f"gme_live_{run_id[:8]}.bootstrap-{run_id}-{uuid.uuid4().hex}"
-    )
+    bootstrap_api_key = f"gme_live_{run_id[:8]}.bootstrap-{run_id}-{uuid.uuid4().hex}"
     bootstrap_prefix = extract_prefix(bootstrap_api_key)
     bootstrap_hash = hash_api_key(bootstrap_api_key)
     bootstrap_client = f"{client_prefix}-bootstrap"
@@ -270,9 +269,9 @@ def apikey_create_context(
         )
     finally:
         with Session(postgres_engine) as session:
-            session.query(Logs).filter(
-                Logs.apiKey_used == bootstrap_prefix
-            ).delete(synchronize_session=False)
+            session.query(Logs).filter(Logs.apiKey_used == bootstrap_prefix).delete(
+                synchronize_session=False
+            )
             session.query(ApiKey).filter(
                 ApiKey.client.like(f"{client_prefix}%")
             ).delete(synchronize_session=False)
@@ -344,9 +343,7 @@ def test_apikey_create_happy_path(
         assert after_count == before_count + 1
 
         created = (
-            session.query(ApiKey)
-            .filter(ApiKey.apiKey == body["apiKey"])
-            .one_or_none()
+            session.query(ApiKey).filter(ApiKey.apiKey == body["apiKey"]).one_or_none()
         )
         assert created is not None
         assert created.client == payload["client"]
@@ -542,8 +539,7 @@ def test_apikey_create_retry_same_payload_is_consistent(
             body_2["apiKey"],
         }
         assert all(
-            row.createdBy == apikey_create_context.admin_subject
-            for row in created_rows
+            row.createdBy == apikey_create_context.admin_subject for row in created_rows
         )
 
 

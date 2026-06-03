@@ -44,13 +44,9 @@ async def _seed_game(
 
 
 @pytest.mark.asyncio
-async def test_get_game_by_id_returns_game_and_params(
-    repository, db_session
-):
+async def test_get_game_by_id_returns_game_and_params(repository, db_session):
     game = await _seed_game(db_session)
-    db_session.add(
-        GamesParams(gameId=game.id, key="difficulty", value="hard")
-    )
+    db_session.add(GamesParams(gameId=game.id, key="difficulty", value="hard"))
     db_session.add(GamesParams(gameId=game.id, key="lives", value="3"))
     await db_session.commit()
 
@@ -67,9 +63,7 @@ async def test_get_game_by_id_returns_game_and_params(
 @pytest.mark.asyncio
 async def test_get_game_by_id_raises_not_found_when_missing(repository):
     with pytest.raises(NotFoundError):
-        await repository.get_game_by_id(
-            UUID("00000000-0000-0000-0000-000000000000")
-        )
+        await repository.get_game_by_id(UUID("00000000-0000-0000-0000-000000000000"))
 
 
 @pytest.mark.asyncio
@@ -112,9 +106,7 @@ async def test_patch_game_by_id_raises_duplicated_on_unique_violation(
 
 
 @pytest.mark.asyncio
-async def test_delete_game_by_id_cascades_params_and_tasks(
-    repository, db_session
-):
+async def test_delete_game_by_id_cascades_params_and_tasks(repository, db_session):
     game = await _seed_game(db_session, external_id="ext-del")
     db_session.add(GamesParams(gameId=game.id, key="k", value="v"))
     task = Tasks(externalTaskId="t-1", gameId=game.id, strategyId="default")
@@ -131,15 +123,11 @@ async def test_delete_game_by_id_cascades_params_and_tasks(
 @pytest.mark.asyncio
 async def test_delete_game_by_id_raises_not_found_when_missing(repository):
     with pytest.raises(NotFoundError):
-        await repository.delete_game_by_id(
-            UUID("00000000-0000-0000-0000-000000000000")
-        )
+        await repository.delete_game_by_id(UUID("00000000-0000-0000-0000-000000000000"))
 
 
 @pytest.mark.asyncio
-async def test_get_all_games_returns_paginated_results(
-    repository, db_session
-):
+async def test_get_all_games_returns_paginated_results(repository, db_session):
     for i in range(3):
         await _seed_game(db_session, external_id=f"ext-{i}")
 
@@ -164,9 +152,7 @@ async def test_get_all_games_filters_by_api_key(repository, db_session):
     from app.model.api_key import ApiKey
 
     api_key_value = "kk-1"
-    db_session.add(
-        ApiKey(apiKey=api_key_value, apiKeyHash="h", apiKeyPrefix="p")
-    )
+    db_session.add(ApiKey(apiKey=api_key_value, apiKeyHash="h", apiKeyPrefix="p"))
     await db_session.commit()
 
     await _seed_game(db_session, external_id="ext-with-key", api_key=api_key_value)
@@ -180,9 +166,7 @@ async def test_get_all_games_filters_by_api_key(repository, db_session):
 
 
 @pytest.mark.asyncio
-async def test_get_all_games_groups_params_under_each_game(
-    repository, db_session
-):
+async def test_get_all_games_groups_params_under_each_game(repository, db_session):
     game = await _seed_game(db_session, external_id="ext-group")
     db_session.add(GamesParams(gameId=game.id, key="a", value="1"))
     db_session.add(GamesParams(gameId=game.id, key="b", value="2"))
@@ -196,9 +180,7 @@ async def test_get_all_games_groups_params_under_each_game(
 
 
 @pytest.mark.asyncio
-async def test_get_all_games_total_count_spans_all_pages(
-    repository, db_session
-):
+async def test_get_all_games_total_count_spans_all_pages(repository, db_session):
     for i in range(5):
         await _seed_game(db_session, external_id=f"ext-{i}")
 
@@ -238,9 +220,7 @@ async def test_get_all_games_page_size_counts_games_not_param_rows(
         "ext-a",
         "ext-b",
     ]
-    params_by_ext = {
-        item.externalGameId: len(item.params) for item in result.items
-    }
+    params_by_ext = {item.externalGameId: len(item.params) for item in result.items}
     assert params_by_ext == {"ext-a": 3, "ext-b": 0}
 
 

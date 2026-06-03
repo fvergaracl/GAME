@@ -12,7 +12,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
-import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride'
+import { Joyride, ACTIONS, EVENTS, STATUS } from 'react-joyride'
 import { useTranslation } from 'react-i18next'
 
 export const TOUR_LOCALSTORAGE_KEY = 'gd-editor-tour-seen'
@@ -39,7 +39,7 @@ const TOUR_STEP_KEYS = [
   },
 ]
 
-const EditorTour = ({ runRequest, onFinished, hasHistory }) => {
+const EditorTour = ({ runRequest = 'auto', onFinished = null, hasHistory = false }) => {
   const { t } = useTranslation('editor')
   const [run, setRun] = useState(false)
   const [stepIndex, setStepIndex] = useState(0)
@@ -140,12 +140,6 @@ EditorTour.propTypes = {
   // history step is skipped when the button doesn't exist yet (e.g.
   // brand-new draft) so Joyride doesn't error out on a missing target.
   hasHistory: PropTypes.bool,
-}
-
-EditorTour.defaultProps = {
-  runRequest: 'auto',
-  onFinished: null,
-  hasHistory: false,
 }
 
 export default EditorTour

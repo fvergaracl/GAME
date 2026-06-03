@@ -38,14 +38,10 @@ async def test_get_by_user_and_game_returns_none_when_missing(repository):
 
 
 @pytest.mark.asyncio
-async def test_create_or_update_inserts_when_pair_is_new(
-    repository, db_session
-):
+async def test_create_or_update_inserts_when_pair_is_new(repository, db_session):
     user, game = await _seed_user_and_game(db_session)
 
-    created = await repository.create_or_update(
-        user.id, game.id, "A", {"k": "v"}
-    )
+    created = await repository.create_or_update(user.id, game.id, "A", {"k": "v"})
 
     assert created.id is not None
     assert created.experimentGroup == "A"
@@ -53,15 +49,11 @@ async def test_create_or_update_inserts_when_pair_is_new(
 
 
 @pytest.mark.asyncio
-async def test_create_or_update_updates_existing_pair_in_place(
-    repository, db_session
-):
+async def test_create_or_update_updates_existing_pair_in_place(repository, db_session):
     user, game = await _seed_user_and_game(db_session, "ext-up", "g-up")
 
     first = await repository.create_or_update(user.id, game.id, "A", {"v": 1})
-    second = await repository.create_or_update(
-        user.id, game.id, "B", {"v": 2}
-    )
+    second = await repository.create_or_update(user.id, game.id, "B", {"v": 2})
 
     assert first.id == second.id
     assert second.experimentGroup == "B"
@@ -69,9 +61,7 @@ async def test_create_or_update_updates_existing_pair_in_place(
 
 
 @pytest.mark.asyncio
-async def test_get_by_user_and_game_returns_persisted_row(
-    repository, db_session
-):
+async def test_get_by_user_and_game_returns_persisted_row(repository, db_session):
     user, game = await _seed_user_and_game(db_session, "ext-get", "g-get")
     await repository.create_or_update(user.id, game.id, "C", {"z": 9})
 
@@ -83,9 +73,7 @@ async def test_get_by_user_and_game_returns_persisted_row(
 
 
 @pytest.mark.asyncio
-async def test_delete_returns_true_and_removes_row_when_present(
-    repository, db_session
-):
+async def test_delete_returns_true_and_removes_row_when_present(repository, db_session):
     user, game = await _seed_user_and_game(db_session, "ext-del", "g-del")
     await repository.create_or_update(user.id, game.id, "A", None)
 

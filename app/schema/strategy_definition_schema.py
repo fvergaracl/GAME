@@ -18,10 +18,8 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.model.strategy_definition import (
-    StrategyDefinitionStatus,
-    StrategyDefinitionType,
-)
+from app.model.strategy_definition import (StrategyDefinitionStatus,
+                                           StrategyDefinitionType)
 
 
 class StrategyDefinitionCreate(BaseModel):

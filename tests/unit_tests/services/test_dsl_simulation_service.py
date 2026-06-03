@@ -14,11 +14,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from app.core.exceptions import (
-    DslTimeoutError,
-    DslValidationError,
-    NotFoundError,
-)
+from app.core.exceptions import DslTimeoutError, DslValidationError, NotFoundError
 from app.schema.dsl_schema import InlineSimulationRequest, SimulationRequest
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
 from app.services.dsl_simulation_service import DslSimulationService
@@ -119,8 +115,7 @@ async def test_simulate_returns_first_matching_branch():
     assert response.points == 1.0
     assert response.caseName == "BasicEngagement"
     assert any(
-        e.nodeId == "a1" and e.type == "assign_points"
-        for e in response.executionTrace
+        e.nodeId == "a1" and e.type == "assign_points" for e in response.executionTrace
     )
 
 
@@ -157,9 +152,7 @@ async def test_simulate_calls_analytics_when_no_mock_for_path():
         ),
     )
 
-    analytics.get_user_task_measurements_count.assert_awaited_once_with(
-        "t", "u"
-    )
+    analytics.get_user_task_measurements_count.assert_awaited_once_with("t", "u")
 
 
 @pytest.mark.asyncio

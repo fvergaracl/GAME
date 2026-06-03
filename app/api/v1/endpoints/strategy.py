@@ -8,11 +8,7 @@ from fastapi.responses import StreamingResponse
 from app.core.container import Container
 from app.core.exceptions import NotFoundError
 from app.middlewares.auth_context import AuditLogger, audit_log
-from app.schema.strategy_schema import (
-    Strategy,
-    StrategySchema,
-    StrategyVariableInfo,
-)
+from app.schema.strategy_schema import Strategy, StrategySchema, StrategyVariableInfo
 from app.services.strategy_service import StrategyService
 
 router = APIRouter(

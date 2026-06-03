@@ -21,9 +21,7 @@ _REGISTRY: dict[str, type] = {}
 _external_loaded: bool = False
 
 
-def register_strategy(
-    id: str, *, version: str | None = None
-) -> Callable[[T], T]:
+def register_strategy(id: str, *, version: str | None = None) -> Callable[[T], T]:
     """Register a strategy class under a stable, public id.
 
     The id is the value persisted on games and returned by the API, so it must

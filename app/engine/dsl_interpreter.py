@@ -37,32 +37,14 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, List, Optional, TypedDict
 
-from app.core.exceptions import (
-    DslExecutionError,
-    DslLimitExceededError,
-    DslValidationError,
-)
-from app.engine.dsl_ast import (
-    ALLOWED_ARITH_OPS,
-    ALLOWED_COMPARE_OPS,
-    ALLOWED_FUNC_NAMES,
-    FUNC_ARITY,
-    NODE_AND,
-    NODE_ARITH,
-    NODE_ASSIGN_POINTS,
-    NODE_COMPARE,
-    NODE_FIELD,
-    NODE_FUNC_CALL,
-    NODE_LITERAL,
-    NODE_NOT,
-    NODE_OR,
-    NODE_RETURN,
-    NODE_SET_CALLBACK_DATA,
-    NODE_SET_CASE_NAME,
-    NODE_SET_DATA,
-    NODE_SET_POINTS,
-    NODE_VETO,
-)
+from app.core.exceptions import (DslExecutionError, DslLimitExceededError,
+                                 DslValidationError)
+from app.engine.dsl_ast import (ALLOWED_ARITH_OPS, ALLOWED_COMPARE_OPS,
+                                ALLOWED_FUNC_NAMES, FUNC_ARITY, NODE_AND, NODE_ARITH,
+                                NODE_ASSIGN_POINTS, NODE_COMPARE, NODE_FIELD,
+                                NODE_FUNC_CALL, NODE_LITERAL, NODE_NOT, NODE_OR,
+                                NODE_RETURN, NODE_SET_CALLBACK_DATA, NODE_SET_CASE_NAME,
+                                NODE_SET_DATA, NODE_SET_POINTS, NODE_VETO)
 from app.engine.dsl_execution_context import ExecutionContext
 
 
@@ -134,9 +116,7 @@ class DslInterpreter:
         if parent_result is not None:
             state.points = float(parent_result.get("points") or 0)
             state.case_name = parent_result.get("case_name")
-            state.callback_data = dict(
-                parent_result.get("callback_data") or {}
-            )
+            state.callback_data = dict(parent_result.get("callback_data") or {})
             state.matched = True
         try:
             await self._run_program(ast, ctx, state, mode=mode)
@@ -204,9 +184,7 @@ class DslInterpreter:
         # only decides which statement stack runs inside the rule — the
         # program-level rule chaining and ``default`` are unchanged (a
         # non-halting branch still falls through to the next rule).
-        matched = await self._eval_condition(
-            node["when"], ctx, state, depth=depth + 1
-        )
+        matched = await self._eval_condition(node["when"], ctx, state, depth=depth + 1)
         if matched:
             state.trace.append(
                 {
@@ -216,9 +194,7 @@ class DslInterpreter:
                     "branch": "match",
                 }
             )
-            await self._run_branch(
-                node.get("then"), ctx, state, depth=depth + 1
-            )
+            await self._run_branch(node.get("then"), ctx, state, depth=depth + 1)
             return
 
         for i, branch in enumerate(node.get("else_if") or []):
@@ -235,9 +211,7 @@ class DslInterpreter:
                         "branch": f"elseif:{i}",
                     }
                 )
-                await self._run_branch(
-                    branch.get("then"), ctx, state, depth=depth + 1
-                )
+                await self._run_branch(branch.get("then"), ctx, state, depth=depth + 1)
                 return
 
         else_stmts = node.get("else")
@@ -399,9 +373,7 @@ class DslInterpreter:
             )
             if not isinstance(value, str):
                 raise DslExecutionError(
-                    detail=(
-                        "set_case_name.value must evaluate to a string."
-                    ),
+                    detail=("set_case_name.value must evaluate to a string."),
                     headers={"X-Node-Id": str(node.get("id"))},
                     code="DSL_SET_CASE_NAME_NOT_STRING",
                     params={
@@ -455,9 +427,7 @@ class DslInterpreter:
         ntype = node.get("type")
         if ntype == NODE_AND:
             for i, arg in enumerate(node["args"]):
-                ok = await self._eval_condition(
-                    arg, ctx, state, depth=depth + 1
-                )
+                ok = await self._eval_condition(arg, ctx, state, depth=depth + 1)
                 if not ok:
                     # Record the remaining args as skipped so the trace
                     # explains why the AND failed.
@@ -470,16 +440,12 @@ class DslInterpreter:
                         }
                     )
                     return False
-            state.trace.append(
-                {"nodeId": node.get("id"), "type": ntype, "value": True}
-            )
+            state.trace.append({"nodeId": node.get("id"), "type": ntype, "value": True})
             return True
 
         if ntype == NODE_OR:
             for i, arg in enumerate(node["args"]):
-                ok = await self._eval_condition(
-                    arg, ctx, state, depth=depth + 1
-                )
+                ok = await self._eval_condition(arg, ctx, state, depth=depth + 1)
                 if ok:
                     state.trace.append(
                         {
@@ -496,9 +462,7 @@ class DslInterpreter:
             return False
 
         if ntype == NODE_NOT:
-            value = await self._eval_condition(
-                node["arg"], ctx, state, depth=depth + 1
-            )
+            value = await self._eval_condition(node["arg"], ctx, state, depth=depth + 1)
             state.trace.append(
                 {"nodeId": node.get("id"), "type": ntype, "value": not value}
             )
@@ -658,9 +622,7 @@ class DslInterpreter:
                     },
                 )
             args = [
-                await self._eval_expression(
-                    arg, ctx, state, depth=depth + 1
-                )
+                await self._eval_expression(arg, ctx, state, depth=depth + 1)
                 for arg in args_nodes
             ]
             try:
@@ -737,12 +699,12 @@ class _RunState:
 
 
 _COMPARE_HANDLERS = {
-    "<":  lambda a, b: a < b,
+    "<": lambda a, b: a < b,
     "<=": lambda a, b: a <= b,
     "==": lambda a, b: a == b,
     "!=": lambda a, b: a != b,
     ">=": lambda a, b: a >= b,
-    ">":  lambda a, b: a > b,
+    ">": lambda a, b: a > b,
 }
 
 

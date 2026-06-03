@@ -25,12 +25,8 @@ from collections import OrderedDict
 from typing import Any, Optional, Tuple
 
 from app.core.config import configs
-from app.core.exceptions import (
-    DslExecutionError,
-    DslLimitExceededError,
-    DslTimeoutError,
-    DslValidationError,
-)
+from app.core.exceptions import (DslExecutionError, DslLimitExceededError,
+                                 DslTimeoutError, DslValidationError)
 from app.engine.base_strategy import BaseStrategy
 from app.engine.dsl_execution_context import ExecutionContext
 from app.engine.dsl_interpreter import DslInterpreter
@@ -163,11 +159,17 @@ class DslStrategy(BaseStrategy):
         try:
             if self._parent_strategy is None:
                 result = await self._calculate_dsl_full(
-                    externalGameId, externalTaskId, externalUserId, data,
+                    externalGameId,
+                    externalTaskId,
+                    externalUserId,
+                    data,
                 )
             else:
                 result = await self._calculate_dsl_extend(
-                    externalGameId, externalTaskId, externalUserId, data,
+                    externalGameId,
+                    externalTaskId,
+                    externalUserId,
+                    data,
                 )
             # ``result`` is the 2- or 3-tuple
             # (points, case_name [, callback_data]). Normalise for the
@@ -215,18 +217,15 @@ class DslStrategy(BaseStrategy):
                         errorCode=error_code,
                         points=(
                             float(points_emitted)
-                            if isinstance(
-                                points_emitted, (int, float)
-                            ) and not isinstance(points_emitted, bool)
+                            if isinstance(points_emitted, (int, float))
+                            and not isinstance(points_emitted, bool)
                             else None
                         ),
                         caseName=case_name_emitted,
                         durationMs=duration_ms,
                         nodesExecuted=nodes_executed,
                         trace=trace,
-                        parentStrategyId=(
-                            self._definition.parentStrategyId
-                        ),
+                        parentStrategyId=(self._definition.parentStrategyId),
                     )
                 except Exception:  # pragma: no cover - defensive
                     # Never let observability bubble up. The observer
@@ -252,8 +251,10 @@ class DslStrategy(BaseStrategy):
             analytics_service=self._analytics,
         )
         result = await self._run_phase(
-            ctx, mode="full",
-            initial_data=None, parent_result=None,
+            ctx,
+            mode="full",
+            initial_data=None,
+            parent_result=None,
         )
         return self._format_result(result)
 
@@ -310,8 +311,10 @@ class DslStrategy(BaseStrategy):
                 analytics_cache=analytics_cache,
             )
             pre_result = await self._run_phase(
-                pre_ctx, mode="pre",
-                initial_data=working_data, parent_result=None,
+                pre_ctx,
+                mode="pre",
+                initial_data=working_data,
+                parent_result=None,
             )
             if pre_result.get("vetoed"):
                 # Pre-rule veto short-circuits the whole pipeline: parent
@@ -350,12 +353,14 @@ class DslStrategy(BaseStrategy):
         # the parent's caseName ("if parent emitted PerformanceBonus,
         # multiply by 1.5"…).
         if not ast_post:
-            return self._format_result({
-                "points": parent_result["points"],
-                "case_name": parent_result["case_name"],
-                "callback_data": parent_result["callback_data"],
-                "trace": [],
-            })
+            return self._format_result(
+                {
+                    "points": parent_result["points"],
+                    "case_name": parent_result["case_name"],
+                    "callback_data": parent_result["callback_data"],
+                    "trace": [],
+                }
+            )
 
         post_ctx = await ExecutionContext.build_for_ast(
             ast,
@@ -368,8 +373,10 @@ class DslStrategy(BaseStrategy):
             analytics_cache=analytics_cache,
         )
         post_result = await self._run_phase(
-            post_ctx, mode="post",
-            initial_data=None, parent_result=parent_result,
+            post_ctx,
+            mode="post",
+            initial_data=None,
+            parent_result=parent_result,
         )
         return self._format_result(post_result)
 
@@ -396,7 +403,8 @@ class DslStrategy(BaseStrategy):
         try:
             result = await asyncio.wait_for(
                 self._interpreter.execute(
-                    self._definition.astJson, ctx,
+                    self._definition.astJson,
+                    ctx,
                     mode=mode,
                     initial_data=initial_data,
                     parent_result=parent_result,

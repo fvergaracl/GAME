@@ -200,18 +200,14 @@ class UserService(BaseService):
             userId, not_found_message=f"User not found with userId: {userId}"
         )
         points = schema.points
-        measurement_count = await self.user_points_repository.get_user_measurement_count(
-            userId
+        measurement_count = (
+            await self.user_points_repository.get_user_measurement_count(userId)
         )  # noqa: E501
-        start_time_last_task = (
-            await self.user_points_repository.get_start_time_for_last_task(  # noqa: E501
-                userId
-            )
+        start_time_last_task = await self.user_points_repository.get_start_time_for_last_task(  # noqa: E501
+            userId
         )
-        end_time_last_task = (
-            await self.user_points_repository.get_time_taken_for_last_task(  # noqa: E501
-                userId
-            )
+        end_time_last_task = await self.user_points_repository.get_time_taken_for_last_task(  # noqa: E501
+            userId
         )
 
         if end_time_last_task and start_time_last_task:
@@ -221,8 +217,8 @@ class UserService(BaseService):
         else:
             duration_last_task = 0
 
-        individual_calculation = await self.user_points_repository.get_individual_calculation(
-            userId
+        individual_calculation = (
+            await self.user_points_repository.get_individual_calculation(userId)
         )  # noqa: E501
 
         global_calculation = (
@@ -615,7 +611,9 @@ class UserService(BaseService):
             apiKey_used=api_key,
         )
 
-        transaction = await self.wallet_transaction_repository.create(wallet_transaction)
+        transaction = await self.wallet_transaction_repository.create(
+            wallet_transaction
+        )
 
         response = {
             "transactionId": str(transaction.id),

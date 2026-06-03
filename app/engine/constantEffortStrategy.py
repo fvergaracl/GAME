@@ -1,6 +1,4 @@
-"""
-
-"""
+""" """
 
 from app.core.container import Container
 from app.engine.base_strategy import BaseStrategy
@@ -22,8 +20,6 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
         self.user_points_service = Container.user_points_service()
         self.user_points_analytics_service = Container.user_points_analytics_service()
 
-        self.debug = True
-
         self.default_points_task_campaign = 1
         self.variable_basic_points = 1
         self.variable_bonus_points = 10
@@ -33,12 +29,10 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
     async def calculate_points(
         self, externalGameId, externalTaskId, externalUserId, data=None
     ):
-        task_measurements_count = (
-            self.user_points_analytics_service.get_user_task_measurements_count_the_last_seconds(
-                externalTaskId,
-                externalUserId,
-                self.variable_constant_effort_interval_minutes * 60,
-            )
+        task_measurements_count = self.user_points_analytics_service.get_user_task_measurements_count_the_last_seconds(
+            externalTaskId,
+            externalUserId,
+            self.variable_constant_effort_interval_minutes * 60,
         )
         self.debug_print(f"task_measurements_count: {task_measurements_count}")
         if task_measurements_count > 0:

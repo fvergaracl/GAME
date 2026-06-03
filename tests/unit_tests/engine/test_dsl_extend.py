@@ -27,7 +27,6 @@ from app.engine.dsl_strategy import DslStrategy
 from app.engine.dsl_validator import validate_ast
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
 
-
 # ---------------------------------------------------------------------------
 # Fixtures & helpers
 # ---------------------------------------------------------------------------
@@ -66,8 +65,11 @@ class _MockParent(BaseStrategy):
         self.last_call_args: Optional[Dict[str, Any]] = None
 
     async def calculate_points(  # noqa: D401
-        self, externalGameId=None, externalTaskId=None,
-        externalUserId=None, data=None,
+        self,
+        externalGameId=None,
+        externalTaskId=None,
+        externalUserId=None,
+        data=None,
     ):
         # Snapshot the inputs so the test can assert pre-rule mutations.
         self.last_call_args = {
@@ -470,7 +472,7 @@ def test_parent_variables_rejects_non_variable_key():
         "type": "program",
         "id": "p",
         "rules": [],
-        "parent_variables": {"debug": True},   # not "variable_..."
+        "parent_variables": {"debug": True},  # not "variable_..."
     }
     with pytest.raises(
         DslValidationError, match="must be a string starting with 'variable_'"
@@ -529,9 +531,7 @@ def test_validator_rejects_field_parent_points_in_main_rule():
             }
         ],
     }
-    with pytest.raises(
-        DslValidationError, match="only available inside post_rules"
-    ):
+    with pytest.raises(DslValidationError, match="only available inside post_rules"):
         validate_ast(ast)
 
 
@@ -557,9 +557,7 @@ def test_validator_rejects_set_data_in_main_rule():
             }
         ],
     }
-    with pytest.raises(
-        DslValidationError, match="not allowed inside 'rule'"
-    ):
+    with pytest.raises(DslValidationError, match="not allowed inside 'rule'"):
         validate_ast(ast)
 
 
@@ -585,9 +583,7 @@ def test_validator_rejects_set_points_in_pre_rule():
             }
         ],
     }
-    with pytest.raises(
-        DslValidationError, match="not allowed inside 'pre'"
-    ):
+    with pytest.raises(DslValidationError, match="not allowed inside 'pre'"):
         validate_ast(ast)
 
 

@@ -43,9 +43,7 @@ def _parse_cors_origins(raw_value: str) -> List[str]:
     Parse a comma-separated CORS origin list. Whitespace-only entries are
     dropped; an empty/whitespace-only string resolves to ``[]``.
     """
-    return [
-        origin.strip() for origin in raw_value.split(",") if origin.strip()
-    ]
+    return [origin.strip() for origin in raw_value.split(",") if origin.strip()]
 
 
 def _parse_trusted_proxy_ips(
@@ -95,6 +93,11 @@ _NON_PROD_DB_NAME_DEFAULTS = {
     "test": "test_game_dev_db",
 }
 
+# Convenience default for local/dev Keycloak realms. It is explicitly
+# rejected in prod/stage by ``_validate_required_secrets`` so the placeholder
+# can never reach a protected deployment.
+_INSECURE_KEYCLOAK_CLIENT_SECRET_DEFAULT = "admin-client-secret"
+
 
 def _resolve_db_name(env: str, db_name: Optional[str]) -> str:
     """
@@ -112,6 +115,36 @@ def _resolve_db_name(env: str, db_name: Optional[str]) -> str:
             "database literally named 'dev' when DB_HOST points elsewhere."
         )
     return _NON_PROD_DB_NAME_DEFAULTS.get(env, "game_dev_db")
+
+
+def _validate_required_secrets(
+    env: str, secret_key: str, keycloak_client_secret: str
+) -> None:
+    """
+    Fail fast in protected environments (``prod``/``stage``) when
+    security-critical secrets are missing or left at their insecure
+    development defaults. Previously ``SECRET_KEY`` fell back to the literal
+    string ``"None"`` -- truthy, so the ``if not configs.SECRET_KEY`` guard in
+    the simulation endpoint never fired and the app signed payloads with the
+    word "None"; and ``KEYCLOAK_CLIENT_SECRET`` shipped a known placeholder.
+    Both now boot-block before serving a single request when misconfigured.
+    """
+    if env not in {"prod", "stage"}:
+        return
+    missing: List[str] = []
+    if not secret_key:
+        missing.append("SECRET_KEY")
+    if (
+        not keycloak_client_secret
+        or keycloak_client_secret == _INSECURE_KEYCLOAK_CLIENT_SECRET_DEFAULT
+    ):
+        missing.append("KEYCLOAK_CLIENT_SECRET")
+    if missing:
+        raise ValueError(
+            "The following secrets must be set to non-default values when "
+            f"ENV={env!r}: {', '.join(missing)}. Configure them via the "
+            "environment (never commit real secrets)."
+        )
 
 
 class Configs(BaseSettings):
@@ -198,7 +231,10 @@ class Configs(BaseSettings):
     DEFAULT_CONVERTION_RATE_POINTS_TO_COIN: int = os.getenv(
         "DEFAULT_CONVERTION_RATE_POINTS_TO_COIN", 100
     )
-    SECRET_KEY: str = str(os.getenv("SECRET_KEY", None))
+    # Resolve to an empty string (falsy) when unset rather than the literal
+    # string "None": the simulation endpoint guards on ``if not SECRET_KEY``
+    # and prod/stage boot is blocked by ``_validate_required_secrets`` below.
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
     # CORS -- comma-separated allow-list from BACKEND_CORS_ORIGINS env var
     # (see Config.parse_env_var below). Defaults to ``[]`` (no origins) so
     # the middleware is only attached when explicit origins are configured.
@@ -213,26 +249,24 @@ class Configs(BaseSettings):
     # IP of the reverse proxy / ingress when running behind Traefik /
     # nginx / ALB. See H10 -- without this gate, any client can forge
     # X-Forwarded-For to bypass per-IP abuse limits.
-    TRUSTED_PROXY_IPS: Annotated[
-        List[Union[IPv4Network, IPv6Network]], NoDecode
-    ] = []
+    TRUSTED_PROXY_IPS: Annotated[List[Union[IPv4Network, IPv6Network]], NoDecode] = []
 
     # keycloak
     KEYCLOAK_REALM: str = os.getenv("KEYCLOAK_REALM", "master")
     KEYCLOAK_AUDIENCE: str = os.getenv("KEYCLOAK_AUDIENCE", "account")
     KEYCLOAK_CLIENT_ID: str = os.getenv("KEYCLOAK_CLIENT_ID", "admin-cli")
     KEYCLOAK_CLIENT_SECRET: str = os.getenv(
-        "KEYCLOAK_CLIENT_SECRET", "admin-client-secret"
+        "KEYCLOAK_CLIENT_SECRET", _INSECURE_KEYCLOAK_CLIENT_SECRET_DEFAULT
     )
     KEYCLOAK_URL: str = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
-    KEYCLOAK_URL_DOCKER: str = os.getenv(
-        "KEYCLOAK_URL_DOCKER", "http://keycloak:8080"
-    )
+    KEYCLOAK_URL_DOCKER: str = os.getenv("KEYCLOAK_URL_DOCKER", "http://keycloak:8080")
     # database
     DB_USER: Optional[str] = os.getenv("DB_USER")
     DB_PASSWORD: Optional[str] = os.getenv("DB_PASSWORD")
     DB_HOST: Optional[str] = os.getenv("DB_HOST")
-    DB_PORT: str = os.getenv("DB_PORT", "3306")
+    # Default to the PostgreSQL port (5432) to match DB_ENGINE; the previous
+    # 3306 default was MySQL's and silently mismatched the engine.
+    DB_PORT: str = os.getenv("DB_PORT", "5432")
     DB_ENGINE: str = os.getenv("DB_ENGINE", "postgresql")
 
     DATABASE_URI: str = (
@@ -251,15 +285,11 @@ class Configs(BaseSettings):
     PAGE_SIZE: int = 10
     ORDERING: str = "-id"
 
-    ABUSE_PREVENTION_ENABLED: bool = _env_to_bool(
-        "ABUSE_PREVENTION_ENABLED", True
-    )
+    ABUSE_PREVENTION_ENABLED: bool = _env_to_bool("ABUSE_PREVENTION_ENABLED", True)
     ABUSE_RATE_LIMIT_WINDOW_SECONDS: int = _env_to_int(
         "ABUSE_RATE_LIMIT_WINDOW_SECONDS", 60
     )
-    ABUSE_RATE_LIMIT_PER_API_KEY: int = _env_to_int(
-        "ABUSE_RATE_LIMIT_PER_API_KEY", 120
-    )
+    ABUSE_RATE_LIMIT_PER_API_KEY: int = _env_to_int("ABUSE_RATE_LIMIT_PER_API_KEY", 120)
     ABUSE_RATE_LIMIT_PER_IP: int = _env_to_int("ABUSE_RATE_LIMIT_PER_IP", 240)
     ABUSE_RATE_LIMIT_PER_EXTERNAL_USER: int = _env_to_int(
         "ABUSE_RATE_LIMIT_PER_EXTERNAL_USER", 60
@@ -270,16 +300,12 @@ class Configs(BaseSettings):
     # "database" keeps the original abuse_limit_counter writes; "redis" uses
     # INCR + EXPIRE against REDIS_URL (atomic, ~50 us vs ~5 ms for the UPDATE
     # on a hot Postgres row, and naturally distributed across instances).
-    ABUSE_PREVENTION_BACKEND: str = os.getenv(
-        "ABUSE_PREVENTION_BACKEND", "database"
-    )
+    ABUSE_PREVENTION_BACKEND: str = os.getenv("ABUSE_PREVENTION_BACKEND", "database")
     REDIS_URL: Optional[str] = os.getenv("REDIS_URL")
     RATE_LIMIT_REDIS_KEY_PREFIX: str = os.getenv(
         "RATE_LIMIT_REDIS_KEY_PREFIX", "game:rl:"
     )
-    RATE_LIMIT_TTL_BUFFER_SECONDS: int = _env_to_int(
-        "RATE_LIMIT_TTL_BUFFER_SECONDS", 5
-    )
+    RATE_LIMIT_TTL_BUFFER_SECONDS: int = _env_to_int("RATE_LIMIT_TTL_BUFFER_SECONDS", 5)
 
     SQLALCHEMY_ECHO: bool = _env_to_bool("SQLALCHEMY_ECHO", False)
     DB_POOL_PRE_PING: bool = _env_to_bool("DB_POOL_PRE_PING", True)
@@ -313,9 +339,7 @@ class Configs(BaseSettings):
     # always persisted regardless of the sample rate -- the rate only
     # applies to OK runs. 0.0 disables successful-run sampling; 1.0
     # persists every run (only safe in dev/test, see runbook).
-    DSL_EXECUTION_LOG_ENABLED: bool = _env_to_bool(
-        "DSL_EXECUTION_LOG_ENABLED", True
-    )
+    DSL_EXECUTION_LOG_ENABLED: bool = _env_to_bool("DSL_EXECUTION_LOG_ENABLED", True)
     DSL_EXECUTION_LOG_SAMPLE_RATE: float = float(
         os.getenv("DSL_EXECUTION_LOG_SAMPLE_RATE", "0.05")
     )
@@ -340,9 +364,7 @@ class Configs(BaseSettings):
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
-    def _coerce_cors_origins(
-        cls, value: Union[str, List[str], None]
-    ) -> List[str]:
+    def _coerce_cors_origins(cls, value: Union[str, List[str], None]) -> List[str]:
         # Treat BACKEND_CORS_ORIGINS as a plain comma-separated list instead
         # of JSON, so operators can write
         # ``BACKEND_CORS_ORIGINS=https://a.example,https://b.example``.
@@ -381,6 +403,9 @@ class TestConfigs(Configs):
 configs = TestConfigs() if os.getenv("ENV") == "test" else Configs()
 
 _validate_cors_origins(configs.ENV, configs.BACKEND_CORS_ORIGINS)
+_validate_required_secrets(
+    configs.ENV, configs.SECRET_KEY, configs.KEYCLOAK_CLIENT_SECRET
+)
 
 logger.info("Environment: %s", configs.ENV)
 

@@ -87,14 +87,13 @@ def _build_token_response(payload: dict[str, Any]) -> Response:
     subject = normalized.get("sub")
     if not isinstance(subject, str) or not subject.strip():
         return Response.fail(
-            error=HTTPException(
-                status_code=401, detail="Token subject not found")
+            error=HTTPException(status_code=401, detail="Token subject not found")
         )
     return Response.ok(normalized)
 
 
 async def valid_access_token(
-    access_token: Annotated[str, Depends(oauth_2_scheme)]
+    access_token: Annotated[str, Depends(oauth_2_scheme)],
 ) -> Response:
     try:
         jwks_client = _get_jwks_client()
@@ -120,8 +119,7 @@ async def valid_access_token(
     except exceptions.InvalidSignatureError as e:
         logger.warning("JWT rejected: invalid signature: %s", e)
         return Response.fail(
-            error=HTTPException(
-                status_code=401, detail="Invalid token signature")
+            error=HTTPException(status_code=401, detail="Invalid token signature")
         )
 
     except exceptions.ExpiredSignatureError as e:
@@ -142,14 +140,12 @@ async def valid_access_token(
     except exceptions.PyJWKClientError:
         logger.exception("JWKS client failure fetching signing key")
         return Response.fail(
-            error=HTTPException(
-                status_code=500, detail="Internal server error")
+            error=HTTPException(status_code=500, detail="Internal server error")
         )
     except jwt.PyJWTError as e:
         logger.warning("JWT rejected: %s", e)
         return Response.fail(
-            error=HTTPException(
-                status_code=401, detail=f"Invalid token: {str(e)}")
+            error=HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
         )
 
 

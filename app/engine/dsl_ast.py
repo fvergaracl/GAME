@@ -29,7 +29,6 @@ import re
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Iterable, Optional, Set, Tuple
 
-
 # Node types ----------------------------------------------------------------
 # The handler tables in dsl_validator and dsl_interpreter dispatch on these
 # strings. Adding a node here without adding a handler will be caught by the
@@ -95,11 +94,19 @@ ALL_NODE_TYPES: Set[str] = {
 }
 
 CONDITION_NODE_TYPES: Set[str] = {
-    NODE_AND, NODE_OR, NODE_NOT, NODE_COMPARE, NODE_LITERAL, NODE_FIELD,
+    NODE_AND,
+    NODE_OR,
+    NODE_NOT,
+    NODE_COMPARE,
+    NODE_LITERAL,
+    NODE_FIELD,
 }
 
 EXPRESSION_NODE_TYPES: Set[str] = {
-    NODE_LITERAL, NODE_FIELD, NODE_ARITH, NODE_FUNC_CALL,
+    NODE_LITERAL,
+    NODE_FIELD,
+    NODE_ARITH,
+    NODE_FUNC_CALL,
 }
 
 STATEMENT_NODE_TYPES: Set[str] = {
@@ -120,13 +127,13 @@ STATEMENT_NODE_TYPES: Set[str] = {
 # IMPORTANT: dashboard/src/views/strategies/dsl/whitelists.js mirrors
 # this map for client-side validation — keep them in sync.
 STATEMENT_ALLOWED_CONTEXTS: Dict[str, Set[str]] = {
-    NODE_ASSIGN_POINTS:     {"rule", "default"},
+    NODE_ASSIGN_POINTS: {"rule", "default"},
     NODE_SET_CALLBACK_DATA: {"rule", "default", "pre", "post"},
-    NODE_RETURN:            {"rule", "default", "pre", "post"},
-    NODE_SET_DATA:          {"pre"},
-    NODE_VETO:              {"pre"},
-    NODE_SET_POINTS:        {"post"},
-    NODE_SET_CASE_NAME:     {"post"},
+    NODE_RETURN: {"rule", "default", "pre", "post"},
+    NODE_SET_DATA: {"pre"},
+    NODE_VETO: {"pre"},
+    NODE_SET_POINTS: {"post"},
+    NODE_SET_CASE_NAME: {"post"},
 }
 
 
@@ -196,59 +203,61 @@ def _analytics(
 # We pass a tiny namespace (not the full ExecutionContext) to keep this map
 # import-safe and side-effect free.
 
-FIELD_RESOLVERS: Dict[str, FieldResolution] = dict([
-    _static(
-        "externalGameId",
-        lambda ctx: ctx.externalGameId,
-    ),
-    _static(
-        "externalTaskId",
-        lambda ctx: ctx.externalTaskId,
-    ),
-    _static(
-        "externalUserId",
-        lambda ctx: ctx.externalUserId,
-    ),
-    _analytics(
-        "user.measurements_count",
-        "get_user_task_measurements_count",
-        lambda ctx: (ctx.externalTaskId, ctx.externalUserId),
-    ),
-    # Sprint 6: rolling-window count used by ``constantEffortStrategy``.
-    # The window in seconds is currently hard-coded to 300 (5 minutes,
-    # the strategy's default). Parametrising the window per-AST requires
-    # variable substitution support which lands in Sprint 7.
-    _analytics(
-        "user.recent_measurements_count",
-        "get_user_task_measurements_count_the_last_seconds",
-        lambda ctx: (ctx.externalTaskId, ctx.externalUserId, 300),
-    ),
-    _analytics(
-        "task.measurements_count",
-        "count_measurements_by_external_task_id",
-        lambda ctx: (ctx.externalTaskId,),
-    ),
-    _analytics(
-        "user.avg_time",
-        "get_avg_time_between_tasks_by_user_and_game_task",
-        lambda ctx: (ctx.externalGameId, ctx.externalTaskId, ctx.externalUserId),
-    ),
-    _analytics(
-        "all.avg_time",
-        "get_avg_time_between_tasks_for_all_users",
-        lambda ctx: (ctx.externalGameId, ctx.externalTaskId),
-    ),
-    _analytics(
-        "user.last_window_diff",
-        "get_last_window_time_diff",
-        lambda ctx: (ctx.externalTaskId, ctx.externalUserId),
-    ),
-    _analytics(
-        "user.new_last_window_diff",
-        "get_new_last_window_time_diff",
-        lambda ctx: (ctx.externalTaskId, ctx.externalUserId, ctx.externalGameId),
-    ),
-])
+FIELD_RESOLVERS: Dict[str, FieldResolution] = dict(
+    [
+        _static(
+            "externalGameId",
+            lambda ctx: ctx.externalGameId,
+        ),
+        _static(
+            "externalTaskId",
+            lambda ctx: ctx.externalTaskId,
+        ),
+        _static(
+            "externalUserId",
+            lambda ctx: ctx.externalUserId,
+        ),
+        _analytics(
+            "user.measurements_count",
+            "get_user_task_measurements_count",
+            lambda ctx: (ctx.externalTaskId, ctx.externalUserId),
+        ),
+        # Sprint 6: rolling-window count used by ``constantEffortStrategy``.
+        # The window in seconds is currently hard-coded to 300 (5 minutes,
+        # the strategy's default). Parametrising the window per-AST requires
+        # variable substitution support which lands in Sprint 7.
+        _analytics(
+            "user.recent_measurements_count",
+            "get_user_task_measurements_count_the_last_seconds",
+            lambda ctx: (ctx.externalTaskId, ctx.externalUserId, 300),
+        ),
+        _analytics(
+            "task.measurements_count",
+            "count_measurements_by_external_task_id",
+            lambda ctx: (ctx.externalTaskId,),
+        ),
+        _analytics(
+            "user.avg_time",
+            "get_avg_time_between_tasks_by_user_and_game_task",
+            lambda ctx: (ctx.externalGameId, ctx.externalTaskId, ctx.externalUserId),
+        ),
+        _analytics(
+            "all.avg_time",
+            "get_avg_time_between_tasks_for_all_users",
+            lambda ctx: (ctx.externalGameId, ctx.externalTaskId),
+        ),
+        _analytics(
+            "user.last_window_diff",
+            "get_last_window_time_diff",
+            lambda ctx: (ctx.externalTaskId, ctx.externalUserId),
+        ),
+        _analytics(
+            "user.new_last_window_diff",
+            "get_new_last_window_time_diff",
+            lambda ctx: (ctx.externalTaskId, ctx.externalUserId, ctx.externalGameId),
+        ),
+    ]
+)
 
 
 # Sprint 7: paths exposed only inside ``post_rules`` — they carry the
@@ -263,7 +272,7 @@ def is_valid_data_path(path: str) -> bool:
     """``data.<key>`` where ``<key>`` is ``[A-Za-z0-9_]+``."""
     if not path.startswith(DATA_FIELD_PREFIX):
         return False
-    suffix = path[len(DATA_FIELD_PREFIX):]
+    suffix = path[len(DATA_FIELD_PREFIX) :]
     return bool(_DATA_KEY_RE.match(suffix))
 
 

@@ -109,8 +109,10 @@ class PointsSimulationMixin(UserPointsContext):
                 userGroup = user_config.experimentGroup
             if not userGroup:
                 group_control = ["random_range", "average_score", "dynamic_calculation"]
-                all_users = await self.users_game_config_repository.get_all_users_by_gameId(
-                    game.id
+                all_users = (
+                    await self.users_game_config_repository.get_all_users_by_gameId(
+                        game.id
+                    )
                 )
                 group_counts = Counter(
                     user_config.experimentGroup for user_config in all_users
@@ -137,7 +139,9 @@ class PointsSimulationMixin(UserPointsContext):
 
         response = []
 
-        user_last_task = await self.user_points_repository.get_last_task_by_userId(user.id)
+        user_last_task = await self.user_points_repository.get_last_task_by_userId(
+            user.id
+        )
         externalUserId = user.externalUserId
 
         for strategy_id_applied, tasks in grouped_by_strategyId.items():

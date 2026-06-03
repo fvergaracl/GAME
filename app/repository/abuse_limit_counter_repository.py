@@ -2,7 +2,8 @@ from contextlib import AbstractAsyncContextManager
 from datetime import datetime, timezone
 from typing import Callable
 
-from sqlalchemy import select, update as sa_update
+from sqlalchemy import select
+from sqlalchemy import update as sa_update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -101,8 +102,6 @@ class AbuseLimitCounterRepository(BaseRepository):
 
     async def _read_counter(self, session: AsyncSession, filters) -> int:
         value = (
-            await session.execute(
-                select(self.model.counter).where(*filters)
-            )
+            await session.execute(select(self.model.counter).where(*filters))
         ).scalar()
         return int(value or 0)

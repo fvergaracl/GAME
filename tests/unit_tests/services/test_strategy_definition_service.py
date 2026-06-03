@@ -14,23 +14,13 @@ from datetime import datetime, timezone
 from types import SimpleNamespace
 from typing import Dict, List, Optional
 
-from app.core.exceptions import (
-    BadRequestError,
-    ConflictError,
-    DuplicatedError,
-    NotFoundError,
-)
-from app.model.strategy_definition import (
-    StrategyDefinitionStatus,
-    StrategyDefinitionType,
-)
-from app.schema.strategy_definition_schema import (
-    StrategyDefinitionCreate,
-    StrategyDefinitionUpdate,
-)
-from app.services.strategy_definition_service import (
-    StrategyDefinitionService,
-)
+from app.core.exceptions import (BadRequestError, ConflictError, DuplicatedError,
+                                 NotFoundError)
+from app.model.strategy_definition import (StrategyDefinitionStatus,
+                                           StrategyDefinitionType)
+from app.schema.strategy_definition_schema import (StrategyDefinitionCreate,
+                                                   StrategyDefinitionUpdate)
+from app.services.strategy_definition_service import StrategyDefinitionService
 
 
 class FakeStrategyDefinitionRepository:
@@ -75,17 +65,11 @@ class FakeStrategyDefinitionRepository:
         self, *, realmId: Optional[str], name: str
     ) -> List[SimpleNamespace]:
         return sorted(
-            [
-                r
-                for r in self._rows.values()
-                if r.realmId == realmId and r.name == name
-            ],
+            [r for r in self._rows.values() if r.realmId == realmId and r.name == name],
             key=lambda r: -r.version,
         )
 
-    async def get_max_version(
-        self, *, realmId: Optional[str], name: str
-    ) -> int:
+    async def get_max_version(self, *, realmId: Optional[str], name: str) -> int:
         versions = [
             r.version
             for r in self._rows.values()
@@ -109,11 +93,7 @@ class FakeStrategyDefinitionRepository:
         self, *, realmId: Optional[str], name: str, version: int
     ) -> Optional[SimpleNamespace]:
         for r in self._rows.values():
-            if (
-                r.realmId == realmId
-                and r.name == name
-                and r.version == version
-            ):
+            if r.realmId == realmId and r.name == name and r.version == version:
                 return r
         return None
 
@@ -182,9 +162,7 @@ class TestCreate(_Base):
 
         self.assertEqual(result.name, "onboarding-boost")
         self.assertEqual(result.version, 1)
-        self.assertEqual(
-            result.status, StrategyDefinitionStatus.DRAFT.value
-        )
+        self.assertEqual(result.status, StrategyDefinitionStatus.DRAFT.value)
         self.assertEqual(result.realmId, "realm-a")
         self.assertEqual(result.type, StrategyDefinitionType.DSL_FULL.value)
         # validate_ast may have backfilled `id` deterministically; assert
@@ -281,9 +259,7 @@ class TestTenantIsolation(_Base):
         )
 
         with self.assertRaises(NotFoundError):
-            await self.service.get_strategy(
-                id=created.id, realmId="realm-b"
-            )
+            await self.service.get_strategy(id=created.id, realmId="realm-b")
 
     async def test_list_only_returns_rows_for_caller_realm(self):
         for realm in ("realm-a", "realm-b"):
@@ -333,9 +309,7 @@ class TestVersioning(_Base):
 
         result = await self.service.update(
             id=created.id,
-            payload=StrategyDefinitionUpdate(
-                description="updated"
-            ),
+            payload=StrategyDefinitionUpdate(description="updated"),
             realmId="realm-a",
             createdBy=None,
             apiKey_used=None,
@@ -345,9 +319,7 @@ class TestVersioning(_Base):
         self.assertEqual(result.id, created.id)
         self.assertEqual(result.version, 1)
         self.assertEqual(result.description, "updated")
-        self.assertEqual(
-            result.status, StrategyDefinitionStatus.DRAFT.value
-        )
+        self.assertEqual(result.status, StrategyDefinitionStatus.DRAFT.value)
 
     async def test_updating_published_forks_new_draft(self):
         published_id = await self._create_and_publish()
@@ -372,19 +344,13 @@ class TestVersioning(_Base):
 
         self.assertNotEqual(forked.id, published_id)
         self.assertEqual(forked.version, 2)
-        self.assertEqual(
-            forked.status, StrategyDefinitionStatus.DRAFT.value
-        )
+        self.assertEqual(forked.status, StrategyDefinitionStatus.DRAFT.value)
         # The fork carries the new AST (validator auto-assigned ids).
         self.assertEqual(forked.astJson["default"]["case_name"], "v2")
 
         # Published row is untouched.
-        original = await self.service.get_strategy(
-            id=published_id, realmId="realm-a"
-        )
-        self.assertEqual(
-            original.status, StrategyDefinitionStatus.PUBLISHED.value
-        )
+        original = await self.service.get_strategy(id=published_id, realmId="realm-a")
+        self.assertEqual(original.status, StrategyDefinitionStatus.PUBLISHED.value)
         self.assertNotIn("default", original.astJson)
 
     async def test_archived_rows_are_immutable(self):
@@ -403,9 +369,7 @@ class TestVersioning(_Base):
         with self.assertRaises(ConflictError):
             await self.service.update(
                 id=created.id,
-                payload=StrategyDefinitionUpdate(
-                    description="too late"
-                ),
+                payload=StrategyDefinitionUpdate(description="too late"),
                 realmId="realm-a",
                 createdBy=None,
                 apiKey_used=None,
@@ -440,18 +404,10 @@ class TestPublishLifecycle(_Base):
         # Publish v2 — should archive v1.
         await self.service.publish(id=v2.id, realmId="realm-a")
 
-        archived_v1 = await self.service.get_strategy(
-            id=v1.id, realmId="realm-a"
-        )
-        live_v2 = await self.service.get_strategy(
-            id=v2.id, realmId="realm-a"
-        )
-        self.assertEqual(
-            archived_v1.status, StrategyDefinitionStatus.ARCHIVED.value
-        )
-        self.assertEqual(
-            live_v2.status, StrategyDefinitionStatus.PUBLISHED.value
-        )
+        archived_v1 = await self.service.get_strategy(id=v1.id, realmId="realm-a")
+        live_v2 = await self.service.get_strategy(id=v2.id, realmId="realm-a")
+        self.assertEqual(archived_v1.status, StrategyDefinitionStatus.ARCHIVED.value)
+        self.assertEqual(live_v2.status, StrategyDefinitionStatus.PUBLISHED.value)
 
     async def test_publish_is_idempotent(self):
         created = await self.service.create(
@@ -464,16 +420,10 @@ class TestPublishLifecycle(_Base):
             apiKey_used=None,
             oauth_user_id=None,
         )
-        first = await self.service.publish(
-            id=created.id, realmId="realm-a"
-        )
-        again = await self.service.publish(
-            id=created.id, realmId="realm-a"
-        )
+        first = await self.service.publish(id=created.id, realmId="realm-a")
+        again = await self.service.publish(id=created.id, realmId="realm-a")
         self.assertEqual(first.id, again.id)
-        self.assertEqual(
-            again.status, StrategyDefinitionStatus.PUBLISHED.value
-        )
+        self.assertEqual(again.status, StrategyDefinitionStatus.PUBLISHED.value)
 
     async def test_cannot_publish_archived(self):
         created = await self.service.create(
@@ -488,9 +438,7 @@ class TestPublishLifecycle(_Base):
         )
         await self.service.archive(id=created.id, realmId="realm-a")
         with self.assertRaises(ConflictError):
-            await self.service.publish(
-                id=created.id, realmId="realm-a"
-            )
+            await self.service.publish(id=created.id, realmId="realm-a")
 
 
 class TestNameExists(_Base):
@@ -500,11 +448,7 @@ class TestNameExists(_Base):
     into realm B) and must consider every version of a family."""
 
     async def test_name_exists_is_false_for_unknown_name(self):
-        self.assertFalse(
-            await self.service.name_exists(
-                realmId="realm-a", name="nada"
-            )
-        )
+        self.assertFalse(await self.service.name_exists(realmId="realm-a", name="nada"))
 
     async def test_name_exists_is_true_after_create(self):
         await self.service.create(
@@ -517,11 +461,7 @@ class TestNameExists(_Base):
             apiKey_used=None,
             oauth_user_id=None,
         )
-        self.assertTrue(
-            await self.service.name_exists(
-                realmId="realm-a", name="taken"
-            )
-        )
+        self.assertTrue(await self.service.name_exists(realmId="realm-a", name="taken"))
 
     async def test_name_exists_is_tenant_scoped(self):
         await self.service.create(
@@ -535,9 +475,7 @@ class TestNameExists(_Base):
             oauth_user_id=None,
         )
         self.assertFalse(
-            await self.service.name_exists(
-                realmId="realm-b", name="shared"
-            )
+            await self.service.name_exists(realmId="realm-b", name="shared")
         )
 
 
@@ -555,18 +493,12 @@ class FakeAssignmentRepository:
         self.bulk_calls: List[Dict[str, str]] = []
 
     async def list_by_strategy_id(self, strategy_id: str):
-        return [
-            SimpleNamespace(strategyId=s)
-            for s in self.rows
-            if s == strategy_id
-        ]
+        return [SimpleNamespace(strategyId=s) for s in self.rows if s == strategy_id]
 
     async def bulk_update_strategy_id(
         self, *, old_strategy_id: str, new_strategy_id: str
     ) -> int:
-        self.bulk_calls.append(
-            {"old": old_strategy_id, "new": new_strategy_id}
-        )
+        self.bulk_calls.append({"old": old_strategy_id, "new": new_strategy_id})
         count = 0
         for i, current in enumerate(self.rows):
             if current == old_strategy_id:
@@ -603,9 +535,7 @@ class TestListVersions(_Base):
             oauth_user_id=None,
         )
 
-        versions = await self.service.list_versions(
-            id=created.id, realmId="realm-a"
-        )
+        versions = await self.service.list_versions(id=created.id, realmId="realm-a")
         self.assertEqual([v.version for v in versions], [2, 1])
         # Status assertions catch the publish/archive bookkeeping.
         self.assertEqual(versions[0].status, "DRAFT")
@@ -613,9 +543,7 @@ class TestListVersions(_Base):
 
     async def test_list_versions_404s_on_unknown_id(self):
         with self.assertRaises(NotFoundError):
-            await self.service.list_versions(
-                id="does-not-exist", realmId="realm-a"
-            )
+            await self.service.list_versions(id="does-not-exist", realmId="realm-a")
 
     async def test_list_versions_is_tenant_scoped(self):
         created = await self.service.create(
@@ -629,9 +557,7 @@ class TestListVersions(_Base):
         )
         # realm-b probing realm-a's id must 404, not leak.
         with self.assertRaises(NotFoundError):
-            await self.service.list_versions(
-                id=created.id, realmId="realm-b"
-            )
+            await self.service.list_versions(id=created.id, realmId="realm-b")
 
 
 class TestRollback(unittest.IsolatedAsyncioTestCase):
@@ -672,9 +598,7 @@ class TestRollback(unittest.IsolatedAsyncioTestCase):
             apiKey_used=None,
             oauth_user_id=None,
         )
-        v2 = await self.service.publish(
-            id=v2_draft.id, realmId="realm-a"
-        )
+        v2 = await self.service.publish(id=v2_draft.id, realmId="realm-a")
         return v1, v2
 
     async def test_happy_path_promotes_v1_and_archives_v2(self):
@@ -692,9 +616,7 @@ class TestRollback(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.games_reassigned, 2)
         self.assertEqual(result.tasks_reassigned, 1)
         # v2 must be archived now.
-        v2_after = await self.repo.get_for_realm(
-            id=v2.id, realmId="realm-a"
-        )
+        v2_after = await self.repo.get_for_realm(id=v2.id, realmId="realm-a")
         self.assertEqual(v2_after.status, "ARCHIVED")
         # All games/tasks now point at v1.
         self.assertEqual(
@@ -715,16 +637,12 @@ class TestRollback(unittest.IsolatedAsyncioTestCase):
     async def test_404_on_unknown_target_version(self):
         _, v2 = await self._build_two_versions()
         with self.assertRaises(NotFoundError):
-            await self.service.rollback(
-                id=v2.id, target_version=99, realmId="realm-a"
-            )
+            await self.service.rollback(id=v2.id, target_version=99, realmId="realm-a")
 
     async def test_404_on_cross_realm_seed_id(self):
         _, v2 = await self._build_two_versions()
         with self.assertRaises(NotFoundError):
-            await self.service.rollback(
-                id=v2.id, target_version=1, realmId="realm-b"
-            )
+            await self.service.rollback(id=v2.id, target_version=1, realmId="realm-b")
 
     async def test_rollback_can_be_initiated_from_a_draft_seed(self):
         """An admin browsing history may click on v1 (ARCHIVED) to
@@ -747,9 +665,7 @@ class TestRollback(unittest.IsolatedAsyncioTestCase):
         )
         _, v2 = await self._build_two_versions()
         with self.assertRaises(BadRequestError):
-            await bare_service.rollback(
-                id=v2.id, target_version=1, realmId="realm-a"
-            )
+            await bare_service.rollback(id=v2.id, target_version=1, realmId="realm-a")
 
 
 class TestSprint9LifecycleEndToEnd(unittest.IsolatedAsyncioTestCase):
@@ -819,7 +735,8 @@ class TestSprint9LifecycleEndToEnd(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(v2_draft.status, "DRAFT")
         # v1 is still PUBLISHED and the Game/Task still execute it.
         v1_after_edit = await self.repo.get_for_realm(
-            id=v1.id, realmId="realm-a",
+            id=v1.id,
+            realmId="realm-a",
         )
         self.assertEqual(v1_after_edit.status, "PUBLISHED")
         self.assertEqual(self.games.rows, [f"custom:{v1.id}"])
@@ -827,12 +744,11 @@ class TestSprint9LifecycleEndToEnd(unittest.IsolatedAsyncioTestCase):
         # Step 4: publish v2 → v1 ARCHIVED. Assignments NOT cascaded on
         # publish (only rollback cascades) so the Game/Task still point
         # at the now-archived v1.
-        v2 = await self.service.publish(
-            id=v2_draft.id, realmId="realm-a"
-        )
+        v2 = await self.service.publish(id=v2_draft.id, realmId="realm-a")
         self.assertEqual(v2.status, "PUBLISHED")
         v1_after_publish = await self.repo.get_for_realm(
-            id=v1.id, realmId="realm-a",
+            id=v1.id,
+            realmId="realm-a",
         )
         self.assertEqual(v1_after_publish.status, "ARCHIVED")
         self.assertEqual(self.games.rows, [f"custom:{v1.id}"])
@@ -846,14 +762,17 @@ class TestSprint9LifecycleEndToEnd(unittest.IsolatedAsyncioTestCase):
         # Step 6: rollback to v1 → v2 ARCHIVED, v1 re-PUBLISHED, all
         # assignments rewritten back to v1.
         result = await self.service.rollback(
-            id=v2.id, target_version=1, realmId="realm-a",
+            id=v2.id,
+            target_version=1,
+            realmId="realm-a",
         )
         self.assertEqual(result.strategy.id, v1.id)
         self.assertEqual(result.strategy.status, "PUBLISHED")
         self.assertEqual(result.games_reassigned, 1)
         self.assertEqual(result.tasks_reassigned, 1)
         v2_after = await self.repo.get_for_realm(
-            id=v2.id, realmId="realm-a",
+            id=v2.id,
+            realmId="realm-a",
         )
         self.assertEqual(v2_after.status, "ARCHIVED")
         # The roadmap's done-criteria: Game.strategyId ends up pointing
@@ -877,9 +796,7 @@ class FakeUsageGameRepository:
 
     async def list_external_ids(self, ids) -> Dict:
         wanted = {i for i in ids if i is not None}
-        return {
-            g.id: g.externalGameId for g in self.games if g.id in wanted
-        }
+        return {g.id: g.externalGameId for g in self.games if g.id in wanted}
 
 
 class FakeUsageTaskRepository:

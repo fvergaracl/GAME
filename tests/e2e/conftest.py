@@ -11,8 +11,7 @@ from dependency_injector import providers
 from httpx import AsyncClient
 from sqlalchemy.dialects.postgresql import JSONB as PG_JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
-                                    create_async_engine)
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.compiler import compiles
 from sqlmodel import SQLModel
 
@@ -143,9 +142,7 @@ async def _initialize_database(
 ) -> ControlledDatabase:
     if base_snapshot:
         if not base_snapshot.exists():
-            raise FileNotFoundError(
-                f"E2E base snapshot not found: {base_snapshot}"
-            )
+            raise FileNotFoundError(f"E2E base snapshot not found: {base_snapshot}")
         shutil.copy2(base_snapshot, db_path)
 
     db = ControlledDatabase(f"sqlite+aiosqlite:///{db_path}")
@@ -154,9 +151,7 @@ async def _initialize_database(
         await db.create_all()
 
     if base_state != "empty":
-        raise ValueError(
-            f"Unsupported E2E base state: {base_state}. Supported: empty"
-        )
+        raise ValueError(f"Unsupported E2E base state: {base_state}. Supported: empty")
 
     return db
 

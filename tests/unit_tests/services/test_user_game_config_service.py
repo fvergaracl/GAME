@@ -100,9 +100,7 @@ async def test_update_user_config_returns_none_when_existing_config_not_found():
     repository = AsyncMock()
     repository.get_by_user_and_game.return_value = None
     service = UserGameConfigService(repository)
-    schema = UpdateUserGameConfig(
-        experimentGroup="group-c", configData={"k": "v"}
-    )
+    schema = UpdateUserGameConfig(experimentGroup="group-c", configData={"k": "v"})
 
     result = await service.update_user_config("user-id", "game-id", schema)
 
@@ -113,12 +111,8 @@ async def test_update_user_config_returns_none_when_existing_config_not_found():
 @pytest.mark.asyncio
 async def test_update_user_config_uses_schema_values_when_provided():
     repository = AsyncMock()
-    existing = _build_config(
-        experiment_group="group-old", config_data={"old": True}
-    )
-    updated = _build_config(
-        experiment_group="group-new", config_data={"new": True}
-    )
+    existing = _build_config(experiment_group="group-old", config_data={"old": True})
+    updated = _build_config(experiment_group="group-new", config_data={"new": True})
     repository.get_by_user_and_game.return_value = existing
     repository.create_or_update.return_value = updated
     service = UserGameConfigService(repository)
@@ -127,9 +121,7 @@ async def test_update_user_config_uses_schema_values_when_provided():
         configData={"new": True},
     )
 
-    result = await service.update_user_config(
-        existing.userId, existing.gameId, schema
-    )
+    result = await service.update_user_config(existing.userId, existing.gameId, schema)
 
     repository.create_or_update.assert_called_once_with(
         existing.userId,
@@ -144,17 +136,13 @@ async def test_update_user_config_uses_schema_values_when_provided():
 @pytest.mark.asyncio
 async def test_update_user_config_uses_existing_values_when_schema_fields_are_none():
     repository = AsyncMock()
-    existing = _build_config(
-        experiment_group="group-existing", config_data={"a": 1}
-    )
+    existing = _build_config(experiment_group="group-existing", config_data={"a": 1})
     repository.get_by_user_and_game.return_value = existing
     repository.create_or_update.return_value = existing
     service = UserGameConfigService(repository)
     schema = UpdateUserGameConfig(experimentGroup=None, configData=None)
 
-    result = await service.update_user_config(
-        existing.userId, existing.gameId, schema
-    )
+    result = await service.update_user_config(existing.userId, existing.gameId, schema)
 
     repository.create_or_update.assert_called_once_with(
         existing.userId,

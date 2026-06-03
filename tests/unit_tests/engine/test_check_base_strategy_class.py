@@ -91,9 +91,7 @@ class TestCheckClassMethodsAndVariables(unittest.TestCase):
         with self.assertLogs(
             "app.engine.check_base_strategy_class", level="WARNING"
         ) as captured:
-            result = check_class_methods_and_variables(
-                self.IncompleteClass, debug=True
-            )
+            result = check_class_methods_and_variables(self.IncompleteClass, debug=True)
         self.assertFalse(result)
 
         joined = "\n".join(captured.output)

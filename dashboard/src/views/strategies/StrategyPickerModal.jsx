@@ -39,7 +39,7 @@ import GlossaryHint from './glossary/GlossaryHint'
 const TAB_BUILTIN = 'builtin'
 const TAB_CUSTOM = 'custom'
 
-const StrategyPickerModal = ({ visible, currentStrategyId, onClose, onSelect }) => {
+const StrategyPickerModal = ({ visible, currentStrategyId = null, onClose, onSelect }) => {
   const [activeTab, setActiveTab] = useState(TAB_BUILTIN)
   const [builtIns, setBuiltIns] = useState([])
   const [customs, setCustoms] = useState([])
@@ -210,10 +210,6 @@ StrategyPickerModal.propTypes = {
   currentStrategyId: PropTypes.string,
   onClose: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
-}
-
-StrategyPickerModal.defaultProps = {
-  currentStrategyId: null,
 }
 
 export default StrategyPickerModal

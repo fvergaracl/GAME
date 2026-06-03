@@ -149,7 +149,7 @@ const GlossaryModal = () => {
   )
 }
 
-export const GlossaryProvider = ({ children }) => {
+export const GlossaryProvider = ({ children = null }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [termId, setTermId] = useState(null)
 
@@ -181,10 +181,6 @@ export const GlossaryProvider = ({ children }) => {
 
 GlossaryProvider.propTypes = {
   children: PropTypes.node,
-}
-
-GlossaryProvider.defaultProps = {
-  children: null,
 }
 
 export default GlossaryProvider

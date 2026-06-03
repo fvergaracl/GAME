@@ -82,10 +82,14 @@ class WalletRepository(BaseRepository):
             await session.flush()
 
         wallet = (
-            await session.execute(
-                select(self.model).filter(self.model.id == wallet_id)
+            (
+                await session.execute(
+                    select(self.model).filter(self.model.id == wallet_id)
+                )
             )
-        ).scalars().first()
+            .scalars()
+            .first()
+        )
         if wallet is None:
             raise NotFoundError(detail=f"Wallet not found by id: {wallet_id}")
         return wallet

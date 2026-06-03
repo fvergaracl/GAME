@@ -26,24 +26,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Optional
 
-from app.repository.strategy_execution_log_repository import (
-    StrategyExecutionLogRepository,
-)
+from app.repository.strategy_execution_log_repository import \
+    StrategyExecutionLogRepository
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
-from app.schema.strategy_observability_schema import (
-    CaseCount,
-    DurationPercentiles,
-    ErrorCount,
-    HistogramBucket,
-    MetricsDelta,
-    StatusBreakdown,
-    StrategyComparisonResponse,
-    StrategyMetricsResponse,
-)
-from app.services.strategy_definition_service import (
-    StrategyDefinitionService,
-)
-
+from app.schema.strategy_observability_schema import (CaseCount, DurationPercentiles,
+                                                      ErrorCount, HistogramBucket,
+                                                      MetricsDelta, StatusBreakdown,
+                                                      StrategyComparisonResponse,
+                                                      StrategyMetricsResponse)
+from app.services.strategy_definition_service import StrategyDefinitionService
 
 # Bucket edges chosen to align with the Prometheus histogram in
 # ``dsl_metrics.DSL_LATENCY_BUCKETS`` so the dashboard's view of a
@@ -233,14 +224,10 @@ class StrategyObservabilityService:
         # comparison when run counts differ; the per-event average is
         # the apples-to-apples number.
         avg_points_a = (
-            a.pointsSum / a.statusBreakdown.total
-            if a.statusBreakdown.total
-            else 0.0
+            a.pointsSum / a.statusBreakdown.total if a.statusBreakdown.total else 0.0
         )
         avg_points_b = (
-            b.pointsSum / b.statusBreakdown.total
-            if b.statusBreakdown.total
-            else 0.0
+            b.pointsSum / b.statusBreakdown.total if b.statusBreakdown.total else 0.0
         )
         delta = MetricsDelta(
             successRate=b.successRate - a.successRate,
@@ -315,12 +302,10 @@ class StrategyObservabilityService:
             duration=percentiles,
             durationHistogram=_duration_histogram(duration_samples),
             topErrors=[
-                ErrorCount(code=e["code"], count=e["count"])
-                for e in top_errors
+                ErrorCount(code=e["code"], count=e["count"]) for e in top_errors
             ],
             topCases=[
-                CaseCount(caseName=c["caseName"], count=c["count"])
-                for c in top_cases
+                CaseCount(caseName=c["caseName"], count=c["count"]) for c in top_cases
             ],
             pointsHistogram=_points_histogram(points_samples),
             pointsSum=summary["pointsSum"],

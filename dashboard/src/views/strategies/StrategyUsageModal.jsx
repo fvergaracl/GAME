@@ -27,7 +27,13 @@ import { getStrategyUsage, patchGameStrategy, patchTaskStrategy } from '../../ap
 import { extractError } from '../../utils/errors'
 import StrategyPickerModal from './StrategyPickerModal'
 
-const StrategyUsageModal = ({ visible, strategyId, strategyName, onClose, onReassigned }) => {
+const StrategyUsageModal = ({
+  visible,
+  strategyId = null,
+  strategyName = null,
+  onClose,
+  onReassigned = null,
+}) => {
   const [usage, setUsage] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -236,12 +242,6 @@ StrategyUsageModal.propTypes = {
   strategyName: PropTypes.string,
   onClose: PropTypes.func.isRequired,
   onReassigned: PropTypes.func,
-}
-
-StrategyUsageModal.defaultProps = {
-  strategyId: null,
-  strategyName: null,
-  onReassigned: null,
 }
 
 export default StrategyUsageModal

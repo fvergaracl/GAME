@@ -73,15 +73,11 @@ def test_repository_exposes_helper_repositories(repository):
 
 
 @pytest.mark.asyncio
-async def test_get_first_user_points_returns_a_row_when_present(
-    repository, db_session
-):
+async def test_get_first_user_points_returns_a_row_when_present(repository, db_session):
     user = await _seed_user(db_session, "ext-fp")
     game = await _seed_game(db_session, "g-fp")
     task = await _seed_task(db_session, game.id, "task-fp")
-    await _seed_points(
-        db_session, user.id, task.id, points=10, idempotency_key="k1"
-    )
+    await _seed_points(db_session, user.id, task.id, points=10, idempotency_key="k1")
 
     result = await repository.get_first_user_points_in_external_task_id_by_user_id(
         externalTaskId="task-fp",
@@ -102,9 +98,7 @@ async def test_get_first_user_points_returns_none_when_missing(repository):
 
 
 @pytest.mark.asyncio
-async def test_read_by_user_task_and_idempotency_returns_match(
-    repository, db_session
-):
+async def test_read_by_user_task_and_idempotency_returns_match(repository, db_session):
     user = await _seed_user(db_session, "ext-idem")
     game = await _seed_game(db_session, "g-idem")
     task = await _seed_task(db_session, game.id, "task-idem")
@@ -149,9 +143,7 @@ async def test_read_by_user_task_and_idempotency_returns_none_when_missing(
 
 
 @pytest.mark.asyncio
-async def test_get_user_measurement_count_counts_per_user(
-    repository, db_session
-):
+async def test_get_user_measurement_count_counts_per_user(repository, db_session):
     user = await _seed_user(db_session, "ext-meas")
     game = await _seed_game(db_session, "g-meas")
     task = await _seed_task(db_session, game.id, "task-meas")
@@ -166,9 +158,7 @@ async def test_get_user_measurement_count_counts_per_user(
 
 
 @pytest.mark.asyncio
-async def test_get_individual_calculation_returns_avg_points(
-    repository, db_session
-):
+async def test_get_individual_calculation_returns_avg_points(repository, db_session):
     user = await _seed_user(db_session, "ext-avg")
     game = await _seed_game(db_session, "g-avg")
     task = await _seed_task(db_session, game.id, "task-avg")
@@ -183,9 +173,7 @@ async def test_get_individual_calculation_returns_avg_points(
 
 
 @pytest.mark.asyncio
-async def test_get_global_calculation_returns_avg_across_all(
-    repository, db_session
-):
+async def test_get_global_calculation_returns_avg_across_all(repository, db_session):
     user = await _seed_user(db_session, "ext-glob")
     game = await _seed_game(db_session, "g-glob")
     task = await _seed_task(db_session, game.id, "task-glob")
@@ -204,12 +192,8 @@ async def test_get_start_and_last_task_times(repository, db_session):
     user = await _seed_user(db_session, "ext-time")
     game = await _seed_game(db_session, "g-time")
     task = await _seed_task(db_session, game.id, "task-time")
-    await _seed_points(
-        db_session, user.id, task.id, points=1, idempotency_key="k-1"
-    )
-    await _seed_points(
-        db_session, user.id, task.id, points=2, idempotency_key="k-2"
-    )
+    await _seed_points(db_session, user.id, task.id, points=1, idempotency_key="k-1")
+    await _seed_points(db_session, user.id, task.id, points=2, idempotency_key="k-2")
 
     start = await repository.get_start_time_for_last_task(user.id)
     last = await repository.get_time_taken_for_last_task(user.id)
@@ -220,15 +204,11 @@ async def test_get_start_and_last_task_times(repository, db_session):
 
 
 @pytest.mark.asyncio
-async def test_get_task_by_external_user_id_returns_user_tasks(
-    repository, db_session
-):
+async def test_get_task_by_external_user_id_returns_user_tasks(repository, db_session):
     user = await _seed_user(db_session, "ext-task-list")
     game = await _seed_game(db_session, "g-task-list")
     task = await _seed_task(db_session, game.id, "task-list-1")
-    await _seed_points(
-        db_session, user.id, task.id, points=1, idempotency_key="k"
-    )
+    await _seed_points(db_session, user.id, task.id, points=1, idempotency_key="k")
 
     tasks = await repository.get_task_by_externalUserId("ext-task-list")
 
@@ -236,18 +216,12 @@ async def test_get_task_by_external_user_id_returns_user_tasks(
 
 
 @pytest.mark.asyncio
-async def test_get_last_task_by_user_id_returns_some_row(
-    repository, db_session
-):
+async def test_get_last_task_by_user_id_returns_some_row(repository, db_session):
     user = await _seed_user(db_session, "ext-last")
     game = await _seed_game(db_session, "g-last")
     task = await _seed_task(db_session, game.id, "task-last")
-    await _seed_points(
-        db_session, user.id, task.id, points=1, idempotency_key="old"
-    )
-    await _seed_points(
-        db_session, user.id, task.id, points=2, idempotency_key="new"
-    )
+    await _seed_points(db_session, user.id, task.id, points=1, idempotency_key="old")
+    await _seed_points(db_session, user.id, task.id, points=2, idempotency_key="new")
 
     result = await repository.get_last_task_by_userId(user.id)
 
@@ -271,15 +245,11 @@ async def test_count_measurements_by_external_task_id(repository, db_session):
 
 
 @pytest.mark.asyncio
-async def test_user_has_record_in_last_minutes_true_when_recent(
-    repository, db_session
-):
+async def test_user_has_record_in_last_minutes_true_when_recent(repository, db_session):
     user = await _seed_user(db_session, "ext-recent")
     game = await _seed_game(db_session, "g-recent")
     task = await _seed_task(db_session, game.id, "task-recent")
-    await _seed_points(
-        db_session, user.id, task.id, points=1, idempotency_key="k"
-    )
+    await _seed_points(db_session, user.id, task.id, points=1, idempotency_key="k")
 
     result = await repository.user_has_record_before_in_externalTaskId_last_min(
         externalTaskId="task-recent",
@@ -291,9 +261,7 @@ async def test_user_has_record_in_last_minutes_true_when_recent(
 
 
 @pytest.mark.asyncio
-async def test_get_user_task_measurements_returns_timestamps(
-    repository, db_session
-):
+async def test_get_user_task_measurements_returns_timestamps(repository, db_session):
     user = await _seed_user(db_session, "ext-ts")
     game = await _seed_game(db_session, "g-ts")
     task = await _seed_task(db_session, game.id, "task-ts")
@@ -329,9 +297,7 @@ async def test_get_user_task_measurements_count(repository, db_session):
 
 
 @pytest.mark.asyncio
-async def test_count_personal_records_by_external_game_id(
-    repository, db_session
-):
+async def test_count_personal_records_by_external_game_id(repository, db_session):
     user = await _seed_user(db_session, "ext-pr")
     game = await _seed_game(db_session, "g-pr-ext")
     task = await _seed_task(db_session, game.id, "task-pr")
@@ -354,9 +320,7 @@ async def test_get_avg_time_between_tasks_returns_minus_one_with_few_rows(
     user = await _seed_user(db_session, "ext-avg-time")
     game = await _seed_game(db_session, "g-avg-time")
     task = await _seed_task(db_session, game.id, "task-avg-time")
-    await _seed_points(
-        db_session, user.id, task.id, points=1, idempotency_key="k"
-    )
+    await _seed_points(db_session, user.id, task.id, points=1, idempotency_key="k")
 
     result = await repository.get_avg_time_between_tasks_for_all_users(
         externalGameId="g-avg-time",
@@ -373,9 +337,7 @@ async def test_get_last_window_time_diff_returns_zero_when_under_two_points(
     user = await _seed_user(db_session, "ext-win-zero")
     game = await _seed_game(db_session, "g-win-zero")
     task = await _seed_task(db_session, game.id, "task-win-zero")
-    await _seed_points(
-        db_session, user.id, task.id, points=1, idempotency_key="k"
-    )
+    await _seed_points(db_session, user.id, task.id, points=1, idempotency_key="k")
 
     diff = await repository.get_last_window_time_diff(
         externalTaskId="task-win-zero",
@@ -393,12 +355,8 @@ async def test_get_all_point_of_tasks_list_returns_only_listed_tasks(
     game = await _seed_game(db_session, "g-list")
     task_a = await _seed_task(db_session, game.id, "task-list-a")
     task_b = await _seed_task(db_session, game.id, "task-list-b")
-    await _seed_points(
-        db_session, user.id, task_a.id, points=1, idempotency_key="ka"
-    )
-    await _seed_points(
-        db_session, user.id, task_b.id, points=2, idempotency_key="kb"
-    )
+    await _seed_points(db_session, user.id, task_a.id, points=1, idempotency_key="ka")
+    await _seed_points(db_session, user.id, task_b.id, points=2, idempotency_key="kb")
 
     results = await repository.get_all_point_of_tasks_list([task_a.id])
 
@@ -421,9 +379,7 @@ async def test_get_all_point_of_tasks_list_with_data_returns_full_objects(
         data={"meta": "abc"},
     )
 
-    results = await repository.get_all_point_of_tasks_list(
-        [task.id], withData=True
-    )
+    results = await repository.get_all_point_of_tasks_list([task.id], withData=True)
 
     assert len(results) == 1
     assert results[0].data == {"meta": "abc"}

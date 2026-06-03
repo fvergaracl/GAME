@@ -33,7 +33,9 @@ class UserActionsRepository(BaseRepository):
               The session factory.
             model: The SQLAlchemy model class for user points.
         """
-        session_factory_userAction = Callable[..., AbstractAsyncContextManager[AsyncSession]]
+        session_factory_userAction = Callable[
+            ..., AbstractAsyncContextManager[AsyncSession]
+        ]
         model_userAction = UserActions
         self.userAction_repository = BaseRepository(
             session_factory_userAction, model_userAction

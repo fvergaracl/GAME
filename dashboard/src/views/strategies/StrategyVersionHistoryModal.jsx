@@ -71,7 +71,7 @@ const prettyJson = (value) => {
   }
 }
 
-const RuleDiffPanel = ({ section, entries }) => {
+const RuleDiffPanel = ({ section, entries = [] }) => {
   if (!entries || entries.length === 0) return null
   return (
     <div className="mb-3">
@@ -128,11 +128,7 @@ RuleDiffPanel.propTypes = {
   entries: PropTypes.array,
 }
 
-RuleDiffPanel.defaultProps = {
-  entries: [],
-}
-
-const ParentVariablesPanel = ({ entries }) => {
+const ParentVariablesPanel = ({ entries = [] }) => {
   if (!entries || entries.length === 0) return null
   const changed = entries.filter((e) => e.kind !== DIFF_KINDS.UNCHANGED)
   if (changed.length === 0) return null
@@ -161,9 +157,14 @@ const ParentVariablesPanel = ({ entries }) => {
 }
 
 ParentVariablesPanel.propTypes = { entries: PropTypes.array }
-ParentVariablesPanel.defaultProps = { entries: [] }
 
-const StrategyVersionHistoryModal = ({ visible, strategyId, isAdmin, onClose, onRollbackDone }) => {
+const StrategyVersionHistoryModal = ({
+  visible,
+  strategyId = null,
+  isAdmin = false,
+  onClose,
+  onRollbackDone = null,
+}) => {
   const [versions, setVersions] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -413,12 +414,6 @@ StrategyVersionHistoryModal.propTypes = {
   isAdmin: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
   onRollbackDone: PropTypes.func,
-}
-
-StrategyVersionHistoryModal.defaultProps = {
-  strategyId: null,
-  isAdmin: false,
-  onRollbackDone: null,
 }
 
 export default StrategyVersionHistoryModal

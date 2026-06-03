@@ -40,7 +40,9 @@ class LogsBase(BaseModel):
     details: dict = Field(
         ...,
         description="Structured metadata associated with the event.",
-        examples=[{"group_by": "day", "start_date": "2026-02-01", "end_date": "2026-02-10"}],
+        examples=[
+            {"group_by": "day", "start_date": "2026-02-01", "end_date": "2026-02-10"}
+        ],
     )
     apiKey_used: Optional[str] = Field(
         default=None,

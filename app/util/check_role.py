@@ -48,13 +48,19 @@ def check_role(
         client_access = resource_access.get(client_id)
         if isinstance(client_access, Mapping):
             client_roles = client_access.get("roles")
-            if isinstance(client_roles, (list, tuple, set)) and required_role in client_roles:
+            if (
+                isinstance(client_roles, (list, tuple, set))
+                and required_role in client_roles
+            ):
                 return True
 
     account = resource_access.get("account")
     if isinstance(account, Mapping):
         account_roles = account.get("roles")
-        if isinstance(account_roles, (list, tuple, set)) and required_role in account_roles:
+        if (
+            isinstance(account_roles, (list, tuple, set))
+            and required_role in account_roles
+        ):
             return True
 
     return False

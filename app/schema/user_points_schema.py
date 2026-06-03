@@ -133,13 +133,15 @@ class PointsAssignedToUserDetails(PointsAssignedToUser):
     pointsData: Optional[List[PointsData]] = Field(
         default=None,
         description="Detailed list of assignment events for this user and scope.",
-        examples=[[
-            {
-                "points": 15,
-                "caseName": "TASK_COMPLETION",
-                "created_at": "2026-02-10T12:20:00Z",
-            }
-        ]],
+        examples=[
+            [
+                {
+                    "points": 15,
+                    "caseName": "TASK_COMPLETION",
+                    "created_at": "2026-02-10T12:20:00Z",
+                }
+            ]
+        ],
     )
 
 

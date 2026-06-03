@@ -9,7 +9,6 @@ from sqlmodel import SQLModel
 
 from app.core.config import configs
 from app.core.database import _to_async_url
-
 # Side-effect imports: populate SQLModel.metadata so autogenerate sees every table.
 from app.model.abuse_limit_counter import AbuseLimitCounter  # noqa: F401
 from app.model.api_key import ApiKey  # noqa: F401

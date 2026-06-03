@@ -38,9 +38,7 @@ async def add_log(
     except Exception as e:
         # Do NOT route this through service_log -- this IS the audit-log
         # writer; recursing would risk a tight failure loop.
-        logger.warning(
-            "Failed to write audit log entry: %s", e, exc_info=True
-        )
+        logger.warning("Failed to write audit log entry: %s", e, exc_info=True)
         oauthusers_service = Container.oauth_users_service()
         create_user = CreateOAuthUser(
             provider="keycloak",

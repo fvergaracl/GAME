@@ -1,10 +1,10 @@
 from datetime import datetime
 from uuid import uuid4
 
+from pydantic import ConfigDict
 from sqlalchemy import Index, Integer, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import Column, DateTime, Field, SQLModel, String, func
-from pydantic import ConfigDict
 
 
 class AbuseLimitCounter(SQLModel, table=True):

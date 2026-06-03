@@ -23,13 +23,10 @@ import pytest
 
 from app.core.exceptions import NotFoundError
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
-from app.services.strategy_observability_service import (
-    StrategyObservabilityService,
-    _duration_histogram,
-    _percentile,
-    _points_histogram,
-    _status_breakdown,
-)
+from app.services.strategy_observability_service import (StrategyObservabilityService,
+                                                         _duration_histogram,
+                                                         _percentile, _points_histogram,
+                                                         _status_breakdown)
 
 
 def _make_strategy(id_: str = "s1", name: str = "demo", version: int = 1):
@@ -266,9 +263,7 @@ class TestCompare:
         def make_service(strategy_a_metrics, strategy_b_metrics):
             defs_service = MagicMock()
             # Return different strategies on consecutive calls.
-            defs_service.get_strategy = AsyncMock(
-                side_effect=[strategy_a, strategy_b]
-            )
+            defs_service.get_strategy = AsyncMock(side_effect=[strategy_a, strategy_b])
             repo = MagicMock()
             # Cycle through (A's queries, then B's queries). The order
             # mirrors what _build_response calls per snapshot.

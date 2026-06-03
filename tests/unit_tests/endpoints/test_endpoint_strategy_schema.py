@@ -28,9 +28,15 @@ def _audit():
     )
 
 
-def _instance_mock(*, variables, name="Mock Strategy",
-                   description="desc", version="1.2.3",
-                   hash_version="ffeeddcc", strategy_id="mock_strategy"):
+def _instance_mock(
+    *,
+    variables,
+    name="Mock Strategy",
+    description="desc",
+    version="1.2.3",
+    hash_version="ffeeddcc",
+    strategy_id="mock_strategy"
+):
     """Builds a MagicMock that quacks like a registered BaseStrategy.
 
     Only the methods the schema endpoint reaches into are stubbed —
@@ -64,7 +70,9 @@ async def test_get_schema_returns_typed_variables_ordered_by_name():
 
     with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
         result = await strategy_endpoint.get_strategy_schema_by_id(
-            id="mock_strategy", service=service, audit=_audit(),
+            id="mock_strategy",
+            service=service,
+            audit=_audit(),
         )
 
     # Variables sorted alphabetically — keeps UI rendering stable.
@@ -76,7 +84,7 @@ async def test_get_schema_returns_typed_variables_ordered_by_name():
     assert by_name["variable_basic_points"].type == "int"
     assert by_name["variable_factor"].type == "float"
     assert by_name["variable_label"].type == "str"
-    assert by_name["variable_flag"].type == "bool"      # NOT "int"
+    assert by_name["variable_flag"].type == "bool"  # NOT "int"
     assert by_name["variable_complex"].type == "dict"
 
     # currentValue carries the literal default from the built-in.
@@ -100,7 +108,9 @@ async def test_get_schema_404s_when_strategy_not_in_registry():
     with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
         with pytest.raises(NotFoundError, match="Strategy not found"):
             await strategy_endpoint.get_strategy_schema_by_id(
-                id="unknown", service=service, audit=_audit(),
+                id="unknown",
+                service=service,
+                audit=_audit(),
             )
 
     service.get_Class_by_id.assert_called_once_with("unknown")
@@ -116,12 +126,15 @@ async def test_get_schema_audits_failure_path():
     with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as add_log:
         with pytest.raises(RuntimeError, match="boom"):
             await strategy_endpoint.get_strategy_schema_by_id(
-                id="x", service=service, audit=_audit(),
+                id="x",
+                service=service,
+                audit=_audit(),
             )
 
     # The audit logger writes at least one ERROR-level entry on failure.
     error_calls = [
-        c for c in add_log.await_args_list
+        c
+        for c in add_log.await_args_list
         if c.kwargs.get("level", "").upper() == "ERROR"
         or (c.args and getattr(c.args[0], "level", "") == "ERROR")
     ]

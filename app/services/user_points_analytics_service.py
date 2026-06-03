@@ -9,6 +9,7 @@ These methods are thin pass-throughs over ``UserPointsRepository`` analytics
 queries; they are consumed primarily by strategy engines (``app/engine``) to
 compute rewards based on historical user behaviour.
 """
+
 from typing import Any
 
 from app.repository.user_points_repository import UserPointsRepository
@@ -20,9 +21,7 @@ class UserPointsAnalyticsService(BaseService):
         self.user_points_repository = user_points_repository
         super().__init__(user_points_repository)
 
-    async def count_measurements_by_external_task_id(
-        self, external_task_id
-    ) -> Any:
+    async def count_measurements_by_external_task_id(self, external_task_id) -> Any:
         return await self.user_points_repository.count_measurements_by_external_task_id(
             external_task_id
         )
@@ -55,9 +54,7 @@ class UserPointsAnalyticsService(BaseService):
             externalGameId, externalTaskId
         )
 
-    async def get_last_window_time_diff(
-        self, externalTaskId, externalUserId
-    ) -> Any:
+    async def get_last_window_time_diff(self, externalTaskId, externalUserId) -> Any:
         return await self.user_points_repository.get_last_window_time_diff(
             externalTaskId, externalUserId
         )
@@ -69,9 +66,7 @@ class UserPointsAnalyticsService(BaseService):
             externalTaskId, externalUserId, externalGameId
         )
 
-    async def get_user_task_measurements(
-        self, externalTaskId, externalUserId
-    ) -> Any:
+    async def get_user_task_measurements(self, externalTaskId, externalUserId) -> Any:
         return await self.user_points_repository.get_user_task_measurements(
             externalTaskId, externalUserId
         )

@@ -221,9 +221,7 @@ class _FakeAsyncClient:
 
 def _install_fake_httpx(monkeypatch, post_side_effect):
     _FakeAsyncClient.post_mock = AsyncMock(side_effect=post_side_effect)
-    monkeypatch.setattr(
-        access_token_middleware.httpx, "AsyncClient", _FakeAsyncClient
-    )
+    monkeypatch.setattr(access_token_middleware.httpx, "AsyncClient", _FakeAsyncClient)
     return _FakeAsyncClient.post_mock
 
 
@@ -266,5 +264,3 @@ async def test_refresh_access_token_raises_http_500_on_unexpected_error(monkeypa
 
     assert exc_info.value.status_code == 500
     assert "Internal server error" in exc_info.value.detail
-
-

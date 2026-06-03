@@ -19,7 +19,6 @@ from sqlalchemy.orm import declarative_base
 from app.core.exceptions import DuplicatedError, NotFoundError
 from app.repository.base_repository import BaseRepository
 
-
 _Base = declarative_base()
 
 
@@ -139,9 +138,7 @@ async def test_read_by_id_raises_not_found_when_missing(base_repo):
 
 @pytest.mark.asyncio
 async def test_read_by_id_returns_none_when_not_found_raise_false(base_repo):
-    result = await base_repo.read_by_id(
-        999_999, not_found_raise_exception=False
-    )
+    result = await base_repo.read_by_id(999_999, not_found_raise_exception=False)
     assert result is None
 
 
@@ -173,9 +170,7 @@ async def test_read_by_column_returns_list_when_only_one_false(base_repo):
 async def test_read_by_columns_returns_first_match(base_repo):
     await base_repo.create(_Schema(name="combo", value="green"))
 
-    result = await base_repo.read_by_columns(
-        {"name": "combo", "value": "green"}
-    )
+    result = await base_repo.read_by_columns({"name": "combo", "value": "green"})
     assert result.name == "combo"
 
 
@@ -190,9 +185,7 @@ async def test_read_by_columns_returns_all_when_only_one_false(base_repo):
     await base_repo.create(_Schema(name="m-1", value="x"))
     await base_repo.create(_Schema(name="m-2", value="x"))
 
-    result = await base_repo.read_by_columns(
-        {"value": "x"}, only_one=False
-    )
+    result = await base_repo.read_by_columns({"value": "x"}, only_one=False)
     assert {r.name for r in result} == {"m-1", "m-2"}
 
 

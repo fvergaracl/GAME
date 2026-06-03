@@ -1,9 +1,9 @@
 from datetime import datetime
 from uuid import uuid4
 
+from pydantic import ConfigDict
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import Column, DateTime, Field, ForeignKey, SQLModel, String, func
-from pydantic import ConfigDict
 
 
 class OAuthUsers(SQLModel, table=True):

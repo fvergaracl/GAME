@@ -1,7 +1,7 @@
+from pydantic import ConfigDict
 from sqlmodel import Column, Field, ForeignKey, String
 
 from app.model.base_model import BaseModel
-from pydantic import ConfigDict
 
 
 class Games(BaseModel, table=True):

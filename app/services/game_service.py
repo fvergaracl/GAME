@@ -1,8 +1,7 @@
 from typing import Any, Optional
 from uuid import UUID
 
-from app.core.exceptions import (BadRequestError, ConflictError,
-                                 NotFoundError)
+from app.core.exceptions import BadRequestError, ConflictError, NotFoundError
 from app.engine.all_engine_strategies import all_engine_strategies
 from app.model.strategy_definition import StrategyDefinitionStatus
 from app.repository.game_params_repository import GameParamsRepository
@@ -10,17 +9,13 @@ from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.schema.games_params_schema import InsertGameParams
-from app.schema.games_schema import (BaseGameResult, FindGameResult,
-                                     GameCreated, PatchGame, PostCreateGame,
-                                     ResponsePatchGame)
+from app.schema.games_schema import (BaseGameResult, FindGameResult, GameCreated,
+                                     PatchGame, PostCreateGame, ResponsePatchGame)
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
-from app.services.strategy_definition_service import \
-    StrategyDefinitionService
-from app.services.strategy_service import (StrategyService,
-                                           is_custom_strategy_id,
-                                           parse_custom_strategy_id,
-                                           resolve_realm_id)
+from app.services.strategy_definition_service import StrategyDefinitionService
+from app.services.strategy_service import (StrategyService, is_custom_strategy_id,
+                                           parse_custom_strategy_id, resolve_realm_id)
 from app.util.are_variables_matching import are_variables_matching
 from app.util.is_valid_slug import is_valid_slug
 
@@ -44,9 +39,7 @@ class GameService(BaseService):
         task_repository: TaskRepository,
         user_points_repository: UserPointsRepository,
         strategy_service: StrategyService,
-        strategy_definition_service: Optional[
-            StrategyDefinitionService
-        ] = None,
+        strategy_definition_service: Optional[StrategyDefinitionService] = None,
     ) -> None:
         """
         Initializes the GameService with the provided repositories and
@@ -190,7 +183,9 @@ class GameService(BaseService):
         Returns:
             object: The game details.
         """
-        return await self.game_repository.read_by_column("externalGameId", externalGameId)
+        return await self.game_repository.read_by_column(
+            "externalGameId", externalGameId
+        )
 
     async def create(
         self, schema: PostCreateGame, api_key: str = None, oauth_user_id=None
@@ -305,13 +300,9 @@ class GameService(BaseService):
         """
         if not is_custom_strategy_id(strategy_id):
             strategies = all_engine_strategies()
-            strategy = next(
-                (s for s in strategies if s.id == strategy_id), None
-            )
+            strategy = next((s for s in strategies if s.id == strategy_id), None)
             if not strategy:
-                raise NotFoundError(
-                    detail=f"Strategy with id: {strategy_id} not found"
-                )
+                raise NotFoundError(detail=f"Strategy with id: {strategy_id} not found")
             return
 
         if self.strategy_definition_service is None:
@@ -321,9 +312,7 @@ class GameService(BaseService):
                     "StrategyDefinitionService not wired."
                 )
             )
-        realmId = resolve_realm_id(
-            api_key=api_key, oauth_user_id=oauth_user_id
-        )
+        realmId = resolve_realm_id(api_key=api_key, oauth_user_id=oauth_user_id)
         uuid_part = parse_custom_strategy_id(strategy_id)
         definition = await self.strategy_definition_service.get_strategy(
             id=uuid_part, realmId=realmId
@@ -434,7 +423,9 @@ class GameService(BaseService):
         updated_params = []
         if params:
             for param in params:
-                await self.game_params_repository.patch_game_params_by_id(param.id, param)
+                await self.game_params_repository.patch_game_params_by_id(
+                    param.id, param
+                )
                 updated_params.append(param)
 
         game = await self.game_repository.patch_game_by_id(gameId, schema)

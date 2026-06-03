@@ -48,21 +48,15 @@ def _legacy_prefix(plaintext: str, key_hash: str) -> str:
 def upgrade():
     bind = op.get_bind()
 
-    op.add_column(
-        "apikey", sa.Column("apiKeyHash", sa.String(), nullable=True)
-    )
+    op.add_column("apikey", sa.Column("apiKeyHash", sa.String(), nullable=True))
 
-    rows = bind.execute(
-        sa.text('SELECT id, "apiKey" FROM apikey')
-    ).fetchall()
+    rows = bind.execute(sa.text('SELECT id, "apiKey" FROM apikey')).fetchall()
 
     if rows:
         # Drop every FK that actually references apikey.apiKey, regardless of
         # name. Earlier migrations created some FKs with op.create_foreign_key(None, ...),
         # so Postgres-assigned names don't always match the canonical pattern.
-        fk_rows = bind.execute(
-            sa.text(
-                """
+        fk_rows = bind.execute(sa.text("""
                 SELECT tc.table_name, tc.constraint_name
                 FROM information_schema.table_constraints AS tc
                 JOIN information_schema.constraint_column_usage AS ccu
@@ -71,9 +65,7 @@ def upgrade():
                 WHERE tc.constraint_type = 'FOREIGN KEY'
                   AND ccu.table_name     = 'apikey'
                   AND ccu.column_name    = 'apiKey'
-                """
-            )
-        ).fetchall()
+                """)).fetchall()
 
         for table_name, constraint_name in fk_rows:
             op.execute(
@@ -89,9 +81,7 @@ def upgrade():
             legacy_plaintext = row[1]
             if legacy_plaintext is None:
                 continue
-            key_hash = hashlib.sha256(
-                legacy_plaintext.encode("utf-8")
-            ).hexdigest()
+            key_hash = hashlib.sha256(legacy_plaintext.encode("utf-8")).hexdigest()
             new_prefix = _legacy_prefix(legacy_plaintext, key_hash)
 
             for table in update_tables:
@@ -109,10 +99,10 @@ def upgrade():
 
             bind.execute(
                 sa.text(
-                    'UPDATE apikey '
+                    "UPDATE apikey "
                     'SET "apiKey" = :new_prefix, '
                     '    "apiKeyHash" = :new_hash '
-                    'WHERE id = :id'
+                    "WHERE id = :id"
                 ),
                 {
                     "new_prefix": new_prefix,
@@ -131,9 +121,7 @@ def upgrade():
             )
 
     op.alter_column("apikey", "apiKeyHash", nullable=False)
-    op.create_unique_constraint(
-        "uq_apikey_apiKeyHash", "apikey", ["apiKeyHash"]
-    )
+    op.create_unique_constraint("uq_apikey_apiKeyHash", "apikey", ["apiKeyHash"])
     op.create_index(
         "ix_apikey_apiKeyHash",
         "apikey",
@@ -151,7 +139,5 @@ def upgrade():
 def downgrade():
     op.drop_index("ix_apikey_apiKey_prefix", table_name="apikey")
     op.drop_index("ix_apikey_apiKeyHash", table_name="apikey")
-    op.drop_constraint(
-        "uq_apikey_apiKeyHash", "apikey", type_="unique"
-    )
+    op.drop_constraint("uq_apikey_apiKeyHash", "apikey", type_="unique")
     op.drop_column("apikey", "apiKeyHash")

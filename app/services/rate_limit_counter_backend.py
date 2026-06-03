@@ -10,15 +10,14 @@ a hot row in Postgres does not pay.
 Selection is driven by ``configs.ABUSE_PREVENTION_BACKEND`` and wired in
 ``app/core/container.py``.
 """
+
 from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
 from typing import Any, Optional, Protocol, runtime_checkable
 
-from app.repository.abuse_limit_counter_repository import (
-    AbuseLimitCounterRepository,
-)
+from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +33,7 @@ class RateLimitCounterBackend(Protocol):
         window_name: str,
         window_start: datetime,
         ttl_seconds: int,
-    ) -> int:
-        ...
+    ) -> int: ...
 
 
 class DatabaseRateLimitCounterBackend:
@@ -134,7 +132,7 @@ def build_redis_client_from_url(url: str) -> Any:
     except ImportError as exc:  # pragma: no cover - import guard
         raise RuntimeError(
             "ABUSE_PREVENTION_BACKEND=redis requires the 'redis' package. "
-            "Install with `poetry add redis@^5.0` or set "
+            "Install with `poetry add redis@^8.0` or set "
             "ABUSE_PREVENTION_BACKEND=database to keep the DB-backed limiter."
         ) from exc
 

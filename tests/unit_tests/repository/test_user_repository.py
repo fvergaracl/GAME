@@ -50,9 +50,7 @@ async def test_create_user_returns_existing_on_duplicate(repository):
 
 @pytest.mark.asyncio
 async def test_get_or_create_creates_when_missing(repository):
-    user = await repository.get_or_create_by_externalUserId(
-        externalUserId="upsert-1"
-    )
+    user = await repository.get_or_create_by_externalUserId(externalUserId="upsert-1")
 
     assert user.externalUserId == "upsert-1"
     assert user.id is not None
@@ -70,7 +68,9 @@ async def test_get_or_create_returns_existing_user(repository):
 
 
 @pytest.mark.asyncio
-async def test_get_or_create_updates_oauth_id_when_provided(repository, session_factory):
+async def test_get_or_create_updates_oauth_id_when_provided(
+    repository, session_factory
+):
     """
     When called on an existing row with a new ``oauth_user_id``, the upsert
     must update the linked OAuth identity in place.

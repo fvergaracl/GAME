@@ -87,9 +87,7 @@ async def test_read_by_game_id_and_external_task_id_returns_match(
     game = await _seed_game(db_session, "game-c")
     task = await _seed_task(db_session, game.id, "t-c-1")
 
-    result = await repository.read_by_gameId_and_externalTaskId(
-        game.id, "t-c-1"
-    )
+    result = await repository.read_by_gameId_and_externalTaskId(game.id, "t-c-1")
 
     assert result is not None
     assert result.id == task.id
@@ -101,17 +99,13 @@ async def test_read_by_game_id_and_external_task_id_returns_none_when_missing(
 ):
     game = await _seed_game(db_session, "game-no-task")
 
-    result = await repository.read_by_gameId_and_externalTaskId(
-        game.id, "absent"
-    )
+    result = await repository.read_by_gameId_and_externalTaskId(game.id, "absent")
 
     assert result is None
 
 
 @pytest.mark.asyncio
-async def test_get_points_and_users_by_task_id_returns_task(
-    repository, db_session
-):
+async def test_get_points_and_users_by_task_id_returns_task(repository, db_session):
     game = await _seed_game(db_session, "game-pt")
     task = await _seed_task(db_session, game.id, "t-pt")
 
