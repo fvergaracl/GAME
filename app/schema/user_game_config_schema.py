@@ -36,7 +36,9 @@ class BaseUserGameConfig(BaseModel):
     configData: Optional[Dict] = Field(
         default=None,
         description="Custom configuration object applied to this user-game pair.",
-        examples=[{"incentiveMultiplier": 1.1, "featureFlags": {"new_reward_rule": True}}],
+        examples=[
+            {"incentiveMultiplier": 1.1, "featureFlags": {"new_reward_rule": True}}
+        ],
     )
 
 

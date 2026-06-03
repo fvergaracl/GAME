@@ -32,7 +32,6 @@ from app.schema.strategy_definition_schema import StrategyDefinitionRead
 from app.services.strategy_service import StrategyService
 from app.services.user_points_service import UserPointsService
 
-
 _AST_PATH = (
     Path(__file__).resolve().parents[3]
     / "app"
@@ -110,9 +109,7 @@ class TestUserPointsServiceDslWiring(unittest.IsolatedAsyncioTestCase):
             "get_last_window_time_diff": 0,
             "get_new_last_window_time_diff": 0,
         }.items():
-            setattr(
-                self.analytics_service, method, AsyncMock(return_value=value)
-            )
+            setattr(self.analytics_service, method, AsyncMock(return_value=value))
 
         # ----- strategy_service: real instance with mocks injected. This is
         # the wiring under test — we exercise the production constructor.

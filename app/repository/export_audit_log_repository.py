@@ -1,7 +1,8 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable, List, Optional
 
-from sqlalchemy import select, update as sa_update
+from sqlalchemy import select
+from sqlalchemy import update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.model.export_audit_log import ExportAuditLog
@@ -15,9 +16,7 @@ class ExportAuditLogRepository(BaseRepository):
 
     def __init__(
         self,
-        session_factory: Callable[
-            ..., AbstractAsyncContextManager[AsyncSession]
-        ],
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model=ExportAuditLog,
     ) -> None:
         super().__init__(session_factory, model)
@@ -57,9 +56,7 @@ class ExportAuditLogRepository(BaseRepository):
         """
         # NULLS LAST so historical rows written before the audit_start
         # client-side timestamp fix don't dominate the top of the list.
-        stmt = select(self.model).order_by(
-            self.model.created_at.desc().nullslast()
-        )
+        stmt = select(self.model).order_by(self.model.created_at.desc().nullslast())
         if oauth_user_id is not None:
             stmt = stmt.where(self.model.oauth_user_id == oauth_user_id)
         stmt = stmt.limit(min(max(limit, 1), 200))

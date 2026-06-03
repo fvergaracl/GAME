@@ -261,7 +261,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
         )
 
         with self.assertRaises(NotFoundError):
-            await self.service.patch_game_by_externalGameId("missing-external-id", schema)
+            await self.service.patch_game_by_externalGameId(
+                "missing-external-id", schema
+            )
 
     async def test_patch_game_by_external_game_id_delegates_to_patch_by_id(self):
         game_id = uuid4()
@@ -310,7 +312,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
             await self.service.patch_game_by_id(game_id, schema)
 
     @patch("app.services.game_service.are_variables_matching", side_effect=[True, True])
-    async def test_patch_game_by_id_raises_when_data_and_params_are_equal(self, _mock_match):
+    async def test_patch_game_by_id_raises_when_data_and_params_are_equal(
+        self, _mock_match
+    ):
         game_id = uuid4()
         param_id = uuid4()
         existing_param = SimpleNamespace(id=param_id, key="k", value="v")
@@ -362,7 +366,9 @@ class TestGameService(unittest.IsolatedAsyncioTestCase):
             await self.service.patch_game_by_id(game_id, schema)
 
     @patch("app.services.game_service.all_engine_strategies", return_value=[])
-    async def test_patch_game_by_id_raises_when_strategy_not_found(self, _mock_strategies):
+    async def test_patch_game_by_id_raises_when_strategy_not_found(
+        self, _mock_strategies
+    ):
         game_id = uuid4()
         game = self._build_game(game_id, include_params=True)
         schema = PatchGame(
@@ -625,22 +631,23 @@ class TestGameServiceCustomStrategyAssignment(unittest.IsolatedAsyncioTestCase):
             "params": [],
         }
         self.game_repository.patch_game_by_id.return_value = patched
-        self.strategy_definition_service.get_strategy.return_value = (
-            SimpleNamespace(
-                id="abc-123",
-                name="foo",
-                version=1,
-                status="PUBLISHED",
-            )
+        self.strategy_definition_service.get_strategy.return_value = SimpleNamespace(
+            id="abc-123",
+            name="foo",
+            version=1,
+            status="PUBLISHED",
         )
 
         result = await self.service.patch_game_by_id(
-            game_id, schema, api_key="api-key-xyz",
+            game_id,
+            schema,
+            api_key="api-key-xyz",
         )
 
         self.assertEqual(result.strategyId, "custom:abc-123")
         self.strategy_definition_service.get_strategy.assert_awaited_once_with(
-            id="abc-123", realmId="api-key-xyz",
+            id="abc-123",
+            realmId="api-key-xyz",
         )
 
     async def test_custom_draft_strategy_is_rejected(self):
@@ -656,18 +663,18 @@ class TestGameServiceCustomStrategyAssignment(unittest.IsolatedAsyncioTestCase):
         )
         self.game_repository.read_by_id.return_value = game
         self.game_repository.read_by_column.return_value = None
-        self.strategy_definition_service.get_strategy.return_value = (
-            SimpleNamespace(
-                id="draft-id",
-                name="not-yet",
-                version=1,
-                status="DRAFT",
-            )
+        self.strategy_definition_service.get_strategy.return_value = SimpleNamespace(
+            id="draft-id",
+            name="not-yet",
+            version=1,
+            status="DRAFT",
         )
 
         with self.assertRaises(BadRequestError):
             await self.service.patch_game_by_id(
-                game_id, schema, api_key="api-key-xyz",
+                game_id,
+                schema,
+                api_key="api-key-xyz",
             )
         # The repository must NOT be called when the validator rejects.
         self.game_repository.patch_game_by_id.assert_not_called()
@@ -683,13 +690,15 @@ class TestGameServiceCustomStrategyAssignment(unittest.IsolatedAsyncioTestCase):
         )
         self.game_repository.read_by_id.return_value = game
         self.game_repository.read_by_column.return_value = None
-        self.strategy_definition_service.get_strategy.side_effect = (
-            NotFoundError(detail="Custom strategy not found: ghost")
+        self.strategy_definition_service.get_strategy.side_effect = NotFoundError(
+            detail="Custom strategy not found: ghost"
         )
 
         with self.assertRaises(NotFoundError):
             await self.service.patch_game_by_id(
-                game_id, schema, api_key="api-key-xyz",
+                game_id,
+                schema,
+                api_key="api-key-xyz",
             )
 
     async def test_custom_without_strategy_definition_service_is_rejected(self):
@@ -719,7 +728,9 @@ class TestGameServiceCustomStrategyAssignment(unittest.IsolatedAsyncioTestCase):
 
         with self.assertRaises(BadRequestError):
             await bare_service.patch_game_by_id(
-                game_id, schema, api_key="api-key-xyz",
+                game_id,
+                schema,
+                api_key="api-key-xyz",
             )
 
 

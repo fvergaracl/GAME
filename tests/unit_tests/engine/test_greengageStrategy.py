@@ -27,7 +27,9 @@ def strategy_bundle():
 
 
 def test_init_sets_expected_configuration(strategy_bundle):
-    strategy, task_service, user_points_service, user_points_analytics_service = strategy_bundle
+    strategy, task_service, user_points_service, user_points_analytics_service = (
+        strategy_bundle
+    )
 
     assert strategy.strategy_name == "GREENGAGEGamificationStrategy"
     assert strategy.strategy_name_slug == "greengage_gamification"
@@ -95,7 +97,9 @@ async def test_calculate_points_rejects_non_integer_minutes(strategy_bundle):
 
 @pytest.mark.asyncio
 async def test_calculate_points_case_1_1_and_maps_task_params(strategy_bundle):
-    strategy, task_service, user_points_service, user_points_analytics_service = strategy_bundle
+    strategy, task_service, user_points_service, user_points_analytics_service = (
+        strategy_bundle
+    )
     task_service.get_task_params_by_externalTaskId.return_value = [
         SimpleNamespace(key="development", value=10),
         SimpleNamespace(key="exploitation", value=20),
@@ -123,7 +127,9 @@ async def test_calculate_points_case_1_1_and_maps_task_params(strategy_bundle):
 async def test_calculate_points_case_1_2_when_user_has_previous_recent_record(
     strategy_bundle,
 ):
-    strategy, task_service, user_points_service, user_points_analytics_service = strategy_bundle
+    strategy, task_service, user_points_service, user_points_analytics_service = (
+        strategy_bundle
+    )
     task_service.get_task_params_by_externalTaskId.return_value = []
     user_points_analytics_service.user_has_record_before_in_externalTaskId_last_min.return_value = (
         True
@@ -140,7 +146,9 @@ async def test_calculate_points_case_1_2_when_user_has_previous_recent_record(
 async def test_calculate_points_case_2_when_personal_records_are_less_than_two(
     strategy_bundle,
 ):
-    strategy, task_service, user_points_service, user_points_analytics_service = strategy_bundle
+    strategy, task_service, user_points_service, user_points_analytics_service = (
+        strategy_bundle
+    )
     task_service.get_task_params_by_externalTaskId.return_value = None
     strategy.variable_dimension_complexity = {
         "development": 99,
@@ -150,7 +158,9 @@ async def test_calculate_points_case_2_when_personal_records_are_less_than_two(
     user_points_analytics_service.user_has_record_before_in_externalTaskId_last_min.return_value = (
         False
     )
-    user_points_analytics_service.count_personal_records_by_external_game_id.return_value = 1
+    user_points_analytics_service.count_personal_records_by_external_game_id.return_value = (
+        1
+    )
 
     result = await strategy.calculate_points(
         "game-1", "task-1", "user-1", data={"minutes": 5}
@@ -168,12 +178,16 @@ async def test_calculate_points_case_2_when_personal_records_are_less_than_two(
 async def test_calculate_points_case_3_when_minutes_are_above_global_average(
     strategy_bundle,
 ):
-    strategy, task_service, user_points_service, user_points_analytics_service = strategy_bundle
+    strategy, task_service, user_points_service, user_points_analytics_service = (
+        strategy_bundle
+    )
     task_service.get_task_params_by_externalTaskId.return_value = []
     user_points_analytics_service.user_has_record_before_in_externalTaskId_last_min.return_value = (
         False
     )
-    user_points_analytics_service.count_personal_records_by_external_game_id.return_value = 2
+    user_points_analytics_service.count_personal_records_by_external_game_id.return_value = (
+        2
+    )
     user_points_analytics_service.get_global_avg_by_external_game_id.return_value = 10
 
     result = await strategy.calculate_points(
@@ -188,12 +202,16 @@ async def test_calculate_points_case_3_when_minutes_are_above_global_average(
 async def test_calculate_points_case_4_1_when_minutes_are_above_personal_average(
     strategy_bundle,
 ):
-    strategy, task_service, user_points_service, user_points_analytics_service = strategy_bundle
+    strategy, task_service, user_points_service, user_points_analytics_service = (
+        strategy_bundle
+    )
     task_service.get_task_params_by_externalTaskId.return_value = []
     user_points_analytics_service.user_has_record_before_in_externalTaskId_last_min.return_value = (
         False
     )
-    user_points_analytics_service.count_personal_records_by_external_game_id.return_value = 2
+    user_points_analytics_service.count_personal_records_by_external_game_id.return_value = (
+        2
+    )
     user_points_analytics_service.get_global_avg_by_external_game_id.return_value = 20
     user_points_analytics_service.get_personal_avg_by_external_game_id.return_value = 15
 
@@ -208,12 +226,16 @@ async def test_calculate_points_case_4_1_when_minutes_are_above_personal_average
 async def test_calculate_points_case_4_2_when_minutes_are_not_above_personal_average(
     strategy_bundle,
 ):
-    strategy, task_service, user_points_service, user_points_analytics_service = strategy_bundle
+    strategy, task_service, user_points_service, user_points_analytics_service = (
+        strategy_bundle
+    )
     task_service.get_task_params_by_externalTaskId.return_value = []
     user_points_analytics_service.user_has_record_before_in_externalTaskId_last_min.return_value = (
         False
     )
-    user_points_analytics_service.count_personal_records_by_external_game_id.return_value = 2
+    user_points_analytics_service.count_personal_records_by_external_game_id.return_value = (
+        2
+    )
     user_points_analytics_service.get_global_avg_by_external_game_id.return_value = 20
     user_points_analytics_service.get_personal_avg_by_external_game_id.return_value = 16
 

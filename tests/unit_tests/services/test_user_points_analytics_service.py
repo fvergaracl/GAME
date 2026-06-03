@@ -49,9 +49,7 @@ class TestUserPointsAnalyticsService(unittest.IsolatedAsyncioTestCase):
             await self.service.get_last_window_time_diff("task", "user"), 4
         )
         self.assertEqual(
-            await self.service.get_new_last_window_time_diff(
-                "task", "user", "game"
-            ),
+            await self.service.get_new_last_window_time_diff("task", "user", "game"),
             6,
         )
         self.assertEqual(

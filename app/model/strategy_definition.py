@@ -14,10 +14,10 @@ the engine and rows are addressable via the ``custom:<id>`` prefix on
 :mod:`app.services.strategy_service`).
 """
 
+from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from datetime import datetime
 from pydantic import ConfigDict
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
@@ -101,9 +101,7 @@ class StrategyDefinition(BaseModel, table=True):
     blocklyXml: Optional[str] = Field(
         default=None, sa_column=Column(Text, nullable=True)
     )
-    version: int = Field(
-        sa_column=Column(Integer, nullable=False, default=1)
-    )
+    version: int = Field(sa_column=Column(Integer, nullable=False, default=1))
     status: str = Field(
         sa_column=Column(
             String,

@@ -1,7 +1,10 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable, Optional
 
-from sqlalchemy import and_, delete as sa_delete, func, select, update as sa_update
+from sqlalchemy import and_
+from sqlalchemy import delete as sa_delete
+from sqlalchemy import func, select
+from sqlalchemy import update as sa_update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
@@ -43,9 +46,7 @@ class BaseRepository:
             stmt = select(self.model)
             if eager:
                 for eager_rel in getattr(self.model, "eagers", []):
-                    stmt = stmt.options(
-                        joinedload(getattr(self.model, eager_rel))
-                    )
+                    stmt = stmt.options(joinedload(getattr(self.model, eager_rel)))
             stmt = stmt.filter(filter_options)
             count_stmt = select(func.count()).select_from(
                 select(self.model).filter(filter_options).subquery()
@@ -77,9 +78,7 @@ class BaseRepository:
             stmt = select(self.model).filter(self.model.id == id)
             if eager:
                 for eager_rel in getattr(self.model, "eagers", []):
-                    stmt = stmt.options(
-                        joinedload(getattr(self.model, eager_rel))
-                    )
+                    stmt = stmt.options(joinedload(getattr(self.model, eager_rel)))
             result = (await session.execute(stmt)).unique().scalars().first()
             if not result and not_found_raise_exception:
                 raise NotFoundError(detail=not_found_message.format(id=id))
@@ -95,14 +94,10 @@ class BaseRepository:
         not_found_message: str = "Not found {column} : {value}",
     ):
         async with self.session_factory() as session:
-            stmt = select(self.model).filter(
-                getattr(self.model, column) == value
-            )
+            stmt = select(self.model).filter(getattr(self.model, column) == value)
             if eager:
                 for eager_rel in getattr(self.model, "eagers", []):
-                    stmt = stmt.options(
-                        joinedload(getattr(self.model, eager_rel))
-                    )
+                    stmt = stmt.options(joinedload(getattr(self.model, eager_rel)))
             executed = await session.execute(stmt)
             if only_one:
                 result = executed.unique().scalars().first()
@@ -181,9 +176,7 @@ class BaseRepository:
             entity = (await session.execute(stmt)).scalars().first()
             if not entity:
                 raise NotFoundError(detail=f"Not found id : {id}")
-            await session.execute(
-                sa_delete(self.model).where(self.model.id == id)
-            )
+            await session.execute(sa_delete(self.model).where(self.model.id == id))
             await session.commit()
 
     async def read_by_columns(
@@ -197,9 +190,7 @@ class BaseRepository:
             stmt = select(self.model)
             if eager:
                 for eager_field in getattr(self.model, "eagers", []):
-                    stmt = stmt.options(
-                        joinedload(getattr(self.model, eager_field))
-                    )
+                    stmt = stmt.options(joinedload(getattr(self.model, eager_field)))
             conditions = [
                 getattr(self.model, col) == val for col, val in filters.items()
             ]

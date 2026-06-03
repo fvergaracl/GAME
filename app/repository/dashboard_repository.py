@@ -113,8 +113,7 @@ class DashboardRepository(BaseRepository):
             stmt = self.process_query(stmt, start_date, end_date, group_by_column)
             results = (await session.execute(stmt)).all()
             return [
-                {"label": str(result[0]), "count": result.count}
-                for result in results
+                {"label": str(result[0]), "count": result.count} for result in results
             ]
 
     async def get_dashboard_summary(self, start_date, end_date, group_by):

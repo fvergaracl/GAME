@@ -178,9 +178,9 @@ class UserPointsRepository(BaseRepository):
 
     async def get_user_measurement_count(self, userId):
         async with self.session_factory() as session:
-            stmt = select(
-                func.count(UserPoints.id).label("measurement_count")
-            ).filter(UserPoints.userId == userId)
+            stmt = select(func.count(UserPoints.id).label("measurement_count")).filter(
+                UserPoints.userId == userId
+            )
             result = (await session.execute(stmt)).one()
             return result.measurement_count
 
@@ -194,9 +194,9 @@ class UserPointsRepository(BaseRepository):
 
     async def get_individual_calculation(self, userId):
         async with self.session_factory() as session:
-            stmt = select(
-                func.avg(UserPoints.points).label("average_points")
-            ).filter(UserPoints.userId == userId)
+            stmt = select(func.avg(UserPoints.points).label("average_points")).filter(
+                UserPoints.userId == userId
+            )
             result = (await session.execute(stmt)).one()
             return result.average_points
 
@@ -208,27 +208,23 @@ class UserPointsRepository(BaseRepository):
 
     async def get_start_time_for_last_task(self, userId):
         async with self.session_factory() as session:
-            stmt = select(
-                func.min(UserPoints.created_at).label("start_time")
-            ).filter(UserPoints.userId == userId)
+            stmt = select(func.min(UserPoints.created_at).label("start_time")).filter(
+                UserPoints.userId == userId
+            )
             result = (await session.execute(stmt)).one()
             return result.start_time
 
     async def count_measurements_by_external_task_id(self, external_task_id):
         async with self.session_factory() as session:
             stmt = (
-                select(
-                    func.count(UserPoints.taskId).label("measurement_count")
-                )
+                select(func.count(UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .filter(Tasks.externalTaskId == external_task_id)
             )
             result = (await session.execute(stmt)).one()
             return result.measurement_count
 
-    async def get_user_task_measurements(
-        self, externalTaskId, externalUserId
-    ):
+    async def get_user_task_measurements(self, externalTaskId, externalUserId):
         async with self.session_factory() as session:
             stmt = (
                 select(UserPoints.created_at.label("timestamp"))
@@ -240,14 +236,10 @@ class UserPointsRepository(BaseRepository):
             )
             return (await session.execute(stmt)).all()
 
-    async def get_user_task_measurements_count(
-        self, externalTaskId, externalUserId
-    ):
+    async def get_user_task_measurements_count(self, externalTaskId, externalUserId):
         async with self.session_factory() as session:
             stmt = (
-                select(
-                    func.count(UserPoints.taskId).label("measurement_count")
-                )
+                select(func.count(UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
@@ -261,17 +253,12 @@ class UserPointsRepository(BaseRepository):
     ):
         async with self.session_factory() as session:
             stmt = (
-                select(
-                    func.count(UserPoints.taskId).label("measurement_count")
-                )
+                select(func.count(UserPoints.taskId).label("measurement_count"))
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
                 .filter(Users.externalUserId == externalUserId)
-                .filter(
-                    UserPoints.created_at
-                    > func.now() - timedelta(seconds=seconds)
-                )
+                .filter(UserPoints.created_at > func.now() - timedelta(seconds=seconds))
             )
             result = (await session.execute(stmt)).one()
             return result.measurement_count
@@ -324,9 +311,7 @@ class UserPointsRepository(BaseRepository):
             ]
             return sum(time_diffs) / len(time_diffs)
 
-    async def get_last_window_time_diff(
-        self, externalTaskId, externalUserId
-    ):
+    async def get_last_window_time_diff(self, externalTaskId, externalUserId):
         async with self.session_factory() as session:
             stmt = (
                 select(UserPoints)
@@ -342,9 +327,7 @@ class UserPointsRepository(BaseRepository):
             if len(last_two_points) < 2:
                 return 0
 
-            time_diff = (
-                last_two_points[0].created_at - last_two_points[1].created_at
-            )
+            time_diff = last_two_points[0].created_at - last_two_points[1].created_at
             return time_diff.total_seconds()
 
     async def get_new_last_window_time_diff(
@@ -366,17 +349,13 @@ class UserPointsRepository(BaseRepository):
             if last_point is None:
                 return 0
 
-            current_time = (
-                await session.execute(select(func.now()))
-            ).scalar()
+            current_time = (await session.execute(select(func.now()))).scalar()
 
             if current_time.tzinfo is None:
                 current_time = current_time.replace(tzinfo=timezone.utc)
 
             if last_point.created_at.tzinfo is None:
-                last_created_at = last_point.created_at.replace(
-                    tzinfo=timezone.utc
-                )
+                last_created_at = last_point.created_at.replace(tzinfo=timezone.utc)
             else:
                 last_created_at = last_point.created_at
 
@@ -408,10 +387,7 @@ class UserPointsRepository(BaseRepository):
                 .join(Users, UserPoints.userId == Users.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
                 .filter(Users.externalUserId == externalUserId)
-                .filter(
-                    UserPoints.created_at
-                    > func.now() - timedelta(minutes=minutes)
-                )
+                .filter(UserPoints.created_at > func.now() - timedelta(minutes=minutes))
             )
             count = (await session.execute(stmt)).scalar_one()
             return count > 0
@@ -430,11 +406,7 @@ class UserPointsRepository(BaseRepository):
                 .filter(UserPoints.data["minutes"].as_float() > 0)
             )
             result = (await session.execute(stmt)).one()
-            return (
-                result.average_minutes
-                if result.average_minutes is not None
-                else -1
-            )
+            return result.average_minutes if result.average_minutes is not None else -1
 
     async def get_personal_avg_by_external_game_id(
         self, externalGameId, externalUserId
@@ -454,11 +426,7 @@ class UserPointsRepository(BaseRepository):
                 .filter(UserPoints.data["minutes"].as_float() > 0)
             )
             result = (await session.execute(stmt)).one()
-            return (
-                result.average_minutes
-                if result.average_minutes is not None
-                else -1
-            )
+            return result.average_minutes if result.average_minutes is not None else -1
 
     async def get_points_of_simulated_task(
         self, externalTaskId: str, simulationHash: str
@@ -468,9 +436,7 @@ class UserPointsRepository(BaseRepository):
                 select(UserPoints)
                 .join(Tasks, UserPoints.taskId == Tasks.id)
                 .filter(Tasks.externalTaskId == externalTaskId)
-                .filter(
-                    UserPoints.data["simulationHash"].astext == simulationHash
-                )
+                .filter(UserPoints.data["simulationHash"].astext == simulationHash)
             )
             return (await session.execute(stmt)).scalars().all()
 
@@ -483,9 +449,7 @@ class UserPointsRepository(BaseRepository):
         streaming via ``stream_scalars`` (caller decides).
         """
         async with self.session_factory() as session:
-            stmt = select(UserPoints).filter(
-                UserPoints.taskId.in_(task_list)
-            )
+            stmt = select(UserPoints).filter(UserPoints.taskId.in_(task_list))
 
             if not withData:
                 stmt = stmt.with_only_columns(

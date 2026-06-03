@@ -50,7 +50,9 @@ def _ast(value):
                         "type": "assign_points",
                         "id": "a1",
                         "value": {
-                            "type": "literal", "id": "lv", "value": value,
+                            "type": "literal",
+                            "id": "lv",
+                            "value": value,
                         },
                         "case_name": "C",
                     }
@@ -113,9 +115,7 @@ class TestPublishedHashCache(unittest.TestCase):
         try:
             for v in range(10):
                 _make(_read(_ast(v), version=v))
-            self.assertLessEqual(
-                len(dsl_strategy._PUBLISHED_HASH_CACHE), 3
-            )
+            self.assertLessEqual(len(dsl_strategy._PUBLISHED_HASH_CACHE), 3)
         finally:
             dsl_strategy._PUBLISHED_HASH_CACHE_MAXSIZE = original
 

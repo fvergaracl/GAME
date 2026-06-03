@@ -32,9 +32,7 @@ def _make_mock_service(rows):
     from app.services.export_service import DATASET_COLUMNS, ExportService
 
     service = AsyncMock()
-    service.audit_start = AsyncMock(
-        return_value=SimpleNamespace(id="audit-1")
-    )
+    service.audit_start = AsyncMock(return_value=SimpleNamespace(id="audit-1"))
     service.audit_finish = AsyncMock()
     service.iter_dataset = lambda dataset_type, filters: _aiter(rows)
 
@@ -68,9 +66,7 @@ def _patch_admin_auth(monkeypatch, *, is_admin: bool):
         "app.middlewares.auth_context.check_role",
         lambda token, role: is_admin,
     )
-    monkeypatch.setattr(
-        "app.middlewares.auth_context.add_log", AsyncMock()
-    )
+    monkeypatch.setattr("app.middlewares.auth_context.add_log", AsyncMock())
 
 
 @pytest.fixture(autouse=True)
@@ -82,9 +78,7 @@ def override_di_logs(monkeypatch):
     )
 
     container.logs_service.override(providers.Object(mock_logs_service))
-    container.oauth_users_service.override(
-        providers.Object(mock_oauth_service)
-    )
+    container.oauth_users_service.override(providers.Object(mock_oauth_service))
     yield
     container.logs_service.reset_override()
     container.oauth_users_service.reset_override()
@@ -123,9 +117,7 @@ def test_export_users_csv_returns_streamed_csv(test_client, monkeypatch):
 
     mock_service.audit_start.assert_awaited_once()
     mock_service.audit_finish.assert_awaited_once()
-    assert (
-        mock_service.audit_finish.await_args.kwargs["status"] == "completed"
-    )
+    assert mock_service.audit_finish.await_args.kwargs["status"] == "completed"
     assert mock_service.audit_finish.await_args.kwargs["row_count"] == 1
 
 
@@ -151,8 +143,7 @@ def test_export_user_points_json_returns_array(test_client, monkeypatch):
 
     try:
         response = test_client.get(
-            "/api/v1/exports/user-points"
-            "?format=json&externalGameId=g1&limit=50",
+            "/api/v1/exports/user-points" "?format=json&externalGameId=g1&limit=50",
             headers={"Authorization": "Bearer mocked"},
         )
     finally:

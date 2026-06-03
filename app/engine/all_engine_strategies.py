@@ -25,9 +25,7 @@ import importlib
 import logging
 import pkgutil
 
-from app.engine.check_base_strategy_class import (
-    check_class_methods_and_variables,
-)
+from app.engine.check_base_strategy_class import check_class_methods_and_variables
 from app.engine.strategy_registry import registered_strategies
 
 _log = logging.getLogger(__name__)
@@ -71,9 +69,7 @@ def _discover_strategy_modules() -> None:
     package = importlib.import_module(_PACKAGE_NAME)
     package_path = getattr(package, "__path__", None)
     if package_path is None:
-        _log.error(
-            "Package %s has no __path__; skipping discovery", _PACKAGE_NAME
-        )
+        _log.error("Package %s has no __path__; skipping discovery", _PACKAGE_NAME)
         return
 
     for module_info in pkgutil.iter_modules(package_path):
@@ -88,9 +84,7 @@ def _discover_strategy_modules() -> None:
         try:
             importlib.import_module(full_name)
         except Exception as exc:
-            _log.error(
-                "Failed importing strategy module %s: %s", full_name, exc
-            )
+            _log.error("Failed importing strategy module %s: %s", full_name, exc)
 
 
 def all_engine_strategies() -> list:

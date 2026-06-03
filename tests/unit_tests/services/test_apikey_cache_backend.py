@@ -6,6 +6,7 @@ Tests for the API key header cache backends.
 - ``RedisApiKeyCacheBackend`` is exercised against ``fakeredis`` to keep
   the SET / GET / DEL / SCAN semantics honest without needing Redis.
 """
+
 import asyncio
 import logging
 from types import SimpleNamespace
@@ -13,11 +14,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from app.services.apikey_cache_backend import (
-    InMemoryApiKeyCacheBackend,
-    RedisApiKeyCacheBackend,
-    build_apikey_cache_backend,
-)
+from app.services.apikey_cache_backend import (InMemoryApiKeyCacheBackend,
+                                               RedisApiKeyCacheBackend,
+                                               build_apikey_cache_backend)
 
 
 def _value(prefix: str = "gme_live_xxxxxxxx", active: bool = True):
@@ -58,9 +57,7 @@ async def test_inmemory_set_with_non_positive_ttl_is_noop():
 async def test_inmemory_expires_entry_after_ttl():
     backend = InMemoryApiKeyCacheBackend()
 
-    with patch(
-        "app.services.apikey_cache_backend.monotonic"
-    ) as mock_monotonic:
+    with patch("app.services.apikey_cache_backend.monotonic") as mock_monotonic:
         mock_monotonic.return_value = 1000.0
         await backend.set("hash-1", _value(), ttl_seconds=5)
 
@@ -120,9 +117,7 @@ def fake_redis_client():
 
 @pytest.mark.asyncio
 async def test_redis_set_persists_value_with_ttl(fake_redis_client):
-    backend = RedisApiKeyCacheBackend(
-        fake_redis_client, key_prefix="test:apikey:"
-    )
+    backend = RedisApiKeyCacheBackend(fake_redis_client, key_prefix="test:apikey:")
 
     await backend.set("hash-1", _value("gme_live_aaaaaaaa"), ttl_seconds=30)
 
@@ -135,12 +130,8 @@ async def test_redis_set_persists_value_with_ttl(fake_redis_client):
 
 @pytest.mark.asyncio
 async def test_redis_get_roundtrips_simplenamespace(fake_redis_client):
-    backend = RedisApiKeyCacheBackend(
-        fake_redis_client, key_prefix="test:apikey:"
-    )
-    await backend.set(
-        "hash-1", _value("gme_live_aaaaaaaa", True), ttl_seconds=30
-    )
+    backend = RedisApiKeyCacheBackend(fake_redis_client, key_prefix="test:apikey:")
+    await backend.set("hash-1", _value("gme_live_aaaaaaaa", True), ttl_seconds=30)
 
     cached = await backend.get("hash-1")
 
@@ -151,18 +142,14 @@ async def test_redis_get_roundtrips_simplenamespace(fake_redis_client):
 
 @pytest.mark.asyncio
 async def test_redis_get_returns_none_on_miss(fake_redis_client):
-    backend = RedisApiKeyCacheBackend(
-        fake_redis_client, key_prefix="test:apikey:"
-    )
+    backend = RedisApiKeyCacheBackend(fake_redis_client, key_prefix="test:apikey:")
 
     assert await backend.get("never-set") is None
 
 
 @pytest.mark.asyncio
 async def test_redis_set_with_non_positive_ttl_is_noop(fake_redis_client):
-    backend = RedisApiKeyCacheBackend(
-        fake_redis_client, key_prefix="test:apikey:"
-    )
+    backend = RedisApiKeyCacheBackend(fake_redis_client, key_prefix="test:apikey:")
 
     await backend.set("hash-1", _value(), ttl_seconds=0)
     assert await fake_redis_client.get("test:apikey:hash-1") is None
@@ -170,9 +157,7 @@ async def test_redis_set_with_non_positive_ttl_is_noop(fake_redis_client):
 
 @pytest.mark.asyncio
 async def test_redis_delete_removes_only_targeted_entry(fake_redis_client):
-    backend = RedisApiKeyCacheBackend(
-        fake_redis_client, key_prefix="test:apikey:"
-    )
+    backend = RedisApiKeyCacheBackend(fake_redis_client, key_prefix="test:apikey:")
     await backend.set("hash-1", _value("gme_live_aaaaaaaa"), ttl_seconds=30)
     await backend.set("hash-2", _value("gme_live_bbbbbbbb"), ttl_seconds=30)
 
@@ -186,9 +171,7 @@ async def test_redis_delete_removes_only_targeted_entry(fake_redis_client):
 
 @pytest.mark.asyncio
 async def test_redis_clear_only_deletes_prefixed_keys(fake_redis_client):
-    backend = RedisApiKeyCacheBackend(
-        fake_redis_client, key_prefix="test:apikey:"
-    )
+    backend = RedisApiKeyCacheBackend(fake_redis_client, key_prefix="test:apikey:")
     await backend.set("hash-1", _value(), ttl_seconds=30)
     await backend.set("hash-2", _value(), ttl_seconds=30)
     # An unrelated key that must survive the scan-and-delete.
@@ -212,9 +195,7 @@ def test_build_backend_defaults_to_in_memory():
 
 
 def test_build_backend_falls_back_to_memory_when_redis_url_missing(caplog):
-    with caplog.at_level(
-        logging.WARNING, logger="app.services.apikey_cache_backend"
-    ):
+    with caplog.at_level(logging.WARNING, logger="app.services.apikey_cache_backend"):
         backend = build_apikey_cache_backend(
             backend_name="redis",
             redis_url=None,

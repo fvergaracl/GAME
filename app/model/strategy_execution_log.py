@@ -58,9 +58,7 @@ class StrategyExecutionLog(BaseModel, table=True):
           strategy id wrapped. Nullable for ``DSL_FULL``.
     """
 
-    strategyId: str = Field(
-        sa_column=Column(String, nullable=False, index=True)
-    )
+    strategyId: str = Field(sa_column=Column(String, nullable=False, index=True))
     strategyVersion: int = Field(sa_column=Column(Integer, nullable=False))
     strategyType: str = Field(sa_column=Column(String, nullable=False))
     realmId: Optional[str] = Field(
@@ -75,9 +73,7 @@ class StrategyExecutionLog(BaseModel, table=True):
     externalUserId: Optional[str] = Field(
         default=None, sa_column=Column(String, nullable=True)
     )
-    status: str = Field(
-        sa_column=Column(String, nullable=False, index=True)
-    )
+    status: str = Field(sa_column=Column(String, nullable=False, index=True))
     errorCode: Optional[str] = Field(
         default=None, sa_column=Column(String, nullable=True)
     )
@@ -89,20 +85,14 @@ class StrategyExecutionLog(BaseModel, table=True):
     )
     durationMs: float = Field(sa_column=Column(Numeric, nullable=False))
     nodesExecuted: int = Field(sa_column=Column(Integer, nullable=False))
-    trace: Optional[list] = Field(
-        default=None, sa_column=Column(JSONB, nullable=True)
-    )
+    trace: Optional[list] = Field(default=None, sa_column=Column(JSONB, nullable=True))
     sampled: bool = Field(
-        sa_column=Column(
-            Boolean(), nullable=False, default=False, index=True
-        )
+        sa_column=Column(Boolean(), nullable=False, default=False, index=True)
     )
     parentStrategyId: Optional[str] = Field(
         default=None, sa_column=Column(String, nullable=True)
     )
-    notes: Optional[str] = Field(
-        default=None, sa_column=Column(Text, nullable=True)
-    )
+    notes: Optional[str] = Field(default=None, sa_column=Column(Text, nullable=True))
 
     model_config = ConfigDict(from_attributes=True)
 

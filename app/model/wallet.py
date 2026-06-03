@@ -1,9 +1,9 @@
+from pydantic import ConfigDict
 from sqlalchemy.dialects.postgresql import UUID
 from sqlmodel import Column, Field, Float, ForeignKey, Integer, String
 
 from app.core.config import configs
 from app.model.base_model import BaseModel
-from pydantic import ConfigDict
 
 
 class Wallet(BaseModel, table=True):

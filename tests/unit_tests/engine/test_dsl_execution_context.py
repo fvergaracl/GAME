@@ -38,9 +38,7 @@ def _analytics_stub():
     svc = MagicMock()
     svc.get_user_task_measurements_count = AsyncMock(return_value=7)
     svc.count_measurements_by_external_task_id = AsyncMock(return_value=42)
-    svc.get_avg_time_between_tasks_by_user_and_game_task = AsyncMock(
-        return_value=1.5
-    )
+    svc.get_avg_time_between_tasks_by_user_and_game_task = AsyncMock(return_value=1.5)
     svc.get_avg_time_between_tasks_for_all_users = AsyncMock(return_value=2.0)
     svc.get_last_window_time_diff = AsyncMock(return_value=3.0)
     svc.get_new_last_window_time_diff = AsyncMock(return_value=4.0)

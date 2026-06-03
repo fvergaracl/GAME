@@ -5,12 +5,8 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.repository.export_audit_log_repository import ExportAuditLogRepository
-from app.schema.export_schema import (
-    ExportDatasetType,
-    ExportFilters,
-    ExportFormat,
-    ExportStatus,
-)
+from app.schema.export_schema import (ExportDatasetType, ExportFilters, ExportFormat,
+                                      ExportStatus)
 from app.services.export_service import DATASET_COLUMNS, ExportService
 
 
@@ -121,12 +117,8 @@ class TestExportServiceAudit(unittest.IsolatedAsyncioTestCase):
                 )
             ]
         )
-        result = await self.service.list_history(
-            limit=10, oauth_user_id="user-x"
-        )
-        self.repo.list_recent.assert_awaited_once_with(
-            limit=10, oauth_user_id="user-x"
-        )
+        result = await self.service.list_history(limit=10, oauth_user_id="user-x")
+        self.repo.list_recent.assert_awaited_once_with(limit=10, oauth_user_id="user-x")
         self.assertEqual(len(result), 1)
         entry = result[0]
         self.assertEqual(entry.id, "row-1")
@@ -162,9 +154,7 @@ class TestExportServiceFormatters(unittest.IsolatedAsyncioTestCase):
                 "oauth_user_id": "sub-2",
             },
         ]
-        chunks = await _collect(
-            ExportService.format_as_csv(_aiter(rows), columns)
-        )
+        chunks = await _collect(ExportService.format_as_csv(_aiter(rows), columns))
         body = b"".join(chunks).decode("utf-8")
         lines = [line for line in body.splitlines() if line]
         self.assertEqual(lines[0], ",".join(columns))
@@ -176,9 +166,7 @@ class TestExportServiceFormatters(unittest.IsolatedAsyncioTestCase):
     async def test_csv_serializes_dict_cells_as_json(self):
         columns = ["id", "data"]
         rows = [{"id": "x", "data": {"k": 1, "v": "abc"}}]
-        chunks = await _collect(
-            ExportService.format_as_csv(_aiter(rows), columns)
-        )
+        chunks = await _collect(ExportService.format_as_csv(_aiter(rows), columns))
         body = b"".join(chunks).decode("utf-8")
         # The data cell is a JSON-encoded dict, quoted by csv module.
         self.assertIn('"{""k"":1,""v"":""abc""}"', body)
@@ -217,9 +205,7 @@ class TestExportServiceFormatters(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(json.loads(body), rows)
 
     def test_media_type_for_csv(self):
-        self.assertIn(
-            "text/csv", ExportService.media_type_for(ExportFormat.CSV.value)
-        )
+        self.assertIn("text/csv", ExportService.media_type_for(ExportFormat.CSV.value))
 
     def test_media_type_for_xlsx(self):
         self.assertIn(
@@ -260,9 +246,7 @@ class TestExportServiceIterators(unittest.IsolatedAsyncioTestCase):
             captured["stmt"] = stmt
             yield fake_row
 
-        with patch.object(
-            ExportService, "_stream_rows", _fake_stream_rows
-        ):
+        with patch.object(ExportService, "_stream_rows", _fake_stream_rows):
             rows = []
             async for row in iterator_factory():
                 rows.append(row)
@@ -284,9 +268,7 @@ class TestExportServiceIterators(unittest.IsolatedAsyncioTestCase):
             apiKey_used="gme_live_abc",
         )
         sql, row = await self._exercise(
-            lambda: self.service.iter_user_interactions(
-                ExportFilters(limit=10)
-            ),
+            lambda: self.service.iter_user_interactions(ExportFilters(limit=10)),
             fake,
         )
         self.assertIn("useractions", sql)
@@ -354,16 +336,12 @@ class TestExportServiceIterators(unittest.IsolatedAsyncioTestCase):
             apiKey_used=None,
         )
         _, row = await self._exercise(
-            lambda: self.service.iter_wallet_transactions(
-                ExportFilters(limit=10)
-            ),
+            lambda: self.service.iter_wallet_transactions(ExportFilters(limit=10)),
             fake,
         )
         self.assertEqual(
             set(row.keys()),
-            set(DATASET_COLUMNS[
-                ExportDatasetType.WALLET_TRANSACTIONS.value
-            ]),
+            set(DATASET_COLUMNS[ExportDatasetType.WALLET_TRANSACTIONS.value]),
         )
 
 

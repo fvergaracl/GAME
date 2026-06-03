@@ -41,7 +41,6 @@ from app.engine.dsl_interpreter import DslInterpreter
 from app.engine.dsl_strategy import DslStrategy
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
 
-
 _AST_PATH = (
     Path(__file__).resolve().parents[3]
     / "app"
@@ -210,8 +209,7 @@ async def test_dsl_default_matches_python_default(analytics_returns, expected):
     # Trim to (points, case_name): DslStrategy returns a 3-tuple only when
     # callback_data is non-empty; the default AST never writes callback_data.
     assert dsl_result[:2] == py_result[:2], (
-        f"Parity mismatch: python={py_result} dsl={dsl_result} "
-        f"expected={expected}"
+        f"Parity mismatch: python={py_result} dsl={dsl_result} " f"expected={expected}"
     )
     # Sanity: both implementations match the roadmap's tabulated expectations.
     assert py_result[:2] == expected

@@ -43,9 +43,7 @@ def _parse_cors_origins(raw_value: str) -> List[str]:
     Parse a comma-separated CORS origin list. Whitespace-only entries are
     dropped; an empty/whitespace-only string resolves to ``[]``.
     """
-    return [
-        origin.strip() for origin in raw_value.split(",") if origin.strip()
-    ]
+    return [origin.strip() for origin in raw_value.split(",") if origin.strip()]
 
 
 def _parse_trusted_proxy_ips(
@@ -251,9 +249,7 @@ class Configs(BaseSettings):
     # IP of the reverse proxy / ingress when running behind Traefik /
     # nginx / ALB. See H10 -- without this gate, any client can forge
     # X-Forwarded-For to bypass per-IP abuse limits.
-    TRUSTED_PROXY_IPS: Annotated[
-        List[Union[IPv4Network, IPv6Network]], NoDecode
-    ] = []
+    TRUSTED_PROXY_IPS: Annotated[List[Union[IPv4Network, IPv6Network]], NoDecode] = []
 
     # keycloak
     KEYCLOAK_REALM: str = os.getenv("KEYCLOAK_REALM", "master")
@@ -263,9 +259,7 @@ class Configs(BaseSettings):
         "KEYCLOAK_CLIENT_SECRET", _INSECURE_KEYCLOAK_CLIENT_SECRET_DEFAULT
     )
     KEYCLOAK_URL: str = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
-    KEYCLOAK_URL_DOCKER: str = os.getenv(
-        "KEYCLOAK_URL_DOCKER", "http://keycloak:8080"
-    )
+    KEYCLOAK_URL_DOCKER: str = os.getenv("KEYCLOAK_URL_DOCKER", "http://keycloak:8080")
     # database
     DB_USER: Optional[str] = os.getenv("DB_USER")
     DB_PASSWORD: Optional[str] = os.getenv("DB_PASSWORD")
@@ -291,15 +285,11 @@ class Configs(BaseSettings):
     PAGE_SIZE: int = 10
     ORDERING: str = "-id"
 
-    ABUSE_PREVENTION_ENABLED: bool = _env_to_bool(
-        "ABUSE_PREVENTION_ENABLED", True
-    )
+    ABUSE_PREVENTION_ENABLED: bool = _env_to_bool("ABUSE_PREVENTION_ENABLED", True)
     ABUSE_RATE_LIMIT_WINDOW_SECONDS: int = _env_to_int(
         "ABUSE_RATE_LIMIT_WINDOW_SECONDS", 60
     )
-    ABUSE_RATE_LIMIT_PER_API_KEY: int = _env_to_int(
-        "ABUSE_RATE_LIMIT_PER_API_KEY", 120
-    )
+    ABUSE_RATE_LIMIT_PER_API_KEY: int = _env_to_int("ABUSE_RATE_LIMIT_PER_API_KEY", 120)
     ABUSE_RATE_LIMIT_PER_IP: int = _env_to_int("ABUSE_RATE_LIMIT_PER_IP", 240)
     ABUSE_RATE_LIMIT_PER_EXTERNAL_USER: int = _env_to_int(
         "ABUSE_RATE_LIMIT_PER_EXTERNAL_USER", 60
@@ -310,16 +300,12 @@ class Configs(BaseSettings):
     # "database" keeps the original abuse_limit_counter writes; "redis" uses
     # INCR + EXPIRE against REDIS_URL (atomic, ~50 us vs ~5 ms for the UPDATE
     # on a hot Postgres row, and naturally distributed across instances).
-    ABUSE_PREVENTION_BACKEND: str = os.getenv(
-        "ABUSE_PREVENTION_BACKEND", "database"
-    )
+    ABUSE_PREVENTION_BACKEND: str = os.getenv("ABUSE_PREVENTION_BACKEND", "database")
     REDIS_URL: Optional[str] = os.getenv("REDIS_URL")
     RATE_LIMIT_REDIS_KEY_PREFIX: str = os.getenv(
         "RATE_LIMIT_REDIS_KEY_PREFIX", "game:rl:"
     )
-    RATE_LIMIT_TTL_BUFFER_SECONDS: int = _env_to_int(
-        "RATE_LIMIT_TTL_BUFFER_SECONDS", 5
-    )
+    RATE_LIMIT_TTL_BUFFER_SECONDS: int = _env_to_int("RATE_LIMIT_TTL_BUFFER_SECONDS", 5)
 
     SQLALCHEMY_ECHO: bool = _env_to_bool("SQLALCHEMY_ECHO", False)
     DB_POOL_PRE_PING: bool = _env_to_bool("DB_POOL_PRE_PING", True)
@@ -353,9 +339,7 @@ class Configs(BaseSettings):
     # always persisted regardless of the sample rate -- the rate only
     # applies to OK runs. 0.0 disables successful-run sampling; 1.0
     # persists every run (only safe in dev/test, see runbook).
-    DSL_EXECUTION_LOG_ENABLED: bool = _env_to_bool(
-        "DSL_EXECUTION_LOG_ENABLED", True
-    )
+    DSL_EXECUTION_LOG_ENABLED: bool = _env_to_bool("DSL_EXECUTION_LOG_ENABLED", True)
     DSL_EXECUTION_LOG_SAMPLE_RATE: float = float(
         os.getenv("DSL_EXECUTION_LOG_SAMPLE_RATE", "0.05")
     )
@@ -380,9 +364,7 @@ class Configs(BaseSettings):
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
-    def _coerce_cors_origins(
-        cls, value: Union[str, List[str], None]
-    ) -> List[str]:
+    def _coerce_cors_origins(cls, value: Union[str, List[str], None]) -> List[str]:
         # Treat BACKEND_CORS_ORIGINS as a plain comma-separated list instead
         # of JSON, so operators can write
         # ``BACKEND_CORS_ORIGINS=https://a.example,https://b.example``.

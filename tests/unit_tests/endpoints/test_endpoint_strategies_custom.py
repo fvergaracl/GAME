@@ -18,12 +18,10 @@ from app.core.config import configs
 from app.core.exceptions import ForbiddenError
 from app.middlewares.auth_context import AuditLogger, AuthContext
 from app.model.strategy_definition import StrategyDefinitionType
-from app.schema.strategy_definition_schema import (
-    StrategyDefinitionCreate,
-    StrategyDefinitionRead,
-    StrategyDefinitionUpdate,
-    StrategyUsageRead,
-)
+from app.schema.strategy_definition_schema import (StrategyDefinitionCreate,
+                                                   StrategyDefinitionRead,
+                                                   StrategyDefinitionUpdate,
+                                                   StrategyUsageRead)
 
 
 def _auth(*, api_key=None, oauth_user_id=None, is_admin=False) -> AuthContext:
@@ -91,9 +89,7 @@ async def test_create_passes_resolved_realm_to_service():
     )
     auth = _auth(api_key="api-key-xyz", oauth_user_id="user-1")
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ):
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
         result = await endpoint.create_custom_strategy(
             payload=payload,
             auth=auth,
@@ -118,9 +114,7 @@ async def test_create_logs_error_when_service_fails():
     )
     auth = _auth(api_key="api-key-xyz")
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         with pytest.raises(RuntimeError, match="boom"):
             await endpoint.create_custom_strategy(
                 payload=payload,
@@ -167,9 +161,7 @@ async def test_publish_requires_admin_gate_to_have_passed():
     service.publish = AsyncMock(return_value=_read_stub(status="PUBLISHED"))
     auth = _auth(oauth_user_id="admin-1", is_admin=True)
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ):
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
         result = await endpoint.publish_custom_strategy(
             id="row-1",
             auth=auth,
@@ -177,18 +169,14 @@ async def test_publish_requires_admin_gate_to_have_passed():
             audit=_audit(auth),
         )
 
-    service.publish.assert_awaited_once_with(
-        id="row-1", realmId=configs.KEYCLOAK_REALM
-    )
+    service.publish.assert_awaited_once_with(id="row-1", realmId=configs.KEYCLOAK_REALM)
     assert result.status == "PUBLISHED"
 
 
 @pytest.mark.asyncio
 async def test_require_admin_dependency_rejects_non_admin():
     with pytest.raises(ForbiddenError):
-        await endpoint.require_admin(
-            _auth(oauth_user_id="user-1", is_admin=False)
-        )
+        await endpoint.require_admin(_auth(oauth_user_id="user-1", is_admin=False))
 
 
 @pytest.mark.asyncio
@@ -197,9 +185,7 @@ async def test_archive_calls_service_with_tenant_scope():
     service.archive = AsyncMock(return_value=_read_stub(status="ARCHIVED"))
     auth = _auth(api_key="api-key-xyz", is_admin=True)
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ):
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
         result = await endpoint.archive_custom_strategy(
             id="row-1",
             auth=auth,
@@ -207,9 +193,7 @@ async def test_archive_calls_service_with_tenant_scope():
             audit=_audit(auth),
         )
 
-    service.archive.assert_awaited_once_with(
-        id="row-1", realmId="api-key-xyz"
-    )
+    service.archive.assert_awaited_once_with(id="row-1", realmId="api-key-xyz")
     assert result.status == "ARCHIVED"
 
 
@@ -223,9 +207,7 @@ async def test_update_passes_payload_through():
     payload = StrategyDefinitionUpdate(description="new")
     auth = _auth(api_key="api-key-xyz")
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ):
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()):
         result = await endpoint.update_custom_strategy(
             id="row-1",
             payload=payload,
@@ -296,7 +278,8 @@ async def test_create_with_dsl_extend_passes_when_parent_exists():
     service.create = AsyncMock(return_value=_read_stub(type="DSL_EXTEND"))
     strategy_service = MagicMock()
     strategy_service.get_strategy_by_id.return_value = {
-        "id": "default", "name": "Default",
+        "id": "default",
+        "name": "Default",
     }
 
     payload = StrategyDefinitionCreate(
@@ -333,7 +316,8 @@ async def test_create_with_dsl_full_skips_parent_check():
     )
 
     payload = StrategyDefinitionCreate(
-        name="full_only", type=StrategyDefinitionType.DSL_FULL,
+        name="full_only",
+        type=StrategyDefinitionType.DSL_FULL,
     )
     auth = _auth(api_key="api-key-xyz")
 
@@ -357,9 +341,7 @@ async def test_create_with_dsl_full_skips_parent_check():
 
 from app.core.exceptions import DslValidationError  # noqa: E402
 from app.schema.strategy_definition_schema import (  # noqa: E402
-    StrategyDefinitionImport,
-    StrategyTemplateRead,
-)
+    StrategyDefinitionImport, StrategyTemplateRead)
 
 
 def _template_stub(**overrides) -> StrategyTemplateRead:
@@ -436,7 +418,8 @@ async def test_import_creates_draft_when_name_is_unique():
         )
 
     service.name_exists.assert_awaited_once_with(
-        realmId="api-key-xyz", name="imported_one",
+        realmId="api-key-xyz",
+        name="imported_one",
     )
     service.create.assert_awaited_once()
     call_kwargs = service.create.await_args.kwargs
@@ -549,9 +532,7 @@ async def test_import_logs_failure_with_audit():
     strategy_service = MagicMock()
     auth = _auth(api_key="api-key-xyz")
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         with pytest.raises(RuntimeError, match="boom"):
             await endpoint.import_custom_strategy(
                 payload=_import_payload(),
@@ -583,12 +564,15 @@ async def test_list_versions_passes_resolved_realm():
     auth = _auth(api_key="api-key-xyz")
 
     result = await endpoint.list_strategy_versions(
-        id="v2", auth=auth, service=service,
+        id="v2",
+        auth=auth,
+        service=service,
     )
 
     assert [v.version for v in result] == [2, 1]
     service.list_versions.assert_awaited_once_with(
-        id="v2", realmId="api-key-xyz",
+        id="v2",
+        realmId="api-key-xyz",
     )
 
 
@@ -616,13 +600,16 @@ async def test_get_usage_passes_resolved_realm():
     auth = _auth(api_key="api-key-xyz")
 
     result = await endpoint.get_custom_strategy_usage(
-        id="v1", auth=auth, service=service,
+        id="v1",
+        auth=auth,
+        service=service,
     )
 
     assert result.strategyId == "custom:v1"
     assert result.gameCount == 2
     service.get_usage.assert_awaited_once_with(
-        id="v1", realmId="api-key-xyz",
+        id="v1",
+        realmId="api-key-xyz",
     )
 
 
@@ -655,9 +642,7 @@ async def test_rollback_logs_cascade_counts_on_success():
     )
     auth = _auth(oauth_user_id="admin-1", is_admin=True)
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         result = await endpoint.rollback_strategy(
             id="v2",
             version=1,
@@ -668,7 +653,9 @@ async def test_rollback_logs_cascade_counts_on_success():
 
     assert result.id == "v1"
     service.rollback.assert_awaited_once_with(
-        id="v2", target_version=1, realmId=configs.KEYCLOAK_REALM,
+        id="v2",
+        target_version=1,
+        realmId=configs.KEYCLOAK_REALM,
     )
     # INFO on attempt + SUCCESS on completion.
     assert mock_add_log.await_count == 2
@@ -688,9 +675,7 @@ async def test_rollback_logs_failure_with_audit():
     service.rollback = AsyncMock(side_effect=RuntimeError("kaboom"))
     auth = _auth(oauth_user_id="admin-1", is_admin=True)
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         with pytest.raises(RuntimeError, match="kaboom"):
             await endpoint.rollback_strategy(
                 id="v2",

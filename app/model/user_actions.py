@@ -1,8 +1,8 @@
+from pydantic import ConfigDict
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlmodel import Column, Field, ForeignKey, String
 
 from app.model.base_model import BaseModel
-from pydantic import ConfigDict
 
 
 class UserActions(BaseModel, table=True):

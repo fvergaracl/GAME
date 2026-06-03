@@ -36,7 +36,6 @@ from app.engine.dsl_interpreter import DslInterpreter
 from app.engine.dsl_strategy import DslStrategy
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
 
-
 _AST_PATH = (
     Path(__file__).resolve().parents[3]
     / "app"
@@ -50,9 +49,7 @@ _AST: Dict = json.loads(_AST_PATH.read_text(encoding="utf-8"))
 # Same factory shape as ``test_default_dsl_parity.py``: a single dict of
 # analytics return values feeds both Python (sync MagicMock) and DSL
 # (AsyncMock) variants so we can never desync them by accident.
-_ANALYTICS_METHODS = (
-    "get_user_task_measurements_count_the_last_seconds",
-)
+_ANALYTICS_METHODS = ("get_user_task_measurements_count_the_last_seconds",)
 
 
 def _build_analytics_mocks(returns: Dict[str, int]):
@@ -121,9 +118,7 @@ _SCENARIOS = [
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("analytics_returns,expected", _SCENARIOS)
-async def test_dsl_constant_effort_matches_python(
-    analytics_returns, expected
-):
+async def test_dsl_constant_effort_matches_python(analytics_returns, expected):
     """Each branch of ConstantEffortStrategy.calculate_points must yield
     identical (points, case_name) when the DSL version is fed the same
     inputs."""
@@ -145,8 +140,7 @@ async def test_dsl_constant_effort_matches_python(
     # returns a 3-tuple only when callback_data is non-empty; the
     # constant_effort AST never writes callback_data.
     assert dsl_result[:2] == py_result[:2], (
-        f"Parity mismatch: python={py_result} dsl={dsl_result} "
-        f"expected={expected}"
+        f"Parity mismatch: python={py_result} dsl={dsl_result} " f"expected={expected}"
     )
     assert py_result[:2] == expected
     assert dsl_result[:2] == expected

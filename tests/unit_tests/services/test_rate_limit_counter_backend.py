@@ -7,6 +7,7 @@ Tests for the rate-limit counter backends.
 - ``RedisRateLimitCounterBackend`` is verified against ``fakeredis`` so the
   INCR + EXPIRE semantics are exercised without standing up Redis.
 """
+
 import asyncio
 import logging
 from datetime import datetime, timezone
@@ -14,14 +15,10 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from app.repository.abuse_limit_counter_repository import (
-    AbuseLimitCounterRepository,
-)
-from app.services.rate_limit_counter_backend import (
-    DatabaseRateLimitCounterBackend,
-    RedisRateLimitCounterBackend,
-    build_rate_limit_counter_backend,
-)
+from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
+from app.services.rate_limit_counter_backend import (DatabaseRateLimitCounterBackend,
+                                                     RedisRateLimitCounterBackend,
+                                                     build_rate_limit_counter_backend)
 
 
 def _window():
@@ -70,9 +67,7 @@ async def test_redis_backend_increments_and_sets_ttl_on_first_write(fake_redis_c
     )
 
     assert value == 1
-    key = backend._build_key(
-        "api_key", "k-1", "task_mutation_short_60s", _window()
-    )
+    key = backend._build_key("api_key", "k-1", "task_mutation_short_60s", _window())
     assert key.startswith("test:rl:task_mutation_short_60s:api_key:k-1:")
     ttl = await fake_redis_client.ttl(key)
     # TTL was planted via SET NX EX and survives subsequent INCRs unchanged.
@@ -92,9 +87,7 @@ async def test_redis_backend_does_not_reset_ttl_on_subsequent_writes(
         window_start=_window(),
         ttl_seconds=65,
     )
-    key = backend._build_key(
-        "api_key", "k-1", "task_mutation_short_60s", _window()
-    )
+    key = backend._build_key("api_key", "k-1", "task_mutation_short_60s", _window())
     await fake_redis_client.expire(key, 30)
 
     value = await backend.increment_and_get(
@@ -129,9 +122,7 @@ async def test_redis_backend_increments_are_stable_under_concurrency(
 
     await asyncio.gather(*[_run_once() for _ in range(25)])
 
-    key = backend._build_key(
-        "api_key", "k-1", "task_mutation_short_60s", _window()
-    )
+    key = backend._build_key("api_key", "k-1", "task_mutation_short_60s", _window())
     final = int(await fake_redis_client.get(key))
     assert final == 25
 

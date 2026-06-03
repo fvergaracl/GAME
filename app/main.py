@@ -48,11 +48,27 @@ def _configure_logging() -> None:
         "root": {"level": level, "handlers": ["stdout"]},
         "loggers": {
             "uvicorn": {"handlers": ["stdout"], "level": level, "propagate": False},
-            "uvicorn.error": {"handlers": ["stdout"], "level": level, "propagate": False},
-            "uvicorn.access": {"handlers": ["stdout"], "level": level, "propagate": False},
+            "uvicorn.error": {
+                "handlers": ["stdout"],
+                "level": level,
+                "propagate": False,
+            },
+            "uvicorn.access": {
+                "handlers": ["stdout"],
+                "level": level,
+                "propagate": False,
+            },
             "gunicorn": {"handlers": ["stdout"], "level": level, "propagate": False},
-            "gunicorn.error": {"handlers": ["stdout"], "level": level, "propagate": False},
-            "gunicorn.access": {"handlers": ["stdout"], "level": level, "propagate": False},
+            "gunicorn.error": {
+                "handlers": ["stdout"],
+                "level": level,
+                "propagate": False,
+            },
+            "gunicorn.access": {
+                "handlers": ["stdout"],
+                "level": level,
+                "propagate": False,
+            },
         },
     }
     logging.config.dictConfig(config)
@@ -206,9 +222,7 @@ class AppCreator:
         self.db = self.container.db()
         # Sprint 13: expose the singleton execution-log observer so the
         # lifespan shutdown hook can flush its background queue.
-        self.app.state.dsl_execution_observer = (
-            self.container.dsl_execution_observer()
-        )
+        self.app.state.dsl_execution_observer = self.container.dsl_execution_observer()
         if configs.BACKEND_CORS_ORIGINS:
             self.app.add_middleware(
                 CORSMiddleware,

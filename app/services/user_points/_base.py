@@ -13,9 +13,7 @@ from app.repository.user_game_config_repository import UserGameConfigRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
-from app.repository.wallet_transaction_repository import (
-    WalletTransactionRepository,
-)
+from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.services.strategy_service import StrategyService
 
 # Cap parallel fan-out so a request over a large user/task list cannot

@@ -2,12 +2,9 @@ import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.core.exceptions import NotFoundError
-from app.services.strategy_service import (
-    CUSTOM_STRATEGY_PREFIX,
-    StrategyService,
-    is_custom_strategy_id,
-    parse_custom_strategy_id,
-)
+from app.services.strategy_service import (CUSTOM_STRATEGY_PREFIX, StrategyService,
+                                           is_custom_strategy_id,
+                                           parse_custom_strategy_id)
 
 
 class FakeStrategyDefault:
@@ -86,9 +83,7 @@ class TestStrategyService(unittest.TestCase):
         self.assertEqual(result, expected)
 
     async def test_get_strategy_by_id_raises_not_found_when_missing(self):
-        self.service.list_all_strategies = MagicMock(
-            return_value=[{"id": "default"}]
-        )
+        self.service.list_all_strategies = MagicMock(return_value=[{"id": "default"}])
 
         with self.assertRaises(NotFoundError) as context:
             await self.service.get_strategy_by_id("missing")
@@ -160,13 +155,9 @@ class TestStrategyServiceCompatLayer(unittest.IsolatedAsyncioTestCase):
         fake_definition = MagicMock()
         fake_definition.type = "DSL_FULL"
         definition_service = MagicMock()
-        definition_service.get_strategy = AsyncMock(
-            return_value=fake_definition
-        )
+        definition_service.get_strategy = AsyncMock(return_value=fake_definition)
 
-        service = StrategyService(
-            strategy_definition_service=definition_service
-        )
+        service = StrategyService(strategy_definition_service=definition_service)
         resolved = await service.resolve(
             f"{CUSTOM_STRATEGY_PREFIX}uuid-1", realmId="realm-a"
         )
@@ -180,9 +171,7 @@ class TestStrategyServiceCompatLayer(unittest.IsolatedAsyncioTestCase):
     async def test_resolve_custom_without_dsl_service_raises(self):
         service = StrategyService(strategy_definition_service=None)
         with self.assertRaises(NotFoundError):
-            await service.resolve(
-                f"{CUSTOM_STRATEGY_PREFIX}uuid-1", realmId="realm-a"
-            )
+            await service.resolve(f"{CUSTOM_STRATEGY_PREFIX}uuid-1", realmId="realm-a")
 
 
 if __name__ == "__main__":

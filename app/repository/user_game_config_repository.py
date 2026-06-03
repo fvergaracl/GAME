@@ -2,7 +2,9 @@ from contextlib import AbstractAsyncContextManager
 from typing import Callable, List, Optional
 from uuid import UUID
 
-from sqlalchemy import and_, delete as sa_delete, select
+from sqlalchemy import and_
+from sqlalchemy import delete as sa_delete
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.model.user_game_config import UserGameConfig

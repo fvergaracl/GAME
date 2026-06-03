@@ -15,11 +15,9 @@ import random
 import unittest
 from unittest.mock import AsyncMock
 
-from app.services.dsl_observability_service import (
-    DslExecutionObserver,
-    NoopDslExecutionObserver,
-    _truncate_trace,
-)
+from app.services.dsl_observability_service import (DslExecutionObserver,
+                                                    NoopDslExecutionObserver,
+                                                    _truncate_trace)
 
 
 class _RecordingRepo:
@@ -57,6 +55,7 @@ class TestObserverPersistence(unittest.IsolatedAsyncioTestCase):
     async def test_error_row_always_persisted_regardless_of_sample_rate(self):
         # Force the sample rate to 0 to prove errors bypass the sampler.
         from app.core.config import configs as live
+
         original = live.DSL_EXECUTION_LOG_SAMPLE_RATE
         live.DSL_EXECUTION_LOG_SAMPLE_RATE = 0.0
         try:
@@ -101,12 +100,14 @@ class TestObserverPersistence(unittest.IsolatedAsyncioTestCase):
         # random.Random(0).random() ~ 0.844 -- so use a rate above that
         # to guarantee a hit.
         from app.core.config import configs as live
+
         original = live.DSL_EXECUTION_LOG_SAMPLE_RATE
         live.DSL_EXECUTION_LOG_SAMPLE_RATE = 0.99
         try:
             repo = _RecordingRepo()
             observer = DslExecutionObserver(
-                execution_log_repository=repo, rng=rng,
+                execution_log_repository=repo,
+                rng=rng,
             )
             await observer.record(
                 strategyId="s2",
@@ -138,12 +139,14 @@ class TestObserverPersistence(unittest.IsolatedAsyncioTestCase):
     async def test_ok_run_skipped_when_sampler_misses(self):
         # Rate 0 ⇒ no ok run is persisted.
         from app.core.config import configs as live
+
         original = live.DSL_EXECUTION_LOG_SAMPLE_RATE
         live.DSL_EXECUTION_LOG_SAMPLE_RATE = 0.0
         try:
             repo = _RecordingRepo()
             observer = DslExecutionObserver(
-                execution_log_repository=repo, rng=random.Random(0),
+                execution_log_repository=repo,
+                rng=random.Random(0),
             )
             await observer.record(
                 strategyId="s3",
@@ -167,12 +170,14 @@ class TestObserverPersistence(unittest.IsolatedAsyncioTestCase):
 
     async def test_log_disabled_skips_persistence(self):
         from app.core.config import configs as live
+
         original_enabled = live.DSL_EXECUTION_LOG_ENABLED
         live.DSL_EXECUTION_LOG_ENABLED = False
         try:
             repo = _RecordingRepo()
             observer = DslExecutionObserver(
-                execution_log_repository=repo, rng=random.Random(0),
+                execution_log_repository=repo,
+                rng=random.Random(0),
             )
             # Even an error row is dropped when the feature flag is off.
             await observer.record(
@@ -199,7 +204,8 @@ class TestObserverPersistence(unittest.IsolatedAsyncioTestCase):
         # Legacy code path: tests that instantiate DslStrategy directly
         # don't wire a repository. The observer must not blow up.
         observer = DslExecutionObserver(
-            execution_log_repository=None, rng=random.Random(0),
+            execution_log_repository=None,
+            rng=random.Random(0),
         )
         await observer.record(
             strategyId="s5",
@@ -222,13 +228,15 @@ class TestObserverPersistence(unittest.IsolatedAsyncioTestCase):
         # If the repository raises, the observer must swallow so a
         # broken sink never breaks scoring.
         from app.core.config import configs as live
+
         original = live.DSL_EXECUTION_LOG_SAMPLE_RATE
         live.DSL_EXECUTION_LOG_SAMPLE_RATE = 0.0
         try:
             repo = AsyncMock()
             repo.insert_row.side_effect = RuntimeError("db down")
             observer = DslExecutionObserver(
-                execution_log_repository=repo, rng=random.Random(0),
+                execution_log_repository=repo,
+                rng=random.Random(0),
             )
             # Errors are always sampled, so the insert is attempted.
             await observer.record(
@@ -283,7 +291,8 @@ class TestObserverQueue(unittest.IsolatedAsyncioTestCase):
         # insert has run. Only after draining are the rows present.
         repo = _RecordingRepo()
         observer = DslExecutionObserver(
-            execution_log_repository=repo, rng=random.Random(0),
+            execution_log_repository=repo,
+            rng=random.Random(0),
         )
         await self._record_error(observer)
         # No await point yielded to the worker yet → not persisted.
@@ -315,7 +324,8 @@ class TestObserverQueue(unittest.IsolatedAsyncioTestCase):
     async def test_aclose_flushes_and_is_idempotent(self):
         repo = _RecordingRepo()
         observer = DslExecutionObserver(
-            execution_log_repository=repo, rng=random.Random(0),
+            execution_log_repository=repo,
+            rng=random.Random(0),
         )
         await self._record_error(observer)
         await observer.aclose()
@@ -335,7 +345,8 @@ class TestObserverMetrics(unittest.IsolatedAsyncioTestCase):
         # counter metric.name, so we look up the base name.
         before = _scrape("dsl_execution_errors")
         observer = DslExecutionObserver(
-            execution_log_repository=None, rng=random.Random(0),
+            execution_log_repository=None,
+            rng=random.Random(0),
         )
         await observer.record(
             strategyId="s7",
@@ -387,8 +398,7 @@ def _scrape(metric_name: str):
             if not sample.name.endswith("_total"):
                 continue
             labels = tuple(
-                sample.labels.get(k)
-                for k in ("realm", "strategy_type", "code")
+                sample.labels.get(k) for k in ("realm", "strategy_type", "code")
             )
             out[labels] = sample.value
     return out

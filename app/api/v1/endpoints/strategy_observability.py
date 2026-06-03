@@ -20,19 +20,13 @@ from typing import Optional
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query
 
-from app.api.v1.endpoints.strategies_custom import (
-    _resolve_realm_id,
-    require_authenticated,
-)
+from app.api.v1.endpoints.strategies_custom import (_resolve_realm_id,
+                                                    require_authenticated)
 from app.core.container import Container
 from app.middlewares.auth_context import AuthContext
-from app.schema.strategy_observability_schema import (
-    StrategyComparisonResponse,
-    StrategyMetricsResponse,
-)
-from app.services.strategy_observability_service import (
-    StrategyObservabilityService,
-)
+from app.schema.strategy_observability_schema import (StrategyComparisonResponse,
+                                                      StrategyMetricsResponse)
+from app.services.strategy_observability_service import StrategyObservabilityService
 
 router = APIRouter(
     prefix="/strategies/custom",
@@ -43,9 +37,7 @@ router = APIRouter(
 @router.get(
     "/{id}/metrics",
     response_model=StrategyMetricsResponse,
-    summary=(
-        "Observability metrics for a custom strategy (Sprint 10)"
-    ),
+    summary=("Observability metrics for a custom strategy (Sprint 10)"),
 )
 @inject
 async def get_strategy_metrics(
@@ -81,7 +73,10 @@ async def get_strategy_metrics(
     """
     realm = _resolve_realm_id(auth)
     return await service.get_metrics(
-        id=id, realmId=realm, sinceDt=sinceDt, untilDt=untilDt,
+        id=id,
+        realmId=realm,
+        sinceDt=sinceDt,
+        untilDt=untilDt,
     )
 
 
@@ -93,19 +88,23 @@ async def get_strategy_metrics(
 @inject
 async def compare_strategies(
     idA: str = Query(
-        ..., alias="a",
+        ...,
+        alias="a",
         description="Strategy A — id of the baseline.",
     ),
     idB: str = Query(
-        ..., alias="b",
+        ...,
+        alias="b",
         description="Strategy B — id of the variant being compared.",
     ),
     sinceDt: Optional[datetime] = Query(
-        default=None, alias="since",
+        default=None,
+        alias="since",
         description="ISO-8601 lower bound for the window.",
     ),
     untilDt: Optional[datetime] = Query(
-        default=None, alias="until",
+        default=None,
+        alias="until",
         description="ISO-8601 upper bound for the window (inclusive).",
     ),
     auth: AuthContext = Depends(require_authenticated),

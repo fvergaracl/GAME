@@ -31,7 +31,9 @@ class TestDashboardService(unittest.TestCase):
         self.assertIs(self.service.user_repository, self.user_repository)
         self.assertIs(self.service.logs_repository, self.logs_repository)
         self.assertIs(self.service.user_points_repository, self.user_points_repository)
-        self.assertIs(self.service.user_actions_repository, self.user_actions_repository)
+        self.assertIs(
+            self.service.user_actions_repository, self.user_actions_repository
+        )
         self.assertIs(self.service._repository, self.dashboard_repository)
 
     async def test_get_dashboard_summary_delegates_to_repository(self):
@@ -43,7 +45,9 @@ class TestDashboardService(unittest.TestCase):
         }
         self.dashboard_repository.get_dashboard_summary.return_value = expected
 
-        result = await self.service.get_dashboard_summary("2026-02-01", "2026-02-09", "day")
+        result = await self.service.get_dashboard_summary(
+            "2026-02-01", "2026-02-09", "day"
+        )
 
         self.assertEqual(result, expected)
         self.dashboard_repository.get_dashboard_summary.assert_called_once_with(

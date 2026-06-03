@@ -1,18 +1,10 @@
 from app.services.abuse_prevention_service import AbusePreventionService
-from app.services.rate_limit_counter_backend import (
-    DatabaseRateLimitCounterBackend,
-    RateLimitCounterBackend,
-    RedisRateLimitCounterBackend,
-    build_rate_limit_counter_backend,
-)
 from app.services.api_requests_service import ApiRequestsService
 from app.services.apikey_service import ApiKeyService
 from app.services.base_service import BaseService
 from app.services.dashboard_service import DashboardService
-from app.services.dsl_observability_service import (
-    DslExecutionObserver,
-    NoopDslExecutionObserver,
-)
+from app.services.dsl_observability_service import (DslExecutionObserver,
+                                                    NoopDslExecutionObserver)
 from app.services.dsl_simulation_service import DslSimulationService
 from app.services.export_service import ExportService
 from app.services.game_params_service import GameParamsService
@@ -20,12 +12,12 @@ from app.services.game_service import GameService
 from app.services.kpi_metrics_service import KpiMetricsService
 from app.services.logs_service import LogsService
 from app.services.oauth_users_service import OAuthUsersService
-from app.services.strategy_definition_service import (
-    StrategyDefinitionService,
-)
-from app.services.strategy_observability_service import (
-    StrategyObservabilityService,
-)
+from app.services.rate_limit_counter_backend import (DatabaseRateLimitCounterBackend,
+                                                     RateLimitCounterBackend,
+                                                     RedisRateLimitCounterBackend,
+                                                     build_rate_limit_counter_backend)
+from app.services.strategy_definition_service import StrategyDefinitionService
+from app.services.strategy_observability_service import StrategyObservabilityService
 from app.services.strategy_service import StrategyService
 from app.services.task_service import TaskService
 from app.services.uptime_logs_service import UptimeLogsService

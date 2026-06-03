@@ -26,9 +26,7 @@ from app.repository.base_repository import BaseRepository
 class StrategyExecutionLogRepository(BaseRepository):
     def __init__(
         self,
-        session_factory: Callable[
-            ..., AbstractAsyncContextManager[AsyncSession]
-        ],
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model=StrategyExecutionLog,
     ) -> None:
         super().__init__(session_factory, model)
@@ -97,9 +95,7 @@ class StrategyExecutionLogRepository(BaseRepository):
         untilDt: Optional[datetime] = None,
     ) -> Dict[str, int]:
         """Counts grouped by ``status`` (ok/error/timeout/limit)."""
-        stmt = select(self.model.status, func.count()).group_by(
-            self.model.status
-        )
+        stmt = select(self.model.status, func.count()).group_by(self.model.status)
         stmt = self._apply_window(stmt, strategyId, sinceDt, untilDt)
         async with self.session_factory() as session:
             rows = (await session.execute(stmt)).all()
@@ -145,9 +141,7 @@ class StrategyExecutionLogRepository(BaseRepository):
         stmt = self._apply_window(stmt, strategyId, sinceDt, untilDt)
         async with self.session_factory() as session:
             rows = (await session.execute(stmt)).all()
-        return [
-            {"caseName": case, "count": int(n)} for case, n in rows
-        ]
+        return [{"caseName": case, "count": int(n)} for case, n in rows]
 
     async def duration_and_nodes_summary(
         self,

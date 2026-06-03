@@ -278,10 +278,12 @@ async def test_enforce_limits_passes_window_aware_ttl_to_backend(monkeypatch):
     daily_bucket = datetime(2026, 2, 10, 0, 0, 0, tzinfo=timezone.utc)
 
     # short window TTL = window_seconds (60) + buffer (5)
-    assert backend.ttl_seconds_seen[
-        ("api_key", "k-1", short_window_name, short_bucket)
-    ] == 65
+    assert (
+        backend.ttl_seconds_seen[("api_key", "k-1", short_window_name, short_bucket)]
+        == 65
+    )
     # daily TTL = 86400 + buffer (5)
-    assert backend.ttl_seconds_seen[
-        ("api_key", "k-1", daily_window_name, daily_bucket)
-    ] == 86405
+    assert (
+        backend.ttl_seconds_seen[("api_key", "k-1", daily_window_name, daily_bucket)]
+        == 86405
+    )

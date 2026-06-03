@@ -7,9 +7,7 @@ from app.engine.base_strategy import BaseStrategy
 from app.engine.dsl_interpreter import DslInterpreter
 from app.engine.dsl_strategy import DslStrategy
 from app.services.base_service import BaseService
-from app.services.strategy_definition_service import (
-    StrategyDefinitionService,
-)
+from app.services.strategy_definition_service import StrategyDefinitionService
 
 # Prefix used to address DB-persisted custom strategies from the existing
 # ``Games.strategyId`` / ``Tasks.strategyId`` columns. Anything without this
@@ -26,7 +24,7 @@ def is_custom_strategy_id(strategy_id: Optional[str]) -> bool:
 
 def parse_custom_strategy_id(strategy_id: str) -> str:
     """Strip the ``custom:`` prefix and return the underlying uuid."""
-    return strategy_id[len(CUSTOM_STRATEGY_PREFIX):]
+    return strategy_id[len(CUSTOM_STRATEGY_PREFIX) :]
 
 
 def resolve_realm_id(
@@ -69,9 +67,7 @@ class StrategyService(BaseService):
 
     def __init__(
         self,
-        strategy_definition_service: Optional[
-            StrategyDefinitionService
-        ] = None,
+        strategy_definition_service: Optional[StrategyDefinitionService] = None,
         *,
         dsl_interpreter: Optional[DslInterpreter] = None,
         analytics_service: Optional[Any] = None,
@@ -264,9 +260,7 @@ class StrategyService(BaseService):
                         "but has no parentStrategyId set."
                     )
                 )
-            parent_strategy = self.get_Class_by_id(
-                definition.parentStrategyId
-            )
+            parent_strategy = self.get_Class_by_id(definition.parentStrategyId)
 
         return DslStrategy(
             definition=definition,

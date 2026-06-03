@@ -191,7 +191,9 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = None
 
         with self.assertRaises(NotFoundError):
-            await self.service.get_task_by_gameId_externalTaskId(game_id, "missing-task")
+            await self.service.get_task_by_gameId_externalTaskId(
+                game_id, "missing-task"
+            )
 
     async def test_get_task_by_game_id_external_task_id_returns_task_details(self):
         game_id = uuid4()
@@ -455,7 +457,9 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
         self.service.get_points_by_task_id_with_details = AsyncMock(return_value=[])
 
         with self.assertRaises(NotFoundError):
-            await self.service.get_points_of_user_by_task_id(uuid4(), "task-1", "user-x")
+            await self.service.get_points_of_user_by_task_id(
+                uuid4(), "task-1", "user-x"
+            )
 
     async def test_get_points_of_user_by_task_id_returns_first_matching_user(self):
         matching = SimpleNamespace(externalUserId="user-1", points=8)
@@ -463,7 +467,9 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
             return_value=[SimpleNamespace(externalUserId="user-2"), matching]
         )
 
-        result = await self.service.get_points_of_user_by_task_id(uuid4(), "task-1", "user-1")
+        result = await self.service.get_points_of_user_by_task_id(
+            uuid4(), "task-1", "user-1"
+        )
 
         self.assertEqual(result, matching)
 
@@ -471,7 +477,9 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
         self.task_repository.read_by_gameId_and_externalTaskId.return_value = None
 
         with self.assertRaises(NotFoundError):
-            await self.service.get_points_by_task_id_with_details(uuid4(), "missing-task")
+            await self.service.get_points_by_task_id_with_details(
+                uuid4(), "missing-task"
+            )
 
     async def test_get_points_by_task_id_with_details_returns_points(self):
         task_id = uuid4()
@@ -482,7 +490,9 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
             {"externalUserId": "user-1", "pointsData": []}
         ]
 
-        result = await self.service.get_points_by_task_id_with_details(uuid4(), "task-1")
+        result = await self.service.get_points_by_task_id_with_details(
+            uuid4(), "task-1"
+        )
 
         self.assertEqual(result, [{"externalUserId": "user-1", "pointsData": []}])
 
@@ -547,9 +557,7 @@ class TestTaskServicePatch(unittest.IsolatedAsyncioTestCase):
         game_id = uuid4()
         task_id = uuid4()
         task = self._make_task(task_id, game_id, strategy_id="default")
-        self.game_repository.read_by_id.return_value = SimpleNamespace(
-            id=game_id
-        )
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
         self.task_repository.read_by_id.return_value = task
         updated = SimpleNamespace(
             id=task_id,
@@ -558,10 +566,8 @@ class TestTaskServicePatch(unittest.IsolatedAsyncioTestCase):
             status="open",
         )
         self.task_repository.patch_by_id = AsyncMock(return_value=updated)
-        self.strategy_definition_service.get_strategy.return_value = (
-            SimpleNamespace(
-                id="abc", name="x", version=1, status="PUBLISHED"
-            )
+        self.strategy_definition_service.get_strategy.return_value = SimpleNamespace(
+            id="abc", name="x", version=1, status="PUBLISHED"
         )
 
         result = await self.service.patch_task_by_id(
@@ -580,14 +586,10 @@ class TestTaskServicePatch(unittest.IsolatedAsyncioTestCase):
         game_id = uuid4()
         task_id = uuid4()
         task = self._make_task(task_id, game_id)
-        self.game_repository.read_by_id.return_value = SimpleNamespace(
-            id=game_id
-        )
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
         self.task_repository.read_by_id.return_value = task
-        self.strategy_definition_service.get_strategy.return_value = (
-            SimpleNamespace(
-                id="abc", name="x", version=2, status="DRAFT"
-            )
+        self.strategy_definition_service.get_strategy.return_value = SimpleNamespace(
+            id="abc", name="x", version=2, status="DRAFT"
         )
 
         with self.assertRaises(BadRequestError):
@@ -605,9 +607,7 @@ class TestTaskServicePatch(unittest.IsolatedAsyncioTestCase):
         other_game_id = uuid4()
         task_id = uuid4()
         task = self._make_task(task_id, other_game_id)
-        self.game_repository.read_by_id.return_value = SimpleNamespace(
-            id=game_id
-        )
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
         self.task_repository.read_by_id.return_value = task
 
         with self.assertRaises(NotFoundError):
@@ -621,9 +621,7 @@ class TestTaskServicePatch(unittest.IsolatedAsyncioTestCase):
         game_id = uuid4()
         task_id = uuid4()
         task = self._make_task(task_id, game_id)
-        self.game_repository.read_by_id.return_value = SimpleNamespace(
-            id=game_id
-        )
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
         self.task_repository.read_by_id.return_value = task
 
         with self.assertRaises(ConflictError):
@@ -636,9 +634,7 @@ class TestTaskServicePatch(unittest.IsolatedAsyncioTestCase):
     async def test_patch_404_when_task_missing(self):
         game_id = uuid4()
         task_id = uuid4()
-        self.game_repository.read_by_id.return_value = SimpleNamespace(
-            id=game_id
-        )
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
         self.task_repository.read_by_id.return_value = None
 
         with self.assertRaises(NotFoundError):

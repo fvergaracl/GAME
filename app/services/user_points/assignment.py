@@ -73,9 +73,7 @@ class PointsAssignmentMixin(PointsPersistenceMixin):
         # endpoint doesn't actually invoke ``calculate_points`` — it just
         # verifies the strategy exists for the realm — but using the
         # same resolver keeps custom and built-in ids consistent.
-        realm_id = resolve_realm_id(
-            api_key=api_key, oauth_user_id=oauth_user_id
-        )
+        realm_id = resolve_realm_id(api_key=api_key, oauth_user_id=oauth_user_id)
         strategy_instance = await self.strategy_service.get_strategy_instance(
             strategyId, realmId=realm_id
         )
@@ -186,9 +184,7 @@ class PointsAssignmentMixin(PointsPersistenceMixin):
         # The resolver raises NotFoundError itself when the strategy is
         # missing, so the previous separate ``get_strategy_by_id`` guard
         # is redundant and has been removed.
-        realm_id = resolve_realm_id(
-            api_key=api_key, oauth_user_id=oauth_user_id
-        )
+        realm_id = resolve_realm_id(api_key=api_key, oauth_user_id=oauth_user_id)
         user = await self.users_repository.read_by_column(
             "externalUserId", externalUserId, not_found_raise_exception=False
         )

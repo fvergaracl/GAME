@@ -1,11 +1,7 @@
 from typing import Any, Optional
 from uuid import UUID
 
-from app.core.exceptions import (
-    BadRequestError,
-    ConflictError,
-    NotFoundError,
-)
+from app.core.exceptions import BadRequestError, ConflictError, NotFoundError
 from app.engine.all_engine_strategies import all_engine_strategies
 from app.model.strategy_definition import StrategyDefinitionStatus
 from app.repository.game_params_repository import GameParamsRepository
@@ -19,12 +15,9 @@ from app.schema.task_schema import (CreateTask, CreateTaskPostSuccesfullyCreated
 from app.schema.tasks_params_schema import InsertTaskParams
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
-from app.services.strategy_definition_service import \
-    StrategyDefinitionService
-from app.services.strategy_service import (StrategyService,
-                                           is_custom_strategy_id,
-                                           parse_custom_strategy_id,
-                                           resolve_realm_id)
+from app.services.strategy_definition_service import StrategyDefinitionService
+from app.services.strategy_service import (StrategyService, is_custom_strategy_id,
+                                           parse_custom_strategy_id, resolve_realm_id)
 
 
 class TaskService(BaseService):
@@ -53,9 +46,7 @@ class TaskService(BaseService):
         user_points_repository: UserPointsRepository,
         game_params_repository: GameParamsRepository,
         task_params_repository: TaskParamsRepository,
-        strategy_definition_service: Optional[
-            StrategyDefinitionService
-        ] = None,
+        strategy_definition_service: Optional[StrategyDefinitionService] = None,
     ) -> None:
         """
         Initializes the TaskService with the provided repositories and
@@ -91,13 +82,9 @@ class TaskService(BaseService):
         """
         if not is_custom_strategy_id(strategy_id):
             strategies = all_engine_strategies()
-            strategy = next(
-                (s for s in strategies if s.id == strategy_id), None
-            )
+            strategy = next((s for s in strategies if s.id == strategy_id), None)
             if not strategy:
-                raise NotFoundError(
-                    detail=f"Strategy with id: {strategy_id} not found"
-                )
+                raise NotFoundError(detail=f"Strategy with id: {strategy_id} not found")
             return
         if self.strategy_definition_service is None:
             raise BadRequestError(
@@ -106,9 +93,7 @@ class TaskService(BaseService):
                     "StrategyDefinitionService not wired."
                 )
             )
-        realmId = resolve_realm_id(
-            api_key=api_key, oauth_user_id=oauth_user_id
-        )
+        realmId = resolve_realm_id(api_key=api_key, oauth_user_id=oauth_user_id)
         uuid_part = parse_custom_strategy_id(strategy_id)
         definition = await self.strategy_definition_service.get_strategy(
             id=uuid_part, realmId=realmId
@@ -159,24 +144,18 @@ class TaskService(BaseService):
                 gameId, not_found_raise_exception=False
             )
         if not game:
-            raise NotFoundError(
-                detail=f"Game not found by gameId: {gameId}"
-            )
+            raise NotFoundError(detail=f"Game not found by gameId: {gameId}")
 
         task = await self.task_repository.read_by_id(
             taskId, not_found_raise_exception=False
         )
         if not task:
-            raise NotFoundError(
-                detail=f"Task not found by taskId: {taskId}"
-            )
+            raise NotFoundError(detail=f"Task not found by taskId: {taskId}")
         if str(task.gameId) != str(gameId):
             # Mismatched parent — 404 instead of 400 so we don't leak
             # which other game the task actually belongs to.
             raise NotFoundError(
-                detail=(
-                    f"Task {taskId} does not belong to game {gameId}."
-                )
+                detail=(f"Task {taskId} does not belong to game {gameId}.")
             )
 
         # Build the update payload only with non-None fields the caller
@@ -194,31 +173,20 @@ class TaskService(BaseService):
             update_fields["status"] = schema.status
 
         if not update_fields:
+            raise ConflictError(detail="Empty patch: no fields provided.")
+        if all(getattr(task, k) == v for k, v in update_fields.items()):
             raise ConflictError(
-                detail="Empty patch: no fields provided."
-            )
-        if all(
-            getattr(task, k) == v for k, v in update_fields.items()
-        ):
-            raise ConflictError(
-                detail=(
-                    "It is not possible to update the task with the "
-                    "same data"
-                )
+                detail=("It is not possible to update the task with the " "same data")
             )
 
-        updated = await self.task_repository.patch_by_id(
-            taskId, update_fields
-        )
+        updated = await self.task_repository.patch_by_id(taskId, update_fields)
         return ResponsePatchTask(
             taskId=updated.id,
             gameId=gameId,
             externalTaskId=updated.externalTaskId,
             strategyId=updated.strategyId,
             status=updated.status,
-            message=(
-                f"Task with taskId: {taskId} updated successfully"
-            ),
+            message=(f"Task with taskId: {taskId} updated successfully"),
         )
 
     async def get_tasks_list_by_externalGameId(
@@ -283,7 +251,9 @@ class TaskService(BaseService):
         if not game:
             raise NotFoundError(f"Game not found with gameId: {gameId}")
 
-        find_task_query = FindTask(gameId=game.id, **find_query.model_dump(exclude_none=True))
+        find_task_query = FindTask(
+            gameId=game.id, **find_query.model_dump(exclude_none=True)
+        )
         all_tasks = await self.task_repository.read_by_gameId(find_task_query)
 
         strategy_data = self.strategy_service.get_strategy_by_id(game.strategyId)
@@ -707,7 +677,9 @@ class TaskService(BaseService):
 
         task_id = task.id
 
-        user_points = await self.user_points_repository.get_all_UserPoints_by_taskId(task_id)
+        user_points = await self.user_points_repository.get_all_UserPoints_by_taskId(
+            task_id
+        )
 
         return user_points
 

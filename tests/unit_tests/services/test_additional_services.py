@@ -3,9 +3,6 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
-from app.services.rate_limit_counter_backend import (
-    DatabaseRateLimitCounterBackend,
-)
 from app.repository.api_requests_repository import ApiRequestsRepository
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.kpi_metrics_repository import KpiMetricsRepository
@@ -19,6 +16,7 @@ from app.services.game_params_service import GameParamsService
 from app.services.kpi_metrics_service import KpiMetricsService
 from app.services.logs_service import LogsService
 from app.services.oauth_users_service import OAuthUsersService
+from app.services.rate_limit_counter_backend import DatabaseRateLimitCounterBackend
 from app.services.uptime_logs_service import UptimeLogsService
 from app.services.user_interactions_service import UserInteractionsService
 
@@ -55,7 +53,10 @@ def test_light_services_set_expected_repository_attributes():
     assert logs_service._repository is logs_repository
     assert uptime_logs_service.uptime_logs_repository is uptime_logs_repository
     assert uptime_logs_service._repository is uptime_logs_repository
-    assert user_interactions_service.user_interactions_repository is user_interactions_repository
+    assert (
+        user_interactions_service.user_interactions_repository
+        is user_interactions_repository
+    )
     assert user_interactions_service._repository is user_interactions_repository
 
 

@@ -1,7 +1,8 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable
 
-from sqlalchemy import func, select, update as sa_update
+from sqlalchemy import func, select
+from sqlalchemy import update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -45,9 +46,7 @@ class TaskRepository(BaseRepository):
             stmt = select(self.model).filter(filter_options)
             if eager:
                 for eager_rel in getattr(self.model, "eagers", []):
-                    stmt = stmt.options(
-                        joinedload(getattr(self.model, eager_rel))
-                    )
+                    stmt = stmt.options(joinedload(getattr(self.model, eager_rel)))
 
             count_stmt = select(func.count()).select_from(
                 select(self.model).filter(filter_options).subquery()
@@ -68,9 +67,7 @@ class TaskRepository(BaseRepository):
                 },
             }
 
-    async def read_by_gameId_and_externalTaskId(
-        self, gameId, externalTaskId: str
-    ):
+    async def read_by_gameId_and_externalTaskId(self, gameId, externalTaskId: str):
         async with self.session_factory() as session:
             stmt = select(self.model).filter(
                 self.model.gameId == gameId,
@@ -100,9 +97,7 @@ class TaskRepository(BaseRepository):
             stmt = select(self.model).filter(self.model.id == taskId)
             task = (await session.execute(stmt)).scalars().first()
             if not task:
-                raise NotFoundError(
-                    detail=f"Task not found by id : {taskId}"
-                )
+                raise NotFoundError(detail=f"Task not found by id : {taskId}")
             for key, value in fields.items():
                 setattr(task, key, value)
             await session.commit()
@@ -117,12 +112,8 @@ class TaskRepository(BaseRepository):
         :meth:`GameRepository.list_by_strategy_id`.
         """
         async with self.session_factory() as session:
-            stmt = select(self.model).filter(
-                self.model.strategyId == strategy_id
-            )
-            return list(
-                (await session.execute(stmt)).scalars().all()
-            )
+            stmt = select(self.model).filter(self.model.strategyId == strategy_id)
+            return list((await session.execute(stmt)).scalars().all())
 
     async def bulk_update_strategy_id(
         self, *, old_strategy_id: str, new_strategy_id: str

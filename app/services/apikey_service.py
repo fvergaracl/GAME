@@ -8,10 +8,9 @@ from app.core.config import configs
 from app.core.exceptions import ForbiddenError, NotFoundError
 from app.repository.apikey_repository import ApiKeyRepository
 from app.services.apikey_cache_backend import (ApiKeyCacheBackend,
-                                                InMemoryApiKeyCacheBackend)
+                                               InMemoryApiKeyCacheBackend)
 from app.services.base_service import BaseService
-from app.util.generate_api_key import (GeneratedApiKey, generate_api_key,
-                                       hash_api_key)
+from app.util.generate_api_key import GeneratedApiKey, generate_api_key, hash_api_key
 from app.util.response import Response
 
 API_KEY_NAME = "X-API-Key"
@@ -103,9 +102,7 @@ class ApiKeyService(BaseService):
         )
         if row is None:
             raise NotFoundError(detail=f"API key not found: {prefix}")
-        updated = await self.apikey_repository.update_attr(
-            row.id, "active", False
-        )
+        updated = await self.apikey_repository.update_attr(row.id, "active", False)
         cache_key = getattr(row, "apiKeyHash", None)
         if cache_key:
             await self.cache_backend.delete(cache_key)
@@ -126,9 +123,7 @@ class ApiKeyService(BaseService):
             return Response.fail(error=ForbiddenError("API key not provided."))
         key_hash = hash_api_key(api_key)
         cache_backend = Container.apikey_cache_backend()
-        ttl_seconds = int(
-            getattr(configs, "API_KEY_HEADER_CACHE_TTL_SECONDS", 0) or 0
-        )
+        ttl_seconds = int(getattr(configs, "API_KEY_HEADER_CACHE_TTL_SECONDS", 0) or 0)
         if ttl_seconds > 0:
             cached = await cache_backend.get(key_hash)
             if cached is not None:
@@ -140,9 +135,7 @@ class ApiKeyService(BaseService):
         if api_key_in_db is None:
             raise ForbiddenError("API key is invalid or does not exist.")
         if not api_key_in_db.active:
-            raise ForbiddenError(
-                "API key is inactive. Please contact an admin."
-            )
+            raise ForbiddenError("API key is inactive. Please contact an admin.")
         normalized = SimpleNamespace(
             apiKey=api_key_in_db.apiKey, active=api_key_in_db.active
         )

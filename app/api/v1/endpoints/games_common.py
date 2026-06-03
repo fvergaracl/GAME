@@ -5,9 +5,8 @@ import jwt
 from fastapi import HTTPException, Request, status
 from sqlalchemy.exc import DataError, IntegrityError, ProgrammingError
 
-from app.core.exceptions import (ConflictError, DuplicatedError,
-                                 InternalServerError, NotFoundError,
-                                 PreconditionFailedError)
+from app.core.exceptions import (ConflictError, DuplicatedError, InternalServerError,
+                                 NotFoundError, PreconditionFailedError)
 
 
 def _extract_api_key_from_header(api_key_header) -> Optional[str]:

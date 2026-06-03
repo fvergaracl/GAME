@@ -20,7 +20,6 @@ from app.engine.dsl_execution_context import ExecutionContext
 from app.engine.dsl_interpreter import DslInterpreter
 from app.engine.dsl_validator import validate_ast
 
-
 _VALID_PROGRAM_TEMPLATE = {
     "type": "program",
     "id": "p",
@@ -384,13 +383,8 @@ def test_validator_rejects_func_call_with_unknown_name(bad_name):
         ("clamp", 4, 3),
     ],
 )
-def test_validator_rejects_func_call_with_wrong_arity(
-    name, args_count, expected_arity
-):
-    args = [
-        {"type": "literal", "id": f"a{i}", "value": i}
-        for i in range(args_count)
-    ]
+def test_validator_rejects_func_call_with_wrong_arity(name, args_count, expected_arity):
+    args = [{"type": "literal", "id": f"a{i}", "value": i} for i in range(args_count)]
     ast = _wrap_expression_as_assign_program(
         {"type": "func_call", "id": "fc", "name": name, "args": args}
     )
@@ -455,7 +449,7 @@ async def test_runtime_rejects_arith_min_between_incompatible_types():
             "type": "arith",
             "id": "ar",
             "op": "min",
-            "left":  {"type": "literal", "id": "ll", "value": "hello"},
+            "left": {"type": "literal", "id": "ll", "value": "hello"},
             "right": {"type": "literal", "id": "lr", "value": 5},
         }
     )

@@ -16,13 +16,10 @@ from app.api.v1.endpoints import strategy_observability as endpoint
 from app.core.config import configs
 from app.core.exceptions import ForbiddenError
 from app.middlewares.auth_context import AuthContext
-from app.schema.strategy_observability_schema import (
-    DurationPercentiles,
-    MetricsDelta,
-    StatusBreakdown,
-    StrategyComparisonResponse,
-    StrategyMetricsResponse,
-)
+from app.schema.strategy_observability_schema import (DurationPercentiles, MetricsDelta,
+                                                      StatusBreakdown,
+                                                      StrategyComparisonResponse,
+                                                      StrategyMetricsResponse)
 
 
 def _auth(*, api_key=None, oauth_user_id=None, is_admin=False) -> AuthContext:
@@ -62,7 +59,10 @@ async def test_metrics_passes_resolved_realm_and_window_to_service():
     )
 
     service.get_metrics.assert_awaited_once_with(
-        id="s1", realmId="api-key-xyz", sinceDt=None, untilDt=None,
+        id="s1",
+        realmId="api-key-xyz",
+        sinceDt=None,
+        untilDt=None,
     )
     assert result.strategyId == "s1"
 

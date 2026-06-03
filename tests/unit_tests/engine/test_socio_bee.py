@@ -27,7 +27,9 @@ def _set_shared_values(strategy, *, task_count=3, user_count=3, user_avg=10, all
 async def test_calculate_points_returns_basic_engagement_when_task_count_is_less_than_two(
     strategy,
 ):
-    strategy.user_points_analytics_service.count_measurements_by_external_task_id.return_value = 1
+    strategy.user_points_analytics_service.count_measurements_by_external_task_id.return_value = (
+        1
+    )
 
     points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
 
@@ -49,7 +51,9 @@ async def test_calculate_points_returns_default_when_user_measurements_are_two_o
 
 
 @pytest.mark.asyncio
-async def test_calculate_points_returns_performance_bonus_when_user_avg_is_better(strategy):
+async def test_calculate_points_returns_performance_bonus_when_user_avg_is_better(
+    strategy,
+):
     _set_shared_values(strategy, user_avg=5, all_avg=10)
 
     points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
@@ -63,7 +67,9 @@ async def test_calculate_points_returns_performance_bonus_when_user_avg_is_bette
 async def test_calculate_points_returns_individual_over_global(strategy):
     _set_shared_values(strategy, user_avg=10, all_avg=5)
     strategy.user_points_analytics_service.get_last_window_time_diff.return_value = 3
-    strategy.user_points_analytics_service.get_new_last_window_time_diff.return_value = 5
+    strategy.user_points_analytics_service.get_new_last_window_time_diff.return_value = (
+        5
+    )
 
     points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
 
@@ -75,7 +81,9 @@ async def test_calculate_points_returns_individual_over_global(strategy):
 async def test_calculate_points_returns_peak_performer_bonus(strategy):
     _set_shared_values(strategy, user_avg=10, all_avg=5)
     strategy.user_points_analytics_service.get_last_window_time_diff.return_value = 2
-    strategy.user_points_analytics_service.get_new_last_window_time_diff.return_value = 9
+    strategy.user_points_analytics_service.get_new_last_window_time_diff.return_value = (
+        9
+    )
 
     points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
 
@@ -87,7 +95,9 @@ async def test_calculate_points_returns_peak_performer_bonus(strategy):
 async def test_calculate_points_returns_global_advantage_adjustment(strategy):
     _set_shared_values(strategy, user_avg=10, all_avg=7)
     strategy.user_points_analytics_service.get_last_window_time_diff.return_value = 1
-    strategy.user_points_analytics_service.get_new_last_window_time_diff.return_value = 13
+    strategy.user_points_analytics_service.get_new_last_window_time_diff.return_value = (
+        13
+    )
 
     points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
 
@@ -96,10 +106,14 @@ async def test_calculate_points_returns_global_advantage_adjustment(strategy):
 
 
 @pytest.mark.asyncio
-async def test_calculate_points_returns_individual_adjustment_for_negative_diff(strategy):
+async def test_calculate_points_returns_individual_adjustment_for_negative_diff(
+    strategy,
+):
     _set_shared_values(strategy, user_avg=10, all_avg=5)
     strategy.user_points_analytics_service.get_last_window_time_diff.return_value = 5
-    strategy.user_points_analytics_service.get_new_last_window_time_diff.return_value = 3
+    strategy.user_points_analytics_service.get_new_last_window_time_diff.return_value = (
+        3
+    )
 
     points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
 
@@ -111,7 +125,9 @@ async def test_calculate_points_returns_individual_adjustment_for_negative_diff(
 async def test_calculate_points_returns_default_when_diff_is_zero(strategy):
     _set_shared_values(strategy, user_avg=10, all_avg=5)
     strategy.user_points_analytics_service.get_last_window_time_diff.return_value = 5
-    strategy.user_points_analytics_service.get_new_last_window_time_diff.return_value = 5
+    strategy.user_points_analytics_service.get_new_last_window_time_diff.return_value = (
+        5
+    )
 
     points, status = await strategy.calculate_points("game_id", "task_id", "user_id")
 

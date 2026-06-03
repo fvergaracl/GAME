@@ -20,15 +20,9 @@ depends_on = None
 def upgrade():
     op.create_table(
         "strategydefinition",
-        sa.Column(
-            "id", postgresql.UUID(as_uuid=True), nullable=False
-        ),
-        sa.Column(
-            "created_at", sa.DateTime(timezone=True), nullable=True
-        ),
-        sa.Column(
-            "updated_at", sa.DateTime(timezone=True), nullable=True
-        ),
+        sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("apiKey_used", sa.String(), nullable=True),
         sa.Column("oauth_user_id", sa.String(), nullable=True),
         sa.Column("realmId", sa.String(), nullable=True),
@@ -63,9 +57,7 @@ def upgrade():
         sa.Column("publishedAt", sa.DateTime(timezone=True), nullable=True),
         sa.Column("experimentTag", sa.String(), nullable=True),
         sa.ForeignKeyConstraint(["apiKey_used"], ["apikey.apiKey"]),
-        sa.ForeignKeyConstraint(
-            ["oauth_user_id"], ["oauthusers.provider_user_id"]
-        ),
+        sa.ForeignKeyConstraint(["oauth_user_id"], ["oauthusers.provider_user_id"]),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint(
             "realmId",

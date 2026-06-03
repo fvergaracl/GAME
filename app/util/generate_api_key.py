@@ -61,4 +61,6 @@ def generate_api_key(namespace: str = DEFAULT_KEY_NAMESPACE) -> GeneratedApiKey:
     prefix = f"{namespace}{prefix_body}"
     secret = secrets.token_urlsafe(24)[:SECRET_RANDOM_LEN]
     plaintext = f"{prefix}.{secret}"
-    return GeneratedApiKey(plaintext=plaintext, prefix=prefix, key_hash=hash_api_key(plaintext))
+    return GeneratedApiKey(
+        plaintext=plaintext, prefix=prefix, key_hash=hash_api_key(plaintext)
+    )

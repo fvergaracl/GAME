@@ -132,9 +132,7 @@ def get_dynamic_values_from_tasks(
     try:
         poi_external_id = task.externalTaskId.split("_")[1]
     except Exception:
-        logger.exception(
-            "Error extracting POI ID from task %s", task.externalTaskId
-        )
+        logger.exception("Error extracting POI ID from task %s", task.externalTaskId)
         return {
             "DIM_BP": 0,
             "DIM_LBE": 0,
@@ -153,9 +151,7 @@ def get_dynamic_values_from_tasks(
             poi_id = t["externalTaskId"].split("_")[1]
             poi_task_map[poi_id].add(t["id"])
         except Exception:
-            logger.exception(
-                "Error processing task %s", t.get("externalTaskId")
-            )
+            logger.exception("Error processing task %s", t.get("externalTaskId"))
 
     count_total_task_in_poi = len(poi_task_map.get(poi_external_id, []))
     count_unique_task_in_poi = len(
@@ -221,8 +217,7 @@ def get_dynamic_values_from_tasks(
     avg_time_window = np.mean(time_diffs) if time_diffs else 0
     last_time_window = (
         (
-            datetime.datetime.now(datetime.timezone.utc)
-            - user_records[-1]
+            datetime.datetime.now(datetime.timezone.utc) - user_records[-1]
         ).total_seconds()
         / 60
         if user_records
@@ -255,7 +250,10 @@ def get_dynamic_values_from_tasks(
         1
         for i in range(len(unique_days) - 1, -1, -1)
         if unique_days[i]
-        >= (datetime.datetime.now(datetime.timezone.utc).date() - datetime.timedelta(days=i))
+        >= (
+            datetime.datetime.now(datetime.timezone.utc).date()
+            - datetime.timedelta(days=i)
+        )
     )
     dim_s_value = round(variable_basic_points * (2 ** (consecutive_days / 5)))
 

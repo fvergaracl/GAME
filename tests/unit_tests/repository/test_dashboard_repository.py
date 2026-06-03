@@ -49,9 +49,7 @@ def test_get_group_by_column_returns_labeled_expressions(repository):
     """
     day_expr = repository._get_group_by_column(repository.model_users, "day")
     week_expr = repository._get_group_by_column(repository.model_users, "week")
-    month_expr = repository._get_group_by_column(
-        repository.model_users, "month"
-    )
+    month_expr = repository._get_group_by_column(repository.model_users, "month")
 
     assert day_expr.key == "date"
     assert week_expr.key == "week"
@@ -69,9 +67,7 @@ async def test_get_dashboard_summary_returns_aggregated_metrics(repository):
         ]
     )
 
-    result = await repository.get_dashboard_summary(
-        "2026-02-09", "2026-02-09", "day"
-    )
+    result = await repository.get_dashboard_summary("2026-02-09", "2026-02-09", "day")
 
     assert result["new_users"][0]["count"] == 2
     assert result["games_opened"][0]["count"] == 1

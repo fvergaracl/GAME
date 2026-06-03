@@ -247,9 +247,7 @@ class PatchTask(BaseModel):
 
     strategyId: Optional[str] = Field(
         default=None,
-        description=(
-            "Updated strategy id (built-in or ``custom:<uuid>``)."
-        ),
+        description=("Updated strategy id (built-in or ``custom:<uuid>``)."),
         examples=["default"],
     )
     status: Optional[str] = Field(

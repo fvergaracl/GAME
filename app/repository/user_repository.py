@@ -36,9 +36,7 @@ class UserRepository(BaseRepository):
         raising IntegrityError to the caller.
         """
         async with self.session_factory() as session:
-            user = Users(
-                externalUserId=externalUserId, oauth_user_id=oauth_user_id
-            )
+            user = Users(externalUserId=externalUserId, oauth_user_id=oauth_user_id)
             session.add(user)
             try:
                 await session.commit()
@@ -47,12 +45,14 @@ class UserRepository(BaseRepository):
             except IntegrityError:
                 await session.rollback()
                 existing = (
-                    await session.execute(
-                        select(self.model).filter_by(
-                            externalUserId=externalUserId
+                    (
+                        await session.execute(
+                            select(self.model).filter_by(externalUserId=externalUserId)
                         )
                     )
-                ).scalars().first()
+                    .scalars()
+                    .first()
+                )
                 if existing is not None:
                     return existing
                 raise
@@ -104,10 +104,10 @@ class UserRepository(BaseRepository):
             await session.flush()
 
         user = (
-            await session.execute(
-                select(self.model).filter(self.model.id == user_id)
-            )
-        ).scalars().first()
+            (await session.execute(select(self.model).filter(self.model.id == user_id)))
+            .scalars()
+            .first()
+        )
         if user is None:
             raise NotFoundError(
                 detail=f"User not found after upsert by externalUserId: {externalUserId}"

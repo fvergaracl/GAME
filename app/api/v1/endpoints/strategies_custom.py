@@ -24,30 +24,19 @@ from app.core.container import Container
 from app.core.exceptions import ForbiddenError
 from app.engine.dsl_templates.loader import load_user_templates
 from app.engine.dsl_validator import validate_ast
-from app.middlewares.auth_context import (
-    AuditLogger,
-    AuthContext,
-    audit_log,
-    get_auth_context,
-)
-from app.schema.dsl_schema import (
-    InlineSimulationRequest,
-    SimulationRequest,
-    SimulationResponse,
-)
+from app.middlewares.auth_context import (AuditLogger, AuthContext, audit_log,
+                                          get_auth_context)
 from app.model.strategy_definition import StrategyDefinitionType
-from app.schema.strategy_definition_schema import (
-    StrategyDefinitionCreate,
-    StrategyDefinitionImport,
-    StrategyDefinitionRead,
-    StrategyDefinitionUpdate,
-    StrategyTemplateRead,
-    StrategyUsageRead,
-)
+from app.schema.dsl_schema import (InlineSimulationRequest, SimulationRequest,
+                                   SimulationResponse)
+from app.schema.strategy_definition_schema import (StrategyDefinitionCreate,
+                                                   StrategyDefinitionImport,
+                                                   StrategyDefinitionRead,
+                                                   StrategyDefinitionUpdate,
+                                                   StrategyTemplateRead,
+                                                   StrategyUsageRead)
 from app.services.dsl_simulation_service import DslSimulationService
-from app.services.strategy_definition_service import (
-    StrategyDefinitionService,
-)
+from app.services.strategy_definition_service import StrategyDefinitionService
 from app.services.strategy_service import StrategyService
 
 router = APIRouter(
@@ -150,9 +139,7 @@ async def create_custom_strategy(
     service: StrategyDefinitionService = Depends(
         Provide[Container.strategy_definition_service]
     ),
-    strategy_service: StrategyService = Depends(
-        Provide[Container.strategy_service]
-    ),
+    strategy_service: StrategyService = Depends(Provide[Container.strategy_service]),
     audit: AuditLogger = Depends(audit_log("strategies_custom")),
 ) -> StrategyDefinitionRead:
     realm = _resolve_realm_id(auth)
@@ -162,7 +149,9 @@ async def create_custom_strategy(
     )
     try:
         _ensure_parent_strategy_exists(
-            payload.type, payload.parentStrategyId, strategy_service,
+            payload.type,
+            payload.parentStrategyId,
+            strategy_service,
         )
         return await service.create(
             payload=payload,
@@ -243,9 +232,7 @@ async def import_custom_strategy(
     service: StrategyDefinitionService = Depends(
         Provide[Container.strategy_definition_service]
     ),
-    strategy_service: StrategyService = Depends(
-        Provide[Container.strategy_service]
-    ),
+    strategy_service: StrategyService = Depends(Provide[Container.strategy_service]),
     audit: AuditLogger = Depends(audit_log("strategy_import")),
 ) -> StrategyDefinitionRead:
     """
@@ -271,7 +258,9 @@ async def import_custom_strategy(
         # precise error pointing at the offending node.
         validate_ast(payload.astJson)
         _ensure_parent_strategy_exists(
-            payload.type, payload.parentStrategyId, strategy_service,
+            payload.type,
+            payload.parentStrategyId,
+            strategy_service,
         )
 
         # Auto-rename on name collision so a re-import is idempotent.
@@ -315,9 +304,7 @@ async def import_custom_strategy(
 async def simulate_inline_strategy(
     payload: InlineSimulationRequest,
     auth: AuthContext = Depends(require_authenticated),
-    service: DslSimulationService = Depends(
-        Provide[Container.dsl_simulation_service]
-    ),
+    service: DslSimulationService = Depends(Provide[Container.dsl_simulation_service]),
     audit: AuditLogger = Depends(audit_log("strategies_custom")),
 ) -> SimulationResponse:
     """
@@ -376,9 +363,7 @@ async def update_custom_strategy(
     service: StrategyDefinitionService = Depends(
         Provide[Container.strategy_definition_service]
     ),
-    strategy_service: StrategyService = Depends(
-        Provide[Container.strategy_service]
-    ),
+    strategy_service: StrategyService = Depends(Provide[Container.strategy_service]),
     audit: AuditLogger = Depends(audit_log("strategies_custom")),
 ) -> StrategyDefinitionRead:
     realm = _resolve_realm_id(auth)
@@ -387,7 +372,9 @@ async def update_custom_strategy(
         # Sprint 7: same registry check as create — only relevant when
         # the PUT explicitly carries type+parentStrategyId.
         _ensure_parent_strategy_exists(
-            payload.type, payload.parentStrategyId, strategy_service,
+            payload.type,
+            payload.parentStrategyId,
+            strategy_service,
         )
         return await service.update(
             id=id,
@@ -537,9 +524,7 @@ async def rollback_strategy(
         {"id": id, "target_version": version},
     )
     try:
-        result = await service.rollback(
-            id=id, target_version=version, realmId=realm
-        )
+        result = await service.rollback(id=id, target_version=version, realmId=realm)
         await audit.success(
             "Rollback custom strategy successful",
             {
@@ -573,9 +558,7 @@ async def simulate_custom_strategy(
     id: str,
     payload: SimulationRequest,
     auth: AuthContext = Depends(require_authenticated),
-    service: DslSimulationService = Depends(
-        Provide[Container.dsl_simulation_service]
-    ),
+    service: DslSimulationService = Depends(Provide[Container.dsl_simulation_service]),
     audit: AuditLogger = Depends(audit_log("strategies_custom")),
 ) -> SimulationResponse:
     """

@@ -11,8 +11,7 @@ from datetime import datetime, timezone
 import pytest
 
 from app.model.abuse_limit_counter import AbuseLimitCounter
-from app.repository.abuse_limit_counter_repository import \
-    AbuseLimitCounterRepository
+from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
 
 
 @pytest.fixture

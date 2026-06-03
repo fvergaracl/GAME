@@ -18,19 +18,10 @@ from fastapi.responses import StreamingResponse
 
 from app.core.container import Container
 from app.core.exceptions import ForbiddenError
-from app.middlewares.auth_context import (
-    AuditLogger,
-    AuthContext,
-    audit_log,
-    get_auth_context,
-)
-from app.schema.export_schema import (
-    ExportAuditLogEntry,
-    ExportDatasetType,
-    ExportFilters,
-    ExportFormat,
-    ExportStatus,
-)
+from app.middlewares.auth_context import (AuditLogger, AuthContext, audit_log,
+                                          get_auth_context)
+from app.schema.export_schema import (ExportAuditLogEntry, ExportDatasetType,
+                                      ExportFilters, ExportFormat, ExportStatus)
 from app.services.export_service import ExportService
 
 router = APIRouter(
@@ -217,9 +208,7 @@ async def list_export_history(
     service: ExportService = Depends(Provide[Container.export_service]),
 ) -> List[ExportAuditLogEntry]:
     oauth_user_id = auth.oauth_user_id if scope == "mine" else None
-    return await service.list_history(
-        limit=limit, oauth_user_id=oauth_user_id
-    )
+    return await service.list_history(limit=limit, oauth_user_id=oauth_user_id)
 
 
 @router.get(
@@ -274,9 +263,7 @@ async def export_user_points(
     service: ExportService = Depends(Provide[Container.export_service]),
     audit: AuditLogger = Depends(audit_log("exports")),
 ):
-    filters = _build_filters(
-        externalGameId, externalTaskId, dateFrom, dateTo, limit
-    )
+    filters = _build_filters(externalGameId, externalTaskId, dateFrom, dateTo, limit)
     return await _stream_export(
         dataset_type=ExportDatasetType.USER_POINTS.value,
         export_format=format,
@@ -308,9 +295,7 @@ async def export_user_interactions(
     service: ExportService = Depends(Provide[Container.export_service]),
     audit: AuditLogger = Depends(audit_log("exports")),
 ):
-    filters = _build_filters(
-        externalGameId, externalTaskId, dateFrom, dateTo, limit
-    )
+    filters = _build_filters(externalGameId, externalTaskId, dateFrom, dateTo, limit)
     return await _stream_export(
         dataset_type=ExportDatasetType.USER_INTERACTIONS.value,
         export_format=format,

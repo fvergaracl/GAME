@@ -21,12 +21,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.core.exceptions import (
-    DslExecutionError,
-    DslLimitExceededError,
-    DslTimeoutError,
-    DslValidationError,
-)
+from app.core.exceptions import (DslExecutionError, DslLimitExceededError,
+                                 DslTimeoutError, DslValidationError)
 from app.engine.dsl_execution_context import ExecutionContext
 from app.engine.dsl_interpreter import DslInterpreter
 from app.engine.dsl_validator import validate_ast
@@ -35,9 +31,9 @@ from app.engine.dsl_validator import validate_ast
 def _assert_code(exc, expected_code, **expected_params):
     """Pin both the class metadata and the serialised detail body."""
     assert exc.code == expected_code
-    assert isinstance(exc.detail, dict), (
-        f"DSL errors with a code must have a dict detail; got {type(exc.detail)}"
-    )
+    assert isinstance(
+        exc.detail, dict
+    ), f"DSL errors with a code must have a dict detail; got {type(exc.detail)}"
     assert exc.detail.get("code") == expected_code
     assert isinstance(exc.detail.get("params"), dict)
     for key, value in expected_params.items():

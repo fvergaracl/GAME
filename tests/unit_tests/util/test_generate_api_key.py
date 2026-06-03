@@ -2,11 +2,9 @@ import hashlib
 import string
 import unittest
 
-from app.util.generate_api_key import (DEFAULT_KEY_NAMESPACE,
-                                       PREFIX_RANDOM_LEN,
-                                       SECRET_RANDOM_LEN,
-                                       extract_prefix, generate_api_key,
-                                       hash_api_key)
+from app.util.generate_api_key import (DEFAULT_KEY_NAMESPACE, PREFIX_RANDOM_LEN,
+                                       SECRET_RANDOM_LEN, extract_prefix,
+                                       generate_api_key, hash_api_key)
 
 
 class TestGenerateApiKey(unittest.TestCase):
@@ -29,9 +27,7 @@ class TestGenerateApiKey(unittest.TestCase):
     def test_hash_matches_sha256_of_plaintext(self):
         """The reported hash is sha256 of the plaintext."""
         generated = generate_api_key()
-        expected = hashlib.sha256(
-            generated.plaintext.encode("utf-8")
-        ).hexdigest()
+        expected = hashlib.sha256(generated.plaintext.encode("utf-8")).hexdigest()
         self.assertEqual(generated.key_hash, expected)
 
     def test_two_invocations_yield_distinct_plaintext_and_hash(self):
@@ -67,9 +63,7 @@ class TestGenerateApiKey(unittest.TestCase):
         extracted = extract_prefix(legacy_value)
         self.assertTrue(extracted.startswith("gme_legacy_"))
         # Deterministic: depends only on hash of the plaintext.
-        digest = hashlib.sha256(
-            legacy_value.encode("utf-8")
-        ).hexdigest()[:12]
+        digest = hashlib.sha256(legacy_value.encode("utf-8")).hexdigest()[:12]
         self.assertEqual(extracted, f"gme_legacy_{digest}")
 
 

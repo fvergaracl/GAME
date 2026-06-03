@@ -10,10 +10,11 @@ The original monolithic implementation was split by sub-resource into
   callers and tests (which import them as ``app.api.v1.endpoints.games.X``)
   keep working without churn.
 """
+
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import (games_crud, games_points, games_strategy,
-                                  games_tasks, games_users)
+from app.api.v1.endpoints import (games_crud, games_points, games_strategy, games_tasks,
+                                  games_users)
 from app.api.v1.endpoints.games_common import (_extract_api_key_from_header,
                                                _extract_db_error_code,
                                                _extract_oauth_user_id_from_token,
@@ -21,22 +22,9 @@ from app.api.v1.endpoints.games_common import (_extract_api_key_from_header,
                                                _map_write_exception,
                                                _resolve_correlation_id,
                                                _resolve_idempotency_key)
-from app.core.config import configs
-from app.middlewares.valid_access_token import valid_access_token
-from app.util.add_log import add_log
-from app.util.calculate_hash_simulated_strategy import calculate_hash_simulated_strategy
-from app.util.check_role import check_role
-
 # CRUD endpoints
 from app.api.v1.endpoints.games_crud import (create_game, delete_game_by_id,
-                                             get_game_by_id, get_games_list,
-                                             patch_game)
-# Strategy
-from app.api.v1.endpoints.games_strategy import get_strategy_by_gameId
-# Task management on a game
-from app.api.v1.endpoints.games_tasks import (create_task, create_tasks_bulk,
-                                              get_task_by_gameId_taskId,
-                                              get_task_list)
+                                             get_game_by_id, get_games_list, patch_game)
 # Points / actions
 from app.api.v1.endpoints.games_points import (assign_points_to_user,
                                                get_points_by_gameId,
@@ -47,8 +35,18 @@ from app.api.v1.endpoints.games_points import (assign_points_to_user,
                                                get_points_of_user_in_game,
                                                get_points_simulated_of_user_in_game,
                                                user_action_in_task)
+# Strategy
+from app.api.v1.endpoints.games_strategy import get_strategy_by_gameId
+# Task management on a game
+from app.api.v1.endpoints.games_tasks import (create_task, create_tasks_bulk,
+                                              get_task_by_gameId_taskId, get_task_list)
 # Users in game
 from app.api.v1.endpoints.games_users import get_users_by_gameId
+from app.core.config import configs
+from app.middlewares.valid_access_token import valid_access_token
+from app.util.add_log import add_log
+from app.util.calculate_hash_simulated_strategy import calculate_hash_simulated_strategy
+from app.util.check_role import check_role
 
 router = APIRouter()
 router.include_router(games_crud.router)

@@ -52,13 +52,11 @@ class PointsPersistenceMixin(UserPointsContext):
         async with self.user_points_repository.session_factory() as session:
             try:
                 if idempotency_key:
-                    existing_points = (
-                        await self.user_points_repository.read_by_user_task_and_idempotency(
-                            user_id=user_id,
-                            task_id=task_id,
-                            idempotency_key=idempotency_key,
-                            session=session,
-                        )
+                    existing_points = await self.user_points_repository.read_by_user_task_and_idempotency(
+                        user_id=user_id,
+                        task_id=task_id,
+                        idempotency_key=idempotency_key,
+                        session=session,
                     )
                     if existing_points is not None:
                         return existing_points, None, None

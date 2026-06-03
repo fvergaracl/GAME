@@ -138,9 +138,7 @@ async def test_audit_logger_methods_route_to_add_log_with_bound_context():
     service_log = MagicMock()
     logger = AuditLogger("users", service_log, auth)
 
-    with patch(
-        "app.middlewares.auth_context.add_log", new=AsyncMock()
-    ) as mock_add_log:
+    with patch("app.middlewares.auth_context.add_log", new=AsyncMock()) as mock_add_log:
         await logger.info("op", {"k": "v"})
         await logger.success("ok", {"id": 1})
         await logger.error("boom", {"error": "x"})

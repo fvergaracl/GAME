@@ -123,7 +123,8 @@ def observe(
         status=status,
     ).observe(duration_seconds)
     dsl_execution_nodes_total.labels(
-        realm=realm_label, strategy_type=type_label,
+        realm=realm_label,
+        strategy_type=type_label,
     ).inc(nodes_executed)
     if status != "ok":
         dsl_execution_errors_total.labels(
@@ -144,5 +145,6 @@ def observe_log_dropped(
     :func:`observe` so the hot path only touches it on the rare drop.
     """
     dsl_execution_log_dropped_total.labels(
-        realm=_label(realm), strategy_type=_label(strategy_type),
+        realm=_label(realm),
+        strategy_type=_label(strategy_type),
     ).inc()

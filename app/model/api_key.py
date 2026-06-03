@@ -3,11 +3,10 @@ from datetime import datetime
 from typing import Optional
 from uuid import uuid4
 
+from pydantic import ConfigDict
 from sqlalchemy import Boolean
 from sqlalchemy.dialects.postgresql import UUID
-from pydantic import ConfigDict
-from sqlmodel import (Column, DateTime, Field, ForeignKey, SQLModel,
-                      String, func)
+from sqlmodel import Column, DateTime, Field, ForeignKey, SQLModel, String, func
 
 from app.util.generate_api_key import extract_prefix, hash_api_key
 

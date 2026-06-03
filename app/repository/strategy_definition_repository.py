@@ -12,13 +12,11 @@ from contextlib import AbstractAsyncContextManager
 from datetime import datetime
 from typing import Callable, List, Optional
 
-from sqlalchemy import and_, func, select, update as sa_update
+from sqlalchemy import and_, func, select
+from sqlalchemy import update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.model.strategy_definition import (
-    StrategyDefinition,
-    StrategyDefinitionStatus,
-)
+from app.model.strategy_definition import StrategyDefinition, StrategyDefinitionStatus
 from app.repository.base_repository import BaseRepository
 
 
@@ -29,9 +27,7 @@ class StrategyDefinitionRepository(BaseRepository):
 
     def __init__(
         self,
-        session_factory: Callable[
-            ..., AbstractAsyncContextManager[AsyncSession]
-        ],
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         model=StrategyDefinition,
     ) -> None:
         super().__init__(session_factory, model)
@@ -56,9 +52,9 @@ class StrategyDefinitionRepository(BaseRepository):
             stmt = stmt.where(self.model.status == status)
         if type is not None:
             stmt = stmt.where(self.model.type == type)
-        stmt = stmt.order_by(
-            self.model.name.asc(), self.model.version.desc()
-        ).limit(max(1, min(limit, 500)))
+        stmt = stmt.order_by(self.model.name.asc(), self.model.version.desc()).limit(
+            max(1, min(limit, 500))
+        )
         async with self.session_factory() as session:
             result = await session.execute(stmt)
             return list(result.scalars().all())
@@ -142,8 +138,7 @@ class StrategyDefinitionRepository(BaseRepository):
                 and_(
                     self.model.realmId == realmId,
                     self.model.name == name,
-                    self.model.status
-                    == StrategyDefinitionStatus.PUBLISHED.value,
+                    self.model.status == StrategyDefinitionStatus.PUBLISHED.value,
                 )
             )
             .limit(1)
@@ -191,8 +186,6 @@ class StrategyDefinitionRepository(BaseRepository):
             values["publishedAt"] = publishedAt
         async with self.session_factory() as session:
             await session.execute(
-                sa_update(self.model)
-                .where(self.model.id == id)
-                .values(**values)
+                sa_update(self.model).where(self.model.id == id).values(**values)
             )
             await session.commit()

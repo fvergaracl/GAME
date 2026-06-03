@@ -22,14 +22,9 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any, Dict, Mapping, Optional, Set
 
-from app.engine.dsl_ast import (
-    DATA_FIELD_PREFIX,
-    FIELD_RESOLVERS,
-    PARENT_FIELD_PATHS,
-    enumerate_field_paths,
-    is_parent_field_path,
-    is_valid_data_path,
-)
+from app.engine.dsl_ast import (DATA_FIELD_PREFIX, FIELD_RESOLVERS, PARENT_FIELD_PATHS,
+                                enumerate_field_paths, is_parent_field_path,
+                                is_valid_data_path)
 
 
 @dataclass(frozen=True)
@@ -111,7 +106,7 @@ class ExecutionContext:
                         analytics_cache[path] = value
                     continue
             if is_valid_data_path(path):
-                key = path[len(DATA_FIELD_PREFIX):]
+                key = path[len(DATA_FIELD_PREFIX) :]
                 resolved[path] = data_payload.get(key)
                 continue
             if is_parent_field_path(path):

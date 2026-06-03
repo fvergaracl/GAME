@@ -17,9 +17,8 @@ from app.schema.user_points_schema import (AllPointsByGame, GameDetail,
                                            PointsAssignedToUserDetails,
                                            ResponseGetPointsByGame,
                                            ResponseGetPointsByTask,
-                                           ResponsePointsByExternalUserId,
-                                           TaskDetail, TaskPointsByGame,
-                                           UserGamePoints)
+                                           ResponsePointsByExternalUserId, TaskDetail,
+                                           TaskPointsByGame, UserGamePoints)
 from app.services.game_access import get_authorized_game, get_authorized_user
 from app.services.user_points._base import FANOUT_LIMIT, UserPointsContext
 
@@ -60,7 +59,9 @@ class PointsQueryMixin(UserPointsContext):
         all_tasks = []
         for task in tasks:
             all_externalUserId = []
-            points = await self.user_points_repository.get_points_and_users_by_taskId(task.id)
+            points = await self.user_points_repository.get_points_and_users_by_taskId(
+                task.id
+            )
 
             externalTaskId = task.externalTaskId
             if points:
@@ -216,7 +217,9 @@ class PointsQueryMixin(UserPointsContext):
         game_points = []
         for task in tasks:
             user_points = []
-            points = await self.user_points_repository.get_points_and_users_by_taskId(task.id)
+            points = await self.user_points_repository.get_points_and_users_by_taskId(
+                task.id
+            )
             if points:
 
                 for point in points:
@@ -269,7 +272,9 @@ class PointsQueryMixin(UserPointsContext):
         game_points = []
         for task in tasks:
             user_points = []
-            points = await self.user_points_repository.get_points_and_users_by_taskId(task.id)
+            points = await self.user_points_repository.get_points_and_users_by_taskId(
+                task.id
+            )
             if points:
 
                 for point in points:
@@ -331,7 +336,9 @@ class PointsQueryMixin(UserPointsContext):
             raise NotFoundError(detail=f"Tasks not found by gameId: {game.id}")
         response = []
         for task in tasks:
-            points = await self.user_points_repository.get_points_and_users_by_taskId(task.id)
+            points = await self.user_points_repository.get_points_and_users_by_taskId(
+                task.id
+            )
             if points:
                 for point in points:
                     if point.externalUserId == externalUserId:
@@ -364,7 +371,9 @@ class PointsQueryMixin(UserPointsContext):
 
         response = []
         for task in tasks:
-            points = await self.user_points_repository.get_points_and_users_by_taskId(task.id)
+            points = await self.user_points_repository.get_points_and_users_by_taskId(
+                task.id
+            )
             response_by_task = []
             if points:
                 for point in points:
@@ -392,8 +401,8 @@ class PointsQueryMixin(UserPointsContext):
             not_found_message=(f"Task with externalTaskId {externalTaskId} not found"),
         )
 
-        points_by_task = await self.user_points_repository.get_points_and_users_by_taskId(
-            task.id
+        points_by_task = (
+            await self.user_points_repository.get_points_and_users_by_taskId(task.id)
         )
         cleaned_points_by_task = []
         if points_by_task:
@@ -446,7 +455,9 @@ class PointsQueryMixin(UserPointsContext):
             user_data = await self.users_repository.read_by_column(
                 column="externalUserId",
                 value=externalUserId,
-                not_found_message=(f"User with externalUserId {externalUserId} not found"),
+                not_found_message=(
+                    f"User with externalUserId {externalUserId} not found"
+                ),
                 not_found_raise_exception=False,
             )
         if not user_data:
@@ -458,7 +469,9 @@ class PointsQueryMixin(UserPointsContext):
                 userExists=False,
             )
 
-        tasks = await self.user_points_repository.get_task_by_externalUserId(externalUserId)
+        tasks = await self.user_points_repository.get_task_by_externalUserId(
+            externalUserId
+        )
 
         response = []
         for task in tasks:
@@ -521,7 +534,9 @@ class PointsQueryMixin(UserPointsContext):
             not_found_message=(f"User with externalUserId {externalUserId} not found"),
         )
 
-        points = await self.user_points_repository.get_task_and_sum_points_by_userId(user.id)
+        points = await self.user_points_repository.get_task_and_sum_points_by_userId(
+            user.id
+        )
 
         total_points = 0
         for point in points:
@@ -534,16 +549,12 @@ class PointsQueryMixin(UserPointsContext):
         )
         return response
 
-    async def get_points_of_simulated_task(
-        self, externalTaskId, simulationHash
-    ) -> Any:
+    async def get_points_of_simulated_task(self, externalTaskId, simulationHash) -> Any:
         return await self.user_points_repository.get_points_of_simulated_task(
             externalTaskId, simulationHash
         )
 
-    async def get_all_point_of_tasks_list(
-        self, list_ids_tasks, withData=False
-    ) -> Any:
+    async def get_all_point_of_tasks_list(self, list_ids_tasks, withData=False) -> Any:
         return await self.user_points_repository.get_all_point_of_tasks_list(
             list_ids_tasks, withData
         )

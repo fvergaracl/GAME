@@ -110,13 +110,11 @@ def upgrade():
     )
 
     generated_uuid = str(uuid.uuid4())
-    op.execute(
-        f"""
+    op.execute(f"""
         INSERT INTO kpimetrics (id, created_at, updated_at, day)
         VALUES ('{generated_uuid}', NOW(), NOW(),
         TO_CHAR(NOW(), 'YYYY-MM-DD'));
-        """
-    )
+        """)
 
 
 def downgrade():

@@ -14,8 +14,7 @@ from app.model.logs import Logs
 from app.model.oauth_users import OAuthUsers
 from app.model.uptime_logs import UptimeLogs
 from app.model.user_interactions import UserInteractions
-from app.repository.abuse_limit_counter_repository import \
-    AbuseLimitCounterRepository
+from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
 from app.repository.api_requests_repository import ApiRequestsRepository
 from app.repository.apikey_repository import ApiKeyRepository
 from app.repository.kpi_metrics_repository import KpiMetricsRepository
@@ -23,8 +22,7 @@ from app.repository.logs_repository import LogsRepository
 from app.repository.oauth_users_repository import OAuthUsersRepository
 from app.repository.uptime_logs_repository import UptimeLogsRepository
 from app.repository.user_game_config_repository import UserGameConfigRepository
-from app.repository.user_interactions_repository import \
-    UserInteractionsRepository
+from app.repository.user_interactions_repository import UserInteractionsRepository
 
 
 def test_light_repositories_set_expected_default_models(session_factory):
@@ -32,24 +30,12 @@ def test_light_repositories_set_expected_default_models(session_factory):
         AbuseLimitCounterRepository(session_factory=session_factory).model
         is AbuseLimitCounter
     )
-    assert (
-        ApiRequestsRepository(session_factory=session_factory).model
-        is ApiRequests
-    )
+    assert ApiRequestsRepository(session_factory=session_factory).model is ApiRequests
     assert ApiKeyRepository(session_factory=session_factory).model is ApiKey
-    assert (
-        KpiMetricsRepository(session_factory=session_factory).model
-        is KpiMetrics
-    )
+    assert KpiMetricsRepository(session_factory=session_factory).model is KpiMetrics
     assert LogsRepository(session_factory=session_factory).model is Logs
-    assert (
-        OAuthUsersRepository(session_factory=session_factory).model
-        is OAuthUsers
-    )
-    assert (
-        UptimeLogsRepository(session_factory=session_factory).model
-        is UptimeLogs
-    )
+    assert OAuthUsersRepository(session_factory=session_factory).model is OAuthUsers
+    assert UptimeLogsRepository(session_factory=session_factory).model is UptimeLogs
     assert (
         UserInteractionsRepository(session_factory=session_factory).model
         is UserInteractions
@@ -110,9 +96,7 @@ async def test_apikey_repository_read_all_caps_page_size_to_100(
 
 
 @pytest.mark.asyncio
-async def test_oauth_users_repository_get_user_by_sub(
-    session_factory, db_session
-):
+async def test_oauth_users_repository_get_user_by_sub(session_factory, db_session):
     repository = OAuthUsersRepository(session_factory=session_factory)
     db_session.add(
         OAuthUsers(

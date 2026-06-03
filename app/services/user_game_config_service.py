@@ -35,9 +35,7 @@ class UserGameConfigService:
     async def update_user_config(
         self, user_id: UUID, game_id: UUID, schema: UpdateUserGameConfig
     ) -> Optional[UserGameConfigResponse]:
-        existing_config = await self.repository.get_by_user_and_game(
-            user_id, game_id
-        )
+        existing_config = await self.repository.get_by_user_and_game(user_id, game_id)
         if not existing_config:
             return None
 
