@@ -12,6 +12,7 @@
 // view only lists and bumps refreshTick to reload after any of them saves.
 
 import React, { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   CAlert,
@@ -56,6 +57,7 @@ const formatDate = (value) => {
 
 const GamesManagementView = () => {
   const { t } = useTranslation('management')
+  const navigate = useNavigate()
 
   const [games, setGames] = useState([])
   const [totalCount, setTotalCount] = useState(0)
@@ -193,14 +195,10 @@ const GamesManagementView = () => {
 
         {error && <CAlert color="danger">{error}</CAlert>}
 
-        {isLoading && (
-          <SkeletonTable columns={4} rows={pageSize > 10 ? 8 : pageSize} hasActions />
-        )}
+        {isLoading && <SkeletonTable columns={4} rows={pageSize > 10 ? 8 : pageSize} hasActions />}
 
         {!isLoading && !error && totalCount === 0 && (
-          <CAlert color="info">
-            {hasFilters ? t('games.emptySearch') : t('games.empty')}
-          </CAlert>
+          <CAlert color="info">{hasFilters ? t('games.emptySearch') : t('games.empty')}</CAlert>
         )}
 
         {!isLoading && games.length > 0 && (
@@ -242,6 +240,13 @@ const GamesManagementView = () => {
                           {t('actions.rowActions')}
                         </CDropdownToggle>
                         <CDropdownMenu>
+                          <CDropdownItem
+                            component="button"
+                            onClick={() => navigate(`/admin/games/${game.gameId}/tasks`)}
+                          >
+                            {t('actions.viewTasks')}
+                          </CDropdownItem>
+                          <CDropdownDivider />
                           <CDropdownItem component="button" onClick={() => openEdit(game)}>
                             {t('actions.edit')}
                           </CDropdownItem>

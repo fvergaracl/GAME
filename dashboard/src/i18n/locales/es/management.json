@@ -71,23 +71,37 @@
   "tasks": {
     "title": "Tareas",
     "subtitle": "Tareas del juego «{{externalGameId}}».",
+    "backToGames": "Volver a juegos",
     "new": "Nueva tarea",
     "bulkNew": "Crear varias",
     "editTitle": "Editar tarea",
     "createTitle": "Crear tarea",
+    "searchPlaceholder": "Buscar por ID externo…",
+    "empty": "Este juego no tiene tareas. Crea la primera.",
     "col": {
       "externalTaskId": "ID externo",
       "strategyId": "Estrategia",
       "status": "Estado",
+      "params": "Parámetros",
       "createdAt": "Creado",
       "actions": "Acciones"
     },
     "form": {
       "externalTaskId": "ID externo de la tarea",
+      "externalTaskIdHelp": "Identificador único de la tarea dentro del juego (slug).",
+      "externalTaskIdInvalid": "Usa de 3 a 60 caracteres: letras, números, guion (-) o guion bajo (_).",
+      "externalTaskIdReadonly": "El ID externo no se puede cambiar al editar.",
       "strategyId": "Estrategia",
       "strategyHelp": "Si se deja vacío, hereda la del juego.",
+      "inheritGame": "Heredar del juego",
       "status": "Estado",
-      "params": "Parámetros de la tarea"
+      "statusKeep": "Mantener actual",
+      "params": "Parámetros de la tarea",
+      "paramsEditNote": "Los parámetros no se pueden editar aquí; duplica la tarea o créala de nuevo para cambiarlos."
+    },
+    "statusOptions": {
+      "open": "Abierta",
+      "closed": "Cerrada"
     },
     "delete": {
       "title": "¿Eliminar esta tarea?",
@@ -100,6 +114,21 @@
       "label": "ID externo de la nueva tarea",
       "placeholder": "copy-of-…",
       "confirm": "Duplicar"
+    },
+    "bulk": {
+      "title": "Crear varias tareas",
+      "label": "IDs externos de las tareas",
+      "placeholder": "task-login\ntask-logout\ntask-share",
+      "help": "Escribe un ID externo por línea. Se ignoran líneas vacías y duplicadas.",
+      "strategyHelp": "Se aplica a todas las tareas creadas. Vacío = heredar la del juego.",
+      "ready_one": "{{count}} tarea lista para crear.",
+      "ready_other": "{{count}} tareas listas para crear.",
+      "invalid_one": "{{count}} ID no válido: {{ids}}",
+      "invalid_other": "{{count}} IDs no válidos: {{ids}}",
+      "confirm_one": "Crear {{count}} tarea",
+      "confirm_other": "Crear {{count}} tareas",
+      "someFailed_one": "{{count}} tarea no se pudo crear:",
+      "someFailed_other": "{{count}} tareas no se pudieron crear:"
     }
   },
   "apikeys": {

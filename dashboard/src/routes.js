@@ -30,6 +30,10 @@ const StrategyComparisonView = React.lazy(() => import('./views/strategies/Strat
 // Sprint 1 (CRUD management): games lifecycle admin. No Blockly dependency,
 // so it stays in its own small chunk like the other admin tables.
 const GamesManagementView = React.lazy(() => import('./views/admin/games/GamesManagementView'))
+// Sprint 3 (CRUD management): per-game task management (CRUD + duplicate +
+// bulk create). Reached from a game row's "Ver tareas" action; keyed on the
+// internal gameId so it can mutate tasks by their internal UUID.
+const GameTasksView = React.lazy(() => import('./views/admin/games/GameTasksView'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -57,6 +61,7 @@ const routes = [
     element: StrategyComparisonView,
   },
   { path: '/admin/games', name: 'Games', element: GamesManagementView },
+  { path: '/admin/games/:gameId/tasks', name: 'Game Tasks', element: GameTasksView },
 ]
 
 export default routes

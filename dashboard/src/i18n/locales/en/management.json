@@ -71,23 +71,37 @@
   "tasks": {
     "title": "Tasks",
     "subtitle": "Tasks for game “{{externalGameId}}”.",
+    "backToGames": "Back to games",
     "new": "New task",
     "bulkNew": "Create several",
     "editTitle": "Edit task",
     "createTitle": "Create task",
+    "searchPlaceholder": "Search by external ID…",
+    "empty": "This game has no tasks yet. Create the first one.",
     "col": {
       "externalTaskId": "External ID",
       "strategyId": "Strategy",
       "status": "Status",
+      "params": "Parameters",
       "createdAt": "Created",
       "actions": "Actions"
     },
     "form": {
       "externalTaskId": "Task external ID",
+      "externalTaskIdHelp": "Unique task identifier within the game (slug).",
+      "externalTaskIdInvalid": "Use 3 to 60 characters: letters, numbers, hyphen (-) or underscore (_).",
+      "externalTaskIdReadonly": "The external ID can't be changed when editing.",
       "strategyId": "Strategy",
       "strategyHelp": "If left empty, it inherits the game's strategy.",
+      "inheritGame": "Inherit from game",
       "status": "Status",
-      "params": "Task parameters"
+      "statusKeep": "Keep current",
+      "params": "Task parameters",
+      "paramsEditNote": "Parameters can't be edited here; duplicate the task or recreate it to change them."
+    },
+    "statusOptions": {
+      "open": "Open",
+      "closed": "Closed"
     },
     "delete": {
       "title": "Delete this task?",
@@ -100,6 +114,21 @@
       "label": "New task external ID",
       "placeholder": "copy-of-…",
       "confirm": "Duplicate"
+    },
+    "bulk": {
+      "title": "Bulk-create tasks",
+      "label": "Task external IDs",
+      "placeholder": "task-login\ntask-logout\ntask-share",
+      "help": "Enter one external ID per line. Empty and duplicate lines are ignored.",
+      "strategyHelp": "Applied to every created task. Empty = inherit the game's strategy.",
+      "ready_one": "{{count}} task ready to create.",
+      "ready_other": "{{count}} tasks ready to create.",
+      "invalid_one": "{{count}} invalid ID: {{ids}}",
+      "invalid_other": "{{count}} invalid IDs: {{ids}}",
+      "confirm_one": "Create {{count}} task",
+      "confirm_other": "Create {{count}} tasks",
+      "someFailed_one": "{{count}} task could not be created:",
+      "someFailed_other": "{{count}} tasks could not be created:"
     }
   },
   "apikeys": {
