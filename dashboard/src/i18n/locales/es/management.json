@@ -55,8 +55,9 @@
     "delete": {
       "title": "¿Eliminar este juego?",
       "message": "Se eliminará «{{externalGameId}}» de forma permanente.",
-      "blastRadius": "Esto también eliminará {{count}} tarea y sus datos asociados.",
-      "blastRadius_plural": "Esto también eliminará {{count}} tareas y sus datos asociados.",
+      "blastRadius_one": "Esto también eliminará {{count}} tarea y sus datos asociados.",
+      "blastRadius_other": "Esto también eliminará {{count}} tareas y sus datos asociados.",
+      "checkingTasks": "Comprobando tareas asociadas…",
       "confirm": "Sí, eliminar"
     },
     "duplicate": {

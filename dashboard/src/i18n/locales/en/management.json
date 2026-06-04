@@ -55,8 +55,9 @@
     "delete": {
       "title": "Delete this game?",
       "message": "This will permanently delete “{{externalGameId}}”.",
-      "blastRadius": "It will also delete {{count}} task and its associated data.",
-      "blastRadius_plural": "It will also delete {{count}} tasks and their associated data.",
+      "blastRadius_one": "It will also delete {{count}} task and its associated data.",
+      "blastRadius_other": "It will also delete {{count}} tasks and their associated data.",
+      "checkingTasks": "Checking associated tasks…",
       "confirm": "Yes, delete"
     },
     "duplicate": {

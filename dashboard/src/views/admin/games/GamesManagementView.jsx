@@ -1,14 +1,15 @@
-// Sprint 1 (CRUD management) — Games management view.
+// Sprint 1–2 (CRUD management) — Games management view.
 //
 // The admin's home for the game lifecycle: a server-paginated, searchable
-// table of games with create + edit. Delete/duplicate land in Sprint 2 and
-// "Ver tareas" in Sprint 3 — the per-row actions dropdown is the seam they
-// plug into.
+// table of games with create + edit (Sprint 1) and delete + duplicate
+// (Sprint 2). "Ver tareas" lands in Sprint 3 — the per-row actions dropdown
+// is the seam each action plugs into.
 //
 // Reuses the StrategyAssignmentsView shape (server pagination + debounced
 // search via listGames) but stays read-light: no row expansion, no
-// multi-select. Mutations happen in GameFormModal; this view only lists and
-// reloads on save.
+// multi-select. Mutations live in dedicated modals (GameFormModal,
+// GameDuplicateModal) and a shared ConfirmDialog (GameDeleteDialog); this
+// view only lists and bumps refreshTick to reload after any of them saves.
 
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -19,6 +20,7 @@ import {
   CCardBody,
   CCardHeader,
   CDropdown,
+  CDropdownDivider,
   CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
@@ -38,6 +40,8 @@ import { listGames } from '../../../api'
 import { extractError } from '../../../utils/errors'
 import { SkeletonTable } from '../../../components/Skeleton'
 import GameFormModal, { PLATFORM_PRESETS } from './GameFormModal'
+import GameDeleteDialog from './GameDeleteDialog'
+import GameDuplicateModal from './GameDuplicateModal'
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50]
 
@@ -67,6 +71,10 @@ const GamesManagementView = () => {
   const [refreshTick, setRefreshTick] = useState(0)
 
   const [modal, setModal] = useState(CLOSED_MODAL)
+  // Delete/duplicate each target a single row; we hold the whole game object
+  // (not just the id) so the dialogs can show externalGameId without a refetch.
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [duplicateTarget, setDuplicateTarget] = useState(null)
 
   // Debounce the search box so typing doesn't fire a request per keystroke.
   useEffect(() => {
@@ -237,6 +245,20 @@ const GamesManagementView = () => {
                           <CDropdownItem component="button" onClick={() => openEdit(game)}>
                             {t('actions.edit')}
                           </CDropdownItem>
+                          <CDropdownItem
+                            component="button"
+                            onClick={() => setDuplicateTarget(game)}
+                          >
+                            {t('actions.duplicate')}
+                          </CDropdownItem>
+                          <CDropdownDivider />
+                          <CDropdownItem
+                            component="button"
+                            className="text-danger"
+                            onClick={() => setDeleteTarget(game)}
+                          >
+                            {t('actions.delete')}
+                          </CDropdownItem>
                         </CDropdownMenu>
                       </CDropdown>
                     </CTableDataCell>
@@ -279,6 +301,27 @@ const GamesManagementView = () => {
           gameId={modal.gameId}
           onClose={closeModal}
           onSaved={() => setRefreshTick((n) => n + 1)}
+        />
+      )}
+
+      {duplicateTarget && (
+        <GameDuplicateModal
+          visible={!!duplicateTarget}
+          game={duplicateTarget}
+          onClose={() => setDuplicateTarget(null)}
+          onDuplicated={() => setRefreshTick((n) => n + 1)}
+        />
+      )}
+
+      {deleteTarget && (
+        <GameDeleteDialog
+          visible={!!deleteTarget}
+          game={deleteTarget}
+          onCancel={() => setDeleteTarget(null)}
+          onDeleted={() => {
+            setDeleteTarget(null)
+            setRefreshTick((n) => n + 1)
+          }}
         />
       )}
     </CCard>
