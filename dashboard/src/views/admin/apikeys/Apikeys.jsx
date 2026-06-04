@@ -40,7 +40,7 @@ const ApiKey = () => {
       {isInitialLoading ? (
         <SkeletonTable columns={5} rows={5} hasActions />
       ) : (
-        <ApiKeyTable apiKeys={apiKeys} />
+        <ApiKeyTable apiKeys={apiKeys} onRevoked={refreshApiKeys} />
       )}
     </>
   )

@@ -30,8 +30,15 @@
       "client": "Client",
       "description": "Description",
       "createdAt": "Created at",
+      "status": "Status",
       "actions": "Actions"
     },
+    "status": {
+      "active": "Active",
+      "revoked": "Revoked"
+    },
+    "revokeAction": "Revoke key",
+    "empty": "No API keys yet.",
     "previous": "Previous",
     "next": "Next"
   }

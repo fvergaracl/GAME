@@ -30,8 +30,15 @@
       "client": "Cliente",
       "description": "Descripción",
       "createdAt": "Creada",
+      "status": "Estado",
       "actions": "Acciones"
     },
+    "status": {
+      "active": "Activa",
+      "revoked": "Revocada"
+    },
+    "revokeAction": "Revocar clave",
+    "empty": "Todavía no hay claves API.",
     "previous": "Anterior",
     "next": "Siguiente"
   }

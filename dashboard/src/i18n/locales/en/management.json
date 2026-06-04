@@ -158,6 +158,7 @@
     "taskDeleted": "Task deleted successfully.",
     "taskDuplicated": "Task duplicated successfully.",
     "tasksBulkCreated": "{{count}} tasks created. {{failed}} failed.",
-    "apiKeyRevoked": "API key revoked successfully."
+    "apiKeyRevoked": "API key revoked successfully.",
+    "apiKeyRevokeError": "Could not revoke the API key."
   }
 }

@@ -158,6 +158,7 @@
     "taskDeleted": "Tarea eliminada correctamente.",
     "taskDuplicated": "Tarea duplicada correctamente.",
     "tasksBulkCreated": "{{count}} tareas creadas. {{failed}} con error.",
-    "apiKeyRevoked": "Clave API revocada correctamente."
+    "apiKeyRevoked": "Clave API revocada correctamente.",
+    "apiKeyRevokeError": "No se pudo revocar la clave API."
   }
 }
