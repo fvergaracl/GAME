@@ -32,7 +32,10 @@
     "new": "Nuevo juego",
     "editTitle": "Editar juego",
     "createTitle": "Crear juego",
-    "searchPlaceholder": "Buscar por externalGameId o plataforma…",
+    "searchPlaceholder": "Buscar por ID externo…",
+    "platformAll": "Todas las plataformas",
+    "empty": "Todavía no hay juegos. Crea el primero.",
+    "emptySearch": "Ningún juego coincide con los filtros.",
     "col": {
       "externalGameId": "ID externo",
       "platform": "Plataforma",
@@ -43,9 +46,11 @@
     "form": {
       "externalGameId": "ID externo del juego",
       "externalGameIdHelp": "Identificador único en tu sistema (slug alfanumérico).",
+      "externalGameIdInvalid": "Usa de 3 a 60 caracteres: letras, números, guion (-) o guion bajo (_).",
       "platform": "Plataforma",
       "strategyId": "Estrategia",
-      "params": "Parámetros del juego"
+      "params": "Parámetros del juego",
+      "paramsEditNote": "Al editar solo se guardan los valores de los parámetros existentes; añadir nuevos aún no está disponible aquí."
     },
     "delete": {
       "title": "¿Eliminar este juego?",

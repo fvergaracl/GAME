@@ -4,6 +4,7 @@ import {
   cilChartLine,
   cilChartPie,
   cilCloudDownload,
+  cilGamepad,
   cilHistory,
   cilLibrary,
   cilNotes,
@@ -78,6 +79,16 @@ const _nav_administrator = [
     name: 'nav.compare',
     to: '/strategies/compare',
     icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'nav.managementTitle',
+  },
+  {
+    component: CNavItem,
+    name: 'nav.games',
+    to: '/admin/games',
+    icon: <CIcon icon={cilGamepad} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,

@@ -32,7 +32,10 @@
     "new": "New game",
     "editTitle": "Edit game",
     "createTitle": "Create game",
-    "searchPlaceholder": "Search by externalGameId or platform…",
+    "searchPlaceholder": "Search by external ID…",
+    "platformAll": "All platforms",
+    "empty": "No games yet. Create the first one.",
+    "emptySearch": "No games match the filters.",
     "col": {
       "externalGameId": "External ID",
       "platform": "Platform",
@@ -43,9 +46,11 @@
     "form": {
       "externalGameId": "Game external ID",
       "externalGameIdHelp": "Unique identifier in your system (alphanumeric slug).",
+      "externalGameIdInvalid": "Use 3 to 60 characters: letters, numbers, hyphen (-) or underscore (_).",
       "platform": "Platform",
       "strategyId": "Strategy",
-      "params": "Game parameters"
+      "params": "Game parameters",
+      "paramsEditNote": "When editing, only existing parameter values are saved; adding new ones isn't available here yet."
     },
     "delete": {
       "title": "Delete this game?",
