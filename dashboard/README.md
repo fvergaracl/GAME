@@ -1,13 +1,41 @@
 # Dashboard GAME
 
-This project is a dashboard for a game. It is a web application that allows the user to manage the game. The user can create, read, update and delete players, games, and scores. The user can also see the ranking of the players.
+The web admin for the GAME gamification engine. From here an administrator
+configures the engine (games, tasks and their strategies), issues API keys for
+integrating apps, exports data, and inspects per-user points and wallets.
 
 ## Features
 
-- Create, read, update, and delete players
-- Create, read, update, and delete games
-- Create, read, update, and delete scores
-- See the ranking of the players
+- **Games** — create, edit, duplicate (deep copy incl. tasks/params) and delete games.
+- **Tasks** — per-game task lifecycle: create (single or bulk), edit, duplicate and delete.
+- **Strategies** — author DSL strategies in the Blockly editor, publish/version them, and assign them to games/tasks.
+- **API keys** — create and revoke integration keys.
+- **Users** — read-only explorer for a user's points (by game/task) and wallet balance/transactions.
+- **Exports & observability** — download datasets and review strategy execution metrics.
+
+## Management module
+
+The CRUD management surface lives under `/admin/*` and is built from a few
+shared building blocks so every entity behaves consistently:
+
+| Surface | Route | Capabilities |
+|---|---|---|
+| Games | `/admin/games` | list (server search/paginate) · create · edit · duplicate · delete |
+| Tasks | `/admin/games/:gameId/tasks` | list · create · bulk-create · edit · duplicate · delete |
+| API keys | `/admin/api-keys` | list · create · revoke |
+| Users | `/admin/users` | look up points + wallet (read-only) |
+
+Shared pieces (in `src/components/`): `ConfirmDialog` (a11y-wired confirm modal
+for destructive/irreversible actions), `ParamsEditor` (repeatable `{key,value}`
+grid used by the game/task forms), and `useUnsavedGuard` (the "discard unsaved
+changes?" guard wired into every form modal's close path). All entity HTTP
+helpers live in `src/api.js`; user-facing copy is in the `management` i18n
+namespace (`src/i18n/locales/{es,en}/management.json`), Spanish-first with full
+English.
+
+Mutating actions surface backend errors inline via `extractError` and confirm
+success with a toast (`useToast`); lists reload after each save. Tests for the
+module live alongside the code (`*.test.{js,jsx}`) and run with `npm test`.
 
 ## Administration panel
 

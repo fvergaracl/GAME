@@ -46,6 +46,7 @@ import {
 import { extractError } from '../../../utils/errors'
 import { useToast } from '../../../components/Toast'
 import ParamsEditor from '../../../components/ParamsEditor'
+import useUnsavedGuard from '../../../components/useUnsavedGuard'
 
 // Suggested platforms for the select. The backend stores a free string,
 // so this is just a convenience list — an existing game on an off-list
@@ -106,12 +107,21 @@ const GameFormModal = ({ visible, mode, gameId, onClose, onSaved }) => {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({
     defaultValues: { externalGameId: '', platform: PLATFORM_PRESETS[0], strategyId: 'default' },
   })
 
   const [params, setParams] = useState([])
+  // ParamsEditor lives outside react-hook-form, so its edits don't show up in
+  // ``isDirty``. Track them separately for the unsaved-changes guard; the load
+  // effect re-seeds params via setParams directly (not through this handler),
+  // so loading a game for edit never trips the dirty flag.
+  const [paramsDirty, setParamsDirty] = useState(false)
+  const handleParamsChange = (next) => {
+    setParamsDirty(true)
+    setParams(next)
+  }
   const [strategyOptions, setStrategyOptions] = useState([])
   const [platformOptions, setPlatformOptions] = useState(PLATFORM_PRESETS)
   const [loadingDetail, setLoadingDetail] = useState(false)
@@ -127,6 +137,7 @@ const GameFormModal = ({ visible, mode, gameId, onClose, onSaved }) => {
     if (!visible) return undefined
     let cancelled = false
     setFormError(null)
+    setParamsDirty(false)
     setLoadingDetail(true)
 
     Promise.all([
@@ -217,10 +228,11 @@ const GameFormModal = ({ visible, mode, gameId, onClose, onSaved }) => {
 
   const busy = isSubmitting || loadingDetail
 
-  const handleClose = () => {
-    if (busy) return
-    onClose?.()
-  }
+  const handleClose = useUnsavedGuard({
+    dirty: isDirty || paramsDirty,
+    blocked: busy,
+    onClose,
+  })
 
   return (
     <CModal visible={visible} onClose={handleClose} size="lg" backdrop="static">
@@ -292,7 +304,7 @@ const GameFormModal = ({ visible, mode, gameId, onClose, onSaved }) => {
 
               <div className="mb-2">
                 <CFormLabel>{t('games.form.params')}</CFormLabel>
-                <ParamsEditor value={params} onChange={setParams} disabled={isSubmitting} />
+                <ParamsEditor value={params} onChange={handleParamsChange} disabled={isSubmitting} />
                 {isEdit && (
                   <CFormText>{t('games.form.paramsEditNote')}</CFormText>
                 )}

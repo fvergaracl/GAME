@@ -33,6 +33,7 @@ import {
 import { duplicateTask } from '../../../api'
 import { extractError } from '../../../utils/errors'
 import { useToast } from '../../../components/Toast'
+import useUnsavedGuard from '../../../components/useUnsavedGuard'
 
 const SLUG_PATTERN = /^[a-zA-Z0-9_-]{3,60}$/
 
@@ -46,7 +47,7 @@ const TaskDuplicateModal = ({ visible, gameId, task, onClose, onDuplicated }) =>
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({ defaultValues: { externalTaskId: '' } })
 
   const [formError, setFormError] = useState(null)
@@ -75,10 +76,7 @@ const TaskDuplicateModal = ({ visible, gameId, task, onClose, onDuplicated }) =>
     }
   }
 
-  const handleClose = () => {
-    if (isSubmitting) return
-    onClose?.()
-  }
+  const handleClose = useUnsavedGuard({ dirty: isDirty, blocked: isSubmitting, onClose })
 
   return (
     <CModal visible={visible} onClose={handleClose} backdrop="static">

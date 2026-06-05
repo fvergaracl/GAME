@@ -37,6 +37,7 @@ import {
 import { duplicateGame } from '../../../api'
 import { extractError } from '../../../utils/errors'
 import { useToast } from '../../../components/Toast'
+import useUnsavedGuard from '../../../components/useUnsavedGuard'
 
 // Slug rule mirrors the backend ``is_valid_slug``: ^[a-z0-9_-]{3,60}$
 // (case-insensitive). Same constraint GameFormModal enforces on create/edit.
@@ -55,7 +56,7 @@ const GameDuplicateModal = ({ visible, game, onClose, onDuplicated }) => {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({ defaultValues: { externalGameId: '' } })
 
   const [formError, setFormError] = useState(null)
@@ -85,10 +86,7 @@ const GameDuplicateModal = ({ visible, game, onClose, onDuplicated }) => {
     }
   }
 
-  const handleClose = () => {
-    if (isSubmitting) return
-    onClose?.()
-  }
+  const handleClose = useUnsavedGuard({ dirty: isDirty, blocked: isSubmitting, onClose })
 
   return (
     <CModal visible={visible} onClose={handleClose} backdrop="static">

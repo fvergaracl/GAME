@@ -41,6 +41,7 @@ import { createTask, listBuiltInStrategies, listCustomStrategies, updateTask } f
 import { extractError } from '../../../utils/errors'
 import { useToast } from '../../../components/Toast'
 import ParamsEditor from '../../../components/ParamsEditor'
+import useUnsavedGuard from '../../../components/useUnsavedGuard'
 
 // Same slug rule the Game form enforces (backend ``is_valid_slug``).
 const SLUG_PATTERN = /^[a-zA-Z0-9_-]{3,60}$/
@@ -98,10 +99,18 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({ defaultValues: { externalTaskId: '', strategyId: '', status: '' } })
 
   const [params, setParams] = useState([])
+  // ParamsEditor (create mode only) lives outside react-hook-form; track its
+  // edits separately so the unsaved-changes guard sees them. The load effect
+  // re-seeds params via setParams directly, so it never trips this flag.
+  const [paramsDirty, setParamsDirty] = useState(false)
+  const handleParamsChange = (next) => {
+    setParamsDirty(true)
+    setParams(next)
+  }
   const [strategyOptions, setStrategyOptions] = useState([])
   const [loadingDetail, setLoadingDetail] = useState(false)
   const [formError, setFormError] = useState(null)
@@ -121,6 +130,7 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
     if (!visible) return undefined
     let cancelled = false
     setFormError(null)
+    setParamsDirty(false)
     setLoadingDetail(true)
 
     Promise.all([
@@ -201,10 +211,11 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
 
   const busy = isSubmitting || loadingDetail
 
-  const handleClose = () => {
-    if (busy) return
-    onClose?.()
-  }
+  const handleClose = useUnsavedGuard({
+    dirty: isDirty || paramsDirty,
+    blocked: busy,
+    onClose,
+  })
 
   return (
     <CModal visible={visible} onClose={handleClose} size="lg" backdrop="static">
@@ -299,7 +310,7 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
                     <CFormText>{t('tasks.form.paramsEditNote')}</CFormText>
                   </>
                 ) : (
-                  <ParamsEditor value={params} onChange={setParams} disabled={isSubmitting} />
+                  <ParamsEditor value={params} onChange={handleParamsChange} disabled={isSubmitting} />
                 )}
               </div>
             </>

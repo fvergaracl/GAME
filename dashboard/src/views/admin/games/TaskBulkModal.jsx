@@ -29,6 +29,7 @@ import {
 import { bulkCreateTasks, listBuiltInStrategies, listCustomStrategies } from '../../../api'
 import { extractError } from '../../../utils/errors'
 import { useToast } from '../../../components/Toast'
+import useUnsavedGuard from '../../../components/useUnsavedGuard'
 
 const SLUG_PATTERN = /^[a-zA-Z0-9_-]{3,60}$/
 
@@ -137,10 +138,14 @@ const TaskBulkModal = ({ visible, gameId, onClose, onCreated }) => {
     }
   }
 
-  const handleClose = () => {
-    if (submitting) return
-    onClose?.()
-  }
+  // Dirty when the admin has typed ids or pinned a non-inherit strategy. After
+  // a partial failure we re-seed the box with the failed ids, so closing then
+  // also (correctly) warns there's still unsaved input.
+  const handleClose = useUnsavedGuard({
+    dirty: text.trim() !== '' || strategyId !== '',
+    blocked: submitting,
+    onClose,
+  })
 
   return (
     <CModal visible={visible} onClose={handleClose} size="lg" backdrop="static">

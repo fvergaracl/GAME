@@ -32,6 +32,9 @@ export default defineConfig({
       'src/i18n/**/*.test.js',
       'src/utils/**/*.test.js',
       'src/components/**/*.test.{js,jsx}',
+      // Sprint 6 (CRUD management): the shared API client lives at the src
+      // root, so its helper tests need their own top-level glob.
+      'src/*.test.{js,jsx}',
     ],
   },
 })
