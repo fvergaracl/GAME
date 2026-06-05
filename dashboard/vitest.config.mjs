@@ -26,6 +26,9 @@ export default defineConfig({
     // surfaces, hence the .jsx glob under views/strategies.
     include: [
       'src/views/strategies/**/*.test.{js,jsx}',
+      // Sprint 5 (CRUD management): the admin views (games/tasks/users)
+      // ship integration tests too.
+      'src/views/admin/**/*.test.{js,jsx}',
       'src/i18n/**/*.test.js',
       'src/utils/**/*.test.js',
       'src/components/**/*.test.{js,jsx}',

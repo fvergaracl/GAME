@@ -34,6 +34,10 @@ const GamesManagementView = React.lazy(() => import('./views/admin/games/GamesMa
 // bulk create). Reached from a game row's "Ver tareas" action; keyed on the
 // internal gameId so it can mutate tasks by their internal UUID.
 const GameTasksView = React.lazy(() => import('./views/admin/games/GameTasksView'))
+// Sprint 5 (CRUD management): read-only Users explorer. Users aren't a real
+// CRUD entity (rows are created implicitly), so this is a lookup-only view —
+// search an externalUserId, see its points + wallet. No Blockly, own chunk.
+const UsersExplorerView = React.lazy(() => import('./views/admin/users/UsersExplorerView'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -62,6 +66,7 @@ const routes = [
   },
   { path: '/admin/games', name: 'Games', element: GamesManagementView },
   { path: '/admin/games/:gameId/tasks', name: 'Game Tasks', element: GameTasksView },
+  { path: '/admin/users', name: 'Users', element: UsersExplorerView },
 ]
 
 export default routes

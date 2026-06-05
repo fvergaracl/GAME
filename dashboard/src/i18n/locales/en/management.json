@@ -141,12 +141,43 @@
   "users": {
     "title": "Users",
     "subtitle": "Look up a user's points and wallet balance by external ID.",
+    "searchLabel": "User external ID",
     "searchPlaceholder": "User external ID…",
     "search": "Search",
-    "points": "Points",
-    "wallet": "Wallet",
+    "searching": "Searching…",
     "empty": "Enter an external ID to see its points and balance.",
-    "notFound": "No data found for “{{externalUserId}}”."
+    "notFound": "No user found with external ID “{{externalUserId}}”.",
+    "loadError": "Could not load the user's data.",
+    "internalId": "Internal ID",
+    "summary": {
+      "totalPoints": "Points earned",
+      "pointsBalance": "Points balance",
+      "coinsBalance": "Coins balance",
+      "conversionRate": "Conversion rate",
+      "conversionRateHelp": "{{rate}} points = 1 coin"
+    },
+    "points": {
+      "title": "Points by game",
+      "empty": "This user hasn't earned any points yet.",
+      "game": "Game",
+      "task": "Task",
+      "points": "Points",
+      "timesAwarded": "Times awarded",
+      "gameTotal_one": "{{count}} point in this game",
+      "gameTotal_other": "{{count}} points in this game"
+    },
+    "wallet": {
+      "title": "Wallet",
+      "noWallet": "This user doesn't have a wallet yet.",
+      "transactions": "Transactions",
+      "noTransactions": "No transactions yet.",
+      "col": {
+        "date": "Date",
+        "type": "Type",
+        "points": "Points",
+        "coins": "Coins"
+      }
+    }
   },
   "feedback": {
     "gameCreated": "Game created successfully.",

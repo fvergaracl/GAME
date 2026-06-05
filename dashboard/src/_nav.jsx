@@ -9,6 +9,7 @@ import {
   cilLibrary,
   cilNotes,
   cilPencil,
+  cilPeople,
   cilPuzzle,
   cilSpeedometer,
 } from '@coreui/icons'
@@ -89,6 +90,12 @@ const _nav_administrator = [
     name: 'nav.games',
     to: '/admin/games',
     icon: <CIcon icon={cilGamepad} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'nav.users',
+    to: '/admin/users',
+    icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,

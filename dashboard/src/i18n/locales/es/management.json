@@ -141,12 +141,43 @@
   "users": {
     "title": "Usuarios",
     "subtitle": "Consulta los puntos y el saldo de un usuario por su ID externo.",
+    "searchLabel": "ID externo del usuario",
     "searchPlaceholder": "ID externo del usuario…",
     "search": "Buscar",
-    "points": "Puntos",
-    "wallet": "Monedero",
+    "searching": "Buscando…",
     "empty": "Introduce un ID externo para ver sus puntos y saldo.",
-    "notFound": "No se encontraron datos para «{{externalUserId}}»."
+    "notFound": "No se encontró ningún usuario con el ID externo «{{externalUserId}}».",
+    "loadError": "No se pudieron cargar los datos del usuario.",
+    "internalId": "ID interno",
+    "summary": {
+      "totalPoints": "Puntos acumulados",
+      "pointsBalance": "Saldo de puntos",
+      "coinsBalance": "Saldo de monedas",
+      "conversionRate": "Tasa de conversión",
+      "conversionRateHelp": "{{rate}} puntos = 1 moneda"
+    },
+    "points": {
+      "title": "Puntos por juego",
+      "empty": "Este usuario todavía no ha ganado puntos.",
+      "game": "Juego",
+      "task": "Tarea",
+      "points": "Puntos",
+      "timesAwarded": "Veces otorgado",
+      "gameTotal_one": "{{count}} punto en este juego",
+      "gameTotal_other": "{{count}} puntos en este juego"
+    },
+    "wallet": {
+      "title": "Monedero",
+      "noWallet": "Este usuario todavía no tiene monedero.",
+      "transactions": "Movimientos",
+      "noTransactions": "Sin movimientos todavía.",
+      "col": {
+        "date": "Fecha",
+        "type": "Tipo",
+        "points": "Puntos",
+        "coins": "Monedas"
+      }
+    }
   },
   "feedback": {
     "gameCreated": "Juego creado correctamente.",
