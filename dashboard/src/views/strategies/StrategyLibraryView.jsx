@@ -525,7 +525,7 @@ const StrategyLibraryView = () => {
                           >
                             Abrir
                           </CButton>
-                          <CDropdown variant="btn-group">
+                          <CDropdown variant="btn-group" portal>
                             <CDropdownToggle
                               size="sm"
                               color="secondary"

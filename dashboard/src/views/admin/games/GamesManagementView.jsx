@@ -235,7 +235,7 @@ const GamesManagementView = () => {
                       </span>
                     </CTableDataCell>
                     <CTableDataCell className="text-end">
-                      <CDropdown variant="btn-group" alignment="end">
+                      <CDropdown variant="btn-group" alignment="end" portal>
                         <CDropdownToggle size="sm" color="secondary" variant="outline">
                           {t('actions.rowActions')}
                         </CDropdownToggle>
