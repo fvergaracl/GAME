@@ -3,7 +3,6 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-
 class UserActions(BaseModel):
     """
     Base schema representing a stored user action event.
