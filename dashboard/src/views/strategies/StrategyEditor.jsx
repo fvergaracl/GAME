@@ -1,18 +1,10 @@
-// Sprint 6: Strategy Editor view — embeds a Blockly workspace alongside
-// a "Probar" simulate panel.
+// Strategy Editor view — embeds a Blockly workspace alongside a "Probar"
+// simulate panel (editor 2/3 width, simulate panel 1/3).
 //
-// Layout: two CCols (CoreUI Bootstrap grid). The editor takes 2/3 of the
-// width, the simulate panel takes the right 1/3. Both are inside a CCard
-// for visual consistency with the rest of the dashboard (ExportData,
-// ApikeysCreation, etc.).
-//
-// State machine (intentionally simple — no Redux, no react-hook-form):
-//   * Workspace is mutated imperatively via the Blockly API and held in a
-//     ref. The React render tree never re-renders on every block drag.
-//   * Save / Simulate buttons read the workspace once on click via the
-//     generator, then dispatch the API call.
-//   * Errors / success / last simulation result go through useState so
-//     CAlert and the trace panel re-render reactively.
+// State is intentionally simple (no Redux): the workspace is mutated
+// imperatively via the Blockly API and held in a ref, so the render tree
+// doesn't re-render on every block drag. Save / Simulate read the
+// workspace once on click; errors and results go through useState.
 
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -71,26 +63,16 @@ import EditorTour from './EditorTour'
 import GlossaryHint from './glossary/GlossaryHint'
 import { SkeletonCard } from '../../components/Skeleton'
 
-// Sprint 11: split the heavy on-demand surfaces out of the editor's
-// main chunk. None of these are reachable on first paint:
-//   * SimulationRunsChart pulls chart.js — only loaded when the user
-//     runs a cumulative simulation.
-//   * SimulationScenarios + SimulationTracePanel render under the
-//     simulate side panel after the first run.
-//   * StrategyVersionHistoryModal carries the AST diff algorithm and
-//     only opens via "Ver historial".
-//   * TemplatePickerModal fetches built-in template fixtures and is
-//     only opened from the empty-state chooser.
+// Lazy-load the heavy on-demand surfaces — none are reachable on first
+// paint, and SimulationRunsChart in particular pulls in chart.js.
 const SimulationRunsChart = React.lazy(() => import('./SimulationRunsChart'))
 const SimulationScenarios = React.lazy(() => import('./SimulationScenarios'))
 const SimulationTracePanel = React.lazy(() => import('./SimulationTracePanel'))
 const StrategyVersionHistoryModal = React.lazy(() => import('./StrategyVersionHistoryModal'))
 const TemplatePickerModal = React.lazy(() => import('./TemplatePickerModal'))
 
-// Sprint 10: feed Blockly's own UI strings (right-click menu, trash
-// confirmations, etc.) the user's locale. Defaults to Spanish to match
-// the rest of the editor; the language switcher swaps these messages
-// in-place via `applyBlocklyLocale`.
+// Feed Blockly's own UI strings (right-click menu, trash confirmations,
+// etc.) the user's locale; defaults to Spanish like the rest of the editor.
 const BLOCKLY_MSG_BY_LANG = { es: BlocklyEsMsg, en: BlocklyEnMsg }
 
 function applyBlocklyLocale(lang) {
@@ -137,26 +119,24 @@ const INITIAL_SIM_FORM = {
 // backend with sequential simulate calls.
 const MAX_CUMULATIVE_RUNS = 50
 
-// Sprint 3: idle delay before autosaving a dirty DRAFT. Long enough that
-// it fires on a real pause, not mid-typing.
+// Idle delay before autosaving a dirty DRAFT — long enough to fire on a
+// real pause, not mid-typing.
 const AUTOSAVE_DELAY_MS = 4000
 
-// Sprint 3: the "clean" snapshot is the AST plus the editable metadata
-// (name / description), so renaming a strategy also counts as an unsaved
-// change. Stable key order via JSON makes string comparison reliable.
+// The "clean" snapshot is the AST plus editable metadata (name /
+// description), so a rename also counts as an unsaved change. Stable JSON
+// key order makes string comparison reliable.
 const composeClean = (ast, name, description) =>
   JSON.stringify({ ast, name: (name || '').trim(), description: (description || '').trim() })
 
 const StrategyEditor = () => {
   const { t, i18n } = useTranslation('editor')
-  // Sprint 11: shared feedback channel. No-op outside a ToastProvider
-  // (e.g. test harness) so callers don't have to guard.
+  // Shared feedback channel. No-op outside a ToastProvider (e.g. test
+  // harness) so callers don't have to guard.
   const toast = useToast()
 
-  // Sprint 10: lock in the active language for Blockly's own UI
-  // (right-click menus, trash dialog, etc.) and re-tooltip every
-  // registered block in the active locale. Idempotent — re-running on
-  // every language change is the supported pattern.
+  // Sync Blockly's own UI (right-click menus, trash dialog) and re-tooltip
+  // every registered block to the active locale. Idempotent by design.
   useEffect(() => {
     applyBlocklyLocale(i18n.resolvedLanguage)
     registerDslBlocks(t)
@@ -165,24 +145,19 @@ const StrategyEditor = () => {
     }
   }, [t, i18n.resolvedLanguage])
 
-  // Sprint 8: ``/strategies/editor/:id`` reuses the same component to
-  // edit an existing strategy. When ``id`` is present we skip the
-  // empty-state chooser and jump straight into editing mode after
-  // loading the row from the backend.
+  // ``/strategies/editor/:id`` reuses this component to edit an existing
+  // strategy: when ``id`` is present we skip the chooser and load the row.
   const { id: routeStrategyId } = useParams()
   const navigate = useNavigate()
 
-  // Sprint 10: tour gating. ``runRequest=auto`` defers to the
-  // localStorage flag inside EditorTour; flipping to ``manual`` from the
-  // toolbar replays the tour on demand.
+  // Tour gating: ``auto`` defers to EditorTour's localStorage flag;
+  // ``manual`` (from the toolbar) replays the tour on demand.
   const [tourRunRequest, setTourRunRequest] = useState('auto')
 
   const workspaceDivRef = useRef(null)
   const workspaceRef = useRef(null)
-  // Sprint 7: parent schema is read by Blockly's toolbox callback,
-  // which is registered ONCE per workspace lifecycle. The callback
-  // closes over a ref so it always sees the latest schema without
-  // forcing a workspace re-injection on every parent change.
+  // The toolbox callback (registered once per workspace) reads the parent
+  // schema via this ref, so a parent change needs no workspace re-injection.
   const parentSchemaRef = useRef(null)
   // Debounce timer for recomputing which accumulated fields the strategy
   // reads as the designer edits blocks (see the change listener below).
@@ -193,23 +168,20 @@ const StrategyEditor = () => {
   const [strategyId, setStrategyId] = useState(routeStrategyId || null)
   const [loadedVersion, setLoadedVersion] = useState(null)
 
-  // Sprint 7: editor mode + parent metadata.
   const [mode, setMode] = useState('DSL_FULL')
   const [parentId, setParentId] = useState('')
   const [parentSchema, setParentSchema] = useState(null)
   const [builtIns, setBuiltIns] = useState([])
   const [parentLoadError, setParentLoadError] = useState(null)
 
-  // Sprint 8: stage gates the empty-state chooser. 'editing' enters the
-  // full Blockly workspace; 'chooser' shows three CTAs. We skip the
-  // chooser when the route already names a strategy id.
+  // ``stage`` gates the empty-state chooser: 'chooser' shows the CTAs,
+  // 'editing' enters the workspace. Skipped when the route names an id.
   const [stage, setStage] = useState(routeStrategyId ? 'editing' : 'chooser')
   const [templateModalOpen, setTemplateModalOpen] = useState(false)
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [pendingImportBundle, setPendingImportBundle] = useState(null)
-  // Sprint 11: queue a starter rule for the "Crear estrategia vacía"
-  // path so the freshly-injected workspace lands on a valid example
-  // instead of a blank canvas that fails validation on first save/test.
+  // Queue a starter rule for the "from scratch" path so the new workspace
+  // lands on a valid example instead of a blank canvas that fails validation.
   const [pendingSeed, setPendingSeed] = useState(false)
   const [loadError, setLoadError] = useState(null)
   const fileInputRef = useRef(null)
@@ -224,11 +196,11 @@ const StrategyEditor = () => {
   const [simResult, setSimResult] = useState(null)
   const [simError, setSimError] = useState(null)
   const [isSimulating, setIsSimulating] = useState(false)
-  // Sprint 5: the exact AST that produced ``simResult`` — kept so the trace
-  // panel can walk the same tree the interpreter ran (node ids line up 1:1).
+  // The exact AST that produced ``simResult`` — kept so the trace panel
+  // walks the same tree the interpreter ran (node ids line up 1:1).
   const [simAst, setSimAst] = useState(null)
-  // Sprint 5: a pinned previous run, shown side-by-side with the current
-  // result so a designer can compare two tweaks of the same strategy.
+  // A pinned previous run, shown side-by-side with the current result to
+  // compare two tweaks of the same strategy.
   const [comparison, setComparison] = useState(null)
 
   // Guided "accumulated values" panel. ``simMode`` toggles a single
@@ -242,28 +214,24 @@ const StrategyEditor = () => {
   const [cumulativeRuns, setCumulativeRuns] = useState(5)
   const [simRuns, setSimRuns] = useState(null)
 
-  // Sprint 9: history modal visibility. Only meaningful when the editor
-  // is loaded with an existing strategy (i.e. ``strategyId`` is set);
-  // otherwise there's no family to walk back through.
+  // History modal visibility — only meaningful once ``strategyId`` is set.
   const [historyOpen, setHistoryOpen] = useState(false)
   const isAdmin = useMemo(() => isCurrentUserAdmin(), [])
 
   // Lifecycle (publish / archive). ``status`` mirrors the backend's
-  // DRAFT→PUBLISHED→ARCHIVED state machine so the toolbar can gate which
-  // CTA is offered. ``lifecycleAction`` drives an inline confirmation
-  // step (mirrors the rollback confirm in the history modal) so an admin
-  // can't publish/archive with a single stray click.
+  // DRAFT→PUBLISHED→ARCHIVED state machine to gate which CTA shows;
+  // ``lifecycleAction`` drives an inline confirm so a stray click can't
+  // publish/archive.
   const [status, setStatus] = useState(null)
   const [lifecycleAction, setLifecycleAction] = useState(null)
   const [isLifecycleBusy, setIsLifecycleBusy] = useState(false)
 
-  // Sprint 3: unsaved-changes tracking + autosave. ``cleanAstRef`` holds
-  // the composite (AST + name + description) of the last saved/loaded
-  // state; a single effect compares the live composite against it to
-  // derive ``isDirty``. We compare the semantic AST (not Blockly
-  // coordinates) so a pure block reposition doesn't count as a change.
-  // ``workspaceRev`` bumps on every block edit so that effect re-runs and
-  // the autosave debounce resets off the *last* change.
+  // Unsaved-changes tracking + autosave. ``cleanAstRef`` holds the
+  // composite (AST + name + description) of the last saved/loaded state;
+  // an effect compares the live composite against it to derive ``isDirty``.
+  // Comparing the semantic AST (not Blockly coordinates) means a pure
+  // reposition isn't a change. ``workspaceRev`` bumps on every block edit
+  // so that effect re-runs and resets the autosave debounce.
   const cleanAstRef = useRef(null)
   const [isDirty, setIsDirty] = useState(false)
   const [workspaceRev, setWorkspaceRev] = useState(0)
@@ -271,12 +239,10 @@ const StrategyEditor = () => {
   const [autosaveError, setAutosaveError] = useState(null)
   const [lastAutosaveAt, setLastAutosaveAt] = useState(null)
 
-  // Sprint 7: toolbox swaps wholesale when the mode changes.
-  // Sprint 4 (fix C6): category names are now localised — the toolbox is
-  // rebuilt from ``t()`` so it also recomputes when the language changes.
-  // We DON'T want a language switch to re-inject the workspace (that would
-  // wipe the canvas), so the injection effect reads the latest XML via a
-  // ref and a separate effect pushes the rebuilt toolbox in-place with
+  // The toolbox is rebuilt from ``t()`` so it recomputes on a mode or
+  // language change. To avoid re-injecting the workspace on a language
+  // switch, the injection effect reads the latest XML via a ref and a
+  // separate effect pushes the rebuilt toolbox in-place via
   // ``workspace.updateToolbox`` (which preserves the blocks).
   const toolboxXml = useMemo(
     () => (mode === 'DSL_EXTEND' ? buildExtendToolbox(t) : buildDefaultToolbox(t)),
@@ -290,9 +256,9 @@ const StrategyEditor = () => {
     }
   }, [toolboxXml])
 
-  // Sprint 4: block-search box. The catalog is mode + language aware and
-  // drives the dropdown of matches; clicking one inserts that block on the
-  // canvas (the toolbox has 20+ blocks, so scanning categories is slow).
+  // Block-search box: the mode + language aware catalog drives the match
+  // dropdown; clicking one inserts that block (scanning 20+ blocks by
+  // category is slow).
   const [blockSearch, setBlockSearch] = useState('')
   const blockCatalog = useMemo(() => buildBlockCatalog(mode, t), [mode, t])
   const blockSearchResults = useMemo(() => {
@@ -320,11 +286,49 @@ const StrategyEditor = () => {
     setBlockSearch('')
   }, [])
 
+  // Keep the guided "accumulated values" inputs in sync with the blocks:
+  // each edit re-derives which analytics fields the AST reads, so the test
+  // panel only shows inputs the strategy uses. Wrapped in try/catch since
+  // the AST is often half-built mid-edit. A stable callback (reading the
+  // live workspace via ``workspaceRef``) so both the change listener and
+  // the hydration effect can call it.
+  const refreshUsedFields = useCallback(() => {
+    const workspace = workspaceRef.current
+    if (!workspace) return
+    try {
+      const ast = workspaceToAst(workspace)
+      const fields = usedAccumulationFields(ast)
+      setUsedFields(fields)
+      setSimFieldValues((prev) => {
+        let changed = false
+        const next = { ...prev }
+        for (const meta of fields) {
+          if (!next[meta.path]) {
+            next[meta.path] = { value: meta.default, step: meta.step }
+            changed = true
+          }
+        }
+        return changed ? next : prev
+      })
+    } catch {
+      // Malformed AST mid-edit — keep the last known field set.
+    }
+    // Signal "the workspace changed" so the dirty/autosave effect
+    // recomputes. We bump a counter rather than compute dirtiness here
+    // because this callback can't see the latest name/description.
+    setWorkspaceRev((rev) => rev + 1)
+  }, [])
+
   // ----- Blockly workspace lifecycle ---------------------------------------
-  // Sprint 8: the workspace only mounts when ``stage === 'editing'``.
-  // While the chooser is showing, workspaceDivRef.current is null and
-  // we skip injection entirely — no orphan Blockly instance hanging
-  // around behind the chooser cards.
+  // The workspace only mounts when ``stage === 'editing'``; while the
+  // chooser shows, workspaceDivRef.current is null and we skip injection.
+  //
+  // This effect must inject EXACTLY ONCE per editing session: it depends
+  // only on ``stage`` (and the stable ``refreshUsedFields``), NOT on
+  // ``mode`` or the ``pending*`` flags. Its body resets those flags, so
+  // depending on them would dispose the freshly-hydrated workspace and
+  // re-inject an empty one. Mode changes stay in-place via the
+  // ``updateToolbox`` effect; content hydration is the effect below.
   useEffect(() => {
     if (stage !== 'editing') return
     if (!workspaceDivRef.current) return
@@ -338,56 +342,38 @@ const StrategyEditor = () => {
     })
     workspaceRef.current = workspace
 
-    // Sprint 7: the "Overrides padre" toolbox category is populated
-    // dynamically from the parent schema. Registering the callback
-    // here means the workspace can read parentSchemaRef.current at the
-    // moment the designer opens the category, so a schema change
-    // doesn't require re-injecting the workspace.
+    // The "Overrides padre" category is populated dynamically from the
+    // parent schema; registering the callback here lets it read
+    // parentSchemaRef.current when the category opens, so a schema change
+    // needs no re-injection.
     workspace.registerToolboxCategoryCallback('PARENT_OVERRIDES', (ws) =>
       _buildParentOverrideFlyout(ws, parentSchemaRef.current),
     )
 
-    // Keep the guided "accumulated values" inputs in sync with the
-    // blocks: each edit re-derives which analytics fields the AST reads
-    // so the test panel only shows inputs the strategy actually uses.
-    // Debounced because Blockly fires a change event per drag tick, and
-    // wrapped in try/catch since the AST is often half-built mid-edit.
-    const refreshUsedFields = () => {
-      try {
-        const ast = workspaceToAst(workspace)
-        const fields = usedAccumulationFields(ast)
-        setUsedFields(fields)
-        setSimFieldValues((prev) => {
-          let changed = false
-          const next = { ...prev }
-          for (const meta of fields) {
-            if (!next[meta.path]) {
-              next[meta.path] = { value: meta.default, step: meta.step }
-              changed = true
-            }
-          }
-          return changed ? next : prev
-        })
-      } catch {
-        // Malformed AST mid-edit — keep the last known field set.
-      }
-      // Sprint 3: signal "the workspace changed" so the dirty/autosave
-      // effect recomputes against the clean baseline. We bump a counter
-      // rather than computing dirtiness here because this closure can't
-      // see the latest name/description (it's registered once per
-      // injection); the effect, which depends on them, owns that logic.
-      setWorkspaceRev((rev) => rev + 1)
-    }
+    // Debounced because Blockly fires a change event per drag tick.
     workspace.addChangeListener(() => {
       if (usedFieldsTimerRef.current) clearTimeout(usedFieldsTimerRef.current)
       usedFieldsTimerRef.current = setTimeout(refreshUsedFields, 300)
     })
 
-    // Sprint 8: a template / imported bundle queued by the chooser is
-    // hydrated AFTER the workspace exists. Doing it inside this effect
-    // — instead of synchronously from the chooser handler — guarantees
-    // workspaceRef.current is the freshly-injected instance, not a
-    // stale one from a previous mount.
+    return () => {
+      if (usedFieldsTimerRef.current) clearTimeout(usedFieldsTimerRef.current)
+      workspace.dispose()
+      workspaceRef.current = null
+    }
+  }, [stage, refreshUsedFields])
+
+  // ----- Blockly content hydration -----------------------------------------
+  // Split out from injection so loading content never disposes/re-injects
+  // the workspace — it operates on the mounted instance via ``workspaceRef``.
+  // A queued template / imported bundle / starter seed is applied here;
+  // resetting the pending flag afterwards is safe since we don't tear the
+  // workspace down. Also runs with no pending content so a fresh empty
+  // canvas still captures its clean baseline.
+  useEffect(() => {
+    const workspace = workspaceRef.current
+    if (stage !== 'editing' || !workspace) return
+
     if (pendingTemplate) {
       loadWorkspaceFromSerialized(workspace, pendingTemplate.blocklyXml)
       setPendingTemplate(null)
@@ -395,40 +381,35 @@ const StrategyEditor = () => {
       loadWorkspaceFromSerialized(workspace, pendingImportBundle.blocklyXml)
       setPendingImportBundle(null)
     } else if (pendingSeed) {
-      // Sprint 11: seed a valid starter rule for the from-scratch path.
+      // Seed a valid starter rule for the from-scratch path.
       loadWorkspaceFromSerialized(workspace, STARTER_RULE_XML)
       setPendingSeed(false)
     }
 
-    // Initial pass so the guided inputs reflect any hydrated blocks even
-    // if the change listener's debounce hasn't fired yet.
+    // Reflect any hydrated blocks in the guided inputs immediately (the
+    // change listener's debounce may not have fired yet).
     refreshUsedFields()
 
-    // Sprint 3: capture the clean baseline AFTER hydration so the first
-    // real edit flips ``isDirty``. An empty/invalid canvas (e.g. the
-    // "extend existing" start) gets a sentinel so dropping the first
-    // block still registers as an unsaved change. Uses the name/
-    // description from the render that mounted this workspace (the load
-    // effect sets them alongside the queued blocks, so they're current).
+    // Capture the clean baseline AFTER hydration so the first real edit
+    // flips ``isDirty``. An empty/invalid canvas gets a sentinel so the
+    // first dropped block still counts as a change. ``strategyName`` /
+    // ``description`` are read here but kept OUT of the deps: the load-by-id
+    // effect sets them in the same batch as the pending bundle, and
+    // depending on them would re-capture the baseline on every keystroke.
     try {
       cleanAstRef.current = composeClean(workspaceToAst(workspace), strategyName, description)
     } catch {
       cleanAstRef.current = '__EMPTY__'
     }
     setIsDirty(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- name/description intentionally excluded (see comment above)
+  }, [stage, pendingTemplate, pendingImportBundle, pendingSeed, refreshUsedFields])
 
-    return () => {
-      if (usedFieldsTimerRef.current) clearTimeout(usedFieldsTimerRef.current)
-      workspace.dispose()
-      workspaceRef.current = null
-    }
-  }, [stage, mode, pendingTemplate, pendingImportBundle, pendingSeed])
-
-  // ----- Load existing strategy by id (Sprint 8) ---------------------------
-  // When the route carries an id we fetch the row, prime the editor's
+  // ----- Load existing strategy by id --------------------------------------
+  // When the route carries an id we fetch the row, prime the
   // name/description/mode fields, and queue the saved Blockly state for
-  // hydration once the workspace mounts. The fetch only runs once per
-  // id; subsequent edits stay in-memory until the user navigates away.
+  // hydration once the workspace mounts. Runs once per id; later edits
+  // stay in-memory until the user navigates away.
   useEffect(() => {
     if (!routeStrategyId) return
     let cancelled = false
@@ -512,7 +493,7 @@ const StrategyEditor = () => {
     }
   }, [mode, parentId, t])
 
-  // ----- Chooser actions (Sprint 8) ----------------------------------------
+  // ----- Chooser actions ---------------------------------------------------
   const startFromScratch = useCallback(() => {
     setMode('DSL_FULL')
     setParentId('')
@@ -540,7 +521,7 @@ const StrategyEditor = () => {
     setStage('editing')
   }, [])
 
-  // ----- Import / Export JSON (Sprint 8) -----------------------------------
+  // ----- Import / Export JSON ----------------------------------------------
   const handleExport = useCallback(() => {
     if (!workspaceRef.current) {
       setSaveError(t('alerts.noWorkspace'))
@@ -628,13 +609,12 @@ const StrategyEditor = () => {
     [navigate, t],
   )
 
-  // Sprint 3: record a "clean" baseline after a successful save/autosave.
-  // ``cleanComposite`` is the exact (AST + name + description) that was
-  // persisted — NOT the live workspace — so edits made *during* an
-  // in-flight save aren't swallowed. Bumping ``workspaceRev`` re-runs the
-  // dirty effect, which re-derives ``isDirty`` by comparing the live
-  // composite against this new baseline (so it stays dirty if the user
-  // kept editing while the request was in flight).
+  // Record a "clean" baseline after a successful save/autosave.
+  // ``cleanComposite`` is the exact (AST + name + description) persisted —
+  // NOT the live workspace — so edits made *during* an in-flight save
+  // aren't swallowed. Bumping ``workspaceRev`` re-runs the dirty effect,
+  // which stays dirty if the user kept editing while the request was in
+  // flight.
   const markClean = useCallback((cleanComposite) => {
     cleanAstRef.current = cleanComposite
     setAutosaveError(null)
@@ -670,10 +650,9 @@ const StrategyEditor = () => {
     // reopened on the same draft from the same workspace shape.
     const blocklyJson = Blockly.serialization.workspaces.save(workspaceRef.current)
 
-    // Sprint 7: when the editor is in DSL_EXTEND mode the payload
-    // carries the parent id; in DSL_FULL mode parentStrategyId is
-    // explicitly null so the backend's _validate_payload rejects any
-    // accidental mismatch.
+    // In DSL_EXTEND the payload carries the parent id; in DSL_FULL
+    // parentStrategyId is explicitly null so the backend's
+    // _validate_payload rejects any accidental mismatch.
     if (mode === 'DSL_EXTEND' && !parentId) {
       setSaveError(t('alerts.noParent'))
       return
@@ -714,7 +693,7 @@ const StrategyEditor = () => {
           }),
         )
       }
-      // Sprint 3: the saved AST + metadata are now the clean baseline.
+      // The saved AST + metadata are now the clean baseline.
       markClean(composeClean(ast, strategyName, description))
     } catch (err) {
       setSaveError(translateDslError(t, err) || extractError(err, t))
@@ -723,15 +702,14 @@ const StrategyEditor = () => {
     }
   }, [strategyName, description, strategyId, mode, parentId, buildAndValidateAst, markClean, t])
 
-  // ----- Autosave (Sprint 3) -----------------------------------------------
+  // ----- Autosave ----------------------------------------------------------
   // Conservative on purpose: only an EXISTING, named DRAFT is autosaved.
-  //   * No strategyId  → never auto-create a row (that's what spawns the
-  //     orphan drafts flagged as C7; the first persist stays a deliberate
-  //     Save/Test).
-  //   * status !== DRAFT → a PUT on a PUBLISHED row forks a new version,
-  //     so autosaving published strategies would spam the version history.
-  //   * invalid/empty name → skip silently; the manual Save surfaces the
-  //     validation error instead of autosave doing it behind the user.
+  //   * No strategyId  → never auto-create a row; the first persist stays a
+  //     deliberate Save/Test (avoids orphan drafts).
+  //   * status !== DRAFT → a PUT on a PUBLISHED row forks a new version, so
+  //     autosaving published strategies would spam the version history.
+  //   * invalid/empty name → skip silently; manual Save surfaces the
+  //     validation error instead.
   const doAutosave = useCallback(async () => {
     if (!workspaceRef.current) return
     if (!strategyId || status !== 'DRAFT') return
@@ -780,13 +758,10 @@ const StrategyEditor = () => {
     t,
   ])
 
-  // ----- Simulate (Sprint 5: inline, fix C7) -------------------------------
-  // Previously "Probar" had to persist a hidden DRAFT just to obtain an id
-  // for /{id}/simulate, leaving orphan rows after every test iteration.
-  // We now POST the AST inline, so simulation:
-  //   * never writes to the DB, and
-  //   * always tests the EXACT blocks on the canvas (unsaved edits included)
-  //     rather than the last-saved version.
+  // ----- Simulate ----------------------------------------------------------
+  // "Probar" POSTs the AST inline, so simulation never writes to the DB and
+  // always tests the EXACT blocks on the canvas (unsaved edits included)
+  // rather than the last-saved version.
   const handleSimulate = useCallback(async () => {
     setSimError(null)
     setSimResult(null)
@@ -810,8 +785,8 @@ const StrategyEditor = () => {
       return
     }
 
-    // DSL_EXTEND only makes sense against a parent; keep the same guard the
-    // old draft-creating path had so the designer gets a clear message.
+    // DSL_EXTEND only makes sense against a parent — guard so the designer
+    // gets a clear message.
     if (mode === 'DSL_EXTEND' && !parentId) {
       setSimError(t('alerts.noParentSim'))
       return
@@ -876,8 +851,8 @@ const StrategyEditor = () => {
     t,
   ])
 
-  // Sprint 5: snapshot the current result as the comparison baseline ("A").
-  // The next run renders beside it so two tweaks can be compared directly.
+  // Snapshot the current result as the comparison baseline; the next run
+  // renders beside it so two tweaks can be compared directly.
   const pinComparison = useCallback(() => {
     if (!simResult) return
     setComparison({
@@ -888,8 +863,8 @@ const StrategyEditor = () => {
     })
   }, [simResult, simRuns])
 
-  // Sprint 5: collect the current test inputs into a serializable scenario
-  // (for SimulationScenarios) and apply a loaded one back onto the form.
+  // Collect the current test inputs into a serializable scenario (for
+  // SimulationScenarios) and apply a loaded one back onto the form.
   const currentScenario = useMemo(
     () => ({
       externalGameId: simForm.externalGameId,
@@ -918,11 +893,10 @@ const StrategyEditor = () => {
     if (scenario.simFieldValues) setSimFieldValues(scenario.simFieldValues)
   }, [])
 
-  // ----- Publish / Archive (Sprint 1 fix C2) -------------------------------
+  // ----- Publish / Archive -------------------------------------------------
   // The lifecycle endpoints are admin-only server-side (``require_admin``);
   // ``isAdmin`` here just hides the CTAs so a non-admin never sees a button
-  // that would 403. The confirm step lives in the toolbar as an inline
-  // CAlert (same pattern as the rollback confirm in the history modal).
+  // that would 403. The confirm step is an inline CAlert in the toolbar.
   const handleLifecycle = useCallback(async () => {
     if (!lifecycleAction || !strategyId) return
     setSaveError(null)
@@ -956,13 +930,12 @@ const StrategyEditor = () => {
   const canArchive =
     isAdmin && Boolean(strategyId) && (status === 'DRAFT' || status === 'PUBLISHED')
 
-  // Sprint 3: single source of truth for "unsaved changes" + autosave
-  // timing. Re-runs whenever the blocks change (``workspaceRev``), the
-  // name/description change, or ``doAutosave`` is recreated. It compares
-  // the live composite against the clean baseline to set ``isDirty``, then
-  // (when dirty and parseable) arms the debounced autosave. ``doAutosave``
-  // self-gates on DRAFT/strategyId, so non-autosaveable edits still flip
-  // the dirty flag (and the beforeunload guard) without persisting.
+  // Single source of truth for "unsaved changes" + autosave timing.
+  // Re-runs when the blocks (``workspaceRev``), name/description, or
+  // ``doAutosave`` change: compares the live composite against the clean
+  // baseline to set ``isDirty``, then (when dirty and parseable) arms the
+  // debounced autosave. ``doAutosave`` self-gates on DRAFT/strategyId, so
+  // non-autosaveable edits still flip the dirty flag without persisting.
   useEffect(() => {
     if (cleanAstRef.current === null) return undefined
     let current = null
@@ -978,10 +951,9 @@ const StrategyEditor = () => {
     return () => clearTimeout(timer)
   }, [workspaceRev, strategyName, description, doAutosave])
 
-  // Sprint 3: warn before a full-page unload (tab close / reload / typing a
-  // new URL) when there's unsaved work. In-app route changes (sidebar
-  // clicks) aren't covered here — react-router's useBlocker needs a data
-  // router, which this app's BrowserRouter setup doesn't use.
+  // Warn before a full-page unload (tab close / reload) when there's
+  // unsaved work. In-app route changes aren't covered — useBlocker needs a
+  // data router, which this app's BrowserRouter setup doesn't use.
   useEffect(() => {
     if (!isDirty) return undefined
     const handler = (e) => {
@@ -993,10 +965,9 @@ const StrategyEditor = () => {
   }, [isDirty])
 
   // ----- Render ------------------------------------------------------------
-  // Sprint 8: render the empty-state chooser as a stand-alone card when
-  // we don't have an id or an explicit user choice yet. The Blockly
-  // workspace and side panels are entirely hidden in that stage so the
-  // designer sees a focused decision point.
+  // Render the empty-state chooser as a stand-alone card until we have an
+  // id or a user choice; the workspace and side panels are hidden in that
+  // stage so the designer sees a focused decision point.
   if (stage === 'chooser') {
     return (
       <CRow>
@@ -1177,11 +1148,10 @@ const StrategyEditor = () => {
                   />
                 </CCol>
               </CRow>
-              {/* Sprint 7: mode selector + parent picker. Changing the
-                  mode swaps the toolbox via the useMemo above, which
-                  triggers the workspace useEffect to re-inject Blockly.
-                  Existing blocks in the workspace stay (Blockly keeps
-                  them) but the toolbox flyout changes. */}
+              {/* Mode selector + parent picker. Changing the mode swaps the
+                  toolbox via the useMemo above; the ``updateToolbox`` effect
+                  pushes it into the live workspace in place, so the blocks
+                  stay and only the flyout changes. */}
               <CRow className="mb-2">
                 <CCol md={6} data-tour="editor-mode">
                   <CFormLabel>
@@ -1229,9 +1199,8 @@ const StrategyEditor = () => {
               </CRow>
             </CForm>
 
-            {/* Sprint 4: block search. With 20+ blocks across categories,
-                scanning the toolbox is slow; typing here filters by block
-                name/category and a click drops the block on the canvas. */}
+            {/* Block search: with 20+ blocks, scanning the toolbox is slow;
+                typing filters by name/category and a click drops the block. */}
             <div className="position-relative mb-2" data-tour="editor-search">
               <CFormInput
                 type="search"
@@ -1371,9 +1340,9 @@ const StrategyEditor = () => {
                 {isSimulating ? <CSpinner size="sm" className="me-2" /> : null}
                 {t('buttons.test')}
               </CButton>
-              {/* Sprint 8: import/export bundles. Export is client-side
-                  (Blob + <a download>), import POSTs to /import which
-                  validates the AST and auto-renames on collision. */}
+              {/* Import/export bundles. Export is client-side (Blob + <a
+                  download>); import POSTs to /import, which validates the AST
+                  and auto-renames on collision. */}
               <CButton color="secondary" variant="outline" onClick={handleExport}>
                 {t('buttons.exportJson')}
               </CButton>
@@ -1386,9 +1355,8 @@ const StrategyEditor = () => {
                 {isImporting && <CSpinner size="sm" className="me-2" />}
                 {t('buttons.importJson')}
               </CButton>
-              {/* Sprint 9: only meaningful for already-persisted
-                  strategies — for a brand-new draft there's nothing
-                  to compare against yet. */}
+              {/* Only meaningful for already-persisted strategies — a
+                  brand-new draft has nothing to compare against yet. */}
               {strategyId && (
                 <CButton
                   color="secondary"
@@ -1399,10 +1367,10 @@ const StrategyEditor = () => {
                   {t('buttons.history')}
                 </CButton>
               )}
-              {/* Sprint 1 fix C2: admin-only lifecycle controls. Gated by
-                  role (UX hint; the server enforces require_admin) and by
-                  the backend state machine — Publish only from DRAFT,
-                  Archive from DRAFT or PUBLISHED. */}
+              {/* Admin-only lifecycle controls. Gated by role (UX hint; the
+                  server enforces require_admin) and by the backend state
+                  machine — Publish only from DRAFT, Archive from DRAFT or
+                  PUBLISHED. */}
               {canPublish && (
                 <CButton
                   color="success"
@@ -1435,7 +1403,7 @@ const StrategyEditor = () => {
               />
             </div>
 
-            {/* Sprint 3: autosave / unsaved-changes status line. */}
+            {/* Autosave / unsaved-changes status line. */}
             {(isAutosaving || autosaveError || (lastAutosaveAt && !isDirty)) && (
               <div className="mt-2 small">
                 {isAutosaving && (
@@ -1457,10 +1425,9 @@ const StrategyEditor = () => {
           </CCardBody>
         </CCard>
 
-        {/* Sprint 7: read-only side panel describing the parent the
-            designer is extending. Surfaces what variables can be
-            overridden + the parent's description so designers don't
-            have to context-switch to the API docs. */}
+        {/* Read-only side panel describing the parent being extended:
+            surfaces the overridable variables + description so designers
+            don't context-switch to the API docs. */}
         {mode === 'DSL_EXTEND' && parentSchema && (
           <CCard className="mb-4">
             <CCardHeader>
@@ -1726,8 +1693,8 @@ const StrategyEditor = () => {
                   </div>
                 </CAlert>
 
-                {/* Sprint 5: pin this run and compare it with the next one
-                    side-by-side, so a designer can see the effect of a tweak. */}
+                {/* Pin this run to compare it side-by-side with the next,
+                    so the effect of a tweak is visible. */}
                 <div className="d-flex align-items-center gap-2 mb-2">
                   <CButton size="sm" color="secondary" variant="outline" onClick={pinComparison}>
                     {t('simulate.compare.pin')}
@@ -1851,8 +1818,7 @@ const StrategyEditor = () => {
   )
 }
 
-// Sprint 5: format a points delta for the compare table with an explicit
-// sign so "+3" / "-2" read at a glance.
+// Format a points delta with an explicit sign so "+3" / "-2" read at a glance.
 function formatDelta(n) {
   const v = Number(n) || 0
   return v > 0 ? `+${v}` : String(v)
@@ -1867,9 +1833,8 @@ function deltaClass(n) {
   return 'text-medium-emphasis'
 }
 
-// Sprint 11: turn a validator error into a localised, actionable
-// string. Falls back to the English machine ``message`` when the code
-// has no translation (or the error carries no code at all).
+// Turn a validator error into a localised, actionable string. Falls back
+// to the English machine ``message`` when there's no code/translation.
 function friendlyValidationMessage(t, err) {
   if (err?.code) {
     return t(`validation.${err.code}`, {
@@ -1880,8 +1845,8 @@ function friendlyValidationMessage(t, err) {
   return err?.message || ''
 }
 
-// Sprint 11: clear every block warning bubble so a previous failed
-// validation doesn't leave stale markers after the designer fixes it.
+// Clear every block warning bubble so a previous failed validation doesn't
+// leave stale markers after the designer fixes it.
 function clearBlockWarnings(workspace) {
   if (!workspace) return
   for (const block of workspace.getAllBlocks(false)) {
@@ -1889,9 +1854,9 @@ function clearBlockWarnings(workspace) {
   }
 }
 
-// Sprint 11: attach the friendly message as a warning bubble on the
-// offending block and focus the first one, so the designer sees WHICH
-// block is wrong on the canvas instead of decoding a cryptic node id.
+// Attach the friendly message as a warning bubble on the offending block
+// and focus the first one, so the designer sees WHICH block is wrong
+// instead of decoding a cryptic node id.
 function highlightErrorBlocks(workspace, errors, t) {
   if (!workspace) return
   clearBlockWarnings(workspace)
@@ -1909,13 +1874,11 @@ function highlightErrorBlocks(workspace, errors, t) {
   }
 }
 
-// Sprint 8: the ``blocklyXml`` column in StrategyDefinition has carried
-// two shapes over time — Blockly's modern JSON state (what handleSave
-// writes via ``Blockly.serialization.workspaces.save``) and classic
-// Blockly XML (what the hand-authored templates ship). Both are still
-// useful so the loader sniffs the leading character instead of forcing
-// a migration. Empty / whitespace strings are a no-op so the chooser
-// can hand us blank canvases without crashing.
+// The ``blocklyXml`` column carries two shapes: Blockly's modern JSON
+// state (what handleSave writes) and classic Blockly XML (what the
+// hand-authored templates ship). The loader sniffs the leading character
+// instead of forcing a migration. Empty / whitespace strings are a no-op
+// so the chooser can hand us blank canvases without crashing.
 function loadWorkspaceFromSerialized(workspace, serialized) {
   if (!workspace || !serialized) return
   const trimmed = String(serialized).trim()
@@ -1928,10 +1891,9 @@ function loadWorkspaceFromSerialized(workspace, serialized) {
   }
 }
 
-// Sprint 7: dynamic toolbox flyout for the "Overrides padre" category.
-// Blockly calls this callback every time the designer opens the
-// category, so a parent change reflects immediately in the next click
-// without re-injecting the workspace. Returns an array of DOM elements
+// Dynamic toolbox flyout for the "Overrides padre" category. Blockly calls
+// this every time the category opens, so a parent change reflects on the
+// next click without re-injecting. Returns an array of DOM elements
 // (Blockly's expected shape for category callbacks).
 function _buildParentOverrideFlyout(workspace, parentSchema) {
   if (!parentSchema || !Array.isArray(parentSchema.variables)) {
