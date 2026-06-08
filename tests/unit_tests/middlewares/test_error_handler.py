@@ -48,9 +48,7 @@ def _build_app(*, with_catch_all: bool) -> FastAPI:
 
 
 def test_unhandled_500_keeps_cors_header_and_json_body():
-    client = TestClient(
-        _build_app(with_catch_all=True), raise_server_exceptions=False
-    )
+    client = TestClient(_build_app(with_catch_all=True), raise_server_exceptions=False)
 
     resp = client.get("/boom", headers={"Origin": ORIGIN})
 
@@ -63,9 +61,7 @@ def test_without_middleware_500_loses_cors_header():
     """Control: this is the bug the middleware fixes — a raw 500 has no
     ``access-control-allow-origin`` header, so the browser reports a generic
     network failure instead of the real status."""
-    client = TestClient(
-        _build_app(with_catch_all=False), raise_server_exceptions=False
-    )
+    client = TestClient(_build_app(with_catch_all=False), raise_server_exceptions=False)
 
     resp = client.get("/boom", headers={"Origin": ORIGIN})
 
@@ -76,9 +72,7 @@ def test_without_middleware_500_loses_cors_header():
 def test_http_exception_still_maps_to_4xx_with_cors():
     """The catch-all must not swallow ``HTTPException`` — those are handled by
     Starlette's ExceptionMiddleware (inside CORS) and keep their status."""
-    client = TestClient(
-        _build_app(with_catch_all=True), raise_server_exceptions=False
-    )
+    client = TestClient(_build_app(with_catch_all=True), raise_server_exceptions=False)
 
     resp = client.get("/http-error", headers={"Origin": ORIGIN})
 
