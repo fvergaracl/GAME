@@ -225,6 +225,28 @@ async def test_get_all_games_page_size_counts_games_not_param_rows(
 
 
 @pytest.mark.asyncio
+async def test_get_all_games_string_page_size_loads_first_page(repository, db_session):
+    # Regression for the "Network Error" on /admin/games (and the strategy
+    # assignments view, which calls listGames). Query-string params arrive as
+    # strings, and under Pydantic v2 smart-union ``page_size`` stayed "20".
+    # On page 1 the repository computed ``(1 - 1) * "20" == ""`` (Python
+    # string repetition), so ``.offset("")`` reached SQLAlchemy as
+    # ``int("")`` → ValueError → 500 (surfaced as a CORS-less "Network
+    # Error" in the browser). ``FindBase`` now coerces numeric page_size
+    # strings to int, so the default first page loads.
+    for i in range(3):
+        await _seed_game(db_session, external_id=f"ext-str-{i}")
+
+    schema = PostFindGame(ordering="externalGameId", page=1, page_size="20")
+    assert schema.page_size == 20  # coerced by the FindBase validator
+
+    result = await repository.get_all_games(schema, is_admin=True)
+
+    assert result.search_options.total_count == 3
+    assert len(result.items) == 3
+
+
+@pytest.mark.asyncio
 async def test_list_external_ids_maps_ids_to_external(repository, db_session):
     game_a = await _seed_game(db_session, external_id="ext-a")
     game_b = await _seed_game(db_session, external_id="ext-b")

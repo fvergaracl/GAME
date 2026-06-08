@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional, Union
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class RootEndpoint(BaseModel):
@@ -104,6 +104,26 @@ class FindBase(BaseModel):
         description="Page size for pagination, or endpoint-specific string value.",
         examples=[10],
     )
+
+    @field_validator("page_size", mode="before")
+    @classmethod
+    def _coerce_numeric_page_size(cls, value):
+        """Coerce a numeric ``page_size`` string into an ``int``.
+
+        Query-string params arrive as strings, and under Pydantic v2's
+        smart union ``Union[int, str]`` keeps a numeric string as ``str``
+        (it prefers the exact ``str`` match). That left ``page_size="20"``
+        as a string, which the repositories then fed into
+        ``(page - 1) * page_size``. On the first page that is
+        ``0 * "20" == ""`` (Python string repetition), so ``.offset("")``
+        reached SQLAlchemy as ``int("")`` and raised ``ValueError`` → 500.
+        Coerce digit strings to ``int`` here; non-numeric sentinels such as
+        ``"all"`` (used by endpoints that support unpaginated reads) pass
+        through untouched.
+        """
+        if isinstance(value, str) and value.strip().isdigit():
+            return int(value.strip())
+        return value
 
 
 class SearchOptions(FindBase):

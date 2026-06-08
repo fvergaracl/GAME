@@ -8,6 +8,7 @@ execute, so the high-level orchestration is exercised by mocking the
 constructor wiring run on the real classes.
 """
 
+from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -128,3 +129,58 @@ def test_process_query_with_no_filters_returns_query_unchanged():
     assert result is query
     query.filter.assert_not_called()
     query.group_by.assert_not_called()
+
+
+def test_parse_date_boundary_parses_iso_and_rejects_garbage():
+    """
+    Regression for the dashboard 500 ("Couldn't load dashboard metrics").
+    Date params arrive as strings; comparing them against the ``timestamptz``
+    ``created_at`` column made Postgres reject the query
+    (``operator does not exist: timestamp with time zone >= character
+    varying``). They must be parsed to real datetimes; malformed input is a
+    4xx, not a 500.
+    """
+    assert DashboardRepository._parse_date_boundary(None) is None
+    assert DashboardRepository._parse_date_boundary("") is None
+
+    parsed = DashboardRepository._parse_date_boundary("2026-05-09")
+    assert isinstance(parsed, datetime)
+    assert (parsed.year, parsed.month, parsed.day) == (2026, 5, 9)
+
+    # Already-typed values pass through untouched.
+    existing = datetime(2026, 6, 8)
+    assert DashboardRepository._parse_date_boundary(existing) is existing
+
+    with pytest.raises(BadRequestError):
+        DashboardRepository._parse_date_boundary("not-a-date")
+
+
+def test_process_query_filters_on_supplied_models_created_at(repository):
+    """
+    The date filter must target the ``created_at`` of the model being
+    aggregated. It used to always filter ``model_users.created_at``, which
+    cross-joined ``Users`` into the games/logs/points/actions queries and
+    skewed their counts.
+    """
+    from app.model.games import Games
+
+    query = MagicMock()
+    query.filter.return_value = query
+
+    repository.process_query(query, model=Games, start_date="2026-05-09")
+
+    rendered = str(query.filter.call_args[0][0])
+    assert f"{Games.__tablename__}.created_at" in rendered
+    assert f"{repository.model_users.__tablename__}.created_at" not in rendered
+
+
+def test_process_query_defaults_to_users_model(repository):
+    """When no model is supplied the filter falls back to ``model_users``,
+    preserving the original users-summary behaviour."""
+    query = MagicMock()
+    query.filter.return_value = query
+
+    repository.process_query(query, start_date="2026-05-09")
+
+    rendered = str(query.filter.call_args[0][0])
+    assert f"{repository.model_users.__tablename__}.created_at" in rendered

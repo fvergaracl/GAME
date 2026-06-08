@@ -1,4 +1,5 @@
 from contextlib import AbstractAsyncContextManager
+from datetime import date, datetime
 from typing import Callable, Dict, List, Union
 
 from sqlalchemy import String, case, func, select
@@ -41,16 +42,50 @@ class DashboardRepository(BaseRepository):
         self.model_user_actions = model_user_actions
         super().__init__(session_factory, model_games)
 
+    @staticmethod
+    def _parse_date_boundary(value):
+        """Coerce an incoming date string into a ``datetime``.
+
+        The ``start_date``/``end_date`` query params arrive as strings
+        (``Query(None)`` typed ``str``). Feeding them straight into a
+        comparison against the ``created_at`` (``timestamptz``) column made
+        asyncpg bind them as ``varchar``, so Postgres rejected the query with
+        ``operator does not exist: timestamp with time zone >= character
+        varying`` (a 500). Parsing to a real ``datetime`` binds the right
+        type. Empty/``None`` means "no boundary"; a malformed value is a
+        client error, not a server crash.
+        """
+        if value is None or value == "":
+            return None
+        if isinstance(value, (datetime, date)):
+            return value
+        try:
+            return datetime.fromisoformat(value)
+        except (TypeError, ValueError) as exc:
+            raise BadRequestError(
+                f"Invalid date '{value}'. Expected ISO 8601, e.g. 2026-05-09."
+            ) from exc
+
     def process_query(
-        self, query, start_date=None, end_date=None, group_by_column=None
+        self, query, model=None, start_date=None, end_date=None, group_by_column=None
     ):
         """
         Processes the SELECT statement by filtering and grouping the results.
+
+        The date filter is applied to the ``created_at`` column of the model
+        actually being aggregated (``model``); it previously always filtered
+        ``model_users.created_at``, which cross-joined ``Users`` into queries
+        over ``Games``/``Logs``/``UserPoints``/``UserActions`` and skewed
+        their counts. ``model`` defaults to ``model_users`` to preserve the
+        users-summary behaviour when a caller omits it.
         """
+        date_model = model if model is not None else self.model_users
+        start_date = self._parse_date_boundary(start_date)
+        end_date = self._parse_date_boundary(end_date)
         if start_date:
-            query = query.filter(self.model_users.created_at >= start_date)
+            query = query.filter(date_model.created_at >= start_date)
         if end_date:
-            query = query.filter(self.model_users.created_at <= end_date)
+            query = query.filter(date_model.created_at <= end_date)
         if group_by_column is not None:
             query = query.group_by(group_by_column)
 
@@ -110,7 +145,9 @@ class DashboardRepository(BaseRepository):
         """Executes a query for a specific model and aggregation field."""
         async with self.session_factory() as session:
             stmt = select(group_by_column, aggregation_field.label("count"))
-            stmt = self.process_query(stmt, start_date, end_date, group_by_column)
+            stmt = self.process_query(
+                stmt, model, start_date, end_date, group_by_column
+            )
             results = (await session.execute(stmt)).all()
             return [
                 {"label": str(result[0]), "count": result.count} for result in results
