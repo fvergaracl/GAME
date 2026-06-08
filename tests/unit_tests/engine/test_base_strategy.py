@@ -72,6 +72,12 @@ async def test_base_strategy_default_behaviour_methods():
 def test_base_strategy_debug_print_only_when_enabled(caplog):
     caplog.set_level(logging.DEBUG, logger="app.engine.base_strategy")
     strategy = BaseStrategy()
+
+    # ``debug_print`` is gated on the per-instance ``debug`` flag, which the
+    # constructor derives from the environment (``ENV == "dev"``). Pin it
+    # explicitly so the test asserts the gating contract itself rather than
+    # the ambient ENV — otherwise it fails for any dev running with ENV=dev.
+    strategy.debug = False
     strategy.debug_print("hidden")
     assert "hidden" not in caplog.text
 

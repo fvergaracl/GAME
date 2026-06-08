@@ -1,6 +1,6 @@
 from pydantic import ConfigDict
 from sqlalchemy.dialects.postgresql import UUID
-from sqlmodel import JSON, Column, Field, ForeignKey, SQLModel, String
+from sqlmodel import JSON, Column, Field, ForeignKey, String
 
 from app.model.base_model import BaseModel
 

@@ -21,9 +21,7 @@ apiClient.interceptors.request.use(
         // Refresh failed (Keycloak SSO session expired) → bounce the
         // user back through the login flow.
         keycloak.login()
-        return Promise.reject(
-          new axios.Cancel('Keycloak session expired, redirecting to login'),
-        )
+        return Promise.reject(new axios.Cancel('Keycloak session expired, redirecting to login'))
       }
       if (keycloak.token) {
         config.headers.Authorization = `Bearer ${keycloak.token}`
@@ -315,10 +313,9 @@ export const patchGameStrategy = async (gameId, strategyId) => {
 }
 
 export const patchTaskStrategy = async (gameId, taskId, strategyId) => {
-  return patchRequest(
-    `/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(taskId)}`,
-    { strategyId },
-  )
+  return patchRequest(`/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(taskId)}`, {
+    strategyId,
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -386,9 +383,7 @@ export const updateTask = async (gameId, taskId, payload) => {
 }
 
 export const deleteTask = async (gameId, taskId) => {
-  return deleteRequest(
-    `/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(taskId)}`,
-  )
+  return deleteRequest(`/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(taskId)}`)
 }
 
 export const duplicateTask = async (gameId, taskId, { externalTaskId }) => {

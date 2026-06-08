@@ -40,13 +40,13 @@ export const FUNC_ARITY = { int: 1, clamp: 3 }
 // validator uses this map to reject set_data outside pre_rules,
 // set_points outside post_rules, etc.
 export const STATEMENT_ALLOWED_CONTEXTS = {
-  assign_points:     new Set(['rule', 'default']),
+  assign_points: new Set(['rule', 'default']),
   set_callback_data: new Set(['rule', 'default', 'pre', 'post']),
-  return:            new Set(['rule', 'default', 'pre', 'post']),
-  set_data:          new Set(['pre']),
-  veto:              new Set(['pre']),
-  set_points:        new Set(['post']),
-  set_case_name:     new Set(['post']),
+  return: new Set(['rule', 'default', 'pre', 'post']),
+  set_data: new Set(['pre']),
+  veto: new Set(['pre']),
+  set_points: new Set(['post']),
+  set_case_name: new Set(['post']),
 }
 
 // Sprint 7: keys that are NOT valid inside parent_variables. Currently

@@ -31,9 +31,7 @@ function _canonical(value) {
     return `[${value.map(_canonical).join(',')}]`
   }
   const keys = Object.keys(value).sort()
-  return `{${keys
-    .map((k) => `${JSON.stringify(k)}:${_canonical(value[k])}`)
-    .join(',')}}`
+  return `{${keys.map((k) => `${JSON.stringify(k)}:${_canonical(value[k])}`).join(',')}}`
 }
 
 function _deepEqual(a, b) {

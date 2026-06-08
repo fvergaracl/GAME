@@ -1,5 +1,3 @@
-from pydantic import ConfigDict
-
 """
 transactions Types:
 {
@@ -23,6 +21,7 @@ transactions Types:
 
 """
 
+from pydantic import ConfigDict
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlmodel import Column, Field, Float, ForeignKey, Integer, String
 

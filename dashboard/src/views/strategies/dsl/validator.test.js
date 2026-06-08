@@ -98,7 +98,14 @@ describe('validateAst — field paths', () => {
             left: { type: 'field', id: 'f', path: '__proto__' },
             right: { type: 'literal', id: 'l', value: 1 },
           },
-          then: [{ type: 'assign_points', id: 'a', value: { type: 'literal', id: 'lv', value: 1 }, case_name: 'x' }],
+          then: [
+            {
+              type: 'assign_points',
+              id: 'a',
+              value: { type: 'literal', id: 'lv', value: 1 },
+              case_name: 'x',
+            },
+          ],
         },
       ],
     })
@@ -122,7 +129,14 @@ describe('validateAst — field paths', () => {
             left: { type: 'field', id: 'f', path: 'data.my_custom_metric' },
             right: { type: 'literal', id: 'l', value: 0 },
           },
-          then: [{ type: 'assign_points', id: 'a', value: { type: 'literal', id: 'lv', value: 1 }, case_name: 'x' }],
+          then: [
+            {
+              type: 'assign_points',
+              id: 'a',
+              value: { type: 'literal', id: 'lv', value: 1 },
+              case_name: 'x',
+            },
+          ],
         },
       ],
     })
@@ -143,7 +157,14 @@ describe('validateAst — field paths', () => {
             left: { type: 'field', id: 'f', path: 'data.nested.field' },
             right: { type: 'literal', id: 'l', value: 1 },
           },
-          then: [{ type: 'assign_points', id: 'a', value: { type: 'literal', id: 'lv', value: 1 }, case_name: 'x' }],
+          then: [
+            {
+              type: 'assign_points',
+              id: 'a',
+              value: { type: 'literal', id: 'lv', value: 1 },
+              case_name: 'x',
+            },
+          ],
         },
       ],
     })
@@ -224,7 +245,14 @@ describe('validateAst — operators', () => {
             left: { type: 'literal', id: 'll', value: 1 },
             right: { type: 'literal', id: 'lr', value: 1 },
           },
-          then: [{ type: 'assign_points', id: 'a', value: { type: 'literal', id: 'lv', value: 1 }, case_name: 'x' }],
+          then: [
+            {
+              type: 'assign_points',
+              id: 'a',
+              value: { type: 'literal', id: 'lv', value: 1 },
+              case_name: 'x',
+            },
+          ],
         },
       ],
     })
@@ -336,7 +364,14 @@ describe('validateAst — case_name', () => {
           type: 'rule',
           id: 'r',
           when: { type: 'literal', id: 'lt', value: true },
-          then: [{ type: 'assign_points', id: 'a', value: { type: 'literal', id: 'lv', value: 1 }, case_name: '' }],
+          then: [
+            {
+              type: 'assign_points',
+              id: 'a',
+              value: { type: 'literal', id: 'lv', value: 1 },
+              case_name: '',
+            },
+          ],
         },
       ],
     })
@@ -352,7 +387,14 @@ describe('validateAst — case_name', () => {
           type: 'rule',
           id: 'r',
           when: { type: 'literal', id: 'lt', value: true },
-          then: [{ type: 'assign_points', id: 'a', value: { type: 'literal', id: 'lv', value: 1 }, case_name: 'bad\x00name' }],
+          then: [
+            {
+              type: 'assign_points',
+              id: 'a',
+              value: { type: 'literal', id: 'lv', value: 1 },
+              case_name: 'bad\x00name',
+            },
+          ],
         },
       ],
     })
@@ -384,12 +426,15 @@ describe('validateAst — Sprint 7 pre/post sections', () => {
       rules: [],
       pre_rules: [
         _ruleWith({
-          type: 'set_data', id: 'sd',
-          key: 'is_first', value: { type: 'literal', id: 'lv', value: true },
+          type: 'set_data',
+          id: 'sd',
+          key: 'is_first',
+          value: { type: 'literal', id: 'lv', value: true },
         }),
       ],
       default: {
-        type: 'assign_points', id: 'd',
+        type: 'assign_points',
+        id: 'd',
         value: { type: 'literal', id: 'ld', value: 1 },
         case_name: 'fallback',
       },
@@ -403,12 +448,14 @@ describe('validateAst — Sprint 7 pre/post sections', () => {
       rules: [],
       post_rules: [
         _ruleWith({
-          type: 'set_points', id: 'sp',
+          type: 'set_points',
+          id: 'sp',
           value: { type: 'field', id: 'fp', path: 'parent.points' },
         }),
       ],
       default: {
-        type: 'assign_points', id: 'd',
+        type: 'assign_points',
+        id: 'd',
         value: { type: 'literal', id: 'ld', value: 1 },
         case_name: 'fallback',
       },
@@ -421,14 +468,14 @@ describe('validateAst — Sprint 7 pre/post sections', () => {
       id: 'p',
       rules: [
         _ruleWith({
-          type: 'set_data', id: 'sd',
-          key: 'x', value: { type: 'literal', id: 'lv', value: 1 },
+          type: 'set_data',
+          id: 'sd',
+          key: 'x',
+          value: { type: 'literal', id: 'lv', value: 1 },
         }),
       ],
     })
-    expect(
-      errs.some((e) => /not allowed inside 'rule'/.test(e.message)),
-    ).toBe(true)
+    expect(errs.some((e) => /not allowed inside 'rule'/.test(e.message))).toBe(true)
   })
 
   it('rejects set_points inside pre_rules (must be in post)', () => {
@@ -438,16 +485,19 @@ describe('validateAst — Sprint 7 pre/post sections', () => {
       rules: [],
       pre_rules: [
         _ruleWith({
-          type: 'set_points', id: 'sp',
+          type: 'set_points',
+          id: 'sp',
           value: { type: 'literal', id: 'lv', value: 5 },
         }),
       ],
-      default: { type: 'assign_points', id: 'd',
-        value: { type: 'literal', id: 'ld', value: 1 }, case_name: 'x' },
+      default: {
+        type: 'assign_points',
+        id: 'd',
+        value: { type: 'literal', id: 'ld', value: 1 },
+        case_name: 'x',
+      },
     })
-    expect(
-      errs.some((e) => /not allowed inside 'pre'/.test(e.message)),
-    ).toBe(true)
+    expect(errs.some((e) => /not allowed inside 'pre'/.test(e.message))).toBe(true)
   })
 
   it('rejects assign_points inside post_rules (post uses set_points)', () => {
@@ -457,29 +507,29 @@ describe('validateAst — Sprint 7 pre/post sections', () => {
       rules: [],
       post_rules: [
         _ruleWith({
-          type: 'assign_points', id: 'a',
-          value: { type: 'literal', id: 'lv', value: 1 }, case_name: 'x',
+          type: 'assign_points',
+          id: 'a',
+          value: { type: 'literal', id: 'lv', value: 1 },
+          case_name: 'x',
         }),
       ],
-      default: { type: 'assign_points', id: 'd',
-        value: { type: 'literal', id: 'ld', value: 1 }, case_name: 'x' },
+      default: {
+        type: 'assign_points',
+        id: 'd',
+        value: { type: 'literal', id: 'ld', value: 1 },
+        case_name: 'x',
+      },
     })
-    expect(
-      errs.some((e) => /not allowed inside 'post'/.test(e.message)),
-    ).toBe(true)
+    expect(errs.some((e) => /not allowed inside 'post'/.test(e.message))).toBe(true)
   })
 
   it('rejects veto outside pre_rules', () => {
     const errs = _errors({
       type: 'program',
       id: 'p',
-      rules: [
-        _ruleWith({ type: 'veto', id: 'v', case_name: 'TooEarly' }),
-      ],
+      rules: [_ruleWith({ type: 'veto', id: 'v', case_name: 'TooEarly' })],
     })
-    expect(
-      errs.some((e) => /'veto' is not allowed inside 'rule'/.test(e.message)),
-    ).toBe(true)
+    expect(errs.some((e) => /'veto' is not allowed inside 'rule'/.test(e.message))).toBe(true)
   })
 
   it('rejects parent.points inside main rules', () => {
@@ -488,116 +538,149 @@ describe('validateAst — Sprint 7 pre/post sections', () => {
       id: 'p',
       rules: [
         {
-          type: 'rule', id: 'r',
+          type: 'rule',
+          id: 'r',
           when: {
-            type: 'compare', id: 'c', op: '>',
+            type: 'compare',
+            id: 'c',
+            op: '>',
             left: { type: 'field', id: 'fp', path: 'parent.points' },
             right: { type: 'literal', id: 'l', value: 0 },
           },
-          then: [{ type: 'assign_points', id: 'a',
-            value: { type: 'literal', id: 'lv', value: 1 }, case_name: 'x' }],
+          then: [
+            {
+              type: 'assign_points',
+              id: 'a',
+              value: { type: 'literal', id: 'lv', value: 1 },
+              case_name: 'x',
+            },
+          ],
         },
       ],
     })
-    expect(
-      errs.some((e) =>
-        /only available inside post_rules/.test(e.message),
-      ),
-    ).toBe(true)
+    expect(errs.some((e) => /only available inside post_rules/.test(e.message))).toBe(true)
   })
 })
 
 describe('validateAst — Sprint 7 parent_variables', () => {
   it('accepts a parent_variables map with scalar values', () => {
     _ok({
-      type: 'program', id: 'p',
+      type: 'program',
+      id: 'p',
       rules: [],
       parent_variables: {
         variable_basic_points: 1,
         variable_bonus_points: 10,
         variable_label: 'override',
       },
-      default: { type: 'assign_points', id: 'd',
-        value: { type: 'literal', id: 'ld', value: 1 }, case_name: 'x' },
+      default: {
+        type: 'assign_points',
+        id: 'd',
+        value: { type: 'literal', id: 'ld', value: 1 },
+        case_name: 'x',
+      },
     })
   })
 
   it('rejects parent_variables keys not starting with variable_', () => {
     const errs = _errors({
-      type: 'program', id: 'p',
+      type: 'program',
+      id: 'p',
       rules: [],
       parent_variables: { debug: true },
-      default: { type: 'assign_points', id: 'd',
-        value: { type: 'literal', id: 'ld', value: 1 }, case_name: 'x' },
+      default: {
+        type: 'assign_points',
+        id: 'd',
+        value: { type: 'literal', id: 'ld', value: 1 },
+        case_name: 'x',
+      },
     })
-    expect(
-      errs.some((e) => /must start with 'variable_'/.test(e.message)),
-    ).toBe(true)
+    expect(errs.some((e) => /must start with 'variable_'/.test(e.message))).toBe(true)
   })
 
   it('rejects non-scalar parent_variables values', () => {
     const errs = _errors({
-      type: 'program', id: 'p',
+      type: 'program',
+      id: 'p',
       rules: [],
       parent_variables: { variable_basic_points: [1, 2, 3] },
-      default: { type: 'assign_points', id: 'd',
-        value: { type: 'literal', id: 'ld', value: 1 }, case_name: 'x' },
+      default: {
+        type: 'assign_points',
+        id: 'd',
+        value: { type: 'literal', id: 'ld', value: 1 },
+        case_name: 'x',
+      },
     })
-    expect(
-      errs.some((e) => /must be a JSON scalar/.test(e.message)),
-    ).toBe(true)
+    expect(errs.some((e) => /must be a JSON scalar/.test(e.message))).toBe(true)
   })
 
   it('rejects parent_variables when not an object', () => {
     const errs = _errors({
-      type: 'program', id: 'p',
+      type: 'program',
+      id: 'p',
       rules: [],
       parent_variables: ['variable_x', 1],
-      default: { type: 'assign_points', id: 'd',
-        value: { type: 'literal', id: 'ld', value: 1 }, case_name: 'x' },
+      default: {
+        type: 'assign_points',
+        id: 'd',
+        value: { type: 'literal', id: 'ld', value: 1 },
+        case_name: 'x',
+      },
     })
-    expect(
-      errs.some((e) => /must be an object/.test(e.message)),
-    ).toBe(true)
+    expect(errs.some((e) => /must be an object/.test(e.message))).toBe(true)
   })
 })
 
 describe('validateAst — else-if / else branches', () => {
   const assign = (id, caseName) => ({
-    type: 'assign_points', id,
-    value: { type: 'literal', id: `${id}_v`, value: 1 }, case_name: caseName,
+    type: 'assign_points',
+    id,
+    value: { type: 'literal', id: `${id}_v`, value: 1 },
+    case_name: caseName,
   })
   const ruleWith = (extra) => ({
-    type: 'program', id: 'p',
-    rules: [{
-      type: 'rule', id: 'r1',
-      when: { type: 'literal', id: 'w', value: true },
-      then: [assign('a1', 'A')],
-      ...extra,
-    }],
+    type: 'program',
+    id: 'p',
+    rules: [
+      {
+        type: 'rule',
+        id: 'r1',
+        when: { type: 'literal', id: 'w', value: true },
+        then: [assign('a1', 'A')],
+        ...extra,
+      },
+    ],
   })
 
   it('accepts a rule with else_if and else branches', () => {
-    _ok(ruleWith({
-      else_if: [{
-        when: { type: 'literal', id: 'w2', value: true },
-        then: [assign('a2', 'B')],
-      }],
-      else: [assign('a3', 'C')],
-    }))
+    _ok(
+      ruleWith({
+        else_if: [
+          {
+            when: { type: 'literal', id: 'w2', value: true },
+            then: [assign('a2', 'B')],
+          },
+        ],
+        else: [assign('a3', 'C')],
+      }),
+    )
   })
 
   it('rejects an else_if branch with an empty then', () => {
-    const errs = _errors(ruleWith({
-      else_if: [{ when: { type: 'literal', id: 'w2', value: true }, then: [] }],
-    }))
+    const errs = _errors(
+      ruleWith({
+        else_if: [{ when: { type: 'literal', id: 'w2', value: true }, then: [] }],
+      }),
+    )
     expect(errs.some((e) => /non-empty array of statements/.test(e.message))).toBe(true)
   })
 
   it('rejects an else_if branch missing when', () => {
-    const errs = _errors(ruleWith({
-      else_if: [{ then: [assign('a2', 'B')] }],
-    }))
+    const errs = _errors(
+      ruleWith({
+        else_if: [{ then: [assign('a2', 'B')] }],
+      }),
+    )
     expect(errs.some((e) => /when is required/.test(e.message))).toBe(true)
   })
 
@@ -615,13 +698,17 @@ describe('validateAst — else-if / else branches', () => {
     // A veto statement is only valid in pre-rules; placing it in a main
     // rule's else branch must be rejected just like in its then.
     const errs = _errors({
-      type: 'program', id: 'p',
-      rules: [{
-        type: 'rule', id: 'r1',
-        when: { type: 'literal', id: 'w', value: true },
-        then: [assign('a1', 'A')],
-        else: [{ type: 'veto', id: 'v1', case_name: 'Nope' }],
-      }],
+      type: 'program',
+      id: 'p',
+      rules: [
+        {
+          type: 'rule',
+          id: 'r1',
+          when: { type: 'literal', id: 'w', value: true },
+          then: [assign('a1', 'A')],
+          else: [{ type: 'veto', id: 'v1', case_name: 'Nope' }],
+        },
+      ],
     })
     expect(errs.some((e) => /not allowed inside 'rule'/.test(e.message))).toBe(true)
   })

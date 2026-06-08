@@ -237,32 +237,6 @@ class AllPointsByGameWithDetails(BaseModel):
     )
 
 
-class AllPointsByGameWithDetails(BaseModel):
-    """
-    Detailed aggregated points view for an entire game.
-
-    Attributes:
-        externalGameId (str): Consumer-facing game identifier.
-        created_at (str): Snapshot creation timestamp.
-        task (List[TaskPointsByGameWithDetails]): Detailed task-level points.
-    """
-
-    externalGameId: str = Field(
-        ...,
-        description="External identifier of the game.",
-        examples=["game-city-mobility"],
-    )
-    created_at: str = Field(
-        ...,
-        description="Timestamp when this points snapshot was produced.",
-        examples=["2026-02-10T12:20:00Z"],
-    )
-    task: List[TaskPointsByGameWithDetails] = Field(
-        ...,
-        description="Detailed task-level points aggregation for this game.",
-    )
-
-
 class BaseUserPointsBaseModel(PostAssignPointsToUser):
     """
     Internal base schema for points assignment tied to an internal user.

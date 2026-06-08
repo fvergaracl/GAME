@@ -23,14 +23,6 @@ from typing import List, Optional
 
 from app.core.exceptions import (BadRequestError, ConflictError, DuplicatedError,
                                  NotFoundError)
-
-# Kept in sync with ``CUSTOM_STRATEGY_PREFIX`` in
-# ``app/services/strategy_service.py``. We inline the literal here
-# instead of importing it because ``StrategyService`` already imports
-# this module — pulling the constant back the other way would create a
-# circular module dependency (same reason ``_validate_payload`` doesn't
-# resolve parent strategies; see comment below).
-_CUSTOM_STRATEGY_PREFIX = "custom:"
 from app.engine.dsl_validator import validate_ast
 from app.model.strategy_definition import (StrategyDefinition, StrategyDefinitionStatus,
                                            StrategyDefinitionType)
@@ -42,6 +34,14 @@ from app.schema.strategy_definition_schema import (StrategyDefinitionCreate,
                                                    StrategyUsageGame, StrategyUsageRead,
                                                    StrategyUsageTask)
 from app.services.base_service import BaseService
+
+# Kept in sync with ``CUSTOM_STRATEGY_PREFIX`` in
+# ``app/services/strategy_service.py``. We inline the literal here
+# instead of importing it because ``StrategyService`` already imports
+# this module — pulling the constant back the other way would create a
+# circular module dependency (same reason ``_validate_payload`` doesn't
+# resolve parent strategies; see comment below).
+_CUSTOM_STRATEGY_PREFIX = "custom:"
 
 
 @dataclass(frozen=True)

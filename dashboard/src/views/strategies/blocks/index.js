@@ -233,9 +233,7 @@ const RULE_MUTATOR_MIXIN = {
       clauseBlock = clauseBlock.getNextBlock()
     }
     this.updateShape_()
-    this.reconnectChildBlocks_(
-      valueConnections, statementConnections, elseStatementConnection,
-    )
+    this.reconnectChildBlocks_(valueConnections, statementConnections, elseStatementConnection)
   },
 
   saveConnections(containerBlock) {
@@ -247,17 +245,14 @@ const RULE_MUTATOR_MIXIN = {
           case 'gd_rule_elseif': {
             const inputIf = this.getInput('IF' + i)
             const inputDo = this.getInput('DO' + i)
-            clauseBlock.valueConnection_ =
-              inputIf && inputIf.connection.targetConnection
-            clauseBlock.statementConnection_ =
-              inputDo && inputDo.connection.targetConnection
+            clauseBlock.valueConnection_ = inputIf && inputIf.connection.targetConnection
+            clauseBlock.statementConnection_ = inputDo && inputDo.connection.targetConnection
             i++
             break
           }
           case 'gd_rule_else': {
             const inputElse = this.getInput('ELSE')
-            clauseBlock.statementConnection_ =
-              inputElse && inputElse.connection.targetConnection
+            clauseBlock.statementConnection_ = inputElse && inputElse.connection.targetConnection
             break
           }
           default:
@@ -282,9 +277,7 @@ const RULE_MUTATOR_MIXIN = {
       statementConnections.push(inputDo.connection.targetConnection)
     }
     this.updateShape_()
-    this.reconnectChildBlocks_(
-      valueConnections, statementConnections, elseStatementConnection,
-    )
+    this.reconnectChildBlocks_(valueConnections, statementConnections, elseStatementConnection)
   },
 
   updateShape_() {
@@ -302,15 +295,11 @@ const RULE_MUTATOR_MIXIN = {
         .appendField(label('then'))
     }
     if (this.elseCount_) {
-      this.appendStatementInput('ELSE')
-        .setCheck('Statement')
-        .appendField(label('else'))
+      this.appendStatementInput('ELSE').setCheck('Statement').appendField(label('else'))
     }
   },
 
-  reconnectChildBlocks_(
-    valueConnections, statementConnections, elseStatementConnection,
-  ) {
+  reconnectChildBlocks_(valueConnections, statementConnections, elseStatementConnection) {
     for (let i = 1; i <= this.elseifCount_; i++) {
       if (valueConnections[i]) valueConnections[i].reconnect(this, 'IF' + i)
       if (statementConnections[i]) {
@@ -363,12 +352,10 @@ function registerRuleMutator(Blockly) {
   }
 
   if (!Blockly.Extensions.isRegistered('gd_rule_mutator')) {
-    Blockly.Extensions.registerMutator(
-      'gd_rule_mutator',
-      RULE_MUTATOR_MIXIN,
-      null,
-      ['gd_rule_elseif', 'gd_rule_else'],
-    )
+    Blockly.Extensions.registerMutator('gd_rule_mutator', RULE_MUTATOR_MIXIN, null, [
+      'gd_rule_elseif',
+      'gd_rule_else',
+    ])
   }
 }
 
@@ -385,12 +372,8 @@ function defineRuleBlock(Blockly, name, { whenLabel, colour, tooltipKey, helpUrl
       // a compare wrapper, mirroring the backend interpreter at
       // app/engine/dsl_interpreter.py ("Allow bare expressions as
       // conditions").
-      this.appendValueInput('WHEN')
-        .setCheck(['Boolean', 'Number'])
-        .appendField(label(whenLabel))
-      this.appendStatementInput('THEN')
-        .setCheck('Statement')
-        .appendField(label('then'))
+      this.appendValueInput('WHEN').setCheck(['Boolean', 'Number']).appendField(label(whenLabel))
+      this.appendStatementInput('THEN').setCheck('Statement').appendField(label('then'))
       this.setColour(colour)
       this.setTooltip(tooltip(tooltipKey))
       this.setHelpUrl(helpUrl)
@@ -438,8 +421,10 @@ export function registerDslBlocks(tFn) {
   Blockly.Blocks.gd_compare = {
     init() {
       this.appendValueInput('LEFT').setCheck(['Number', 'String'])
-      this.appendDummyInput()
-        .appendField(new Blockly.FieldDropdown(optionsFromArray(COMPARE_OPS)), 'OP')
+      this.appendDummyInput().appendField(
+        new Blockly.FieldDropdown(optionsFromArray(COMPARE_OPS)),
+        'OP',
+      )
       this.appendValueInput('RIGHT').setCheck(['Number', 'String'])
       this.setInputsInline(true)
       this.setOutput(true, 'Boolean')
@@ -523,8 +508,7 @@ export function registerDslBlocks(tFn) {
   // ---- gd_literal_number / gd_literal_text -------------------------------
   Blockly.Blocks.gd_literal_number = {
     init() {
-      this.appendDummyInput()
-        .appendField(new Blockly.FieldNumber(0), 'VALUE')
+      this.appendDummyInput().appendField(new Blockly.FieldNumber(0), 'VALUE')
       this.setOutput(true, 'Number')
       this.setColour(330)
       this.setTooltip(tooltip('gd_literal_number'))
@@ -548,8 +532,10 @@ export function registerDslBlocks(tFn) {
   Blockly.Blocks.gd_arith = {
     init() {
       this.appendValueInput('LEFT').setCheck('Number')
-      this.appendDummyInput()
-        .appendField(new Blockly.FieldDropdown(optionsFromArray(ARITH_OPS)), 'OP')
+      this.appendDummyInput().appendField(
+        new Blockly.FieldDropdown(optionsFromArray(ARITH_OPS)),
+        'OP',
+      )
       this.appendValueInput('RIGHT').setCheck('Number')
       this.setInputsInline(true)
       this.setOutput(true, 'Number')
@@ -564,21 +550,17 @@ export function registerDslBlocks(tFn) {
   // ``int`` exposes one arg (VALUE); ``clamp`` exposes three (VALUE, LO, HI).
   Blockly.Blocks.gd_func_call = {
     init() {
-      this.appendDummyInput('HEADER')
-        .appendField(
-          new Blockly.FieldDropdown(
-            optionsFromArray(FUNC_NAMES),
-            (newName) => {
-              // Re-build args slots whenever the function name changes.
-              // Blockly invokes the validator first; we defer the
-              // structural rebuild to the next tick so the field value
-              // is committed when _rebuildArgs reads it.
-              setTimeout(() => this._rebuildArgs(newName), 0)
-              return newName
-            },
-          ),
-          'NAME',
-        )
+      this.appendDummyInput('HEADER').appendField(
+        new Blockly.FieldDropdown(optionsFromArray(FUNC_NAMES), (newName) => {
+          // Re-build args slots whenever the function name changes.
+          // Blockly invokes the validator first; we defer the
+          // structural rebuild to the next tick so the field value
+          // is committed when _rebuildArgs reads it.
+          setTimeout(() => this._rebuildArgs(newName), 0)
+          return newName
+        }),
+        'NAME',
+      )
       this.setOutput(true, 'Number')
       this.setColour(230)
       this.setTooltip(tooltip('gd_func_call'))
@@ -606,9 +588,7 @@ export function registerDslBlocks(tFn) {
   // ``assign_points`` semantics — once you assign, the rule is done.
   Blockly.Blocks.gd_assign_points = {
     init() {
-      this.appendValueInput('VALUE')
-        .setCheck('Number')
-        .appendField(label('assignPoints'))
+      this.appendValueInput('VALUE').setCheck('Number').appendField(label('assignPoints'))
       this.appendDummyInput()
         .appendField(label('case'))
         .appendField(new Blockly.FieldTextInput('default'), 'CASE_NAME')
@@ -707,9 +687,7 @@ export function registerDslBlocks(tFn) {
   // set_points + set_callback_data inside one rule.
   Blockly.Blocks.gd_set_points = {
     init() {
-      this.appendValueInput('VALUE')
-        .setCheck('Number')
-        .appendField(label('setPoints'))
+      this.appendValueInput('VALUE').setCheck('Number').appendField(label('setPoints'))
       this.setPreviousStatement(true, 'Statement')
       this.setNextStatement(true, 'Statement')
       this.setColour(60)
@@ -721,9 +699,7 @@ export function registerDslBlocks(tFn) {
   // ---- gd_set_case_name --------------------------------------------------
   Blockly.Blocks.gd_set_case_name = {
     init() {
-      this.appendValueInput('VALUE')
-        .setCheck('String')
-        .appendField(label('setCaseName'))
+      this.appendValueInput('VALUE').setCheck('String').appendField(label('setCaseName'))
       this.setPreviousStatement(true, 'Statement')
       this.setNextStatement(true, 'Statement')
       this.setColour(60)
@@ -760,10 +736,7 @@ export function registerDslBlocks(tFn) {
     init() {
       this.appendDummyInput()
         .appendField(label('override'))
-        .appendField(
-          new Blockly.FieldTextInput('variable_basic_points'),
-          'VARIABLE',
-        )
+        .appendField(new Blockly.FieldTextInput('variable_basic_points'), 'VARIABLE')
         .appendField(label('equals'))
         .appendField(new Blockly.FieldTextInput('1'), 'VALUE')
       this.setColour(20)
@@ -873,7 +846,6 @@ export function buildBlockCatalog(mode, t) {
   return catalog
 }
 
-
 /**
  * Sprint 11: starter rule seeded into a brand-new DSL_FULL workspace
  * ("Crear estrategia vacía"). A blank canvas made every first
@@ -918,7 +890,6 @@ export const STARTER_RULE_XML = `
   </block>
 </xml>
 `.trim()
-
 
 /**
  * Sprint 10: refresh the cached ``t`` reference and re-tooltip every

@@ -107,7 +107,7 @@ describe('workspaceToAst — basic engagement rule', () => {
             type: 'compare',
             id: 'c1',
             op: '<',
-            left:  { type: 'field',   id: 'f1', path: 'task.measurements_count' },
+            left: { type: 'field', id: 'f1', path: 'task.measurements_count' },
             right: { type: 'literal', id: 'l1', value: 2 },
           },
           then: [
@@ -270,7 +270,8 @@ describe('workspaceToAst — Sprint 7 pre/post + parent_variables', () => {
     const ast = workspaceToAst(ws)
     // Add a default so the validator accepts the program (rules=[]).
     ast.default = {
-      type: 'assign_points', id: 'd',
+      type: 'assign_points',
+      id: 'd',
       value: { type: 'literal', id: 'ld', value: 0 },
       case_name: 'baseline',
     }
@@ -336,7 +337,6 @@ describe('workspaceToAst — Sprint 7 pre/post + parent_variables', () => {
   })
 })
 
-
 describe('workspaceToAst — invalid output still validates structurally', () => {
   it('a rule whose then is empty produces an empty array (caught by validator)', () => {
     const ws = makeWorkspace()
@@ -351,12 +351,9 @@ describe('workspaceToAst — invalid output still validates structurally', () =>
     const result = validateAst(ast)
     expect(result.ok).toBe(false)
     // The validator must flag the empty `then` — that's the contract.
-    expect(
-      result.errors.some((e) => /non-empty array of statements/.test(e.message)),
-    ).toBe(true)
+    expect(result.errors.some((e) => /non-empty array of statements/.test(e.message))).toBe(true)
   })
 })
-
 
 describe('workspaceToAst — else-if / else branches (mutator)', () => {
   // Small helper: an assign_points statement with a literal number value.
@@ -410,18 +407,33 @@ describe('workspaceToAst — else-if / else branches (mutator)', () => {
     const r = ast.rules[0]
 
     expect(r.then).toEqual([
-      { type: 'assign_points', id: 'a1', value: { type: 'literal', id: 'a1_v', value: 1 }, case_name: 'A' },
+      {
+        type: 'assign_points',
+        id: 'a1',
+        value: { type: 'literal', id: 'a1_v', value: 1 },
+        case_name: 'A',
+      },
     ])
     expect(r.else_if).toEqual([
       {
         when: { type: 'literal', id: 'el', value: 1 },
         then: [
-          { type: 'assign_points', id: 'a2', value: { type: 'literal', id: 'a2_v', value: 2 }, case_name: 'B' },
+          {
+            type: 'assign_points',
+            id: 'a2',
+            value: { type: 'literal', id: 'a2_v', value: 2 },
+            case_name: 'B',
+          },
         ],
       },
     ])
     expect(r.else).toEqual([
-      { type: 'assign_points', id: 'a3', value: { type: 'literal', id: 'a3_v', value: 3 }, case_name: 'C' },
+      {
+        type: 'assign_points',
+        id: 'a3',
+        value: { type: 'literal', id: 'a3_v', value: 3 },
+        case_name: 'C',
+      },
     ])
 
     // The full thing must pass the client validator.

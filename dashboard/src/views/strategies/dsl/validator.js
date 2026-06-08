@@ -23,18 +23,19 @@ import {
   STATEMENT_ALLOWED_CONTEXTS,
 } from './whitelists'
 
-const CONDITION_TYPES = new Set([
-  'and', 'or', 'not', 'compare', 'literal', 'field',
-])
-const EXPRESSION_TYPES = new Set([
-  'literal', 'field', 'arith', 'func_call',
-])
+const CONDITION_TYPES = new Set(['and', 'or', 'not', 'compare', 'literal', 'field'])
+const EXPRESSION_TYPES = new Set(['literal', 'field', 'arith', 'func_call'])
 // Sprint 7: statement set expands with the 4 DSL_EXTEND statements.
 // Per-section whitelisting (which statements are valid where) is
 // enforced via STATEMENT_ALLOWED_CONTEXTS at validation time.
 const STATEMENT_TYPES = new Set([
-  'assign_points', 'set_callback_data', 'return',
-  'set_data', 'veto', 'set_points', 'set_case_name',
+  'assign_points',
+  'set_callback_data',
+  'return',
+  'set_data',
+  'veto',
+  'set_points',
+  'set_case_name',
 ])
 
 const PARENT_FIELD_PATH_SET = new Set(PARENT_FIELD_PATHS)
@@ -69,13 +70,12 @@ function validateExpression(node, errors, nodeCount, context = 'rule') {
 
   if (node.type === 'literal') {
     const v = node.value
-    const isScalar = (
+    const isScalar =
       typeof v === 'string' ||
       typeof v === 'number' ||
       typeof v === 'boolean' ||
       v === null ||
       v === undefined
-    )
     if (!isScalar) {
       fail(errors, node.id, 'literal.value must be a JSON scalar.')
     }
@@ -95,11 +95,7 @@ function validateExpression(node, errors, nodeCount, context = 'rule') {
     }
     // Sprint 7: parent.* only inside post_rules — mirrors backend.
     if (PARENT_FIELD_PATH_SET.has(node.path) && context !== 'post') {
-      fail(
-        errors,
-        node.id,
-        `field.path '${node.path}' is only available inside post_rules.`,
-      )
+      fail(errors, node.id, `field.path '${node.path}' is only available inside post_rules.`)
     }
     return
   }
@@ -121,11 +117,7 @@ function validateExpression(node, errors, nodeCount, context = 'rule') {
     const expected = FUNC_ARITY[node.name]
     if (!Array.isArray(node.args) || node.args.length !== expected) {
       const actual = Array.isArray(node.args) ? node.args.length : 'non-list'
-      fail(
-        errors,
-        node.id,
-        `func_call '${node.name}' expects ${expected} args, got ${actual}.`,
-      )
+      fail(errors, node.id, `func_call '${node.name}' expects ${expected} args, got ${actual}.`)
       return
     }
     node.args.forEach((arg) => validateExpression(arg, errors, nodeCount, context))
@@ -181,20 +173,12 @@ function validateStatement(node, errors, nodeCount, context = 'rule') {
   // so the error message points at the real designer problem.
   const allowed = STATEMENT_ALLOWED_CONTEXTS[node.type]
   if (!allowed || !allowed.has(context)) {
-    fail(
-      errors,
-      node.id,
-      `Statement '${node.type}' is not allowed inside '${context}' section.`,
-    )
+    fail(errors, node.id, `Statement '${node.type}' is not allowed inside '${context}' section.`)
     return
   }
   if (node.type === 'assign_points') {
     if (!CASE_NAME_REGEX.test(node.case_name || '')) {
-      fail(
-        errors,
-        node.id,
-        'assign_points.case_name must be 1-200 printable ASCII chars.',
-      )
+      fail(errors, node.id, 'assign_points.case_name must be 1-200 printable ASCII chars.')
     }
     validateExpression(node.value, errors, nodeCount, context)
     return
@@ -276,10 +260,7 @@ export function validateAst(ast) {
     section.forEach((rule, i) => {
       nodeCount.value += 1
       if (!rule || rule.type !== 'rule') {
-        fail(
-          errors, rule?.id,
-          `program.${sectionName}[${i}] must be a rule node.`,
-        )
+        fail(errors, rule?.id, `program.${sectionName}[${i}] must be a rule node.`)
         return
       }
       if (!rule.when) {
@@ -289,14 +270,13 @@ export function validateAst(ast) {
       }
       if (!Array.isArray(rule.then) || rule.then.length === 0) {
         fail(
-          errors, rule.id,
+          errors,
+          rule.id,
           'rule.then must be a non-empty array of statements.',
           'RULE_THEN_EMPTY',
         )
       } else {
-        rule.then.forEach(
-          (stmt) => validateStatement(stmt, errors, nodeCount, context),
-        )
+        rule.then.forEach((stmt) => validateStatement(stmt, errors, nodeCount, context))
       }
       // Sprint 12: optional else-if branches. Each is a {when, then}
       // object; ``then`` is validated exactly like the main branch so an
@@ -318,14 +298,13 @@ export function validateAst(ast) {
             }
             if (!Array.isArray(branch.then) || branch.then.length === 0) {
               fail(
-                errors, rule.id,
+                errors,
+                rule.id,
                 'rule.else_if[].then must be a non-empty array of statements.',
                 'RULE_THEN_EMPTY',
               )
             } else {
-              branch.then.forEach(
-                (stmt) => validateStatement(stmt, errors, nodeCount, context),
-              )
+              branch.then.forEach((stmt) => validateStatement(stmt, errors, nodeCount, context))
             }
           })
         }
@@ -334,14 +313,13 @@ export function validateAst(ast) {
       if (rule.else != null) {
         if (!Array.isArray(rule.else) || rule.else.length === 0) {
           fail(
-            errors, rule.id,
+            errors,
+            rule.id,
             'rule.else must be a non-empty array of statements.',
             'RULE_THEN_EMPTY',
           )
         } else {
-          rule.else.forEach(
-            (stmt) => validateStatement(stmt, errors, nodeCount, context),
-          )
+          rule.else.forEach((stmt) => validateStatement(stmt, errors, nodeCount, context))
         }
       }
     })
@@ -364,31 +342,25 @@ export function validateAst(ast) {
   // only enforce the AST shape so the editor catches malformed input
   // before the POST round-trip.
   if (ast.parent_variables !== undefined && ast.parent_variables !== null) {
-    if (
-      typeof ast.parent_variables !== 'object'
-      || Array.isArray(ast.parent_variables)
-    ) {
+    if (typeof ast.parent_variables !== 'object' || Array.isArray(ast.parent_variables)) {
       fail(errors, ast.id, 'program.parent_variables must be an object.')
     } else {
       Object.entries(ast.parent_variables).forEach(([key, value]) => {
         if (!key.startsWith(PARENT_VARIABLE_KEY_PREFIX)) {
           fail(
-            errors, ast.id,
+            errors,
+            ast.id,
             `program.parent_variables key '${key}' must start with '${PARENT_VARIABLE_KEY_PREFIX}'.`,
           )
           return
         }
-        const isScalar = (
+        const isScalar =
           typeof value === 'string' ||
           typeof value === 'number' ||
           typeof value === 'boolean' ||
           value === null
-        )
         if (!isScalar) {
-          fail(
-            errors, ast.id,
-            `program.parent_variables['${key}'] must be a JSON scalar.`,
-          )
+          fail(errors, ast.id, `program.parent_variables['${key}'] must be a JSON scalar.`)
         }
       })
     }
@@ -400,10 +372,12 @@ export function validateAst(ast) {
   if (nodeCount.value > DSL_MAX_NODES) {
     return {
       ok: false,
-      errors: [{
-        nodeId: null,
-        message: `AST has ${nodeCount.value} nodes; the backend limit is ${DSL_MAX_NODES}.`,
-      }],
+      errors: [
+        {
+          nodeId: null,
+          message: `AST has ${nodeCount.value} nodes; the backend limit is ${DSL_MAX_NODES}.`,
+        },
+      ],
     }
   }
   return { ok: true, nodeCount: nodeCount.value }

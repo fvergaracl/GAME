@@ -8,8 +8,7 @@ from app.repository.user_repository import UserRepository
 from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.schema.task_schema import TaskPointsResponseByUser
-from app.schema.user_points_schema import (BaseUserPointsBaseModel,
-                                           BaseUserPointsBaseModelWithCaseName,
+from app.schema.user_points_schema import (BaseUserPointsBaseModelWithCaseName,
                                            UserPointsAssigned)
 from app.schema.user_schema import (PostPointsConversionRequest,
                                     ResponsePointsConversion, UserPointsTasks,

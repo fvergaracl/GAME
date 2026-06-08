@@ -16,7 +16,7 @@
 
 const BLOCK_TO_AST = {
   gd_rule: blockToRule,
-  gd_pre_rule: blockToRule,        // pre/post rules share the rule shape
+  gd_pre_rule: blockToRule, // pre/post rules share the rule shape
   gd_post_rule: blockToRule,
   gd_compare: blockToCompare,
   gd_and: blockToAnd,
@@ -71,10 +71,7 @@ export function workspaceToAst(workspace) {
       const name = block.getFieldValue('VARIABLE')
       const raw = block.getFieldValue('VALUE')
       parentVariables[name] = _coerceOverrideValue(raw)
-    } else if (
-      block.type === 'gd_assign_points' &&
-      !block.getPreviousBlock()
-    ) {
+    } else if (block.type === 'gd_assign_points' && !block.getPreviousBlock()) {
       // A floating assign_points outside any rule is the default branch.
       // Limit to one: extras silently win-last (the order Blockly returns).
       defaultStmt = blockToAssignPoints(block)

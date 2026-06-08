@@ -1,10 +1,7 @@
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from app.schema.base_schema import ModelBaseInfo
-from app.schema.wallet_schema import WalletWithoutUserId
-from app.util.schema import AllOptional
 
 
 class UserActions(BaseModel):
