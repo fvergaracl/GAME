@@ -251,7 +251,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CreateTask</span><span class="p">,</span> <span class="n">CreateTaskPost</span><span class="p">,</span>
                                     <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">,</span> <span class="n">FindTask</span><span class="p">,</span>
                                     <span class="n">PatchTask</span><span class="p">,</span> <span class="n">ResponseDeleteTask</span><span class="p">,</span> <span class="n">ResponsePatchTask</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.tasks_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateTaskParams</span><span class="p">,</span> <span class="n">InsertTaskParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.tasks_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CreateTaskParams</span><span class="p">,</span> <span class="n">InsertTaskParams</span><span class="p">,</span>
+                                            <span class="n">UpdateTaskParams</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.game_access</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_authorized_game</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_definition_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionService</span>
@@ -364,11 +365,11 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Partially update a task identified by ``gameId`` + ``taskId``.</span>
 
-<span class="sd">        Sprint 9 scope: the only mutable field is ``strategyId`` (plus</span>
-<span class="sd">        the existing ``status`` lifecycle) — we don't expose params</span>
-<span class="sd">        editing here because the rest of the task body has its own</span>
-<span class="sd">        endpoints and the use case driving this method is "reassign a</span>
-<span class="sd">        task to a different strategy" from the admin assignments view.</span>
+<span class="sd">        Mutable fields: ``strategyId``, ``status`` and ``params``. When</span>
+<span class="sd">        ``params`` is provided it is treated as the desired full set and</span>
+<span class="sd">        synced via :meth:`_sync_task_params` (update existing rows by id,</span>
+<span class="sd">        create rows without an id, delete rows omitted from the list);</span>
+<span class="sd">        omit ``params`` to leave them untouched.</span>
 
 <span class="sd">        ``strategyId`` accepts both built-ins and ``custom:&lt;uuid&gt;`` —</span>
 <span class="sd">        validated by :meth:`_validate_strategy_assignment` with the</span>
@@ -401,9 +402,9 @@
                 <span class="n">detail</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">taskId</span><span class="si">}</span><span class="s2"> does not belong to game </span><span class="si">{</span><span class="n">gameId</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="c1"># Build the update payload only with non-None fields the caller</span>
-        <span class="c1"># actually wants to change; an empty patch is rejected to keep</span>
-        <span class="c1"># the audit trail meaningful.</span>
+        <span class="c1"># Build the scalar update payload only with non-None fields the</span>
+        <span class="c1"># caller actually wants to change. ``params`` is handled separately</span>
+        <span class="c1"># (synced below) so it doesn't go through ``patch_by_id``.</span>
         <span class="n">update_fields</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">schema</span><span class="o">.</span><span class="n">strategyId</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_strategy_assignment</span><span class="p">(</span>
@@ -415,23 +416,99 @@
         <span class="k">if</span> <span class="n">schema</span><span class="o">.</span><span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">update_fields</span><span class="p">[</span><span class="s2">"status"</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">status</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">update_fields</span><span class="p">:</span>
+        <span class="n">params_provided</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="c1"># An empty patch (no scalar fields and no params block) is rejected</span>
+        <span class="c1"># to keep the audit trail meaningful.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">update_fields</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">params_provided</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ConflictError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">"Empty patch: no fields provided."</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">==</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">update_fields</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+
+        <span class="c1"># Only the scalar fields that actually differ get written; this also</span>
+        <span class="c1"># lets us reject a pure no-op field patch (when params aren't touched)</span>
+        <span class="c1"># without blocking a params-only change.</span>
+        <span class="n">changed_fields</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">update_fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">!=</span> <span class="n">v</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">changed_fields</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">params_provided</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ConflictError</span><span class="p">(</span>
-                <span class="n">detail</span><span class="o">=</span><span class="p">(</span><span class="s2">"It is not possible to update the task with the "</span> <span class="s2">"same data"</span><span class="p">)</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">"It is not possible to update the task with the same data"</span>
+                <span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="n">updated</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">patch_by_id</span><span class="p">(</span><span class="n">taskId</span><span class="p">,</span> <span class="n">update_fields</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">changed_fields</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">patch_by_id</span><span class="p">(</span><span class="n">taskId</span><span class="p">,</span> <span class="n">changed_fields</span><span class="p">)</span>
+
+        <span class="n">updated_params</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">params_provided</span><span class="p">:</span>
+            <span class="n">updated_params</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sync_task_params</span><span class="p">(</span>
+                <span class="n">taskId</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span>
+            <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">ResponsePatchTask</span><span class="p">(</span>
-            <span class="n">taskId</span><span class="o">=</span><span class="n">updated</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">taskId</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="n">gameId</span><span class="o">=</span><span class="n">gameId</span><span class="p">,</span>
-            <span class="n">externalTaskId</span><span class="o">=</span><span class="n">updated</span><span class="o">.</span><span class="n">externalTaskId</span><span class="p">,</span>
-            <span class="n">strategyId</span><span class="o">=</span><span class="n">updated</span><span class="o">.</span><span class="n">strategyId</span><span class="p">,</span>
-            <span class="n">status</span><span class="o">=</span><span class="n">updated</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+            <span class="n">externalTaskId</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">externalTaskId</span><span class="p">,</span>
+            <span class="n">strategyId</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">strategyId</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+            <span class="n">taskParams</span><span class="o">=</span><span class="n">updated_params</span><span class="p">,</span>
             <span class="n">message</span><span class="o">=</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task with taskId: </span><span class="si">{</span><span class="n">taskId</span><span class="si">}</span><span class="s2"> updated successfully"</span><span class="p">),</span>
         <span class="p">)</span></div>
 
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_sync_task_params</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">taskId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UpdateTaskParams</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Reconcile a task's params to the desired set in ``params``.</span>
+
+<span class="sd">        For each entry: a present ``id`` matching an existing param updates</span>
+<span class="sd">        it in place; otherwise a new param is created. Existing params whose</span>
+<span class="sd">        id is absent from ``params`` are deleted. Values are persisted as</span>
+<span class="sd">        strings, mirroring task creation. Returns the surviving param rows.</span>
+<span class="sd">        """</span>
+        <span class="n">existing</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
+                <span class="s2">"taskId"</span><span class="p">,</span>
+                <span class="n">taskId</span><span class="p">,</span>
+                <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">only_one</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="ow">or</span> <span class="p">[]</span>
+        <span class="p">)</span>
+        <span class="n">existing_by_id</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">):</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">existing</span><span class="p">}</span>
+
+        <span class="n">kept_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">param_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">id_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">param_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">param_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">id_str</span> <span class="ow">and</span> <span class="n">id_str</span> <span class="ow">in</span> <span class="n">existing_by_id</span><span class="p">:</span>
+                <span class="n">kept_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">id_str</span><span class="p">)</span>
+                <span class="n">patched</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span><span class="o">.</span><span class="n">patch_task_params_by_id</span><span class="p">(</span>
+                    <span class="n">param_id</span><span class="p">,</span>
+                    <span class="n">CreateTaskParams</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">)),</span>
+                <span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patched</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">to_insert</span> <span class="o">=</span> <span class="n">InsertTaskParams</span><span class="p">(</span>
+                    <span class="n">key</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                    <span class="n">taskId</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">taskId</span><span class="p">),</span>
+                    <span class="n">apiKey_used</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">created</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">to_insert</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">created</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">id_str</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">existing_by_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">id_str</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kept_ids</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_params_repository</span><span class="o">.</span><span class="n">delete_by_id</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_task_in_game</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

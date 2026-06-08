@@ -296,6 +296,8 @@
         <li class="md-nav__item"><a href="#app.repository.task_params_repository.TaskParamsRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskParamsRepository.session_factory</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.task_params_repository.TaskParamsRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskParamsRepository.model</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.task_params_repository.TaskParamsRepository.patch_task_params_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskParamsRepository.patch_task_params_by_id()</span></code></a>
         </li></ul>
             </nav>
         </li></ul>
@@ -580,6 +582,8 @@
         <li class="md-nav__item"><a href="#app.repository.TaskParamsRepository.session_factory" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskParamsRepository.session_factory</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.TaskParamsRepository.model" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskParamsRepository.model</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.TaskParamsRepository.patch_task_params_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskParamsRepository.patch_task_params_by_id()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -897,6 +901,15 @@ instead of a raw UUID, in a single query rather than N reads.</p>
 <dt class="sig sig-object py" id="app.repository.task_params_repository.TaskParamsRepository.model">
 <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#app.repository.task_params_repository.TaskParamsRepository.model" title="Link to this definition">¶</a></dt>
 <dd><p>SQLAlchemy model class for task parameters.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.task_params_repository.TaskParamsRepository.patch_task_params_by_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_task_params_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_params_repository.html#TaskParamsRepository.patch_task_params_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_params_repository.TaskParamsRepository.patch_task_params_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Updates a task parameter row in place by its id.</p>
+<p>Sibling of <code class="xref py py-meth docutils literal notranslate"><span class="pre">GameParamsRepository.patch_game_params_by_id()</span></code>,
+used by the task PATCH flow to rewrite a param’s <code class="docutils literal notranslate"><span class="pre">key</span></code>/<code class="docutils literal notranslate"><span class="pre">value</span></code>
+without deleting and recreating the row (so its id is preserved).</p>
+<p>Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code> if the param does not exist.</p>
 </dd></dl>
 </dd></dl>
 </section>
@@ -1602,6 +1615,15 @@ histogram. <code class="docutils literal notranslate"><span class="pre">points</
 <dt class="sig sig-object py" id="app.repository.TaskParamsRepository.model">
 <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#app.repository.TaskParamsRepository.model" title="Link to this definition">¶</a></dt>
 <dd><p>SQLAlchemy model class for task parameters.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.TaskParamsRepository.patch_task_params_by_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_task_params_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_params_repository.html#TaskParamsRepository.patch_task_params_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.TaskParamsRepository.patch_task_params_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Updates a task parameter row in place by its id.</p>
+<p>Sibling of <a class="reference internal" href="#app.repository.GameParamsRepository.patch_game_params_by_id" title="app.repository.GameParamsRepository.patch_game_params_by_id"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GameParamsRepository.patch_game_params_by_id()</span></code></a>,
+used by the task PATCH flow to rewrite a param’s <code class="docutils literal notranslate"><span class="pre">key</span></code>/<code class="docutils literal notranslate"><span class="pre">value</span></code>
+without deleting and recreating the row (so its id is preserved).</p>
+<p>Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code> if the param does not exist.</p>
 </dd></dl>
 </dd></dl>
 <dl class="py class">
