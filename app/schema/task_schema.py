@@ -7,7 +7,7 @@ from app.schema.base_schema import (FindBase, ModelBaseInfo, SearchOptions,
                                     SuccesfullyCreated)
 from app.schema.games_params_schema import CreateGameParams
 from app.schema.strategy_schema import Strategy
-from app.schema.tasks_params_schema import CreateTaskParams
+from app.schema.tasks_params_schema import CreateTaskParams, UpdateTaskParams
 from app.util.schema import AllOptional
 
 
@@ -130,6 +130,7 @@ class FoundTask(ModelBaseInfo):
 
     Attributes:
         externalTaskId (str): External task identifier.
+        status (Optional[str]): Task lifecycle status (e.g. ``open``/``closed``).
         gameParams (Optional[List[CreateGameParams]]): Resolved game parameters.
         taskParams (Optional[List[CreateTaskParams]]): Resolved task parameters.
         strategy (Optional[Strategy]): Strategy definition applied to the task.
@@ -139,6 +140,11 @@ class FoundTask(ModelBaseInfo):
         ...,
         description="External task identifier.",
         examples=["task-login"],
+    )
+    status: Optional[str] = Field(
+        default=None,
+        description="Task lifecycle status.",
+        examples=["open"],
     )
     gameParams: Optional[List[CreateGameParams]] = Field(
         default=None,
@@ -243,6 +249,11 @@ class PatchTask(BaseModel):
           validates against the persistent registry and refuses unpublished
           custom strategies.
         status (Optional[str]): New task lifecycle status.
+        params (Optional[List[UpdateTaskParams]]): Desired full set of task
+          params. When provided, params are synced: entries with a matching
+          ``id`` are updated, entries without an ``id`` are created, and any
+          existing param absent from the list is deleted. Omit the field to
+          leave params untouched.
     """
 
     strategyId: Optional[str] = Field(
@@ -254,6 +265,14 @@ class PatchTask(BaseModel):
         default=None,
         description="Updated task status.",
         examples=["open"],
+    )
+    params: Optional[List[UpdateTaskParams]] = Field(
+        default=None,
+        description=(
+            "Desired full set of task params; synced on patch "
+            "(update by id, create when id absent, delete when omitted)."
+        ),
+        examples=[[{"key": "variable_bonus_points", "value": 20}]],
     )
 
 
@@ -267,6 +286,8 @@ class ResponsePatchTask(BaseModel):
         externalTaskId (Optional[str]): External task identifier.
         strategyId (Optional[str]): Effective strategy id after the update.
         status (Optional[str]): Effective status after the update.
+        taskParams (Optional[List[CreateTaskParams]]): Task params after the
+          update (present when the patch touched params).
         message (Optional[str]): Operation result message.
     """
 
@@ -294,6 +315,10 @@ class ResponsePatchTask(BaseModel):
         default=None,
         description="Current task status.",
         examples=["open"],
+    )
+    taskParams: Optional[List[CreateTaskParams]] = Field(
+        default=None,
+        description="Task params after the update (when params were patched).",
     )
     message: Optional[str] = Field(
         default="Successfully updated",

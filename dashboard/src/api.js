@@ -375,7 +375,9 @@ export const bulkCreateTasks = async (gameId, tasks) => {
 }
 
 export const updateTask = async (gameId, taskId, payload) => {
-  // payload: any subset of { strategyId, status }.
+  // payload: any subset of { strategyId, status, params }. params (when sent)
+  // is the desired full set [{ id?, key, value }]: rows with an id update in
+  // place, rows without one are created, and omitted rows are deleted.
   return patchRequest(
     `/games/${encodeURIComponent(gameId)}/tasks/${encodeURIComponent(taskId)}`,
     payload,

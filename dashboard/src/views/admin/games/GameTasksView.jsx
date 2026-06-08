@@ -16,6 +16,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   CAlert,
+  CBadge,
   CButton,
   CCard,
   CCardBody,
@@ -53,6 +54,20 @@ const formatDate = (value) => {
 }
 
 const strategyIdOf = (task) => task?.strategy?.id || task?.strategyId || ''
+
+// Map the (free-string) task status onto a CBadge color. ``open`` is the
+// active/default state, ``closed`` is retired; anything else still renders
+// with a neutral badge so unexpected values stay visible.
+const statusColor = (status) => {
+  switch (status) {
+    case 'open':
+      return 'success'
+    case 'closed':
+      return 'secondary'
+    default:
+      return 'info'
+  }
+}
 
 const GameTasksView = () => {
   const { t } = useTranslation('management')
@@ -174,7 +189,7 @@ const GameTasksView = () => {
 
         {error && <CAlert color="danger">{error}</CAlert>}
 
-        {isLoading && <SkeletonTable columns={4} rows={6} hasActions />}
+        {isLoading && <SkeletonTable columns={5} rows={6} hasActions />}
 
         {!isLoading && !error && tasks.length === 0 && (
           <CAlert color="info">{t('tasks.empty')}</CAlert>
@@ -190,6 +205,7 @@ const GameTasksView = () => {
               <CTableRow>
                 <CTableHeaderCell>{t('tasks.col.externalTaskId')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('tasks.col.strategyId')}</CTableHeaderCell>
+                <CTableHeaderCell>{t('tasks.col.status')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('tasks.col.params')}</CTableHeaderCell>
                 <CTableHeaderCell>{t('tasks.col.createdAt')}</CTableHeaderCell>
                 <CTableHeaderCell style={{ width: 120 }} className="text-end">
@@ -209,6 +225,17 @@ const GameTasksView = () => {
                     <CTableDataCell>
                       {stratId ? (
                         <code>{stratId}</code>
+                      ) : (
+                        <span className="text-medium-emphasis">—</span>
+                      )}
+                    </CTableDataCell>
+                    <CTableDataCell>
+                      {task.status ? (
+                        <CBadge color={statusColor(task.status)}>
+                          {t(`tasks.statusOptions.${task.status}`, {
+                            defaultValue: task.status,
+                          })}
+                        </CBadge>
                       ) : (
                         <span className="text-medium-emphasis">—</span>
                       )}

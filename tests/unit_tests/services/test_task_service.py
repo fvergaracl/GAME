@@ -617,6 +617,56 @@ class TestTaskServicePatch(unittest.IsolatedAsyncioTestCase):
                 self.PatchTask(status="closed"),
             )
 
+    async def test_patch_syncs_params_add_update_delete(self):
+        """params-only patch: matching ids update in place, id-less entries
+        are created, and existing params absent from the list are deleted."""
+        from app.schema.tasks_params_schema import UpdateTaskParams
+
+        game_id = uuid4()
+        task_id = uuid4()
+        keep_id = uuid4()
+        drop_id = uuid4()
+        task = self._make_task(task_id, game_id)
+        self.game_repository.read_by_id.return_value = SimpleNamespace(id=game_id)
+        self.task_repository.read_by_id.return_value = task
+        self.task_repository.patch_by_id = AsyncMock()
+
+        existing = [
+            SimpleNamespace(id=keep_id, key="keep", value="1"),
+            SimpleNamespace(id=drop_id, key="drop", value="2"),
+        ]
+        self.task_params_repository.read_by_column = AsyncMock(return_value=existing)
+        self.task_params_repository.patch_task_params_by_id = AsyncMock(
+            return_value=SimpleNamespace(key="keep", value="10")
+        )
+        self.task_params_repository.create = AsyncMock(
+            return_value=SimpleNamespace(key="new", value="5")
+        )
+        self.task_params_repository.delete_by_id = AsyncMock()
+
+        result = await self.service.patch_task_by_id(
+            game_id,
+            task_id,
+            self.PatchTask(
+                params=[
+                    UpdateTaskParams(id=keep_id, key="keep", value=10),
+                    UpdateTaskParams(key="new", value=5),
+                ]
+            ),
+        )
+
+        # No scalar field changed, so the task row itself is never patched.
+        self.task_repository.patch_by_id.assert_not_called()
+        # keep_id updated in place; new param created; drop_id deleted.
+        self.task_params_repository.patch_task_params_by_id.assert_awaited_once()
+        self.assertEqual(
+            self.task_params_repository.patch_task_params_by_id.await_args.args[0],
+            keep_id,
+        )
+        self.task_params_repository.create.assert_awaited_once()
+        self.task_params_repository.delete_by_id.assert_awaited_once_with(drop_id)
+        self.assertEqual(len(result.taskParams), 2)
+
     async def test_patch_rejects_empty_body(self):
         game_id = uuid4()
         task_id = uuid4()

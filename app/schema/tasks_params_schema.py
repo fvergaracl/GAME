@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -56,4 +57,28 @@ class InsertTaskParams(BaseTaskParams):
         default=None,
         description="API key used to create this task parameter.",
         examples=["gk_live_3f6a9e0f1a2b4c5d6e7f8a9b"],
+    )
+
+
+class UpdateTaskParams(BaseTaskParams):
+    """
+    Payload schema for editing a task's parameters through a ``PATCH``.
+
+    The list of ``UpdateTaskParams`` sent in a task patch is treated as the
+    desired full set of params:
+
+    - an entry with an ``id`` matching an existing param updates it in place;
+    - an entry without an ``id`` (or with an unknown ``id``) creates a new
+      param;
+    - any existing param whose ``id`` is absent from the list is removed.
+
+    Attributes:
+        id (Optional[UUID]): Identifier of the param to update; omit to add a
+          new one.
+    """
+
+    id: Optional[UUID] = Field(
+        default=None,
+        description="Identifier of the param to update; omit to create a new one.",
+        examples=["fd8551f4-7cf0-4f8b-b372-a269541db5a5"],
     )

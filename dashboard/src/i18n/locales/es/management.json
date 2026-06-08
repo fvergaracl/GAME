@@ -97,7 +97,7 @@
       "status": "Estado",
       "statusKeep": "Mantener actual",
       "params": "Parámetros de la tarea",
-      "paramsEditNote": "Los parámetros no se pueden editar aquí; duplica la tarea o créala de nuevo para cambiarlos."
+      "paramsEditNote": "Edita o añade parámetros. Quitar una fila la elimina al guardar."
     },
     "statusOptions": {
       "open": "Abierta",

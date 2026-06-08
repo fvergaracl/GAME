@@ -9,9 +9,9 @@ from app.schema.task_schema import (AddActionDidByUserInTask,
                                     AssignedPointsToExternalUserId, BaseTask, BaseUser,
                                     BaseUserFirstAction, CreateTask, CreateTaskPost,
                                     CreateTaskPostSuccesfullyCreated, FindTask,
-                                    FoundTask, FoundTasks, PostFindTask,
+                                    FoundTask, FoundTasks, PatchTask, PostFindTask,
                                     TaskPointsResponseByUser, TasksWithUsers)
-from app.schema.tasks_params_schema import CreateTaskParams
+from app.schema.tasks_params_schema import CreateTaskParams, UpdateTaskParams
 
 
 def test_base_task():
@@ -106,12 +106,14 @@ def test_found_task():
         "created_at": datetime.now(),
         "updated_at": datetime.now(),
         "externalTaskId": "task123",
+        "status": "closed",
         "gameParams": [CreateGameParams(key="var1", value=10)],
         "taskParams": [CreateTaskParams(key="var2", value=20)],
         "strategy": Strategy(id="strategy123", version="1.0", variables={"var1": 10}),
     }
     found_task = FoundTask(**data)
     assert found_task.externalTaskId == data["externalTaskId"]
+    assert found_task.status == data["status"]
     assert found_task.gameParams[0].key == data["gameParams"][0].key
     assert found_task.taskParams[0].key == data["taskParams"][0].key
     assert found_task.strategy.id == data["strategy"].id
@@ -375,3 +377,33 @@ def test_tasks_with_users():
     tasks_with_users = TasksWithUsers(**data)
     assert tasks_with_users.externalTaskId == data["externalTaskId"]
     assert tasks_with_users.users == data["users"]
+
+
+def test_patch_task_accepts_status_strategy_and_params():
+    """
+    PatchTask carries any subset of { strategyId, status, params }, and
+    params accepts both existing rows (with an id) and new ones (without).
+    """
+    existing_id = uuid4()
+    patch = PatchTask(
+        strategyId="default",
+        status="closed",
+        params=[
+            UpdateTaskParams(id=existing_id, key="var1", value=10),
+            UpdateTaskParams(key="var2", value="five"),
+        ],
+    )
+    assert patch.strategyId == "default"
+    assert patch.status == "closed"
+    assert patch.params[0].id == existing_id
+    assert patch.params[1].id is None
+    assert patch.params[1].key == "var2"
+
+
+def test_patch_task_defaults_to_all_none():
+    """An empty PatchTask leaves every field unset (None) so the service can
+    distinguish "not provided" from an explicit value."""
+    patch = PatchTask()
+    assert patch.strategyId is None
+    assert patch.status is None
+    assert patch.params is None

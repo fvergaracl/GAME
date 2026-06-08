@@ -1,20 +1,20 @@
 // Sprint 3 (CRUD management) — create / edit a Task within a game.
 //
-// Same react-hook-form + CForm shell as GameFormModal, but the task backend
-// is more constrained, and those constraints shape the two modes:
+// Same react-hook-form + CForm shell as GameFormModal, shaping the two modes:
 //
 //   • Create (POST /games/{id}/tasks): externalTaskId (req), strategyId
 //     (opt — empty inherits the game's strategy) and params {key,value}.
 //
-//   • Edit (PATCH /games/{id}/tasks/{taskId}): the backend's PatchTask only
-//     accepts { strategyId, status }. externalTaskId and params CANNOT be
-//     changed here, so we render them read-only with a note. status is never
-//     returned by any GET, so its select defaults to "keep current" and is
-//     only sent when the admin picks a concrete value — otherwise editing the
-//     strategy would silently reset a task's status.
+//   • Edit (PATCH /games/{id}/tasks/{taskId}): PatchTask accepts
+//     { strategyId, status, params }. externalTaskId stays immutable (shown
+//     read-only); strategy, status and params are all editable. status is
+//     seeded from the row's current value; params are synced server-side
+//     (rows with an id update in place, new rows are created, removed rows
+//     are deleted) so the editor grid is the desired full set. Each field is
+//     only sent when it actually changed, so editing one never resets another.
 //
 // The task row we get from the list already carries everything edit needs
-// (id, externalTaskId, strategy.id, taskParams), so edit mode never refetches.
+// (id, externalTaskId, strategy.id, status, taskParams), so edit never refetches.
 
 import React, { useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
@@ -47,9 +47,17 @@ import useUnsavedGuard from '../../../components/useUnsavedGuard'
 const SLUG_PATTERN = /^[a-zA-Z0-9_-]{3,60}$/
 
 // Task status is a free string server-side (default "open"); these are the
-// two lifecycle states worth surfacing. The empty value is the "keep current"
-// sentinel — selecting it omits status from the PATCH entirely.
+// two lifecycle states worth surfacing in the UI.
 const STATUS_OPTIONS = ['open', 'closed']
+
+// Status picklist for edit mode: the two known states, plus the task's own
+// current status if it's some other free-string value, so an edit never
+// drops an unexpected status off the list.
+const buildStatusOptions = (currentValue) => {
+  const options = STATUS_OPTIONS.slice()
+  if (currentValue && !options.includes(currentValue)) options.push(currentValue)
+  return options
+}
 
 // See GameFormModal.coerceValue — re-narrow obvious numbers/booleans so a
 // "10" param stays numeric instead of becoming the string "10".
@@ -115,13 +123,15 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
   const [loadingDetail, setLoadingDetail] = useState(false)
   const [formError, setFormError] = useState(null)
 
-  // The current strategy of the task being edited, so submit can tell whether
-  // the admin actually changed it (and skip a no-op PATCH otherwise).
+  // Current strategy/status of the task being edited, so submit can tell
+  // whether the admin actually changed each one (and skip no-op fields).
   const currentStrategyId = isEdit ? task?.strategy?.id || task?.strategyId || '' : ''
-  // Read-only params shown in edit mode (PATCH can't mutate them).
+  const currentStatus = isEdit ? task?.status || '' : ''
+  // Params the task currently has — used to seed the editor in edit mode.
   const existingParams = isEdit ? task?.taskParams || task?.params || [] : []
 
   const inheritLabel = t('tasks.form.inheritGame')
+  const statusOptions = buildStatusOptions(currentStatus)
 
   // On open: fetch the strategy picklist (built-ins + published customs) and
   // seed the form. Strategy-list failures degrade gracefully to just the
@@ -144,9 +154,18 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
           reset({
             externalTaskId: task?.externalTaskId || '',
             strategyId: currentStrategyId,
-            status: '',
+            status: currentStatus,
           })
-          setParams([])
+          // Seed the editor with the task's params. Keep each row's id so the
+          // PATCH updates in place (vs. deleting + recreating); stringify the
+          // value since the list endpoint may return it already coerced.
+          setParams(
+            existingParams.map((p) => ({
+              id: p.id,
+              key: p.key ?? '',
+              value: p.value === null || p.value === undefined ? '' : String(p.value),
+            })),
+          )
         } else {
           reset({ externalTaskId: '', strategyId: '', status: '' })
           setParams([])
@@ -174,15 +193,26 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
     setFormError(null)
     try {
       if (isEdit) {
-        // PatchTask only takes { strategyId, status }. Send strategyId only
-        // when changed, status only when a concrete value was chosen.
+        // PatchTask takes { strategyId, status, params }. Send each field only
+        // when it actually changed so editing one never resets another.
         const payload = {}
         if (values.strategyId !== currentStrategyId) {
           payload.strategyId = values.strategyId || 'default'
         }
-        if (values.status) payload.status = values.status
+        if (values.status && values.status !== currentStatus) {
+          payload.status = values.status
+        }
+        if (paramsDirty) {
+          // The editor grid is the desired full set; preserve ids so existing
+          // rows update in place and dropped rows get deleted server-side.
+          payload.params = cleanedParams.map((p) => {
+            const entry = { key: p.key, value: coerceValue(p.value) }
+            if (p.id) entry.id = p.id
+            return entry
+          })
+        }
         if (Object.keys(payload).length === 0) {
-          // Nothing changed — close without hitting the API (PATCH 400s on an
+          // Nothing changed — close without hitting the API (PATCH 409s on an
           // empty patch anyway).
           onClose?.()
           return
@@ -280,8 +310,12 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
                 <div className="mb-3">
                   <CFormLabel htmlFor="task-status">{t('tasks.form.status')}</CFormLabel>
                   <CFormSelect id="task-status" {...register('status')}>
-                    <option value="">{t('tasks.form.statusKeep')}</option>
-                    {STATUS_OPTIONS.map((s) => (
+                    {/* Fallback "keep current" only when the row has no known
+                        status, so we never silently flip it to "open". */}
+                    {!currentStatus && (
+                      <option value="">{t('tasks.form.statusKeep')}</option>
+                    )}
+                    {statusOptions.map((s) => (
                       <option key={s} value={s}>
                         {t(`tasks.statusOptions.${s}`, { defaultValue: s })}
                       </option>
@@ -292,26 +326,12 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
 
               <div className="mb-2">
                 <CFormLabel>{t('tasks.form.params')}</CFormLabel>
-                {isEdit ? (
-                  <>
-                    {existingParams.length > 0 ? (
-                      <ul className="list-unstyled mb-1 small">
-                        {existingParams.map((p, i) => (
-                          <li key={p.id || `${p.key}-${i}`}>
-                            <code>{p.key}</code>
-                            {': '}
-                            <span className="text-medium-emphasis">{String(p.value)}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-medium-emphasis small mb-1">{t('params.empty')}</p>
-                    )}
-                    <CFormText>{t('tasks.form.paramsEditNote')}</CFormText>
-                  </>
-                ) : (
-                  <ParamsEditor value={params} onChange={handleParamsChange} disabled={isSubmitting} />
-                )}
+                <ParamsEditor
+                  value={params}
+                  onChange={handleParamsChange}
+                  disabled={isSubmitting}
+                />
+                {isEdit && <CFormText>{t('tasks.form.paramsEditNote')}</CFormText>}
               </div>
             </>
           )}

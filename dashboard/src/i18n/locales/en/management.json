@@ -97,7 +97,7 @@
       "status": "Status",
       "statusKeep": "Keep current",
       "params": "Task parameters",
-      "paramsEditNote": "Parameters can't be edited here; duplicate the task or recreate it to change them."
+      "paramsEditNote": "Edit or add parameters. Removing a row deletes it on save."
     },
     "statusOptions": {
       "open": "Open",

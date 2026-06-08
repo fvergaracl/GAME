@@ -1,10 +1,11 @@
 // Sprint 6 (CRUD management) — TaskFormModal validation + submit tests.
 //
-// Tasks have a tighter backend than games: PATCH only accepts
-// { strategyId, status }, and externalTaskId/params are immutable after
-// creation. These tests pin the create-mode slug validation and payload, plus
-// the edit-mode "no changes → don't call the API" short-circuit (PATCH 400s on
-// an empty body, so the modal must close instead of submitting nothing).
+// externalTaskId stays immutable after creation, but PATCH accepts
+// { strategyId, status, params }. These tests pin the create-mode slug
+// validation and payload, the edit-mode "no changes → don't call the API"
+// short-circuit (PATCH 409s on an empty body, so the modal must close instead
+// of submitting nothing), and that editing params sends the full set with
+// existing rows' ids preserved.
 
 import React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -102,5 +103,39 @@ describe('TaskFormModal', () => {
 
     await waitFor(() => expect(onClose).toHaveBeenCalled())
     expect(api.updateTask).not.toHaveBeenCalled()
+  })
+
+  it('sends the full param set with existing ids when editing params', async () => {
+    const api = await importApi()
+    const onSaved = vi.fn()
+    const task = {
+      id: 't-uuid-1',
+      externalTaskId: 'task-login',
+      strategy: { id: 'default' },
+      status: 'open',
+      taskParams: [{ id: 'param-1', key: 'bonus', value: 20 }],
+    }
+    await renderModal({ mode: 'edit', task, onSaved })
+
+    await screen.findByText(/can't be changed when editing/i)
+
+    // Add a second param row and fill it; the existing row is left untouched.
+    fireEvent.click(screen.getByRole('button', { name: 'Add parameter' }))
+    const valueInputs = screen.getAllByLabelText('Value')
+    const keyInputs = screen.getAllByLabelText('Key')
+    fireEvent.change(keyInputs[1], { target: { value: 'penalty' } })
+    fireEvent.change(valueInputs[1], { target: { value: '5' } })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => {
+      expect(api.updateTask).toHaveBeenCalledWith('game-1', 't-uuid-1', {
+        params: [
+          { id: 'param-1', key: 'bonus', value: 20 },
+          { key: 'penalty', value: 5 },
+        ],
+      })
+    })
+    expect(onSaved).toHaveBeenCalled()
   })
 })

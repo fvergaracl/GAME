@@ -13,7 +13,8 @@ from app.repository.user_repository import UserRepository
 from app.schema.task_schema import (CreateTask, CreateTaskPost,
                                     CreateTaskPostSuccesfullyCreated, FindTask,
                                     PatchTask, ResponseDeleteTask, ResponsePatchTask)
-from app.schema.tasks_params_schema import CreateTaskParams, InsertTaskParams
+from app.schema.tasks_params_schema import (CreateTaskParams, InsertTaskParams,
+                                            UpdateTaskParams)
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
 from app.services.strategy_definition_service import StrategyDefinitionService
@@ -122,11 +123,11 @@ class TaskService(BaseService):
         """
         Partially update a task identified by ``gameId`` + ``taskId``.
 
-        Sprint 9 scope: the only mutable field is ``strategyId`` (plus
-        the existing ``status`` lifecycle) — we don't expose params
-        editing here because the rest of the task body has its own
-        endpoints and the use case driving this method is "reassign a
-        task to a different strategy" from the admin assignments view.
+        Mutable fields: ``strategyId``, ``status`` and ``params``. When
+        ``params`` is provided it is treated as the desired full set and
+        synced via :meth:`_sync_task_params` (update existing rows by id,
+        create rows without an id, delete rows omitted from the list);
+        omit ``params`` to leave them untouched.
 
         ``strategyId`` accepts both built-ins and ``custom:<uuid>`` —
         validated by :meth:`_validate_strategy_assignment` with the
@@ -159,9 +160,9 @@ class TaskService(BaseService):
                 detail=(f"Task {taskId} does not belong to game {gameId}.")
             )
 
-        # Build the update payload only with non-None fields the caller
-        # actually wants to change; an empty patch is rejected to keep
-        # the audit trail meaningful.
+        # Build the scalar update payload only with non-None fields the
+        # caller actually wants to change. ``params`` is handled separately
+        # (synced below) so it doesn't go through ``patch_by_id``.
         update_fields = {}
         if schema.strategyId is not None:
             await self._validate_strategy_assignment(
@@ -173,22 +174,98 @@ class TaskService(BaseService):
         if schema.status is not None:
             update_fields["status"] = schema.status
 
-        if not update_fields:
+        params_provided = schema.params is not None
+
+        # An empty patch (no scalar fields and no params block) is rejected
+        # to keep the audit trail meaningful.
+        if not update_fields and not params_provided:
             raise ConflictError(detail="Empty patch: no fields provided.")
-        if all(getattr(task, k) == v for k, v in update_fields.items()):
+
+        # Only the scalar fields that actually differ get written; this also
+        # lets us reject a pure no-op field patch (when params aren't touched)
+        # without blocking a params-only change.
+        changed_fields = {
+            k: v for k, v in update_fields.items() if getattr(task, k) != v
+        }
+        if not changed_fields and not params_provided:
             raise ConflictError(
-                detail=("It is not possible to update the task with the " "same data")
+                detail=(
+                    "It is not possible to update the task with the same data"
+                )
             )
 
-        updated = await self.task_repository.patch_by_id(taskId, update_fields)
+        if changed_fields:
+            task = await self.task_repository.patch_by_id(taskId, changed_fields)
+
+        updated_params = None
+        if params_provided:
+            updated_params = await self._sync_task_params(
+                taskId, schema.params, api_key=api_key
+            )
+
         return ResponsePatchTask(
-            taskId=updated.id,
+            taskId=task.id,
             gameId=gameId,
-            externalTaskId=updated.externalTaskId,
-            strategyId=updated.strategyId,
-            status=updated.status,
+            externalTaskId=task.externalTaskId,
+            strategyId=task.strategyId,
+            status=task.status,
+            taskParams=updated_params,
             message=(f"Task with taskId: {taskId} updated successfully"),
         )
+
+    async def _sync_task_params(
+        self,
+        taskId: UUID,
+        params: list[UpdateTaskParams],
+        *,
+        api_key: Optional[str] = None,
+    ) -> list:
+        """
+        Reconcile a task's params to the desired set in ``params``.
+
+        For each entry: a present ``id`` matching an existing param updates
+        it in place; otherwise a new param is created. Existing params whose
+        id is absent from ``params`` are deleted. Values are persisted as
+        strings, mirroring task creation. Returns the surviving param rows.
+        """
+        existing = (
+            await self.task_params_repository.read_by_column(
+                "taskId",
+                taskId,
+                not_found_raise_exception=False,
+                only_one=False,
+            )
+            or []
+        )
+        existing_by_id = {str(p.id): p for p in existing}
+
+        kept_ids = set()
+        result = []
+        for param in params:
+            param_id = getattr(param, "id", None)
+            id_str = str(param_id) if param_id is not None else None
+            if id_str and id_str in existing_by_id:
+                kept_ids.add(id_str)
+                patched = await self.task_params_repository.patch_task_params_by_id(
+                    param_id,
+                    CreateTaskParams(key=param.key, value=str(param.value)),
+                )
+                result.append(patched)
+            else:
+                to_insert = InsertTaskParams(
+                    key=param.key,
+                    value=str(param.value),
+                    taskId=str(taskId),
+                    apiKey_used=api_key,
+                )
+                created = await self.task_params_repository.create(to_insert)
+                result.append(created)
+
+        for id_str, row in existing_by_id.items():
+            if id_str not in kept_ids:
+                await self.task_params_repository.delete_by_id(row.id)
+
+        return result
 
     async def _get_task_in_game(
         self,
