@@ -253,6 +253,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.api.v1.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">routers</span> <span class="k">as</span> <span class="n">v1_routers</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">configs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">Container</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.middlewares.error_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">CatchUnhandledErrorsMiddleware</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.util.class_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">singleton</span>
 
 
@@ -476,6 +477,12 @@
         <span class="c1"># Sprint 13: expose the singleton execution-log observer so the</span>
         <span class="c1"># lifespan shutdown hook can flush its background queue.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">dsl_execution_observer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dsl_execution_observer</span><span class="p">()</span>
+        <span class="c1"># Added before CORSMiddleware on purpose: add_middleware prepends, so</span>
+        <span class="c1"># the CORS layer added below stays the outermost user middleware and</span>
+        <span class="c1"># wraps this one. That lets unhandled 500s be rendered from inside the</span>
+        <span class="c1"># stack and still receive CORS headers (otherwise the browser blocks</span>
+        <span class="c1"># them and the dashboard shows a bare "Network Error").</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span><span class="n">CatchUnhandledErrorsMiddleware</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">configs</span><span class="o">.</span><span class="n">BACKEND_CORS_ORIGINS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
                 <span class="n">CORSMiddleware</span><span class="p">,</span>
