@@ -12,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.ref_name != 'main' && github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, 'Automated Black') }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
