@@ -237,6 +237,7 @@
             
   <h1 id="modules-app-repository-dashboard-repository--page-root">Source code for app.repository.dashboard_repository</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractAsyncContextManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">String</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">select</span>
@@ -281,18 +282,52 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">model_user_actions</span> <span class="o">=</span> <span class="n">model_user_actions</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model_games</span><span class="p">)</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_date_boundary</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Coerce an incoming date string into a ``datetime``.</span>
+
+<span class="sd">        The ``start_date``/``end_date`` query params arrive as strings</span>
+<span class="sd">        (``Query(None)`` typed ``str``). Feeding them straight into a</span>
+<span class="sd">        comparison against the ``created_at`` (``timestamptz``) column made</span>
+<span class="sd">        asyncpg bind them as ``varchar``, so Postgres rejected the query with</span>
+<span class="sd">        ``operator does not exist: timestamp with time zone &gt;= character</span>
+<span class="sd">        varying`` (a 500). Parsing to a real ``datetime`` binds the right</span>
+<span class="sd">        type. Empty/``None`` means "no boundary"; a malformed value is a</span>
+<span class="sd">        client error, not a server crash.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">datetime</span><span class="p">,</span> <span class="n">date</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadRequestError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Invalid date '</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">'. Expected ISO 8601, e.g. 2026-05-09."</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
 <div class="viewcode-block" id="DashboardRepository.process_query">
 <a class="viewcode-back" href="../../../app/app.repository.html#app.repository.DashboardRepository.process_query">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">process_query</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_by_column</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_by_column</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Processes the SELECT statement by filtering and grouping the results.</span>
+
+<span class="sd">        The date filter is applied to the ``created_at`` column of the model</span>
+<span class="sd">        actually being aggregated (``model``); it previously always filtered</span>
+<span class="sd">        ``model_users.created_at``, which cross-joined ``Users`` into queries</span>
+<span class="sd">        over ``Games``/``Logs``/``UserPoints``/``UserActions`` and skewed</span>
+<span class="sd">        their counts. ``model`` defaults to ``model_users`` to preserve the</span>
+<span class="sd">        users-summary behaviour when a caller omits it.</span>
 <span class="sd">        """</span>
+        <span class="n">date_model</span> <span class="o">=</span> <span class="n">model</span> <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_users</span>
+        <span class="n">start_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_date_boundary</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_date_boundary</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">start_date</span><span class="p">:</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_users</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&gt;=</span> <span class="n">start_date</span><span class="p">)</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">date_model</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&gt;=</span> <span class="n">start_date</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">end_date</span><span class="p">:</span>
-            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_users</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&lt;=</span> <span class="n">end_date</span><span class="p">)</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">date_model</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&lt;=</span> <span class="n">end_date</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">group_by_column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">group_by_column</span><span class="p">)</span>
 
@@ -353,7 +388,9 @@
 <span class="w">        </span><span class="sd">"""Executes a query for a specific model and aggregation field."""</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">group_by_column</span><span class="p">,</span> <span class="n">aggregation_field</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"count"</span><span class="p">))</span>
-            <span class="n">stmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_query</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">group_by_column</span><span class="p">)</span>
+            <span class="n">stmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_query</span><span class="p">(</span>
+                <span class="n">stmt</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">group_by_column</span>
+            <span class="p">)</span>
             <span class="n">results</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="k">return</span> <span class="p">[</span>
                 <span class="p">{</span><span class="s2">"label"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">"count"</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">count</span><span class="p">}</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span>
