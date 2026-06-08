@@ -218,3 +218,55 @@ describe('StrategyEditor — load/hydration', () => {
     expect(validateAst(ast).ok).toBe(true)
   })
 })
+
+// Sprint C — robust loading (F4) and data-loss guards (F3).
+describe('StrategyEditor — robust load / data-loss guards', () => {
+  beforeAll(() => {
+    registerDslBlocks()
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  // The static portion of the localised "load failed" message (everything
+  // before the interpolated error), so the assertion is language-agnostic.
+  const ERROR_SENTINEL = ' ERR '
+  const loadFailedPrefix = i18n
+    .t('alerts.loadFailed', { ns: 'editor', error: ERROR_SENTINEL })
+    .split(ERROR_SENTINEL)[0]
+
+  it('F4 — a corrupt blocklyXml surfaces a clear error instead of a silent blank canvas', async () => {
+    await renderEditor(makeRow({ blocklyXml: '{ this is : not valid json' }))
+
+    await waitFor(() => expect(Blockly.inject).toHaveBeenCalled())
+    const ws = survivingWorkspace()
+
+    // The error must reach the user...
+    await waitFor(() => expect(document.body.textContent).toContain(loadFailedPrefix))
+    // ...without tearing down or duplicating the workspace, and the parse
+    // failure (caught before ``clear``) leaves the canvas empty, not crashed.
+    expect(Blockly.inject).toHaveBeenCalledTimes(1)
+    expect(ws.dispose).not.toHaveBeenCalled()
+    expect(ws.getAllBlocks(false)).toHaveLength(0)
+  })
+
+  it('F3 — loading a DRAFT leaves it clean so an untouched canvas is never autosaved over', async () => {
+    const api = await import('../../api')
+    await renderEditor(makeRow())
+
+    await waitFor(() => expect(Blockly.inject).toHaveBeenCalled())
+    const ws = survivingWorkspace()
+    await waitForHydration(ws)
+
+    // A freshly-loaded, untouched strategy must read as clean: no "unsaved
+    // changes" badge. A wrong (e.g. empty) baseline here would mark it dirty
+    // and arm the autosave that previously clobbered saved blocks.
+    const unsavedLabel = i18n.t('header.unsaved', { ns: 'editor' })
+    await waitFor(() => expect(workspaceToAst(ws)).toEqual(BASIC_ENGAGEMENT_AST))
+    expect(document.body.textContent).not.toContain(unsavedLabel)
+    // The clean load must not have triggered any persistence on its own.
+    expect(api.updateCustomStrategy).not.toHaveBeenCalled()
+    expect(api.createCustomStrategy).not.toHaveBeenCalled()
+  })
+})

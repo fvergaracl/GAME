@@ -129,6 +129,19 @@ const AUTOSAVE_DELAY_MS = 4000
 const composeClean = (ast, name, description) =>
   JSON.stringify({ ast, name: (name || '').trim(), description: (description || '').trim() })
 
+// True when an AST carries something worth persisting — at least one rule
+// (main / pre / post) or a default statement. The autosave data-loss guard
+// uses it to refuse overwriting a saved-with-content version with an empty
+// canvas (F3).
+const astHasContent = (ast) =>
+  Boolean(
+    ast &&
+      ((Array.isArray(ast.rules) && ast.rules.length > 0) ||
+        (Array.isArray(ast.pre_rules) && ast.pre_rules.length > 0) ||
+        (Array.isArray(ast.post_rules) && ast.post_rules.length > 0) ||
+        ast.default),
+  )
+
 const StrategyEditor = () => {
   const { t, i18n } = useTranslation('editor')
   // Shared feedback channel. No-op outside a ToastProvider (e.g. test
@@ -233,6 +246,13 @@ const StrategyEditor = () => {
   // reposition isn't a change. ``workspaceRev`` bumps on every block edit
   // so that effect re-runs and resets the autosave debounce.
   const cleanAstRef = useRef(null)
+  // F3 (data-loss guards). ``hydratedRef`` stays false until the intended
+  // initial content has landed on the canvas, so autosave can't PUT a blank
+  // canvas over saved blocks during the load window. ``baselineHasContentRef``
+  // mirrors whether the current clean baseline has any rules, so autosave
+  // refuses to clobber a with-content version with an empty canvas.
+  const hydratedRef = useRef(false)
+  const baselineHasContentRef = useRef(false)
   const [isDirty, setIsDirty] = useState(false)
   const [workspaceRev, setWorkspaceRev] = useState(0)
   const [isAutosaving, setIsAutosaving] = useState(false)
@@ -374,35 +394,62 @@ const StrategyEditor = () => {
     const workspace = workspaceRef.current
     if (stage !== 'editing' || !workspace) return
 
+    // Resolve the single queued content source (if any) up front so the
+    // try/finally can clear the right flag whether the load succeeds or
+    // throws — a corrupt payload must not re-trigger the effect forever.
+    let pending = null
     if (pendingTemplate) {
-      loadWorkspaceFromSerialized(workspace, pendingTemplate.blocklyXml)
-      setPendingTemplate(null)
+      pending = { xml: pendingTemplate.blocklyXml, clear: () => setPendingTemplate(null) }
     } else if (pendingImportBundle) {
-      loadWorkspaceFromSerialized(workspace, pendingImportBundle.blocklyXml)
-      setPendingImportBundle(null)
+      pending = { xml: pendingImportBundle.blocklyXml, clear: () => setPendingImportBundle(null) }
     } else if (pendingSeed) {
       // Seed a valid starter rule for the from-scratch path.
-      loadWorkspaceFromSerialized(workspace, STARTER_RULE_XML)
-      setPendingSeed(false)
+      pending = { xml: STARTER_RULE_XML, clear: () => setPendingSeed(false) }
+    }
+
+    if (pending) {
+      try {
+        loadWorkspaceFromSerialized(workspace, pending.xml)
+      } catch (err) {
+        // F4: a corrupt blocklyXml must surface a clear error instead of a
+        // silent blank canvas. ``loadWorkspaceFromSerialized`` parses before
+        // clearing, so on a parse failure the prior blocks stay put.
+        setLoadError(t('alerts.loadFailed', { error: err?.message || String(err) }))
+      } finally {
+        pending.clear()
+      }
     }
 
     // Reflect any hydrated blocks in the guided inputs immediately (the
     // change listener's debounce may not have fired yet).
     refreshUsedFields()
 
-    // Capture the clean baseline AFTER hydration so the first real edit
-    // flips ``isDirty``. An empty/invalid canvas gets a sentinel so the
-    // first dropped block still counts as a change. ``strategyName`` /
+    // Capture the clean baseline AFTER (attempting to) hydrate so the first
+    // real edit flips ``isDirty``. An empty/invalid canvas gets a sentinel so
+    // the first dropped block still counts as a change. ``strategyName`` /
     // ``description`` are read here but kept OUT of the deps: the load-by-id
-    // effect sets them in the same batch as the pending bundle, and
-    // depending on them would re-capture the baseline on every keystroke.
+    // effect sets them in the same batch as the pending bundle, and depending
+    // on them would re-capture the baseline on every keystroke.
+    let baselineAst = null
     try {
-      cleanAstRef.current = composeClean(workspaceToAst(workspace), strategyName, description)
+      baselineAst = workspaceToAst(workspace)
+      cleanAstRef.current = composeClean(baselineAst, strategyName, description)
     } catch {
       cleanAstRef.current = '__EMPTY__'
     }
     setIsDirty(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- name/description intentionally excluded (see comment above)
+
+    // F3: track whether the baseline has content (so autosave won't clobber
+    // it with an empty canvas) and arm autosave only once the intended
+    // content has landed. The initial no-pending pass on the load-by-id path
+    // (``routeStrategyId`` set, nothing queued yet) is intentionally left
+    // un-hydrated so a blank canvas can never be autosaved over saved blocks
+    // before the row arrives; the load-by-id effect handles content-less rows.
+    baselineHasContentRef.current = astHasContent(baselineAst)
+    if (pending || !routeStrategyId) {
+      hydratedRef.current = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- name/description/t/routeStrategyId intentionally excluded (see comment above)
   }, [stage, pendingTemplate, pendingImportBundle, pendingSeed, refreshUsedFields])
 
   // ----- Load existing strategy by id --------------------------------------
@@ -414,6 +461,10 @@ const StrategyEditor = () => {
     if (!routeStrategyId) return
     let cancelled = false
     setLoadError(null)
+    // F3: a (re)load is in flight — disable autosave until this row's content
+    // hydrates so we never PUT a stale/blank canvas over the row being loaded.
+    hydratedRef.current = false
+    baselineHasContentRef.current = false
     getCustomStrategy(routeStrategyId)
       .then((row) => {
         if (cancelled) return
@@ -432,6 +483,11 @@ const StrategyEditor = () => {
           // Queue for the workspace effect to hydrate. Don't try to load
           // here — the workspace may not be mounted yet on first render.
           setPendingImportBundle({ blocklyXml: row.blocklyXml })
+        } else {
+          // Nothing to hydrate — the row IS loaded, so it's safe to arm
+          // autosave. (The hydration effect only flips ``hydratedRef`` when
+          // it has pending content to apply.)
+          hydratedRef.current = true
         }
       })
       .catch((err) => {
@@ -695,6 +751,7 @@ const StrategyEditor = () => {
       }
       // The saved AST + metadata are now the clean baseline.
       markClean(composeClean(ast, strategyName, description))
+      baselineHasContentRef.current = astHasContent(ast)
     } catch (err) {
       setSaveError(translateDslError(t, err) || extractError(err, t))
     } finally {
@@ -716,13 +773,21 @@ const StrategyEditor = () => {
     if (isSaving || isAutosaving) return
     if (!strategyName.trim()) return
     if (mode === 'DSL_EXTEND' && !parentId) return
+    // F3: never autosave before the row's content has hydrated — otherwise
+    // the blank canvas shown during the load window could be PUT over the
+    // saved blocks (data loss).
+    if (!hydratedRef.current) return
     let ast
     try {
       ast = workspaceToAst(workspaceRef.current)
-      if (!validateAst(ast).ok) return
     } catch {
       return
     }
+    // F3: refuse to clobber a baseline that has content with an empty canvas —
+    // a transient blank/partial canvas (failed hydration, mid-clear) must not
+    // wipe saved blocks. A deliberate full delete still persists via Save.
+    if (!astHasContent(ast) && baselineHasContentRef.current) return
+    if (!validateAst(ast).ok) return
     const blocklyJson = Blockly.serialization.workspaces.save(workspaceRef.current)
     setIsAutosaving(true)
     setAutosaveError(null)
@@ -739,6 +804,7 @@ const StrategyEditor = () => {
       setLoadedVersion(updated.version ?? null)
       setStatus(updated.status ?? 'DRAFT')
       markClean(composeClean(ast, strategyName, description))
+      baselineHasContentRef.current = astHasContent(ast)
       setLastAutosaveAt(new Date())
     } catch (err) {
       setAutosaveError(translateDslError(t, err) || extractError(err, t))
@@ -1883,11 +1949,17 @@ function loadWorkspaceFromSerialized(workspace, serialized) {
   if (!workspace || !serialized) return
   const trimmed = String(serialized).trim()
   if (!trimmed) return
-  workspace.clear()
+  // F4: parse BEFORE clearing so a malformed payload throws while the
+  // existing canvas is still intact — a corrupt blocklyXml then leaves the
+  // workspace as-is for the caller to flag, instead of silently blanking it.
   if (trimmed.startsWith('<')) {
-    Blockly.Xml.domToWorkspace(Blockly.utils.xml.textToDom(trimmed), workspace)
+    const dom = Blockly.utils.xml.textToDom(trimmed)
+    workspace.clear()
+    Blockly.Xml.domToWorkspace(dom, workspace)
   } else {
-    Blockly.serialization.workspaces.load(JSON.parse(trimmed), workspace)
+    const state = JSON.parse(trimmed)
+    workspace.clear()
+    Blockly.serialization.workspaces.load(state, workspace)
   }
 }
 

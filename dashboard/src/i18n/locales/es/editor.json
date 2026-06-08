@@ -254,6 +254,7 @@
     "nameRequired": "El nombre de la estrategia es obligatorio.",
     "noWorkspace": "Abre el editor antes de exportar.",
     "serializeFailed": "No se pudo serializar el workspace: {{error}}",
+    "loadFailed": "No se pudo cargar la estrategia en el editor (datos corruptos): {{error}}.",
     "noParent": "Selecciona una estrategia padre antes de guardar.",
     "noParentSim": "Selecciona una estrategia padre antes de probar.",
     "fileReadFailed": "No se pudo leer el archivo: {{error}}",
