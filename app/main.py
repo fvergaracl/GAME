@@ -15,6 +15,7 @@ from starlette.middleware.cors import CORSMiddleware
 from app.api.v1.routes import routers as v1_routers
 from app.core.config import configs
 from app.core.container import Container
+from app.middlewares.error_handler import CatchUnhandledErrorsMiddleware
 from app.util.class_object import singleton
 
 
@@ -223,6 +224,12 @@ class AppCreator:
         # Sprint 13: expose the singleton execution-log observer so the
         # lifespan shutdown hook can flush its background queue.
         self.app.state.dsl_execution_observer = self.container.dsl_execution_observer()
+        # Added before CORSMiddleware on purpose: add_middleware prepends, so
+        # the CORS layer added below stays the outermost user middleware and
+        # wraps this one. That lets unhandled 500s be rendered from inside the
+        # stack and still receive CORS headers (otherwise the browser blocks
+        # them and the dashboard shows a bare "Network Error").
+        self.app.add_middleware(CatchUnhandledErrorsMiddleware)
         if configs.BACKEND_CORS_ORIGINS:
             self.app.add_middleware(
                 CORSMiddleware,
