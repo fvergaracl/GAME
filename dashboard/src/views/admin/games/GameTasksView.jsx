@@ -87,6 +87,22 @@ const GameTasksView = () => {
   const [duplicateTarget, setDuplicateTarget] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
 
+  // Switching games keeps this component mounted (only the :gameId route
+  // param changes), so without an explicit reset the previous game's rows and
+  // any open modal would survive the navigation. Acting on them then targets a
+  // task that belongs to the old game under the new gameId — which the backend
+  // correctly rejects with a cross-game 404. Drop all per-game state up front
+  // so the old game's tasks can never be edited/duplicated/deleted here.
+  useEffect(() => {
+    setTasks([])
+    setSearch('')
+    setError(null)
+    setFormModal(CLOSED_MODAL)
+    setBulkOpen(false)
+    setDuplicateTarget(null)
+    setDeleteTarget(null)
+  }, [gameId])
+
   // Resolve the game label once (best-effort). Independent of the task reload
   // so it doesn't re-fetch on every refreshTick bump.
   useEffect(() => {
