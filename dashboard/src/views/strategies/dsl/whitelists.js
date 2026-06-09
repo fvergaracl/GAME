@@ -1,4 +1,4 @@
-// Sprint 6: client-side mirror of the backend whitelists from
+// Client-side mirror of the backend whitelists from
 // app/engine/dsl_ast.py. These power the Blockly dropdowns and the
 // client-side validator so the designer gets immediate feedback before
 // the AST round-trips through the backend.
@@ -18,11 +18,11 @@ export const FIELD_PATHS = [
   'all.avg_time',
   'user.last_window_diff',
   'user.new_last_window_diff',
-  // Sprint 6: rolling-window count for constantEffort-style strategies.
+  // Rolling-window count for constantEffort-style strategies.
   'user.recent_measurements_count',
 ]
 
-// Sprint 7: paths that read the parent built-in's result in DSL_EXTEND
+// Paths that read the parent built-in's result in DSL_EXTEND
 // mode. The validator only accepts these inside post_rules - using
 // them anywhere else would read uninitialised state because the
 // parent hasn't run yet.
@@ -35,7 +35,7 @@ export const ARITH_OPS = ['+', '-', '*', '/', 'min', 'max']
 export const FUNC_NAMES = ['int', 'clamp']
 export const FUNC_ARITY = { int: 1, clamp: 3 }
 
-// Sprint 7: per-section statement whitelisting. Mirrors
+// Per-section statement whitelisting. Mirrors
 // ``STATEMENT_ALLOWED_CONTEXTS`` in app/engine/dsl_ast.py - the
 // validator uses this map to reject set_data outside pre_rules,
 // set_points outside post_rules, etc.
@@ -49,7 +49,7 @@ export const STATEMENT_ALLOWED_CONTEXTS = {
   set_case_name: new Set(['post']),
 }
 
-// Sprint 7: keys that are NOT valid inside parent_variables. Currently
+// Keys that are NOT valid inside parent_variables. Currently
 // any key starting with ``variable_`` is accepted; the registry-level
 // "does this variable exist?" check happens server-side at create/
 // update time so a malformed editor state never poisons the DB.

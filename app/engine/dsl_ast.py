@@ -29,7 +29,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Iterable, Optional, Set, Tuple
 
-# Node types ----------------------------------------------------------------
+# Node types
 # The handler tables in dsl_validator and dsl_interpreter dispatch on these
 # strings. Adding a node here without adding a handler will be caught by the
 # validator (unknown type) - the constants are intentionally exhaustive.
@@ -51,7 +51,7 @@ NODE_COMPARE = "compare"
 NODE_LITERAL = "literal"
 NODE_FIELD = "field"
 NODE_ARITH = "arith"
-# Sprint 6: dedicated node for non-binary built-ins (unary ``int``,
+# Dedicated node for non-binary built-ins (unary ``int``,
 # ternary ``clamp``). Binary ``min`` / ``max`` stay in ``arith`` because
 # they fit the existing left/right dispatch table cleanly.
 NODE_FUNC_CALL = "func_call"
@@ -60,7 +60,7 @@ NODE_ASSIGN_POINTS = "assign_points"
 NODE_SET_CALLBACK_DATA = "set_callback_data"
 NODE_RETURN = "return"
 
-# Sprint 7: statements for DSL_EXTEND mode (pre_rules / post_rules).
+# Statements for DSL_EXTEND mode (pre_rules / post_rules).
 # - set_data + veto are pre-only (they affect what the parent sees / whether
 #   it runs at all).
 # - set_points + set_case_name are post-only (they mutate the parent's result).
@@ -120,7 +120,7 @@ STATEMENT_NODE_TYPES: Set[str] = {
 }
 
 
-# Sprint 7: which statements are allowed inside which AST section.
+# Which statements are allowed inside which AST section.
 # Context strings: "rule" (main rules[]), "default" (program.default),
 # "pre" (program.pre_rules[]), "post" (program.post_rules[]).
 #
@@ -138,7 +138,7 @@ STATEMENT_ALLOWED_CONTEXTS: Dict[str, Set[str]] = {
 
 
 ALLOWED_COMPARE_OPS: Set[str] = {"<", "<=", "==", "!=", ">=", ">"}
-# Sprint 6: ``min`` / ``max`` added as binary arith ops so they reuse the
+# ``min`` / ``max`` added as binary arith ops so they reuse the
 # existing _ARITH_HANDLERS table. Unary ``int`` and ternary ``clamp`` are
 # expressed through ``NODE_FUNC_CALL`` instead.
 ALLOWED_ARITH_OPS: Set[str] = {"+", "-", "*", "/", "min", "max"}
@@ -151,12 +151,12 @@ ALLOWED_ARITH_OPS: Set[str] = {"+", "-", "*", "/", "min", "max"}
 ALLOWED_FUNC_NAMES: Set[str] = {"int", "clamp"}
 FUNC_ARITY: Dict[str, int] = {"int": 1, "clamp": 3}
 
-# Sprint 7: program may carry pre_rules and post_rules (DSL_EXTEND mode).
+# Program may carry pre_rules and post_rules (DSL_EXTEND mode).
 # The validator now treats both as optional-but-can-be-non-empty lists of
-# rule-shaped nodes; Sprint 6 used to require they be empty.
+# rule-shaped nodes; an earlier version required they be empty.
 RESERVED_PROGRAM_KEYS: Set[str] = {"pre_rules", "post_rules"}
 
-# Sprint 7: declarative override map applied to a fresh copy of the
+# Declarative override map applied to a fresh copy of the
 # parent built-in before its calculate_points runs. Keys must be present
 # in ``parent.get_variables()`` (validated against the registry at
 # create/update time, see strategy_definition_service); values must be
@@ -164,7 +164,7 @@ RESERVED_PROGRAM_KEYS: Set[str] = {"pre_rules", "post_rules"}
 PARENT_VARIABLES_KEY = "parent_variables"
 
 
-# Field whitelist -----------------------------------------------------------
+# Field whitelist
 
 DATA_FIELD_PREFIX = "data."
 _DATA_KEY_RE = re.compile(r"^[A-Za-z0-9_]+$")
@@ -250,10 +250,10 @@ FIELD_RESOLVERS: Dict[str, FieldResolution] = dict(
             "get_user_task_measurements_count",
             lambda ctx: (ctx.externalTaskId, ctx.externalUserId),
         ),
-        # Sprint 6: rolling-window count used by ``constantEffortStrategy``.
+        # Rolling-window count used by ``constantEffortStrategy``.
         # The window in seconds is currently hard-coded to 300 (5 minutes,
         # the strategy's default). Parametrising the window per-AST requires
-        # variable substitution support which lands in Sprint 7.
+        # variable substitution support, which is not yet implemented.
         _analytics(
             "user.recent_measurements_count",
             "get_user_task_measurements_count_the_last_seconds",
@@ -288,7 +288,7 @@ FIELD_RESOLVERS: Dict[str, FieldResolution] = dict(
 )
 
 
-# Sprint 7: paths exposed only inside ``post_rules`` - they carry the
+# Paths exposed only inside ``post_rules`` - they carry the
 # parent built-in's result after the pre→parent→post pipeline. They are
 # NOT in FIELD_RESOLVERS because their value is injected directly into
 # ExecutionContext.resolved_fields by ``DslStrategy`` after the parent
@@ -335,7 +335,7 @@ def is_valid_case_name(value: Any) -> bool:
     return isinstance(value, str) and bool(_CASE_NAME_RE.match(value))
 
 
-# Field enumeration ---------------------------------------------------------
+# Field enumeration
 # ExecutionContext uses this to build a precompute list. It walks the AST
 # permissively (will not raise on unknown nodes - that is the validator's
 # job) so the same code path is safe to call after validation has passed.

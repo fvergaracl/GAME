@@ -32,7 +32,7 @@ from app.engine.dsl_execution_context import ExecutionContext
 from app.engine.dsl_interpreter import DslInterpreter
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
 
-# Sprint 13: the idempotency hash is a canonical-JSON dump of the AST
+# The idempotency hash is a canonical-JSON dump of the AST
 # plus a SHA-256 - pure CPU, but ``UserPointsService`` constructs a fresh
 # ``DslStrategy`` on every scoring call, so a busy strategy re-hashes the
 # same multi-KB AST thousands of times a minute. We memoise the result
@@ -122,17 +122,17 @@ class DslStrategy(BaseStrategy):
         self._definition = definition
         self._interpreter = interpreter
         self._analytics = analytics_service
-        # Sprint 7: when set, calculate_points runs the DSL_EXTEND
+        # When set, calculate_points runs the DSL_EXTEND
         # pipeline (pre_rules → parent.calculate_points → post_rules).
         # Injected by StrategyService.get_strategy_instance only when
         # the definition is DSL_EXTEND.
         self._parent_strategy = parent_strategy
-        # Sprint 11: observer sink for metrics + sampled persistence.
+        # Observer sink for metrics + sampled persistence.
         # Optional so unit tests instantiating DslStrategy without the
         # container keep working unchanged. The container wires the
         # real DslExecutionObserver in production.
         self._observer = observer
-        # Sprint 11: filled by _run_phase on every interpreter call so
+        # Filled by _run_phase on every interpreter call so
         # the calculate_points wrapper can hand the observer a trace
         # without threading return values through DSL_EXTEND's three
         # phases. Reset at the top of every calculate_points entry.
@@ -151,7 +151,7 @@ class DslStrategy(BaseStrategy):
         Returns:
             str: The AST-derived hash stored as ``hash_version``.
         """
-        # Sprint 13: published definitions hit the process-wide LRU so the
+        # Published definitions hit the process-wide LRU so the
         # same AST isn't re-hashed on every scoring call; drafts (whose
         # (id, version) key is not stable) always recompute.
         if getattr(self._definition, "status", None) == "PUBLISHED":
@@ -207,7 +207,7 @@ class DslStrategy(BaseStrategy):
         self._last_trace = None
         self._last_nodes_executed = 0
 
-        # Sprint 11: every execution gets a single observation envelope
+        # Every execution gets a single observation envelope
         # so metrics + sampled persistence cover both DSL_FULL and
         # DSL_EXTEND (and both success and failure) on one code path.
         # The envelope is intentionally outside _calculate_dsl_* so it
@@ -296,8 +296,6 @@ class DslStrategy(BaseStrategy):
                     # scoring path from a broken sink.
                     pass
 
-    # ----- DSL_FULL (Sprint 5) ----------------------------------------------
-
     async def _calculate_dsl_full(
         self,
         externalGameId: Optional[str],
@@ -336,8 +334,6 @@ class DslStrategy(BaseStrategy):
         )
         return self._format_result(result)
 
-    # ----- DSL_EXTEND (Sprint 7) --------------------------------------------
-
     async def _calculate_dsl_extend(
         self,
         externalGameId: Optional[str],
@@ -364,7 +360,7 @@ class DslStrategy(BaseStrategy):
         ast_post = ast.get("post_rules") or []
         parent_variable_overrides = ast.get("parent_variables") or {}
 
-        # Sprint 13: DSL_EXTEND builds up to two ExecutionContexts (pre +
+        # DSL_EXTEND builds up to two ExecutionContexts (pre +
         # post) for the same user and request window. Share one analytics
         # memo across both so each analytics field (a DB round-trip)
         # resolves once instead of twice. Static and data.* fields are not
@@ -457,8 +453,6 @@ class DslStrategy(BaseStrategy):
             parent_result=parent_result,
         )
         return self._format_result(post_result)
-
-    # ----- shared helpers ---------------------------------------------------
 
     async def _run_phase(
         self,

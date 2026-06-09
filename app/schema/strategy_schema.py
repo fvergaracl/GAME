@@ -167,7 +167,7 @@ class BaseStrategy(ModelBaseInfo):
     )
 
 
-# Sprint 7 - schema endpoint payload --------------------------------------
+# Schema endpoint payload
 #
 # ``/v1/strategies/{id}/schema`` returns a richer representation of a
 # built-in than ``GET /v1/strategies/{id}``: the variables list is

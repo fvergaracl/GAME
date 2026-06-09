@@ -1,4 +1,4 @@
-// Sprint 6: AST generator - walks a Blockly workspace and emits JSON
+// AST generator - walks a Blockly workspace and emits JSON
 // matching app/engine/dsl_ast.py's grammar exactly.
 //
 // We deliberately do NOT extend ``Blockly.Generator`` / use
@@ -116,9 +116,7 @@ function _coerceOverrideValue(raw) {
   return trimmed
 }
 
-// ---------------------------------------------------------------------------
 // Rule + statements
-// ---------------------------------------------------------------------------
 
 function blockToRule(block) {
   const whenBlock = block.getInputTargetBlock('WHEN')
@@ -130,13 +128,13 @@ function blockToRule(block) {
     then: collectStatements(thenBlock),
   }
 
-  // Sprint 12: optional else-if / else branches added via the rule
+  // Optional else-if / else branches added via the rule
   // mutator. Extra branches use IF{i}/DO{i} (i >= 1) value+statement
   // input pairs; the else clause is a single ELSE statement input. We
   // probe by input presence (block.getInput) rather than the private
   // elseifCount_ counter so the AST stays correct even if a branch was
   // re-shaped without updating the counter. The keys are omitted when
-  // empty so rules without branches produce the exact pre-Sprint-12 AST.
+  // empty so rules without branches produce the exact legacy AST.
   const elseIf = []
   for (let i = 1; block.getInput(`IF${i}`); i++) {
     const branchWhen = block.getInputTargetBlock(`IF${i}`)
@@ -165,7 +163,7 @@ function collectStatements(firstBlock) {
 function blockToStatement(block) {
   if (block.type === 'gd_assign_points') return blockToAssignPoints(block)
   if (block.type === 'gd_set_callback_data') return blockToSetCallbackData(block)
-  // Sprint 7 statements.
+  // Statements.
   if (block.type === 'gd_set_data') return blockToSetData(block)
   if (block.type === 'gd_veto') return blockToVeto(block)
   if (block.type === 'gd_set_points') return blockToSetPoints(block)
@@ -197,7 +195,7 @@ function blockToSetCallbackData(block) {
   }
 }
 
-// Sprint 7 statement converters --------------------------------------------
+// Statement converters
 
 function blockToSetData(block) {
   const valueBlock = block.getInputTargetBlock('VALUE')
@@ -241,9 +239,7 @@ function blockToSetCaseName(block) {
   }
 }
 
-// ---------------------------------------------------------------------------
 // Conditions
-// ---------------------------------------------------------------------------
 
 function blockToCondition(block) {
   if (block.type === 'gd_compare') return blockToCompare(block)
@@ -289,9 +285,7 @@ function blockToNot(block) {
   }
 }
 
-// ---------------------------------------------------------------------------
 // Expressions
-// ---------------------------------------------------------------------------
 
 function blockToExpression(block) {
   const converter = BLOCK_TO_AST[block.type]
@@ -316,7 +310,7 @@ function blockToFieldData(block) {
   }
 }
 
-// Sprint 7: reads parent.points / parent.case_name. The dropdown stores
+// Reads parent.points / parent.case_name. The dropdown stores
 // the full path string as its value so emission is one-line.
 function blockToFieldParent(block) {
   return {
@@ -365,9 +359,7 @@ function blockToFuncCall(block) {
   return { type: 'func_call', id: block.id, name, args }
 }
 
-// ---------------------------------------------------------------------------
 // Helpers
-// ---------------------------------------------------------------------------
 
 function _exprOrMissing(parentBlock, inputName) {
   const target = parentBlock.getInputTargetBlock(inputName)

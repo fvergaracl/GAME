@@ -227,7 +227,7 @@ class Configs(BaseSettings):
 
     ENV: str = os.getenv("ENV", "dev")
     ROOT_PATH: str = os.getenv("ROOT_PATH", "")
-    # Sprint 11 follow-up: when True the FastAPI app exposes /metrics via
+    # When True the FastAPI app exposes /metrics via
     # prometheus_fastapi_instrumentator so the bundled docker-compose
     # Prometheus container can scrape the DSL counters out of the box.
     # Default ON because the metrics stack ships pre-configured; flip to
@@ -347,7 +347,7 @@ class Configs(BaseSettings):
         "APIKEY_CACHE_REDIS_KEY_PREFIX", "game:apikey:"
     )
 
-    # DSL interpreter limits (Sprint 4). The validator rejects ASTs whose
+    # DSL interpreter limits. The validator rejects ASTs whose
     # static node count or depth exceeds these thresholds, so runtime should
     # never hit them - they are belt-and-braces guards in case future changes
     # introduce dynamic expansion. The wall-clock timeout is the backstop
@@ -357,7 +357,7 @@ class Configs(BaseSettings):
     DSL_MAX_NODES: int = _env_to_int("DSL_MAX_NODES", 1000)
     DSL_MAX_DEPTH: int = _env_to_int("DSL_MAX_DEPTH", 32)
 
-    # Sprint 11: sampled persistence of DSL execution traces. Errors are
+    # Sampled persistence of DSL execution traces. Errors are
     # always persisted regardless of the sample rate -- the rate only
     # applies to OK runs. 0.0 disables successful-run sampling; 1.0
     # persists every run (only safe in dev/test, see runbook).
@@ -373,7 +373,7 @@ class Configs(BaseSettings):
         "DSL_EXECUTION_LOG_TRACE_LIMIT", 200
     )
 
-    # Sprint 13: the execution-log DB write is drained off the scoring
+    # The execution-log DB write is drained off the scoring
     # hot-path by a background worker fed from a bounded in-process queue
     # (see DslExecutionObserver). This caps how many pending rows the
     # queue holds before it starts dropping (and counting via

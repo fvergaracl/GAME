@@ -1,4 +1,4 @@
-// Sprint 5 (CRUD management) - UsersExplorerView integration tests.
+// UsersExplorerView integration tests.
 //
 // The explorer is read-only, so the regression surface is narrow but the
 // state machine isn't: a lookup fans out to two independent endpoints and the

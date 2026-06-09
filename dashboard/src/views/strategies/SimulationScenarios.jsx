@@ -1,4 +1,4 @@
-// Sprint 5: saveable simulation scenarios. A "scenario" is the full set of
+// Saveable simulation scenarios. A "scenario" is the full set of
 // test inputs (ids, event data, mock overrides, accumulated-field values,
 // single/cumulative mode + step). Designers iterate on the same handful of
 // inputs over and over - saving them as named presets means they stop

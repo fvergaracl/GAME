@@ -1,4 +1,4 @@
-// Sprint 6 (CRUD management) - useUnsavedGuard tests.
+// UseUnsavedGuard tests.
 //
 // The guard is one decision shared by all five management form modals, so a
 // regression here silently breaks "discard changes?" everywhere at once.

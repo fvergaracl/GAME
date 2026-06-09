@@ -497,24 +497,6 @@ async def get_wallet_by_user_id(
         raise e
 
 
-# @router.get("")
-# @inject
-# def list_users(
-#     schema: FindBase = Depends(),
-#     service: UserService = Depends(Provide[Container.user_service]),
-# ):
-#     return await service.get_list(schema)
-
-
-# @router.post("", response_model=CreatedUser)
-# @inject
-# def create_user(
-#     schema: PostCreateUser,
-#     service: UserService = Depends(Provide[Container.user_service]),
-# ):
-#     return await service.create_user(schema)
-
-
 summary_assign_points_by_external_id = "Assign points to user by externalUserId"
 response_example_assign_points_by_external_user_id = {
     "id": "4ef6fc17-1bc8-44a9-b3fa-8f8cc43cb9a2",
@@ -704,27 +686,6 @@ async def assign_points_by_external_user_id(
     except Exception as e:
         await audit.error("Assign points by externalUserId failed", {"error": str(e)})
         raise e
-
-
-summary_get_points = "Get points by user id"
-description_get_points = """
-## Get points by user id
-### Get points by user id
-"""
-
-
-# @router.get(
-#     "/{userId}/points",
-#     response_model=UserPointsTasks,
-#     summary=summary_get_points,
-#     description=description_get_points,
-# )
-# @inject
-# def get_points_by_user_id(
-#     userId: UUID,
-#     service: UserService = Depends(Provide[Container.user_service]),
-# ):
-#     return await service.get_points_by_user_id(userId)
 
 
 summary_preview_points = "Preview Points to Coins Conversion"

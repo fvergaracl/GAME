@@ -1,4 +1,4 @@
-// Sprint 9 - section-level error boundary.
+// Section-level error boundary.
 //
 // React error boundaries are still class-only (no hook equivalent), so
 // this is the one class component in the dashboard. Wraps a section

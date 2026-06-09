@@ -1,4 +1,4 @@
-// Sprint 8: shared react-joyride wrapper for the Library and
+// Shared react-joyride wrapper for the Library and
 // Assignments onboarding tours. Generalises the per-view-specific bits
 // of EditorTour so we don't reimplement the same auto-trigger /
 // localStorage / locale plumbing twice.
@@ -111,7 +111,7 @@ const OnboardingTour = ({
       callback={handleCallback}
       locale={locale}
       styles={{
-        // Sprint 9: drive the tour off CoreUI tokens so dark mode and any
+        // Drive the tour off CoreUI tokens so dark mode and any
         // future theming stay in sync. Joyride consumes these as inline
         // styles, which accept ``var()`` values.
         options: {

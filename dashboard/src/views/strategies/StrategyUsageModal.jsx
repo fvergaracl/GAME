@@ -1,4 +1,4 @@
-// Sprint 6 - strategy usage / reverse-lookup modal.
+// Strategy usage / reverse-lookup modal.
 //
 // "¿Dónde se usa esta estrategia?" Opened from the library, it lists the
 // games and tasks currently assigned to a specific strategy version

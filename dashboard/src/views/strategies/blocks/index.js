@@ -1,10 +1,10 @@
-// Sprint 6: custom Blockly block definitions for the strategy DSL.
+// Custom Blockly block definitions for the strategy DSL.
 //
 // Each block maps 1:1 to an AST node in app/engine/dsl_ast.py. The
 // dropdowns are sourced from the whitelists mirror so they always show
 // the same options the backend will accept.
 //
-// Sprint 10: tooltips and inline labels read from the i18n ``blocks``
+// Tooltips and inline labels read from the i18n ``blocks``
 // namespace. ``registerDslBlocks`` accepts the i18next ``t`` function so
 // the language-switcher can re-register (idempotent) blocks with the
 // current locale.
@@ -28,7 +28,7 @@ const optionsFromArray = (arr) => arr.map((v) => [v, v])
 // toolbox open via the prototype) pick up the new locale.
 let _t = null
 
-// Sprint 3 (fix C5): per-block documentation route. Used as helpUrl so
+// Per-block documentation route. Used as helpUrl so
 // the right-click "Help" opens the real reference doc (the same content
 // as docs/dsl/blocks/<slug>.md, bundled via blockDocs.js and rendered by
 // BlockHelpView at /strategies/blocks-help/:slug).
@@ -115,14 +115,14 @@ const tooltip = (blockKey) => {
   return ''
 }
 
-// Sprint 4: human-readable field catalog. The whitelisted analytic paths
+// Human-readable field catalog. The whitelisted analytic paths
 // (``user.measurements_count``, ``all.avg_time``, …) are cryptic, so the
 // dropdown shows a localised label with the canonical path in parens -
 // e.g. "Mediciones del usuario (user.measurements_count)". The path stays
 // the stored value so the generated AST and the docs/whitelist are
 // unaffected. Falls back to the bare path before i18next initialises (and
 // in headless unit tests), which keeps the dropdown values identical to
-// the pre-Sprint-4 ``optionsFromArray(FIELD_PATHS)`` shape.
+// the legacy ``optionsFromArray(FIELD_PATHS)`` shape.
 const fieldLabel = (path) => {
   if (_t) {
     const human = _t(`blocks:fields.${path}.label`, { defaultValue: '' })
@@ -140,9 +140,7 @@ const fieldLabel = (path) => {
 const fieldOptions = () => FIELD_PATHS.map((path) => [fieldLabel(path), path])
 const parentFieldOptions = () => PARENT_FIELD_PATHS.map((path) => [fieldLabel(path), path])
 
-// ---------------------------------------------------------------------------
 // Rule else / else-if mutator
-// ---------------------------------------------------------------------------
 // Adapted from Blockly's built-in ``controls_if`` mutator. The three rule
 // blocks share this single mutator so the generator/validator/interpreter
 // see a uniform shape:
@@ -395,7 +393,7 @@ export function registerDslBlocks(tFn) {
   if (_registered) return
   _registered = true
 
-  // ---- rule mutator ------------------------------------------------------
+  // rule mutator
   // ``gd_rule`` / ``gd_pre_rule`` / ``gd_post_rule`` all share the same
   // ``cuando``/``entonces`` shape AND the same else / else-if mutator, so
   // the branching logic lives once here and is applied to each block via
@@ -406,7 +404,7 @@ export function registerDslBlocks(tFn) {
   // exactly the names controls_if uses for its dynamic clauses.
   registerRuleMutator(Blockly)
 
-  // ---- gd_rule -----------------------------------------------------------
+  // gd_rule
   // Statement-shaped root that holds one ``when`` condition, a stack of
   // ``then`` statements, and optional else-if / else branches added via the
   // mutator. Top-level on the workspace; not connectable to anything else.
@@ -417,7 +415,7 @@ export function registerDslBlocks(tFn) {
     helpUrl: HELP_URLS.gd_rule,
   })
 
-  // ---- gd_compare --------------------------------------------------------
+  // gd_compare
   Blockly.Blocks.gd_compare = {
     init() {
       this.appendValueInput('LEFT').setCheck(['Number', 'String'])
@@ -434,7 +432,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_and / gd_or (binary for MVP - mutator for variadic in S7) ------
+  // gd_and / gd_or (binary for MVP - mutator for variadic in S7)
   Blockly.Blocks.gd_and = {
     init() {
       this.appendValueInput('A').setCheck('Boolean').appendField(label('and'))
@@ -458,7 +456,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_not ------------------------------------------------------------
+  // gd_not
   Blockly.Blocks.gd_not = {
     init() {
       this.appendValueInput('ARG').setCheck('Boolean').appendField(label('not'))
@@ -469,7 +467,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_field ----------------------------------------------------------
+  // gd_field
   // Picks a whitelisted analytic path. ``data.<key>`` is handled by the
   // separate gd_field_data block so the dropdown doesn't drown the
   // designer in arbitrary keys.
@@ -485,7 +483,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_field_data -----------------------------------------------------
+  // gd_field_data
   // Dynamic ``data.<key>`` reader for caller-supplied event payload.
   Blockly.Blocks.gd_field_data = {
     init() {
@@ -505,7 +503,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_literal_number / gd_literal_text -------------------------------
+  // gd_literal_number / gd_literal_text
   Blockly.Blocks.gd_literal_number = {
     init() {
       this.appendDummyInput().appendField(new Blockly.FieldNumber(0), 'VALUE')
@@ -528,7 +526,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_arith ----------------------------------------------------------
+  // gd_arith
   Blockly.Blocks.gd_arith = {
     init() {
       this.appendValueInput('LEFT').setCheck('Number')
@@ -545,7 +543,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_func_call ------------------------------------------------------
+  // gd_func_call
   // Arity adapts to the selected function via a simple onchange handler.
   // ``int`` exposes one arg (VALUE); ``clamp`` exposes three (VALUE, LO, HI).
   Blockly.Blocks.gd_func_call = {
@@ -583,7 +581,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_assign_points --------------------------------------------------
+  // gd_assign_points
   // Terminator: no nextStatement. Mirrors the interpreter's halt-on-first-
   // ``assign_points`` semantics - once you assign, the rule is done.
   Blockly.Blocks.gd_assign_points = {
@@ -600,7 +598,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_set_callback_data ----------------------------------------------
+  // gd_set_callback_data
   Blockly.Blocks.gd_set_callback_data = {
     init() {
       this.appendDummyInput()
@@ -618,15 +616,13 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ========================================================================
-  // Sprint 7: DSL_EXTEND blocks. These only appear in the toolbox when
+  // DSL_EXTEND blocks. These only appear in the toolbox when
   // the editor is in "Extender existente" mode. The generator routes
   // top-level gd_pre_rule / gd_post_rule into program.pre_rules /
   // post_rules respectively, and top-level gd_parent_variable_override
   // into program.parent_variables.
-  // ========================================================================
 
-  // ---- gd_pre_rule -------------------------------------------------------
+  // gd_pre_rule
   // Same shape (and else / else-if mutator) as gd_rule but emits into
   // pre_rules[]. Visually distinguished by colour so the designer sees at
   // a glance which section a rule belongs to.
@@ -637,7 +633,7 @@ export function registerDslBlocks(tFn) {
     helpUrl: HELP_URLS.gd_pre_rule,
   })
 
-  // ---- gd_post_rule ------------------------------------------------------
+  // gd_post_rule
   defineRuleBlock(Blockly, 'gd_post_rule', {
     whenLabel: 'postWhen',
     colour: 60,
@@ -645,7 +641,7 @@ export function registerDslBlocks(tFn) {
     helpUrl: HELP_URLS.gd_post_rule,
   })
 
-  // ---- gd_set_data -------------------------------------------------------
+  // gd_set_data
   // Mutates the working_data dict the parent built-in will receive. Key
   // must be alphanumeric+underscore so it's addressable via data.<key>.
   Blockly.Blocks.gd_set_data = {
@@ -665,7 +661,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_veto -----------------------------------------------------------
+  // gd_veto
   // Terminator: when this fires, the parent and post_rules never run.
   // The final result is (0, case_name).
   Blockly.Blocks.gd_veto = {
@@ -681,7 +677,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_set_points -----------------------------------------------------
+  // gd_set_points
   // Post-rule override. Unlike assign_points (which halts), set_points
   // lets the rest of the post-rule keep running so a designer can chain
   // set_points + set_callback_data inside one rule.
@@ -696,7 +692,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_set_case_name --------------------------------------------------
+  // gd_set_case_name
   Blockly.Blocks.gd_set_case_name = {
     init() {
       this.appendValueInput('VALUE').setCheck('String').appendField(label('setCaseName'))
@@ -708,7 +704,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_field_parent ---------------------------------------------------
+  // gd_field_parent
   // Reads parent.points or parent.case_name. Only valid in post_rules -
   // the client-side validator catches mis-placement.
   Blockly.Blocks.gd_field_parent = {
@@ -726,7 +722,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_parent_variable_override --------------------------------------
+  // gd_parent_variable_override
   // Top-level block that emits an entry into program.parent_variables.
   // The VARIABLE dropdown is intentionally a single editable text field
   // here - the dynamic flyout in StrategyEditor.jsx pre-fills the
@@ -746,8 +742,7 @@ export function registerDslBlocks(tFn) {
   }
 }
 
-// ===========================================================================
-// Sprint 4 (fix C6): data-driven, localised toolbox.
+// Data-driven, localised toolbox.
 //
 // The toolbox used to be two hand-written XML strings with hard-coded
 // Spanish category names ("Cuándo", "Compara", …), so an English-locale
@@ -756,7 +751,6 @@ export function registerDslBlocks(tFn) {
 // under ``editor:toolbox.categories``), ``colour`` and the list of block
 // types - and build the XML from ``t()`` at render time. The same data
 // drives the block-search catalog so the two never drift.
-// ===========================================================================
 
 const TOOLBOX_CATEGORIES_FULL = [
   { key: 'when', colour: 210, blocks: ['gd_rule'] },

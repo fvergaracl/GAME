@@ -117,7 +117,7 @@ class StrategyDefinition(BaseModel, table=True):
         default=None,
         sa_column=Column(DateTime(timezone=True), nullable=True),
     )
-    # Reserved for the experimentation work flagged in the Sprint 3 risk
+    # Reserved for the experimentation work flagged in the risk
     # notes: tagging a strategy lets us A/B route users between two
     # versions later without another migration. Unused for now.
     experimentTag: Optional[str] = Field(

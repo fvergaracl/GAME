@@ -1,4 +1,4 @@
-// Sprint 8: glossary context + modal.
+// Glossary context + modal.
 //
 // Provides a single GlossaryModal mounted at layout level so any view
 // can call ``useGlossary().openGlossary(termId)`` to pop the definition

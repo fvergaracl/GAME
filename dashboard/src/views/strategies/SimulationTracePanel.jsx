@@ -1,4 +1,4 @@
-// Sprint 5: render the interpreter execution trace as a tree that mirrors
+// Render the interpreter execution trace as a tree that mirrors
 // the blocks the designer built, instead of the old flat list of JSON.
 //
 // The backend trace is a flat array of { nodeId, type, value, branch }

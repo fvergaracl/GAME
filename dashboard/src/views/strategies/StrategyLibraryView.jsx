@@ -1,4 +1,4 @@
-// Sprint 2 - "Mis estrategias" library view.
+// "Mis estrategias" library view.
 //
 // Solves discoverability: before this view a saved DRAFT was unreachable
 // from the menu (the editor only offered create/template/extend/import),
@@ -8,7 +8,7 @@
 // Server-side filters (status/type) re-query the API; the name search is
 // client-side over the loaded page. Per-row actions cover the lifecycle:
 // open in the editor, duplicate, publish/archive (admin), view history,
-// export the bundle. Pagination at scale is deferred to Sprint 6 - here
+// export the bundle. Pagination at scale is deferred for now - here
 // we load a generous page and filter in memory.
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -62,7 +62,7 @@ import OnboardingTour from './OnboardingTour'
 import StrategyUsageModal from './StrategyUsageModal'
 import StrategyVersionHistoryModal from './StrategyVersionHistoryModal'
 
-// Sprint 8: per-view tour storage key. Setting this key from devtools to
+// Per-view tour storage key. Setting this key from devtools to
 // '' makes the tour auto-trigger again on the next mount, which is the
 // supported way to replay an onboarding without code changes.
 export const LIBRARY_TOUR_STORAGE_KEY = 'gd-library-tour-seen'
@@ -76,7 +76,7 @@ const LIBRARY_TOUR_STEPS = [
   { target: '[data-tour="library-help"]', i18n: 'help', placement: 'bottom' },
 ]
 
-// Generous page size - real pagination/search is Sprint 6. This keeps the
+// Generous page size - real pagination/search is deferred. This keeps the
 // library usable for the hundreds-of-strategies range without a "next page".
 const PAGE_LIMIT = 200
 
@@ -124,7 +124,7 @@ const StrategyLibraryView = () => {
   const navigate = useNavigate()
   const isAdmin = useMemo(() => isCurrentUserAdmin(), [])
   const { t } = useTranslation('strategies')
-  // Sprint 11: useToast() returns no-op handlers when no ToastProvider
+  // UseToast() returns no-op handlers when no ToastProvider
   // is mounted (e.g. test harnesses), so this is safe to call
   // unconditionally without forcing every caller to opt-in.
   const toast = useToast()
@@ -402,7 +402,7 @@ const StrategyLibraryView = () => {
         {error && <CAlert color="danger">{error}</CAlert>}
 
         {isLoading && (
-          // Sprint 9: skeleton preserves the table layout so the swap to
+          // Skeleton preserves the table layout so the swap to
           // real rows doesn't shift the viewport.
           <SkeletonTable columns={7} rows={5} hasActions />
         )}

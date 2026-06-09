@@ -1,4 +1,4 @@
-// Sprint 8: contract tests for the DSL glossary.
+// Contract tests for the DSL glossary.
 //
 // Pins three things so the glossary doesn't drift silently:
 //   1. Every entry in GLOSSARY_TERMS has a non-empty title + body in

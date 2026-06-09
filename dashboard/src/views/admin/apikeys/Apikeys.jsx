@@ -8,7 +8,7 @@ import { SkeletonTable } from '../../../components/Skeleton'
 
 const ApiKey = () => {
   const [apiKeys, setApiKeys] = useState([])
-  // Sprint 9: track first-load vs. refresh so the table renders a
+  // Track first-load vs. refresh so the table renders a
   // skeleton on mount instead of "nothing → pop". Refreshes after a key
   // creation keep the existing rows visible while the request is in
   // flight (no flicker).

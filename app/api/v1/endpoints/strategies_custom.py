@@ -427,7 +427,7 @@ async def update_custom_strategy(
     realm = _resolve_realm_id(auth)
     await audit.info("Update custom strategy", {"id": id})
     try:
-        # Sprint 7: same registry check as create - only relevant when
+        # Same registry check as create - only relevant when
         # the PUT explicitly carries type+parentStrategyId.
         _ensure_parent_strategy_exists(
             payload.type,

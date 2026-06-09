@@ -4,10 +4,10 @@ import { ToastProvider } from '../components/Toast'
 import { GlossaryProvider } from '../views/strategies/glossary/GlossaryContext'
 
 const DefaultLayout = () => {
-  // Sprint 8: GlossaryProvider mounts a single shared modal at layout
+  // GlossaryProvider mounts a single shared modal at layout
   // level so any view (header help button, library row, editor badge…)
   // can openGlossary(term) without each one embedding its own modal.
-  // Sprint 11: ToastProvider does the same for feedback so every view
+  // ToastProvider does the same for feedback so every view
   // can call useToast() instead of reinventing CAlert plumbing.
   return (
     <ToastProvider>

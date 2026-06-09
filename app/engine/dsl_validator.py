@@ -224,7 +224,7 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
             context="rule",
         )
 
-    # Sprint 7: pre_rules and post_rules are real now. Each entry is a
+    # Pre_rules and post_rules are real now. Each entry is a
     # rule-shaped node, but the contained statements are restricted to
     # the section's allowed set (set_data/veto in pre, set_points/
     # set_case_name in post, set_callback_data in both).
@@ -247,7 +247,7 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
                 context=ctx,
             )
 
-    # Sprint 7: parent_variables is an optional declarative override map
+    # Parent_variables is an optional declarative override map
     # applied to a fresh copy of the parent built-in before its
     # calculate_points runs. Keys must be strings, values must be JSON
     # scalars (the registry-level "does this variable exist?" check
@@ -616,7 +616,7 @@ def _validate_expression(
                 code="DSL_FIELD_PATH_NOT_ALLOWED",
                 params={"nodeId": nid, "path": path},
             )
-        # Sprint 7: parent.points / parent.case_name are only meaningful
+        # Parent.points / parent.case_name are only meaningful
         # inside post_rules - using them in main rules or pre_rules
         # would read uninitialised state. Reject early with a clear
         # message rather than letting the interpreter return None.
@@ -745,7 +745,7 @@ def _validate_statement(
             detail=f"Unknown statement node type: '{ntype}'.",
             headers={"X-Node-Id": parent_id},
         )
-    # Sprint 7: enforce per-section statement whitelisting BEFORE any
+    # Enforce per-section statement whitelisting BEFORE any
     # shape validation so the error message points the designer at the
     # real problem ("you can't veto from a main rule") rather than a
     # generic structural mismatch downstream.
@@ -803,7 +803,7 @@ def _validate_statement(
         return
 
     if ntype == NODE_SET_DATA:
-        # Sprint 7: writes into the working_data dict passed to the
+        # Writes into the working_data dict passed to the
         # parent built-in. The interpreter mutates a copy of data, so
         # pre-rule mutations are local to this request.
         _assert_keys(node, ("key", "value"), node_id=nid)
@@ -834,7 +834,7 @@ def _validate_statement(
         return
 
     if ntype == NODE_VETO:
-        # Sprint 7: halts the whole DSL_EXTEND pipeline (parent is NOT
+        # Halts the whole DSL_EXTEND pipeline (parent is NOT
         # invoked, post_rules are NOT run). Final result is
         # (0, case_name, current callback_data).
         _assert_keys(node, ("case_name",), node_id=nid)
@@ -850,7 +850,7 @@ def _validate_statement(
         return
 
     if ntype == NODE_SET_POINTS:
-        # Sprint 7: post-rule override of the parent's points. Unlike
+        # Post-rule override of the parent's points. Unlike
         # assign_points (which halts the rule), set_points lets the
         # remaining statements in the post-rule keep running, so a
         # designer can chain set_points + set_callback_data.
@@ -866,7 +866,7 @@ def _validate_statement(
         return
 
     if ntype == NODE_SET_CASE_NAME:
-        # Sprint 7: post-rule override of the parent's caseName. The
+        # Post-rule override of the parent's caseName. The
         # value is an expression so it can be computed (e.g. a literal
         # text block, or even derived from data.* - though the latter
         # is unusual). The runtime checks the resolved value is a

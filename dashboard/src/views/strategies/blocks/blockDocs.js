@@ -1,4 +1,4 @@
-// Sprint 3 (fix C5): bundle the real per-block reference docs so the
+// Bundle the real per-block reference docs so the
 // editor's right-click "Help" opens actual content instead of the old
 // dead `#/docs/strategy-blocks/...` hash anchors.
 //

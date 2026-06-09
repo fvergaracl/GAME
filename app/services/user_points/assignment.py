@@ -178,7 +178,7 @@ class PointsAssignmentMixin(PointsPersistenceMixin):
         if not task:
             raise NotFoundError(f"Task not found with externalTaskId: {externalTaskId}")
         strategyId = task.strategyId
-        # Sprint 5: a single async resolver handles both built-in
+        # A single async resolver handles both built-in
         # registry ids and ``custom:<uuid>`` DSL strategies (scoped by
         # realmId so a tenant can't invoke another tenant's strategy).
         # The resolver raises NotFoundError itself when the strategy is

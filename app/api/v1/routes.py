@@ -20,7 +20,7 @@ from app.api.v1.endpoints.wallet import router as wallet_router
 routers = APIRouter()
 router_list = [
     apikey_router,
-    # Sprint 10: the observability router shares the
+    # The observability router shares the
     # ``/strategies/custom`` prefix with strategies_custom_router and
     # owns a literal ``/compare`` path. FastAPI matches routes in
     # include-order, so this router has to come first - otherwise the

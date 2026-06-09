@@ -64,22 +64,3 @@ def check_role(
             return True
 
     return False
-
-
-# Example usage:
-# token_decoded = {
-#     "roles": ["User", "AdministratorGAME"],
-#     "resource_access": {
-#         "game_client": {
-#             "roles": ["User", "AdministratorGAME"]
-#         },
-#         "another_client": {
-#             "roles": ["User"]
-#         }
-#     }
-# }
-# print(check_role(token_decoded, "AdministratorGAME"))  # Output: True
-#     raise ForbiddenError("You don't have permission to create API key")
-#     )
-#     return await service_api_key.get_all_api_keys(api_key, oauth_user_id)
-#     await service_api_key.get_all_api_keys(api_key, oauth_user_id)

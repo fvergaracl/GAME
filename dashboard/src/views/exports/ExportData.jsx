@@ -253,7 +253,7 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-// Sprint 9: download-specific wrapper around the shared extractError.
+// Download-specific wrapper around the shared extractError.
 // Carries the dataset-specific 403 and 422 messages that the generic
 // helper doesn't know about; everything else (Blob bodies, generic
 // fallback, network errors) routes through the shared helper.

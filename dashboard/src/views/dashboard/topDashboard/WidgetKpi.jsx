@@ -7,7 +7,7 @@ import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
 import { cilArrowBottom, cilArrowTop, cilInfo } from '@coreui/icons'
 
-// Sprint 11: single reusable KPI widget for the dashboard header row.
+// Single reusable KPI widget for the dashboard header row.
 //
 // Replaces four near-identical copies (WidgetNewUsers / WidgetGamesOpened /
 // WidgetPointsRewarded / WidgetActionsPerformanced) that each carried the

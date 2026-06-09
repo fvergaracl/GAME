@@ -1,4 +1,4 @@
-// Sprint 10: the canonical list of DSL error codes the backend emits.
+// The canonical list of DSL error codes the backend emits.
 //
 // Kept in sync with ``app/engine/dsl_interpreter.py`` and
 // ``app/engine/dsl_validator.py`` and ``app/services/dsl_simulation_service.py``.

@@ -1,4 +1,4 @@
-// Sprint 6: generator tests - snapshot-style assertions that pin the
+// Generator tests - snapshot-style assertions that pin the
 // workspace→AST mapping. Each test builds a known workspace using the
 // headless Blockly API (no DOM, no react), runs ``workspaceToAst``,
 // and checks the JSON shape matches what the backend interpreter
@@ -215,13 +215,11 @@ describe('workspaceToAst - func_call with int and clamp', () => {
   })
 })
 
-// =========================================================================
-// Sprint 7 - DSL_EXTEND generator tests.
+// DSL_EXTEND generator tests.
 //
 // Verify the top-level routing of gd_pre_rule / gd_post_rule into
 // program.pre_rules / post_rules, the parent_variables map emission,
 // and that the resulting AST passes the client-side validator.
-// =========================================================================
 
 describe('workspaceToAst - Sprint 7 pre/post + parent_variables', () => {
   it('emits pre_rules from top-level gd_pre_rule blocks', () => {

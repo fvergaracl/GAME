@@ -1,4 +1,4 @@
-// Sprint 6 (CRUD management) - unit tests for the api.js helpers.
+// Unit tests for the api.js helpers.
 //
 // The entity helpers (games / tasks / api-keys / users) are thin wrappers
 // over axios, but the value they add - and the part that regresses silently

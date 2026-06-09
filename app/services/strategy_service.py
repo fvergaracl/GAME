@@ -12,7 +12,7 @@ from app.services.strategy_definition_service import StrategyDefinitionService
 # Prefix used to address DB-persisted custom strategies from the existing
 # ``Games.strategyId`` / ``Tasks.strategyId`` columns. Anything without this
 # prefix is resolved against the in-process registry, preserving the
-# pre-Sprint-3 behaviour. See the Sprint 3 compat-layer notes in the
+# legacy registry behaviour. See the compat-layer notes in the
 # roadmap.
 CUSTOM_STRATEGY_PREFIX = "custom:"
 
@@ -95,7 +95,7 @@ class StrategyService(BaseService):
         self._strategy_definition_service = strategy_definition_service
         self._dsl_interpreter = dsl_interpreter
         self._analytics_service = analytics_service
-        # Sprint 11: passed straight through to ``DslStrategy``. Optional
+        # Passed straight through to ``DslStrategy``. Optional
         # so the legacy two-arg construction style in tests still works
         # - metrics + persistence become no-ops in that case.
         self._execution_observer = execution_observer
@@ -256,7 +256,7 @@ class StrategyService(BaseService):
             id=uuid_part, realmId=realmId
         )
 
-        # Sprint 7: DSL_EXTEND wraps a built-in parent with pre/post
+        # DSL_EXTEND wraps a built-in parent with pre/post
         # rules. Resolve the parent here (sync registry lookup) and
         # hand it to DslStrategy as a constructor dependency. If the
         # parent id stored in the row no longer references an existing

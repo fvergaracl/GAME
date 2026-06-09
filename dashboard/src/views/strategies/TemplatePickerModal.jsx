@@ -1,4 +1,4 @@
-// Sprint 8: template picker modal.
+// Template picker modal.
 //
 // Fetches /v1/strategies/custom/templates on open and renders a grid of
 // CCards. Selecting one fires ``onSelect(template)`` and closes the

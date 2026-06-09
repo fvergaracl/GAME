@@ -240,7 +240,7 @@ class Container(containers.DeclarativeContainer):
     strategy_definition_service = providers.Factory(
         StrategyDefinitionService,
         strategy_definition_repository=strategy_definition_repository,
-        # Sprint 9: rollback rewrites Games.strategyId/Tasks.strategyId
+        # Rollback rewrites Games.strategyId/Tasks.strategyId
         # so the cascade reaches every consumer pointing at the
         # to-be-archived UUID. These are optional in the service to keep
         # legacy tests/light call sites working; production wiring always
@@ -265,7 +265,7 @@ class Container(containers.DeclarativeContainer):
         max_depth=configs.DSL_MAX_DEPTH,
     )
 
-    # Sprint 11: observer for DSL execution metrics + sampled
+    # Observer for DSL execution metrics + sampled
     # persistence. Singleton because it carries the per-process
     # random.Random for sampling decisions; Factory-built ``DslStrategy``
     # instances all reach into the same one so the sample rate applies
@@ -290,11 +290,11 @@ class Container(containers.DeclarativeContainer):
         task_repository=task_repository,
         user_points_repository=user_points_repository,
         strategy_service=strategy_service,
-        # Sprint 9: accept ``custom:<uuid>`` strategyIds on patch_game and
+        # Accept ``custom:<uuid>`` strategyIds on patch_game and
         # validate them against the DB-backed registry instead of refusing
         # everything that isn't a built-in id.
         strategy_definition_service=strategy_definition_service,
-        # Sprint 0 (CRUD): needed by duplicate_game to deep-copy each
+        # Needed by duplicate_game to deep-copy each
         # task's params into the new game.
         task_params_repository=task_params_repository,
     )
@@ -433,7 +433,7 @@ class Container(containers.DeclarativeContainer):
         user_points_analytics_service=user_points_analytics_service,
     )
 
-    # Sprint 10: aggregates rows from ``strategyexecutionlog`` into the
+    # Aggregates rows from ``strategyexecutionlog`` into the
     # observability dashboard view (status mix, latency percentiles,
     # case-name and error-code breakdowns) and the A/B comparison view.
     strategy_observability_service = providers.Factory(

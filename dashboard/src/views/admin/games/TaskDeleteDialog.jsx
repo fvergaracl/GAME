@@ -1,4 +1,4 @@
-// Sprint 3 (CRUD management) - delete a Task.
+// Delete a Task.
 //
 // Thin wrapper over the shared ConfirmDialog (a11y + busy handling included).
 // Unlike a game delete there's no blast-radius to preview: the cascade

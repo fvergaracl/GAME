@@ -78,7 +78,7 @@ dsl_execution_errors_total = Counter(
     labelnames=("realm", "strategy_type", "code"),
 )
 
-# Sprint 13: persistence is now drained off the scoring hot-path by a
+# Persistence is now drained off the scoring hot-path by a
 # background worker fed from a bounded queue. When the queue is full
 # (a slow/unavailable DB causing the worker to fall behind) the observer
 # drops the audit row rather than applying backpressure to scoring. This

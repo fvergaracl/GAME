@@ -93,7 +93,6 @@ export const getApiKeys = async () => {
   return getRequest('/apikey')
 }
 
-// ---------------------------------------------------------------------------
 // Exports (/v1/exports/*)
 //
 // These endpoints are admin-only and return streaming responses. We can't
@@ -101,7 +100,6 @@ export const getApiKeys = async () => {
 // token, so we fetch the body as a Blob and synthesise the download client
 // side. Errors are surfaced as thrown Error objects so the calling view can
 // render a CAlert without parsing axios internals.
-// ---------------------------------------------------------------------------
 
 const EXPORT_DATASETS = ['users', 'user-points', 'user-interactions', 'wallet-transactions']
 
@@ -152,14 +150,12 @@ export const getExportHistory = async ({ scope = 'mine', limit = 50 } = {}) => {
   return getRequest(`/exports/history?${params.toString()}`)
 }
 
-// ---------------------------------------------------------------------------
 // Custom Strategies (/v1/strategies/custom/*)
 //
 // Endpoints introduced in Sprints 3-5. The dashboard's Strategy Editor uses
 // these to persist Blockly-authored DSL programs and dry-run them via the
 // simulate endpoint. All requests are tenant-scoped server-side via the
 // Bearer token or X-API-Key header; the realm is never sent from the client.
-// ---------------------------------------------------------------------------
 
 export const listCustomStrategies = async ({ status, type, limit = 100 } = {}) => {
   const params = new URLSearchParams({ limit: String(limit) })
@@ -202,7 +198,7 @@ export const simulateCustomStrategy = async (id, request) => {
   return postRequest(`/strategies/custom/${encodeURIComponent(id)}/simulate`, request)
 }
 
-// Sprint 5 (fix C7): dry-run an AST supplied inline - no persisted id, so
+// Dry-run an AST supplied inline - no persisted id, so
 // "Probar" never spawns an orphan DRAFT and always tests the exact blocks
 // on the canvas (unsaved edits included).
 // request: { astJson, externalGameId, externalTaskId, externalUserId, data?, mockState? }
@@ -210,8 +206,7 @@ export const simulateInlineStrategy = async (request) => {
   return postRequest(`/strategies/custom/simulate`, request)
 }
 
-// ---------------------------------------------------------------------------
-// Sprint 7 - DSL_EXTEND editor helpers
+// DSL_EXTEND editor helpers
 //
 // The editor in DSL_EXTEND mode needs two things from the public
 // /v1/strategies endpoints:
@@ -222,10 +217,9 @@ export const simulateInlineStrategy = async (request) => {
 //
 //   2. A typed schema of a single built-in (populates the dynamic
 //      "Parent overrides" toolbox category). The schema endpoint is
-//      a Sprint 7 addition that returns variables as an ORDERED LIST
+//      an addition that returns variables as an ORDERED LIST
 //      with explicit Python type names, so the editor can choose the
 //      right input widget per variable.
-// ---------------------------------------------------------------------------
 
 export const listBuiltInStrategies = async () => {
   return getRequest('/strategies')
@@ -235,15 +229,13 @@ export const getStrategySchema = async (id) => {
   return getRequest(`/strategies/${encodeURIComponent(id)}/schema`)
 }
 
-// ---------------------------------------------------------------------------
-// Sprint 8 - templates + import
+// Templates + import
 //
 // Templates are static JSON fixtures shipped with the backend so they can
 // share the validator and stay version-pinned to the DSL grammar. The
 // "Importar JSON" flow posts a full bundle (the same shape the dashboard
 // exports), with the server auto-renaming on name collision so a repeated
 // import is idempotent for support engineers.
-// ---------------------------------------------------------------------------
 
 export const listStrategyTemplates = async () => {
   return getRequest('/strategies/custom/templates')
@@ -257,15 +249,13 @@ export const importCustomStrategy = async (bundle) => {
   return postRequest('/strategies/custom/import', bundle)
 }
 
-// ---------------------------------------------------------------------------
-// Sprint 9 - version history, rollback, and assignment helpers
+// Version history, rollback, and assignment helpers
 //
 // The history endpoint feeds the StrategyVersionHistoryModal (diff view +
 // rollback CTA) and the assignment helpers back the admin "Asignación"
 // table. Rollback cascades server-side through Games.strategyId /
 // Tasks.strategyId so the UI only needs to re-fetch the assignment table
 // after the call returns.
-// ---------------------------------------------------------------------------
 
 export const listStrategyVersions = async (id) => {
   return getRequest(`/strategies/custom/${encodeURIComponent(id)}/versions`)
@@ -297,7 +287,7 @@ export const listGames = async ({
   return getRequest(`/games?${params.toString()}`)
 }
 
-// Sprint 6 - reverse lookup: which games/tasks run this exact strategy
+// Reverse lookup: which games/tasks run this exact strategy
 // version. Feeds the library's "¿Dónde se usa?" modal (blast-radius
 // preview) and the bulk-reassign-all-consumers flow.
 export const getStrategyUsage = async (id) => {
@@ -318,15 +308,13 @@ export const patchTaskStrategy = async (gameId, taskId, strategyId) => {
   })
 }
 
-// ---------------------------------------------------------------------------
-// Sprint 0 (CRUD management) - full lifecycle helpers for Games and Tasks.
+// Full lifecycle helpers for Games and Tasks.
 //
 // The dashboard already had read + strategy-reassign helpers (listGames,
 // listGameTasks, patchGameStrategy, patchTaskStrategy). These complete the
 // CRUD surface the management views need: create / read-one / update (full
 // PATCH incl. params) / delete / duplicate, mirroring the backend endpoints
 // added in the same sprint (DELETE task, POST game & task duplicate).
-// ---------------------------------------------------------------------------
 
 export const getGame = async (gameId) => {
   return getRequest(`/games/${encodeURIComponent(gameId)}`)
@@ -395,9 +383,7 @@ export const duplicateTask = async (gameId, taskId, { externalTaskId }) => {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Sprint 0 (CRUD management) - API key revoke + read-only Users explorer.
-// ---------------------------------------------------------------------------
+// API key revoke + read-only Users explorer.
 
 export const deleteApiKey = async (prefix) => {
   // Revoke by public prefix (the safe identifier shown in audit logs).
@@ -413,15 +399,13 @@ export const getUserWallet = async (externalUserId) => {
   return getRequest(`/users/${encodeURIComponent(externalUserId)}/wallet`)
 }
 
-// ---------------------------------------------------------------------------
-// Sprint 10 - observability endpoints (metrics + A/B comparison)
+// Observability endpoints (metrics + A/B comparison)
 //
 // The backend aggregates the sampled execution log into a single payload per
 // strategy version (status mix, latency percentiles, top errors, case-name
 // breakdown, points distribution). The comparison endpoint runs the same
 // aggregation against two ids and includes the B - A deltas server-side so
 // the UI doesn't need to recompute them.
-// ---------------------------------------------------------------------------
 
 const _buildWindowParams = ({ since, until } = {}) => {
   const params = new URLSearchParams()

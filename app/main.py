@@ -102,7 +102,7 @@ async def lifespan(app: FastAPI):
             ``dsl_execution_observer`` to flush.
     """
     yield
-    # Sprint 13: flush the DSL execution-log queue so a graceful
+    # Flush the DSL execution-log queue so a graceful
     # shutdown doesn't drop buffered audit rows. ``aclose`` is
     # idempotent and tolerant of an observer that never enqueued.
     observer = getattr(app.state, "dsl_execution_observer", None)
@@ -241,7 +241,7 @@ class AppCreator:
 
         self.container = Container()
         self.db = self.container.db()
-        # Sprint 13: expose the singleton execution-log observer so the
+        # Expose the singleton execution-log observer so the
         # lifespan shutdown hook can flush its background queue.
         self.app.state.dsl_execution_observer = self.container.dsl_execution_observer()
         # Added before CORSMiddleware on purpose: add_middleware prepends, so
@@ -259,7 +259,7 @@ class AppCreator:
                 allow_headers=["*"],
             )
 
-        # Sprint 11 follow-up: expose Prometheus /metrics.  Wired here
+        # Expose Prometheus /metrics.  Wired here
         # (after CORS, before include_router) so the instrumentor sees
         # every request middleware but does NOT itself sit behind any
         # router-level auth dependency. The custom DSL counters in

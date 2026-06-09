@@ -1,4 +1,4 @@
-// Sprint 10 - Strategy observability view.
+// Strategy observability view.
 //
 // Surfaces metrics the backend already collects via DslExecutionObserver
 // (status mix, latency percentiles, top errors, case-name breakdown,

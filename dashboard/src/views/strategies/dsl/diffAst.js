@@ -1,4 +1,4 @@
-// Sprint 9 - AST diffing for the version history modal.
+// AST diffing for the version history modal.
 //
 // Compares two DSL ``program`` ASTs (the JSON shape emitted by
 // ``workspaceToAst`` in generator.js) and returns a structured diff

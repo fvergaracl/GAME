@@ -220,14 +220,12 @@ async def get_strategy_by_id(
         raise e
 
 
-# --------------------------------------------------------------------------
-# Sprint 7: /v1/strategies/{id}/schema
+# /v1/strategies/{id}/schema
 #
 # Editor-facing endpoint that returns built-in metadata enriched with a
 # typed, ordered variables list. The DSL_EXTEND editor (Blockly) uses
 # this to populate the "Parent overrides" toolbox category and the
 # read-only side panel describing the parent strategy.
-# --------------------------------------------------------------------------
 
 summary_get_strategy_schema_by_id = "Retrieve Strategy Schema by ID"
 responses_get_strategy_schema_by_id = {

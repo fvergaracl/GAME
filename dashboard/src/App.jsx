@@ -15,7 +15,7 @@ const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 // thing rendered and at least one ops workflow likely bookmarked it.
 const QuickApiDashboard = React.lazy(() => import('./views/quick-api/QuickApiDashboard'))
 
-// Sprint 9: a chunk-load failure (deploy mid-session, network blip) used
+// A chunk-load failure (deploy mid-session, network blip) used
 // to crash the whole tree because no error boundary wrapped the top-
 // level Suspense. Now an outer ErrorBoundary catches it and offers a
 // reload, keeping the URL navigable.

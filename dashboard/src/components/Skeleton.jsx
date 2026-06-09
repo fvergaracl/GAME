@@ -1,4 +1,4 @@
-// Sprint 9 - Skeleton placeholders.
+// Skeleton placeholders.
 //
 // Replaces "spinner inside an empty card" loading states. A skeleton
 // keeps the layout stable (no content shift) and signals shape so the

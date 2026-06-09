@@ -1,4 +1,4 @@
-// Sprint 9 - Skeleton primitives smoke tests. Verify the wrapper
+// Skeleton primitives smoke tests. Verify the wrapper
 // shapes render with the right classes and accessibility hints so the
 // table/card skeletons stay drop-in replacements for spinners.
 

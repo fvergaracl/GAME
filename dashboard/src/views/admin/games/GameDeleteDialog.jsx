@@ -1,4 +1,4 @@
-// Sprint 2 (CRUD management) - delete a Game with a blast-radius preview.
+// Delete a Game with a blast-radius preview.
 //
 // Deleting a game cascades to its tasks (and their params) server-side, so
 // before asking the admin to confirm we fetch the game's tasks and show how

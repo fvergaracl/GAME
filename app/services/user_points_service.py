@@ -56,7 +56,7 @@ class UserPointsService(
         # When constructed via DI (the production path) the container
         # injects a fully-wired StrategyService that can resolve
         # ``custom:<uuid>`` ids against the DB. The no-arg fallback
-        # preserves the pre-Sprint-5 behaviour for tests that build this
+        # preserves the legacy behaviour for tests that build this
         # service positionally and monkey-patch ``self.strategy_service``.
         self.strategy_service = strategy_service or StrategyService()
         super().__init__(user_points_repository)

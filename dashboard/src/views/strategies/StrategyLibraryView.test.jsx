@@ -1,8 +1,8 @@
-// Sprint 11 - StrategyLibraryView integration tests.
+// StrategyLibraryView integration tests.
 //
-// The library is the discoverability surface (Sprint 2) and the entry
-// point to the publish/archive lifecycle from outside the editor
-// (Sprint 3 actions). Until now it shipped without component-level
+// The library is the discoverability surface and the entry
+// point to the publish/archive lifecycle from outside the editor.
+// Until now it shipped without component-level
 // tests, so a regression in the row actions or filter wiring went
 // unnoticed until the user discovered it. These tests exercise the
 // view end-to-end with a mocked API module.
@@ -32,7 +32,7 @@ import {
 import i18n from '../../i18n'
 import ToastProvider from '../../components/Toast'
 
-// ---- Module mocks -------------------------------------------------------
+// Module mocks
 
 vi.mock('../../api', () => ({
   listCustomStrategies: vi.fn(),
@@ -86,7 +86,7 @@ vi.mock('./glossary/GlossaryHint', () => ({
   default: () => null,
 }))
 
-// ---- Helpers ------------------------------------------------------------
+// Helpers
 
 const navigateSpy = vi.fn()
 vi.mock('react-router-dom', async () => {
@@ -171,7 +171,7 @@ const getRowMenuItem = (rowLabel, itemLabel) => {
   return within(cell).getByText(itemLabel)
 }
 
-// ---- Tests --------------------------------------------------------------
+// Tests
 
 describe('StrategyLibraryView', () => {
   beforeEach(async () => {

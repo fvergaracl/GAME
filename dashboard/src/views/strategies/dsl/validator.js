@@ -1,4 +1,4 @@
-// Sprint 6: client-side AST validator.
+// Client-side AST validator.
 //
 // This is a *thin mirror* of app/engine/dsl_validator.py - its job is
 // purely UX: catch obvious mistakes (unknown field path, wrong arity,
@@ -25,7 +25,7 @@ import {
 
 const CONDITION_TYPES = new Set(['and', 'or', 'not', 'compare', 'literal', 'field'])
 const EXPRESSION_TYPES = new Set(['literal', 'field', 'arith', 'func_call'])
-// Sprint 7: statement set expands with the 4 DSL_EXTEND statements.
+// Statement set expands with the 4 DSL_EXTEND statements.
 // Per-section whitelisting (which statements are valid where) is
 // enforced via STATEMENT_ALLOWED_CONTEXTS at validation time.
 const STATEMENT_TYPES = new Set([
@@ -93,7 +93,7 @@ function validateExpression(node, errors, nodeCount, context = 'rule') {
       )
       return
     }
-    // Sprint 7: parent.* only inside post_rules - mirrors backend.
+    // Parent.* only inside post_rules - mirrors backend.
     if (PARENT_FIELD_PATH_SET.has(node.path) && context !== 'post') {
       fail(errors, node.id, `field.path '${node.path}' is only available inside post_rules.`)
     }
@@ -169,7 +169,7 @@ function validateStatement(node, errors, nodeCount, context = 'rule') {
     fail(errors, node.id, `Unknown statement type: '${node.type}'.`)
     return
   }
-  // Sprint 7: per-section statement whitelisting BEFORE shape checks
+  // Per-section statement whitelisting BEFORE shape checks
   // so the error message points at the real designer problem.
   const allowed = STATEMENT_ALLOWED_CONTEXTS[node.type]
   if (!allowed || !allowed.has(context)) {
@@ -190,7 +190,7 @@ function validateStatement(node, errors, nodeCount, context = 'rule') {
     validateExpression(node.value, errors, nodeCount, context)
     return
   }
-  // Sprint 7: DSL_EXTEND statements ---------------------------------
+  // DSL_EXTEND statements ---------------------------------
   if (node.type === 'set_data') {
     if (typeof node.key !== 'string' || node.key.length === 0) {
       fail(errors, node.id, 'set_data.key must be a non-empty string.')
@@ -278,7 +278,7 @@ export function validateAst(ast) {
       } else {
         rule.then.forEach((stmt) => validateStatement(stmt, errors, nodeCount, context))
       }
-      // Sprint 12: optional else-if branches. Each is a {when, then}
+      // Optional else-if branches. Each is a {when, then}
       // object; ``then`` is validated exactly like the main branch so an
       // empty else-if body surfaces the same RULE_THEN_EMPTY error.
       if (rule.else_if != null) {
@@ -309,7 +309,7 @@ export function validateAst(ast) {
           })
         }
       }
-      // Sprint 12: optional else branch - a non-empty statement list.
+      // Optional else branch - a non-empty statement list.
       if (rule.else != null) {
         if (!Array.isArray(rule.else) || rule.else.length === 0) {
           fail(
@@ -326,7 +326,7 @@ export function validateAst(ast) {
   }
 
   validateRuleArray(ast.rules, 'rules', 'rule')
-  // Sprint 7: pre_rules / post_rules are sibling sections to rules,
+  // Pre_rules / post_rules are sibling sections to rules,
   // each with its own statement-context whitelist.
   validateRuleArray(ast.pre_rules, 'pre_rules', 'pre')
   validateRuleArray(ast.post_rules, 'post_rules', 'post')
@@ -335,7 +335,7 @@ export function validateAst(ast) {
     validateStatement(ast.default, errors, nodeCount, 'default')
   }
 
-  // Sprint 7: parent_variables is an optional {var_name: scalar} map
+  // Parent_variables is an optional {var_name: scalar} map
   // applied to a fresh copy of the parent built-in before its
   // calculate_points runs. The registry-level "does this variable
   // exist?" check happens server-side at create/update time; here we

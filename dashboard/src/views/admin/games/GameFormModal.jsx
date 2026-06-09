@@ -1,4 +1,4 @@
-// Sprint 1 (CRUD management) - create / edit a Game.
+// Create / edit a Game.
 //
 // Mirrors the react-hook-form + CForm + CFormFeedback pattern from
 // ApikeysCreation, but rendered inside a CModal so the same component

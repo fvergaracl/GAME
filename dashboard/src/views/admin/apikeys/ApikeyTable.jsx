@@ -1,4 +1,4 @@
-// Sprint 4 (CRUD management) - API key listing with revoke.
+// API key listing with revoke.
 //
 // The table is the only place an admin closes out an API key's lifecycle.
 // Revocation is irreversible server-side (the row stays but flips to

@@ -1,4 +1,4 @@
-// Sprint 11 - ToastProvider + useToast tests.
+// ToastProvider + useToast tests.
 //
 // Verifies the centralised feedback layer that replaces the per-view
 // CAlert pairs. Pulls i18n into the test runtime so the localised

@@ -222,13 +222,13 @@ class BadRequestError(HTTPException):
         super().__init__(status.HTTP_400_BAD_REQUEST, detail, headers)
 
 
-# DSL interpreter errors (Sprint 4) ------------------------------------------
+# DSL interpreter errors
 # These inherit from the right HTTP base classes so FastAPI serialises them
 # without an extra exception handler. We keep them as distinct types so the
 # simulate/CRUD endpoints can map specific failure modes to clear messages and
 # tests can assert on the precise class.
 #
-# Sprint 10: each DSL error optionally carries a stable ``code`` plus a
+# Each DSL error optionally carries a stable ``code`` plus a
 # ``params`` map. When ``code`` is supplied the ``detail`` body becomes a
 # dict ``{"code": ..., "params": ..., "message": ...}`` so the frontend
 # can render a localised message via i18n while servers, logs, and pytest

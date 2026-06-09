@@ -1,4 +1,4 @@
-// Sprint D (F5) - coverage for the SWR fetcher's error shaping.
+// Coverage for the SWR fetcher's error shaping.
 //
 // Before this sprint the fetcher threw ``new Error(response.statusText)`` on a
 // non-2xx response. That error had no ``.response``, so the shared

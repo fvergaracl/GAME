@@ -10,7 +10,7 @@ const Page404 = React.lazy(() => import('../views/pages/page404/Page404'))
 // routes config
 import routes from '../routes'
 
-// Sprint 9: each lazy-loaded route renders inside its own ErrorBoundary
+// Each lazy-loaded route renders inside its own ErrorBoundary
 // so a broken chunk or an unhandled render error in one view (e.g. the
 // strategy editor failing to load Blockly) doesn't take the rest of the
 // dashboard down. The Suspense fallback is a layout-preserving skeleton

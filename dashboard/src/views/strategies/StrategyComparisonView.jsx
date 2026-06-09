@@ -1,4 +1,4 @@
-// Sprint 10 - A/B comparison view.
+// A/B comparison view.
 //
 // Two strategies, same time window, rendered side by side with deltas
 // computed server-side (B - A). The intended use is the README's

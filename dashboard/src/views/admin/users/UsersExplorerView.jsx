@@ -1,4 +1,4 @@
-// Sprint 5 (CRUD management) - read-only Users explorer.
+// Read-only Users explorer.
 //
 // Users aren't a real CRUD entity in GAME: rows are created implicitly the
 // first time points/actions land for an externalUserId, so there's nothing to

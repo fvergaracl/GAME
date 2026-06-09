@@ -1,4 +1,4 @@
-// Sprint 5: a points-per-iteration chart for cumulative simulation runs.
+// A points-per-iteration chart for cumulative simulation runs.
 // The table already lists every run; the chart makes the *shape* of the
 // curve obvious - does the strategy plateau, accelerate, or cap out as the
 // accumulated values grow? Two series: points granted per run (bars) and

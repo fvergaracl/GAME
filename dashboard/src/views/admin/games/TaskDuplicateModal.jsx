@@ -1,4 +1,4 @@
-// Sprint 3 (CRUD management) - duplicate a Task within the same game.
+// Duplicate a Task within the same game.
 //
 // Mirror of GameDuplicateModal: the backend POST
 // /games/{gameId}/tasks/{taskId}/duplicate deep-copies the source task's

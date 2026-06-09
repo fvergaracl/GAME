@@ -1,8 +1,8 @@
-// Sprint 11 - StrategyAssignmentsView integration tests.
+// StrategyAssignmentsView integration tests.
 //
 // The assignments view is the only surface that mutates production
 // scoring (a PATCH to game.strategyId reshapes points generation for
-// every future submission). Until Sprint 11 it shipped without any
+// every future submission). Previously it shipped without any
 // integration coverage, which made the regression risk asymmetric:
 // a UI bug here changes how users earn points in production.
 //
@@ -26,7 +26,7 @@ import {
 import i18n from '../../i18n'
 import ToastProvider from '../../components/Toast'
 
-// ---- Module mocks -------------------------------------------------------
+// Module mocks
 
 vi.mock('../../api', () => ({
   listBuiltInStrategies: vi.fn(),
@@ -81,7 +81,7 @@ vi.mock('./StrategyPickerModal', () => ({
 
 const importMockedApi = async () => await import('../../api')
 
-// ---- Fixtures -----------------------------------------------------------
+// Fixtures
 
 const GAMES_FIXTURE = [
   {
@@ -122,7 +122,7 @@ const renderView = async () => {
 const flushMicrotasks = () =>
   new Promise((resolve) => setTimeout(resolve, 0))
 
-// ---- Tests --------------------------------------------------------------
+// Tests
 
 describe('StrategyAssignmentsView', () => {
   beforeEach(async () => {

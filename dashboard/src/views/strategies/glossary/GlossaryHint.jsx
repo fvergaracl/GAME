@@ -1,4 +1,4 @@
-// Sprint 8: ``<GlossaryHint term="...">`` - small ⓘ trigger that opens
+// ``<GlossaryHint term="...">`` - small ⓘ trigger that opens
 // the glossary modal at a specific term.
 //
 // Two modes:

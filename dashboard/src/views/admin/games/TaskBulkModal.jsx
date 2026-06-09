@@ -1,4 +1,4 @@
-// Sprint 3 (CRUD management) - bulk-create tasks in a game.
+// Bulk-create tasks in a game.
 //
 // POST /games/{gameId}/tasks/bulk takes a list of task payloads and returns a
 // PARTITIONED result: { succesfully_created, failed_to_create:[{task,error}] }.

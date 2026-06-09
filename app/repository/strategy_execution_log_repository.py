@@ -69,15 +69,13 @@ class StrategyExecutionLogRepository(BaseRepository):
             result = await session.execute(stmt)
             return list(result.scalars().all())
 
-    # ------------------------------------------------------------------
-    # Sprint 10 - aggregations for the dashboard observability view.
+    # Aggregations for the dashboard observability view.
     #
     # All four queries scope by strategyId + optional time range. We hit
     # the same indexed columns (strategyId, status, created_at) so the
     # planner can use index-only scans even on large execution-log
     # tables. Each returns a plain dict/list so the service can compose
     # them into a single response without ORM-layer roundtrips.
-    # ------------------------------------------------------------------
 
     def _apply_window(self, stmt, strategyId: str, sinceDt, untilDt):
         """

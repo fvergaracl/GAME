@@ -1,4 +1,4 @@
-// Sprint 8: data layer for the DSL glossary.
+// Data layer for the DSL glossary.
 //
 // Single source of truth for the concepts referenced from contextual
 // popovers (GlossaryHint), the help button in the app header, the
@@ -44,7 +44,7 @@ export const GLOSSARY_INDEX = Object.fromEntries(GLOSSARY_TERMS.map((term) => [t
 
 // Maps custom Blockly block types to the closest glossary entry so the
 // right-click "Help" page can surface a related-concepts panel
-// (complements C5 / HELP_URLS - Sprint 3 wires the per-block doc, this
+// (complements C5 / HELP_URLS, which wires the per-block doc; this
 // adds the conceptual cross-link).
 export const BLOCK_TO_TERM = {
   gd_rule: 'rule',

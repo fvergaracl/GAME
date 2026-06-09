@@ -1,4 +1,4 @@
-// Sprint 9 - coverage for the shared extractError helper. Pins the
+// Coverage for the shared extractError helper. Pins the
 // behaviour the per-view duplicates used to provide so the consolidation
 // stays a net upgrade (no caller silently loses a special-case message).
 

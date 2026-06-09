@@ -116,9 +116,7 @@ class ExportService(BaseService):
         self.export_audit_log_repository = export_audit_log_repository
         super().__init__(export_audit_log_repository)
 
-    # ------------------------------------------------------------------
     # Audit
-    # ------------------------------------------------------------------
     async def audit_start(
         self,
         dataset_type: str,
@@ -196,9 +194,7 @@ class ExportService(BaseService):
             for row in rows
         ]
 
-    # ------------------------------------------------------------------
     # Query helpers
-    # ------------------------------------------------------------------
     def _apply_date_filters(self, stmt, model, filters: ExportFilters):
         """
         Add ``created_at`` range filters to a select statement.
@@ -225,9 +221,7 @@ class ExportService(BaseService):
             async for row in result:
                 yield row
 
-    # ------------------------------------------------------------------
     # Dataset iterators (each yields plain dicts)
-    # ------------------------------------------------------------------
     async def iter_users(self, filters: ExportFilters) -> AsyncIterator[Dict[str, Any]]:
         """
         Stream user rows as plain dicts for export.
@@ -400,9 +394,7 @@ class ExportService(BaseService):
                 "apiKey_used": row.apiKey_used,
             }
 
-    # ------------------------------------------------------------------
     # Dispatcher
-    # ------------------------------------------------------------------
     def iter_dataset(
         self, dataset_type: str, filters: ExportFilters
     ) -> AsyncIterator[Dict[str, Any]]:
@@ -426,9 +418,7 @@ class ExportService(BaseService):
                 detail=f"Unknown dataset type: {dataset_type}"
             ) from exc
 
-    # ------------------------------------------------------------------
     # Formatters (return async generators of bytes ready for StreamingResponse)
-    # ------------------------------------------------------------------
     @staticmethod
     async def format_as_csv(
         rows: AsyncIterator[Dict[str, Any]],
@@ -504,9 +494,7 @@ class ExportService(BaseService):
         # 100k cap, and StreamingResponse will still iterate to send it.
         yield buffer.read()
 
-    # ------------------------------------------------------------------
     # Dispatch wrapper: dataset + format → (media_type, filename, body_iter)
-    # ------------------------------------------------------------------
     def format_iterator(
         self,
         dataset_type: str,

@@ -1,4 +1,4 @@
-// Sprint 9 - shared error extraction utility.
+// Shared error extraction utility.
 //
 // Before this module each fetching view shipped its own ``extractError``
 // (StrategyEditor, StrategyLibraryView, StrategyAssignmentsView,

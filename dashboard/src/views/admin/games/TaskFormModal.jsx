@@ -1,4 +1,4 @@
-// Sprint 3 (CRUD management) - create / edit a Task within a game.
+// Create / edit a Task within a game.
 //
 // Same react-hook-form + CForm shell as GameFormModal, shaping the two modes:
 //

@@ -1,4 +1,4 @@
-// Sprint 6 (CRUD management) - TaskFormModal validation + submit tests.
+// TaskFormModal validation + submit tests.
 //
 // externalTaskId stays immutable after creation, but PATCH accepts
 // { strategyId, status, params }. These tests pin the create-mode slug

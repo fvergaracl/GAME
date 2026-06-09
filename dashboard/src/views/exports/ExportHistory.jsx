@@ -99,7 +99,7 @@ const ExportHistory = () => {
             {error && <CAlert color="danger">{error}</CAlert>}
 
             {loading && rows.length === 0 && (
-              // Sprint 9: skeleton instead of an empty card. Columns
+              // Skeleton instead of an empty card. Columns
               // match the real table so the swap is jump-free.
               <SkeletonTable columns={8} rows={4} />
             )}

@@ -1,8 +1,8 @@
-// Sprint 1–2 (CRUD management) - Games management view.
+// Games management view.
 //
 // The admin's home for the game lifecycle: a server-paginated, searchable
-// table of games with create + edit (Sprint 1) and delete + duplicate
-// (Sprint 2). "Ver tareas" lands in Sprint 3 - the per-row actions dropdown
+// table of games with create + edit and delete + duplicate.
+// "Ver tareas" and the per-row actions dropdown
 // is the seam each action plugs into.
 //
 // Reuses the StrategyAssignmentsView shape (server pagination + debounced

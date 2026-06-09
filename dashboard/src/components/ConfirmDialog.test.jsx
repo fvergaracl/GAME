@@ -1,4 +1,4 @@
-// Sprint 6 (CRUD management) - ConfirmDialog tests.
+// ConfirmDialog tests.
 //
 // ConfirmDialog is the shared confirm modal behind every destructive or
 // irreversible action (delete game/task, revoke key). The risk it carries is

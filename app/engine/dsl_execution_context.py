@@ -110,7 +110,7 @@ class ExecutionContext:
                 resolved[path] = data_payload.get(key)
                 continue
             if is_parent_field_path(path):
-                # Sprint 7: parent.* fields land here only when the
+                # Parent.* fields land here only when the
                 # caller provided ``parent_result`` (DSL_EXTEND post
                 # phase). Outside of that the validator should have
                 # rejected the AST already (parent.* paths are only
@@ -122,7 +122,7 @@ class ExecutionContext:
             # field unresolved and let the interpreter surface a clean
             # error rather than silently returning None.
 
-        # Sprint 7: inject parent.* AFTER the regular resolution loop so
+        # Inject parent.* AFTER the regular resolution loop so
         # post-rule execution can read the parent built-in's output via
         # the same ``ctx.resolved_fields`` lookup used for analytics.
         # Mock state still wins (mocks were already applied above) -

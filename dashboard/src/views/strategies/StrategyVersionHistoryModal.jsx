@@ -1,4 +1,4 @@
-// Sprint 9 - version history modal.
+// Version history modal.
 //
 // Renders the version timeline of a strategy family alongside a
 // per-section AST diff between two selected versions, and exposes a

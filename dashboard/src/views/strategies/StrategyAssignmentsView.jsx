@@ -1,5 +1,5 @@
-// Sprint 9 - strategy assignments admin view.
-// Sprint 6 - reworked for scale: server-side pagination + search instead
+// Strategy assignments admin view.
+// Reworked for scale: server-side pagination + search instead
 // of pulling every game with page_size=all, plus multi-select bulk
 // reassignment with a confirmation/impact step.
 //
@@ -57,7 +57,7 @@ import GlossaryHint from './glossary/GlossaryHint'
 import OnboardingTour from './OnboardingTour'
 import StrategyPickerModal from './StrategyPickerModal'
 
-// Sprint 8: per-view tour storage key (mirror of the Library one).
+// Per-view tour storage key (mirror of the Library one).
 export const ASSIGNMENTS_TOUR_STORAGE_KEY = 'gd-assignments-tour-seen'
 
 const ASSIGNMENTS_TOUR_STEPS = [
@@ -89,7 +89,7 @@ const buildStrategyLabelIndex = (builtIns, customs) => {
 
 const StrategyAssignmentsView = () => {
   const { t } = useTranslation('strategies')
-  // Sprint 11: shared feedback channel - see ToastProvider in
+  // Shared feedback channel - see ToastProvider in
   // DefaultLayout. Falls back to no-ops outside a provider.
   const toast = useToast()
   const [tourRunRequest, setTourRunRequest] = useState('auto')
@@ -487,7 +487,7 @@ const StrategyAssignmentsView = () => {
         )}
 
         {isLoading && (
-          // Sprint 9: skeleton matches the Games table (checkbox +
+          // Skeleton matches the Games table (checkbox +
           // expand + 3 columns + action) so the layout stays stable
           // across the loading-to-loaded transition.
           <SkeletonTable columns={5} rows={pageSize > 10 ? 8 : pageSize} hasActions />

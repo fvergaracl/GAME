@@ -70,7 +70,7 @@ class DslExecutionObserver:
     ) -> None:
         self._repository = execution_log_repository
         self._rng = rng or random
-        # Sprint 13: lazily-created bounded queue + drain worker. Both are
+        # Lazily-created bounded queue + drain worker. Both are
         # created on the first enqueue (which always happens inside the
         # running event loop), so constructing the observer outside a loop
         # - as the DI container Singleton does at import time - is safe.
@@ -110,7 +110,7 @@ class DslExecutionObserver:
         not just the interpreter walk, because that is what the SLO
         speaks to ("a scoring event taking >250ms is user-visible").
         """
-        # --- metrics ------------------------------------------------
+        # metrics
         try:
             dsl_metrics.observe(
                 realm=realmId,
@@ -127,7 +127,7 @@ class DslExecutionObserver:
                 status,
             )
 
-        # --- sampled persistence ------------------------------------
+        # sampled persistence
         if not _config_module.configs.DSL_EXECUTION_LOG_ENABLED:
             return
         if self._repository is None:
@@ -173,15 +173,13 @@ class DslExecutionObserver:
             notes=notes,
         )
 
-        # Sprint 13: hand off to the background worker instead of awaiting
+        # Hand off to the background worker instead of awaiting
         # the DB write here. ``_enqueue`` never blocks and never raises -
         # a full queue drops the row (counted) so a slow database can't
         # apply backpressure to the scoring hot-path.
         self._enqueue(row, realmId=realmId, strategyType=strategyType)
 
-    # ------------------------------------------------------------------
-    # Sprint 13 - background drain worker.
-    # ------------------------------------------------------------------
+    # Background drain worker.
 
     def _enqueue(
         self,

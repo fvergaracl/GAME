@@ -1,4 +1,4 @@
-// Sprint 3 (fix C5): renders a single block's reference documentation.
+// Renders a single block's reference documentation.
 //
 // Reached via Blockly's right-click "Help" (helpUrl =
 // /strategies/blocks-help/:slug), which opens this in a new tab so the
@@ -10,7 +10,7 @@
 // in a markdown renderer dependency: these docs are written with aligned
 // tables and fenced code, so they stay perfectly readable as-is.
 //
-// Sprint 4: the field blocks additionally render a localised reference
+// The field blocks additionally render a localised reference
 // table of the whitelisted analytic paths (the "tabla de referencia" of
 // the cryptic catalog). It's generated from the whitelist + i18n so it
 // stays in sync with the dropdown and the backend mirror.
@@ -53,7 +53,7 @@ const BlockHelpView = () => {
   const doc = getBlockDoc(slug)
   const catalogPaths = FIELD_CATALOGS[slug]
 
-  // Sprint 8: cross-link from the per-block doc into the glossary so a
+  // Cross-link from the per-block doc into the glossary so a
   // designer reading "what is gd_veto?" can jump to the conceptual
   // explanation (veto → callbackData → post-rule …) without going back
   // to the editor.

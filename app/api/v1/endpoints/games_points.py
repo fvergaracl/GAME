@@ -554,11 +554,6 @@ async def get_points_simulated_of_user_in_game(
     Returns:
         List[SimulatedPointsAssignedToUser]: The simulated points details of the user in the specified game.
     """
-    # user = await service_user.get_user_by_external_id(externalUserId)
-    # if user is None:
-    #     raise NotFoundError(
-    #         detail=f"User with external ID {externalUserId} not found.")
-
     if not configs.SECRET_KEY:
         raise InternalServerError(
             detail="SECRET_KEY is not set. Please set the SECRET_KEY in the environment variables"

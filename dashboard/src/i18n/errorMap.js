@@ -1,9 +1,9 @@
-// Sprint 10: translate a structured DSL error coming back from the API
+// Translate a structured DSL error coming back from the API
 // into a localised string.
 //
 // The backend now emits ``detail`` as either:
 //   * a bare string (legacy raises that haven't been migrated)
-//   * an object ``{ code, params, message }`` (Sprint 10 raises)
+//   * an object ``{ code, params, message }``
 //
 // This helper accepts both axios error objects AND the detail body
 // directly, so callers can do ``translateDslError(t, axiosError)`` or

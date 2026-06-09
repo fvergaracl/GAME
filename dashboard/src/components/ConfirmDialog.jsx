@@ -1,4 +1,4 @@
-// Sprint 0 (CRUD management) - reusable confirmation modal.
+// Reusable confirmation modal.
 //
 // Lifts the inline confirm modal that StrategyLibraryView hand-rolled for
 // publish/archive into a single component so every destructive or

@@ -6,7 +6,7 @@ import 'core-js'
 import App from './App'
 import store from './store'
 import keycloak from './keycloak'
-// Sprint 10: side-effect import - initialises i18next before App
+// Side-effect import - initialises i18next before App
 // renders so the first paint uses the resolved language.
 import './i18n'
 

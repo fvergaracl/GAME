@@ -1,4 +1,4 @@
-// Sprint 9 - strategy picker modal.
+// Strategy picker modal.
 //
 // Two-tab modal used by the admin "Asignación" view to choose which
 // strategy gets assigned to a Game or one of its Tasks. Built-ins live

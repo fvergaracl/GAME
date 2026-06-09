@@ -1,6 +1,6 @@
-// Sprint 11 - centralized toast/feedback system.
+// Centralized toast/feedback system.
 //
-// Until Sprint 11 every view rolled its own success/error pair as
+// Previously every view rolled its own success/error pair as
 // CAlerts mounted inline (StrategyLibraryView, StrategyAssignmentsView,
 // StrategyEditor, ExportData…). That pattern bled across files in
 // subtly different ways: some auto-dismissed, some didn't; some lived

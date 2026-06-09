@@ -1,4 +1,4 @@
-// Sprint 6: client-side AST validator tests.
+// Client-side AST validator tests.
 //
 // Targets the rejection paths the validator is responsible for - the
 // dashboard MUST refuse any AST shape the backend would reject, so we
@@ -402,14 +402,12 @@ describe('validateAst - case_name', () => {
   })
 })
 
-// =========================================================================
-// Sprint 7 - DSL_EXTEND validation tests.
+// DSL_EXTEND validation tests.
 //
 // The validator gained per-section statement whitelisting plus support
 // for parent.* field paths (post-only) and the parent_variables map.
 // These tests pin the rejection / acceptance contracts the editor
 // relies on for immediate designer feedback.
-// =========================================================================
 
 const _ruleWith = (stmt) => ({
   type: 'rule',

@@ -53,7 +53,7 @@ class DslExecutionResult(TypedDict, total=False):
     case_name: Optional[str]
     callback_data: Dict[str, Any]
     trace: List[Dict[str, Any]]
-    # Sprint 7: DSL_EXTEND-only outputs. ``working_data`` is the dict
+    # DSL_EXTEND-only outputs. ``working_data`` is the dict
     # that pre-rules mutated via set_data - the orchestrator hands it
     # to the parent built-in. ``vetoed`` signals that a pre-rule veto
     # fired so the orchestrator skips parent + post entirely.
@@ -128,14 +128,14 @@ class DslInterpreter:
             "case_name": state.case_name,
             "callback_data": state.callback_data,
             "trace": state.trace,
-            # Sprint 7 outputs. They are no-ops for DSL_FULL callers
+            # These outputs are no-ops for DSL_FULL callers
             # (working_data stays empty, vetoed stays False) so the
-            # existing Sprint 5 contract is unchanged.
+            # existing contract is unchanged.
             "working_data": state.working_data,
             "vetoed": state.vetoed,
         }
 
-    # ----- top-level dispatch ----------------------------------------------
+    # top-level dispatch
 
     async def _run_program(
         self,
@@ -170,7 +170,7 @@ class DslInterpreter:
                 await self._run_statement(default, ctx, state, depth=1)
             return
 
-        # Sprint 7: DSL_EXTEND phases. ``pre`` and ``post`` walk a
+        # DSL_EXTEND phases. ``pre`` and ``post`` walk a
         # distinct section of the program and ignore the others - the
         # main ``rules`` + ``default`` are exclusively the DSL_FULL
         # path. This keeps the two execution models from accidentally
@@ -285,7 +285,7 @@ class DslInterpreter:
         for stmt in statements or []:
             await self._run_statement(stmt, ctx, state, depth=depth)
 
-    # ----- statements ------------------------------------------------------
+    # statements
 
     async def _run_statement(
         self,
@@ -356,7 +356,7 @@ class DslInterpreter:
             )
             return
 
-        # Sprint 7: DSL_EXTEND pre-rule statements. set_data writes into
+        # DSL_EXTEND pre-rule statements. set_data writes into
         # ``state.working_data`` - the dict the orchestrator hands to the
         # parent built-in's ``calculate_points``. veto raises _DslHalt
         # with state.vetoed=True so the orchestrator skips both the
@@ -390,7 +390,7 @@ class DslInterpreter:
             )
             raise _DslHalt()
 
-        # Sprint 7: DSL_EXTEND post-rule statements. set_points mutates
+        # DSL_EXTEND post-rule statements. set_points mutates
         # ``state.points`` WITHOUT halting (unlike assign_points) so a
         # designer can chain set_points + set_callback_data inside a
         # single post-rule. set_case_name overrides the caseName
@@ -463,7 +463,7 @@ class DslInterpreter:
             params={"nodeId": node.get("id"), "nodeType": ntype},
         )
 
-    # ----- conditions ------------------------------------------------------
+    # conditions
 
     async def _eval_condition(
         self,
@@ -577,7 +577,7 @@ class DslInterpreter:
         value = await self._eval_expression(node, ctx, state, depth=depth)
         return bool(value)
 
-    # ----- expressions -----------------------------------------------------
+    # expressions
 
     async def _eval_expression(
         self,
@@ -728,7 +728,7 @@ class DslInterpreter:
             headers={"X-Node-Id": str(node.get("id"))},
         )
 
-    # ----- guards ----------------------------------------------------------
+    # guards
 
     def _step(self, state: _RunState, node: Dict[str, Any]) -> None:
         """
@@ -794,7 +794,7 @@ class _RunState:
         "case_name",
         "callback_data",
         "matched",
-        # Sprint 7: DSL_EXTEND state. ``working_data`` is the dict that
+        # DSL_EXTEND state. ``working_data`` is the dict that
         # set_data writes to during pre_rules - the orchestrator reads
         # it back to hand to the parent built-in's calculate_points.
         # ``vetoed`` signals that a pre_rules veto fired so the
@@ -864,7 +864,7 @@ def _apply_arith(op: str, left: Any, right: Any) -> Any:
     return _ARITH_HANDLERS[op](left, right)
 
 
-# Sprint 6: handlers for the ``func_call`` node. Kept separate from the
+# Handlers for the ``func_call`` node. Kept separate from the
 # binary arith table because the arities and signatures differ. ``int``
 # truncates toward zero (mirroring Python's built-in and matching
 # ``constantEffortStrategy.py:53`` semantics - not rounding). ``clamp``

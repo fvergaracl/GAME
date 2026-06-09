@@ -1,4 +1,4 @@
-// Sprint 6 (CRUD management) - shared "discard unsaved changes?" guard.
+// Shared "discard unsaved changes?" guard.
 //
 // Every management form modal (game/task create-edit, duplicate, bulk) can
 // be dismissed three ways: the header X, the Cancel button and the Esc key.

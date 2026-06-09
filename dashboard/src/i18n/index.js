@@ -1,4 +1,4 @@
-// Sprint 10: i18next configuration for the dashboard.
+// I18next configuration for the dashboard.
 //
 // The dashboard ships with full Spanish + English bundles for the
 // surfaces a game designer interacts with (strategy editor, block

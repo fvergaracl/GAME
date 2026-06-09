@@ -5,36 +5,36 @@ const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Apikeys = React.lazy(() => import('./views/admin/apikeys/Apikeys'))
 const ExportData = React.lazy(() => import('./views/exports/ExportData'))
 const ExportHistory = React.lazy(() => import('./views/exports/ExportHistory'))
-// Sprint 6: lazy-loaded so Blockly's ~1.5MB bundle is downloaded only
+// Lazy-loaded so Blockly's ~1.5MB bundle is downloaded only
 // when an admin actually opens the editor.
 const StrategyEditor = React.lazy(() => import('./views/strategies/StrategyEditor'))
-// Sprint 2: strategy library (discoverability). No Blockly dependency, so
+// Strategy library (discoverability). No Blockly dependency, so
 // it stays out of the editor's heavy chunk.
 const StrategyLibraryView = React.lazy(() => import('./views/strategies/StrategyLibraryView'))
-// Sprint 3 (fix C5): per-block reference docs, opened from the editor's
+// Per-block reference docs, opened from the editor's
 // right-click "Help". Lazy + Blockly-free so it loads instantly in the
 // new tab without pulling the editor bundle.
 const BlockHelpView = React.lazy(() => import('./views/strategies/BlockHelpView'))
-// Sprint 9: assignments view doesn't need Blockly but reuses the same
+// Assignments view doesn't need Blockly but reuses the same
 // lazy pattern to keep the assignments table out of the initial bundle.
 const StrategyAssignmentsView = React.lazy(
   () => import('./views/strategies/StrategyAssignmentsView'),
 )
-// Sprint 10: observability + A/B comparison views. Both render
+// Observability + A/B comparison views. Both render
 // aggregations from the sampled execution log and don't depend on
 // Blockly, so they stay in their own small chunks.
 const StrategyObservabilityView = React.lazy(
   () => import('./views/strategies/StrategyObservabilityView'),
 )
 const StrategyComparisonView = React.lazy(() => import('./views/strategies/StrategyComparisonView'))
-// Sprint 1 (CRUD management): games lifecycle admin. No Blockly dependency,
+// Games lifecycle admin. No Blockly dependency,
 // so it stays in its own small chunk like the other admin tables.
 const GamesManagementView = React.lazy(() => import('./views/admin/games/GamesManagementView'))
-// Sprint 3 (CRUD management): per-game task management (CRUD + duplicate +
+// Per-game task management (CRUD + duplicate +
 // bulk create). Reached from a game row's "Ver tareas" action; keyed on the
 // internal gameId so it can mutate tasks by their internal UUID.
 const GameTasksView = React.lazy(() => import('./views/admin/games/GameTasksView'))
-// Sprint 5 (CRUD management): read-only Users explorer. Users aren't a real
+// Read-only Users explorer. Users aren't a real
 // CRUD entity (rows are created implicitly), so this is a lookup-only view -
 // search an externalUserId, see its points + wallet. No Blockly, own chunk.
 const UsersExplorerView = React.lazy(() => import('./views/admin/users/UsersExplorerView'))

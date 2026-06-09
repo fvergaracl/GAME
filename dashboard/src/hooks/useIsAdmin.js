@@ -1,4 +1,4 @@
-// Sprint 0 (CRUD management) - single source of truth for the admin check.
+// Single source of truth for the admin check.
 //
 // Before this hook the ``AdministratorGAME`` role lookup was copy-pasted in
 // at least three places, each subtly different:

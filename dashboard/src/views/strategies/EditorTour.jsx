@@ -1,4 +1,4 @@
-// Sprint 10: react-joyride onboarding tour for the strategy editor.
+// React-joyride onboarding tour for the strategy editor.
 //
 // Triggers once per browser unless the user manually clicks "Show tour
 // again" in the toolbar. A localStorage flag (``gd-editor-tour-seen``)
@@ -117,7 +117,7 @@ const EditorTour = ({ runRequest = 'auto', onFinished = null, hasHistory = false
       callback={handleCallback}
       locale={locale}
       styles={{
-        // Sprint 9: same dark-mode-friendly token-driven palette as
+        // Same dark-mode-friendly token-driven palette as
         // OnboardingTour - the colour is no longer hardcoded.
         options: {
           zIndex: 10000,

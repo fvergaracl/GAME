@@ -1,4 +1,4 @@
-// Sprint 10: contract tests for the i18n surface.
+// Contract tests for the i18n surface.
 //
 // The dashboard ships ES + EN bundles for ``editor``, ``errors`` and
 // ``blocks``. These tests pin three things:

@@ -1,4 +1,4 @@
-// Sprint 6 (CRUD management) - ParamsEditor tests.
+// ParamsEditor tests.
 //
 // ParamsEditor is the controlled {key,value} grid shared by the game and task
 // forms. Being controlled, its whole contract is the array it emits via

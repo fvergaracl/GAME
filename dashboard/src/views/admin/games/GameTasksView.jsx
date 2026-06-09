@@ -1,4 +1,4 @@
-// Sprint 3 (CRUD management) - per-game task management.
+// Per-game task management.
 //
 // Reached from a game row's "Ver tareas" action (route
 // /admin/games/:gameId/tasks). It lists the game's tasks and is the home for

@@ -1,4 +1,4 @@
-// Sprint 11 - editor publish/lifecycle flow tests.
+// Editor publish/lifecycle flow tests.
 //
 // The full StrategyEditor mounts Blockly, so a head-on integration
 // test there would pull in 1.5MB of canvas code we don't need to
@@ -46,7 +46,7 @@ const importMockedApi = async () => await import('../../api')
 const flushMicrotasks = () =>
   new Promise((resolve) => setTimeout(resolve, 0))
 
-// ---- StrategyVersionHistoryModal ---------------------------------------
+// StrategyVersionHistoryModal
 
 const VERSIONS_FIXTURE = [
   {
@@ -178,7 +178,7 @@ describe('StrategyVersionHistoryModal - publish/rollback flow', () => {
   })
 })
 
-// ---- StrategyPickerModal -----------------------------------------------
+// StrategyPickerModal
 
 describe('StrategyPickerModal - picker contract', () => {
   beforeEach(async () => {

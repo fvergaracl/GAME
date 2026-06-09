@@ -1,6 +1,6 @@
-// Sprint B - regression net for the editor's load/hydration path.
+// Regression net for the editor's load/hydration path.
 //
-// Locks in the Sprint A fix: Blockly is injected exactly once per editing
+// Locks in the fix: Blockly is injected exactly once per editing
 // session and saved content hydrates that same instance instead of being
 // disposed and re-injected blank (the "editor opens empty when I edit a
 // strategy" bug - see the diagnosis doc, F1/F2).
@@ -219,7 +219,7 @@ describe('StrategyEditor - load/hydration', () => {
   })
 })
 
-// Sprint C - robust loading (F4) and data-loss guards (F3).
+// Robust loading (F4) and data-loss guards (F3).
 describe('StrategyEditor - robust load / data-loss guards', () => {
   beforeAll(() => {
     registerDslBlocks()
