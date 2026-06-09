@@ -391,6 +391,7 @@ poetry run pytest tests/e2e -q --e2e-keep-db
 ```
 
 Notes:
+
 - Script: `tests/load/game_api_loadtest.js`
 - Runner: `scripts/run_load_test.sh`
 - Default write auth mode is `apikey` (set `--write-auth-mode bearer` to stress bearer path).
@@ -424,26 +425,26 @@ API reference at `/docs` (Swagger UI) and `/redocs` (ReDoc).
 
 **Start here, by goal:**
 
-| I want to…                         | Read                                                                 |
-| ---------------------------------- | -------------------------------------------------------------------- |
-| Make my first API call             | `docs/source/getting-started.rst` → `authentication.rst`             |
-| Integrate GAME into my product     | `integrating.rst`, `strategies.rst`, `rest-api.rst`                  |
-| Understand how it works            | `overview.rst`, `architecture.rst`, `dsl-engine.rst`, `domain-model.rst` |
-| Run it in production               | `configuration.rst`, `operations.rst`, `observability.rst`, `security.rst` |
-| Contribute code or docs            | `architecture.rst`, `codebase.rst`, `contributing.rst`               |
+| I want to…                     | Read                                                                       |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| Make my first API call         | `docs/source/getting-started.rst` → `authentication.rst`                   |
+| Integrate GAME into my product | `integrating.rst`, `strategies.rst`, `rest-api.rst`                        |
+| Understand how it works        | `overview.rst`, `architecture.rst`, `dsl-engine.rst`, `domain-model.rst`   |
+| Run it in production           | `configuration.rst`, `operations.rst`, `observability.rst`, `security.rst` |
+| Contribute code or docs        | `architecture.rst`, `codebase.rst`, `contributing.rst`                     |
 
 **Reference material:**
 
-| Topic                  | Document                                                        |
-| ---------------------- | -------------------------------------------------------------- |
-| Local setup            | [SETUP.md](SETUP.md)                                           |
-| Deployment             | [DEPLOYMENT.md](DEPLOYMENT.md) · [KUBERNETES_SETUP.md](KUBERNETES_SETUP.md) |
-| Testing                | [TESTING.md](TESTING.md)                                       |
-| Strategy scenarios     | [strategies.md](strategies.md)                                |
-| Domain model (ERD)     | [docs/domain-model.md](docs/domain-model.md)                  |
-| DSL block reference    | [docs/dsl/](docs/dsl/) · [runbook](docs/dsl/runbook.md)       |
-| Troubleshooting        | [troubleshooting.md](troubleshooting.md)                      |
-| Contributing           | [CONTRIBUTING.md](CONTRIBUTING.md)                            |
+| Topic               | Document                                                                    |
+| ------------------- | --------------------------------------------------------------------------- |
+| Local setup         | [SETUP.md](SETUP.md)                                                        |
+| Deployment          | [DEPLOYMENT.md](DEPLOYMENT.md) · [KUBERNETES_SETUP.md](KUBERNETES_SETUP.md) |
+| Testing             | [TESTING.md](TESTING.md)                                                    |
+| Strategy scenarios  | [strategies.md](strategies.md)                                              |
+| Domain model (ERD)  | [docs/domain-model.md](docs/domain-model.md)                                |
+| DSL block reference | [docs/dsl/](docs/dsl/) · [runbook](docs/dsl/runbook.md)                     |
+| Troubleshooting     | [troubleshooting.md](troubleshooting.md)                                    |
+| Contributing        | [CONTRIBUTING.md](CONTRIBUTING.md)                                          |
 
 > Build the docs locally with `poetry run sphinx-build -b html docs/source _build/html`
 > (or `poetry run sphinx-autobuild docs/source _build/html` for live preview).
@@ -510,6 +511,31 @@ GAME can be used to compare:
 - baseline vs experimental incentive models
 
 These evaluation capabilities make GAME suitable for **experimental research, adaptive systems validation, and real-world behavioral optimization studies**.
+
+## How to Cite GAME
+
+If you use **GAME** in your research, academic work, or publications, please cite the software directly. This helps support the project and makes your results reproducible.
+
+**Plain text:**
+
+> Vergara-Borge, F (2025). _GAME (Goals And Motivation Engine): An adaptive gamification engine_. https://github.com/fvergaracl/GAME
+
+**BibTeX:**
+
+```bibtex
+@software{vergara_game,
+  author       = {Vergara-Borge, Felipe},
+  title        = {{GAME}: Goals And Motivation Engine -- An Adaptive Gamification Engine},
+  year         = {2025},
+  publisher    = {GitHub},
+  howpublished = {\url{https://github.com/fvergaracl/GAME}},
+  url          = {https://github.com/fvergaracl/GAME}
+}
+```
+
+If your work relates to a specific use case (citizen science, spatial crowdsourcing, or scalability), please also cite the corresponding paper listed under [Research & Publications](#research--publications) below.
+
+---
 
 ## Research & Publications
 
