@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Operations &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
+    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="REST API Reference" href="rest-api.html" />
+    <link rel="prev" title="Configuration Reference" href="configuration.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#operations" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> Operations </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Operations </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Operations</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#operations--page-root" class="md-nav__link">Operations</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#deployment-topology" class="md-nav__link">Deployment topology</a>
+        </li>
+        <li class="md-nav__item"><a href="#local-dev-with-docker-compose" class="md-nav__link">Local & dev with Docker Compose</a>
+        </li>
+        <li class="md-nav__item"><a href="#production-deployment" class="md-nav__link">Production deployment</a>
+        </li>
+        <li class="md-nav__item"><a href="#kubernetes" class="md-nav__link">Kubernetes</a>
+        </li>
+        <li class="md-nav__item"><a href="#database-migrations-alembic" class="md-nav__link">Database migrations (Alembic)</a>
+        </li>
+        <li class="md-nav__item"><a href="#health-readiness-graceful-shutdown" class="md-nav__link">Health, readiness & graceful shutdown</a>
+        </li>
+        <li class="md-nav__item"><a href="#scaling-guidance" class="md-nav__link">Scaling guidance</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-performance-testing" class="md-nav__link">Load & performance testing</a>
+        </li>
+        <li class="md-nav__item"><a href="#runbooks" class="md-nav__link">Runbooks</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/operations.rst.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#deployment-topology" class="md-nav__link">Deployment topology</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#local-dev-with-docker-compose" class="md-nav__link">Local & dev with Docker Compose</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#production-deployment" class="md-nav__link">Production deployment</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#kubernetes" class="md-nav__link">Kubernetes</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#database-migrations-alembic" class="md-nav__link">Database migrations (Alembic)</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#health-readiness-graceful-shutdown" class="md-nav__link">Health, readiness & graceful shutdown</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#scaling-guidance" class="md-nav__link">Scaling guidance</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#load-performance-testing" class="md-nav__link">Load & performance testing</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#runbooks" class="md-nav__link">Runbooks</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="codebase.html" class="md-nav__link">Codebase Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#operations--page-root" class="md-nav__link">Operations</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#deployment-topology" class="md-nav__link">Deployment topology</a>
+        </li>
+        <li class="md-nav__item"><a href="#local-dev-with-docker-compose" class="md-nav__link">Local & dev with Docker Compose</a>
+        </li>
+        <li class="md-nav__item"><a href="#production-deployment" class="md-nav__link">Production deployment</a>
+        </li>
+        <li class="md-nav__item"><a href="#kubernetes" class="md-nav__link">Kubernetes</a>
+        </li>
+        <li class="md-nav__item"><a href="#database-migrations-alembic" class="md-nav__link">Database migrations (Alembic)</a>
+        </li>
+        <li class="md-nav__item"><a href="#health-readiness-graceful-shutdown" class="md-nav__link">Health, readiness & graceful shutdown</a>
+        </li>
+        <li class="md-nav__item"><a href="#scaling-guidance" class="md-nav__link">Scaling guidance</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-performance-testing" class="md-nav__link">Load & performance testing</a>
+        </li>
+        <li class="md-nav__item"><a href="#runbooks" class="md-nav__link">Runbooks</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/operations.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="operations">
+<h1 id="operations--page-root">Operations<a class="headerlink" href="#operations--page-root" title="Link to this heading">¶</a></h1>
+<div class="note admonition">
+<p class="admonition-title">Who is this page for?</p>
+<p>Operators deploying and running GAME. Pairs with <a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a>
+(every variable), <a class="reference internal" href="security.html"><span class="doc">Security</span></a> (hardening), and <a class="reference internal" href="observability.html"><span class="doc">Observability</span></a>
+(signals). The repository also keeps <code class="docutils literal notranslate"><span class="pre">DEPLOYMENT.md</span></code> and
+<code class="docutils literal notranslate"><span class="pre">KUBERNETES_SETUP.md</span></code> as quick references.</p>
+</div>
+<section id="deployment-topology">
+<h2 id="deployment-topology">Deployment topology<a class="headerlink" href="#deployment-topology" title="Link to this heading">¶</a></h2>
+<p>GAME is <strong>stateless</strong>: it holds no per-request server state beyond the
+database (and optional Redis). That means you scale it by running more
+identical replicas behind a load balancer; PostgreSQL and Redis are the only
+shared state.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌────────────┐     ┌──────────────┐     ┌──────────────┐
+│  Ingress / │────►│  GAME API    │────►│  PostgreSQL  │
+│  Load bal. │     │  (N replicas)│     └──────────────┘
+└────────────┘     │  gunicorn +  │────►┌──────────────┐
+     │             │  uvicorn     │     │   Redis      │ (optional:
+     │             └──────┬───────┘     └──────────────┘  rate-limit +
+     ▼                    │                                apikey cache)
+┌────────────┐            ▼
+│  Keycloak  │◄───── JWT validation (JWKS)
+└────────────┘
+</pre></div>
+</div>
+<p>The process model in containers is <strong>gunicorn</strong> managing <strong>uvicorn</strong> workers
+(<code class="docutils literal notranslate"><span class="pre">app/gunicorn_conf.py</span></code>, <code class="docutils literal notranslate"><span class="pre">app/start-prod.sh</span></code>).</p>
+</section>
+<section id="local-dev-with-docker-compose">
+<h2 id="local-dev-with-docker-compose">Local &amp; dev with Docker Compose<a class="headerlink" href="#local-dev-with-docker-compose" title="Link to this heading">¶</a></h2>
+<p>The repository ships several Compose files and a <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> that wraps them
+(auto-detecting <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> v2 vs <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> v1):</p>
+<table>
+<colgroup>
+<col style="width: 30.0%"/>
+<col style="width: 70.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Make target</p></th>
+<th class="head"><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">setup</span></code></p></td>
+<td><p>First-run: installs Docker if missing, creates <code class="docutils literal notranslate"><span class="pre">.env</span></code> from the
+sample (interactive).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">dev</span></code></p></td>
+<td><p>Dev stack (<code class="docutils literal notranslate"><span class="pre">docker-compose-dev.yml</span></code>): API + Postgres + Keycloak.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">dev-nodb</span></code></p></td>
+<td><p>Dev stack without a bundled DB (bring your own).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">integrated</span></code></p></td>
+<td><p>Integrated stack (<code class="docutils literal notranslate"><span class="pre">docker-compose.devintegrated.yml</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">up</span></code> / <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">up-fg</span></code></p></td>
+<td><p>Start in background / foreground.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">logs</span></code> / <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">logs-api</span></code></p></td>
+<td><p>Tail logs (all services / just the API).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">ps</span></code></p></td>
+<td><p>Show running containers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">shell-api</span></code> / <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">shell-db</span></code></p></td>
+<td><p>Shell into the API container / <code class="docutils literal notranslate"><span class="pre">psql</span></code> into Postgres.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">down</span></code> / <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code></p></td>
+<td><p>Stop+remove containers / …<strong>and volumes</strong> (destructive).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">audit</span></code></p></td>
+<td><p>Run <code class="docutils literal notranslate"><span class="pre">pip-audit</span></code> locally (parity with CI).</p></td>
+</tr>
+</tbody>
+</table>
+<p>Override the compose file or command per invocation, e.g.
+<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">up</span> <span class="pre">FILE=docker-compose.yml</span> <span class="pre">DC="docker-compose"</span></code>.</p>
+<p>Raw Compose, without Make:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dev</span>
+docker-compose<span class="w"> </span>-f<span class="w"> </span>docker-compose-dev.yml<span class="w"> </span>up<span class="w"> </span>--build
+docker-compose<span class="w"> </span>-f<span class="w"> </span>docker-compose-dev.yml<span class="w"> </span>down<span class="w"> </span>--remove-orphans
+
+<span class="c1"># Production-style single host</span>
+docker-compose<span class="w"> </span>up<span class="w"> </span>--build<span class="w"> </span>-d
+docker-compose<span class="w"> </span>logs<span class="w"> </span>-f
+docker-compose<span class="w"> </span>up<span class="w"> </span>--scale<span class="w"> </span><span class="nv">app</span><span class="o">=</span><span class="m">3</span><span class="w">      </span><span class="c1"># horizontal scale</span>
+</pre></div>
+</div>
+</section>
+<section id="production-deployment">
+<h2 id="production-deployment">Production deployment<a class="headerlink" href="#production-deployment" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Configure</strong> the environment for <code class="docutils literal notranslate"><span class="pre">ENV=prod</span></code> (or <code class="docutils literal notranslate"><span class="pre">stage</span></code>). The
+fail-fast guards will block boot on missing secrets — that is intended; see
+<a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a> and <a class="reference internal" href="security.html"><span class="doc">Security</span></a>.</p></li>
+<li><p><strong>Run migrations</strong> before serving traffic (see below).</p></li>
+<li><p><strong>Deploy</strong> the image with your orchestrator (Compose, Kubernetes, or a
+managed container platform), behind an ingress that terminates TLS.</p></li>
+<li><p><strong>Set ``TRUSTED_PROXY_IPS``</strong> to the ingress IP/CIDR so per-IP rate limits
+work and forwarding headers are trusted.</p></li>
+<li><p><strong>Protect ``/metrics``</strong> at the ingress, or set <code class="docutils literal notranslate"><span class="pre">METRICS_ENABLED=false</span></code>.</p></li>
+<li><p><strong>Externalize shared state</strong>: point <code class="docutils literal notranslate"><span class="pre">REDIS_URL</span></code> and switch
+<code class="docutils literal notranslate"><span class="pre">ABUSE_PREVENTION_BACKEND</span></code> / <code class="docutils literal notranslate"><span class="pre">APIKEY_CACHE_BACKEND</span></code> to <code class="docutils literal notranslate"><span class="pre">redis</span></code> so
+limits and key revocations are consistent across replicas.</p></li>
+</ol>
+</section>
+<section id="kubernetes">
+<h2 id="kubernetes">Kubernetes<a class="headerlink" href="#kubernetes" title="Link to this heading">¶</a></h2>
+<p>Manifests live under <code class="docutils literal notranslate"><span class="pre">kubernetes/</span></code> and a helper script
+<code class="docutils literal notranslate"><span class="pre">deploy-kubernetes.sh</span></code> is provided. See <code class="docutils literal notranslate"><span class="pre">KUBERNETES_SETUP.md</span></code> for the full
+walkthrough. Operational notes:</p>
+<ul class="simple">
+<li><p>Define <strong>liveness/readiness probes</strong> — <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/v1/kpi/health_check</span></code> is a
+natural readiness target.</p></li>
+<li><p>Provide configuration via <code class="docutils literal notranslate"><span class="pre">ConfigMap</span></code> (non-secret) and <code class="docutils literal notranslate"><span class="pre">Secret</span></code>
+(<code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code>, DB password, <code class="docutils literal notranslate"><span class="pre">KEYCLOAK_CLIENT_SECRET</span></code>).</p></li>
+<li><p>Roll back with <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">rollout</span> <span class="pre">undo</span> <span class="pre">deployment/&lt;name&gt;</span></code> — Kubernetes keeps
+the deployment history.</p></li>
+</ul>
+</section>
+<section id="database-migrations-alembic">
+<h2 id="database-migrations-alembic">Database migrations (Alembic)<a class="headerlink" href="#database-migrations-alembic" title="Link to this heading">¶</a></h2>
+<p>Schema changes are Alembic migrations (<code class="docutils literal notranslate"><span class="pre">migrations/</span></code>, <code class="docutils literal notranslate"><span class="pre">alembic.ini</span></code>). The
+golden rule: <strong>migrate before the new code serves traffic</strong>, in CI/CD.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Local / Poetry</span>
+poetry<span class="w"> </span>run<span class="w"> </span>alembic<span class="w"> </span>upgrade<span class="w"> </span>head
+
+<span class="c1"># Inside a running container</span>
+docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>app<span class="w"> </span>alembic<span class="w"> </span>upgrade<span class="w"> </span>head
+
+<span class="c1"># Generate a new migration after a model change (review before committing!)</span>
+poetry<span class="w"> </span>run<span class="w"> </span>alembic<span class="w"> </span>revision<span class="w"> </span>--autogenerate<span class="w"> </span>-m<span class="w"> </span><span class="s2">"describe change"</span>
+</pre></div>
+</div>
+</section>
+<section id="health-readiness-graceful-shutdown">
+<h2 id="health-readiness-graceful-shutdown">Health, readiness &amp; graceful shutdown<a class="headerlink" href="#health-readiness-graceful-shutdown" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Health</strong> — <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/v1/kpi/health_check</span></code>.</p></li>
+<li><p><strong>Graceful shutdown</strong> — the FastAPI lifespan hook flushes the DSL
+execution-log queue on shutdown (<code class="docutils literal notranslate"><span class="pre">observer.aclose()</span></code>) so buffered audit
+rows aren’t lost. Give the container a few seconds of termination grace so
+the flush completes.</p></li>
+</ul>
+</section>
+<section id="scaling-guidance">
+<h2 id="scaling-guidance">Scaling guidance<a class="headerlink" href="#scaling-guidance" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 66.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Lever</p></th>
+<th class="head"><p>Guidance</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Replicas / workers</strong></p></td>
+<td><p>Scale horizontally; the app is stateless. Size gunicorn workers to CPU.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>DB pool</strong></p></td>
+<td><p>Total connections ≈ replicas × workers × (<code class="docutils literal notranslate"><span class="pre">DB_POOL_SIZE</span></code> +
+<code class="docutils literal notranslate"><span class="pre">DB_MAX_OVERFLOW</span></code>). Keep it under PostgreSQL’s <code class="docutils literal notranslate"><span class="pre">max_connections</span></code>;
+consider PgBouncer at high replica counts.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Rate-limit &amp; cache backend</strong></p></td>
+<td><p>Use <code class="docutils literal notranslate"><span class="pre">redis</span></code> so limits and key revocations are global, not per-worker.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>DSL trace sink</strong></p></td>
+<td><p>Watch <code class="docutils literal notranslate"><span class="pre">dsl_execution_log_dropped_total</span></code>; if non-zero, the trace DB is
+behind — raise <code class="docutils literal notranslate"><span class="pre">DSL_EXECUTION_LOG_QUEUE_MAXSIZE</span></code> or lower the sample
+rate. Scoring is unaffected (<a class="reference internal" href="observability.html"><span class="doc">Observability</span></a>).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="load-performance-testing">
+<h2 id="load-performance-testing">Load &amp; performance testing<a class="headerlink" href="#load-performance-testing" title="Link to this heading">¶</a></h2>
+<p>A k6 load suite ships in <code class="docutils literal notranslate"><span class="pre">tests/load</span></code> with a runner:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/run_load_test.sh<span class="w"> </span>--mode<span class="w"> </span><span class="m">100</span><span class="w">        </span><span class="c1"># 100 VUs</span>
+./scripts/run_load_test.sh<span class="w"> </span>--mode<span class="w"> </span><span class="m">1000</span><span class="w">       </span><span class="c1"># stress</span>
+./scripts/run_load_test.sh<span class="w"> </span>--vus<span class="w"> </span><span class="m">300</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--mix-a<span class="w"> </span><span class="m">60</span><span class="w"> </span>--mix-b<span class="w"> </span><span class="m">30</span><span class="w"> </span>--mix-c<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--warmup<span class="w"> </span>20s<span class="w"> </span>--hold<span class="w"> </span>2m<span class="w"> </span>--ramp-down<span class="w"> </span>20s
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="contributing.html"><span class="doc">Contributing</span></a> for the full testing story and the README for every
+flag.</p>
+</section>
+<section id="runbooks">
+<h2 id="runbooks">Runbooks<a class="headerlink" href="#runbooks" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>DSL strategy incidents</strong> (a published strategy erroring, hitting limits,
+or needing rollback) → <code class="docutils literal notranslate"><span class="pre">docs/dsl/runbook.md</span></code> and <a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a>.</p></li>
+<li><p><strong>“Network Error” in the dashboard</strong> → almost always a backend <code class="docutils literal notranslate"><span class="pre">500</span></code>;
+check API logs (<a class="reference internal" href="observability.html"><span class="doc">Observability</span></a>).</p></li>
+<li><p><strong>Boot failure in prod/stage</strong> → a fail-fast guard tripped; the error names
+the variable (<a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a>).</p></li>
+</ul>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="configuration.html" title="Configuration Reference"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Configuration Reference </span>
+              </div>
+            </a>
+          
+          
+            <a href="rest-api.html" title="REST API Reference"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> REST API Reference </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

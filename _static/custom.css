@@ -1,0 +1,62 @@
+/* GAME documentation — light cosmetic overrides on top of sphinx_material.
+ *
+ * Scope is intentionally narrow: readability of code blocks, tables, and
+ * admonitions. We do not restyle the theme chrome so future sphinx_material
+ * upgrades keep working without manual reconciliation.
+ */
+
+:root {
+  --game-accent: #1565c0;
+  --game-accent-soft: #e3f2fd;
+  --game-mono: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+/* Slightly denser, more legible body copy for long reference pages. */
+.md-typeset {
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+/* Code: monospace stack + gentle background so inline literals stand out. */
+.md-typeset code,
+.md-typeset pre {
+  font-family: var(--game-mono);
+}
+
+.md-typeset :not(pre) > code {
+  background: var(--game-accent-soft);
+  color: #0d47a1;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+
+/* Reference tables (env vars, error codes, endpoint catalogs) get zebra
+ * striping and tighter cells so wide tables stay scannable. */
+.md-typeset table:not([class]) {
+  font-size: 0.72rem;
+}
+
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background: rgba(21, 101, 192, 0.04);
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--game-accent-soft);
+  color: #0d47a1;
+}
+
+/* A subtle left rule on the first-column "key" of definition-style tables. */
+.md-typeset table:not([class]) td:first-child {
+  border-left: 3px solid transparent;
+}
+
+.md-typeset table:not([class]) tbody tr:hover td:first-child {
+  border-left-color: var(--game-accent);
+}
+
+/* Make "[source]" viewcode links unobtrusive. */
+.viewcode-link,
+.viewcode-back {
+  color: var(--game-accent);
+  font-weight: 500;
+}

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Overview &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
+    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Architecture" href="architecture.html" />
+    <link rel="prev" title="GAME — Goals And Motivation Engine" href="index.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#overview" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> Overview </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Overview </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Overview</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#overview--page-root" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#what-is-game" class="md-nav__link">What is GAME?</a>
+        </li>
+        <li class="md-nav__item"><a href="#the-problem-game-solves" class="md-nav__link">The problem GAME solves</a>
+        </li>
+        <li class="md-nav__item"><a href="#two-integration-modes" class="md-nav__link">Two integration modes</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#full-backend-gamification-platform" class="md-nav__link">1. Full backend gamification platform</a>
+        </li>
+        <li class="md-nav__item"><a href="#scoring-microservice" class="md-nav__link">2. Scoring microservice</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#representative-use-cases" class="md-nav__link">Representative use cases</a>
+        </li>
+        <li class="md-nav__item"><a href="#properties-that-matter" class="md-nav__link">Properties that matter</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#reproducibility-determinism" class="md-nav__link">Reproducibility & determinism</a>
+        </li>
+        <li class="md-nav__item"><a href="#safety-under-failure" class="md-nav__link">Safety under failure</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#where-to-go-next" class="md-nav__link">Where to go next</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/overview.rst.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#what-is-game" class="md-nav__link">What is GAME?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#the-problem-game-solves" class="md-nav__link">The problem GAME solves</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#two-integration-modes" class="md-nav__link">Two integration modes</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#representative-use-cases" class="md-nav__link">Representative use cases</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#properties-that-matter" class="md-nav__link">Properties that matter</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#where-to-go-next" class="md-nav__link">Where to go next</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="codebase.html" class="md-nav__link">Codebase Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#overview--page-root" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#what-is-game" class="md-nav__link">What is GAME?</a>
+        </li>
+        <li class="md-nav__item"><a href="#the-problem-game-solves" class="md-nav__link">The problem GAME solves</a>
+        </li>
+        <li class="md-nav__item"><a href="#two-integration-modes" class="md-nav__link">Two integration modes</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#full-backend-gamification-platform" class="md-nav__link">1. Full backend gamification platform</a>
+        </li>
+        <li class="md-nav__item"><a href="#scoring-microservice" class="md-nav__link">2. Scoring microservice</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#representative-use-cases" class="md-nav__link">Representative use cases</a>
+        </li>
+        <li class="md-nav__item"><a href="#properties-that-matter" class="md-nav__link">Properties that matter</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#reproducibility-determinism" class="md-nav__link">Reproducibility & determinism</a>
+        </li>
+        <li class="md-nav__item"><a href="#safety-under-failure" class="md-nav__link">Safety under failure</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#where-to-go-next" class="md-nav__link">Where to go next</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/overview.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="overview">
+<h1 id="overview--page-root">Overview<a class="headerlink" href="#overview--page-root" title="Link to this heading">¶</a></h1>
+<div class="note admonition">
+<p class="admonition-title">Who is this page for?</p>
+<p>Everyone. It explains <em>what</em> GAME is, <em>what problem</em> it solves, and the
+vocabulary used throughout the rest of the documentation. No code.</p>
+</div>
+<section id="what-is-game">
+<h2 id="what-is-game">What is GAME?<a class="headerlink" href="#what-is-game" title="Link to this heading">¶</a></h2>
+<p><strong>GAME (Goals And Motivation Engine)</strong> is an <em>adaptive gamification engine</em>.
+It accepts events — “a user completed a task”, “a measurement was submitted” —
+and decides how many <strong>points</strong> to award, why, and what side effects follow
+(coins, wallet movements, callbacks). The decision is made by a <strong>strategy</strong>:
+a unit of scoring logic bound to a game or an individual task.</p>
+<p>The defining idea is that strategies are <strong>programmable and adaptive</strong>. A
+strategy is not limited to “task X is worth N points”. It can read analytics
+about the user and the task — how many times the user has acted, how their
+completion time compares to their own history or to the global average — and
+shape the reward accordingly.</p>
+</section>
+<section id="the-problem-game-solves">
+<h2 id="the-problem-game-solves">The problem GAME solves<a class="headerlink" href="#the-problem-game-solves" title="Link to this heading">¶</a></h2>
+<p>Most gamification systems are <strong>static</strong>: rules and rewards are fixed at
+design time. Static rules produce predictable engagement curves and, in
+practice, tend to <em>reinforce participation inequality</em> — the users who are
+already active collect most of the rewards, while under-engaged users see no
+reason to start.</p>
+<p>GAME introduces <strong>adaptive gamification</strong>, enabling:</p>
+<table>
+<colgroup>
+<col style="width: 28.0%"/>
+<col style="width: 72.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Capability</p></th>
+<th class="head"><p>What it means</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Adaptive vs. static</strong></p></td>
+<td><p>Scoring rules can react to behavior, context, or system state instead
+of being frozen constants.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Behavioral redistribution</strong></p></td>
+<td><p>Incentives can shift participation toward under-engaged users, tasks,
+or areas.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Incentive shaping</strong></p></td>
+<td><p>Strategies can modify rewards dynamically based on distribution,
+performance, or context (including spatial context).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Equity optimization</strong></p></td>
+<td><p>Reward structures can <em>balance</em> participation rather than amplify the
+gap between heavy and light users.</p></td>
+</tr>
+</tbody>
+</table>
+<p>GAME is designed as a <strong>programmable incentive engine</strong>, not just a points
+API.</p>
+</section>
+<section id="two-integration-modes">
+<h2 id="two-integration-modes">Two integration modes<a class="headerlink" href="#two-integration-modes" title="Link to this heading">¶</a></h2>
+<p>GAME is deliberately usable at two very different altitudes.</p>
+<section id="full-backend-gamification-platform">
+<h3 id="full-backend-gamification-platform">1. Full backend gamification platform<a class="headerlink" href="#full-backend-gamification-platform" title="Link to this heading">¶</a></h3>
+<p>Use GAME as the complete gamification backend for your product:</p>
+<ul class="simple">
+<li><p>create and manage <strong>games</strong> (campaigns) and their <strong>tasks</strong>;</p></li>
+<li><p>assign <strong>points</strong> to users when they act;</p></li>
+<li><p>track <strong>wallets</strong> and convert points to <strong>coins</strong>;</p></li>
+<li><p>apply built-in or custom <strong>strategies</strong> per game/task;</p></li>
+<li><p>read aggregated analytics, KPIs, and per-event audit history.</p></li>
+</ul>
+</section>
+<section id="scoring-microservice">
+<h3 id="scoring-microservice">2. Scoring microservice<a class="headerlink" href="#scoring-microservice" title="Link to this heading">¶</a></h3>
+<p>Use GAME purely as an <strong>incentive/scoring engine</strong>. Your system owns the
+application logic and the source of truth for users and tasks; it calls GAME
+only to compute the scoring outcome:</p>
+<ol class="arabic simple">
+<li><p>The external system reports an event to GAME.</p></li>
+<li><p>GAME runs the relevant strategy and returns <code class="docutils literal notranslate"><span class="pre">points</span></code> plus a
+<code class="docutils literal notranslate"><span class="pre">caseName</span></code> (the human-readable reason the rule matched).</p></li>
+<li><p>The external system applies the result however it likes.</p></li>
+</ol>
+<p>Because scoring is deterministic given the same inputs (see <em>Reproducibility</em>
+below), the same event always yields the same score — which is what makes the
+microservice mode safe to retry and to reason about.</p>
+</section>
+</section>
+<section id="representative-use-cases">
+<h2 id="representative-use-cases">Representative use cases<a class="headerlink" href="#representative-use-cases" title="Link to this heading">¶</a></h2>
+<p>GAME has been deployed and studied in <strong>citizen science</strong> and <strong>spatial
+crowdsourcing</strong> contexts, where the goal is to keep volunteers engaged and to
+<em>spread</em> effort across tasks and geographic areas rather than letting it
+concentrate. Typical scenarios:</p>
+<ul class="simple">
+<li><p>Reward a user’s <strong>first contributions</strong> generously to lower the activation
+barrier (basic engagement), then taper as they become regular.</p></li>
+<li><p>Pay a <strong>bonus</strong> when a user improves on their own previous performance, and
+a different bonus when they beat the global average — so both newcomers and
+top performers have a reason to act.</p></li>
+<li><p>Steer attention toward <strong>cold spots</strong> — tasks or regions with little
+activity — by making them temporarily worth more.</p></li>
+</ul>
+<p>The <a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a> guide shows how each of these is expressed, either with
+a built-in strategy or with the no-code DSL.</p>
+</section>
+<section id="properties-that-matter">
+<h2 id="properties-that-matter">Properties that matter<a class="headerlink" href="#properties-that-matter" title="Link to this heading">¶</a></h2>
+<p>Two cross-cutting properties show up repeatedly and are worth internalizing
+early.</p>
+<section id="reproducibility-determinism">
+<h3 id="reproducibility-determinism">Reproducibility &amp; determinism<a class="headerlink" href="#reproducibility-determinism" title="Link to this heading">¶</a></h3>
+<p>GAME is built to support <strong>scientific reproducibility</strong> and deterministic
+evaluation of strategies:</p>
+<ul class="simple">
+<li><p><strong>Deterministic execution</strong> — identical inputs (tasks, parameters,
+timestamps, configuration) produce identical outputs.</p></li>
+<li><p><strong>Explicit parameterization</strong> — scoring is driven by explicit strategy
+parameters stored in the database; there is no hidden global state.</p></li>
+<li><p><strong>Simulation mode</strong> — strategies can be evaluated with <code class="docutils literal notranslate"><span class="pre">isSimulated=true</span></code>
+(and a dedicated simulate endpoint) <em>without</em> touching <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code>, the
+wallet, or any other production data.</p></li>
+<li><p><strong>Versionable strategies</strong> — custom strategies are versioned; publishing a
+new version never overwrites the running one until you say so.</p></li>
+<li><p><strong>Traceable execution</strong> — sampled execution traces let you reconstruct <em>why</em>
+a rule matched weeks after the fact.</p></li>
+</ul>
+<p>These properties let GAME double as a <strong>reproducible experimental platform</strong>
+for studying adaptive incentive mechanisms — see the <em>Research &amp; Publications</em>
+section of the project <code class="docutils literal notranslate"><span class="pre">README</span></code> for the papers built on it.</p>
+</section>
+<section id="safety-under-failure">
+<h3 id="safety-under-failure">Safety under failure<a class="headerlink" href="#safety-under-failure" title="Link to this heading">¶</a></h3>
+<p>GAME aims to behave predictably when things go wrong:</p>
+<ul class="simple">
+<li><p><strong>Idempotent</strong> point assignment where an idempotency key is supplied, so a
+retried request does not double-award.</p></li>
+<li><p>Transactional database behavior, safe under concurrent requests.</p></li>
+<li><p>Deterministic auth failures — no silent fallback to an unauthenticated path.</p></li>
+<li><p>Bounded strategy execution — the DSL interpreter cannot run away with CPU
+or memory (see <a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a>).</p></li>
+</ul>
+</section>
+</section>
+<section id="where-to-go-next">
+<h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="architecture.html"><span class="doc">Architecture</span></a> — the layered design and the life of a request.</p></li>
+<li><p><a class="reference internal" href="domain-model.html"><span class="doc">Domain Model</span></a> — the entities (games, tasks, users, points, wallets…)
+and how they relate.</p></li>
+<li><p><a class="reference internal" href="getting-started.html"><span class="doc">Getting Started</span></a> — install, configure, and make your first call.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="index.html" title="GAME — Goals And Motivation Engine"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> GAME — Goals And Motivation Engine </span>
+              </div>
+            </a>
+          
+          
+            <a href="architecture.html" title="Architecture"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Architecture </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Domain Model &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
+    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="getting-started.html" />
+    <link rel="prev" title="Architecture" href="architecture.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#domain-model" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> Domain Model </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Domain Model </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Domain Model</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#domain-model--page-root" class="md-nav__link">Domain Model</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#the-big-picture" class="md-nav__link">The big picture</a>
+        </li>
+        <li class="md-nav__item"><a href="#core-entities" class="md-nav__link">Core entities</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#identity-access" class="md-nav__link">Identity & access</a>
+        </li>
+        <li class="md-nav__item"><a href="#campaign-hierarchy" class="md-nav__link">Campaign hierarchy</a>
+        </li>
+        <li class="md-nav__item"><a href="#participation-scoring" class="md-nav__link">Participation & scoring</a>
+        </li>
+        <li class="md-nav__item"><a href="#economy" class="md-nav__link">Economy</a>
+        </li>
+        <li class="md-nav__item"><a href="#strategy-observability" class="md-nav__link">Strategy & observability</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#the-basemodel-contract" class="md-nav__link">The <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> contract</a>
+        </li>
+        <li class="md-nav__item"><a href="#identifiers-internal-vs-external" class="md-nav__link">Identifiers: internal vs. external</a>
+        </li>
+        <li class="md-nav__item"><a href="#idempotency-concurrency" class="md-nav__link">Idempotency & concurrency</a>
+        </li>
+        <li class="md-nav__item"><a href="#where-to-go-next" class="md-nav__link">Where to go next</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/domain-model.rst.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#the-big-picture" class="md-nav__link">The big picture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#core-entities" class="md-nav__link">Core entities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#the-basemodel-contract" class="md-nav__link">The <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> contract</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#identifiers-internal-vs-external" class="md-nav__link">Identifiers: internal vs. external</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#idempotency-concurrency" class="md-nav__link">Idempotency & concurrency</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#where-to-go-next" class="md-nav__link">Where to go next</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="codebase.html" class="md-nav__link">Codebase Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#domain-model--page-root" class="md-nav__link">Domain Model</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#the-big-picture" class="md-nav__link">The big picture</a>
+        </li>
+        <li class="md-nav__item"><a href="#core-entities" class="md-nav__link">Core entities</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#identity-access" class="md-nav__link">Identity & access</a>
+        </li>
+        <li class="md-nav__item"><a href="#campaign-hierarchy" class="md-nav__link">Campaign hierarchy</a>
+        </li>
+        <li class="md-nav__item"><a href="#participation-scoring" class="md-nav__link">Participation & scoring</a>
+        </li>
+        <li class="md-nav__item"><a href="#economy" class="md-nav__link">Economy</a>
+        </li>
+        <li class="md-nav__item"><a href="#strategy-observability" class="md-nav__link">Strategy & observability</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#the-basemodel-contract" class="md-nav__link">The <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> contract</a>
+        </li>
+        <li class="md-nav__item"><a href="#identifiers-internal-vs-external" class="md-nav__link">Identifiers: internal vs. external</a>
+        </li>
+        <li class="md-nav__item"><a href="#idempotency-concurrency" class="md-nav__link">Idempotency & concurrency</a>
+        </li>
+        <li class="md-nav__item"><a href="#where-to-go-next" class="md-nav__link">Where to go next</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/domain-model.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="domain-model">
+<h1 id="domain-model--page-root">Domain Model<a class="headerlink" href="#domain-model--page-root" title="Link to this heading">¶</a></h1>
+<div class="note admonition">
+<p class="admonition-title">Who is this page for?</p>
+<p>Integrators who need to know what each object means on the wire, and
+contributors who need the schema. The canonical machine-readable ERD
+(Mermaid) lives in <code class="docutils literal notranslate"><span class="pre">docs/domain-model.md</span></code>; this page is the prose
+reference.</p>
+</div>
+<section id="the-big-picture">
+<h2 id="the-big-picture">The big picture<a class="headerlink" href="#the-big-picture" title="Link to this heading">¶</a></h2>
+<p>GAME’s entities fall into five clusters. Solid arrows below read
+“parent → many children”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH / ACCESS            CAMPAIGN HIERARCHY
+┌──────────┐             ┌──────────┐
+│OAuthUsers│◄──owns────► │  Games   │──┬──► GameParams   (key/value config)
+└────┬─────┘   ┌────────►└────┬─────┘  └──► Tasks ──► TaskParams
+     │         │              │
+     ▼         │              ▼
+┌──────────┐   │        ┌──────────────┐
+│  ApiKey  │───┘        │UserGameConfig│  (enrolment + experiment group)
+└────┬─────┘            └──────────────┘
+     │ audit trail: every entity records the ApiKey that created it
+     ▼
+PARTICIPATION &amp; SCORING                 ECONOMY
+┌──────────┐                            ┌──────────┐
+│  Users   │──► UserActions             │  Wallet  │──► WalletTransactions
+│          │──► UserInteractions        └────▲─────┘
+│          │──► UserPoints ◄──awards──┐       │ one wallet per user
+│          │──────────────────────────┴───────┘
+└──────────┘
+             STRATEGY                    OBSERVABILITY
+┌────────────────────┐                  ApiRequests · Logs · KpiMetrics
+│ StrategyDefinition │──► versions      UptimeLogs · StrategyExecutionLog
+│ (custom DSL)       │                  AbuseLimitCounter · ExportAuditLog
+└────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="core-entities">
+<h2 id="core-entities">Core entities<a class="headerlink" href="#core-entities" title="Link to this heading">¶</a></h2>
+<section id="identity-access">
+<h3 id="identity-access">Identity &amp; access<a class="headerlink" href="#identity-access" title="Link to this heading">¶</a></h3>
+<table>
+<colgroup>
+<col style="width: 22.0%"/>
+<col style="width: 78.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Entity</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>OAuthUsers</strong></p></td>
+<td><p>A human/admin identity federated from Keycloak (<code class="docutils literal notranslate"><span class="pre">provider</span></code> +
+<code class="docutils literal notranslate"><span class="pre">provider_user_id</span></code>). Owns API keys and is the principal behind
+OAuth2-authenticated requests.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ApiKey</strong></p></td>
+<td><p>A machine credential (<code class="docutils literal notranslate"><span class="pre">apiKey</span></code>, <code class="docutils literal notranslate"><span class="pre">client</span></code>, <code class="docutils literal notranslate"><span class="pre">active</span></code>) issued to a
+caller. Every write records <em>which key created it</em>, giving a complete
+audit trail and the basis for per-key data scoping.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="campaign-hierarchy">
+<h3 id="campaign-hierarchy">Campaign hierarchy<a class="headerlink" href="#campaign-hierarchy" title="Link to this heading">¶</a></h3>
+<table>
+<colgroup>
+<col style="width: 22.0%"/>
+<col style="width: 78.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Entity</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Games</strong></p></td>
+<td><p>A campaign/project. Carries an <code class="docutils literal notranslate"><span class="pre">externalGameId</span></code> (your identifier), a
+<code class="docutils literal notranslate"><span class="pre">platform</span></code>, and a <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> — the <em>default</em> scoring strategy for
+its tasks. If unset, the built-in <code class="docutils literal notranslate"><span class="pre">default</span></code> strategy applies.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>GameParams</strong></p></td>
+<td><p>Key/value configuration attached to a game (e.g. base points). These
+feed strategy variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Tasks</strong></p></td>
+<td><p>A concrete activity inside a game (<code class="docutils literal notranslate"><span class="pre">externalTaskId</span></code>). A task inherits
+the game’s strategy unless it declares its own <code class="docutils literal notranslate"><span class="pre">strategyId</span></code>. Tasks
+are independent of each other.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>TaskParams</strong></p></td>
+<td><p>Key/value configuration attached to a task; overrides/extends game
+params for that task’s scoring.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="participation-scoring">
+<h3 id="participation-scoring">Participation &amp; scoring<a class="headerlink" href="#participation-scoring" title="Link to this heading">¶</a></h3>
+<table>
+<colgroup>
+<col style="width: 22.0%"/>
+<col style="width: 78.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Entity</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Users</strong></p></td>
+<td><p>A participant, keyed by your <code class="docutils literal notranslate"><span class="pre">externalUserId</span></code>. Users are created
+lazily on first scoring if they don’t exist yet.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>UserGameConfig</strong></p></td>
+<td><p>A user’s enrolment in a game, including their <code class="docutils literal notranslate"><span class="pre">experimentGroup</span></code>
+(e.g. control vs. treatment for A/B studies) and per-user
+<code class="docutils literal notranslate"><span class="pre">configData</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>UserActions</strong></p></td>
+<td><p>An explicit event a user performed (<code class="docutils literal notranslate"><span class="pre">typeAction</span></code> + structured
+<code class="docutils literal notranslate"><span class="pre">data</span></code>), recorded for audit and as scoring input.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>UserInteractions</strong></p></td>
+<td><p>A typed interaction between a user and a task
+(<code class="docutils literal notranslate"><span class="pre">interactionType</span></code>/<code class="docutils literal notranslate"><span class="pre">interactionDetail</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>UserPoints</strong></p></td>
+<td><p>The heart of the system: one row per award. Holds <code class="docutils literal notranslate"><span class="pre">points</span></code>, the
+<code class="docutils literal notranslate"><span class="pre">caseName</span></code> (why the rule matched), an <code class="docutils literal notranslate"><span class="pre">idempotencyKey</span></code> (dedupes
+retries), the originating <code class="docutils literal notranslate"><span class="pre">data</span></code>, and links to user + task.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="economy">
+<h3 id="economy">Economy<a class="headerlink" href="#economy" title="Link to this heading">¶</a></h3>
+<table>
+<colgroup>
+<col style="width: 22.0%"/>
+<col style="width: 78.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Entity</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Wallet</strong></p></td>
+<td><p>Exactly one per user. Tracks <code class="docutils literal notranslate"><span class="pre">pointsBalance</span></code> and <code class="docutils literal notranslate"><span class="pre">coinsBalance</span></code>
+plus the <code class="docutils literal notranslate"><span class="pre">conversionRate</span></code> (points per coin).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>WalletTransactions</strong></p></td>
+<td><p>An append-only ledger of wallet movements (<code class="docutils literal notranslate"><span class="pre">transactionType</span></code>,
+<code class="docutils literal notranslate"><span class="pre">points</span></code>, <code class="docutils literal notranslate"><span class="pre">coins</span></code>, <code class="docutils literal notranslate"><span class="pre">appliedConversionRate</span></code>), so balances are
+always reconstructable.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="strategy-observability">
+<h3 id="strategy-observability">Strategy &amp; observability<a class="headerlink" href="#strategy-observability" title="Link to this heading">¶</a></h3>
+<table>
+<colgroup>
+<col style="width: 26.0%"/>
+<col style="width: 74.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Entity</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>StrategyDefinition</strong></p></td>
+<td><p>A custom, DSL-authored strategy and its versions. Saving a published
+version creates a new <code class="docutils literal notranslate"><span class="pre">DRAFT</span></code> rather than overwriting (see
+<a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a>). Referenced by <code class="docutils literal notranslate"><span class="pre">strategyId</span> <span class="pre">=</span> <span class="pre">custom:&lt;uuid&gt;</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>StrategyExecutionLog</strong></p></td>
+<td><p>A sampled trace of a custom-strategy run: status, latency, node count,
+case name, error code, and (bounded) node-by-node trace. Drives the
+observability dashboard.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ApiRequests / Logs / KpiMetrics / UptimeLogs</strong></p></td>
+<td><p>Operational telemetry: per-request records, structured application
+logs, daily KPI rollups, and uptime samples.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>AbuseLimitCounter</strong></p></td>
+<td><p>Backing store for the database rate-limiter (scope, window, counter).
+See <a class="reference internal" href="security.html"><span class="doc">Security</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ExportAuditLog</strong></p></td>
+<td><p>Records data-export operations for compliance/audit.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="the-basemodel-contract">
+<h2 id="the-basemodel-contract">The <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> contract<a class="headerlink" href="#the-basemodel-contract" title="Link to this heading">¶</a></h2>
+<p>Every persisted entity inherits a common base (<code class="docutils literal notranslate"><span class="pre">app/model/base_model.py</span></code>)
+that contributes four columns to <em>every</em> table:</p>
+<table>
+<colgroup>
+<col style="width: 22.0%"/>
+<col style="width: 18.0%"/>
+<col style="width: 60.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">UUID</span></code></p></td>
+<td><p>Primary key, server-generated.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">created_at</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code> (tz-aware UTC)</p></td>
+<td><p>Set on insert. Stored as timezone-aware UTC.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">updated_at</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code> (tz-aware UTC)</p></td>
+<td><p>Refreshed on update.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">apiKey_used</span></code> / <code class="docutils literal notranslate"><span class="pre">oauth_user_id</span></code></p></td>
+<td><p>FK / string</p></td>
+<td><p>The credential that performed the write — the audit + scoping anchor.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Because <code class="docutils literal notranslate"><span class="pre">apiKey_used</span></code> is stamped on every write, GAME can answer “who
+created this?” for any row and can <em>scope</em> reads so one API key only sees the
+data it created (admins bypass scoping). See <a class="reference internal" href="security.html"><span class="doc">Security</span></a>.</p>
+</section>
+<section id="identifiers-internal-vs-external">
+<h2 id="identifiers-internal-vs-external">Identifiers: internal vs. external<a class="headerlink" href="#identifiers-internal-vs-external" title="Link to this heading">¶</a></h2>
+<p>GAME maintains a clean separation between <strong>its</strong> identifiers and <strong>yours</strong>:</p>
+<ul class="simple">
+<li><p><strong>Internal</strong> ids are <code class="docutils literal notranslate"><span class="pre">UUID</span></code> primary keys (<code class="docutils literal notranslate"><span class="pre">gameId</span></code>, <code class="docutils literal notranslate"><span class="pre">taskId</span></code>,
+<code class="docutils literal notranslate"><span class="pre">userId</span></code>). They appear in URLs that address a specific record
+(<code class="docutils literal notranslate"><span class="pre">/games/{gameId}/...</span></code>).</p></li>
+<li><p><strong>External</strong> ids are the strings <em>you</em> supply (<code class="docutils literal notranslate"><span class="pre">externalGameId</span></code>,
+<code class="docutils literal notranslate"><span class="pre">externalTaskId</span></code>, <code class="docutils literal notranslate"><span class="pre">externalUserId</span></code>). They let you address records using
+your own domain keys and keep GAME loosely coupled to your system.</p></li>
+</ul>
+<p>A common integration pattern: create a game and keep the returned
+<code class="docutils literal notranslate"><span class="pre">gameId</span></code>; thereafter reference tasks and users by <em>your</em> external ids.</p>
+</section>
+<section id="idempotency-concurrency">
+<h2 id="idempotency-concurrency">Idempotency &amp; concurrency<a class="headerlink" href="#idempotency-concurrency" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Point assignment accepts an <strong>idempotency key</strong> (request header, surfaced
+into the event <code class="docutils literal notranslate"><span class="pre">data</span></code> as <code class="docutils literal notranslate"><span class="pre">eventId</span></code>). A repeated request with the same
+key does not create a second <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code> row — safe to retry.</p></li>
+<li><p>Writes are <strong>transactional</strong>; wallet movement and points persistence happen
+together so a partial failure does not leave a points row without its
+wallet effect.</p></li>
+</ul>
+</section>
+<section id="where-to-go-next">
+<h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="integrating.html"><span class="doc">Integrating with GAME</span></a> — the request/response shapes for creating games, tasks,
+and awarding points.</p></li>
+<li><p><a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a> — how <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> resolution and scoring actually work.</p></li>
+<li><p><a class="reference internal" href="codebase.html"><span class="doc">Codebase Reference</span></a> — the generated reference for <code class="docutils literal notranslate"><span class="pre">app/model</span></code> and the rest.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="architecture.html" title="Architecture"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Architecture </span>
+              </div>
+            </a>
+          
+          
+            <a href="getting-started.html" title="Getting Started"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Getting Started </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

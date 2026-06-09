@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>The DSL Strategy Engine &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
+    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Security" href="security.html" />
+    <link rel="prev" title="Strategy Creation" href="UserGuide/Foundations/how_create_your_own_strategy.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#dsl-engine" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> The DSL Strategy Engine </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> The DSL Strategy Engine </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">The DSL Strategy Engine</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#dsl-engine--page-root" class="md-nav__link">The DSL Strategy Engine</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#why-a-dsl-at-all" class="md-nav__link">Why a DSL at all?</a>
+        </li>
+        <li class="md-nav__item"><a href="#the-pipeline" class="md-nav__link">The pipeline</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#validation-dsl-validator-py" class="md-nav__link">1. Validation (<code class="docutils literal notranslate"><span class="pre">dsl_validator.py</span></code>)</a>
+        </li>
+        <li class="md-nav__item"><a href="#context-building-dsl-execution-context-py" class="md-nav__link">2. Context building (<code class="docutils literal notranslate"><span class="pre">dsl_execution_context.py</span></code>)</a>
+        </li>
+        <li class="md-nav__item"><a href="#interpretation-dsl-interpreter-py" class="md-nav__link">3. Interpretation (<code class="docutils literal notranslate"><span class="pre">dsl_interpreter.py</span></code>)</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#execution-modes" class="md-nav__link">Execution modes</a>
+        </li>
+        <li class="md-nav__item"><a href="#limits-error-taxonomy" class="md-nav__link">Limits & error taxonomy</a>
+        </li>
+        <li class="md-nav__item"><a href="#built-in-strategies-in-code" class="md-nav__link">Built-in strategies in code</a>
+        </li>
+        <li class="md-nav__item"><a href="#observability-hooks" class="md-nav__link">Observability hooks</a>
+        </li>
+        <li class="md-nav__item"><a href="#source-map" class="md-nav__link">Source map</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/dsl-engine.rst.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#why-a-dsl-at-all" class="md-nav__link">Why a DSL at all?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#the-pipeline" class="md-nav__link">The pipeline</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#execution-modes" class="md-nav__link">Execution modes</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#limits-error-taxonomy" class="md-nav__link">Limits & error taxonomy</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#built-in-strategies-in-code" class="md-nav__link">Built-in strategies in code</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#observability-hooks" class="md-nav__link">Observability hooks</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#source-map" class="md-nav__link">Source map</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="codebase.html" class="md-nav__link">Codebase Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#dsl-engine--page-root" class="md-nav__link">The DSL Strategy Engine</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#why-a-dsl-at-all" class="md-nav__link">Why a DSL at all?</a>
+        </li>
+        <li class="md-nav__item"><a href="#the-pipeline" class="md-nav__link">The pipeline</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#validation-dsl-validator-py" class="md-nav__link">1. Validation (<code class="docutils literal notranslate"><span class="pre">dsl_validator.py</span></code>)</a>
+        </li>
+        <li class="md-nav__item"><a href="#context-building-dsl-execution-context-py" class="md-nav__link">2. Context building (<code class="docutils literal notranslate"><span class="pre">dsl_execution_context.py</span></code>)</a>
+        </li>
+        <li class="md-nav__item"><a href="#interpretation-dsl-interpreter-py" class="md-nav__link">3. Interpretation (<code class="docutils literal notranslate"><span class="pre">dsl_interpreter.py</span></code>)</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#execution-modes" class="md-nav__link">Execution modes</a>
+        </li>
+        <li class="md-nav__item"><a href="#limits-error-taxonomy" class="md-nav__link">Limits & error taxonomy</a>
+        </li>
+        <li class="md-nav__item"><a href="#built-in-strategies-in-code" class="md-nav__link">Built-in strategies in code</a>
+        </li>
+        <li class="md-nav__item"><a href="#observability-hooks" class="md-nav__link">Observability hooks</a>
+        </li>
+        <li class="md-nav__item"><a href="#source-map" class="md-nav__link">Source map</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/dsl-engine.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="the-dsl-strategy-engine">
+<h1 id="dsl-engine--page-root">The DSL Strategy Engine<a class="headerlink" href="#dsl-engine--page-root" title="Link to this heading">¶</a></h1>
+<div class="note admonition">
+<p class="admonition-title">Who is this page for?</p>
+<p>Contributors and security reviewers who need to understand how custom
+strategies execute safely. Strategy <em>authors</em> want <a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a> and
+the per-block reference under <code class="docutils literal notranslate"><span class="pre">docs/dsl/</span></code>.</p>
+</div>
+<section id="why-a-dsl-at-all">
+<h2 id="why-a-dsl-at-all">Why a DSL at all?<a class="headerlink" href="#why-a-dsl-at-all" title="Link to this heading">¶</a></h2>
+<p>Custom scoring logic is <strong>user-supplied</strong> — authored in a browser by people
+who are not GAME developers. Running arbitrary user code on the scoring
+hot-path is a non-starter, so GAME defines a small, total, sandboxed
+<strong>domain-specific language</strong>. A strategy is a JSON <strong>AST</strong> (abstract syntax
+tree) of typed <em>blocks</em>; the engine interprets that tree. There is no Python
+generated, compiled, or executed.</p>
+</section>
+<section id="the-pipeline">
+<h2 id="the-pipeline">The pipeline<a class="headerlink" href="#the-pipeline" title="Link to this heading">¶</a></h2>
+<p>A custom strategy travels through four stages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Blockly editor ──► JSON AST ──► validate_ast() ──► persist (StrategyDefinition)
+                                                         │
+scoring event ──► ExecutionContext.build_for_ast ──► DslInterpreter.execute ──► (points, caseName, callbackData)
+</pre></div>
+</div>
+<section id="validation-dsl-validator-py">
+<h3 id="validation-dsl-validator-py">1. Validation (<code class="docutils literal notranslate"><span class="pre">dsl_validator.py</span></code>)<a class="headerlink" href="#validation-dsl-validator-py" title="Link to this heading">¶</a></h3>
+<p>Runs synchronously, with <strong>no I/O</strong>, on every create/update (and again, cheaply,
+before each simulation). It enforces three things in order:</p>
+<ol class="arabic simple">
+<li><p><strong>Shape</strong> — every node has the required keys with the expected types (a
+rule has a <code class="docutils literal notranslate"><span class="pre">when</span></code>; a literal is a scalar, not a dict).</p></li>
+<li><p><strong>Whitelist</strong> — <code class="docutils literal notranslate"><span class="pre">node.type</span></code>, <code class="docutils literal notranslate"><span class="pre">compare.op</span></code>, <code class="docutils literal notranslate"><span class="pre">arith.op</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">field.path</span></code> must each appear in the corresponding allow-list in
+<code class="docutils literal notranslate"><span class="pre">dsl_ast</span></code>. Unknown names are rejected here, before they can reach the
+interpreter.</p></li>
+<li><p><strong>Limits</strong> — a <em>static</em> node count and recursion depth are computed during
+the walk and bounded by <code class="docutils literal notranslate"><span class="pre">DSL_MAX_NODES</span></code> / <code class="docutils literal notranslate"><span class="pre">DSL_MAX_DEPTH</span></code>, so a
+billion-node tree can never be persisted, let alone executed.</p></li>
+</ol>
+<p>The validator also fills in missing node <code class="docutils literal notranslate"><span class="pre">id</span></code> fields with a deterministic
+<code class="docutils literal notranslate"><span class="pre">"&lt;parent_id&gt;.&lt;type&gt;.&lt;index&gt;"</span></code> slug, giving every node a stable correlation
+key for traces and error messages.</p>
+</section>
+<section id="context-building-dsl-execution-context-py">
+<h3 id="context-building-dsl-execution-context-py">2. Context building (<code class="docutils literal notranslate"><span class="pre">dsl_execution_context.py</span></code>)<a class="headerlink" href="#context-building-dsl-execution-context-py" title="Link to this heading">¶</a></h3>
+<p>Before a walk, <code class="docutils literal notranslate"><span class="pre">ExecutionContext.build_for_ast</span></code> <strong>precomputes</strong> every
+analytics value the AST references (the <code class="docutils literal notranslate"><span class="pre">field</span></code> paths) into a frozen
+dictionary. The interpreter then does pure dictionary lookups — it never
+reaches back into the database or computes analytics mid-walk. This is what
+keeps execution bounded and deterministic.</p>
+</section>
+<section id="interpretation-dsl-interpreter-py">
+<h3 id="interpretation-dsl-interpreter-py">3. Interpretation (<code class="docutils literal notranslate"><span class="pre">dsl_interpreter.py</span></code>)<a class="headerlink" href="#interpretation-dsl-interpreter-py" title="Link to this heading">¶</a></h3>
+<p>The interpreter <strong>is the sandbox</strong>. It walks the AST node-by-node, dispatching
+on <code class="docutils literal notranslate"><span class="pre">node["type"]</span></code> through a <strong>fixed handler table</strong>. Its hard guarantees:</p>
+<ul class="simple">
+<li><p><strong>No dynamic Python</strong> — no <code class="docutils literal notranslate"><span class="pre">eval</span></code>, no <code class="docutils literal notranslate"><span class="pre">exec</span></code>, no <code class="docutils literal notranslate"><span class="pre">getattr</span></code> on
+AST-supplied strings. A node type absent from the handler table is rejected
+as <code class="docutils literal notranslate"><span class="pre">DslValidationError</span></code> (defence in depth — the validator should already
+have caught it).</p></li>
+<li><p><strong>Frozen field access</strong> — reading a <code class="docutils literal notranslate"><span class="pre">field</span></code> is a lookup in the precomputed
+frozen dict; AST strings can never address arbitrary attributes.</p></li>
+<li><p><strong>Bounded</strong> — node count and recursion depth are re-checked at runtime, so
+even a future feature like macros couldn’t blow the limits.</p></li>
+<li><p><strong>Actually cancellable</strong> — the walk <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">asyncio.sleep(0)</span></code> every
+<code class="docutils literal notranslate"><span class="pre">yield_every</span></code> (default <strong>64</strong>) node visits. Without that yield a CPU-bound
+tree would run to completion and <em>then</em> notice the timeout; the yield lets
+<code class="docutils literal notranslate"><span class="pre">asyncio.wait_for</span></code> cancel it mid-walk. (This is the failure mode that
+<code class="docutils literal notranslate"><span class="pre">RestrictedPython</span></code>-style sandboxes usually get wrong.)</p></li>
+</ul>
+<p>Execution semantics mirror the built-in <code class="docutils literal notranslate"><span class="pre">default</span></code> strategy:</p>
+<ul class="simple">
+<li><p>Rules evaluate <strong>in order</strong>.</p></li>
+<li><p>The <strong>first</strong> <code class="docutils literal notranslate"><span class="pre">assign_points</span></code> reached inside a matched rule sets the result
+and <strong>halts</strong> (early return). <code class="docutils literal notranslate"><span class="pre">set_callback_data</span></code> statements <em>before</em> the
+assignment accumulate into a dict; statements <em>after</em> it never run.</p></li>
+<li><p>If no rule matches, the program’s <code class="docutils literal notranslate"><span class="pre">default</span></code> section runs; otherwise the
+result is <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">None,</span> <span class="pre">{})</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="execution-modes">
+<h2 id="execution-modes">Execution modes<a class="headerlink" href="#execution-modes" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">DslInterpreter.execute</span></code> takes a <code class="docutils literal notranslate"><span class="pre">mode</span></code> selecting which section runs. This
+is how <code class="docutils literal notranslate"><span class="pre">DSL_EXTEND</span></code> strategies wrap a built-in parent (orchestrated by
+<code class="docutils literal notranslate"><span class="pre">DslStrategy</span></code>):</p>
+<table>
+<colgroup>
+<col style="width: 14.0%"/>
+<col style="width: 86.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Mode</p></th>
+<th class="head"><p>Behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">full</span></code></p></td>
+<td><p>Main <code class="docutils literal notranslate"><span class="pre">rules</span></code> + <code class="docutils literal notranslate"><span class="pre">default</span></code> — the <code class="docutils literal notranslate"><span class="pre">DSL_FULL</span></code> path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pre</span></code></p></td>
+<td><p>Only <code class="docutils literal notranslate"><span class="pre">pre_rules</span></code>. <code class="docutils literal notranslate"><span class="pre">initial_data</span></code> is cloned into
+<code class="docutils literal notranslate"><span class="pre">working_data</span></code> so <code class="docutils literal notranslate"><span class="pre">set_data</span></code> can mutate the input the parent will
+see; a <code class="docutils literal notranslate"><span class="pre">veto</span></code> here signals the orchestrator to skip the parent and
+all post-rules.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">post</span></code></p></td>
+<td><p>Only <code class="docutils literal notranslate"><span class="pre">post_rules</span></code>. The parent built-in’s output bootstraps the run
+state, so <code class="docutils literal notranslate"><span class="pre">set_points</span></code> / <code class="docutils literal notranslate"><span class="pre">set_case_name</span></code> / <code class="docutils literal notranslate"><span class="pre">set_callback_data</span></code>
+mutate <em>from</em> the parent’s result. The <code class="docutils literal notranslate"><span class="pre">parent.points</span></code> /
+<code class="docutils literal notranslate"><span class="pre">parent.case_name</span></code> field paths are pre-resolved into the context.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The result is a <code class="docutils literal notranslate"><span class="pre">DslExecutionResult</span></code> carrying <code class="docutils literal notranslate"><span class="pre">points</span></code>, <code class="docutils literal notranslate"><span class="pre">case_name</span></code>,
+<code class="docutils literal notranslate"><span class="pre">callback_data</span></code>, an optional <code class="docutils literal notranslate"><span class="pre">trace</span></code> (node-by-node), and the
+<code class="docutils literal notranslate"><span class="pre">DSL_EXTEND</span></code> signals <code class="docutils literal notranslate"><span class="pre">working_data</span></code> and <code class="docutils literal notranslate"><span class="pre">vetoed</span></code>.</p>
+</section>
+<section id="limits-error-taxonomy">
+<h2 id="limits-error-taxonomy">Limits &amp; error taxonomy<a class="headerlink" href="#limits-error-taxonomy" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 30.0%"/>
+<col style="width: 16.0%"/>
+<col style="width: 54.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Guard</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Effect on breach</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DSL_EXECUTION_TIMEOUT_MS</span></code></p></td>
+<td><p>500 ms</p></td>
+<td><p>Wall-clock backstop; the cooperative yield lets the walk be cancelled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DSL_MAX_NODES</span></code></p></td>
+<td><p>1000</p></td>
+<td><p>Rejected at validation; re-checked at runtime.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DSL_MAX_DEPTH</span></code></p></td>
+<td><p>32</p></td>
+<td><p>Rejected at validation; re-checked at runtime.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Errors are typed (<code class="docutils literal notranslate"><span class="pre">app/core/exceptions</span></code>):</p>
+<table>
+<colgroup>
+<col style="width: 30.0%"/>
+<col style="width: 70.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Exception</p></th>
+<th class="head"><p>Raised when</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DslValidationError</span></code></p></td>
+<td><p>The AST is structurally invalid or references a non-whitelisted
+name/op/field. Surfaced at create/update time.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DslLimitExceededError</span></code></p></td>
+<td><p>Node/depth/time limits are exceeded.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DslExecutionError</span></code></p></td>
+<td><p>A runtime error inside an otherwise valid program (e.g. a disallowed
+operation slipped through).</p></td>
+</tr>
+</tbody>
+</table>
+<p>See the operational <code class="docutils literal notranslate"><span class="pre">docs/dsl/runbook.md</span></code> for what to do when these fire in
+production.</p>
+</section>
+<section id="built-in-strategies-in-code">
+<h2 id="built-in-strategies-in-code">Built-in strategies in code<a class="headerlink" href="#built-in-strategies-in-code" title="Link to this heading">¶</a></h2>
+<p>Built-ins are ordinary Python (not DSL). They:</p>
+<ol class="arabic simple">
+<li><p>subclass <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code> (<code class="docutils literal notranslate"><span class="pre">app/engine/base_strategy.py</span></code>),</p></li>
+<li><p>implement the async <code class="docutils literal notranslate"><span class="pre">calculate_points</span></code> scoring method, and</p></li>
+<li><p>register a <strong>stable public id</strong> with <code class="docutils literal notranslate"><span class="pre">@register_strategy(id=...)</span></code>.</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code> also computes a <code class="docutils literal notranslate"><span class="pre">hash_version</span></code> — a SHA-256 of the
+<code class="docutils literal notranslate"><span class="pre">calculate_points</span></code> source — so a logic change is detectable as a version
+change. The registry (<code class="docutils literal notranslate"><span class="pre">strategy_registry.py</span></code>) is explicit and
+opt-in; <code class="docutils literal notranslate"><span class="pre">all_engine_strategies.py</span></code> discovers modules in <code class="docutils literal notranslate"><span class="pre">app/engine</span></code> via
+<code class="docutils literal notranslate"><span class="pre">pkgutil</span></code> (CWD-independent), and <strong>external packages</strong> can contribute
+strategies through the <code class="docutils literal notranslate"><span class="pre">game.strategies</span></code> entry-point group without forking.</p>
+</section>
+<section id="observability-hooks">
+<h2 id="observability-hooks">Observability hooks<a class="headerlink" href="#observability-hooks" title="Link to this heading">¶</a></h2>
+<p>Every production DSL run is observed by the singleton <code class="docutils literal notranslate"><span class="pre">DslExecutionObserver</span></code>
+(wired in the container). It:</p>
+<ul class="simple">
+<li><p>emits Prometheus counters/histograms (<code class="docutils literal notranslate"><span class="pre">dsl_execution_duration_seconds</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dsl_execution_nodes_total</span></code>, <code class="docutils literal notranslate"><span class="pre">dsl_execution_errors_total</span></code>), and</p></li>
+<li><p>persists a <code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog</span></code> row on <strong>every error</strong>, and on
+<strong>successful</strong> runs with probability <code class="docutils literal notranslate"><span class="pre">DSL_EXECUTION_LOG_SAMPLE_RATE</span></code>
+(default 5%).</p></li>
+</ul>
+<p>The DB write is drained off the hot-path by a background worker fed from a
+bounded in-process queue, so scoring only pays the enqueue. The full model —
+queue sizing, drop counting, graceful flush on shutdown — is in
+<a class="reference internal" href="observability.html"><span class="doc">Observability</span></a>.</p>
+</section>
+<section id="source-map">
+<h2 id="source-map">Source map<a class="headerlink" href="#source-map" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 40.0%"/>
+<col style="width: 60.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>Responsibility</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">app/engine/dsl_ast.py</span></code></p></td>
+<td><p>Node-type constants and the operator/function/field allow-lists.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">app/engine/dsl_validator.py</span></code></p></td>
+<td><p>Structural + whitelist + limit validation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">app/engine/dsl_execution_context.py</span></code></p></td>
+<td><p>Precomputes analytics fields into a frozen lookup table.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">app/engine/dsl_interpreter.py</span></code></p></td>
+<td><p>The sandboxed walker.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">app/engine/dsl_strategy.py</span></code></p></td>
+<td><p>Orchestrates <code class="docutils literal notranslate"><span class="pre">DSL_EXTEND</span></code> (pre → parent → post).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">app/engine/dsl_metrics.py</span></code></p></td>
+<td><p>Prometheus metric definitions.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">app/engine/base_strategy.py</span></code> / <code class="docutils literal notranslate"><span class="pre">strategy_registry.py</span></code></p></td>
+<td><p>Built-in strategy base class and the explicit registry.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The auto-generated reference for these modules is in <a class="reference internal" href="codebase.html"><span class="doc">Codebase Reference</span></a>.</p>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="UserGuide/Foundations/how_create_your_own_strategy.html" title="Strategy Creation"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Strategy Creation </span>
+              </div>
+            </a>
+          
+          
+            <a href="security.html" title="Security"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Security </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

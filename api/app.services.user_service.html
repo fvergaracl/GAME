@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>app.services.user_service module &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
+    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="app.services.wallet_service module" href="app.services.wallet_service.html" />
+    <link rel="prev" title="app.services.user_points_service module" href="app.services.user_points_service.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#api/app.services.user_service" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> app.services.user_service module </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../codebase.html" class="md-tabs__link">Codebase Reference</a></li>
+          <li class="md-tabs__item"><a href="app.html" class="md-tabs__link">app package</a></li>
+          <li class="md-tabs__item"><a href="app.services.html" class="md-tabs__link">app.services package</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html" class="md-nav__link">Codebase Reference</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html#how-to-read-it" class="md-nav__link">How to read it</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html#full-module-index" class="md-nav__link">Full module index</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#api-app-services-user-service--page-root" class="md-nav__link">app.services.user_service module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.user_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.user_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.user_points_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.user_points_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.task_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.task_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.wallet_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.wallet_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.wallet_transaction_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.wallet_transaction_repository</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.__init__" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.__init__()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.basic_engagement_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.basic_engagement_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.performance_penalty_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.performance_penalty_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.performance_bonus_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.performance_bonus_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.individual_over_global_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.individual_over_global_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.need_for_motivation_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.need_for_motivation_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.peak_performer_bonus_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.peak_performer_bonus_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.global_advantage_adjustment_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.global_advantage_adjustment_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.individual_adjustment_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.individual_adjustment_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.create_user" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.create_user()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.assign_points_to_user" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.assign_points_to_user()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.get_wallet_by_user_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.get_wallet_by_user_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.get_user_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.get_user_by_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.get_wallet_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.get_wallet_by_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.get_points_by_user_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.get_points_by_user_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.preview_points_to_coins_conversion" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.preview_points_to_coins_conversion()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.preview_points_to_coins_conversion_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.preview_points_to_coins_conversion_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.convert_points_to_coins" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.convert_points_to_coins()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_service.UserService.convert_points_to_coins_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserService.convert_points_to_coins_externalUserId()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/api/app.services.user_service.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="module-app.services.user_service">
+<span id="app-services-user-service-module"></span><h1 id="api-app-services-user-service--page-root">app.services.user_service module<a class="headerlink" href="#api-app-services-user-service--page-root" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.services.user_service.UserService">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.user_service.</span></span><span class="sig-name descname"><span class="pre">UserService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_points_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet_transaction_repository</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="app.services.base_service.html#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
+<p>Service class for managing users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_repository</strong> (<a class="reference internal" href="app.repository.user_repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository"><em>UserRepository</em></a>)</p></li>
+<li><p><strong>user_points_repository</strong> (<a class="reference internal" href="app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository"><em>UserPointsRepository</em></a>)</p></li>
+<li><p><strong>task_repository</strong> (<a class="reference internal" href="app.repository.task_repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository"><em>TaskRepository</em></a>)</p></li>
+<li><p><strong>wallet_repository</strong> (<a class="reference internal" href="app.repository.wallet_repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository"><em>WalletRepository</em></a>)</p></li>
+<li><p><strong>wallet_transaction_repository</strong> (<a class="reference internal" href="app.repository.wallet_transaction_repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository"><em>WalletTransactionRepository</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.user_repository">
+<span class="sig-name descname"><span class="pre">user_repository</span></span><a class="headerlink" href="#app.services.user_service.UserService.user_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.user_repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository">UserRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.user_points_repository">
+<span class="sig-name descname"><span class="pre">user_points_repository</span></span><a class="headerlink" href="#app.services.user_service.UserService.user_points_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for
+user points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository">UserPointsRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.task_repository">
+<span class="sig-name descname"><span class="pre">task_repository</span></span><a class="headerlink" href="#app.services.user_service.UserService.task_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.task_repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository">TaskRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.wallet_repository">
+<span class="sig-name descname"><span class="pre">wallet_repository</span></span><a class="headerlink" href="#app.services.user_service.UserService.wallet_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for wallets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.wallet_repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository">WalletRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.wallet_transaction_repository">
+<span class="sig-name descname"><span class="pre">wallet_transaction_repository</span></span><a class="headerlink" href="#app.services.user_service.UserService.wallet_transaction_repository" title="Link to this definition">¶</a></dt>
+<dd><p>Repository instance for wallet transactions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="app.repository.wallet_transaction_repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository">WalletTransactionRepository</a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_points_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wallet_transaction_repository</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes the UserService with the provided repositories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_repository</strong> (<a class="reference internal" href="app.repository.user_repository.html#app.repository.user_repository.UserRepository" title="app.repository.user_repository.UserRepository"><em>UserRepository</em></a>) – The user repository instance.</p></li>
+<li><p><strong>user_points_repository</strong> (<a class="reference internal" href="app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository"><em>UserPointsRepository</em></a>) – The user points
+repository instance.</p></li>
+<li><p><strong>task_repository</strong> (<a class="reference internal" href="app.repository.task_repository.html#app.repository.task_repository.TaskRepository" title="app.repository.task_repository.TaskRepository"><em>TaskRepository</em></a>) – The task repository instance.</p></li>
+<li><p><strong>wallet_repository</strong> (<a class="reference internal" href="app.repository.wallet_repository.html#app.repository.wallet_repository.WalletRepository" title="app.repository.wallet_repository.WalletRepository"><em>WalletRepository</em></a>) – The wallet repository
+instance.</p></li>
+<li><p><strong>wallet_transaction_repository</strong> (<a class="reference internal" href="app.repository.wallet_transaction_repository.html#app.repository.wallet_transaction_repository.WalletTransactionRepository" title="app.repository.wallet_transaction_repository.WalletTransactionRepository"><em>WalletTransactionRepository</em></a>) – The
+wallet transaction repository instance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.basic_engagement_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">basic_engagement_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.basic_engagement_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.basic_engagement_points" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Provides a fixed number of points as a basic engagement reward for a</dt><dd><p>user’s initial actions within the gamification system.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>int</em> – The fixed number of basic engagement points.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.performance_penalty_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">performance_penalty_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.performance_penalty_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.performance_penalty_points" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Calculates the number of points to deduct as a penalty for performance</dt><dd><p>below a certain threshold.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>int</em> – The number of points to deduct.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.performance_bonus_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">performance_bonus_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.performance_bonus_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.performance_bonus_points" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Calculates the number of additional points to award for performance</dt><dd><p>above a certain threshold.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>int</em> – The number of bonus points to award.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.individual_over_global_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">individual_over_global_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.individual_over_global_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.individual_over_global_points" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Awards additional points for users who have improved their individual</dt><dd><dl class="simple">
+<dt>performance compared to their own history, even if below the global</dt><dd><p>average.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>int</em> – The number of additional points to award.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.need_for_motivation_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">need_for_motivation_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.need_for_motivation_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.need_for_motivation_points" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Provides a small point incentive for users who are underperforming</dt><dd><p>both individually and globally, to motivate improvement.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>int</em> – The number of points to award as motivation.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.peak_performer_bonus_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">peak_performer_bonus_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.peak_performer_bonus_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.peak_performer_bonus_points" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Rewards users who have exceeded both their individual performance and</dt><dd><p>the global average, standing out as peak performers in the system.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>int</em> – The number of bonus points for peak performers.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.global_advantage_adjustment_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">global_advantage_adjustment_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.global_advantage_adjustment_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.global_advantage_adjustment_points" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Awards additional points to users whose performance is above the</dt><dd><dl class="simple">
+<dt>global average but have shown a decrease in their individual</dt><dd><dl class="simple">
+<dt>performance. It’s designed to encourage users to strive for</dt><dd><dl class="simple">
+<dt>above-average performance, recognizing their effort amidst</dt><dd><p>challenges.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><em>int</em> –</p>
+<dl class="simple">
+<dt>The number of adjustment points for maintaining a global</dt><dd><p>advantage.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.individual_adjustment_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">individual_adjustment_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.individual_adjustment_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.individual_adjustment_points" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Rewards users who have improved their individual performance,</dt><dd><dl class="simple">
+<dt>regardless of their standing against the global average. It aims to</dt><dd><dl class="simple">
+<dt>acknowledge and encourage personal improvement, motivating users</dt><dd><p>to keep advancing.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><em>int</em> –</p>
+<dl class="simple">
+<dt>The number of points to award for individual performance</dt><dd><p>improvement.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.create_user">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.create_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.create_user" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a new user using the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – The schema representing the user to be created.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>object</em> – The created user.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.assign_points_to_user">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">assign_points_to_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apiKey_used</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.assign_points_to_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.assign_points_to_user" title="Link to this definition">¶</a></dt>
+<dd><p>Assigns points to a user based on the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>userId</strong> (<em>str</em>) – The user ID.</p></li>
+<li><p><strong>schema</strong> (<em>BaseUserPointsBaseModel</em>) – The schema containing point
+assignment details.</p></li>
+<li><p><strong>apiKey_used</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>UserPointsAssigned</em> – The assigned points details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>UserPointsAssigned</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.get_wallet_by_user_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_wallet_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_wallet_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_wallet_by_user_id" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the wallet associated with a user by their user ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>userId</strong> (<em>str</em>) – The user ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>UserWallet</em> – The wallet details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>UserWallet</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.get_user_by_externalUserId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_user_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_user_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves a user by their external user ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>externalUserId</strong> (<em>str</em>) – The external user ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>object</em> – The user details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.get_wallet_by_externalUserId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_wallet_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_wallet_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_wallet_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves the wallet associated with a user by their external user ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalUserId</strong> (<em>str</em>) – The external user ID.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>)</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>str</em>)</p></li>
+<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
+<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>UserWallet</em> – The wallet details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>UserWallet</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.get_points_by_user_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.get_points_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.get_points_by_user_id" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieves points associated with a user by their user ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>userId</strong> (<em>str</em>) – The user ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>UserPointsTasks</em> – The user’s points and associated tasks.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>UserPointsTasks</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.preview_points_to_coins_conversion">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preview_points_to_coins_conversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.preview_points_to_coins_conversion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.preview_points_to_coins_conversion" title="Link to this definition">¶</a></dt>
+<dd><p>Previews the conversion of points to coins for a user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>userId</strong> (<em>str</em>) – The user ID.</p></li>
+<li><p><strong>points</strong> (<em>int</em>) – The number of points to convert.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict</em> – The conversion preview details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, <em>Any</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.preview_points_to_coins_conversion_externalUserId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preview_points_to_coins_conversion_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.preview_points_to_coins_conversion_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.preview_points_to_coins_conversion_externalUserId" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Previews the conversion of points to coins for a user by their</dt><dd><p>external user ID.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalUserId</strong> (<em>str</em>) – The external user ID.</p></li>
+<li><p><strong>points</strong> (<em>int</em>) – The number of points to convert.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict</em> – The conversion preview details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, <em>Any</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.convert_points_to_coins">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_points_to_coins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.convert_points_to_coins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.convert_points_to_coins" title="Link to this definition">¶</a></dt>
+<dd><p>Converts points to coins for a user based on the provided schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>userId</strong> (<em>str</em>) – The user ID.</p></li>
+<li><p><strong>schema</strong> (<em>PostPointsConversionRequest</em>) – The schema containing
+conversion details.
+api_key (str): The API key.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ResponsePointsConversion</em> – The conversion details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ResponsePointsConversion</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_service.UserService.convert_points_to_coins_externalUserId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_points_to_coins_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_service.html#UserService.convert_points_to_coins_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_service.UserService.convert_points_to_coins_externalUserId" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Converts points to coins for a user by their external user ID based on</dt><dd><p>the provided schema.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalUserId</strong> (<em>str</em>) – The external user ID.</p></li>
+<li><p><strong>schema</strong> (<em>PostPointsConversionRequest</em>) – The schema containing
+conversion details.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – The API key.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ResponsePointsConversion</em> – The conversion details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ResponsePointsConversion</em></p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="app.services.user_points_service.html" title="app.services.user_points_service module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> app.services.user_points_service module </span>
+              </div>
+            </a>
+          
+          
+            <a href="app.services.wallet_service.html" title="app.services.wallet_service module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> app.services.wallet_service module </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

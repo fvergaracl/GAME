@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>app.engine.greengageStrategy module &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
+    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="app.engine.socio_bee module" href="app.engine.socio_bee.html" />
+    <link rel="prev" title="app.engine.greencrowdStrategy module" href="app.engine.greencrowdStrategy.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#api/app.engine.greengageStrategy" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> app.engine.greengageStrategy module </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../codebase.html" class="md-tabs__link">Codebase Reference</a></li>
+          <li class="md-tabs__item"><a href="app.html" class="md-tabs__link">app package</a></li>
+          <li class="md-tabs__item"><a href="app.engine.html" class="md-tabs__link">app.engine package</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html" class="md-nav__link">Codebase Reference</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html#how-to-read-it" class="md-nav__link">How to read it</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html#full-module-index" class="md-nav__link">Full module index</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#api-app-engine-greengagestrategy--page-root" class="md-nav__link">app.engine.greengageStrategy module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENGAGEGamificationStrategy</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.get_DPTE" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENGAGEGamificationStrategy.get_DPTE()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.get_BP" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENGAGEGamificationStrategy.get_BP()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.get_PBP" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENGAGEGamificationStrategy.get_PBP()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.generate_logic_graph" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENGAGEGamificationStrategy.generate_logic_graph()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.calculate_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENGAGEGamificationStrategy.calculate_points()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/api/app.engine.greengageStrategy.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="module-app.engine.greengageStrategy">
+<span id="app-engine-greengagestrategy-module"></span><h1 id="api-app-engine-greengagestrategy--page-root">app.engine.greengageStrategy module<a class="headerlink" href="#api-app-engine-greengagestrategy--page-root" title="Link to this heading">¶</a></h1>
+<p># noqa
+<a class="reference external" href="https://dreampuf.github.io/GraphvizOnline/?compressed=CYSw5gTghgDgFgAgOIIN4CgFYdAdga1AgF4AVAIQG5NsatcB7YAUwQG0BnOWZ4gIwYAPADQIOAFwCeAG14AzENNnBRCpQGMG0hiWng44yFEkBdatgTNgYVmzkNc4jiABevAIwAGM3QSzJzLjAbNJQfMzSxABEALYAXAgAsiC4AK7izBwIADq4CAAiAAoJ%2BcxyUKnS4giFDClOOXkI5MXNDqlZtfVZjTUtCYXMEBwOUNJtaZ11jlm5BYWkAKIlZRVVNdMNpCAxrIuhMBxWvQDC%2BcQnDDEwsgBWIMBQwAXMAG4RDDC7jqeLF1c3Zj3R7PRaCG51cRQcQgBynRL-a53B5PJJQXBQGzfapzE6kRGA4Go0gMKHSKKqRTSTTaEgBJQMADukGYgRM6F8EigEGqITCEWiAGUoTyKWJuDBeBE9IdmJSNFodMQ9GADEZTOZsOo4Mx1PgQHJPOxQuFIrFiJ4oj4LNrdfq5AAZKASLqOADqzvcyVw5DKOmYfNN0VCEgQME2WQgzEZ3JYzwAFFCOPgAJQIAA8CHcCBiKStvlteo6Q24HCjmggwF99ijAElcKRnfhAwKogBVI4QBClnC6nTPcI11iJpsp-M2nV6g0AJnL-ayLbNxa73HeCAAfAhp72K8AOAB%2BBDxpBQXZj61ayf2g3bXa1jhIKPQoakbi4JDaPhjACCADUUIu0SCBuyCfmMCB-igx6nsw56alghbXnIt7MPej7MM%2BECvuigzDKM0iQca-JmsBm64SMGLjIR0Fnla8EIL4-iBMA06AVEJxjOolTQrCeS4viCBnAgADUgmLCJgmJL08wrAouDHCkYjiNAGRgJICAAFRHniAD0XieGmvRFEsCDEPMCAAOs5r0LSmfMJmifGxmLDp04pnMhS2WZzkSU5CwuQALGmYpqNSiokKQqQQAAjqkdRHOyHI2s6zDuAA%2BtmbEcUcWYAHTZn5Y6iFwPDEDA3JjLI2hGDE8phbSyr6FI0pMheCEpel25ZSleXbn5rlFeKpXldASgfDVdU0kqKoGPS2iMm1CDqClXUmq22WsH1RSWVug0lZKZUVWN1XQLVCChVNuhNXNrX0ctRwAMxEUG7E9U98YtHtEq8CNlXjadk3hY1qrNQyC13SlAUZc9609QF%2BVHp5hRfcNR1VQwE3nVSl3A7NLXgwWkNpatxHRBtCDw1t-kowdv3HRjANYwqDUzaD83Wkl2BcjyCAALSbohBqeAWV5C3zAtXsupZzpW1b%2BvWjbJjDZoAJqZOOl52lLzoy1Wfp1g2Tb80touOs64iuuIHocF6KRy1GyvRGrHAawhptOi6mzW7bPr68wxv3alxNsc7rtu3aBoexbXuet69v%2BwLHUZWxAByDBhyLWudtLfay37CtG4nRwky9adh4LhriybEdyLOud7o7URl%2ByE413Xu5ZAHK2N83mdTrXuudxLNc3jsqEPk%2BGRYW%2BH4MF%2BBH-o3oct5r-ej3eE8YVP2HvmBC8oF3j1L%2BrK-h2vyFj2hk8vjPe%2BEQHpvr%2BP6GYTv5H4YRqfp6f1fnyhV9bxvjhIYFEfyL0PswKGmU1qqxPn3JC-9N6vzfO-Si98i6QOJj3b%2BHIAC%2B6BcFAA">https://dreampuf.github.io/GraphvizOnline/?compressed=CYSw5gTghgDgFgAgOIIN4CgFYdAdga1AgF4AVAIQG5NsatcB7YAUwQG0BnOWZ4gIwYAPADQIOAFwCeAG14AzENNnBRCpQGMG0hiWng44yFEkBdatgTNgYVmzkNc4jiABevAIwAGM3QSzJzLjAbNJQfMzSxABEALYAXAgAsiC4AK7izBwIADq4CAAiAAoJ%2BcxyUKnS4giFDClOOXkI5MXNDqlZtfVZjTUtCYXMEBwOUNJtaZ11jlm5BYWkAKIlZRVVNdMNpCAxrIuhMBxWvQDC%2BcQnDDEwsgBWIMBQwAXMAG4RDDC7jqeLF1c3Zj3R7PRaCG51cRQcQgBynRL-a53B5PJJQXBQGzfapzE6kRGA4Go0gMKHSKKqRTSTTaEgBJQMADukGYgRM6F8EigEGqITCEWiAGUoTyKWJuDBeBE9IdmJSNFodMQ9GADEZTOZsOo4Mx1PgQHJPOxQuFIrFiJ4oj4LNrdfq5AAZKASLqOADqzvcyVw5DKOmYfNN0VCEgQME2WQgzEZ3JYzwAFFCOPgAJQIAA8CHcCBiKStvlteo6Q24HCjmggwF99ijAElcKRnfhAwKogBVI4QBClnC6nTPcI11iJpsp-M2nV6g0AJnL-ayLbNxa73HeCAAfAhp72K8AOAB%2BBDxpBQXZj61ayf2g3bXa1jhIKPQoakbi4JDaPhjACCADUUIu0SCBuyCfmMCB-igx6nsw56alghbXnIt7MPej7MM%2BECvuigzDKM0iQca-JmsBm64SMGLjIR0Fnla8EIL4-iBMA06AVEJxjOolTQrCeS4viCBnAgADUgmLCJgmJL08wrAouDHCkYjiNAGRgJICAAFRHniAD0XieGmvRFEsCDEPMCAAOs5r0LSmfMJmifGxmLDp04pnMhS2WZzkSU5CwuQALGmYpqNSiokKQqQQAAjqkdRHOyHI2s6zDuAA%2BtmbEcUcWYAHTZn5Y6iFwPDEDA3JjLI2hGDE8phbSyr6FI0pMheCEpel25ZSleXbn5rlFeKpXldASgfDVdU0kqKoGPS2iMm1CDqClXUmq22WsH1RSWVug0lZKZUVWN1XQLVCChVNuhNXNrX0ctRwAMxEUG7E9U98YtHtEq8CNlXjadk3hY1qrNQyC13SlAUZc9609QF%2BVHp5hRfcNR1VQwE3nVSl3A7NLXgwWkNpatxHRBtCDw1t-kowdv3HRjANYwqDUzaD83Wkl2BcjyCAALSbohBqeAWV5C3zAtXsupZzpW1b%2BvWjbJjDZoAJqZOOl52lLzoy1Wfp1g2Tb80touOs64iuuIHocF6KRy1GyvRGrHAawhptOi6mzW7bPr68wxv3alxNsc7rtu3aBoexbXuet69v%2BwLHUZWxAByDBhyLWudtLfay37CtG4nRwky9adh4LhriybEdyLOud7o7URl%2ByE413Xu5ZAHK2N83mdTrXuudxLNc3jsqEPk%2BGRYW%2BH4MF%2BBH-o3oct5r-ej3eE8YVP2HvmBC8oF3j1L%2BrK-h2vyFj2hk8vjPe%2BEQHpvr%2BP6GYTv5H4YRqfp6f1fnyhV9bxvjhIYFEfyL0PswKGmU1qqxPn3JC-9N6vzfO-Si98i6QOJj3b%2BHIAC%2B6BcFAA</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.engine.greengageStrategy.GREENGAGEGamificationStrategy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.engine.greengageStrategy.</span></span><span class="sig-name descname"><span class="pre">GREENGAGEGamificationStrategy</span></span><a class="reference internal" href="../_modules/app/engine/greengageStrategy.html#GREENGAGEGamificationStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="app.engine.base_strategy.html#app.engine.base_strategy.BaseStrategy" title="app.engine.base_strategy.BaseStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseStrategy</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.greengageStrategy.GREENGAGEGamificationStrategy.get_DPTE">
+<span class="sig-name descname"><span class="pre">get_DPTE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greengageStrategy.html#GREENGAGEGamificationStrategy.get_DPTE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.get_DPTE" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the Default Points Time Elapsed (DPTE) based on the number of
+minutes elapsed, using the floor of the time range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>minutes</strong> (<em>int</em>) – The number of minutes elapsed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em> – The Default Points Time Elapsed (DPTE).</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.greengageStrategy.GREENGAGEGamificationStrategy.get_BP">
+<span class="sig-name descname"><span class="pre">get_BP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greengageStrategy.html#GREENGAGEGamificationStrategy.get_BP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.get_BP" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the Bonus Points (BP) based on the number of minutes elapsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>minutes</strong> (<em>int</em>) – The number of minutes elapsed.</p></li>
+<li><p><strong>points</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em> – The Bonus Points (BP).</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.greengageStrategy.GREENGAGEGamificationStrategy.get_PBP">
+<span class="sig-name descname"><span class="pre">get_PBP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greengageStrategy.html#GREENGAGEGamificationStrategy.get_PBP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.get_PBP" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Returns the Personal Bonus Points (PBP) based on the number of minutes</dt><dd><p>elapsed.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>minutes</strong> (<em>int</em>) – The number of minutes elapsed.</p></li>
+<li><p><strong>points</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em> – The Personal Bonus Points (PBP).</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.greengageStrategy.GREENGAGEGamificationStrategy.generate_logic_graph">
+<span class="sig-name descname"><span class="pre">generate_logic_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'png'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greengageStrategy.html#GREENGAGEGamificationStrategy.generate_logic_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.generate_logic_graph" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a logic graph for the strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>str</em> – The logic graph as a string.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.greengageStrategy.GREENGAGEGamificationStrategy.calculate_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greengageStrategy.html#GREENGAGEGamificationStrategy.calculate_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.calculate_points" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the points for the strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>int</em> – The basic points variable.</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="app.engine.greencrowdStrategy.html" title="app.engine.greencrowdStrategy module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> app.engine.greencrowdStrategy module </span>
+              </div>
+            </a>
+          
+          
+            <a href="app.engine.socio_bee.html" title="app.engine.socio_bee module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> app.engine.socio_bee module </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

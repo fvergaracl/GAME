@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>app.services.strategy_definition_service module &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
+    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="app.services.strategy_observability_service module" href="app.services.strategy_observability_service.html" />
+    <link rel="prev" title="app.services.rate_limit_counter_backend module" href="app.services.rate_limit_counter_backend.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#api/app.services.strategy_definition_service" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> app.services.strategy_definition_service module </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../codebase.html" class="md-tabs__link">Codebase Reference</a></li>
+          <li class="md-tabs__item"><a href="app.html" class="md-tabs__link">app package</a></li>
+          <li class="md-tabs__item"><a href="app.services.html" class="md-tabs__link">app.services package</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html" class="md-nav__link">Codebase Reference</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html#how-to-read-it" class="md-nav__link">How to read it</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html#full-module-index" class="md-nav__link">Full module index</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#api-app-services-strategy-definition-service--page-root" class="md-nav__link">app.services.strategy_definition_service module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.RollbackResult" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RollbackResult</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.__init__" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.__init__()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.name_exists" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.name_exists()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.update" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.update()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.list_versions" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.list_versions()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.get_usage" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.get_usage()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.rollback" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.rollback()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/api/app.services.strategy_definition_service.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="module-app.services.strategy_definition_service">
+<span id="app-services-strategy-definition-service-module"></span><h1 id="api-app-services-strategy-definition-service--page-root">app.services.strategy_definition_service module<a class="headerlink" href="#api-app-services-strategy-definition-service--page-root" title="Link to this heading">¶</a></h1>
+<p>Service for the persistent strategy model.</p>
+<p>Implements the versioning rules called out in the Sprint 3 plan:</p>
+<ul class="simple">
+<li><p>Creating uses <code class="docutils literal notranslate"><span class="pre">version=1</span></code> and <code class="docutils literal notranslate"><span class="pre">status=DRAFT</span></code>.</p></li>
+<li><p>Editing a draft mutates the row in place.</p></li>
+<li><p>Editing a published row forks <code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">+</span> <span class="pre">1</span></code> as a new draft instead
+of mutating the published copy.</p></li>
+<li><p>Publishing a draft transitions it to <code class="docutils literal notranslate"><span class="pre">PUBLISHED</span></code> and archives any
+sibling that was previously published, so a <code class="docutils literal notranslate"><span class="pre">(realmId,</span> <span class="pre">name)</span></code>
+family only ever has at most one live row.</p></li>
+<li><p>Archiving moves a row out of the active set without deleting history.</p></li>
+</ul>
+<p>Tenancy is enforced at this layer: every read/write takes <code class="docutils literal notranslate"><span class="pre">realmId</span></code>
+and we never accept it from the caller body — the endpoint resolves it
+from the auth context and passes it in.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.RollbackResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.strategy_definition_service.</span></span><span class="sig-name descname"><span class="pre">RollbackResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">games_reassigned</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tasks_reassigned</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#RollbackResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.RollbackResult" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Outcome of a rollback operation, returned by the service so the
+endpoint can include cascade counts in the audit log without re-hitting
+the DB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>strategy</strong> (<em>StrategyDefinitionRead</em>)</p></li>
+<li><p><strong>games_reassigned</strong> (<em>int</em>)</p></li>
+<li><p><strong>tasks_reassigned</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.strategy_definition_service.</span></span><span class="sig-name descname"><span class="pre">StrategyDefinitionService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_definition_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_repository</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_repository</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="app.services.base_service.html#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
+<p>CRUD + lifecycle operations for custom strategies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>strategy_definition_repository</strong> (<a class="reference internal" href="app.repository.strategy_definition_repository.html#app.repository.strategy_definition_repository.StrategyDefinitionRepository" title="app.repository.strategy_definition_repository.StrategyDefinitionRepository"><em>StrategyDefinitionRepository</em></a>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_definition_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_repository</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_repository</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.__init__" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">game_repository</span></code> and <code class="docutils literal notranslate"><span class="pre">task_repository</span></code> are optional so legacy
+call sites that only need CRUD/lifecycle (most tests, the
+simulation service) keep working without a wider DI graph. The
+Sprint 9 rollback flow requires both — when missing,
+<a class="reference internal" href="#app.services.strategy_definition_service.StrategyDefinitionService.rollback" title="app.services.strategy_definition_service.StrategyDefinitionService.rollback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rollback()</span></code></a> raises a precise error rather than silently
+leaving cascade UPDATEs undone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>strategy_definition_repository</strong> (<a class="reference internal" href="app.repository.strategy_definition_repository.html#app.repository.strategy_definition_repository.StrategyDefinitionRepository" title="app.repository.strategy_definition_repository.StrategyDefinitionRepository"><em>StrategyDefinitionRepository</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.name_exists">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.name_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.name_exists" title="Link to this definition">¶</a></dt>
+<dd><p>Whether any version of <code class="docutils literal notranslate"><span class="pre">(realmId,</span> <span class="pre">name)</span></code> already exists.</p>
+<p>Used by the import endpoint (Sprint 8) to decide whether the
+incoming bundle needs an auto-rename to avoid colliding with
+the <code class="docutils literal notranslate"><span class="pre">UNIQUE(realmId,</span> <span class="pre">name,</span> <span class="pre">version)</span></code> constraint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>realmId</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.update">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">createdBy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apiKey_used</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.update" title="Link to this definition">¶</a></dt>
+<dd><p>Apply an update.</p>
+<ul class="simple">
+<li><p>On a DRAFT row: patch in place and return the same id.</p></li>
+<li><p>On a PUBLISHED row: fork a new DRAFT at <code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">+</span> <span class="pre">1</span></code> with
+the patched fields applied, leaving the published row
+untouched so it keeps running until an explicit publish.</p></li>
+<li><p>On an ARCHIVED row: refuse — archived strategies are
+immutable.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>)</p></li>
+<li><p><strong>payload</strong> (<em>StrategyDefinitionUpdate</em>)</p></li>
+<li><p><strong>realmId</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>createdBy</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>apiKey_used</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>StrategyDefinitionRead</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.list_versions">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_versions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.list_versions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.list_versions" title="Link to this definition">¶</a></dt>
+<dd><p>Return every version in the family that contains <code class="docutils literal notranslate"><span class="pre">id</span></code>, newest
+first. The caller passes a single id (typically the current
+published version) and we resolve the family name from it so the
+endpoint contract stays “one id in, full history out”.</p>
+<p>Tenant-scoped: <code class="docutils literal notranslate"><span class="pre">get_for_realm</span></code> 404s when the row belongs to
+another realm, so cross-tenant probing returns nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>)</p></li>
+<li><p><strong>realmId</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>List</em>[<em>StrategyDefinitionRead</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.get_usage">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.get_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.get_usage" title="Link to this definition">¶</a></dt>
+<dd><p>Reverse lookup: which games/tasks are assigned to this exact
+strategy version (Sprint 6).</p>
+<p>Consumers store the assignable id <code class="docutils literal notranslate"><span class="pre">custom:&lt;uuid&gt;</span></code>, so usage is
+an exact match on that string — the same value the rollback
+cascade rewrites. We report per-version (not per-family) because
+each published version is a distinct uuid that games point at
+individually; that matches what an admin needs to see before
+reassigning, archiving or rolling back <em>this</em> version.</p>
+<p>Tenant-scoped via <code class="docutils literal notranslate"><span class="pre">get_for_realm</span></code>: a cross-realm id 404s.
+No cross-tenant leak through the usage lists either — a game can
+only be assigned a strategy validated to live in its own realm,
+so every consumer of <code class="docutils literal notranslate"><span class="pre">custom:&lt;uuid&gt;</span></code> shares the strategy’s
+realm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>)</p></li>
+<li><p><strong>realmId</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>StrategyUsageRead</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.rollback">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rollback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.rollback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.rollback" title="Link to this definition">¶</a></dt>
+<dd><p>Promote <code class="docutils literal notranslate"><span class="pre">target_version</span></code> back to PUBLISHED in the family that
+contains <code class="docutils literal notranslate"><span class="pre">id</span></code>, archive whichever version is currently published,
+and rewrite every <code class="docutils literal notranslate"><span class="pre">Games.strategyId</span></code> / <code class="docutils literal notranslate"><span class="pre">Tasks.strategyId</span></code>
+pointing at the displaced row so no consumer is left referencing
+an ARCHIVED row.</p>
+<p><code class="docutils literal notranslate"><span class="pre">id</span></code> doesn’t have to be PUBLISHED: an admin may initiate rollback
+from any version of the family (e.g. browsing the version history
+UI). We always treat the family’s <em>current</em> PUBLISHED row as the
+one to archive + reassign, regardless of which id was clicked.</p>
+<dl class="simple">
+<dt>Errors:</dt><dd><ul class="simple">
+<li><p>404 if <code class="docutils literal notranslate"><span class="pre">id</span></code> doesn’t resolve (or is in another realm).</p></li>
+<li><p>404 if <code class="docutils literal notranslate"><span class="pre">target_version</span></code> isn’t a version of that family.</p></li>
+<li><p>409 if the requested target is the row that’s already PUBLISHED
+— rolling back to the current state would be a no-op that
+falsely advertises a status change in the audit log.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>)</p></li>
+<li><p><strong>target_version</strong> (<em>int</em>)</p></li>
+<li><p><strong>realmId</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#app.services.strategy_definition_service.RollbackResult" title="app.services.strategy_definition_service.RollbackResult"><em>RollbackResult</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="app.services.rate_limit_counter_backend.html" title="app.services.rate_limit_counter_backend module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> app.services.rate_limit_counter_backend module </span>
+              </div>
+            </a>
+          
+          
+            <a href="app.services.strategy_observability_service.html" title="app.services.strategy_observability_service module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> app.services.strategy_observability_service module </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

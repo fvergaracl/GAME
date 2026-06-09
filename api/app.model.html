@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>app.model package &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
+    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="app.model.abuse_limit_counter module" href="app.model.abuse_limit_counter.html" />
+    <link rel="prev" title="app.middlewares.valid_access_token module" href="app.middlewares.valid_access_token.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#api/app.model" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> app.model package </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../codebase.html" class="md-tabs__link">Codebase Reference</a></li>
+          <li class="md-tabs__item"><a href="app.html" class="md-tabs__link">app package</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html" class="md-nav__link">Codebase Reference</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html#how-to-read-it" class="md-nav__link">How to read it</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html#full-module-index" class="md-nav__link">Full module index</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#api-app-model--page-root" class="md-nav__link">app.model package</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#submodules" class="md-nav__link">Submodules</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/api/app.model.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="module-app.model">
+<span id="app-model-package"></span><h1 id="api-app-model--page-root">app.model package<a class="headerlink" href="#api-app-model--page-root" title="Link to this heading">¶</a></h1>
+<p>Model layer — the database schema.</p>
+<p>SQLModel/SQLAlchemy table definitions for every persisted entity. Each model
+inherits <a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel" title="app.model.base_model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">app.model.base_model.BaseModel</span></code></a>, which contributes the common
+<code class="docutils literal notranslate"><span class="pre">id</span></code>, timezone-aware <code class="docutils literal notranslate"><span class="pre">created_at</span></code>/<code class="docutils literal notranslate"><span class="pre">updated_at</span></code>, and the
+<code class="docutils literal notranslate"><span class="pre">apiKey_used</span></code>/<code class="docutils literal notranslate"><span class="pre">oauth_user_id</span></code> audit columns to every table. See the
+<a class="reference internal" href="../domain-model.html"><span class="doc">domain model</span></a> for the entity-relationship overview.</p>
+<section id="submodules">
+<h2 id="submodules">Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="app.model.abuse_limit_counter.html">app.model.abuse_limit_counter module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.abuse_limit_counter.html#app.model.abuse_limit_counter.AbuseLimitCounter"><code class="docutils literal notranslate"><span class="pre">AbuseLimitCounter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.abuse_limit_counter.html#app.model.abuse_limit_counter.AbuseLimitCounter.model_config"><code class="docutils literal notranslate"><span class="pre">AbuseLimitCounter.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.api_key.html">app.model.api_key module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.api_key.html#app.model.api_key.ApiKey"><code class="docutils literal notranslate"><span class="pre">ApiKey</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_key.html#app.model.api_key.ApiKey.apiKey"><code class="docutils literal notranslate"><span class="pre">ApiKey.apiKey</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_key.html#app.model.api_key.ApiKey.apiKeyHash"><code class="docutils literal notranslate"><span class="pre">ApiKey.apiKeyHash</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_key.html#app.model.api_key.ApiKey.description"><code class="docutils literal notranslate"><span class="pre">ApiKey.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_key.html#app.model.api_key.ApiKey.active"><code class="docutils literal notranslate"><span class="pre">ApiKey.active</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_key.html#app.model.api_key.ApiKey.createdBy"><code class="docutils literal notranslate"><span class="pre">ApiKey.createdBy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_key.html#app.model.api_key.ApiKey.model_config"><code class="docutils literal notranslate"><span class="pre">ApiKey.model_config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_key.html#app.model.api_key.ApiKey.get_e2e_seed_api_key"><code class="docutils literal notranslate"><span class="pre">ApiKey.get_e2e_seed_api_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_key.html#app.model.api_key.ApiKey.build_e2e_seed"><code class="docutils literal notranslate"><span class="pre">ApiKey.build_e2e_seed()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.api_requests.html">app.model.api_requests module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.api_requests.html#app.model.api_requests.ApiRequests"><code class="docutils literal notranslate"><span class="pre">ApiRequests</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_requests.html#app.model.api_requests.ApiRequests.userId"><code class="docutils literal notranslate"><span class="pre">ApiRequests.userId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_requests.html#app.model.api_requests.ApiRequests.endpoint"><code class="docutils literal notranslate"><span class="pre">ApiRequests.endpoint</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_requests.html#app.model.api_requests.ApiRequests.statusCode"><code class="docutils literal notranslate"><span class="pre">ApiRequests.statusCode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_requests.html#app.model.api_requests.ApiRequests.responseTimeMS"><code class="docutils literal notranslate"><span class="pre">ApiRequests.responseTimeMS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_requests.html#app.model.api_requests.ApiRequests.requestType"><code class="docutils literal notranslate"><span class="pre">ApiRequests.requestType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.api_requests.html#app.model.api_requests.ApiRequests.model_config"><code class="docutils literal notranslate"><span class="pre">ApiRequests.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.base_model.html">app.model.base_model module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel"><code class="docutils literal notranslate"><span class="pre">BaseModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel.id"><code class="docutils literal notranslate"><span class="pre">BaseModel.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel.created_at"><code class="docutils literal notranslate"><span class="pre">BaseModel.created_at</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel.updated_at"><code class="docutils literal notranslate"><span class="pre">BaseModel.updated_at</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel.apiKey_used"><code class="docutils literal notranslate"><span class="pre">BaseModel.apiKey_used</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel.oauth_user_id"><code class="docutils literal notranslate"><span class="pre">BaseModel.oauth_user_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel.__str__"><code class="docutils literal notranslate"><span class="pre">BaseModel.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel.__repr__"><code class="docutils literal notranslate"><span class="pre">BaseModel.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel.__eq__"><code class="docutils literal notranslate"><span class="pre">BaseModel.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel.__hash__"><code class="docutils literal notranslate"><span class="pre">BaseModel.__hash__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.base_model.html#app.model.base_model.BaseModel.model_config"><code class="docutils literal notranslate"><span class="pre">BaseModel.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.export_audit_log.html">app.model.export_audit_log module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.export_audit_log.html#app.model.export_audit_log.ExportAuditLog"><code class="docutils literal notranslate"><span class="pre">ExportAuditLog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.export_audit_log.html#app.model.export_audit_log.ExportAuditLog.datasetType"><code class="docutils literal notranslate"><span class="pre">ExportAuditLog.datasetType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.export_audit_log.html#app.model.export_audit_log.ExportAuditLog.format"><code class="docutils literal notranslate"><span class="pre">ExportAuditLog.format</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.export_audit_log.html#app.model.export_audit_log.ExportAuditLog.filters"><code class="docutils literal notranslate"><span class="pre">ExportAuditLog.filters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.export_audit_log.html#app.model.export_audit_log.ExportAuditLog.rowLimit"><code class="docutils literal notranslate"><span class="pre">ExportAuditLog.rowLimit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.export_audit_log.html#app.model.export_audit_log.ExportAuditLog.rowCount"><code class="docutils literal notranslate"><span class="pre">ExportAuditLog.rowCount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.export_audit_log.html#app.model.export_audit_log.ExportAuditLog.status"><code class="docutils literal notranslate"><span class="pre">ExportAuditLog.status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.export_audit_log.html#app.model.export_audit_log.ExportAuditLog.requestedBy"><code class="docutils literal notranslate"><span class="pre">ExportAuditLog.requestedBy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.export_audit_log.html#app.model.export_audit_log.ExportAuditLog.model_config"><code class="docutils literal notranslate"><span class="pre">ExportAuditLog.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.game_params.html">app.model.game_params module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.game_params.html#app.model.game_params.GamesParams"><code class="docutils literal notranslate"><span class="pre">GamesParams</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.game_params.html#app.model.game_params.GamesParams.key"><code class="docutils literal notranslate"><span class="pre">GamesParams.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.game_params.html#app.model.game_params.GamesParams.value"><code class="docutils literal notranslate"><span class="pre">GamesParams.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.game_params.html#app.model.game_params.GamesParams.gameId"><code class="docutils literal notranslate"><span class="pre">GamesParams.gameId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.game_params.html#app.model.game_params.GamesParams.__str__"><code class="docutils literal notranslate"><span class="pre">GamesParams.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.game_params.html#app.model.game_params.GamesParams.__repr__"><code class="docutils literal notranslate"><span class="pre">GamesParams.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.game_params.html#app.model.game_params.GamesParams.__eq__"><code class="docutils literal notranslate"><span class="pre">GamesParams.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.game_params.html#app.model.game_params.GamesParams.__hash__"><code class="docutils literal notranslate"><span class="pre">GamesParams.__hash__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.game_params.html#app.model.game_params.GamesParams.model_config"><code class="docutils literal notranslate"><span class="pre">GamesParams.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.games.html">app.model.games module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.games.html#app.model.games.Games"><code class="docutils literal notranslate"><span class="pre">Games</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.id"><code class="docutils literal notranslate"><span class="pre">Games.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.created_at"><code class="docutils literal notranslate"><span class="pre">Games.created_at</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.updated_at"><code class="docutils literal notranslate"><span class="pre">Games.updated_at</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.externalGameId"><code class="docutils literal notranslate"><span class="pre">Games.externalGameId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.strategyId"><code class="docutils literal notranslate"><span class="pre">Games.strategyId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.platform"><code class="docutils literal notranslate"><span class="pre">Games.platform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.__str__"><code class="docutils literal notranslate"><span class="pre">Games.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.__repr__"><code class="docutils literal notranslate"><span class="pre">Games.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.__eq__"><code class="docutils literal notranslate"><span class="pre">Games.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.__hash__"><code class="docutils literal notranslate"><span class="pre">Games.__hash__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.games.html#app.model.games.Games.model_config"><code class="docutils literal notranslate"><span class="pre">Games.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.kpi_metrics.html">app.model.kpi_metrics module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.kpi_metrics.html#app.model.kpi_metrics.KpiMetrics"><code class="docutils literal notranslate"><span class="pre">KpiMetrics</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.kpi_metrics.html#app.model.kpi_metrics.KpiMetrics.day"><code class="docutils literal notranslate"><span class="pre">KpiMetrics.day</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.kpi_metrics.html#app.model.kpi_metrics.KpiMetrics.totalRequests"><code class="docutils literal notranslate"><span class="pre">KpiMetrics.totalRequests</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.kpi_metrics.html#app.model.kpi_metrics.KpiMetrics.successRate"><code class="docutils literal notranslate"><span class="pre">KpiMetrics.successRate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.kpi_metrics.html#app.model.kpi_metrics.KpiMetrics.avgLatencyMS"><code class="docutils literal notranslate"><span class="pre">KpiMetrics.avgLatencyMS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.kpi_metrics.html#app.model.kpi_metrics.KpiMetrics.errorRate"><code class="docutils literal notranslate"><span class="pre">KpiMetrics.errorRate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.kpi_metrics.html#app.model.kpi_metrics.KpiMetrics.activeUsers"><code class="docutils literal notranslate"><span class="pre">KpiMetrics.activeUsers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.kpi_metrics.html#app.model.kpi_metrics.KpiMetrics.retentionRate"><code class="docutils literal notranslate"><span class="pre">KpiMetrics.retentionRate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.kpi_metrics.html#app.model.kpi_metrics.KpiMetrics.avgInteractionsPerUser"><code class="docutils literal notranslate"><span class="pre">KpiMetrics.avgInteractionsPerUser</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.kpi_metrics.html#app.model.kpi_metrics.KpiMetrics.model_config"><code class="docutils literal notranslate"><span class="pre">KpiMetrics.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.logs.html">app.model.logs module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.logs.html#app.model.logs.Logs"><code class="docutils literal notranslate"><span class="pre">Logs</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.logs.html#app.model.logs.Logs.log_level"><code class="docutils literal notranslate"><span class="pre">Logs.log_level</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.logs.html#app.model.logs.Logs.message"><code class="docutils literal notranslate"><span class="pre">Logs.message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.logs.html#app.model.logs.Logs.module"><code class="docutils literal notranslate"><span class="pre">Logs.module</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.logs.html#app.model.logs.Logs.details"><code class="docutils literal notranslate"><span class="pre">Logs.details</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.logs.html#app.model.logs.Logs.__str__"><code class="docutils literal notranslate"><span class="pre">Logs.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.logs.html#app.model.logs.Logs.__repr__"><code class="docutils literal notranslate"><span class="pre">Logs.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.logs.html#app.model.logs.Logs.__eq__"><code class="docutils literal notranslate"><span class="pre">Logs.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.logs.html#app.model.logs.Logs.__hash__"><code class="docutils literal notranslate"><span class="pre">Logs.__hash__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.logs.html#app.model.logs.Logs.model_config"><code class="docutils literal notranslate"><span class="pre">Logs.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.oauth_users.html">app.model.oauth_users module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.oauth_users.html#app.model.oauth_users.OAuthUsers"><code class="docutils literal notranslate"><span class="pre">OAuthUsers</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.oauth_users.html#app.model.oauth_users.OAuthUsers.provider"><code class="docutils literal notranslate"><span class="pre">OAuthUsers.provider</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.oauth_users.html#app.model.oauth_users.OAuthUsers.provider_user_id"><code class="docutils literal notranslate"><span class="pre">OAuthUsers.provider_user_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.oauth_users.html#app.model.oauth_users.OAuthUsers.status"><code class="docutils literal notranslate"><span class="pre">OAuthUsers.status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.oauth_users.html#app.model.oauth_users.OAuthUsers.__str__"><code class="docutils literal notranslate"><span class="pre">OAuthUsers.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.oauth_users.html#app.model.oauth_users.OAuthUsers.__repr__"><code class="docutils literal notranslate"><span class="pre">OAuthUsers.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.oauth_users.html#app.model.oauth_users.OAuthUsers.__eq__"><code class="docutils literal notranslate"><span class="pre">OAuthUsers.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.oauth_users.html#app.model.oauth_users.OAuthUsers.__hash__"><code class="docutils literal notranslate"><span class="pre">OAuthUsers.__hash__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.oauth_users.html#app.model.oauth_users.OAuthUsers.model_config"><code class="docutils literal notranslate"><span class="pre">OAuthUsers.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.strategy_definition.html">app.model.strategy_definition module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.strategy_definition.html#app.model.strategy_definition.StrategyDefinitionType"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.model.strategy_definition.html#app.model.strategy_definition.StrategyDefinitionStatus"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionStatus</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="app.model.strategy_definition.html#app.model.strategy_definition.StrategyDefinition"><code class="docutils literal notranslate"><span class="pre">StrategyDefinition</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_definition.html#app.model.strategy_definition.StrategyDefinition.model_config"><code class="docutils literal notranslate"><span class="pre">StrategyDefinition.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.strategy_execution_log.html">app.model.strategy_execution_log module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.strategyId"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.strategyId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.strategyVersion"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.strategyVersion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.strategyType"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.strategyType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.realmId"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.realmId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.status"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.errorCode"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.errorCode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.points"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.points</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.caseName"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.caseName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.durationMs"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.durationMs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.nodesExecuted"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.nodesExecuted</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.trace"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.trace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.sampled"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.sampled</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.parentStrategyId"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.parentStrategyId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.strategy_execution_log.html#app.model.strategy_execution_log.StrategyExecutionLog.model_config"><code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.task_params.html">app.model.task_params module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.task_params.html#app.model.task_params.TasksParams"><code class="docutils literal notranslate"><span class="pre">TasksParams</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.task_params.html#app.model.task_params.TasksParams.key"><code class="docutils literal notranslate"><span class="pre">TasksParams.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.task_params.html#app.model.task_params.TasksParams.value"><code class="docutils literal notranslate"><span class="pre">TasksParams.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.task_params.html#app.model.task_params.TasksParams.taskId"><code class="docutils literal notranslate"><span class="pre">TasksParams.taskId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.task_params.html#app.model.task_params.TasksParams.__str__"><code class="docutils literal notranslate"><span class="pre">TasksParams.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.task_params.html#app.model.task_params.TasksParams.__repr__"><code class="docutils literal notranslate"><span class="pre">TasksParams.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.task_params.html#app.model.task_params.TasksParams.__eq__"><code class="docutils literal notranslate"><span class="pre">TasksParams.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.task_params.html#app.model.task_params.TasksParams.__hash__"><code class="docutils literal notranslate"><span class="pre">TasksParams.__hash__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.task_params.html#app.model.task_params.TasksParams.model_config"><code class="docutils literal notranslate"><span class="pre">TasksParams.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.tasks.html">app.model.tasks module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.tasks.html#app.model.tasks.Tasks"><code class="docutils literal notranslate"><span class="pre">Tasks</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.tasks.html#app.model.tasks.Tasks.externalTaskId"><code class="docutils literal notranslate"><span class="pre">Tasks.externalTaskId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.tasks.html#app.model.tasks.Tasks.gameId"><code class="docutils literal notranslate"><span class="pre">Tasks.gameId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.tasks.html#app.model.tasks.Tasks.strategyId"><code class="docutils literal notranslate"><span class="pre">Tasks.strategyId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.tasks.html#app.model.tasks.Tasks.status"><code class="docutils literal notranslate"><span class="pre">Tasks.status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.tasks.html#app.model.tasks.Tasks.apiKey_used"><code class="docutils literal notranslate"><span class="pre">Tasks.apiKey_used</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.tasks.html#app.model.tasks.Tasks.model_config"><code class="docutils literal notranslate"><span class="pre">Tasks.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.uptime_logs.html">app.model.uptime_logs module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.uptime_logs.html#app.model.uptime_logs.UptimeLogs"><code class="docutils literal notranslate"><span class="pre">UptimeLogs</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.uptime_logs.html#app.model.uptime_logs.UptimeLogs.status"><code class="docutils literal notranslate"><span class="pre">UptimeLogs.status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.uptime_logs.html#app.model.uptime_logs.UptimeLogs.model_config"><code class="docutils literal notranslate"><span class="pre">UptimeLogs.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.user_actions.html">app.model.user_actions module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.user_actions.html#app.model.user_actions.UserActions"><code class="docutils literal notranslate"><span class="pre">UserActions</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_actions.html#app.model.user_actions.UserActions.typeAction"><code class="docutils literal notranslate"><span class="pre">UserActions.typeAction</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_actions.html#app.model.user_actions.UserActions.data"><code class="docutils literal notranslate"><span class="pre">UserActions.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_actions.html#app.model.user_actions.UserActions.description"><code class="docutils literal notranslate"><span class="pre">UserActions.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_actions.html#app.model.user_actions.UserActions.userId"><code class="docutils literal notranslate"><span class="pre">UserActions.userId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_actions.html#app.model.user_actions.UserActions.model_config"><code class="docutils literal notranslate"><span class="pre">UserActions.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.user_game_config.html">app.model.user_game_config module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.user_game_config.html#app.model.user_game_config.UserGameConfig"><code class="docutils literal notranslate"><span class="pre">UserGameConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_game_config.html#app.model.user_game_config.UserGameConfig.userId"><code class="docutils literal notranslate"><span class="pre">UserGameConfig.userId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_game_config.html#app.model.user_game_config.UserGameConfig.gameId"><code class="docutils literal notranslate"><span class="pre">UserGameConfig.gameId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_game_config.html#app.model.user_game_config.UserGameConfig.experimentGroup"><code class="docutils literal notranslate"><span class="pre">UserGameConfig.experimentGroup</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_game_config.html#app.model.user_game_config.UserGameConfig.configData"><code class="docutils literal notranslate"><span class="pre">UserGameConfig.configData</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_game_config.html#app.model.user_game_config.UserGameConfig.model_config"><code class="docutils literal notranslate"><span class="pre">UserGameConfig.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.user_interactions.html">app.model.user_interactions module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.user_interactions.html#app.model.user_interactions.UserInteractions"><code class="docutils literal notranslate"><span class="pre">UserInteractions</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_interactions.html#app.model.user_interactions.UserInteractions.userId"><code class="docutils literal notranslate"><span class="pre">UserInteractions.userId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_interactions.html#app.model.user_interactions.UserInteractions.taskId"><code class="docutils literal notranslate"><span class="pre">UserInteractions.taskId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_interactions.html#app.model.user_interactions.UserInteractions.interactionType"><code class="docutils literal notranslate"><span class="pre">UserInteractions.interactionType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_interactions.html#app.model.user_interactions.UserInteractions.interactionDetail"><code class="docutils literal notranslate"><span class="pre">UserInteractions.interactionDetail</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_interactions.html#app.model.user_interactions.UserInteractions.model_config"><code class="docutils literal notranslate"><span class="pre">UserInteractions.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.user_points.html">app.model.user_points module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.user_points.html#app.model.user_points.UserPoints"><code class="docutils literal notranslate"><span class="pre">UserPoints</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_points.html#app.model.user_points.UserPoints.points"><code class="docutils literal notranslate"><span class="pre">UserPoints.points</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_points.html#app.model.user_points.UserPoints.caseName"><code class="docutils literal notranslate"><span class="pre">UserPoints.caseName</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_points.html#app.model.user_points.UserPoints.data"><code class="docutils literal notranslate"><span class="pre">UserPoints.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_points.html#app.model.user_points.UserPoints.description"><code class="docutils literal notranslate"><span class="pre">UserPoints.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_points.html#app.model.user_points.UserPoints.userId"><code class="docutils literal notranslate"><span class="pre">UserPoints.userId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_points.html#app.model.user_points.UserPoints.taskId"><code class="docutils literal notranslate"><span class="pre">UserPoints.taskId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.user_points.html#app.model.user_points.UserPoints.model_config"><code class="docutils literal notranslate"><span class="pre">UserPoints.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.users.html">app.model.users module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.users.html#app.model.users.Users"><code class="docutils literal notranslate"><span class="pre">Users</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.users.html#app.model.users.Users.externalUserId"><code class="docutils literal notranslate"><span class="pre">Users.externalUserId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.users.html#app.model.users.Users.model_config"><code class="docutils literal notranslate"><span class="pre">Users.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.wallet.html">app.model.wallet module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.wallet.html#app.model.wallet.Wallet"><code class="docutils literal notranslate"><span class="pre">Wallet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet.html#app.model.wallet.Wallet.coinsBalance"><code class="docutils literal notranslate"><span class="pre">Wallet.coinsBalance</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet.html#app.model.wallet.Wallet.pointsBalance"><code class="docutils literal notranslate"><span class="pre">Wallet.pointsBalance</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet.html#app.model.wallet.Wallet.conversionRate"><code class="docutils literal notranslate"><span class="pre">Wallet.conversionRate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet.html#app.model.wallet.Wallet.userId"><code class="docutils literal notranslate"><span class="pre">Wallet.userId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet.html#app.model.wallet.Wallet.model_config"><code class="docutils literal notranslate"><span class="pre">Wallet.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app.model.wallet_transactions.html">app.model.wallet_transactions module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.model.wallet_transactions.html#app.model.wallet_transactions.WalletTransactions"><code class="docutils literal notranslate"><span class="pre">WalletTransactions</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet_transactions.html#app.model.wallet_transactions.WalletTransactions.transactionType"><code class="docutils literal notranslate"><span class="pre">WalletTransactions.transactionType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet_transactions.html#app.model.wallet_transactions.WalletTransactions.points"><code class="docutils literal notranslate"><span class="pre">WalletTransactions.points</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet_transactions.html#app.model.wallet_transactions.WalletTransactions.coins"><code class="docutils literal notranslate"><span class="pre">WalletTransactions.coins</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet_transactions.html#app.model.wallet_transactions.WalletTransactions.data"><code class="docutils literal notranslate"><span class="pre">WalletTransactions.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet_transactions.html#app.model.wallet_transactions.WalletTransactions.appliedConversionRate"><code class="docutils literal notranslate"><span class="pre">WalletTransactions.appliedConversionRate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet_transactions.html#app.model.wallet_transactions.WalletTransactions.walletId"><code class="docutils literal notranslate"><span class="pre">WalletTransactions.walletId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="app.model.wallet_transactions.html#app.model.wallet_transactions.WalletTransactions.model_config"><code class="docutils literal notranslate"><span class="pre">WalletTransactions.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="app.middlewares.valid_access_token.html" title="app.middlewares.valid_access_token module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> app.middlewares.valid_access_token module </span>
+              </div>
+            </a>
+          
+          
+            <a href="app.model.abuse_limit_counter.html" title="app.model.abuse_limit_counter module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> app.model.abuse_limit_counter module </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

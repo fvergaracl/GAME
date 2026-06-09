@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Authentication &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
+    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Integrating with GAME" href="integrating.html" />
+    <link rel="prev" title="Getting Started" href="getting-started.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#authentication" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> Authentication </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Authentication </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Authentication</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#authentication--page-root" class="md-nav__link">Authentication</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#two-credentials-one-decision" class="md-nav__link">Two credentials, one decision</a>
+        </li>
+        <li class="md-nav__item"><a href="#api-keys" class="md-nav__link">API keys</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#issuing-a-key" class="md-nav__link">Issuing a key</a>
+        </li>
+        <li class="md-nav__item"><a href="#using-a-key" class="md-nav__link">Using a key</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#oauth2-with-keycloak" class="md-nav__link">OAuth2 with Keycloak</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#getting-a-token-dev" class="md-nav__link">Getting a token (dev)</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#the-admin-role" class="md-nav__link">The admin role</a>
+        </li>
+        <li class="md-nav__item"><a href="#identity-bootstrapping" class="md-nav__link">Identity bootstrapping</a>
+        </li>
+        <li class="md-nav__item"><a href="#the-per-request-auth-context" class="md-nav__link">The per-request auth context</a>
+        </li>
+        <li class="md-nav__item"><a href="#quick-reference" class="md-nav__link">Quick reference</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/authentication.rst.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#two-credentials-one-decision" class="md-nav__link">Two credentials, one decision</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#api-keys" class="md-nav__link">API keys</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#oauth2-with-keycloak" class="md-nav__link">OAuth2 with Keycloak</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#the-admin-role" class="md-nav__link">The admin role</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#identity-bootstrapping" class="md-nav__link">Identity bootstrapping</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#the-per-request-auth-context" class="md-nav__link">The per-request auth context</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#quick-reference" class="md-nav__link">Quick reference</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="codebase.html" class="md-nav__link">Codebase Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#authentication--page-root" class="md-nav__link">Authentication</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#two-credentials-one-decision" class="md-nav__link">Two credentials, one decision</a>
+        </li>
+        <li class="md-nav__item"><a href="#api-keys" class="md-nav__link">API keys</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#issuing-a-key" class="md-nav__link">Issuing a key</a>
+        </li>
+        <li class="md-nav__item"><a href="#using-a-key" class="md-nav__link">Using a key</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#oauth2-with-keycloak" class="md-nav__link">OAuth2 with Keycloak</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#getting-a-token-dev" class="md-nav__link">Getting a token (dev)</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#the-admin-role" class="md-nav__link">The admin role</a>
+        </li>
+        <li class="md-nav__item"><a href="#identity-bootstrapping" class="md-nav__link">Identity bootstrapping</a>
+        </li>
+        <li class="md-nav__item"><a href="#the-per-request-auth-context" class="md-nav__link">The per-request auth context</a>
+        </li>
+        <li class="md-nav__item"><a href="#quick-reference" class="md-nav__link">Quick reference</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/authentication.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="authentication">
+<h1 id="authentication--page-root">Authentication<a class="headerlink" href="#authentication--page-root" title="Link to this heading">¶</a></h1>
+<div class="note admonition">
+<p class="admonition-title">Who is this page for?</p>
+<p>Integrators choosing a credential, and anyone debugging a <code class="docutils literal notranslate"><span class="pre">401</span></code>/<code class="docutils literal notranslate"><span class="pre">403</span></code>.
+The enforcement internals (scoping, rate limits, secrets) live in
+<a class="reference internal" href="security.html"><span class="doc">Security</span></a>.</p>
+</div>
+<section id="two-credentials-one-decision">
+<h2 id="two-credentials-one-decision">Two credentials, one decision<a class="headerlink" href="#two-credentials-one-decision" title="Link to this heading">¶</a></h2>
+<p>Almost every endpoint is guarded by the dependency
+<code class="docutils literal notranslate"><span class="pre">auth_api_key_or_oauth2</span></code>. It accepts <strong>either</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 20.0%"/>
+<col style="width: 30.0%"/>
+<col style="width: 50.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Credential</p></th>
+<th class="head"><p>Header</p></th>
+<th class="head"><p>Best for</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>API key</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">X-API-Key:</span> <span class="pre">&lt;key&gt;</span></code></p></td>
+<td><p>Server-to-server integration. Simple, long-lived, scoped to the data
+the key created.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>OAuth2 bearer</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Authorization:</span> <span class="pre">Bearer</span> <span class="pre">&lt;jwt&gt;</span></code></p></td>
+<td><p>Interactive users/admins via Keycloak (OIDC). Required for
+privileged and per-user operations.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The resolution order is <strong>API key first, OAuth2 second</strong>: if a valid
+<code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code> is present the request is authenticated immediately; otherwise
+the bearer token is validated. If neither is valid the request fails with
+<code class="docutils literal notranslate"><span class="pre">401</span> <span class="pre">Invalid</span> <span class="pre">authentication</span> <span class="pre">credentials</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A handful of endpoints require <strong>OAuth2 specifically</strong> and reject API keys —
+notably the per-user <em>simulation</em> endpoint
+(<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/games/{gameId}/users/{externalUserId}/points/simulated</span></code>), which is
+bound to the token’s own subject. Those endpoints use the stricter
+<code class="docutils literal notranslate"><span class="pre">auth_oauth2</span></code> dependency. The endpoint’s OpenAPI entry always states
+which it requires.</p>
+</div>
+</section>
+<section id="api-keys">
+<h2 id="api-keys">API keys<a class="headerlink" href="#api-keys" title="Link to this heading">¶</a></h2>
+<section id="issuing-a-key">
+<h3 id="issuing-a-key">Issuing a key<a class="headerlink" href="#issuing-a-key" title="Link to this heading">¶</a></h3>
+<p>Keys are minted by <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/v1/apikey/create</span></code>, which is itself
+OAuth2-protected — so you need a bearer token (and the admin role) to create
+one:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"http://localhost:8000/api/v1/apikey/create"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"client":"my-service"}'</span>
+</pre></div>
+</div>
+<p>The response contains the <code class="docutils literal notranslate"><span class="pre">apiKey</span></code> string. Store it as a secret; it is the
+bearer of all authority for that <code class="docutils literal notranslate"><span class="pre">client</span></code>.</p>
+</section>
+<section id="using-a-key">
+<h3 id="using-a-key">Using a key<a class="headerlink" href="#using-a-key" title="Link to this heading">¶</a></h3>
+<p>Send it on every request:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span><span class="s2">"http://localhost:8000/api/v1/games"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"X-API-Key: </span><span class="nv">$API_KEY</span><span class="s2">"</span>
+</pre></div>
+</div>
+<p>Properties to know:</p>
+<ul class="simple">
+<li><p>A key can be <strong>active</strong> or inactive. An inactive/unknown key yields
+<code class="docutils literal notranslate"><span class="pre">403</span> <span class="pre">API</span> <span class="pre">key</span> <span class="pre">is</span> <span class="pre">invalid</span> <span class="pre">or</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">exist</span></code>.</p></li>
+<li><p>Validation results are <strong>cached</strong> briefly (<code class="docutils literal notranslate"><span class="pre">API_KEY_HEADER_CACHE_TTL_SECONDS</span></code>,
+default 5 s) to avoid a DB hit per request. With the default in-memory cache
+each worker caches independently, so a revocation propagates on the next
+request after the TTL; set <code class="docutils literal notranslate"><span class="pre">APIKEY_CACHE_BACKEND=redis</span></code> to share the cache
+(and revocations) across workers. See <a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a>.</p></li>
+<li><p>Every write made with a key stamps <code class="docutils literal notranslate"><span class="pre">apiKey_used</span></code> on the row, which both
+builds an audit trail and <strong>scopes</strong> what that key can later read (see
+<a class="reference internal" href="security.html"><span class="doc">Security</span></a>).</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The current API has no key <em>revoke/delete</em> endpoint. Treat key issuance as
+deliberate, and prefer one key per integration/<code class="docutils literal notranslate"><span class="pre">client</span></code> so you can reason
+about blast radius.</p>
+</div>
+</section>
+</section>
+<section id="oauth2-with-keycloak">
+<h2 id="oauth2-with-keycloak">OAuth2 with Keycloak<a class="headerlink" href="#oauth2-with-keycloak" title="Link to this heading">¶</a></h2>
+<p>GAME validates <strong>RS256</strong> JWTs issued by Keycloak (OpenID Connect). The
+validation (<code class="docutils literal notranslate"><span class="pre">app/middlewares/valid_access_token.py</span></code>) is strict:</p>
+<ol class="arabic simple">
+<li><p>The signing key is fetched from the realm JWKS endpoint
+(<code class="docutils literal notranslate"><span class="pre">/realms/&lt;realm&gt;/protocol/openid-connect/certs</span></code>) via a <code class="docutils literal notranslate"><span class="pre">PyJWKClient</span></code>
+that caches keys for 300 s.</p></li>
+<li><p>The token is decoded and checked for:</p>
+<ul class="simple">
+<li><p><strong>signature</strong> (RS256, against the JWKS key),</p></li>
+<li><p><strong>issuer</strong> = <code class="docutils literal notranslate"><span class="pre">&lt;KEYCLOAK_URL&gt;/realms/&lt;KEYCLOAK_REALM&gt;</span></code>,</p></li>
+<li><p><strong>audience</strong> = <code class="docutils literal notranslate"><span class="pre">KEYCLOAK_AUDIENCE</span></code> (default <code class="docutils literal notranslate"><span class="pre">account</span></code>),</p></li>
+<li><p><strong>expiry</strong>, with 30 s of clock-skew leeway.</p></li>
+</ul>
+</li>
+<li><p>The <strong>subject</strong> is taken from <code class="docutils literal notranslate"><span class="pre">sub</span></code>, falling back through
+<code class="docutils literal notranslate"><span class="pre">preferred_username</span></code>, <code class="docutils literal notranslate"><span class="pre">email</span></code>, <code class="docutils literal notranslate"><span class="pre">client_id</span></code>, <code class="docutils literal notranslate"><span class="pre">azp</span></code> — so both user
+and service-account tokens resolve to a stable subject.</p></li>
+</ol>
+<p>Failure modes map to precise responses:</p>
+<table>
+<colgroup>
+<col style="width: 40.0%"/>
+<col style="width: 18.0%"/>
+<col style="width: 42.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Condition</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Detail</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Invalid signature</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">401</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Invalid</span> <span class="pre">token</span> <span class="pre">signature</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Expired token</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">401</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Token</span> <span class="pre">has</span> <span class="pre">expired</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Wrong audience</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">403</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Invalid</span> <span class="pre">audience</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Other malformed token</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">401</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Invalid</span> <span class="pre">token</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>JWKS fetch failure</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">500</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Internal</span> <span class="pre">server</span> <span class="pre">error</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<section id="getting-a-token-dev">
+<h3 id="getting-a-token-dev">Getting a token (dev)<a class="headerlink" href="#getting-a-token-dev" title="Link to this heading">¶</a></h3>
+<p>For local development you can use the resource-owner password grant:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">TOKEN</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">"</span><span class="nv">$KEYCLOAK_URL</span><span class="s2">/realms/</span><span class="nv">$KEYCLOAK_REALM</span><span class="s2">/protocol/openid-connect/token"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/x-www-form-urlencoded"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"client_id=</span><span class="nv">$KEYCLOAK_CLIENT_ID</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"client_secret=</span><span class="nv">$KEYCLOAK_CLIENT_SECRET</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"grant_type=password"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"username=game_admin"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"password=</span><span class="nv">$KEYCLOAK_USER_WITH_ROLE_PASSWORD</span><span class="s2">"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">'.access_token'</span><span class="k">)</span>
+</pre></div>
+</div>
+<p>Swagger UI at <code class="docutils literal notranslate"><span class="pre">/docs</span></code> is also wired for the OAuth2 authorization-code flow
+when <code class="docutils literal notranslate"><span class="pre">KEYCLOAK_CLIENT_ID</span></code>/<code class="docutils literal notranslate"><span class="pre">KEYCLOAK_CLIENT_SECRET</span></code> are configured, so you
+can authorize interactively and try endpoints in the browser.</p>
+</section>
+</section>
+<section id="the-admin-role">
+<h2 id="the-admin-role">The admin role<a class="headerlink" href="#the-admin-role" title="Link to this heading">¶</a></h2>
+<p>A bearer token carrying the realm role <strong>``AdministratorGAME``</strong> is treated as
+an <strong>admin</strong>. Admins bypass the per-key/per-subject data scoping described in
+<a class="reference internal" href="security.html"><span class="doc">Security</span></a> and can perform privileged operations (such as issuing API
+keys). Non-admin tokens are scoped to the games and users associated with
+their subject.</p>
+</section>
+<section id="identity-bootstrapping">
+<h2 id="identity-bootstrapping">Identity bootstrapping<a class="headerlink" href="#identity-bootstrapping" title="Link to this heading">¶</a></h2>
+<p>The first time a valid token is seen for a new subject, GAME creates an
+<code class="docutils literal notranslate"><span class="pre">OAuthUsers</span></code> record (<code class="docutils literal notranslate"><span class="pre">provider=keycloak</span></code>, <code class="docutils literal notranslate"><span class="pre">status=active</span></code>) and writes a
+single <code class="docutils literal notranslate"><span class="pre">auth</span> <span class="pre">/</span> <span class="pre">OAuth</span> <span class="pre">user</span> <span class="pre">bootstrapped</span></code> audit log entry. No manual user
+provisioning is required — authenticating once is enough to register the
+identity.</p>
+</section>
+<section id="the-per-request-auth-context">
+<h2 id="the-per-request-auth-context">The per-request auth context<a class="headerlink" href="#the-per-request-auth-context" title="Link to this heading">¶</a></h2>
+<p>Internally, every guarded handler receives an <code class="docutils literal notranslate"><span class="pre">AuthContext</span></code> (and an
+<code class="docutils literal notranslate"><span class="pre">AuditLogger</span></code> bound to it) carrying:</p>
+<table>
+<colgroup>
+<col style="width: 26.0%"/>
+<col style="width: 74.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api_key</span></code></p></td>
+<td><p>The validated API key string, if one was presented.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">oauth_user_id</span></code></p></td>
+<td><p>The token subject (<code class="docutils literal notranslate"><span class="pre">sub</span></code>/fallback), if a bearer token was presented.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">is_admin</span></code></p></td>
+<td><p>Whether the token carries <code class="docutils literal notranslate"><span class="pre">AdministratorGAME</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">token_data</span></code></p></td>
+<td><p>The decoded JWT claims.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Handlers pass these into services as scoping parameters
+(<code class="docutils literal notranslate"><span class="pre">api_key</span></code>, <code class="docutils literal notranslate"><span class="pre">oauth_user_id</span></code>, <code class="docutils literal notranslate"><span class="pre">is_admin</span></code>), which is how authorization is
+enforced consistently across the codebase. See <a class="reference internal" href="security.html"><span class="doc">Security</span></a> for the exact
+rules.</p>
+</section>
+<section id="quick-reference">
+<h2 id="quick-reference">Quick reference<a class="headerlink" href="#quick-reference" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 30.0%"/>
+<col style="width: 70.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>You see…</p></th>
+<th class="head"><p>It means…</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">401</span> <span class="pre">Invalid</span> <span class="pre">authentication</span> <span class="pre">credentials</span></code></p></td>
+<td><p>No valid <code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code> and no valid bearer token were presented.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">403</span> <span class="pre">API</span> <span class="pre">key</span> <span class="pre">is</span> <span class="pre">invalid</span> <span class="pre">or</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">exist</span></code></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code> was rejected (unknown/inactive).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">403</span> <span class="pre">You</span> <span class="pre">do</span> <span class="pre">not</span> <span class="pre">have</span> <span class="pre">permission</span> <span class="pre">to</span> <span class="pre">access</span> <span class="pre">this</span> <span class="pre">game</span></code></p></td>
+<td><p>Authenticated, but the credential is scoped away from that game.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">429</span></code></p></td>
+<td><p>Authenticated, but a rate limit / daily quota was exceeded
+(<a class="reference internal" href="security.html"><span class="doc">Security</span></a>).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="getting-started.html" title="Getting Started"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Getting Started </span>
+              </div>
+            </a>
+          
+          
+            <a href="integrating.html" title="Integrating with GAME"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Integrating with GAME </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

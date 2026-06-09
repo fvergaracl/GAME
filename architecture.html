@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Architecture &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
+    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Domain Model" href="domain-model.html" />
+    <link rel="prev" title="Overview" href="overview.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#architecture" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> Architecture </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Architecture </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Architecture</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#architecture--page-root" class="md-nav__link">Architecture</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#the-layered-design" class="md-nav__link">The layered design</a>
+        </li>
+        <li class="md-nav__item"><a href="#the-life-of-a-scoring-request" class="md-nav__link">The life of a scoring request</a>
+        </li>
+        <li class="md-nav__item"><a href="#the-middleware-stack-and-a-subtle-ordering-bug-it-fixes" class="md-nav__link">The middleware stack (and a subtle ordering bug it fixes)</a>
+        </li>
+        <li class="md-nav__item"><a href="#dependency-injection" class="md-nav__link">Dependency injection</a>
+        </li>
+        <li class="md-nav__item"><a href="#async-persistence-model" class="md-nav__link">Async & persistence model</a>
+        </li>
+        <li class="md-nav__item"><a href="#cross-cutting-concerns" class="md-nav__link">Cross-cutting concerns</a>
+        </li>
+        <li class="md-nav__item"><a href="#where-to-go-next" class="md-nav__link">Where to go next</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/architecture.rst.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#the-layered-design" class="md-nav__link">The layered design</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#the-life-of-a-scoring-request" class="md-nav__link">The life of a scoring request</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#the-middleware-stack-and-a-subtle-ordering-bug-it-fixes" class="md-nav__link">The middleware stack (and a subtle ordering bug it fixes)</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#dependency-injection" class="md-nav__link">Dependency injection</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#async-persistence-model" class="md-nav__link">Async & persistence model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#cross-cutting-concerns" class="md-nav__link">Cross-cutting concerns</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#where-to-go-next" class="md-nav__link">Where to go next</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="codebase.html" class="md-nav__link">Codebase Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#architecture--page-root" class="md-nav__link">Architecture</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#the-layered-design" class="md-nav__link">The layered design</a>
+        </li>
+        <li class="md-nav__item"><a href="#the-life-of-a-scoring-request" class="md-nav__link">The life of a scoring request</a>
+        </li>
+        <li class="md-nav__item"><a href="#the-middleware-stack-and-a-subtle-ordering-bug-it-fixes" class="md-nav__link">The middleware stack (and a subtle ordering bug it fixes)</a>
+        </li>
+        <li class="md-nav__item"><a href="#dependency-injection" class="md-nav__link">Dependency injection</a>
+        </li>
+        <li class="md-nav__item"><a href="#async-persistence-model" class="md-nav__link">Async & persistence model</a>
+        </li>
+        <li class="md-nav__item"><a href="#cross-cutting-concerns" class="md-nav__link">Cross-cutting concerns</a>
+        </li>
+        <li class="md-nav__item"><a href="#where-to-go-next" class="md-nav__link">Where to go next</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/architecture.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="architecture">
+<h1 id="architecture--page-root">Architecture<a class="headerlink" href="#architecture--page-root" title="Link to this heading">¶</a></h1>
+<div class="note admonition">
+<p class="admonition-title">Who is this page for?</p>
+<p>Contributors and operators who need an accurate mental model of how a
+request flows through GAME and why the layers are split the way they are.
+Integrators can skip to <a class="reference internal" href="integrating.html"><span class="doc">Integrating with GAME</span></a>.</p>
+</div>
+<section id="the-layered-design">
+<h2 id="the-layered-design">The layered design<a class="headerlink" href="#the-layered-design" title="Link to this heading">¶</a></h2>
+<p>GAME is a layered application. Each layer has exactly one responsibility and
+talks only to the layer directly beneath it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> HTTP request
+     │
+     ▼
+┌─────────────┐   FastAPI routers in app/api/v1/endpoints/*
+│  Endpoint   │   • validation (Pydantic schemas)
+│   layer     │   • authentication &amp; scoping
+└─────────────┘   • request/response shaping, audit logging
+     │
+     ▼
+┌─────────────┐   app/services/*
+│  Service    │   • business logic, transactional behavior
+│   layer     │   • orchestration across repositories
+└─────────────┘   • domain rules and invariants
+     │
+     ├───────────────► ┌───────────────┐  app/engine/*
+     │                 │ Strategy      │  • scoring strategies
+     │                 │ engine        │  • built-ins + sandboxed DSL
+     │                 └───────────────┘
+     ▼
+┌─────────────┐   app/repository/*
+│ Repository  │   • persistence abstraction
+│   layer     │   • SQLAlchemy 2.0 async queries
+└─────────────┘   • no business logic
+     │
+     ▼
+┌─────────────┐   PostgreSQL (async, via asyncpg)
+│  Database   │
+└─────────────┘
+</pre></div>
+</div>
+<p>The same boundaries appear in the directory tree:</p>
+<table>
+<colgroup>
+<col style="width: 26.0%"/>
+<col style="width: 30.0%"/>
+<col style="width: 44.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer</p></th>
+<th class="head"><p>Package</p></th>
+<th class="head"><p>Responsibility</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Endpoint</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app/api/v1/endpoints/</span></code></p></td>
+<td><p>HTTP interface: routing, request validation, authentication,
+per-request audit logging, mapping domain errors to HTTP responses.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Service</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app/services/</span></code></p></td>
+<td><p>Business logic and orchestration. The <em>only</em> place transactions and
+multi-repository workflows live.</p></td>
+</tr>
+<tr class="row-even"><td><p>Strategy engine</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app/engine/</span></code></p></td>
+<td><p>Adaptive/deterministic scoring. Pluggable strategies selected by
+<code class="docutils literal notranslate"><span class="pre">strategyId</span></code>; includes the DSL interpreter and validator.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Repository</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app/repository/</span></code></p></td>
+<td><p>Thin persistence layer over SQLAlchemy <code class="docutils literal notranslate"><span class="pre">AsyncSession</span></code>. CRUD and
+queries only — no domain decisions.</p></td>
+</tr>
+<tr class="row-even"><td><p>Model</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app/model/</span></code></p></td>
+<td><p>SQLModel/SQLAlchemy table definitions (the database schema).</p></td>
+</tr>
+<tr class="row-odd"><td><p>Schema</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app/schema/</span></code></p></td>
+<td><p>Pydantic request/response contracts (the wire format).</p></td>
+</tr>
+</tbody>
+</table>
+<p>Why this split matters:</p>
+<ul class="simple">
+<li><p><strong>Pluggable strategies</strong> — scoring logic is isolated in <code class="docutils literal notranslate"><span class="pre">app/engine</span></code> and
+selected by id, so new strategies drop in without touching endpoints or
+repositories.</p></li>
+<li><p><strong>Deterministic services</strong> — business rules live in one layer, making them
+unit-testable without HTTP or a real database.</p></li>
+<li><p><strong>Reproducible behavior</strong> — persistence is abstracted, so the same service
+logic runs against PostgreSQL in production and SQLite in tests.</p></li>
+</ul>
+</section>
+<section id="the-life-of-a-scoring-request">
+<h2 id="the-life-of-a-scoring-request">The life of a scoring request<a class="headerlink" href="#the-life-of-a-scoring-request" title="Link to this heading">¶</a></h2>
+<p>Tracing <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/v1/games/{gameId}/tasks/{externalTaskId}/points</span></code> end to
+end (see <code class="docutils literal notranslate"><span class="pre">app/api/v1/endpoints/games_points.py</span></code>):</p>
+<ol class="arabic simple">
+<li><p><strong>Middleware</strong> — the request passes through the outer middleware stack
+(CORS → unhandled-error catcher; see below) and, if metrics are enabled,
+the Prometheus instrumentator.</p></li>
+<li><p><strong>Auth dependency</strong> — <code class="docutils literal notranslate"><span class="pre">Depends(auth_api_key_or_oauth2)</span></code> resolves an
+<code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code> header <em>or</em> an OAuth2 bearer token. Failure short-circuits
+with <code class="docutils literal notranslate"><span class="pre">401</span></code>/<code class="docutils literal notranslate"><span class="pre">403</span></code> before any business logic runs.</p></li>
+<li><p><strong>Audit context</strong> — <code class="docutils literal notranslate"><span class="pre">Depends(audit_log("game"))</span></code> builds an
+<code class="docutils literal notranslate"><span class="pre">AuditLogger</span></code> bound to the authenticated principal (API key, OAuth user
+id, admin flag). Every meaningful step is logged with a correlation id.</p></li>
+<li><p><strong>Validation</strong> — the JSON body is parsed into a Pydantic schema
+(<code class="docutils literal notranslate"><span class="pre">AsignPointsToExternalUserId</span></code>); malformed input yields <code class="docutils literal notranslate"><span class="pre">422</span></code> before
+the handler body executes.</p></li>
+<li><p><strong>Abuse prevention</strong> — <code class="docutils literal notranslate"><span class="pre">AbusePreventionService</span></code> enforces per-API-key,
+per-IP, and per-user rate limits and daily quotas; over-limit yields
+<code class="docutils literal notranslate"><span class="pre">429</span></code> (see <a class="reference internal" href="security.html"><span class="doc">Security</span></a>).</p></li>
+<li><p><strong>Service</strong> — <code class="docutils literal notranslate"><span class="pre">UserPointsService.assign_points_to_user</span></code> orchestrates the
+work: resolve/lazily-create the user, load the task’s effective strategy,
+run scoring, persist <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code>, and move the wallet — within a
+transaction.</p></li>
+<li><p><strong>Strategy engine</strong> — the resolved strategy computes <code class="docutils literal notranslate"><span class="pre">points</span></code> and a
+<code class="docutils literal notranslate"><span class="pre">caseName</span></code>. For custom strategies this runs the sandboxed DSL
+interpreter (<a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a>).</p></li>
+<li><p><strong>Repository</strong> — persistence happens through repositories over an async
+session; idempotency keys prevent double-awards on retry.</p></li>
+<li><p><strong>Response</strong> — the service returns a domain object serialized by the
+response model. On any exception the endpoint maps it to a structured
+error (preserving the correlation id) and records an audit error.</p></li>
+</ol>
+</section>
+<section id="the-middleware-stack-and-a-subtle-ordering-bug-it-fixes">
+<h2 id="the-middleware-stack-and-a-subtle-ordering-bug-it-fixes">The middleware stack (and a subtle ordering bug it fixes)<a class="headerlink" href="#the-middleware-stack-and-a-subtle-ordering-bug-it-fixes" title="Link to this heading">¶</a></h2>
+<p>Middleware is registered in <code class="docutils literal notranslate"><span class="pre">app/main.py</span></code>. FastAPI’s <code class="docutils literal notranslate"><span class="pre">add_middleware</span></code>
+<em>prepends</em>, so the <strong>last</strong> registered middleware is the <strong>outermost</strong>. GAME
+relies on this on purpose:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">add_middleware</span><span class="p">(</span><span class="n">CatchUnhandledErrorsMiddleware</span><span class="p">)</span>   <span class="c1"># registered first</span>
+<span class="n">add_middleware</span><span class="p">(</span><span class="n">CORSMiddleware</span><span class="p">)</span>                   <span class="c1"># registered second → outermost</span>
+</pre></div>
+</div>
+<p>The CORS layer must wrap the error-catcher so that when an unhandled
+exception is rendered as a <code class="docutils literal notranslate"><span class="pre">500</span></code> <em>from inside</em> the stack, the response
+still passes back through CORS and receives its <code class="docutils literal notranslate"><span class="pre">Access-Control-Allow-*</span></code>
+headers. Without this ordering the browser blocks the error response and the
+dashboard shows a bare <em>“Network Error”</em> with no clue that the real cause was
+a backend <code class="docutils literal notranslate"><span class="pre">500</span></code>.</p>
+<div class="tip admonition">
+<p class="admonition-title">Operator tip</p>
+<p>A dashboard “Network Error” with no HTTP status almost always means a
+backend <code class="docutils literal notranslate"><span class="pre">500</span></code> whose body the browser dropped. Check the API logs
+(<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">logs</span> <span class="pre">GAME_API_DEV</span></code>) for the real traceback rather than trusting
+the browser message.</p>
+</div>
+</section>
+<section id="dependency-injection">
+<h2 id="dependency-injection">Dependency injection<a class="headerlink" href="#dependency-injection" title="Link to this heading">¶</a></h2>
+<p>Wiring is centralized in a single <a class="reference external" href="https://python-dependency-injector.ets-labs.org/">dependency-injector</a> container,
+<code class="docutils literal notranslate"><span class="pre">app/core/container.py</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">db</span></code> is a <strong>Singleton</strong> — one async engine/connection pool per process.</p></li>
+<li><p>Repositories and services are <strong>Factories</strong> — a fresh instance per
+resolution, each handed the dependencies it declares.</p></li>
+<li><p>A few components are deliberately <strong>Singletons</strong> because they carry
+process-wide state: the DSL execution-log observer (its sampling RNG and
+background queue), the API-key cache backend, and the rate-limit counter
+backend.</p></li>
+</ul>
+<p>Endpoints never construct services directly. They declare what they need with
+<code class="docutils literal notranslate"><span class="pre">Depends(Provide[Container.&lt;provider&gt;])</span></code> and the container supplies a fully
+wired instance. The <code class="docutils literal notranslate"><span class="pre">wiring_config</span></code> in the container lists exactly which
+endpoint modules participate in injection.</p>
+<p>This is what makes the layers swappable: tests override providers (for
+example pointing <code class="docutils literal notranslate"><span class="pre">db</span></code> at SQLite) without changing a line of endpoint or
+service code.</p>
+</section>
+<section id="async-persistence-model">
+<h2 id="async-persistence-model">Async &amp; persistence model<a class="headerlink" href="#async-persistence-model" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The application is <strong>async end to end</strong> — FastAPI handlers, services, and
+repositories are coroutines; persistence uses SQLAlchemy 2.0’s
+<code class="docutils literal notranslate"><span class="pre">AsyncSession</span></code> over <code class="docutils literal notranslate"><span class="pre">asyncpg</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BaseRepository</span></code> (<code class="docutils literal notranslate"><span class="pre">app/repository/base_repository.py</span></code>) provides the
+common CRUD vocabulary — <code class="docutils literal notranslate"><span class="pre">read_by_id</span></code>, <code class="docutils literal notranslate"><span class="pre">read_by_options</span></code> (paginated +
+filtered + ordered), <code class="docutils literal notranslate"><span class="pre">read_by_column(s)</span></code>, <code class="docutils literal notranslate"><span class="pre">create</span></code>, <code class="docutils literal notranslate"><span class="pre">update</span></code>,
+<code class="docutils literal notranslate"><span class="pre">whole_update</span></code>, <code class="docutils literal notranslate"><span class="pre">delete_by_id</span></code> — each opening a session from the
+injected <code class="docutils literal notranslate"><span class="pre">session_factory</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">create</span></code> supports an <strong>externally managed session</strong> (<code class="docutils literal notranslate"><span class="pre">auto_commit=False</span></code>)
+so a service can compose several writes into one transaction; the default
+path commits per call.</p></li>
+<li><p>Connection pooling is configured on the singleton engine (pool size,
+overflow, pre-ping, recycle) and tuned via environment variables — see
+<a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a>.</p></li>
+</ul>
+<p>Because the app holds no per-request server state beyond the database, it is
+<strong>stateless and horizontally scalable</strong>: run N replicas behind a load
+balancer and let PostgreSQL (and optionally Redis) be the shared state.</p>
+</section>
+<section id="cross-cutting-concerns">
+<h2 id="cross-cutting-concerns">Cross-cutting concerns<a class="headerlink" href="#cross-cutting-concerns" title="Link to this heading">¶</a></h2>
+<p>These are not layers but slices that cut across the stack; each has its own
+page:</p>
+<ul class="simple">
+<li><p><strong>Authentication &amp; authorization</strong> → <a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a>, <a class="reference internal" href="security.html"><span class="doc">Security</span></a></p></li>
+<li><p><strong>Rate limiting &amp; abuse prevention</strong> → <a class="reference internal" href="security.html"><span class="doc">Security</span></a></p></li>
+<li><p><strong>Observability</strong> (metrics, logs, Sentry, execution traces) →
+<a class="reference internal" href="observability.html"><span class="doc">Observability</span></a></p></li>
+<li><p><strong>Configuration</strong> (every environment variable) → <a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a></p></li>
+</ul>
+</section>
+<section id="where-to-go-next">
+<h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="domain-model.html"><span class="doc">Domain Model</span></a> — the entities these layers move around.</p></li>
+<li><p><a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a> — the strategy engine in depth.</p></li>
+<li><p><a class="reference internal" href="codebase.html"><span class="doc">Codebase Reference</span></a> — the auto-generated API reference for every module.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="overview.html" title="Overview"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Overview </span>
+              </div>
+            </a>
+          
+          
+            <a href="domain-model.html" title="Domain Model"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Domain Model </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

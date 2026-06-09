@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>app.engine.greencrowdStrategy module &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
+    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="app.engine.greengageStrategy module" href="app.engine.greengageStrategy.html" />
+    <link rel="prev" title="app.engine.getis_ord_gi_star module" href="app.engine.getis_ord_gi_star.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#api/app.engine.greencrowdStrategy" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> app.engine.greencrowdStrategy module </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../codebase.html" class="md-tabs__link">Codebase Reference</a></li>
+          <li class="md-tabs__item"><a href="app.html" class="md-tabs__link">app package</a></li>
+          <li class="md-tabs__item"><a href="app.engine.html" class="md-tabs__link">app.engine package</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html" class="md-nav__link">Codebase Reference</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html#how-to-read-it" class="md-nav__link">How to read it</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../codebase.html#full-module-index" class="md-nav__link">Full module index</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#api-app-engine-greencrowdstrategy--page-root" class="md-nav__link">app.engine.greencrowdStrategy module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.get_random_values_from_tasks" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_random_values_from_tasks()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.get_average_values_from_tasks" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_average_values_from_tasks()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.get_dynamic_values_from_tasks" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_dynamic_values_from_tasks()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENCROWDGamificationStrategy</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.generate_logic_graph" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENCROWDGamificationStrategy.generate_logic_graph()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.generate_hash" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENCROWDGamificationStrategy.generate_hash()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.simulate_strategy" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENCROWDGamificationStrategy.simulate_strategy()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.checkISExpired" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENCROWDGamificationStrategy.checkISExpired()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.calculate_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENCROWDGamificationStrategy.calculate_points()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/api/app.engine.greencrowdStrategy.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="module-app.engine.greencrowdStrategy">
+<span id="app-engine-greencrowdstrategy-module"></span><h1 id="api-app-engine-greencrowdstrategy--page-root">app.engine.greencrowdStrategy module<a class="headerlink" href="#api-app-engine-greencrowdstrategy--page-root" title="Link to this heading">¶</a></h1>
+<p># noqa
+<a class="reference external" href="https://dreampuf.github.io/GraphvizOnline/?engine=dot#digraph%20G%7B%0A%20%20%20%20rankdir%3DTB%3B%0A%20%20%20%20node%20%5Bshape%3Dbox%2C%20style%3Dfilled%2C%20fillcolor%3Dlightgray%5D%3B%0A%20%20%20%20edge%20%5Bfontsize%3D10%5D%3B%0A%20%20%20%20%0A%20%20%20%20leyend%5Blabel%3D%22BP%3A%20Base%20Points%20%5Cn%20DIM_BP%3A%20Base%20Points%20Reward%20%5Cn%20DIM_LBE%3A%20Location-Based%20Equity%20%5Cn%20DIM_TD%3A%20Time%20Diversity%20%5Cn%20DIM_PP%3A%20Personal%20Performance%20%5Cn%20DIM_S%3A%20Streak%20Bonus%22%2C%20fillcolor%3Dyellowgreen%5D%0A%20%20%20%20%0A%20%20%20%20start%20%5Blabel%3D%22Start%22%2C%20shape%3Dellipse%2C%20fillcolor%3Dlightgray%5D%3B%0A%20%20%20%20taskCompleted%20%5Blabel%3D%22Task%20Completed%3F%22%2C%20shape%3Ddiamond%2C%20fillcolor%3Dlightblue%5D%3B%0A%20%20%20%20assignBP%20%5Blabel%3D%22Assign%20BP%20(DIM_BP)%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20checkLBE%20%5Blabel%3D%22Evaluate%20DIM_LBE%5Cn(Geolocation%20Equity)%22%2C%20shape%3Ddiamond%2C%20fillcolor%3Dlightblue%5D%3B%0A%20%20%20%20assignLBE%20%5Blabel%3D%22Assign%20BP%20*%200.5%20(if%20POI%20%3C%20Avg)%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20checkTD%20%5Blabel%3D%22Evaluate%20DIM_TD%5Cn(Time%20Diversity)%22%2C%20shape%3Ddiamond%2C%20fillcolor%3Dlightblue%5D%3B%0A%20%20%20%20assignTD%20%5Blabel%3D%22Assign%20BP%20*%20Coe_time%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20checkPP%20%5Blabel%3D%22Evaluate%20DIM_PP%5Cn(Personal%20Performance)%22%2C%20shape%3Ddiamond%2C%20fillcolor%3Dlightblue%5D%3B%0A%20%20%20%20assignPP%20%5Blabel%3D%22Assign%20BP%20*%20(AVG_Time_Window%20-%20Last_Time_Window)%20%2F%20AVG_Time_Window%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20checkStreak%20%5Blabel%3D%22Evaluate%20DIM_S%5Cn(Consistency)%22%2C%20shape%3Ddiamond%2C%20fillcolor%3Dlightblue%5D%3B%0A%20%20%20%20assignStreak%20%5Blabel%3D%22Assign%20BP%20*%20(2%5EDays_Consecutive%20%2F%207)%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20totalPoints%20%5Blabel%3D%22Total%20Reward%20Calculation%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20start%20-%3E%20taskCompleted%3B%0A%20%20%20%20taskCompleted%20-%3E%20assignBP%20%5Blabel%3D%22Yes%22%5D%3B%0A%20%20%20%20taskCompleted%20-%3E%20totalPoints%20%5Blabel%3D%22No%22%2C%20style%3Ddashed%5D%3B%0A%20%20%20%20%0A%20%20%20%20assignBP%20-%3E%20checkLBE%3B%0A%20%20%20%20checkLBE%20-%3E%20assignLBE%20%5Blabel%3D%22POI%20%3C%20Avg%22%5D%3B%0A%20%20%20%20checkLBE%20-%3E%20checkTD%20%5Blabel%3D%22POI%20%3E%3D%20Avg%22%5D%3B%0A%20%20%20%20assignLBE%20-%3E%20checkTD%3B%0A%20%20%20%20%0A%20%20%20%20checkTD%20-%3E%20assignTD%20%5Blabel%3D%22Valid%20Time%20Slot%22%5D%3B%0A%20%20%20%20checkTD%20-%3E%20checkPP%20%5Blabel%3D%22Invalid%20Time%20Slot%22%5D%3B%0A%20%20%20%20assignTD%20-%3E%20checkPP%3B%0A%20%20%20%20%0A%20%20%20%20checkPP%20-%3E%20assignPP%20%5Blabel%3D%22Improved%20Response%20Time%22%5D%3B%0A%20%20%20%20checkPP%20-%3E%20checkStreak%20%5Blabel%3D%22No%20Improvement%22%5D%3B%0A%20%20%20%20assignPP%20-%3E%20checkStreak%3B%0A%20%20%20%20%0A%20%20%20%20checkStreak%20-%3E%20assignStreak%20%5Blabel%3D%22Maintained%20Streak%22%5D%3B%0A%20%20%20%20checkStreak%20-%3E%20totalPoints%20%5Blabel%3D%22No%20Streak%22%5D%3B%0A%20%20%20%20assignStreak%20-%3E%20totalPoints%3B%0A%7D">https://dreampuf.github.io/GraphvizOnline/?engine=dot#digraph%20G%7B%0A%20%20%20%20rankdir%3DTB%3B%0A%20%20%20%20node%20%5Bshape%3Dbox%2C%20style%3Dfilled%2C%20fillcolor%3Dlightgray%5D%3B%0A%20%20%20%20edge%20%5Bfontsize%3D10%5D%3B%0A%20%20%20%20%0A%20%20%20%20leyend%5Blabel%3D%22BP%3A%20Base%20Points%20%5Cn%20DIM_BP%3A%20Base%20Points%20Reward%20%5Cn%20DIM_LBE%3A%20Location-Based%20Equity%20%5Cn%20DIM_TD%3A%20Time%20Diversity%20%5Cn%20DIM_PP%3A%20Personal%20Performance%20%5Cn%20DIM_S%3A%20Streak%20Bonus%22%2C%20fillcolor%3Dyellowgreen%5D%0A%20%20%20%20%0A%20%20%20%20start%20%5Blabel%3D%22Start%22%2C%20shape%3Dellipse%2C%20fillcolor%3Dlightgray%5D%3B%0A%20%20%20%20taskCompleted%20%5Blabel%3D%22Task%20Completed%3F%22%2C%20shape%3Ddiamond%2C%20fillcolor%3Dlightblue%5D%3B%0A%20%20%20%20assignBP%20%5Blabel%3D%22Assign%20BP%20(DIM_BP)%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20checkLBE%20%5Blabel%3D%22Evaluate%20DIM_LBE%5Cn(Geolocation%20Equity)%22%2C%20shape%3Ddiamond%2C%20fillcolor%3Dlightblue%5D%3B%0A%20%20%20%20assignLBE%20%5Blabel%3D%22Assign%20BP%20*%200.5%20(if%20POI%20%3C%20Avg)%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20checkTD%20%5Blabel%3D%22Evaluate%20DIM_TD%5Cn(Time%20Diversity)%22%2C%20shape%3Ddiamond%2C%20fillcolor%3Dlightblue%5D%3B%0A%20%20%20%20assignTD%20%5Blabel%3D%22Assign%20BP%20*%20Coe_time%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20checkPP%20%5Blabel%3D%22Evaluate%20DIM_PP%5Cn(Personal%20Performance)%22%2C%20shape%3Ddiamond%2C%20fillcolor%3Dlightblue%5D%3B%0A%20%20%20%20assignPP%20%5Blabel%3D%22Assign%20BP%20*%20(AVG_Time_Window%20-%20Last_Time_Window)%20%2F%20AVG_Time_Window%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20checkStreak%20%5Blabel%3D%22Evaluate%20DIM_S%5Cn(Consistency)%22%2C%20shape%3Ddiamond%2C%20fillcolor%3Dlightblue%5D%3B%0A%20%20%20%20assignStreak%20%5Blabel%3D%22Assign%20BP%20*%20(2%5EDays_Consecutive%20%2F%207)%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20totalPoints%20%5Blabel%3D%22Total%20Reward%20Calculation%22%2C%20shape%3Dparallelogram%2C%20fillcolor%3Dlightyellow%5D%3B%0A%20%20%20%20%0A%20%20%20%20start%20-%3E%20taskCompleted%3B%0A%20%20%20%20taskCompleted%20-%3E%20assignBP%20%5Blabel%3D%22Yes%22%5D%3B%0A%20%20%20%20taskCompleted%20-%3E%20totalPoints%20%5Blabel%3D%22No%22%2C%20style%3Ddashed%5D%3B%0A%20%20%20%20%0A%20%20%20%20assignBP%20-%3E%20checkLBE%3B%0A%20%20%20%20checkLBE%20-%3E%20assignLBE%20%5Blabel%3D%22POI%20%3C%20Avg%22%5D%3B%0A%20%20%20%20checkLBE%20-%3E%20checkTD%20%5Blabel%3D%22POI%20%3E%3D%20Avg%22%5D%3B%0A%20%20%20%20assignLBE%20-%3E%20checkTD%3B%0A%20%20%20%20%0A%20%20%20%20checkTD%20-%3E%20assignTD%20%5Blabel%3D%22Valid%20Time%20Slot%22%5D%3B%0A%20%20%20%20checkTD%20-%3E%20checkPP%20%5Blabel%3D%22Invalid%20Time%20Slot%22%5D%3B%0A%20%20%20%20assignTD%20-%3E%20checkPP%3B%0A%20%20%20%20%0A%20%20%20%20checkPP%20-%3E%20assignPP%20%5Blabel%3D%22Improved%20Response%20Time%22%5D%3B%0A%20%20%20%20checkPP%20-%3E%20checkStreak%20%5Blabel%3D%22No%20Improvement%22%5D%3B%0A%20%20%20%20assignPP%20-%3E%20checkStreak%3B%0A%20%20%20%20%0A%20%20%20%20checkStreak%20-%3E%20assignStreak%20%5Blabel%3D%22Maintained%20Streak%22%5D%3B%0A%20%20%20%20checkStreak%20-%3E%20totalPoints%20%5Blabel%3D%22No%20Streak%22%5D%3B%0A%20%20%20%20assignStreak%20-%3E%20totalPoints%3B%0A%7D</a></p>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.greencrowdStrategy.get_random_values_from_tasks">
+<span class="sig-prename descclassname"><span class="pre">app.engine.greencrowdStrategy.</span></span><span class="sig-name descname"><span class="pre">get_random_values_from_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_records</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#get_random_values_from_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.get_random_values_from_tasks" title="Link to this definition">¶</a></dt>
+<dd><p>Extracts all dimensions from the tasks and generates random values
+within the range of the minimum and maximum values found in the tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>all_records</strong> (<em>list</em>) – A list of all tasks.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict</em> – A dictionary containing random values for each dimension.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.greencrowdStrategy.get_average_values_from_tasks">
+<span class="sig-prename descclassname"><span class="pre">app.engine.greencrowdStrategy.</span></span><span class="sig-name descname"><span class="pre">get_average_values_from_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_records</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#get_average_values_from_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.get_average_values_from_tasks" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the average integer value of each dimension across tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task</strong> – The current task (unused placeholder kept for signature
+compatibility).</p></li>
+<li><p><strong>all_records</strong> (<em>list</em>) – All task records to average over.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict</em> – Average integer value for each dimension.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.greencrowdStrategy.get_dynamic_values_from_tasks">
+<span class="sig-prename descclassname"><span class="pre">app.engine.greencrowdStrategy.</span></span><span class="sig-name descname"><span class="pre">get_dynamic_values_from_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_ids_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_records</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_basic_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_lbe_multiplier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#get_dynamic_values_from_tasks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.get_dynamic_values_from_tasks" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates dynamic values based on user participation in tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task</strong> (<em>object</em>) – The task object.</p></li>
+<li><p><strong>list_ids_tasks</strong> (<em>list</em>) – A list of task IDs with externalTaskId references.</p></li>
+<li><p><strong>all_records</strong> (<em>list</em>) – A list of all task participation records.</p></li>
+<li><p><strong>user</strong> (<em>object</em>) – The user object participating in tasks.</p></li>
+<li><p><strong>variable_basic_points</strong> (<em>int</em>) – The base points per participation.</p></li>
+<li><p><strong>variable_lbe_multiplier</strong> (<em>float</em>) – The location-based equity multiplier.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>dict</em> –</p>
+<dl class="simple">
+<dt>A dictionary containing calculated values for each dimension:</dt><dd><ul class="simple">
+<li><p>”DIM_BP”: Base points adjusted for task uniqueness.</p></li>
+<li><p>”DIM_LBE”: Points adjusted for location-based equity.</p></li>
+<li><p>”DIM_TD”: Points based on temporal distribution of participation.</p></li>
+<li><p>”DIM_PP”: Points adjusted for participation periodicity.</p></li>
+<li><p>”DIM_S”: Streak-based points for continuous participation.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.engine.greencrowdStrategy.</span></span><span class="sig-name descname"><span class="pre">GREENCROWDGamificationStrategy</span></span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#GREENCROWDGamificationStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="app.engine.base_strategy.html#app.engine.base_strategy.BaseStrategy" title="app.engine.base_strategy.BaseStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseStrategy</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.generate_logic_graph">
+<span class="sig-name descname"><span class="pre">generate_logic_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'png'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#GREENCROWDGamificationStrategy.generate_logic_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.generate_logic_graph" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a logic graph for the strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>str</em> – The logic graph as a string.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.generate_hash">
+<span class="sig-name descname"><span class="pre">generate_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#GREENCROWDGamificationStrategy.generate_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.generate_hash" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a hash for the response to ensure integrity.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.simulate_strategy">
+<span class="sig-name descname"><span class="pre">simulate_strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_to_simulate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">userGroup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dynamic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_last_task</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#GREENCROWDGamificationStrategy.simulate_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.simulate_strategy" title="Link to this definition">¶</a></dt>
+<dd><p>Estimate the points a user would receive, without assigning them.</p>
+<p>Five dimensions contribute to the score:</p>
+<ul class="simple">
+<li><p>Task Diversity Base Points (<code class="docutils literal notranslate"><span class="pre">DIM_BP</span></code>)</p></li>
+<li><p>Location-Based Equity (<code class="docutils literal notranslate"><span class="pre">DIM_LBE</span></code>)</p></li>
+<li><p>Time Diversity (<code class="docutils literal notranslate"><span class="pre">DIM_TD</span></code>)</p></li>
+<li><p>Personal Performance (<code class="docutils literal notranslate"><span class="pre">DIM_PP</span></code>)</p></li>
+<li><p>Streak Bonus (<code class="docutils literal notranslate"><span class="pre">DIM_S</span></code>)</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_to_simulate</strong> (<em>dict</em><em>, </em><em>optional</em>) – Data for the simulation, with
+the structure shown below.</p></li>
+<li><p><strong>userGroup</strong> (<em>str</em>) – The user group to simulate for; one of
+<code class="docutils literal notranslate"><span class="pre">random_range</span></code>, <code class="docutils literal notranslate"><span class="pre">average_score</span></code>, <code class="docutils literal notranslate"><span class="pre">dynamic_calculation</span></code>.</p></li>
+<li><p><strong>user_last_task</strong> (<em>dict</em><em>, </em><em>optional</em>) – The user’s last task.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The <code class="docutils literal notranslate"><span class="pre">data_to_simulate</span></code> payload is structured as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">"task"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>            <span class="c1"># single task object</span>
+    <span class="s2">"allTasks"</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>        <span class="c1"># all tasks</span>
+    <span class="s2">"externalUserId"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>   <span class="c1"># the user the simulation is run for</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><em>list</em> –</p>
+<p>One result dict per task, each structured as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">"externalUserId"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="s2">"dimensions"</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>           <span class="c1"># points per dimension</span>
+    <span class="s2">"totalSimulatedPoints"</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># total estimated points</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>data_to_simulate</strong> (<em>dict</em>)</p></li>
+<li><p><strong>userGroup</strong> (<em>str</em>)</p></li>
+<li><p><strong>user_last_task</strong> (<em>dict</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.checkISExpired">
+<span class="sig-name descname"><span class="pre">checkISExpired</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expiration_date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#GREENCROWDGamificationStrategy.checkISExpired"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.checkISExpired" title="Link to this definition">¶</a></dt>
+<dd><p>Check if the expiration date has passed.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.calculate_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#GREENCROWDGamificationStrategy.calculate_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.calculate_points" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the points for the GREENCROWD gamification strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalGameId</strong> (<em>str</em>) – The external game id.</p></li>
+<li><p><strong>externalTaskId</strong> (<em>str</em>) – The external task id.</p></li>
+<li><p><strong>externalUserId</strong> (<em>str</em>) – The external user id.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The dimensions used for the calculation, with the
+shape shown below.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The <code class="docutils literal notranslate"><span class="pre">data</span></code> payload is structured as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">"experimentGroup"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="s2">"simulationHash"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="s2">"dimensions"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">"DIM_BP"</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="s2">"DIM_LBE"</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="s2">"DIM_TD"</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+         <span class="s2">"DIM_PP"</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="s2">"DIM_S"</span><span class="p">:</span> <span class="nb">int</span><span class="p">},</span>
+        <span class="o">...</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+</dd></dl>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="app.engine.getis_ord_gi_star.html" title="app.engine.getis_ord_gi_star module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> app.engine.getis_ord_gi_star module </span>
+              </div>
+            </a>
+          
+          
+            <a href="app.engine.greengageStrategy.html" title="app.engine.greengageStrategy module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> app.engine.greengageStrategy module </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

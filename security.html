@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Security &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
+    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Observability" href="observability.html" />
+    <link rel="prev" title="The DSL Strategy Engine" href="dsl-engine.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#security" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> Security </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Security </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Security</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#security--page-root" class="md-nav__link">Security</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#threat-model-in-one-paragraph" class="md-nav__link">Threat model in one paragraph</a>
+        </li>
+        <li class="md-nav__item"><a href="#authentication" class="md-nav__link">Authentication</a>
+        </li>
+        <li class="md-nav__item"><a href="#authorization-data-scoping" class="md-nav__link">Authorization & data scoping</a>
+        </li>
+        <li class="md-nav__item"><a href="#abuse-prevention-rate-limiting" class="md-nav__link">Abuse prevention & rate limiting</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#counter-backend" class="md-nav__link">Counter backend</a>
+        </li>
+        <li class="md-nav__item"><a href="#trusted-proxies-don-t-let-clients-forge-their-ip" class="md-nav__link">Trusted proxies (don’t let clients forge their IP)</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#cors" class="md-nav__link">CORS</a>
+        </li>
+        <li class="md-nav__item"><a href="#secrets-fail-fast-configuration" class="md-nav__link">Secrets & fail-fast configuration</a>
+        </li>
+        <li class="md-nav__item"><a href="#strategy-sandbox" class="md-nav__link">Strategy sandbox</a>
+        </li>
+        <li class="md-nav__item"><a href="#auditability" class="md-nav__link">Auditability</a>
+        </li>
+        <li class="md-nav__item"><a href="#hardening-checklist" class="md-nav__link">Hardening checklist</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/security.rst.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#threat-model-in-one-paragraph" class="md-nav__link">Threat model in one paragraph</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#authentication" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#authorization-data-scoping" class="md-nav__link">Authorization & data scoping</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#abuse-prevention-rate-limiting" class="md-nav__link">Abuse prevention & rate limiting</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#cors" class="md-nav__link">CORS</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#secrets-fail-fast-configuration" class="md-nav__link">Secrets & fail-fast configuration</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#strategy-sandbox" class="md-nav__link">Strategy sandbox</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#auditability" class="md-nav__link">Auditability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#hardening-checklist" class="md-nav__link">Hardening checklist</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="configuration.html" class="md-nav__link">Configuration Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="codebase.html" class="md-nav__link">Codebase Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#security--page-root" class="md-nav__link">Security</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#threat-model-in-one-paragraph" class="md-nav__link">Threat model in one paragraph</a>
+        </li>
+        <li class="md-nav__item"><a href="#authentication" class="md-nav__link">Authentication</a>
+        </li>
+        <li class="md-nav__item"><a href="#authorization-data-scoping" class="md-nav__link">Authorization & data scoping</a>
+        </li>
+        <li class="md-nav__item"><a href="#abuse-prevention-rate-limiting" class="md-nav__link">Abuse prevention & rate limiting</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#counter-backend" class="md-nav__link">Counter backend</a>
+        </li>
+        <li class="md-nav__item"><a href="#trusted-proxies-don-t-let-clients-forge-their-ip" class="md-nav__link">Trusted proxies (don’t let clients forge their IP)</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#cors" class="md-nav__link">CORS</a>
+        </li>
+        <li class="md-nav__item"><a href="#secrets-fail-fast-configuration" class="md-nav__link">Secrets & fail-fast configuration</a>
+        </li>
+        <li class="md-nav__item"><a href="#strategy-sandbox" class="md-nav__link">Strategy sandbox</a>
+        </li>
+        <li class="md-nav__item"><a href="#auditability" class="md-nav__link">Auditability</a>
+        </li>
+        <li class="md-nav__item"><a href="#hardening-checklist" class="md-nav__link">Hardening checklist</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/security.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="security">
+<h1 id="security--page-root">Security<a class="headerlink" href="#security--page-root" title="Link to this heading">¶</a></h1>
+<div class="note admonition">
+<p class="admonition-title">Who is this page for?</p>
+<p>Operators and security reviewers. It collects every enforcement boundary in
+one place. Credential <em>usage</em> is in <a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a>; the scoring
+sandbox is in <a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a>.</p>
+</div>
+<section id="threat-model-in-one-paragraph">
+<h2 id="threat-model-in-one-paragraph">Threat model in one paragraph<a class="headerlink" href="#threat-model-in-one-paragraph" title="Link to this heading">¶</a></h2>
+<p>GAME is a multi-tenant scoring backend reachable by many API keys and OAuth
+identities. The properties it defends: (a) one tenant cannot read or mutate
+another’s data; (b) a flood of requests cannot exhaust the service or skew
+scoring; (c) user-supplied strategies cannot execute arbitrary code or run
+away with resources; and (d) a misconfiguration cannot silently downgrade
+these guarantees in production.</p>
+</section>
+<section id="authentication">
+<h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Link to this heading">¶</a></h2>
+<p>Two credentials, resolved API-key-first then OAuth2, validated strictly
+(RS256 JWTs with issuer/audience/expiry checks). The full mechanism, failure
+codes, and the <code class="docutils literal notranslate"><span class="pre">AdministratorGAME</span></code> admin role are documented in
+<a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a>.</p>
+</section>
+<section id="authorization-data-scoping">
+<h2 id="authorization-data-scoping">Authorization &amp; data scoping<a class="headerlink" href="#authorization-data-scoping" title="Link to this heading">¶</a></h2>
+<p>Authentication answers <em>who</em>; authorization answers <em>what they may touch</em>.
+Scoping is enforced in the <strong>service layer</strong> (<code class="docutils literal notranslate"><span class="pre">app/services/game_access.py</span></code>)
+using the <code class="docutils literal notranslate"><span class="pre">AuthContext</span></code> carried from the endpoint, so every code path goes
+through the same rules:</p>
+<table>
+<colgroup>
+<col style="width: 26.0%"/>
+<col style="width: 74.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Principal</p></th>
+<th class="head"><p>Visibility</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Admin</strong> (<code class="docutils literal notranslate"><span class="pre">AdministratorGAME</span></code>)</p></td>
+<td><p>Every game and every user. Bypasses scoping.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>API key</strong></p></td>
+<td><p>Scoped to rows whose <code class="docutils literal notranslate"><span class="pre">apiKey_used</span></code> matches the key — i.e. the data
+<em>that key created</em>. A key cannot read another key’s games/users.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>OAuth non-admin</strong></p></td>
+<td><p>Scoped to games whose <code class="docutils literal notranslate"><span class="pre">oauth_user_id</span></code> matches the token subject;
+per-user data is gated at the game level.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The enforcement helpers raise precise errors:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_authorized_game</span></code> → <code class="docutils literal notranslate"><span class="pre">404</span> <span class="pre">Game</span> <span class="pre">not</span> <span class="pre">found</span></code> if it doesn’t exist,
+<code class="docutils literal notranslate"><span class="pre">403</span> <span class="pre">You</span> <span class="pre">do</span> <span class="pre">not</span> <span class="pre">have</span> <span class="pre">permission</span> <span class="pre">to</span> <span class="pre">access</span> <span class="pre">this</span> <span class="pre">game</span></code> if it exists but is
+out of scope.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_authorized_user</span></code> → analogous, for user-addressed endpoints.</p></li>
+</ul>
+<p>Because the check lives below the HTTP layer, adding a new endpoint that
+forgets to scope is a <em>visible</em> omission — the service method it calls demands
+the scoping kwargs.</p>
+</section>
+<section id="abuse-prevention-rate-limiting">
+<h2 id="abuse-prevention-rate-limiting">Abuse prevention &amp; rate limiting<a class="headerlink" href="#abuse-prevention-rate-limiting" title="Link to this heading">¶</a></h2>
+<p>Sensitive write endpoints (point assignment, action recording) pass through
+<code class="docutils literal notranslate"><span class="pre">AbusePreventionService</span></code> before doing work. It enforces, per request:</p>
+<table>
+<colgroup>
+<col style="width: 44.0%"/>
+<col style="width: 18.0%"/>
+<col style="width: 38.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Limit</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Env var</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Short-window requests per API key</p></td>
+<td><p>120 / 60 s</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_RATE_LIMIT_PER_API_KEY</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Short-window requests per IP</p></td>
+<td><p>240 / 60 s</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_RATE_LIMIT_PER_IP</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Short-window requests per external user</p></td>
+<td><p>60 / 60 s</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_RATE_LIMIT_PER_EXTERNAL_USER</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Daily quota per API key</p></td>
+<td><p>10 000 / day</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_DAILY_QUOTA_PER_API_KEY</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Window length</p></td>
+<td><p>60 s</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_RATE_LIMIT_WINDOW_SECONDS</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Over-limit requests get <code class="docutils literal notranslate"><span class="pre">429</span></code> with a descriptive detail. The whole subsystem
+can be turned off with <code class="docutils literal notranslate"><span class="pre">ABUSE_PREVENTION_ENABLED=false</span></code> (not recommended in
+production).</p>
+<section id="counter-backend">
+<h3 id="counter-backend">Counter backend<a class="headerlink" href="#counter-backend" title="Link to this heading">¶</a></h3>
+<p>The counter store is pluggable via <code class="docutils literal notranslate"><span class="pre">ABUSE_PREVENTION_BACKEND</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">database</span></code> (default) — increments a row in <code class="docutils literal notranslate"><span class="pre">AbuseLimitCounter</span></code>. Simple,
+but a hot row under load.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">redis</span></code> — atomic <code class="docutils literal notranslate"><span class="pre">INCR</span></code> + <code class="docutils literal notranslate"><span class="pre">EXPIRE</span></code> against <code class="docutils literal notranslate"><span class="pre">REDIS_URL</span></code> (~50 µs vs.
+~5 ms for the Postgres UPDATE, and naturally shared across instances).
+Recommended for multi-replica deployments.</p></li>
+</ul>
+</section>
+<section id="trusted-proxies-don-t-let-clients-forge-their-ip">
+<h3 id="trusted-proxies-don-t-let-clients-forge-their-ip">Trusted proxies (don’t let clients forge their IP)<a class="headerlink" href="#trusted-proxies-don-t-let-clients-forge-their-ip" title="Link to this heading">¶</a></h3>
+<p>Per-IP limits are only meaningful if the client IP can be trusted. When GAME
+runs behind a reverse proxy/ingress, the real client IP arrives in
+<code class="docutils literal notranslate"><span class="pre">X-Forwarded-For</span></code> / <code class="docutils literal notranslate"><span class="pre">X-Real-IP</span></code> — headers a client could otherwise forge to
+dodge per-IP limits.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TRUSTED_PROXY_IPS</span></code> is the gate. It is a comma-separated list of IPs/CIDRs
+allowed to set forwarding headers:</p>
+<ul class="simple">
+<li><p><strong>Empty (default)</strong> — no proxy is trusted; forwarding headers are ignored and
+the socket peer is used. This is the secure default.</p></li>
+<li><p><strong>Set</strong> to your proxy/ingress IP(s) — only then are forwarding headers
+honored.</p></li>
+</ul>
+<p>Malformed entries are rejected <strong>at startup</strong>, so a typo fails fast instead of
+silently trusting no one.</p>
+</section>
+</section>
+<section id="cors">
+<h2 id="cors">CORS<a class="headerlink" href="#cors" title="Link to this heading">¶</a></h2>
+<p>CORS origins come from <code class="docutils literal notranslate"><span class="pre">BACKEND_CORS_ORIGINS</span></code> (a plain comma-separated list,
+not JSON). The middleware is only attached when origins are configured.</p>
+<p>Two safety behaviors:</p>
+<ul class="simple">
+<li><p><strong>Wildcard is rejected in protected environments.</strong> With <code class="docutils literal notranslate"><span class="pre">ENV=prod</span></code> or
+<code class="docutils literal notranslate"><span class="pre">stage</span></code>, <code class="docutils literal notranslate"><span class="pre">BACKEND_CORS_ORIGINS=*</span></code> raises at startup — a wildcard combined
+with credentialed requests would let any site act on the user’s behalf.</p></li>
+<li><p><strong>CORS wraps the error handler.</strong> The middleware ordering (see
+<a class="reference internal" href="architecture.html"><span class="doc">Architecture</span></a>) guarantees even a <code class="docutils literal notranslate"><span class="pre">500</span></code> carries CORS headers, so the
+browser surfaces the real status instead of a bare “Network Error”.</p></li>
+</ul>
+</section>
+<section id="secrets-fail-fast-configuration">
+<h2 id="secrets-fail-fast-configuration">Secrets &amp; fail-fast configuration<a class="headerlink" href="#secrets-fail-fast-configuration" title="Link to this heading">¶</a></h2>
+<p>In <code class="docutils literal notranslate"><span class="pre">prod</span></code>/<code class="docutils literal notranslate"><span class="pre">stage</span></code> the app <strong>refuses to boot</strong> when a security-critical
+setting is missing or left at an insecure default:</p>
+<table>
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 66.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Guard</p></th>
+<th class="head"><p>Boot blocks if…</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code></p></td>
+<td><p>empty. (It previously defaulted to the literal string <code class="docutils literal notranslate"><span class="pre">"None"</span></code> —
+truthy — which silently signed payloads with the word “None”. Now it
+resolves to <code class="docutils literal notranslate"><span class="pre">""</span></code> and is rejected in protected envs.)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">KEYCLOAK_CLIENT_SECRET</span></code></p></td>
+<td><p>missing or equal to the shipped dev placeholder.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DB_NAME</span></code></p></td>
+<td><p>unset. (Prevents prod/stage workloads from silently writing to a
+database named <code class="docutils literal notranslate"><span class="pre">game_dev_db</span></code> when <code class="docutils literal notranslate"><span class="pre">DB_HOST</span></code> is repointed.)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BACKEND_CORS_ORIGINS</span></code></p></td>
+<td><p>set to <code class="docutils literal notranslate"><span class="pre">*</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<p>These checks run once at import of <code class="docutils literal notranslate"><span class="pre">app.core.config</span></code> and turn a class of
+“works in dev, leaks in prod” mistakes into loud startup failures.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Manage secrets via the environment or a secret manager — <strong>never</strong> commit
+real secrets, and don’t ship a <code class="docutils literal notranslate"><span class="pre">.env</span></code> with production values. See
+<a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a>.</p>
+</div>
+</section>
+<section id="strategy-sandbox">
+<h2 id="strategy-sandbox">Strategy sandbox<a class="headerlink" href="#strategy-sandbox" title="Link to this heading">¶</a></h2>
+<p>User-authored DSL strategies are the largest attack surface and get their own
+defenses: a validator that whitelists every node/op/field and bounds size, and
+an interpreter with no <code class="docutils literal notranslate"><span class="pre">eval</span></code>/<code class="docutils literal notranslate"><span class="pre">exec</span></code>/<code class="docutils literal notranslate"><span class="pre">getattr</span></code>, frozen field access, and
+a cancellable wall-clock timeout. See <a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a>.</p>
+</section>
+<section id="auditability">
+<h2 id="auditability">Auditability<a class="headerlink" href="#auditability" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Every write stamps <code class="docutils literal notranslate"><span class="pre">apiKey_used</span></code> / <code class="docutils literal notranslate"><span class="pre">oauth_user_id</span></code> (the <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>
+contract), so any row’s origin is known.</p></li>
+<li><p>Endpoints emit structured audit logs (<code class="docutils literal notranslate"><span class="pre">AuditLogger</span></code>) with correlation ids.</p></li>
+<li><p>Data exports are recorded in <code class="docutils literal notranslate"><span class="pre">ExportAuditLog</span></code>.</p></li>
+<li><p>DSL runs are sampled into <code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog</span></code>.</p></li>
+</ul>
+</section>
+<section id="hardening-checklist">
+<h2 id="hardening-checklist">Hardening checklist<a class="headerlink" href="#hardening-checklist" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 6.0%"/>
+<col style="width: 94.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>✓</p></th>
+<th class="head"><p>Item</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ENV=prod</span></code> (or <code class="docutils literal notranslate"><span class="pre">stage</span></code>) so fail-fast checks are active.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code> and <code class="docutils literal notranslate"><span class="pre">KEYCLOAK_CLIENT_SECRET</span></code> set to strong, unique
+values from a secret manager.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BACKEND_CORS_ORIGINS</span></code> an explicit allow-list (never <code class="docutils literal notranslate"><span class="pre">*</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TRUSTED_PROXY_IPS</span></code> set to your ingress/proxy IP(s) when behind one.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_PREVENTION_ENABLED=true</span></code>; <code class="docutils literal notranslate"><span class="pre">ABUSE_PREVENTION_BACKEND=redis</span></code>
+for multi-replica.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">APIKEY_CACHE_BACKEND=redis</span></code> so key revocations propagate across
+workers.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/metrics</span></code> not exposed publicly (front it at the ingress, or set
+<code class="docutils literal notranslate"><span class="pre">METRICS_ENABLED=false</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>One API key per integration/<code class="docutils literal notranslate"><span class="pre">client</span></code> to bound blast radius.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="dsl-engine.html" title="The DSL Strategy Engine"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> The DSL Strategy Engine </span>
+              </div>
+            </a>
+          
+          
+            <a href="observability.html" title="Observability"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Observability </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

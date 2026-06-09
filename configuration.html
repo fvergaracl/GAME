@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Configuration Reference &#8212; GAME (Goals And Motivation Engine)</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
+    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Operations" href="operations.html" />
+    <link rel="prev" title="Observability" href="observability.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#configuration" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="GAME (Goals And Motivation Engine)"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> Configuration Reference </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="GAME (Goals And Motivation Engine)" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    fvergaracl/GAME
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Overview &amp; Concepts</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="architecture.html" class="md-nav__link">Architecture</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="domain-model.html" class="md-nav__link">Domain Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="getting-started.html" class="md-nav__link">Getting Started</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Integration Guides</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="integrating.html" class="md-nav__link">Integrating with GAME</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="strategies.html" class="md-nav__link">Strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="UserGuide/index.html" class="md-nav__link">Foundations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="dsl-engine.html" class="md-nav__link">The DSL Strategy Engine</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="security.html" class="md-nav__link">Security</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="observability.html" class="md-nav__link">Observability</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Operations</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Configuration Reference </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Configuration Reference</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#configuration--page-root" class="md-nav__link">Configuration Reference</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#how-configuration-works" class="md-nav__link">How configuration works</a>
+        </li>
+        <li class="md-nav__item"><a href="#core-application" class="md-nav__link">Core / application</a>
+        </li>
+        <li class="md-nav__item"><a href="#database" class="md-nav__link">Database</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#connection-pool" class="md-nav__link">Connection pool</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#authentication-keycloak" class="md-nav__link">Authentication (Keycloak)</a>
+        </li>
+        <li class="md-nav__item"><a href="#security-cors-proxies" class="md-nav__link">Security: CORS & proxies</a>
+        </li>
+        <li class="md-nav__item"><a href="#abuse-prevention-rate-limiting" class="md-nav__link">Abuse prevention & rate limiting</a>
+        </li>
+        <li class="md-nav__item"><a href="#redis-optional-shared-state" class="md-nav__link">Redis (optional, shared state)</a>
+        </li>
+        <li class="md-nav__item"><a href="#dsl-engine-limits" class="md-nav__link">DSL engine limits</a>
+        </li>
+        <li class="md-nav__item"><a href="#dsl-execution-logging" class="md-nav__link">DSL execution logging</a>
+        </li>
+        <li class="md-nav__item"><a href="#errors-extras" class="md-nav__link">Errors & extras</a>
+        </li>
+        <li class="md-nav__item"><a href="#pagination-defaults" class="md-nav__link">Pagination defaults</a>
+        </li>
+        <li class="md-nav__item"><a href="#fail-fast-guards-summary" class="md-nav__link">Fail-fast guards (summary)</a>
+        </li>
+        <li class="md-nav__item"><a href="#minimal-production-env-skeleton" class="md-nav__link">Minimal production <code class="docutils literal notranslate"><span class="pre">.env</span></code> skeleton</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/configuration.rst.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#how-configuration-works" class="md-nav__link">How configuration works</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#core-application" class="md-nav__link">Core / application</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#database" class="md-nav__link">Database</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#authentication-keycloak" class="md-nav__link">Authentication (Keycloak)</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#security-cors-proxies" class="md-nav__link">Security: CORS & proxies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#abuse-prevention-rate-limiting" class="md-nav__link">Abuse prevention & rate limiting</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#redis-optional-shared-state" class="md-nav__link">Redis (optional, shared state)</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#dsl-engine-limits" class="md-nav__link">DSL engine limits</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#dsl-execution-logging" class="md-nav__link">DSL execution logging</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#errors-extras" class="md-nav__link">Errors & extras</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#pagination-defaults" class="md-nav__link">Pagination defaults</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#fail-fast-guards-summary" class="md-nav__link">Fail-fast guards (summary)</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#minimal-production-env-skeleton" class="md-nav__link">Minimal production <code class="docutils literal notranslate"><span class="pre">.env</span></code> skeleton</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="operations.html" class="md-nav__link">Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="rest-api.html" class="md-nav__link">REST API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="codebase.html" class="md-nav__link">Codebase Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="contributing.html" class="md-nav__link">Contributing</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#configuration--page-root" class="md-nav__link">Configuration Reference</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#how-configuration-works" class="md-nav__link">How configuration works</a>
+        </li>
+        <li class="md-nav__item"><a href="#core-application" class="md-nav__link">Core / application</a>
+        </li>
+        <li class="md-nav__item"><a href="#database" class="md-nav__link">Database</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#connection-pool" class="md-nav__link">Connection pool</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#authentication-keycloak" class="md-nav__link">Authentication (Keycloak)</a>
+        </li>
+        <li class="md-nav__item"><a href="#security-cors-proxies" class="md-nav__link">Security: CORS & proxies</a>
+        </li>
+        <li class="md-nav__item"><a href="#abuse-prevention-rate-limiting" class="md-nav__link">Abuse prevention & rate limiting</a>
+        </li>
+        <li class="md-nav__item"><a href="#redis-optional-shared-state" class="md-nav__link">Redis (optional, shared state)</a>
+        </li>
+        <li class="md-nav__item"><a href="#dsl-engine-limits" class="md-nav__link">DSL engine limits</a>
+        </li>
+        <li class="md-nav__item"><a href="#dsl-execution-logging" class="md-nav__link">DSL execution logging</a>
+        </li>
+        <li class="md-nav__item"><a href="#errors-extras" class="md-nav__link">Errors & extras</a>
+        </li>
+        <li class="md-nav__item"><a href="#pagination-defaults" class="md-nav__link">Pagination defaults</a>
+        </li>
+        <li class="md-nav__item"><a href="#fail-fast-guards-summary" class="md-nav__link">Fail-fast guards (summary)</a>
+        </li>
+        <li class="md-nav__item"><a href="#minimal-production-env-skeleton" class="md-nav__link">Minimal production <code class="docutils literal notranslate"><span class="pre">.env</span></code> skeleton</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/configuration.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="configuration-reference">
+<h1 id="configuration--page-root">Configuration Reference<a class="headerlink" href="#configuration--page-root" title="Link to this heading">¶</a></h1>
+<div class="note admonition">
+<p class="admonition-title">Who is this page for?</p>
+<p>Operators. This is the exhaustive reference for <strong>every</strong> environment
+variable read by <code class="docutils literal notranslate"><span class="pre">app/core/config.py</span></code> (and a few read elsewhere). For the
+<em>why</em> behind the security-related ones, see <a class="reference internal" href="security.html"><span class="doc">Security</span></a>.</p>
+</div>
+<section id="how-configuration-works">
+<h2 id="how-configuration-works">How configuration works<a class="headerlink" href="#how-configuration-works" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Settings are a Pydantic <code class="docutils literal notranslate"><span class="pre">BaseSettings</span></code> class (<code class="docutils literal notranslate"><span class="pre">Configs</span></code>). Values come
+from <strong>environment variables</strong>; a local <code class="docutils literal notranslate"><span class="pre">.env</span></code> is loaded automatically in
+development.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ENV</span></code> selects the profile. <code class="docutils literal notranslate"><span class="pre">ENV=test</span></code> swaps in <code class="docutils literal notranslate"><span class="pre">TestConfigs</span></code> (SQLite,
+localhost DB). <code class="docutils literal notranslate"><span class="pre">prod</span></code>/<code class="docutils literal notranslate"><span class="pre">stage</span></code> activate <strong>fail-fast</strong> validation.</p></li>
+<li><p>Several values are validated at import time — a bad value raises before the
+app serves a single request (see <em>Fail-fast guards</em> below).</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Copy <code class="docutils literal notranslate"><span class="pre">.env.sample</span></code> to <code class="docutils literal notranslate"><span class="pre">.env</span></code> and edit. In production, inject values
+through the environment or a secret manager — do <strong>not</strong> ship a <code class="docutils literal notranslate"><span class="pre">.env</span></code>
+with real secrets.</p>
+</div>
+</section>
+<section id="core-application">
+<h2 id="core-application">Core / application<a class="headerlink" href="#core-application" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 14.0%"/>
+<col style="width: 52.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ENV</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dev</span></code></p></td>
+<td><p>One of <code class="docutils literal notranslate"><span class="pre">dev</span></code>/<code class="docutils literal notranslate"><span class="pre">test</span></code>/<code class="docutils literal notranslate"><span class="pre">stage</span></code>/<code class="docutils literal notranslate"><span class="pre">prod</span></code>. Gates fail-fast checks,
+log format, and strategy debug output.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ROOT_PATH</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">""</span></code></p></td>
+<td><p>ASGI root path when mounted behind a path prefix.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">API_V1_STR</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/api/v1</span></code></p></td>
+<td><p>API base path. All documented routes are relative to this.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PROJECT_NAME</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GAME-api</span></code></p></td>
+<td><p>Display name.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GAMIFICATIONENGINE_VERSION_APP</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">No_version</span></code></p></td>
+<td><p>Free-form app version label.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LOG_LEVEL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">INFO</span></code></p></td>
+<td><p>Root log level (read in <code class="docutils literal notranslate"><span class="pre">app/main.py</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">METRICS_ENABLED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>Expose Prometheus <code class="docutils literal notranslate"><span class="pre">/metrics</span></code>. Disable (or firewall the path) in
+production — it is unauthenticated at the app level. See
+<a class="reference internal" href="observability.html"><span class="doc">Observability</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="database">
+<h2 id="database">Database<a class="headerlink" href="#database" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 16.0%"/>
+<col style="width: 50.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DB_ENGINE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">postgresql</span></code></p></td>
+<td><p>SQLAlchemy dialect.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DB_USER</span></code> / <code class="docutils literal notranslate"><span class="pre">DB_PASSWORD</span></code></p></td>
+<td><p><em>(unset)</em></p></td>
+<td><p>Credentials.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DB_HOST</span></code></p></td>
+<td><p><em>(unset)</em></p></td>
+<td><p>Hostname.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DB_PORT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">5432</span></code></p></td>
+<td><p>Defaults to PostgreSQL’s port (the prior <code class="docutils literal notranslate"><span class="pre">3306</span></code> MySQL default
+mismatched the engine).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DB_NAME</span></code></p></td>
+<td><p>env-dependent</p></td>
+<td><p><strong>Required in ``prod``/``stage``</strong> (boot blocks if unset). Defaults to
+<code class="docutils literal notranslate"><span class="pre">game_dev_db</span></code> in <code class="docutils literal notranslate"><span class="pre">dev</span></code> and <code class="docutils literal notranslate"><span class="pre">test_game_dev_db</span></code> in <code class="docutils literal notranslate"><span class="pre">test</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DATABASE_URI</span></code></p></td>
+<td><p>derived</p></td>
+<td><p>Assembled from the parts above; usually not set directly.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="connection-pool">
+<h3 id="connection-pool">Connection pool<a class="headerlink" href="#connection-pool" title="Link to this heading">¶</a></h3>
+<table>
+<colgroup>
+<col style="width: 38.0%"/>
+<col style="width: 14.0%"/>
+<col style="width: 48.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SQLALCHEMY_ECHO</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>Log every SQL statement. Dev only.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DB_POOL_PRE_PING</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>Health-check a connection before use (avoids stale-connection errors).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DB_POOL_SIZE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">20</span></code></p></td>
+<td><p>Persistent pooled connections.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DB_MAX_OVERFLOW</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">40</span></code></p></td>
+<td><p>Extra connections allowed above the pool size under burst.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DB_POOL_TIMEOUT_SECONDS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">30</span></code></p></td>
+<td><p>Wait time for a free connection before erroring.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DB_POOL_RECYCLE_SECONDS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1800</span></code></p></td>
+<td><p>Recycle connections older than this (dodges server-side idle timeouts).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="authentication-keycloak">
+<h2 id="authentication-keycloak">Authentication (Keycloak)<a class="headerlink" href="#authentication-keycloak" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 36.0%"/>
+<col style="width: 22.0%"/>
+<col style="width: 42.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">KEYCLOAK_URL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8080</span></code></p></td>
+<td><p>Public realm base URL (used for issuer + token URLs).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">KEYCLOAK_URL_DOCKER</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">http://keycloak:8080</span></code></p></td>
+<td><p>In-cluster URL used to fetch the JWKS signing keys.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">KEYCLOAK_REALM</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">master</span></code></p></td>
+<td><p>Realm name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">KEYCLOAK_AUDIENCE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">account</span></code></p></td>
+<td><p>Required JWT <code class="docutils literal notranslate"><span class="pre">aud</span></code>; mismatches yield <code class="docutils literal notranslate"><span class="pre">403</span> <span class="pre">Invalid</span> <span class="pre">audience</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">KEYCLOAK_CLIENT_ID</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">admin-cli</span></code></p></td>
+<td><p>OAuth client id (also used by Swagger UI’s OAuth flow).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">KEYCLOAK_CLIENT_SECRET</span></code></p></td>
+<td><p><em>(dev placeholder)</em></p></td>
+<td><p><strong>Boot blocks in ``prod``/``stage``</strong> if missing or left at the
+shipped placeholder.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">""</span></code></p></td>
+<td><p>Signs simulation payloads. <strong>Boot blocks in ``prod``/``stage``</strong> if
+empty. (Historically defaulted to the truthy string <code class="docutils literal notranslate"><span class="pre">"None"</span></code> — now
+falsy.)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="security-cors-proxies">
+<h2 id="security-cors-proxies">Security: CORS &amp; proxies<a class="headerlink" href="#security-cors-proxies" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 14.0%"/>
+<col style="width: 52.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BACKEND_CORS_ORIGINS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[]</span></code></p></td>
+<td><p><strong>Plain comma-separated</strong> allow-list (not JSON), e.g.
+<code class="docutils literal notranslate"><span class="pre">https://a.example,https://b.example</span></code>. <code class="docutils literal notranslate"><span class="pre">*</span></code> is <strong>rejected</strong> in
+<code class="docutils literal notranslate"><span class="pre">prod</span></code>/<code class="docutils literal notranslate"><span class="pre">stage</span></code>. Middleware attaches only when non-empty.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TRUSTED_PROXY_IPS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[]</span></code></p></td>
+<td><p>Comma-separated IPs/CIDRs allowed to set <code class="docutils literal notranslate"><span class="pre">X-Forwarded-For</span></code> /
+<code class="docutils literal notranslate"><span class="pre">X-Real-IP</span></code>. Empty = trust no proxy (use socket peer). Malformed
+entries fail at startup. See <a class="reference internal" href="security.html"><span class="doc">Security</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="abuse-prevention-rate-limiting">
+<h2 id="abuse-prevention-rate-limiting">Abuse prevention &amp; rate limiting<a class="headerlink" href="#abuse-prevention-rate-limiting" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 40.0%"/>
+<col style="width: 16.0%"/>
+<col style="width: 44.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_PREVENTION_ENABLED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>Master switch for rate limiting on sensitive endpoints.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_RATE_LIMIT_WINDOW_SECONDS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">60</span></code></p></td>
+<td><p>Short-window length.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_RATE_LIMIT_PER_API_KEY</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">120</span></code></p></td>
+<td><p>Max requests per key per window.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_RATE_LIMIT_PER_IP</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">240</span></code></p></td>
+<td><p>Max requests per source IP per window.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_RATE_LIMIT_PER_EXTERNAL_USER</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">60</span></code></p></td>
+<td><p>Max requests per external user per window.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_DAILY_QUOTA_PER_API_KEY</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10000</span></code></p></td>
+<td><p>Daily quota per key for sensitive operations.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ABUSE_PREVENTION_BACKEND</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">database</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">database</span></code> or <code class="docutils literal notranslate"><span class="pre">redis</span></code>. Use <code class="docutils literal notranslate"><span class="pre">redis</span></code> for multi-replica (atomic,
+shared, ~100× faster).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="redis-optional-shared-state">
+<h2 id="redis-optional-shared-state">Redis (optional, shared state)<a class="headerlink" href="#redis-optional-shared-state" title="Link to this heading">¶</a></h2>
+<p>Only needed when a backend below is set to <code class="docutils literal notranslate"><span class="pre">redis</span></code>.</p>
+<table>
+<colgroup>
+<col style="width: 38.0%"/>
+<col style="width: 22.0%"/>
+<col style="width: 40.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">REDIS_URL</span></code></p></td>
+<td><p><em>(unset)</em></p></td>
+<td><p>Connection URL; required when any <code class="docutils literal notranslate"><span class="pre">*_BACKEND=redis</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RATE_LIMIT_REDIS_KEY_PREFIX</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">game:rl:</span></code></p></td>
+<td><p>Key namespace for rate-limit counters.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RATE_LIMIT_TTL_BUFFER_SECONDS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">5</span></code></p></td>
+<td><p>Extra TTL slack on counter keys.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">APIKEY_CACHE_BACKEND</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">memory</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">memory</span></code> (per-worker) or <code class="docutils literal notranslate"><span class="pre">redis</span></code> (shared, so revocations propagate
+across workers).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">APIKEY_CACHE_REDIS_KEY_PREFIX</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">game:apikey:</span></code></p></td>
+<td><p>Key namespace for the API-key cache.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">API_KEY_HEADER_CACHE_TTL_SECONDS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">5</span></code></p></td>
+<td><p>How long a key-validation result is cached.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="dsl-engine-limits">
+<h2 id="dsl-engine-limits">DSL engine limits<a class="headerlink" href="#dsl-engine-limits" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 40.0%"/>
+<col style="width: 14.0%"/>
+<col style="width: 46.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DSL_EXECUTION_TIMEOUT_MS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">500</span></code></p></td>
+<td><p>Wall-clock backstop per custom-strategy call.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DSL_MAX_NODES</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1000</span></code></p></td>
+<td><p>Max AST nodes (rejected at validation + runtime).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DSL_MAX_DEPTH</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">32</span></code></p></td>
+<td><p>Max recursion depth.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="dsl-execution-logging">
+<h2 id="dsl-execution-logging">DSL execution logging<a class="headerlink" href="#dsl-execution-logging" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 42.0%"/>
+<col style="width: 14.0%"/>
+<col style="width: 44.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DSL_EXECUTION_LOG_ENABLED</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>Persist sampled execution traces.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DSL_EXECUTION_LOG_SAMPLE_RATE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></td>
+<td><p>Fraction of <strong>successful</strong> runs persisted (errors are always kept).
+<code class="docutils literal notranslate"><span class="pre">1.0</span></code> is dev/test only.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DSL_EXECUTION_LOG_TRACE_LIMIT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">200</span></code></p></td>
+<td><p>Max trace entries per row (tail-truncated).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DSL_EXECUTION_LOG_QUEUE_MAXSIZE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1000</span></code></p></td>
+<td><p>Bounded background-write queue; overflow drops rows (counted by
+<code class="docutils literal notranslate"><span class="pre">dsl_execution_log_dropped_total</span></code>) instead of slowing scoring.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="errors-extras">
+<h2 id="errors-extras">Errors &amp; extras<a class="headerlink" href="#errors-extras" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 16.0%"/>
+<col style="width: 50.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SENTRY_DSN</span></code></p></td>
+<td><p><em>(unset)</em></p></td>
+<td><p>Enables Sentry when set.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SENTRY_ENVIRONMENT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dev</span></code></p></td>
+<td><p>Sentry environment tag.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SENTRY_RELEASE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0.0</span></code></p></td>
+<td><p>Sentry release tag.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EXTRA_SERVER_URL</span></code> / <code class="docutils literal notranslate"><span class="pre">EXTRA_SERVER_DESCRIPTION</span></code></p></td>
+<td><p><em>(unset)</em></p></td>
+<td><p>Adds an extra server entry to the OpenAPI schema (handy when the API is
+reachable at more than one base URL).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DEFAULT_CONVERTION_RATE_POINTS_TO_COIN</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">100</span></code></p></td>
+<td><p>Default points-per-coin used when creating wallets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GOOGLE_ANALYTICS_ACCOUNT</span></code></p></td>
+<td><p><em>(unset)</em></p></td>
+<td><p>Used by this documentation site’s theme only.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="pagination-defaults">
+<h2 id="pagination-defaults">Pagination defaults<a class="headerlink" href="#pagination-defaults" title="Link to this heading">¶</a></h2>
+<table>
+<colgroup>
+<col style="width: 24.0%"/>
+<col style="width: 14.0%"/>
+<col style="width: 62.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PAGE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p>Default page for list endpoints.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PAGE_SIZE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+<td><p>Default page size (<code class="docutils literal notranslate"><span class="pre">page_size=all</span></code> returns everything).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ORDERING</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-id</span></code></p></td>
+<td><p>Default sort (<code class="docutils literal notranslate"><span class="pre">-</span></code> prefix = descending).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="fail-fast-guards-summary">
+<h2 id="fail-fast-guards-summary">Fail-fast guards (summary)<a class="headerlink" href="#fail-fast-guards-summary" title="Link to this heading">¶</a></h2>
+<p>These turn misconfiguration into a loud startup failure in <code class="docutils literal notranslate"><span class="pre">prod</span></code>/<code class="docutils literal notranslate"><span class="pre">stage</span></code>:</p>
+<table>
+<colgroup>
+<col style="width: 34.0%"/>
+<col style="width: 66.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Boot blocks when…</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code></p></td>
+<td><p>empty</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">KEYCLOAK_CLIENT_SECRET</span></code></p></td>
+<td><p>missing or equal to the dev placeholder</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DB_NAME</span></code></p></td>
+<td><p>unset</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BACKEND_CORS_ORIGINS</span></code></p></td>
+<td><p>set to <code class="docutils literal notranslate"><span class="pre">*</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TRUSTED_PROXY_IPS</span></code></p></td>
+<td><p>contains a malformed IP/CIDR (any environment)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="minimal-production-env-skeleton">
+<h2 id="minimal-production-env-skeleton">Minimal production <code class="docutils literal notranslate"><span class="pre">.env</span></code> skeleton<a class="headerlink" href="#minimal-production-env-skeleton" title="Link to this heading">¶</a></h2>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="na">ENV</span><span class="o">=</span><span class="s">prod</span>
+<span class="na">SECRET_KEY</span><span class="o">=</span><span class="s">&lt;from-secret-manager&gt;</span>
+
+<span class="na">DB_ENGINE</span><span class="o">=</span><span class="s">postgresql</span>
+<span class="na">DB_USER</span><span class="o">=</span><span class="s">&lt;user&gt;</span>
+<span class="na">DB_PASSWORD</span><span class="o">=</span><span class="s">&lt;from-secret-manager&gt;</span>
+<span class="na">DB_HOST</span><span class="o">=</span><span class="s">&lt;host&gt;</span>
+<span class="na">DB_PORT</span><span class="o">=</span><span class="s">5432</span>
+<span class="na">DB_NAME</span><span class="o">=</span><span class="s">&lt;explicit-db-name&gt;</span>
+
+<span class="na">KEYCLOAK_URL</span><span class="o">=</span><span class="s">https://auth.example.com</span>
+<span class="na">KEYCLOAK_URL_DOCKER</span><span class="o">=</span><span class="s">https://auth.example.com</span>
+<span class="na">KEYCLOAK_REALM</span><span class="o">=</span><span class="s">game</span>
+<span class="na">KEYCLOAK_AUDIENCE</span><span class="o">=</span><span class="s">account</span>
+<span class="na">KEYCLOAK_CLIENT_ID</span><span class="o">=</span><span class="s">game-api</span>
+<span class="na">KEYCLOAK_CLIENT_SECRET</span><span class="o">=</span><span class="s">&lt;from-secret-manager&gt;</span>
+
+<span class="na">BACKEND_CORS_ORIGINS</span><span class="o">=</span><span class="s">https://app.example.com,https://admin.example.com</span>
+<span class="na">TRUSTED_PROXY_IPS</span><span class="o">=</span><span class="s">10.0.0.0/8</span>
+
+<span class="na">ABUSE_PREVENTION_ENABLED</span><span class="o">=</span><span class="s">true</span>
+<span class="na">ABUSE_PREVENTION_BACKEND</span><span class="o">=</span><span class="s">redis</span>
+<span class="na">APIKEY_CACHE_BACKEND</span><span class="o">=</span><span class="s">redis</span>
+<span class="na">REDIS_URL</span><span class="o">=</span><span class="s">redis://redis:6379/0</span>
+
+<span class="na">METRICS_ENABLED</span><span class="o">=</span><span class="s">false</span><span class="w">   </span><span class="c1"># or keep true and block /metrics at the ingress</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="observability.html" title="Observability"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Observability </span>
+              </div>
+            </a>
+          
+          
+            <a href="operations.html" title="Operations"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Operations </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2024-2026, fvergaracl.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>
