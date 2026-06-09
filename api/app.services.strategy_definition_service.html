@@ -377,7 +377,17 @@
         </li>
         <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.name_exists" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.name_exists()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.list_strategies" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.list_strategies()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.get_strategy" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.get_strategy()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.create" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.create()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.update" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.update()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.publish" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.publish()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.archive" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.archive()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.strategy_definition_service.StrategyDefinitionService.list_versions" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">StrategyDefinitionService.list_versions()</span></code></a>
         </li>
@@ -485,6 +495,80 @@ the <code class="docutils literal notranslate"><span class="pre">UNIQUE(realmId,
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.list_strategies">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_strategies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.list_strategies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.list_strategies" title="Link to this definition">¶</a></dt>
+<dd><p>List strategy definitions for a realm, optionally filtered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>realmId</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Realm/tenant to scope to.</p></li>
+<li><p><strong>status</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Optional lifecycle-status filter.</p></li>
+<li><p><strong>type</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Optional strategy-type filter.</p></li>
+<li><p><strong>limit</strong> (<em>int</em>) – Maximum rows to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>List[StrategyDefinitionRead]</em> – The matching definitions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>List</em>[<em>StrategyDefinitionRead</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.get_strategy">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.get_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.get_strategy" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch one strategy definition scoped to a realm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Strategy definition identifier.</p></li>
+<li><p><strong>realmId</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Realm/tenant the strategy must belong to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>StrategyDefinitionRead</em> – The matching definition.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no matching strategy exists in the realm.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>StrategyDefinitionRead</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.create">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">createdBy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apiKey_used</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.create" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new strategy-definition draft.</p>
+<p>Validates the type/parent combination and any provided AST, rejects a
+name that already exists in the realm, and persists the draft as
+version 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>payload</strong> (<em>StrategyDefinitionCreate</em>) – The strategy to create.</p></li>
+<li><p><strong>realmId</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Realm/tenant that will own it.</p></li>
+<li><p><strong>createdBy</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Identity recorded as the author.</p></li>
+<li><p><strong>apiKey_used</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – API key used for the request, if any.</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – OAuth subject, if any.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>StrategyDefinitionRead</em> – The newly created draft.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>BadRequestError</strong> – If the type/parent combination is invalid.</p></li>
+<li><p><strong>DuplicatedError</strong> – If a strategy with the same name already exists.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>StrategyDefinitionRead</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.update">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">createdBy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apiKey_used</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.update" title="Link to this definition">¶</a></dt>
 <dd><p>Apply an update.</p>
@@ -506,6 +590,57 @@ immutable.</p></li>
 <li><p><strong>apiKey_used</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>oauth_user_id</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>StrategyDefinitionRead</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.publish">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">publish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.publish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.publish" title="Link to this definition">¶</a></dt>
+<dd><p>Publish a draft strategy, archiving any previously-published sibling.</p>
+<p>Idempotent: re-publishing an already-published row is a no-op. If
+another version of the same name is published, it is archived first so
+only one published version exists per name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Strategy definition identifier.</p></li>
+<li><p><strong>realmId</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Realm/tenant the strategy must belong to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>StrategyDefinitionRead</em> – The published strategy.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>NotFoundError</strong> – If no matching strategy exists in the realm.</p></li>
+<li><p><strong>ConflictError</strong> – If the strategy is archived.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>StrategyDefinitionRead</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.archive">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.archive" title="Link to this definition">¶</a></dt>
+<dd><p>Archive a strategy so it can no longer be published or assigned.</p>
+<p>Idempotent: archiving an already-archived row returns it unchanged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Strategy definition identifier.</p></li>
+<li><p><strong>realmId</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Realm/tenant the strategy must belong to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>StrategyDefinitionRead</em> – The archived strategy.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no matching strategy exists in the realm.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>StrategyDefinitionRead</em></p>

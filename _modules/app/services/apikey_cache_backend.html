@@ -395,15 +395,35 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ApiKeyCacheBackend</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Cache the resolved ``(apiKey, active)`` tuple keyed by sha256 hash."""</span>
 
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SimpleNamespace</span><span class="p">]:</span> <span class="o">...</span>
+<div class="viewcode-block" id="ApiKeyCacheBackend.get">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.ApiKeyCacheBackend.get">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SimpleNamespace</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return the cached value for ``cache_key``, or ``None`` if absent."""</span>
+        <span class="o">...</span></div>
 
+
+<div class="viewcode-block" id="ApiKeyCacheBackend.set">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.ApiKeyCacheBackend.set">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">SimpleNamespace</span><span class="p">,</span> <span class="n">ttl_seconds</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Store ``value`` under ``cache_key`` with a ``ttl_seconds`` lifetime."""</span>
+        <span class="o">...</span></div>
 
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span></div>
+<div class="viewcode-block" id="ApiKeyCacheBackend.delete">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.ApiKeyCacheBackend.delete">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Remove the entry for ``cache_key`` if present."""</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="ApiKeyCacheBackend.clear">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.ApiKeyCacheBackend.clear">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Remove every cached entry."""</span>
+        <span class="o">...</span></div>
+</div>
 
 
 
@@ -424,11 +444,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the asyncio lock, binding it to the current loop on first use.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            asyncio.Lock: The lazily-created per-instance lock.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span>
 
+<div class="viewcode-block" id="InMemoryApiKeyCacheBackend.get">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.get">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SimpleNamespace</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the cached value for ``cache_key``, evicting it if expired.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cache_key (str): The lookup key (sha256 of the API key plaintext).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[SimpleNamespace]: The cached ``(apiKey, active)`` value,</span>
+<span class="sd">            or ``None`` if absent or past its TTL.</span>
+<span class="sd">        """</span>
         <span class="n">now</span> <span class="o">=</span> <span class="n">monotonic</span><span class="p">()</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lock</span><span class="p">():</span>
             <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cache_key</span><span class="p">)</span>
@@ -438,29 +476,58 @@
             <span class="k">if</span> <span class="n">expires_at</span> <span class="o">&lt;=</span> <span class="n">now</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cache_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
-            <span class="k">return</span> <span class="n">value</span>
+            <span class="k">return</span> <span class="n">value</span></div>
 
+
+<div class="viewcode-block" id="InMemoryApiKeyCacheBackend.set">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.set">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">SimpleNamespace</span><span class="p">,</span> <span class="n">ttl_seconds</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Cache ``value`` under ``cache_key`` for ``ttl_seconds`` (no-op if ≤ 0).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cache_key (str): The lookup key.</span>
+<span class="sd">            value (SimpleNamespace): The ``(apiKey, active)`` value to store.</span>
+<span class="sd">            ttl_seconds (int): Lifetime in seconds; values ≤ 0 are ignored.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">ttl_seconds</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">expires_at</span> <span class="o">=</span> <span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">ttl_seconds</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lock</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">expires_at</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">expires_at</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="InMemoryApiKeyCacheBackend.delete">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.delete">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Remove the cached entry for ``cache_key`` if present.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cache_key (str): The lookup key to evict.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lock</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cache_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cache_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="InMemoryApiKeyCacheBackend.clear">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.clear">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sync_clear</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">"""Remove every cached entry (async wrapper over ``sync_clear``)."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sync_clear</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="InMemoryApiKeyCacheBackend.sync_clear">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.sync_clear">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sync_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Clear the store synchronously and reset the lock for a new loop."""</span>
         <span class="c1"># dict.clear() is atomic under the GIL; resetting the lock lets the</span>
         <span class="c1"># next async caller bind it to the current event loop.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="kc">None</span></div>
+</div>
 
 
 
@@ -478,36 +545,82 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_key_prefix</span> <span class="o">=</span> <span class="n">key_prefix</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Namespace a cache key with the configured Redis prefix.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cache_key (str): The bare lookup key.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The prefixed Redis key.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_key_prefix</span><span class="si">}{</span><span class="n">cache_key</span><span class="si">}</span><span class="s2">"</span>
 
+<div class="viewcode-block" id="RedisApiKeyCacheBackend.get">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.get">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SimpleNamespace</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Read and deserialize a cached value from Redis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cache_key (str): The lookup key.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[SimpleNamespace]: The decoded ``(apiKey, active)`` value,</span>
+<span class="sd">            or ``None`` if the key is absent.</span>
+<span class="sd">        """</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_key</span><span class="p">(</span><span class="n">cache_key</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">raw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">SimpleNamespace</span><span class="p">(</span>
             <span class="n">apiKey</span><span class="o">=</span><span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"apiKey"</span><span class="p">),</span> <span class="n">active</span><span class="o">=</span><span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"active"</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="RedisApiKeyCacheBackend.set">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.set">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">SimpleNamespace</span><span class="p">,</span> <span class="n">ttl_seconds</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Store ``value`` as JSON in Redis with a server-side TTL (no-op if ≤ 0).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cache_key (str): The lookup key.</span>
+<span class="sd">            value (SimpleNamespace): The ``(apiKey, active)`` value to store.</span>
+<span class="sd">            ttl_seconds (int): Expiry passed to Redis ``SET ... EX``.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">ttl_seconds</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">"apiKey"</span><span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">apiKey</span><span class="p">,</span> <span class="s2">"active"</span><span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">active</span><span class="p">})</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_build_key</span><span class="p">(</span><span class="n">cache_key</span><span class="p">),</span> <span class="n">payload</span><span class="p">,</span> <span class="n">ex</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">ttl_seconds</span><span class="p">))</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="RedisApiKeyCacheBackend.delete">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.delete">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_key</span><span class="p">(</span><span class="n">cache_key</span><span class="p">))</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Delete a single cached entry from Redis.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            cache_key (str): The lookup key to evict.</span>
+<span class="sd">        """</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_key</span><span class="p">(</span><span class="n">cache_key</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="RedisApiKeyCacheBackend.clear">
+<a class="viewcode-back" href="../../../api/app.services.apikey_cache_backend.html#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.clear">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Delete every entry under the key prefix via a bounded SCAN + DEL."""</span>
         <span class="c1"># SCAN + DEL is bounded and non-blocking for other clients; only</span>
         <span class="c1"># called from admin/maintenance paths, never the request hot path.</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_key_prefix</span><span class="si">}</span><span class="s2">*"</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">scan_iter</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="n">pattern</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+</div>
 
 
 

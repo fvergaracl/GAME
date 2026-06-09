@@ -371,6 +371,22 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.count_measurements_by_external_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService.count_measurements_by_external_task_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_user_task_measurements_count" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService.get_user_task_measurements_count()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_user_task_measurements_count_the_last_seconds" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService.get_user_task_measurements_count_the_last_seconds()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_avg_time_between_tasks_by_user_and_game_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService.get_avg_time_between_tasks_by_user_and_game_task()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_avg_time_between_tasks_for_all_users" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService.get_avg_time_between_tasks_for_all_users()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService.get_last_window_time_diff()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_new_last_window_time_diff" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService.get_new_last_window_time_diff()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_user_task_measurements" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService.get_user_task_measurements()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.count_personal_records_by_external_game_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService.count_personal_records_by_external_game_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.user_has_record_before_in_externalTaskId_last_min" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsAnalyticsService.user_has_record_before_in_externalTaskId_last_min()</span></code></a>
@@ -415,6 +431,88 @@ compute rewards based on historical user behaviour.</p>
 <dd class="field-odd"><p><strong>user_points_repository</strong> (<a class="reference internal" href="app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository" title="app.repository.user_points_repository.UserPointsRepository"><em>UserPointsRepository</em></a>)</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_analytics_service.UserPointsAnalyticsService.count_measurements_by_external_task_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_measurements_by_external_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_analytics_service.html#UserPointsAnalyticsService.count_measurements_by_external_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.count_measurements_by_external_task_id" title="Link to this definition">¶</a></dt>
+<dd><p>Count all points rows recorded for an external task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_analytics_service.UserPointsAnalyticsService.get_user_task_measurements_count">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_task_measurements_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_analytics_service.html#UserPointsAnalyticsService.get_user_task_measurements_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_user_task_measurements_count" title="Link to this definition">¶</a></dt>
+<dd><p>Count a user’s awards on a given external task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_analytics_service.UserPointsAnalyticsService.get_user_task_measurements_count_the_last_seconds">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_task_measurements_count_the_last_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_analytics_service.html#UserPointsAnalyticsService.get_user_task_measurements_count_the_last_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_user_task_measurements_count_the_last_seconds" title="Link to this definition">¶</a></dt>
+<dd><p>Count a user’s awards on a task within the last <code class="docutils literal notranslate"><span class="pre">seconds</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_analytics_service.UserPointsAnalyticsService.get_avg_time_between_tasks_by_user_and_game_task">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_by_user_and_game_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_analytics_service.html#UserPointsAnalyticsService.get_avg_time_between_tasks_by_user_and_game_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_avg_time_between_tasks_by_user_and_game_task" title="Link to this definition">¶</a></dt>
+<dd><p>Average seconds between a user’s consecutive awards on a task
+(<code class="docutils literal notranslate"><span class="pre">-1</span></code> with fewer than two awards).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_analytics_service.UserPointsAnalyticsService.get_avg_time_between_tasks_for_all_users">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_avg_time_between_tasks_for_all_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_analytics_service.html#UserPointsAnalyticsService.get_avg_time_between_tasks_for_all_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_avg_time_between_tasks_for_all_users" title="Link to this definition">¶</a></dt>
+<dd><p>Average seconds between consecutive awards on a task across all
+users (<code class="docutils literal notranslate"><span class="pre">-1</span></code> with fewer than two awards).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_analytics_service.UserPointsAnalyticsService.get_last_window_time_diff">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_analytics_service.html#UserPointsAnalyticsService.get_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_last_window_time_diff" title="Link to this definition">¶</a></dt>
+<dd><p>Seconds between a user’s two most recent awards on a task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_analytics_service.UserPointsAnalyticsService.get_new_last_window_time_diff">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_new_last_window_time_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_analytics_service.html#UserPointsAnalyticsService.get_new_last_window_time_diff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_new_last_window_time_diff" title="Link to this definition">¶</a></dt>
+<dd><p>Seconds elapsed since a user’s most recent award on a task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points_analytics_service.UserPointsAnalyticsService.get_user_task_measurements">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_task_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_analytics_service.html#UserPointsAnalyticsService.get_user_task_measurements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.get_user_task_measurements" title="Link to this definition">¶</a></dt>
+<dd><p>Return the ordered timestamps of a user’s awards on a task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.services.user_points_analytics_service.UserPointsAnalyticsService.count_personal_records_by_external_game_id">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_personal_records_by_external_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_game_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points_analytics_service.html#UserPointsAnalyticsService.count_personal_records_by_external_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points_analytics_service.UserPointsAnalyticsService.count_personal_records_by_external_game_id" title="Link to this definition">¶</a></dt>

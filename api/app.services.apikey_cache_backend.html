@@ -369,11 +369,43 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#api-app-services-apikey-cache-backend--page-root" class="md-nav__link">app.services.apikey_cache_backend module</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.ApiKeyCacheBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyCacheBackend</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.ApiKeyCacheBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyCacheBackend</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.ApiKeyCacheBackend.get" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyCacheBackend.get()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">InMemoryApiKeyCacheBackend</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.ApiKeyCacheBackend.set" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyCacheBackend.set()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.RedisApiKeyCacheBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RedisApiKeyCacheBackend</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.ApiKeyCacheBackend.delete" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyCacheBackend.delete()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.ApiKeyCacheBackend.clear" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyCacheBackend.clear()</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">InMemoryApiKeyCacheBackend</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.get" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">InMemoryApiKeyCacheBackend.get()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.set" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">InMemoryApiKeyCacheBackend.set()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.delete" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">InMemoryApiKeyCacheBackend.delete()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.clear" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">InMemoryApiKeyCacheBackend.clear()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.sync_clear" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">InMemoryApiKeyCacheBackend.sync_clear()</span></code></a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.RedisApiKeyCacheBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RedisApiKeyCacheBackend</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.get" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RedisApiKeyCacheBackend.get()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.set" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RedisApiKeyCacheBackend.set()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.delete" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RedisApiKeyCacheBackend.delete()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.clear" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RedisApiKeyCacheBackend.clear()</span></code></a>
+        </li></ul>
+            </nav>
         </li>
         <li class="md-nav__item"><a href="#app.services.apikey_cache_backend.build_apikey_cache_backend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">build_apikey_cache_backend()</span></code></a>
         </li></ul>
@@ -409,6 +441,59 @@ request.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.apikey_cache_backend.</span></span><span class="sig-name descname"><span class="pre">ApiKeyCacheBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#ApiKeyCacheBackend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.ApiKeyCacheBackend" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
 <p>Cache the resolved <code class="docutils literal notranslate"><span class="pre">(apiKey,</span> <span class="pre">active)</span></code> tuple keyed by sha256 hash.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.ApiKeyCacheBackend.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#ApiKeyCacheBackend.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.ApiKeyCacheBackend.get" title="Link to this definition">¶</a></dt>
+<dd><p>Return the cached value for <code class="docutils literal notranslate"><span class="pre">cache_key</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if absent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cache_key</strong> (<em>str</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>SimpleNamespace</em> | None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.ApiKeyCacheBackend.set">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl_seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#ApiKeyCacheBackend.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.ApiKeyCacheBackend.set" title="Link to this definition">¶</a></dt>
+<dd><p>Store <code class="docutils literal notranslate"><span class="pre">value</span></code> under <code class="docutils literal notranslate"><span class="pre">cache_key</span></code> with a <code class="docutils literal notranslate"><span class="pre">ttl_seconds</span></code> lifetime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cache_key</strong> (<em>str</em>)</p></li>
+<li><p><strong>value</strong> (<em>SimpleNamespace</em>)</p></li>
+<li><p><strong>ttl_seconds</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.ApiKeyCacheBackend.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#ApiKeyCacheBackend.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.ApiKeyCacheBackend.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Remove the entry for <code class="docutils literal notranslate"><span class="pre">cache_key</span></code> if present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cache_key</strong> (<em>str</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.ApiKeyCacheBackend.clear">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#ApiKeyCacheBackend.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.ApiKeyCacheBackend.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Remove every cached entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend">
@@ -421,6 +506,73 @@ different loop”. This mirrors the behavior the cache had when it lived
 on <code class="docutils literal notranslate"><span class="pre">ApiKeyService</span></code> directly.</p>
 <dl class="field-list simple">
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#InMemoryApiKeyCacheBackend.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.get" title="Link to this definition">¶</a></dt>
+<dd><p>Return the cached value for <code class="docutils literal notranslate"><span class="pre">cache_key</span></code>, evicting it if expired.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cache_key</strong> (<em>str</em>) – The lookup key (sha256 of the API key plaintext).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Optional[SimpleNamespace]</em> – The cached <code class="docutils literal notranslate"><span class="pre">(apiKey,</span> <span class="pre">active)</span></code> value,
+or <code class="docutils literal notranslate"><span class="pre">None</span></code> if absent or past its TTL.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>SimpleNamespace</em> | None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.set">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl_seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#InMemoryApiKeyCacheBackend.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.set" title="Link to this definition">¶</a></dt>
+<dd><p>Cache <code class="docutils literal notranslate"><span class="pre">value</span></code> under <code class="docutils literal notranslate"><span class="pre">cache_key</span></code> for <code class="docutils literal notranslate"><span class="pre">ttl_seconds</span></code> (no-op if ≤ 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cache_key</strong> (<em>str</em>) – The lookup key.</p></li>
+<li><p><strong>value</strong> (<em>SimpleNamespace</em>) – The <code class="docutils literal notranslate"><span class="pre">(apiKey,</span> <span class="pre">active)</span></code> value to store.</p></li>
+<li><p><strong>ttl_seconds</strong> (<em>int</em>) – Lifetime in seconds; values ≤ 0 are ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#InMemoryApiKeyCacheBackend.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Remove the cached entry for <code class="docutils literal notranslate"><span class="pre">cache_key</span></code> if present.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cache_key</strong> (<em>str</em>) – The lookup key to evict.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.clear">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#InMemoryApiKeyCacheBackend.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Remove every cached entry (async wrapper over <code class="docutils literal notranslate"><span class="pre">sync_clear</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.sync_clear">
+<span class="sig-name descname"><span class="pre">sync_clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#InMemoryApiKeyCacheBackend.sync_clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.InMemoryApiKeyCacheBackend.sync_clear" title="Link to this definition">¶</a></dt>
+<dd><p>Clear the store synchronously and reset the lock for a new loop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.services.apikey_cache_backend.RedisApiKeyCacheBackend">
@@ -434,6 +586,63 @@ JSON (<code class="docutils literal notranslate"><span class="pre">{"apiKey":</s
 <dd class="field-odd"><p><strong>key_prefix</strong> (<em>str</em>)</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.RedisApiKeyCacheBackend.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#RedisApiKeyCacheBackend.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.get" title="Link to this definition">¶</a></dt>
+<dd><p>Read and deserialize a cached value from Redis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cache_key</strong> (<em>str</em>) – The lookup key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Optional[SimpleNamespace]</em> – The decoded <code class="docutils literal notranslate"><span class="pre">(apiKey,</span> <span class="pre">active)</span></code> value,
+or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the key is absent.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>SimpleNamespace</em> | None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.RedisApiKeyCacheBackend.set">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl_seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#RedisApiKeyCacheBackend.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.set" title="Link to this definition">¶</a></dt>
+<dd><p>Store <code class="docutils literal notranslate"><span class="pre">value</span></code> as JSON in Redis with a server-side TTL (no-op if ≤ 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cache_key</strong> (<em>str</em>) – The lookup key.</p></li>
+<li><p><strong>value</strong> (<em>SimpleNamespace</em>) – The <code class="docutils literal notranslate"><span class="pre">(apiKey,</span> <span class="pre">active)</span></code> value to store.</p></li>
+<li><p><strong>ttl_seconds</strong> (<em>int</em>) – Expiry passed to Redis <code class="docutils literal notranslate"><span class="pre">SET</span> <span class="pre">...</span> <span class="pre">EX</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.RedisApiKeyCacheBackend.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#RedisApiKeyCacheBackend.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a single cached entry from Redis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cache_key</strong> (<em>str</em>) – The lookup key to evict.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_cache_backend.RedisApiKeyCacheBackend.clear">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_cache_backend.html#RedisApiKeyCacheBackend.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_cache_backend.RedisApiKeyCacheBackend.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Delete every entry under the key prefix via a bounded SCAN + DEL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="app.services.apikey_cache_backend.build_apikey_cache_backend">

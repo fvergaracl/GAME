@@ -451,6 +451,20 @@
     <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">strategyId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sinceDt</span><span class="p">,</span> <span class="n">untilDt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Scope a statement to one strategy and an optional time range.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stmt: The SQLAlchemy select statement to constrain.</span>
+<span class="sd">            strategyId (str): Strategy whose logs to include.</span>
+<span class="sd">            sinceDt: Lower bound on ``created_at`` (inclusive); ignored if</span>
+<span class="sd">                ``None``.</span>
+<span class="sd">            untilDt: Upper bound on ``created_at`` (inclusive); ignored if</span>
+<span class="sd">                ``None``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The statement with the added ``WHERE`` clauses.</span>
+<span class="sd">        """</span>
         <span class="n">stmt</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">strategyId</span> <span class="o">==</span> <span class="n">strategyId</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sinceDt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&gt;=</span> <span class="n">sinceDt</span><span class="p">)</span>

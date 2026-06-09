@@ -616,6 +616,20 @@
         <span class="n">sinceDt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">],</span>
         <span class="n">untilDt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StrategyMetricsResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Assemble the metrics response for one strategy over a time window.</span>
+
+<span class="sd">        Aggregates execution counts, status/error breakdowns and latency</span>
+<span class="sd">        percentiles for the strategy within the optional date range.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            strategy (StrategyDefinitionRead): The strategy to report on.</span>
+<span class="sd">            sinceDt (Optional[datetime]): Inclusive lower time bound.</span>
+<span class="sd">            untilDt (Optional[datetime]): Inclusive upper time bound.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            StrategyMetricsResponse: The aggregated metrics.</span>
+<span class="sd">        """</span>
         <span class="c1"># Strategy executions persist with the bare definition id</span>
         <span class="c1"># (StrategyDefinitionLog.strategyId — see how the observer is</span>
         <span class="c1"># called from DslStrategy._run_phase). We pass that id verbatim</span>

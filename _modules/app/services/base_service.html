@@ -376,26 +376,112 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span> <span class="o">=</span> <span class="n">repository</span>
 
+<div class="viewcode-block" id="BaseService.get_list">
+<a class="viewcode-back" href="../../../api/app.services.base_service.html#app.services.base_service.BaseService.get_list">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">read_by_options</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return a filtered, paginated list of entities.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            schema: Search schema with filters and ordering/pagination.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, Any]: Items plus search metadata, as returned by the</span>
+<span class="sd">            repository.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">read_by_options</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseService.get_by_id">
+<a class="viewcode-back" href="../../../api/app.services.base_service.html#app.services.base_service.BaseService.get_by_id">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Fetch a single entity by primary key.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            id (UUID): Primary key of the entity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The matching entity.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseService.add">
+<a class="viewcode-back" href="../../../api/app.services.base_service.html#app.services.base_service.BaseService.add">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Create a new entity from ``schema``.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            schema: Pydantic schema describing the entity to create.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The persisted entity.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseService.patch">
+<a class="viewcode-back" href="../../../api/app.services.base_service.html#app.services.base_service.BaseService.patch">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Partially update an entity, ignoring null fields.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            id (UUID): Primary key of the entity to update.</span>
+<span class="sd">            schema: Schema whose non-null fields are applied.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The updated entity.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseService.patch_attr">
+<a class="viewcode-back" href="../../../api/app.services.base_service.html#app.services.base_service.BaseService.patch_attr">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">patch_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">update_attr</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Update a single attribute of an entity.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            id (UUID): Primary key of the entity.</span>
+<span class="sd">            attr (str): Name of the attribute to set.</span>
+<span class="sd">            value: New value for the attribute.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The updated entity.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">update_attr</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseService.put_update">
+<a class="viewcode-back" href="../../../api/app.services.base_service.html#app.services.base_service.BaseService.put_update">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">whole_update</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Fully replace an entity's fields from ``schema``.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            id (UUID): Primary key of the entity to replace.</span>
+<span class="sd">            schema: Schema dumped in full into the update.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The updated entity.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">whole_update</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BaseService.remove_by_id">
+<a class="viewcode-back" href="../../../api/app.services.base_service.html#app.services.base_service.BaseService.remove_by_id">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">remove_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Delete an entity by primary key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (UUID): Primary key of the entity to delete.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">delete_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
 

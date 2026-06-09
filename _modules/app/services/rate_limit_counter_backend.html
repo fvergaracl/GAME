@@ -391,6 +391,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">RateLimitCounterBackend</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Increment a per-bucket counter and return its new value."""</span>
 
+<div class="viewcode-block" id="RateLimitCounterBackend.increment_and_get">
+<a class="viewcode-back" href="../../../api/app.services.rate_limit_counter_backend.html#app.services.rate_limit_counter_backend.RateLimitCounterBackend.increment_and_get">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">increment_and_get</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">scope_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -398,7 +400,10 @@
         <span class="n">window_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">window_start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
         <span class="n">ttl_seconds</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span></div>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Increment the bucket's counter and return its new value."""</span>
+        <span class="o">...</span></div>
+</div>
 
 
 
@@ -416,6 +421,8 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">:</span> <span class="n">AbuseLimitCounterRepository</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span> <span class="o">=</span> <span class="n">repository</span>
 
+<div class="viewcode-block" id="DatabaseRateLimitCounterBackend.increment_and_get">
+<a class="viewcode-back" href="../../../api/app.services.rate_limit_counter_backend.html#app.services.rate_limit_counter_backend.DatabaseRateLimitCounterBackend.increment_and_get">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">increment_and_get</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">scope_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -424,6 +431,22 @@
         <span class="n">window_start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
         <span class="n">ttl_seconds</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Increment a DB-backed rate-limit counter and return its value.</span>
+
+<span class="sd">        ``ttl_seconds`` is ignored: the bucket's ``window_start`` already</span>
+<span class="sd">        encodes window boundaries, so expiry is handled offline.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scope_type (str): Dimension being limited.</span>
+<span class="sd">            scope_value (str): Concrete value within ``scope_type``.</span>
+<span class="sd">            window_name (str): Name of the time window/bucket.</span>
+<span class="sd">            window_start (datetime): Start of the bucket window.</span>
+<span class="sd">            ttl_seconds (int): Ignored by this backend.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The counter value after the increment.</span>
+<span class="sd">        """</span>
         <span class="k">del</span> <span class="n">ttl_seconds</span>  <span class="c1"># bucket key carries window semantics for the DB backend</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span><span class="o">.</span><span class="n">increment_and_get</span><span class="p">(</span>
             <span class="n">scope_type</span><span class="o">=</span><span class="n">scope_type</span><span class="p">,</span>
@@ -431,6 +454,7 @@
             <span class="n">window_name</span><span class="o">=</span><span class="n">window_name</span><span class="p">,</span>
             <span class="n">window_start</span><span class="o">=</span><span class="n">window_start</span><span class="p">,</span>
         <span class="p">)</span></div>
+</div>
 
 
 
@@ -454,6 +478,17 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_bucket_epoch</span><span class="p">(</span><span class="n">window_start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the UTC unix timestamp of a bucket's window start.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            window_start (datetime): Start of the bucket window (naive treated</span>
+<span class="sd">                as UTC).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Unix epoch seconds, used to make the Redis key unique per</span>
+<span class="sd">            window.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">window_start</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">window_start</span> <span class="o">=</span> <span class="n">window_start</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -467,11 +502,25 @@
         <span class="n">window_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">window_start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Build the Redis key uniquely identifying a rate-limit bucket.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scope_type (str): Dimension being limited.</span>
+<span class="sd">            scope_value (str): Concrete value within ``scope_type``.</span>
+<span class="sd">            window_name (str): Name of the time window.</span>
+<span class="sd">            window_start (datetime): Start of the bucket window.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The fully-qualified, prefixed Redis key.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_key_prefix</span><span class="si">}{</span><span class="n">window_name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">scope_type</span><span class="si">}</span><span class="s2">:"</span>
             <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">scope_value</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_bucket_epoch</span><span class="p">(</span><span class="n">window_start</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
+<div class="viewcode-block" id="RedisRateLimitCounterBackend.increment_and_get">
+<a class="viewcode-back" href="../../../api/app.services.rate_limit_counter_backend.html#app.services.rate_limit_counter_backend.RedisRateLimitCounterBackend.increment_and_get">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">increment_and_get</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">scope_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -480,6 +529,23 @@
         <span class="n">window_start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
         <span class="n">ttl_seconds</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Increment a Redis-backed rate-limit counter and return its value.</span>
+
+<span class="sd">        Uses a single ``MULTI/EXEC`` pipeline of ``SET key 0 EX ttl NX`` (plant</span>
+<span class="sd">        a TTL'd zero on the first hit) followed by ``INCR`` so a key is never</span>
+<span class="sd">        visible without a TTL.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scope_type (str): Dimension being limited.</span>
+<span class="sd">            scope_value (str): Concrete value within ``scope_type``.</span>
+<span class="sd">            window_name (str): Name of the time window/bucket.</span>
+<span class="sd">            window_start (datetime): Start of the bucket window.</span>
+<span class="sd">            ttl_seconds (int): Key TTL (clamped to ≥ 1 second).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The counter value after the increment.</span>
+<span class="sd">        """</span>
         <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_key</span><span class="p">(</span><span class="n">scope_type</span><span class="p">,</span> <span class="n">scope_value</span><span class="p">,</span> <span class="n">window_name</span><span class="p">,</span> <span class="n">window_start</span><span class="p">)</span>
         <span class="n">ttl</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">ttl_seconds</span><span class="p">))</span>
 
@@ -488,6 +554,7 @@
         <span class="n">pipe</span><span class="o">.</span><span class="n">incr</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pipe</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+</div>
 
 
 

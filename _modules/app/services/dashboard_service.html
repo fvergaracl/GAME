@@ -418,15 +418,43 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dashboard_repository</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="DashboardService.get_dashboard_summary">
+<a class="viewcode-back" href="../../../api/app.services.dashboard_service.html#app.services.dashboard_service.DashboardService.get_dashboard_summary">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_dashboard_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">group_by</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the dashboard activity summary for a date range.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start_date: Inclusive lower bound of the reporting window.</span>
+<span class="sd">            end_date: Inclusive upper bound of the reporting window.</span>
+<span class="sd">            group_by: Bucketing granularity (e.g. ``"day"``/``"month"``).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: Aggregated summary metrics produced by the repository.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">dashboard_repository</span><span class="o">.</span><span class="n">get_dashboard_summary</span><span class="p">(</span>
             <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">group_by</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="DashboardService.get_dashboard_summary_logs">
+<a class="viewcode-back" href="../../../api/app.services.dashboard_service.html#app.services.dashboard_service.DashboardService.get_dashboard_summary_logs">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_dashboard_summary_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">group_by</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the dashboard log-activity summary for a date range.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start_date: Inclusive lower bound of the reporting window.</span>
+<span class="sd">            end_date: Inclusive upper bound of the reporting window.</span>
+<span class="sd">            group_by: Bucketing granularity (e.g. ``"day"``/``"month"``).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: Aggregated log metrics produced by the repository.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">dashboard_repository</span><span class="o">.</span><span class="n">get_dashboard_summary_logs</span><span class="p">(</span>
             <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">group_by</span>
         <span class="p">)</span></div>
+</div>
 
 
     <span class="c1"># def get_dashboard_summary_logs_module_counts(self, start_date, end_date, group_by):</span>

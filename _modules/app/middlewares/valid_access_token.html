@@ -400,6 +400,16 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_jwks_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">PyJWKClient</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Return the lazily-built, process-wide ``PyJWKClient`` singleton.</span>
+
+<span class="sd">    The client points at the Keycloak realm's JWKS endpoint and caches signing</span>
+<span class="sd">    keys for its ``lifespan`` so repeated token validations avoid a JWKS HTTP</span>
+<span class="sd">    roundtrip on every request.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        PyJWKClient: The shared signing-key client.</span>
+<span class="sd">    """</span>
     <span class="k">global</span> <span class="n">_JWKS_CLIENT</span>
     <span class="k">if</span> <span class="n">_JWKS_CLIENT</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">configs</span><span class="o">.</span><span class="n">KEYCLOAK_URL_DOCKER</span><span class="si">}</span><span class="s2">/realms/</span><span class="si">{</span><span class="n">configs</span><span class="o">.</span><span class="n">KEYCLOAK_REALM</span><span class="si">}</span><span class="s2">/protocol/openid-connect/certs"</span>
@@ -439,6 +449,21 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_subject_claim</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Ensure the token payload has a usable ``sub`` claim.</span>
+
+<span class="sd">    Keycloak access tokens do not always carry ``sub`` (e.g. client-credential</span>
+<span class="sd">    tokens). This copies the payload and fills ``sub`` from the first non-empty</span>
+<span class="sd">    fallback claim in :data:`SUBJECT_FALLBACK_CLAIMS`</span>
+<span class="sd">    (``preferred_username``, ``email``, ``client_id``, ``azp``).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        payload (dict[str, Any]): Decoded JWT claims.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, Any]: A copy of the payload with ``sub`` normalized when a</span>
+<span class="sd">        suitable fallback exists.</span>
+<span class="sd">    """</span>
     <span class="n">normalized</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">claim_name</span> <span class="ow">in</span> <span class="n">SUBJECT_FALLBACK_CLAIMS</span><span class="p">:</span>
         <span class="n">claim_value</span> <span class="o">=</span> <span class="n">normalized</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">claim_name</span><span class="p">)</span>
@@ -449,6 +474,20 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_build_token_response</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Wrap a decoded JWT payload into a success/failure :class:`Response`.</span>
+
+<span class="sd">    Normalizes the subject claim and rejects tokens that still lack a usable</span>
+<span class="sd">    ``sub`` after normalization.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        payload (dict[str, Any]): Decoded JWT claims.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: ``Response.ok`` with the normalized claims, or</span>
+<span class="sd">        ``Response.fail`` carrying a 401 ``HTTPException`` when no subject is</span>
+<span class="sd">        present.</span>
+<span class="sd">    """</span>
     <span class="n">normalized</span> <span class="o">=</span> <span class="n">_normalize_subject_claim</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
     <span class="n">subject</span> <span class="o">=</span> <span class="n">normalized</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sub"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">subject</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
@@ -458,9 +497,27 @@
     <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="n">ok</span><span class="p">(</span><span class="n">normalized</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="valid_access_token">
+<a class="viewcode-back" href="../../../api/app.middlewares.valid_access_token.html#app.middlewares.valid_access_token.valid_access_token">[docs]</a>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">valid_access_token</span><span class="p">(</span>
     <span class="n">access_token</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Depends</span><span class="p">(</span><span class="n">oauth_2_scheme</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Validate a Keycloak-issued JWT access token.</span>
+
+<span class="sd">    Fetches the realm signing key (offloaded to a worker thread so the JWKS</span>
+<span class="sd">    roundtrip does not block the event loop) and verifies the token's</span>
+<span class="sd">    signature, expiry, issuer and audience. Each failure mode is mapped to an</span>
+<span class="sd">    appropriate HTTP status carried inside the returned ``Response``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        access_token (str): The bearer token extracted by ``oauth_2_scheme``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Response: ``Response.ok`` with the decoded/normalized claims on</span>
+<span class="sd">        success; ``Response.fail`` wrapping an ``HTTPException`` (401/403/500)</span>
+<span class="sd">        describing why validation failed.</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">jwks_client</span> <span class="o">=</span> <span class="n">_get_jwks_client</span><span class="p">()</span>
         <span class="c1"># PyJWKClient does sync HTTP under the hood; offload to a worker thread</span>
@@ -512,7 +569,8 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"JWT rejected: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
             <span class="n">error</span><span class="o">=</span><span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Invalid token: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="refresh_access_token">

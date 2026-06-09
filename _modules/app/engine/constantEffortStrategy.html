@@ -396,6 +396,24 @@
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">calculate_points</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Award points for sustained effort within a rolling time window.</span>
+
+<span class="sd">        If the user already has measurements in the last</span>
+<span class="sd">        ``variable_constant_effort_interval_minutes`` minutes, the award scales</span>
+<span class="sd">        with how consistent they have been (``ConstantEffortReward``);</span>
+<span class="sd">        otherwise a flat basic point is granted (``BasicReward``).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId: External identifier of the game.</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+<span class="sd">            data: Optional event payload (unused by this strategy).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[int, str]: The points to award and the case name describing</span>
+<span class="sd">            which branch produced them.</span>
+<span class="sd">        """</span>
         <span class="n">task_measurements_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_analytics_service</span><span class="o">.</span><span class="n">get_user_task_measurements_count_the_last_seconds</span><span class="p">(</span>
             <span class="n">externalTaskId</span><span class="p">,</span>
             <span class="n">externalUserId</span><span class="p">,</span>
@@ -411,6 +429,17 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_points_from_consistency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">consistent_effort_count</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Map a consistent-effort streak to a bounded point value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            consistent_effort_count: Number of consecutive in-window</span>
+<span class="sd">                measurements (including the current one).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Points normalized against ``variable_max_points`` and clamped</span>
+<span class="sd">            to the range ``[1, variable_max_points]``.</span>
+<span class="sd">        """</span>
         <span class="n">normalized_points</span> <span class="o">=</span> <span class="p">(</span><span class="n">consistent_effort_count</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_max_points</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">normalized_points</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_max_points</span><span class="p">)</span></div>
 

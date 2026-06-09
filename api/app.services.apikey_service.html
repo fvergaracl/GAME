@@ -379,7 +379,13 @@
         </li>
         <li class="md-nav__item"><a href="#app.services.apikey_service.ApiKeyService.generate_api_key_service" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyService.generate_api_key_service()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_service.ApiKeyService.create_api_key" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyService.create_api_key()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_service.ApiKeyService.get_all_api_keys" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyService.get_all_api_keys()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.apikey_service.ApiKeyService.revoke_api_key_by_prefix" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyService.revoke_api_key_by_prefix()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.apikey_service.ApiKeyService.get_api_key_header" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyService.get_api_key_header()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.apikey_service.ApiKeyService.clear_header_cache" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ApiKeyService.clear_header_cache()</span></code></a>
         </li></ul>
@@ -482,6 +488,36 @@ not collide with any existing record.</p>
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_service.ApiKeyService.create_api_key">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_api_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">apikeyPostBody</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_service.html#ApiKeyService.create_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_service.ApiKeyService.create_api_key" title="Link to this definition">¶</a></dt>
+<dd><p>Persist a new API-key record.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>apikeyPostBody</strong> – Schema describing the API key to store (including
+its prefix and hash).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – The created API-key entity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_service.ApiKeyService.get_all_api_keys">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_api_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_service.html#ApiKeyService.get_all_api_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_service.ApiKeyService.get_all_api_keys" title="Link to this definition">¶</a></dt>
+<dd><p>Return every API-key record.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em> – All stored API-key entities.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="app.services.apikey_service.ApiKeyService.revoke_api_key_by_prefix">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">revoke_api_key_by_prefix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_service.html#ApiKeyService.revoke_api_key_by_prefix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_service.ApiKeyService.revoke_api_key_by_prefix" title="Link to this definition">¶</a></dt>
 <dd><p>Revoke an API key identified by its public prefix and drop the
@@ -495,6 +531,30 @@ no need to nuke unrelated entries.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.apikey_service.ApiKeyService.get_api_key_header">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_api_key_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Security(APIKeyHeader)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/apikey_service.html#ApiKeyService.get_api_key_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.apikey_service.ApiKeyService.get_api_key_header" title="Link to this definition">¶</a></dt>
+<dd><p>Authenticate a request based on the value of the <code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code>
+header. The value is hashed and compared against the canonical
+<code class="docutils literal notranslate"><span class="pre">apiKeyHash</span></code> column; the plaintext is never stored or returned.</p>
+<p>A short-lived cache (when <code class="docutils literal notranslate"><span class="pre">API_KEY_HEADER_CACHE_TTL_SECONDS</span></code> &gt; 0)
+avoids a DB lookup on every request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>api_key</strong> (<em>str</em>) – The raw <code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code> header value.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Response</em> – <code class="docutils literal notranslate"><span class="pre">Response.ok</span></code> with the normalized key info on success,
+or <code class="docutils literal notranslate"><span class="pre">Response.fail</span></code> when the header is absent.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ForbiddenError</strong> – If the key is missing, unknown or inactive.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Response</em></p>
 </dd>
 </dl>
 </dd></dl>

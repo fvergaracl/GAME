@@ -382,12 +382,34 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">PointsPersistenceMixin</span><span class="p">(</span><span class="n">UserPointsContext</span><span class="p">):</span>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_extract_points</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Read a ``points`` value from a dict or object payload.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: Either a mapping or an object exposing ``points``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int | None: The points value, or ``None`` if absent.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"points"</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">"points"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_extract_idempotency_key</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Derive an idempotency key from common identifier fields.</span>
+
+<span class="sd">        Checks ``eventId``, ``idempotencyKey`` and ``correlationId`` in order</span>
+<span class="sd">        and returns the first non-empty string value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: The event payload (only dicts are inspected).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str | None: The stripped idempotency key, or ``None`` if none</span>
+<span class="sd">            present.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"eventId"</span><span class="p">,</span> <span class="s2">"idempotencyKey"</span><span class="p">,</span> <span class="s2">"correlationId"</span><span class="p">):</span>

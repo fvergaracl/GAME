@@ -454,11 +454,33 @@
                 <span class="k">return</span> <span class="n">generated</span></div>
 
 
+<div class="viewcode-block" id="ApiKeyService.create_api_key">
+<a class="viewcode-back" href="../../../api/app.services.apikey_service.html#app.services.apikey_service.ApiKeyService.create_api_key">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_api_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">apikeyPostBody</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">apikey_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">apikeyPostBody</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Persist a new API-key record.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            apikeyPostBody: Schema describing the API key to store (including</span>
+<span class="sd">                its prefix and hash).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The created API-key entity.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">apikey_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">apikeyPostBody</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ApiKeyService.get_all_api_keys">
+<a class="viewcode-back" href="../../../api/app.services.apikey_service.html#app.services.apikey_service.ApiKeyService.get_all_api_keys">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_api_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">apikey_repository</span><span class="o">.</span><span class="n">read_all</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return every API-key record.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: All stored API-key entities.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">apikey_repository</span><span class="o">.</span><span class="n">read_all</span><span class="p">()</span></div>
+
 
 <div class="viewcode-block" id="ApiKeyService.revoke_api_key_by_prefix">
 <a class="viewcode-back" href="../../../api/app.services.apikey_service.html#app.services.apikey_service.ApiKeyService.revoke_api_key_by_prefix">[docs]</a>
@@ -482,17 +504,32 @@
         <span class="k">return</span> <span class="n">updated</span></div>
 
 
+<div class="viewcode-block" id="ApiKeyService.get_api_key_header">
+<a class="viewcode-back" href="../../../api/app.services.apikey_service.html#app.services.apikey_service.ApiKeyService.get_api_key_header">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_api_key_header</span><span class="p">(</span>
         <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Security</span><span class="p">(</span><span class="n">api_key_header</span><span class="p">),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">Container</span>
-
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Authenticate a request based on the value of the ``X-API-Key``</span>
 <span class="sd">        header. The value is hashed and compared against the canonical</span>
 <span class="sd">        ``apiKeyHash`` column; the plaintext is never stored or returned.</span>
+
+<span class="sd">        A short-lived cache (when ``API_KEY_HEADER_CACHE_TTL_SECONDS`` &gt; 0)</span>
+<span class="sd">        avoids a DB lookup on every request.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            api_key (str): The raw ``X-API-Key`` header value.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Response: ``Response.ok`` with the normalized key info on success,</span>
+<span class="sd">            or ``Response.fail`` when the header is absent.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ForbiddenError: If the key is missing, unknown or inactive.</span>
 <span class="sd">        """</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.container</span><span class="w"> </span><span class="kn">import</span> <span class="n">Container</span>
+
         <span class="k">if</span> <span class="n">api_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="n">ForbiddenError</span><span class="p">(</span><span class="s2">"API key not provided."</span><span class="p">))</span>
         <span class="n">key_hash</span> <span class="o">=</span> <span class="n">hash_api_key</span><span class="p">(</span><span class="n">api_key</span><span class="p">)</span>
@@ -515,7 +552,8 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">ttl_seconds</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">cache_backend</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key_hash</span><span class="p">,</span> <span class="n">normalized</span><span class="p">,</span> <span class="n">ttl_seconds</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="n">ok</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">normalized</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="n">ok</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">normalized</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="ApiKeyService.clear_header_cache">
 <a class="viewcode-back" href="../../../api/app.services.apikey_service.html#app.services.apikey_service.ApiKeyService.clear_header_cache">[docs]</a>

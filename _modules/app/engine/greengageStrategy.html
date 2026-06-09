@@ -475,6 +475,20 @@
 <div class="viewcode-block" id="GREENGAGEGamificationStrategy.generate_logic_graph">
 <a class="viewcode-back" href="../../../api/app.engine.greengageStrategy.html#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.generate_logic_graph">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_logic_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"png"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Render this strategy's decision tree as a Graphviz diagram.</span>
+
+<span class="sd">        Builds a labelled flowchart (legend, decision nodes and the Case</span>
+<span class="sd">        1.1–4.2 outcomes) describing how minutes, records and global/personal</span>
+<span class="sd">        averages map to a point award. Used by the dashboard to visualize the</span>
+<span class="sd">        strategy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            format (str): Graphviz output format (e.g. ``"png"``, ``"svg"``).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            graphviz.Digraph: The constructed diagram.</span>
+<span class="sd">        """</span>
         <span class="n">dot</span> <span class="o">=</span> <span class="n">Digraph</span><span class="p">(</span><span class="n">comment</span><span class="o">=</span><span class="s2">"Points Calculation Logic"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
 
         <span class="c1"># Set overall graph attributes</span>
@@ -552,6 +566,24 @@
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">calculate_points</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">data</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Award points from reported effort minutes and task complexity.</span>
+
+<span class="sd">        Requires a numeric ``minutes`` value in ``data``. The award follows</span>
+<span class="sd">        the Case 1.1–4.2 decision tree (see :meth:`generate_logic_graph`),</span>
+<span class="sd">        weighting the configured default points by total complexity and the</span>
+<span class="sd">        user's history/averages.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId: External identifier of the game.</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+<span class="sd">            data (dict): Event payload; must contain an integer ``minutes``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: ``(points, caseName)`` on success, or ``(-1, message)``</span>
+<span class="sd">            when ``minutes`` is missing or invalid.</span>
+<span class="sd">        """</span>
         <span class="n">minutes</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"minutes"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">minutes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'The "minutes" field is required into the data'</span><span class="p">)</span>

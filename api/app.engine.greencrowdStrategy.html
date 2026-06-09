@@ -375,6 +375,8 @@
         </li>
         <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.get_dynamic_values_from_tasks" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_dynamic_values_from_tasks()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.assign_random_scores" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">assign_random_scores()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENCROWDGamificationStrategy</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.generate_logic_graph" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">GREENCROWDGamificationStrategy.generate_logic_graph()</span></code></a>
@@ -471,6 +473,24 @@ compatibility).</p></li>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.greencrowdStrategy.assign_random_scores">
+<span class="sig-prename descclassname"><span class="pre">app.engine.greencrowdStrategy.</span></span><span class="sig-name descname"><span class="pre">assign_random_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#assign_random_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.assign_random_scores" title="Link to this definition">¶</a></dt>
+<dd><p>Generate random scores for each GREENCROWD scoring dimension.</p>
+<p>Used to seed simulations/tests with plausible per-dimension values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>min_value</strong> (<em>int</em>) – Inclusive lower bound for each random score.</p></li>
+<li><p><strong>max_value</strong> (<em>int</em>) – Inclusive upper bound for each random score.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict</em> – Random integer scores keyed by dimension (<code class="docutils literal notranslate"><span class="pre">DIM_BP</span></code>,
+<code class="docutils literal notranslate"><span class="pre">DIM_TD</span></code>, <code class="docutils literal notranslate"><span class="pre">DIM_LBE</span></code>, <code class="docutils literal notranslate"><span class="pre">DIM_PP</span></code>, <code class="docutils literal notranslate"><span class="pre">DIM_S</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.engine.greencrowdStrategy.</span></span><span class="sig-name descname"><span class="pre">GREENCROWDGamificationStrategy</span></span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#GREENCROWDGamificationStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy" title="Link to this definition">¶</a></dt>
@@ -478,10 +498,16 @@ compatibility).</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.generate_logic_graph">
 <span class="sig-name descname"><span class="pre">generate_logic_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'png'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greencrowdStrategy.html#GREENCROWDGamificationStrategy.generate_logic_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.generate_logic_graph" title="Link to this definition">¶</a></dt>
-<dd><p>Generates a logic graph for the strategy.</p>
+<dd><p>Render the GREENCROWD scoring logic as a Graphviz diagram.</p>
+<p>Produces a labelled flowchart of the five scoring dimensions (base
+points, location-based equity, time diversity, personal performance and
+streak bonus) for display in the dashboard.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>str</em> – The logic graph as a string.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>format</strong> (<em>str</em>) – Graphviz output format (e.g. <code class="docutils literal notranslate"><span class="pre">"png"</span></code>, <code class="docutils literal notranslate"><span class="pre">"svg"</span></code>).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>graphviz.Digraph</em> – The constructed diagram.</p>
 </dd>
 </dl>
 </dd></dl>

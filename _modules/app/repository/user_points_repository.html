@@ -391,9 +391,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">user_repository</span> <span class="o">=</span> <span class="n">BaseRepository</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">Users</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
+<div class="viewcode-block" id="UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_first_user_points_in_external_task_id_by_user_id">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_first_user_points_in_external_task_id_by_user_id</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the earliest points row for a user on a given external task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            UserPoints | None: The oldest matching points row, or ``None``.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">)</span>
@@ -403,7 +415,8 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
+
 
 <div class="viewcode-block" id="UserPointsRepository.read_by_user_task_and_idempotency">
 <a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.read_by_user_task_and_idempotency">[docs]</a>
@@ -437,7 +450,20 @@
         <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="UserPointsRepository.get_all_UserPoints_by_gameId">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_gameId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_UserPoints_by_gameId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Aggregate points per (task, user) for every task in a game.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId: Internal game identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Rows of ``(externalTaskId, externalUserId, points,</span>
+<span class="sd">            timesAwarded)`` where ``points`` is the summed total and</span>
+<span class="sd">            ``timesAwarded`` the number of awards.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span>
@@ -451,9 +477,22 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">gameId</span> <span class="o">==</span> <span class="n">gameId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span><span class="p">,</span> <span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_all_UserPoints_by_taskId">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_taskId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_UserPoints_by_taskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Aggregate points per user for a single task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskId: Internal task identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Rows of ``(externalUserId, points, timesAwarded)`` with the</span>
+<span class="sd">            summed points and award count per user.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span>
@@ -465,9 +504,26 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">taskId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_all_UserPoints_by_taskId_with_details">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_all_UserPoints_by_taskId_with_details">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_UserPoints_by_taskId_with_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Aggregate points per user for a task, including per-award detail.</span>
+
+<span class="sd">        Like :meth:`get_all_UserPoints_by_taskId` but also returns a</span>
+<span class="sd">        ``pointsData`` array aggregating each award's ``points``, ``caseName``,</span>
+<span class="sd">        ``data``, ``description`` and ``created_at``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskId: Internal task identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Rows of ``(externalUserId, points, timesAwarded,</span>
+<span class="sd">            pointsData)``.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span>
@@ -493,9 +549,23 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">taskId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_points_and_users_by_taskId">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_and_users_by_taskId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Aggregate points per user for a task with a compact award breakdown.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskId: Internal task identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Rows of ``(externalUserId, points, timesAwarded,</span>
+<span class="sd">            pointsData)`` where ``pointsData`` aggregates each award's</span>
+<span class="sd">            ``points``, ``caseName`` and ``created_at``.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span>
@@ -517,9 +587,21 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span> <span class="o">==</span> <span class="n">taskId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_task_by_externalUserId">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_task_by_externalUserId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return all tasks a user has earned points on.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[Tasks]: Distinct tasks linked to the user's points rows.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">Tasks</span><span class="p">)</span>
@@ -527,9 +609,22 @@
                 <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Users</span><span class="p">,</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_task_and_sum_points_by_userId">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_task_and_sum_points_by_userId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_and_sum_points_by_userId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Sum a user's points grouped by task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userId: Internal user identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Rows of ``(externalTaskId, points)`` with the total points</span>
+<span class="sd">            the user earned on each task.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span>
@@ -542,47 +637,120 @@
                 <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_user_measurement_count">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_measurement_count">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_measurement_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Count how many points rows (measurements) a user has.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userId: Internal user identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of points rows for the user.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">measurement_count</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">measurement_count</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_time_taken_for_last_task">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_time_taken_for_last_task">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_time_taken_for_last_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the timestamp of a user's most recent points row.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userId: Internal user identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            datetime | None: The maximum ``created_at`` for the user, or</span>
+<span class="sd">            ``None`` if they have no rows.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span>
                 <span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"last_task_time"</span><span class="p">)</span>
             <span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">last_task_time</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">last_task_time</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_individual_calculation">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_individual_calculation">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_individual_calculation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return a user's average points per award.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userId: Internal user identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float | None: Mean of ``points`` across the user's rows, or</span>
+<span class="sd">            ``None`` if they have none.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"average_points"</span><span class="p">))</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_points</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_points</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_global_calculation">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_global_calculation">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_global_calculation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the average points per award across all users.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float | None: Mean of ``points`` over every points row, or</span>
+<span class="sd">            ``None`` if the table is empty.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"average_points"</span><span class="p">))</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_points</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_points</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_start_time_for_last_task">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_start_time_for_last_task">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_start_time_for_last_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the timestamp of a user's earliest points row.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userId: Internal user identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            datetime | None: The minimum ``created_at`` for the user, or</span>
+<span class="sd">            ``None`` if they have no rows.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"start_time"</span><span class="p">))</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
                 <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span> <span class="o">==</span> <span class="n">userId</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">start_time</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">start_time</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.count_measurements_by_external_task_id">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.count_measurements_by_external_task_id">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">count_measurements_by_external_task_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">external_task_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Count all points rows recorded for an external task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            external_task_id: External identifier of the task.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of points rows linked to the task.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
@@ -590,9 +758,22 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">external_task_id</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">measurement_count</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">measurement_count</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the ordered timestamps of a user's awards on a task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Rows of ``(timestamp,)`` ordered chronologically.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"timestamp"</span><span class="p">))</span>
@@ -602,9 +783,22 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements_count">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Count a user's awards on a given external task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of points rows for the user on that task.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
@@ -614,11 +808,25 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">measurement_count</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">measurement_count</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_user_task_measurements_count_the_last_seconds">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_user_task_measurements_count_the_last_seconds">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_task_measurements_count_the_last_seconds</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">seconds</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Count a user's recent awards on a task within a time window.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+<span class="sd">            seconds: Length of the look-back window, in seconds.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of points rows created within the last ``seconds``.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"measurement_count"</span><span class="p">))</span>
@@ -629,11 +837,26 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&gt;</span> <span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">))</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">measurement_count</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">measurement_count</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_avg_time_between_tasks_by_user_and_game_task">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_avg_time_between_tasks_by_user_and_game_task</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Average the gap between a user's consecutive awards on a task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId: External identifier of the game.</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Mean seconds between consecutive awards, or ``-1`` when the</span>
+<span class="sd">            user has fewer than two awards.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span>
@@ -654,11 +877,25 @@
                 <span class="p">(</span><span class="n">timestamps</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">timestamps</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
             <span class="p">]</span>
-            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">time_diffs</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_diffs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">time_diffs</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_diffs</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_avg_time_between_tasks_for_all_users">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_avg_time_between_tasks_for_all_users">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_avg_time_between_tasks_for_all_users</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Average the gap between consecutive awards on a task across all users.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId: External identifier of the game.</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Mean seconds between consecutive awards, or ``-1`` when</span>
+<span class="sd">            fewer than two awards exist.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span>
@@ -677,9 +914,23 @@
                 <span class="p">(</span><span class="n">timestamps</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">timestamps</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
             <span class="p">]</span>
-            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">time_diffs</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_diffs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">time_diffs</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_diffs</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_last_window_time_diff">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_last_window_time_diff">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_last_window_time_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return seconds between a user's two most recent awards on a task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Seconds between the last two awards, or ``0`` when the user</span>
+<span class="sd">            has fewer than two.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">)</span>
@@ -696,11 +947,28 @@
                 <span class="k">return</span> <span class="mi">0</span>
 
             <span class="n">time_diff</span> <span class="o">=</span> <span class="n">last_two_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">created_at</span> <span class="o">-</span> <span class="n">last_two_points</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">created_at</span>
-            <span class="k">return</span> <span class="n">time_diff</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">time_diff</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_new_last_window_time_diff">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_new_last_window_time_diff">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_new_last_window_time_diff</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">externalGameId</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return seconds elapsed since a user's most recent award on a task.</span>
+
+<span class="sd">        Measures the gap between *now* and the user's latest award (scoped by</span>
+<span class="sd">        game and task), normalizing both timestamps to UTC.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+<span class="sd">            externalGameId: External identifier of the game.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Seconds since the last award, or ``0`` if the user has none.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">)</span>
@@ -728,11 +996,24 @@
                 <span class="n">last_created_at</span> <span class="o">=</span> <span class="n">last_point</span><span class="o">.</span><span class="n">created_at</span>
 
             <span class="n">time_diff</span> <span class="o">=</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">last_created_at</span>
-            <span class="k">return</span> <span class="n">time_diff</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">time_diff</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.count_personal_records_by_external_game_id">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.count_personal_records_by_external_game_id">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">count_personal_records_by_external_game_id</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Count a user's total awards across a game.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId: External identifier of the game.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of points rows for the user within the game.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"record_count"</span><span class="p">))</span>
@@ -743,11 +1024,25 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">record_count</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">record_count</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.user_has_record_before_in_externalTaskId_last_min">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.user_has_record_before_in_externalTaskId_last_min">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">user_has_record_before_in_externalTaskId_last_min</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">minutes</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Check whether a user earned points on a task within recent minutes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+<span class="sd">            minutes: Length of the look-back window, in minutes.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: ``True`` if at least one award exists within the window.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
@@ -758,9 +1053,25 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&gt;</span> <span class="n">func</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">minutes</span><span class="p">))</span>
             <span class="p">)</span>
             <span class="n">count</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_global_avg_by_external_game_id">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_global_avg_by_external_game_id">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_global_avg_by_external_game_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Average the ``data["minutes"]`` measurement across a whole game.</span>
+
+<span class="sd">        Considers only rows with a positive ``minutes`` value in their JSON</span>
+<span class="sd">        ``data`` payload.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId: External identifier of the game.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Mean ``minutes`` over all users, or ``-1`` when no</span>
+<span class="sd">            qualifying rows exist.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span>
@@ -774,11 +1085,28 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"minutes"</span><span class="p">]</span><span class="o">.</span><span class="n">as_float</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_personal_avg_by_external_game_id">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_personal_avg_by_external_game_id">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_personal_avg_by_external_game_id</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Average one user's ``data["minutes"]`` measurement across a game.</span>
+
+<span class="sd">        Considers only rows with a positive ``minutes`` value in their JSON</span>
+<span class="sd">        ``data`` payload.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId: External identifier of the game.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Mean ``minutes`` for the user, or ``-1`` when no qualifying</span>
+<span class="sd">            rows exist.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span>
@@ -794,11 +1122,26 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"minutes"</span><span class="p">]</span><span class="o">.</span><span class="n">as_float</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">one</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">average_minutes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span></div>
 
+
+<div class="viewcode-block" id="UserPointsRepository.get_points_of_simulated_task">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_points_of_simulated_task">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_simulated_task</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">simulationHash</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return points rows produced by a specific strategy simulation run.</span>
+
+<span class="sd">        Matches rows whose JSON ``data`` carries the given ``simulationHash``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId (str): External identifier of the task.</span>
+<span class="sd">            simulationHash (str): Hash identifying the simulation run.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[UserPoints]: Points rows belonging to that simulation.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">)</span>
@@ -806,7 +1149,8 @@
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Tasks</span><span class="o">.</span><span class="n">externalTaskId</span> <span class="o">==</span> <span class="n">externalTaskId</span><span class="p">)</span>
                 <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"simulationHash"</span><span class="p">]</span><span class="o">.</span><span class="n">astext</span> <span class="o">==</span> <span class="n">simulationHash</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
 
 <div class="viewcode-block" id="UserPointsRepository.get_all_point_of_tasks_list">
 <a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_all_point_of_tasks_list">[docs]</a>
@@ -838,7 +1182,18 @@
             <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="UserPointsRepository.get_last_task_by_userId">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_last_task_by_userId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_last_task_by_userId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return a user's most recent points row.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            userId: Internal user identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            UserPoints | None: The latest award by ``created_at``, or ``None``.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">select</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">)</span>
@@ -846,6 +1201,7 @@
                 <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">desc</span><span class="p">())</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></div>
+</div>
 
 </pre></div>
 

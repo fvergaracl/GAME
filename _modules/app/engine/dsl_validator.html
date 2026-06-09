@@ -456,6 +456,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">node_count</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Count one visited node and enforce the AST node-count budget.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node_id (str): Id of the node being visited (reported on error).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DslValidationError: If the running node count exceeds</span>
+<span class="sd">                ``max_nodes``.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">node_count</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_count</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_nodes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DslValidationError</span><span class="p">(</span>
@@ -468,6 +478,17 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_require_type</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">expected</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Assert that ``node`` is a dict whose ``type`` equals ``expected``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        node (Any): Candidate AST node.</span>
+<span class="sd">        expected (str): The required node ``type``.</span>
+<span class="sd">        parent_id (str): Id of the enclosing node, used in error reporting.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DslValidationError: If ``node`` is not a dict or has the wrong type.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">DslValidationError</span><span class="p">(</span>
             <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Expected node of type '</span><span class="si">{</span><span class="n">expected</span><span class="si">}</span><span class="s2">', got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
@@ -494,6 +515,22 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_assert_keys</span><span class="p">(</span>
     <span class="n">node</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">required</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">allowed_extra</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">()</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Validate that a node has all required keys and no unexpected ones.</span>
+
+<span class="sd">    ``type`` and ``id`` are always permitted in addition to ``required`` and</span>
+<span class="sd">    ``allowed_extra``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        node (Dict[str, Any]): The AST node to check.</span>
+<span class="sd">        required (tuple): Keys that must be present.</span>
+<span class="sd">        node_id (str): Id of the node, used in error reporting.</span>
+<span class="sd">        allowed_extra (tuple): Additional optional keys to permit.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DslValidationError: If a required key is missing or an unknown key is</span>
+<span class="sd">            present.</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">required</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DslValidationError</span><span class="p">(</span>
@@ -512,6 +549,16 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_validate_program</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">_State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Validate the top-level ``program`` node and recurse into its rules.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        node (Dict[str, Any]): The program AST node.</span>
+<span class="sd">        state (_State): Shared validation state tracking node/depth budgets.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DslValidationError: If the program node or any descendant is invalid.</span>
+<span class="sd">    """</span>
     <span class="n">nid</span> <span class="o">=</span> <span class="n">_node_id</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"p"</span><span class="p">,</span> <span class="n">NODE_PROGRAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">state</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">nid</span><span class="p">)</span>
     <span class="n">_require_type</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">NODE_PROGRAM</span><span class="p">,</span> <span class="n">parent_id</span><span class="o">=</span><span class="s2">"root"</span><span class="p">)</span>
@@ -648,6 +695,21 @@
     <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"rule"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Validate a single ``rule`` node and its condition/branches.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        node (Any): The rule AST node.</span>
+<span class="sd">        parent_id (str): Id of the enclosing node, for error reporting.</span>
+<span class="sd">        index (int): Position of this rule among its siblings.</span>
+<span class="sd">        state (_State): Shared validation state (node/depth budgets).</span>
+<span class="sd">        depth (int): Current nesting depth.</span>
+<span class="sd">        context (str): Logical context label (e.g. ``"rule"``) controlling</span>
+<span class="sd">            which constructs are allowed.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DslValidationError: If the rule or any descendant is invalid.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">DslValidationError</span><span class="p">(</span>
             <span class="n">detail</span><span class="o">=</span><span class="s2">"program.rules[*] must be objects."</span><span class="p">,</span>
@@ -752,6 +814,20 @@
     <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"rule"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Validate a condition node (logical/comparison) and its operands.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        node (Any): The condition AST node.</span>
+<span class="sd">        parent_id (str): Id of the enclosing node, for error reporting.</span>
+<span class="sd">        index (int): Position of this node among its siblings.</span>
+<span class="sd">        state (_State): Shared validation state (node/depth budgets).</span>
+<span class="sd">        depth (int): Current nesting depth.</span>
+<span class="sd">        context (str): Logical context label controlling allowed constructs.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DslValidationError: If the condition or any operand is invalid.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">DslValidationError</span><span class="p">(</span>
             <span class="n">detail</span><span class="o">=</span><span class="s2">"Condition must be an object."</span><span class="p">,</span>
@@ -845,6 +921,20 @@
     <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"rule"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Validate an expression node (field/literal/arith/func) and its children.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        node (Any): The expression AST node.</span>
+<span class="sd">        parent_id (str): Id of the enclosing node, for error reporting.</span>
+<span class="sd">        index (int): Position of this node among its siblings.</span>
+<span class="sd">        state (_State): Shared validation state (node/depth budgets).</span>
+<span class="sd">        depth (int): Current nesting depth.</span>
+<span class="sd">        context (str): Logical context label controlling allowed constructs.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DslValidationError: If the expression or any sub-expression is invalid.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">DslValidationError</span><span class="p">(</span>
             <span class="n">detail</span><span class="o">=</span><span class="s2">"Expression must be an object."</span><span class="p">,</span>
@@ -985,6 +1075,20 @@
     <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"rule"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Validate a statement node (e.g. ``set``, ``emit``, ``return``).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        node (Any): The statement AST node.</span>
+<span class="sd">        parent_id (str): Id of the enclosing node, for error reporting.</span>
+<span class="sd">        index (int): Position of this statement among its siblings.</span>
+<span class="sd">        state (_State): Shared validation state (node/depth budgets).</span>
+<span class="sd">        depth (int): Current nesting depth.</span>
+<span class="sd">        context (str): Logical context label controlling allowed constructs.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DslValidationError: If the statement or any sub-node is invalid.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">DslValidationError</span><span class="p">(</span>
             <span class="n">detail</span><span class="o">=</span><span class="s2">"Statement must be an object."</span><span class="p">,</span>
@@ -1150,6 +1254,17 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_depth</span><span class="p">(</span><span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">_State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Enforce the maximum AST nesting depth.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        depth (int): Current nesting depth.</span>
+<span class="sd">        node_id (str): Id of the node being visited (reported on error).</span>
+<span class="sd">        state (_State): Validation state carrying ``max_depth``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DslValidationError: If ``depth`` exceeds ``state.max_depth``.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">state</span><span class="o">.</span><span class="n">max_depth</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">DslValidationError</span><span class="p">(</span>
             <span class="n">detail</span><span class="o">=</span><span class="p">(</span>

@@ -420,6 +420,7 @@
 <li class="toctree-l4"><a class="reference internal" href="app.engine.dsl_ast.html#app.engine.dsl_ast.is_valid_data_path"><code class="docutils literal notranslate"><span class="pre">is_valid_data_path()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.engine.dsl_ast.html#app.engine.dsl_ast.is_parent_field_path"><code class="docutils literal notranslate"><span class="pre">is_parent_field_path()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.engine.dsl_ast.html#app.engine.dsl_ast.is_known_field_path"><code class="docutils literal notranslate"><span class="pre">is_known_field_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.engine.dsl_ast.html#app.engine.dsl_ast.is_valid_case_name"><code class="docutils literal notranslate"><span class="pre">is_valid_case_name()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.engine.dsl_ast.html#app.engine.dsl_ast.enumerate_field_paths"><code class="docutils literal notranslate"><span class="pre">enumerate_field_paths()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.engine.dsl_ast.html#app.engine.dsl_ast.iter_program_rules"><code class="docutils literal notranslate"><span class="pre">iter_program_rules()</span></code></a></li>
 </ul>
@@ -454,6 +455,7 @@
 <li class="toctree-l4"><a class="reference internal" href="app.engine.greencrowdStrategy.html#app.engine.greencrowdStrategy.get_random_values_from_tasks"><code class="docutils literal notranslate"><span class="pre">get_random_values_from_tasks()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.engine.greencrowdStrategy.html#app.engine.greencrowdStrategy.get_average_values_from_tasks"><code class="docutils literal notranslate"><span class="pre">get_average_values_from_tasks()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.engine.greencrowdStrategy.html#app.engine.greencrowdStrategy.get_dynamic_values_from_tasks"><code class="docutils literal notranslate"><span class="pre">get_dynamic_values_from_tasks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.engine.greencrowdStrategy.html#app.engine.greencrowdStrategy.assign_random_scores"><code class="docutils literal notranslate"><span class="pre">assign_random_scores()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.engine.greencrowdStrategy.html#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy"><code class="docutils literal notranslate"><span class="pre">GREENCROWDGamificationStrategy</span></code></a></li>
 </ul>
 </li>
@@ -496,6 +498,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="app.middlewares.valid_access_token.html">app.middlewares.valid_access_token module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="app.middlewares.valid_access_token.html#app.middlewares.valid_access_token.CustomOAuth2AuthorizationCodeBearer"><code class="docutils literal notranslate"><span class="pre">CustomOAuth2AuthorizationCodeBearer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.middlewares.valid_access_token.html#app.middlewares.valid_access_token.valid_access_token"><code class="docutils literal notranslate"><span class="pre">valid_access_token()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.middlewares.valid_access_token.html#app.middlewares.valid_access_token.refresh_access_token"><code class="docutils literal notranslate"><span class="pre">refresh_access_token()</span></code></a></li>
 </ul>
 </li>
@@ -748,7 +751,9 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="app.services.game_access.html">app.services.game_access module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="app.services.game_access.html#app.services.game_access.can_access_user"><code class="docutils literal notranslate"><span class="pre">can_access_user()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.services.game_access.html#app.services.game_access.get_authorized_user"><code class="docutils literal notranslate"><span class="pre">get_authorized_user()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="app.services.game_access.html#app.services.game_access.can_access_game"><code class="docutils literal notranslate"><span class="pre">can_access_game()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="app.services.game_access.html#app.services.game_access.get_authorized_game"><code class="docutils literal notranslate"><span class="pre">get_authorized_game()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="app.services.game_params_service.html">app.services.game_params_service module</a><ul>
@@ -851,6 +856,7 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="app.main.html">app.main module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.main.html#app.main.lifespan"><code class="docutils literal notranslate"><span class="pre">lifespan()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="app.main.html#app.main.get_project_data"><code class="docutils literal notranslate"><span class="pre">get_project_data()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="app.main.html#app.main.get_swagger_oauth_config"><code class="docutils literal notranslate"><span class="pre">get_swagger_oauth_config()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="app.main.html#app.main.custom_openapi"><code class="docutils literal notranslate"><span class="pre">custom_openapi()</span></code></a></li>

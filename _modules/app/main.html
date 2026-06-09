@@ -383,6 +383,14 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_configure_logging</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Configure the root logger and uvicorn/gunicorn loggers process-wide.</span>
+
+<span class="sd">    Emits structured JSON logs in ``prod``/``stage`` environments and</span>
+<span class="sd">    human-readable plain text everywhere else. The log level is taken from</span>
+<span class="sd">    the ``LOG_LEVEL`` environment variable (defaulting to ``INFO``). Called</span>
+<span class="sd">    once at import time so handlers are in place before the app is built.</span>
+<span class="sd">    """</span>
     <span class="n">use_json</span> <span class="o">=</span> <span class="n">configs</span><span class="o">.</span><span class="n">ENV</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"prod"</span><span class="p">,</span> <span class="s2">"stage"</span><span class="p">}</span>
     <span class="n">level</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"LOG_LEVEL"</span><span class="p">,</span> <span class="s2">"INFO"</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
     <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
@@ -442,8 +450,22 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="lifespan">
+<a class="viewcode-back" href="../../api/app.main.html#app.main.lifespan">[docs]</a>
 <span class="nd">@asynccontextmanager</span>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    FastAPI lifespan context manager handling graceful shutdown.</span>
+
+<span class="sd">    Yields immediately on startup (no startup work needed) and, on shutdown,</span>
+<span class="sd">    flushes the buffered DSL execution-log queue so a graceful stop does not</span>
+<span class="sd">    drop pending audit rows. The flush is best-effort: failures are logged</span>
+<span class="sd">    and swallowed so they never block shutdown.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        app (FastAPI): The application instance whose ``state`` may hold the</span>
+<span class="sd">            ``dsl_execution_observer`` to flush.</span>
+<span class="sd">    """</span>
     <span class="k">yield</span>
     <span class="c1"># Sprint 13: flush the DSL execution-log queue so a graceful</span>
     <span class="c1"># shutdown doesn't drop buffered audit rows. ``aclose`` is</span>
@@ -456,7 +478,8 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">"Failed to flush DSL execution-log queue on shutdown"</span><span class="p">,</span>
                 <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="get_project_data">

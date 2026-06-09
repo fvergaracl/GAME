@@ -368,6 +368,8 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#api-app-main--page-root" class="md-nav__link">app.main module</a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.main.lifespan" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">lifespan()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.main.get_project_data" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_project_data()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.main.get_swagger_oauth_config" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_swagger_oauth_config()</span></code></a>
@@ -394,6 +396,21 @@
             
   <section id="module-app.main">
 <span id="app-main-module"></span><h1 id="api-app-main--page-root">app.main module<a class="headerlink" href="#api-app-main--page-root" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.main.lifespan">
+<span class="sig-prename descclassname"><span class="pre">app.main.</span></span><span class="sig-name descname"><span class="pre">lifespan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/main.html#lifespan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.main.lifespan" title="Link to this definition">¶</a></dt>
+<dd><p>FastAPI lifespan context manager handling graceful shutdown.</p>
+<p>Yields immediately on startup (no startup work needed) and, on shutdown,
+flushes the buffered DSL execution-log queue so a graceful stop does not
+drop pending audit rows. The flush is best-effort: failures are logged
+and swallowed so they never block shutdown.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>FastAPI</em>) – The application instance whose <code class="docutils literal notranslate"><span class="pre">state</span></code> may hold the
+<code class="docutils literal notranslate"><span class="pre">dsl_execution_observer</span></code> to flush.</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="app.main.get_project_data">
 <span class="sig-prename descclassname"><span class="pre">app.main.</span></span><span class="sig-name descname"><span class="pre">get_project_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/main.html#get_project_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.main.get_project_data" title="Link to this definition">¶</a></dt>

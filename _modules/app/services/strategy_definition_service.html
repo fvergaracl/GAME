@@ -452,6 +452,15 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_to_read</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="n">StrategyDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StrategyDefinitionRead</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Map a ``StrategyDefinition`` ORM row to its public read schema.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            row (StrategyDefinition): The persisted definition row.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            StrategyDefinitionRead: The API-facing representation.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">StrategyDefinitionRead</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
             <span class="n">realmId</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">realmId</span><span class="p">,</span>
@@ -513,6 +522,8 @@
         <span class="k">return</span> <span class="n">max_version</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
 
 
+<div class="viewcode-block" id="StrategyDefinitionService.list_strategies">
+<a class="viewcode-back" href="../../../api/app.services.strategy_definition_service.html#app.services.strategy_definition_service.StrategyDefinitionService.list_strategies">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_strategies</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -521,24 +532,55 @@
         <span class="nb">type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">StrategyDefinitionRead</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        List strategy definitions for a realm, optionally filtered.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            realmId (Optional[str]): Realm/tenant to scope to.</span>
+<span class="sd">            status (Optional[str]): Optional lifecycle-status filter.</span>
+<span class="sd">            type (Optional[str]): Optional strategy-type filter.</span>
+<span class="sd">            limit (int): Maximum rows to return.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[StrategyDefinitionRead]: The matching definitions.</span>
+<span class="sd">        """</span>
         <span class="n">rows</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_repository</span><span class="o">.</span><span class="n">list_for_realm</span><span class="p">(</span>
             <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_read</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_read</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span></div>
 
+
+<div class="viewcode-block" id="StrategyDefinitionService.get_strategy">
+<a class="viewcode-back" href="../../../api/app.services.strategy_definition_service.html#app.services.strategy_definition_service.StrategyDefinitionService.get_strategy">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_strategy</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">realmId</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StrategyDefinitionRead</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Fetch one strategy definition scoped to a realm.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): Strategy definition identifier.</span>
+<span class="sd">            realmId (Optional[str]): Realm/tenant the strategy must belong to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            StrategyDefinitionRead: The matching definition.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If no matching strategy exists in the realm.</span>
+<span class="sd">        """</span>
         <span class="n">row</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_repository</span><span class="o">.</span><span class="n">get_for_realm</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Custom strategy not found: </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_read</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_read</span><span class="p">(</span><span class="n">row</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="StrategyDefinitionService.create">
+<a class="viewcode-back" href="../../../api/app.services.strategy_definition_service.html#app.services.strategy_definition_service.StrategyDefinitionService.create">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -548,6 +590,27 @@
         <span class="n">apiKey_used</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">oauth_user_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StrategyDefinitionRead</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Create a new strategy-definition draft.</span>
+
+<span class="sd">        Validates the type/parent combination and any provided AST, rejects a</span>
+<span class="sd">        name that already exists in the realm, and persists the draft as</span>
+<span class="sd">        version 1.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            payload (StrategyDefinitionCreate): The strategy to create.</span>
+<span class="sd">            realmId (Optional[str]): Realm/tenant that will own it.</span>
+<span class="sd">            createdBy (Optional[str]): Identity recorded as the author.</span>
+<span class="sd">            apiKey_used (Optional[str]): API key used for the request, if any.</span>
+<span class="sd">            oauth_user_id (Optional[str]): OAuth subject, if any.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            StrategyDefinitionRead: The newly created draft.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            BadRequestError: If the type/parent combination is invalid.</span>
+<span class="sd">            DuplicatedError: If a strategy with the same name already exists.</span>
+<span class="sd">        """</span>
         <span class="n">type_value</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_payload</span><span class="p">(</span><span class="n">type_value</span><span class="p">,</span> <span class="n">payload</span><span class="o">.</span><span class="n">parentStrategyId</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">payload</span><span class="o">.</span><span class="n">astJson</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -581,7 +644,8 @@
             <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">row</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_repository</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">persist</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_read</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_read</span><span class="p">(</span><span class="n">row</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="StrategyDefinitionService.update">
 <a class="viewcode-back" href="../../../api/app.services.strategy_definition_service.html#app.services.strategy_definition_service.StrategyDefinitionService.update">[docs]</a>
@@ -687,12 +751,32 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_read</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="StrategyDefinitionService.publish">
+<a class="viewcode-back" href="../../../api/app.services.strategy_definition_service.html#app.services.strategy_definition_service.StrategyDefinitionService.publish">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">realmId</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StrategyDefinitionRead</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Publish a draft strategy, archiving any previously-published sibling.</span>
+
+<span class="sd">        Idempotent: re-publishing an already-published row is a no-op. If</span>
+<span class="sd">        another version of the same name is published, it is archived first so</span>
+<span class="sd">        only one published version exists per name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): Strategy definition identifier.</span>
+<span class="sd">            realmId (Optional[str]): Realm/tenant the strategy must belong to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            StrategyDefinitionRead: The published strategy.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If no matching strategy exists in the realm.</span>
+<span class="sd">            ConflictError: If the strategy is archived.</span>
+<span class="sd">        """</span>
         <span class="n">row</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_repository</span><span class="o">.</span><span class="n">get_for_realm</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span>
         <span class="p">)</span>
@@ -718,14 +802,32 @@
             <span class="n">status</span><span class="o">=</span><span class="n">StrategyDefinitionStatus</span><span class="o">.</span><span class="n">PUBLISHED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="n">publishedAt</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="StrategyDefinitionService.archive">
+<a class="viewcode-back" href="../../../api/app.services.strategy_definition_service.html#app.services.strategy_definition_service.StrategyDefinitionService.archive">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">archive</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">realmId</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StrategyDefinitionRead</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Archive a strategy so it can no longer be published or assigned.</span>
+
+<span class="sd">        Idempotent: archiving an already-archived row returns it unchanged.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): Strategy definition identifier.</span>
+<span class="sd">            realmId (Optional[str]): Realm/tenant the strategy must belong to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            StrategyDefinitionRead: The archived strategy.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If no matching strategy exists in the realm.</span>
+<span class="sd">        """</span>
         <span class="n">row</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_repository</span><span class="o">.</span><span class="n">get_for_realm</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span>
         <span class="p">)</span>
@@ -738,7 +840,8 @@
             <span class="nb">id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
             <span class="n">status</span><span class="o">=</span><span class="n">StrategyDefinitionStatus</span><span class="o">.</span><span class="n">ARCHIVED</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="StrategyDefinitionService.list_versions">
 <a class="viewcode-back" href="../../../api/app.services.strategy_definition_service.html#app.services.strategy_definition_service.StrategyDefinitionService.list_versions">[docs]</a>

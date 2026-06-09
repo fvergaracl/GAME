@@ -403,6 +403,25 @@
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">calculate_points</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Score an event by comparing the user's pace to the global average.</span>
+
+<span class="sd">        Until the task has enough history a flat basic award is granted</span>
+<span class="sd">        (``BasicEngagement``). Once history exists, the user's average time</span>
+<span class="sd">        between tasks is compared to all users' average and individual/global</span>
+<span class="sd">        adjustment points are added or subtracted accordingly, returning the</span>
+<span class="sd">        case name of the branch taken.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId: External identifier of the game.</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+<span class="sd">            data: Optional event payload (unused by this strategy).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[int, str]: The points to award and the case name describing</span>
+<span class="sd">            which branch produced them.</span>
+<span class="sd">        """</span>
         <span class="n">task_measurements_count</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">user_points_analytics_service</span><span class="o">.</span><span class="n">count_measurements_by_external_task_id</span><span class="p">(</span>
                 <span class="n">externalTaskId</span>

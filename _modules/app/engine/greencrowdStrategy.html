@@ -636,14 +636,30 @@
 
 
 
+<div class="viewcode-block" id="assign_random_scores">
+<a class="viewcode-back" href="../../../api/app.engine.greencrowdStrategy.html#app.engine.greencrowdStrategy.assign_random_scores">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">assign_random_scores</span><span class="p">(</span><span class="n">min_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Generate random scores for each GREENCROWD scoring dimension.</span>
+
+<span class="sd">    Used to seed simulations/tests with plausible per-dimension values.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        min_value (int): Inclusive lower bound for each random score.</span>
+<span class="sd">        max_value (int): Inclusive upper bound for each random score.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Random integer scores keyed by dimension (``DIM_BP``,</span>
+<span class="sd">        ``DIM_TD``, ``DIM_LBE``, ``DIM_PP``, ``DIM_S``).</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">"DIM_BP"</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span><span class="p">),</span>
         <span class="s2">"DIM_TD"</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span><span class="p">),</span>
         <span class="s2">"DIM_LBE"</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span><span class="p">),</span>
         <span class="s2">"DIM_PP"</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span><span class="p">),</span>
         <span class="s2">"DIM_S"</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span><span class="p">),</span>
-    <span class="p">}</span>
+    <span class="p">}</span></div>
+
 
 
 <div class="viewcode-block" id="GREENCROWDGamificationStrategy">
@@ -674,6 +690,19 @@
 <div class="viewcode-block" id="GREENCROWDGamificationStrategy.generate_logic_graph">
 <a class="viewcode-back" href="../../../api/app.engine.greencrowdStrategy.html#app.engine.greencrowdStrategy.GREENCROWDGamificationStrategy.generate_logic_graph">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_logic_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"png"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Render the GREENCROWD scoring logic as a Graphviz diagram.</span>
+
+<span class="sd">        Produces a labelled flowchart of the five scoring dimensions (base</span>
+<span class="sd">        points, location-based equity, time diversity, personal performance and</span>
+<span class="sd">        streak bonus) for display in the dashboard.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            format (str): Graphviz output format (e.g. ``"png"``, ``"svg"``).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            graphviz.Digraph: The constructed diagram.</span>
+<span class="sd">        """</span>
         <span class="n">dot</span> <span class="o">=</span> <span class="n">Digraph</span><span class="p">(</span><span class="n">comment</span><span class="o">=</span><span class="s2">"GREENCROWD Points Calculation Logic"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
         <span class="n">dot</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="s2">"node"</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s2">"box"</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">"filled"</span><span class="p">,</span> <span class="n">fillcolor</span><span class="o">=</span><span class="s2">"lightgray"</span><span class="p">)</span>
         <span class="n">dot</span><span class="o">.</span><span class="n">attr</span><span class="p">(</span><span class="s2">"edge"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s2">"10"</span><span class="p">)</span>

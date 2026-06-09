@@ -373,6 +373,10 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.read_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.read_by_gameId()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.read_by_gameId_and_externalTaskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.read_by_gameId_and_externalTaskId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.get_points_and_users_by_taskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.get_points_and_users_by_taskId()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.patch_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.patch_by_id()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.task_repository.TaskRepository.delete_task_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskRepository.delete_task_by_id()</span></code></a>
@@ -418,6 +422,38 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>eager</strong> (<em>bool</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository.read_by_gameId_and_externalTaskId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_by_gameId_and_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.read_by_gameId_and_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository.read_by_gameId_and_externalTaskId" title="Link to this definition">¶</a></dt>
+<dd><p>Look up a task by its game and external identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> – Internal identifier of the owning game.</p></li>
+<li><p><strong>externalTaskId</strong> (<em>str</em>) – External identifier of the task.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tasks | None</em> – The matching task, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if not found.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository.get_points_and_users_by_taskId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_and_users_by_taskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.get_points_and_users_by_taskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository.get_points_and_users_by_taskId" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch a task by its internal id, raising if it does not exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>taskId</strong> – Internal task identifier.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tasks</em> – The matching task.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no task has the given id.</p>
 </dd>
 </dl>
 </dd></dl>

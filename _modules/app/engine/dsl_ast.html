@@ -553,12 +553,40 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_static</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">getter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldResolution</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Build a ``(path, FieldResolution)`` entry for a static field.</span>
+
+<span class="sd">    Static fields are read directly off the context (no analytics call).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): The whitelisted field path (e.g. ``"externalGameId"``).</span>
+<span class="sd">        getter (Callable): Function extracting the value from the context.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: ``(path, FieldResolution)`` for inclusion in</span>
+<span class="sd">        :data:`FIELD_RESOLVERS`.</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="n">FieldResolution</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"static"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arg_fn</span><span class="o">=</span><span class="n">getter</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_analytics</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">arg_fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldResolution</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Build a ``(path, FieldResolution)`` entry for an analytics-backed field.</span>
+
+<span class="sd">    Analytics fields are resolved by calling ``method`` on the analytics</span>
+<span class="sd">    service with positional args produced by ``arg_fn``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (str): The whitelisted field path.</span>
+<span class="sd">        method (str): Name of the analytics-service method to invoke.</span>
+<span class="sd">        arg_fn (Callable): Builds the positional-args tuple from the context.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: ``(path, FieldResolution)`` for inclusion in</span>
+<span class="sd">        :data:`FIELD_RESOLVERS`.</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="n">FieldResolution</span><span class="p">(</span>
         <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"analytics"</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">arg_fn</span><span class="o">=</span><span class="n">arg_fn</span>
     <span class="p">)</span>
@@ -666,8 +694,23 @@
 
 
 
+<div class="viewcode-block" id="is_valid_case_name">
+<a class="viewcode-back" href="../../../api/app.engine.dsl_ast.html#app.engine.dsl_ast.is_valid_case_name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_valid_case_name</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">_CASE_NAME_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Return whether ``value`` is a syntactically valid case name.</span>
+
+<span class="sd">    A valid case name is a string matching the case-name pattern</span>
+<span class="sd">    (``_CASE_NAME_RE``).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value (Any): Candidate value to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: ``True`` if ``value`` is a well-formed case name.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">_CASE_NAME_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+
 
 
 <span class="c1"># Field enumeration ---------------------------------------------------------</span>
@@ -687,6 +730,16 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_walk_collect</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">acc</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Recursively collect every ``field`` node ``path`` into ``acc``.</span>
+
+<span class="sd">    Walks dicts and lists permissively (never raising on unknown nodes), so it</span>
+<span class="sd">    is safe to run before or after validation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        node (Any): Current AST node (dict, list or scalar).</span>
+<span class="sd">        acc (Set[str]): Accumulator mutated in place with discovered paths.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"type"</span><span class="p">)</span> <span class="o">==</span> <span class="n">NODE_FIELD</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"path"</span><span class="p">)</span>

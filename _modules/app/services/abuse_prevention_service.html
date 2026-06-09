@@ -436,6 +436,18 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_peer_is_trusted_proxy</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return whether ``ip`` falls within a configured trusted-proxy network.</span>
+
+<span class="sd">        Used to decide if ``X-Forwarded-For`` can be trusted to derive the real</span>
+<span class="sd">        client IP.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ip (Optional[str]): The direct peer IP to test.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: ``True`` if ``ip`` is valid and within ``TRUSTED_PROXY_IPS``.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ip</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">trusted</span> <span class="o">=</span> <span class="n">configs</span><span class="o">.</span><span class="n">TRUSTED_PROXY_IPS</span>
@@ -524,6 +536,23 @@
         <span class="n">max_allowed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">error_detail</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Increment one rate-limit bucket and raise if it exceeds the cap.</span>
+
+<span class="sd">        No-ops when the scope value is empty or the cap is non-positive.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scope_type (str): Dimension being limited (``api_key``/``ip``/...).</span>
+<span class="sd">            scope_value (Optional[str]): Concrete value within ``scope_type``.</span>
+<span class="sd">            window_name (str): Name of the time window/bucket.</span>
+<span class="sd">            window_start (datetime): Start of the bucket window.</span>
+<span class="sd">            ttl_seconds (int): TTL applied to the bucket.</span>
+<span class="sd">            max_allowed (int): Maximum requests allowed in the window.</span>
+<span class="sd">            error_detail (str): Message used when the limit is exceeded.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TooManyRequestsError: If the counter exceeds ``max_allowed``.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">scope_value</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">max_allowed</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -541,6 +570,15 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_scope_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Trim a scope value, collapsing blanks to ``None``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (Optional[str]): Raw scope value.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[str]: The stripped value, or ``None`` if empty/blank.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">normalized</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -550,6 +588,15 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_now</span><span class="p">(</span><span class="n">now</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return ``now`` as a UTC-aware datetime, defaulting to the current time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            now (Optional[datetime]): Caller-supplied time, naive or aware.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            datetime: A timezone-aware UTC datetime.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">now</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">now</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -558,6 +605,16 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_window_bucket_start</span><span class="p">(</span><span class="n">now</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">window_seconds</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Align ``now`` down to the start of its fixed-size time bucket.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            now (datetime): The reference time.</span>
+<span class="sd">            window_seconds (int): Bucket width in seconds.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            datetime: UTC start of the bucket containing ``now``.</span>
+<span class="sd">        """</span>
         <span class="n">now</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
         <span class="n">unix_now</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>
         <span class="n">bucket_start</span> <span class="o">=</span> <span class="n">unix_now</span> <span class="o">-</span> <span class="p">(</span><span class="n">unix_now</span> <span class="o">%</span> <span class="n">window_seconds</span><span class="p">)</span>
@@ -565,6 +622,15 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_daily_bucket_start</span><span class="p">(</span><span class="n">now</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return midnight UTC of ``now``'s day (the daily-quota bucket start).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            now (datetime): The reference time.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            datetime: UTC start of the current day.</span>
+<span class="sd">        """</span>
         <span class="n">now</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">datetime</span><span class="p">(</span>
             <span class="n">year</span><span class="o">=</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
@@ -575,6 +641,16 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ttl_for_seconds</span><span class="p">(</span><span class="n">window_seconds</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Compute a bucket TTL from a window length plus a skew buffer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            window_seconds (int): The window length in seconds.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: TTL in seconds (window plus ``RATE_LIMIT_TTL_BUFFER_SECONDS``)</span>
+<span class="sd">            so buckets survive clock skew between instances and Redis.</span>
+<span class="sd">        """</span>
         <span class="c1"># Extra buffer absorbs clock skew between API instances and Redis so</span>
         <span class="c1"># a bucket cannot die just before the next request promotes it.</span>
         <span class="n">buffer</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">configs</span><span class="o">.</span><span class="n">RATE_LIMIT_TTL_BUFFER_SECONDS</span><span class="p">))</span>

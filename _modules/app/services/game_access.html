@@ -397,6 +397,8 @@
 
 
 
+<div class="viewcode-block" id="get_authorized_user">
+<a class="viewcode-back" href="../../../api/app.services.game_access.html#app.services.game_access.get_authorized_user">[docs]</a>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_authorized_user</span><span class="p">(</span>
     <span class="n">user_repository</span><span class="p">,</span>
     <span class="n">external_user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -405,6 +407,23 @@
     <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Load a user and assert the caller is allowed to access them.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        user_repository: Repository used to look the user up.</span>
+<span class="sd">        external_user_id (str): External identifier of the user.</span>
+<span class="sd">        api_key (str | None): Caller's API key, for ownership scoping.</span>
+<span class="sd">        oauth_user_id (str | None): Caller's OAuth subject, for scoping.</span>
+<span class="sd">        is_admin (bool): Whether the caller has the admin role.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Any: The authorized user entity.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        NotFoundError: If the user does not exist.</span>
+<span class="sd">        ForbiddenError: If the caller may not access the user.</span>
+<span class="sd">    """</span>
     <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">user_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
         <span class="s2">"externalUserId"</span><span class="p">,</span> <span class="n">external_user_id</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
@@ -415,7 +434,8 @@
         <span class="n">is_admin</span><span class="o">=</span><span class="n">is_admin</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="n">ForbiddenError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">"You do not have permission to access this user"</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">user</span>
+    <span class="k">return</span> <span class="n">user</span></div>
+
 
 
 <div class="viewcode-block" id="can_access_game">
@@ -446,6 +466,8 @@
 
 
 
+<div class="viewcode-block" id="get_authorized_game">
+<a class="viewcode-back" href="../../../api/app.services.game_access.html#app.services.game_access.get_authorized_game">[docs]</a>
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_authorized_game</span><span class="p">(</span>
     <span class="n">game_repository</span><span class="p">,</span>
     <span class="n">game_id</span><span class="p">,</span>
@@ -454,6 +476,23 @@
     <span class="n">oauth_user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Load a game and assert the caller is allowed to access it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        game_repository: Repository used to look the game up.</span>
+<span class="sd">        game_id: Internal identifier of the game.</span>
+<span class="sd">        api_key (str | None): Caller's API key, for ownership scoping.</span>
+<span class="sd">        oauth_user_id (str | None): Caller's OAuth subject, for scoping.</span>
+<span class="sd">        is_admin (bool): Whether the caller has the admin role.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Any: The authorized game entity.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        NotFoundError: If the game does not exist.</span>
+<span class="sd">        ForbiddenError: If the caller may not access the game.</span>
+<span class="sd">    """</span>
     <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_id</span><span class="p">(</span>
         <span class="n">game_id</span><span class="p">,</span>
         <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -469,7 +508,8 @@
     <span class="p">):</span>
         <span class="k">raise</span> <span class="n">ForbiddenError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">"You do not have permission to access this game"</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">game</span>
+    <span class="k">return</span> <span class="n">game</span></div>
+
 </pre></div>
 
           </article>

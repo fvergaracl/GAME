@@ -408,6 +408,11 @@
         <span class="n">response_started</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">"""Track whether the response has started before forwarding it.</span>
+
+<span class="sd">            Records the first ``http.response.start`` so the outer handler</span>
+<span class="sd">            knows it can no longer safely replace the response with a 500.</span>
+<span class="sd">            """</span>
             <span class="k">nonlocal</span> <span class="n">response_started</span>
             <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"http.response.start"</span><span class="p">:</span>
                 <span class="n">response_started</span> <span class="o">=</span> <span class="kc">True</span>

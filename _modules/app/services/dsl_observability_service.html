@@ -588,6 +588,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_worker</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_drain_loop</span><span class="p">())</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_drain_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Background worker that persists queued execution-log rows.</span>
+
+<span class="sd">        Runs forever, pulling rows off the queue and writing each to the</span>
+<span class="sd">        repository. Persistence failures are logged at WARNING and swallowed so</span>
+<span class="sd">        the worker keeps draining and a bad row never escapes the loop.</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">row</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
@@ -665,8 +672,12 @@
 <span class="sd">    ``DslStrategy`` directly). Drops everything on the floor.</span>
 <span class="sd">    """</span>
 
+<div class="viewcode-block" id="NoopDslExecutionObserver.record">
+<a class="viewcode-back" href="../../../api/app.services.dsl_observability_service.html#app.services.dsl_observability_service.NoopDslExecutionObserver.record">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""No-op observer hook; discards all execution observations."""</span>
         <span class="k">return</span> <span class="kc">None</span></div>
+</div>
 
 </pre></div>
 

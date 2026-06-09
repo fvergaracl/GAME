@@ -369,11 +369,23 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#api-app-services-rate-limit-counter-backend--page-root" class="md-nav__link">app.services.rate_limit_counter_backend module</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.rate_limit_counter_backend.RateLimitCounterBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RateLimitCounterBackend</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.rate_limit_counter_backend.RateLimitCounterBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RateLimitCounterBackend</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.rate_limit_counter_backend.RateLimitCounterBackend.increment_and_get" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RateLimitCounterBackend.increment_and_get()</span></code></a>
+        </li></ul>
+            </nav>
         </li>
-        <li class="md-nav__item"><a href="#app.services.rate_limit_counter_backend.DatabaseRateLimitCounterBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DatabaseRateLimitCounterBackend</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.rate_limit_counter_backend.DatabaseRateLimitCounterBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DatabaseRateLimitCounterBackend</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.rate_limit_counter_backend.DatabaseRateLimitCounterBackend.increment_and_get" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DatabaseRateLimitCounterBackend.increment_and_get()</span></code></a>
+        </li></ul>
+            </nav>
         </li>
-        <li class="md-nav__item"><a href="#app.services.rate_limit_counter_backend.RedisRateLimitCounterBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RedisRateLimitCounterBackend</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.rate_limit_counter_backend.RedisRateLimitCounterBackend" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RedisRateLimitCounterBackend</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.rate_limit_counter_backend.RedisRateLimitCounterBackend.increment_and_get" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RedisRateLimitCounterBackend.increment_and_get()</span></code></a>
+        </li></ul>
+            </nav>
         </li>
         <li class="md-nav__item"><a href="#app.services.rate_limit_counter_backend.build_redis_client_from_url" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">build_redis_client_from_url()</span></code></a>
         </li>
@@ -410,6 +422,25 @@ a hot row in Postgres does not pay.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.rate_limit_counter_backend.</span></span><span class="sig-name descname"><span class="pre">RateLimitCounterBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/rate_limit_counter_backend.html#RateLimitCounterBackend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.rate_limit_counter_backend.RateLimitCounterBackend" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
 <p>Increment a per-bucket counter and return its new value.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.rate_limit_counter_backend.RateLimitCounterBackend.increment_and_get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">increment_and_get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl_seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/rate_limit_counter_backend.html#RateLimitCounterBackend.increment_and_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.rate_limit_counter_backend.RateLimitCounterBackend.increment_and_get" title="Link to this definition">¶</a></dt>
+<dd><p>Increment the bucket’s counter and return its new value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope_type</strong> (<em>str</em>)</p></li>
+<li><p><strong>scope_value</strong> (<em>str</em>)</p></li>
+<li><p><strong>window_name</strong> (<em>str</em>)</p></li>
+<li><p><strong>window_start</strong> (<em>datetime</em>)</p></li>
+<li><p><strong>ttl_seconds</strong> (<em>int</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.services.rate_limit_counter_backend.DatabaseRateLimitCounterBackend">
@@ -424,6 +455,30 @@ job, not the request path).</p>
 <dd class="field-odd"><p><strong>repository</strong> (<a class="reference internal" href="app.repository.abuse_limit_counter_repository.html#app.repository.abuse_limit_counter_repository.AbuseLimitCounterRepository" title="app.repository.abuse_limit_counter_repository.AbuseLimitCounterRepository"><em>AbuseLimitCounterRepository</em></a>)</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.rate_limit_counter_backend.DatabaseRateLimitCounterBackend.increment_and_get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">increment_and_get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl_seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/rate_limit_counter_backend.html#DatabaseRateLimitCounterBackend.increment_and_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.rate_limit_counter_backend.DatabaseRateLimitCounterBackend.increment_and_get" title="Link to this definition">¶</a></dt>
+<dd><p>Increment a DB-backed rate-limit counter and return its value.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ttl_seconds</span></code> is ignored: the bucket’s <code class="docutils literal notranslate"><span class="pre">window_start</span></code> already
+encodes window boundaries, so expiry is handled offline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope_type</strong> (<em>str</em>) – Dimension being limited.</p></li>
+<li><p><strong>scope_value</strong> (<em>str</em>) – Concrete value within <code class="docutils literal notranslate"><span class="pre">scope_type</span></code>.</p></li>
+<li><p><strong>window_name</strong> (<em>str</em>) – Name of the time window/bucket.</p></li>
+<li><p><strong>window_start</strong> (<em>datetime</em>) – Start of the bucket window.</p></li>
+<li><p><strong>ttl_seconds</strong> (<em>int</em>) – Ignored by this backend.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em> – The counter value after the increment.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.services.rate_limit_counter_backend.RedisRateLimitCounterBackend">
@@ -441,6 +496,31 @@ a TTL.</p>
 <dd class="field-odd"><p><strong>key_prefix</strong> (<em>str</em>)</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.rate_limit_counter_backend.RedisRateLimitCounterBackend.increment_and_get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">increment_and_get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl_seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/rate_limit_counter_backend.html#RedisRateLimitCounterBackend.increment_and_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.rate_limit_counter_backend.RedisRateLimitCounterBackend.increment_and_get" title="Link to this definition">¶</a></dt>
+<dd><p>Increment a Redis-backed rate-limit counter and return its value.</p>
+<p>Uses a single <code class="docutils literal notranslate"><span class="pre">MULTI/EXEC</span></code> pipeline of <code class="docutils literal notranslate"><span class="pre">SET</span> <span class="pre">key</span> <span class="pre">0</span> <span class="pre">EX</span> <span class="pre">ttl</span> <span class="pre">NX</span></code> (plant
+a TTL’d zero on the first hit) followed by <code class="docutils literal notranslate"><span class="pre">INCR</span></code> so a key is never
+visible without a TTL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope_type</strong> (<em>str</em>) – Dimension being limited.</p></li>
+<li><p><strong>scope_value</strong> (<em>str</em>) – Concrete value within <code class="docutils literal notranslate"><span class="pre">scope_type</span></code>.</p></li>
+<li><p><strong>window_name</strong> (<em>str</em>) – Name of the time window/bucket.</p></li>
+<li><p><strong>window_start</strong> (<em>datetime</em>) – Start of the bucket window.</p></li>
+<li><p><strong>ttl_seconds</strong> (<em>int</em>) – Key TTL (clamped to ≥ 1 second).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em> – The counter value after the increment.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="app.services.rate_limit_counter_backend.build_redis_client_from_url">

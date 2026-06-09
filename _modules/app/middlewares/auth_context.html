@@ -400,9 +400,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">service_log</span> <span class="o">=</span> <span class="n">service_log</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="n">auth</span>
 
+<div class="viewcode-block" id="AuditLogger.info">
+<a class="viewcode-back" href="../../../api/app.middlewares.auth_context.html#app.middlewares.auth_context.AuditLogger.info">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">details</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Write an ``INFO``-level audit log row for this request.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (str): Human-readable description of the event.</span>
+<span class="sd">            details (Optional[Dict[str, Any]]): Structured context to attach;</span>
+<span class="sd">                defaults to an empty dict.</span>
+<span class="sd">        """</span>
         <span class="k">await</span> <span class="n">add_log</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">,</span>
             <span class="s2">"INFO"</span><span class="p">,</span>
@@ -411,11 +421,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">service_log</span><span class="p">,</span>
             <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span>
             <span class="n">oauth_user_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">oauth_user_id</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="AuditLogger.success">
+<a class="viewcode-back" href="../../../api/app.middlewares.auth_context.html#app.middlewares.auth_context.AuditLogger.success">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">success</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">details</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Write a ``SUCCESS``-level audit log row for this request.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (str): Human-readable description of the event.</span>
+<span class="sd">            details (Optional[Dict[str, Any]]): Structured context to attach;</span>
+<span class="sd">                defaults to an empty dict.</span>
+<span class="sd">        """</span>
         <span class="k">await</span> <span class="n">add_log</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">,</span>
             <span class="s2">"SUCCESS"</span><span class="p">,</span>
@@ -424,11 +445,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">service_log</span><span class="p">,</span>
             <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span>
             <span class="n">oauth_user_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">oauth_user_id</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="AuditLogger.error">
+<a class="viewcode-back" href="../../../api/app.middlewares.auth_context.html#app.middlewares.auth_context.AuditLogger.error">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">details</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Write an ``ERROR``-level audit log row for this request.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            message (str): Human-readable description of the failure.</span>
+<span class="sd">            details (Optional[Dict[str, Any]]): Structured context to attach;</span>
+<span class="sd">                defaults to an empty dict.</span>
+<span class="sd">        """</span>
         <span class="k">await</span> <span class="n">add_log</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">,</span>
             <span class="s2">"ERROR"</span><span class="p">,</span>
@@ -438,6 +470,7 @@
             <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span>
             <span class="n">oauth_user_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">oauth_user_id</span><span class="p">,</span>
         <span class="p">)</span></div>
+</div>
 
 
 
@@ -533,6 +566,7 @@
         <span class="n">auth</span><span class="p">:</span> <span class="n">AuthContext</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_auth_context</span><span class="p">),</span>
         <span class="n">service_log</span><span class="p">:</span> <span class="n">LogsService</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">Provide</span><span class="p">[</span><span class="n">Container</span><span class="o">.</span><span class="n">logs_service</span><span class="p">]),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AuditLogger</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Resolve the request's auth context and bind it to an AuditLogger."""</span>
         <span class="k">return</span> <span class="n">AuditLogger</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">service_log</span><span class="p">,</span> <span class="n">auth</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_audit_log_dependency</span></div>

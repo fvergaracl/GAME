@@ -405,6 +405,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">model_user_points</span> <span class="o">=</span> <span class="n">model_user_points</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
+<div class="viewcode-block" id="GameRepository.get_all_games">
+<a class="viewcode-back" href="../../../api/app.repository.game_repository.html#app.repository.game_repository.GameRepository.get_all_games">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_games</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">schema</span><span class="p">,</span>
@@ -412,6 +414,25 @@
         <span class="n">oauth_user_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        List games visible to the caller, filtered, ordered and paginated.</span>
+
+<span class="sd">        Non-null fields on ``schema`` become filters and drive</span>
+<span class="sd">        ordering/pagination. Unless ``is_admin`` is ``True``, results are</span>
+<span class="sd">        restricted to games owned by the supplied ``api_key`` /</span>
+<span class="sd">        ``oauth_user_id``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema: Search schema with optional filters and</span>
+<span class="sd">                ordering/page/page_size.</span>
+<span class="sd">            api_key: API key of the caller, used for ownership scoping.</span>
+<span class="sd">            oauth_user_id: OAuth subject of the caller, used for scoping.</span>
+<span class="sd">            is_admin (bool): When ``True``, bypass ownership scoping and list</span>
+<span class="sd">                all games.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A paginated result with the matching games and search metadata.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">schema_as_dict</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">ordering</span> <span class="o">=</span> <span class="n">schema_as_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ordering"</span><span class="p">,</span> <span class="n">configs</span><span class="o">.</span><span class="n">ORDERING</span><span class="p">)</span>
@@ -514,9 +535,24 @@
                     <span class="s2">"ordering"</span><span class="p">:</span> <span class="n">ordering</span><span class="p">,</span>
                     <span class="s2">"total_count"</span><span class="p">:</span> <span class="n">total_count</span><span class="p">,</span>
                 <span class="p">},</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="GameRepository.get_game_by_id">
+<a class="viewcode-back" href="../../../api/app.repository.game_repository.html#app.repository.game_repository.GameRepository.get_game_by_id">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Fetch a game together with its configured parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): Internal game identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseGameResult: The game and its ``params`` (id/key/value).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If no game has the given id.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)))</span>
@@ -545,9 +581,27 @@
                 <span class="n">externalGameId</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">externalGameId</span><span class="p">,</span>
                 <span class="n">platform</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">platform</span><span class="p">,</span>
                 <span class="n">params</span><span class="o">=</span><span class="n">game_params</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="GameRepository.patch_game_by_id">
+<a class="viewcode-back" href="../../../api/app.repository.game_repository.html#app.repository.game_repository.GameRepository.patch_game_by_id">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">patch_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Partially update a game's columns from ``schema``.</span>
+
+<span class="sd">        Only non-null fields on ``schema`` are written to the row.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (str): Internal game identifier.</span>
+<span class="sd">            schema: Patch schema whose non-null fields are applied.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The updated game.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If no game has the given id.</span>
+<span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="p">(</span>
@@ -570,7 +624,8 @@
             <span class="k">except</span> <span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">DuplicatedError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">orig</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_game_by_id</span><span class="p">(</span><span class="n">gameId</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_game_by_id</span><span class="p">(</span><span class="n">gameId</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="GameRepository.list_by_strategy_id">
 <a class="viewcode-back" href="../../../api/app.repository.game_repository.html#app.repository.game_repository.GameRepository.list_by_strategy_id">[docs]</a>
@@ -636,7 +691,18 @@
             <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">rowcount</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="GameRepository.delete_game_by_id">
+<a class="viewcode-back" href="../../../api/app.repository.game_repository.html#app.repository.game_repository.GameRepository.delete_game_by_id">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_game_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Delete a game by its internal identifier.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            game_id (str): Internal game identifier.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If no game has the given id.</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
                 <span class="n">game</span> <span class="o">=</span> <span class="p">(</span>
@@ -695,6 +761,7 @@
             <span class="k">raise</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+</div>
 
 </pre></div>
 

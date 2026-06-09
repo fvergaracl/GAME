@@ -369,7 +369,11 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#api-app-repository-abuse-limit-counter-repository--page-root" class="md-nav__link">app.repository.abuse_limit_counter_repository module</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.repository.abuse_limit_counter_repository.AbuseLimitCounterRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">AbuseLimitCounterRepository</span></code></a>
+        <li class="md-nav__item"><a href="#app.repository.abuse_limit_counter_repository.AbuseLimitCounterRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">AbuseLimitCounterRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.abuse_limit_counter_repository.AbuseLimitCounterRepository.increment_and_get" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">AbuseLimitCounterRepository.increment_and_get()</span></code></a>
+        </li></ul>
+            </nav>
         </li></ul>
             </nav>
         </li>
@@ -403,6 +407,32 @@
 <dd class="field-odd"><p><strong>session_factory</strong> (<em>Callable</em><em>[</em><em>[</em><em>...</em><em>]</em><em>, </em><em>AbstractAsyncContextManager</em><em>[</em><em>AsyncSession</em><em>]</em><em>]</em>)</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.abuse_limit_counter_repository.AbuseLimitCounterRepository.increment_and_get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">increment_and_get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_start</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/abuse_limit_counter_repository.html#AbuseLimitCounterRepository.increment_and_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.abuse_limit_counter_repository.AbuseLimitCounterRepository.increment_and_get" title="Link to this definition">¶</a></dt>
+<dd><p>Atomically increment a rate-limit bucket and return its new value.</p>
+<p>Concurrency-safe: it first tries an atomic <code class="docutils literal notranslate"><span class="pre">counter</span> <span class="pre">=</span> <span class="pre">counter</span> <span class="pre">+</span> <span class="pre">1</span></code>
+update; if the bucket does not yet exist it inserts it, and if a
+concurrent insert collides it rolls back and retries the update. The
+<code class="docutils literal notranslate"><span class="pre">window_start</span></code> is normalized to UTC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope_type</strong> (<em>str</em>) – Dimension being limited (e.g. <code class="docutils literal notranslate"><span class="pre">"ip"</span></code>,
+<code class="docutils literal notranslate"><span class="pre">"api_key"</span></code>).</p></li>
+<li><p><strong>scope_value</strong> (<em>str</em>) – Concrete value within <code class="docutils literal notranslate"><span class="pre">scope_type</span></code>.</p></li>
+<li><p><strong>window_name</strong> (<em>str</em>) – Name of the limit window (e.g. <code class="docutils literal notranslate"><span class="pre">"per_minute"</span></code>).</p></li>
+<li><p><strong>window_start</strong> (<em>datetime</em>) – Start of the bucket’s time window.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em> – The counter value after this increment.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 

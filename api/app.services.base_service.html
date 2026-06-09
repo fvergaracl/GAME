@@ -369,7 +369,23 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#api-app-services-base-service--page-root" class="md-nav__link">app.services.base_service module</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.base_service.BaseService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.base_service.BaseService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.base_service.BaseService.get_list" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.get_list()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.base_service.BaseService.get_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.get_by_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.base_service.BaseService.add" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.add()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.base_service.BaseService.patch" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.patch()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.base_service.BaseService.patch_attr" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.patch_attr()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.base_service.BaseService.put_update" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.put_update()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.base_service.BaseService.remove_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseService.remove_by_id()</span></code></a>
+        </li></ul>
+            </nav>
         </li></ul>
             </nav>
         </li>
@@ -397,6 +413,126 @@
 an async repository.</p>
 <dl class="field-list simple">
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.base_service.BaseService.get_list">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.get_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.get_list" title="Link to this definition">¶</a></dt>
+<dd><p>Return a filtered, paginated list of entities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – Search schema with filters and ordering/pagination.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict[str, Any]</em> – Items plus search metadata, as returned by the
+repository.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, <em>Any</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.base_service.BaseService.get_by_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.get_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.get_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch a single entity by primary key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>UUID</em>) – Primary key of the entity.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – The matching entity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.base_service.BaseService.add">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.add" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new entity from <code class="docutils literal notranslate"><span class="pre">schema</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – Pydantic schema describing the entity to create.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – The persisted entity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.base_service.BaseService.patch">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.patch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.patch" title="Link to this definition">¶</a></dt>
+<dd><p>Partially update an entity, ignoring null fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>UUID</em>) – Primary key of the entity to update.</p></li>
+<li><p><strong>schema</strong> – Schema whose non-null fields are applied.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – The updated entity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.base_service.BaseService.patch_attr">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.patch_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.patch_attr" title="Link to this definition">¶</a></dt>
+<dd><p>Update a single attribute of an entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>UUID</em>) – Primary key of the entity.</p></li>
+<li><p><strong>attr</strong> (<em>str</em>) – Name of the attribute to set.</p></li>
+<li><p><strong>value</strong> – New value for the attribute.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – The updated entity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.base_service.BaseService.put_update">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">put_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.put_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.put_update" title="Link to this definition">¶</a></dt>
+<dd><p>Fully replace an entity’s fields from <code class="docutils literal notranslate"><span class="pre">schema</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>UUID</em>) – Primary key of the entity to replace.</p></li>
+<li><p><strong>schema</strong> – Schema dumped in full into the update.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – The updated entity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.base_service.BaseService.remove_by_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/base_service.html#BaseService.remove_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.base_service.BaseService.remove_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Delete an entity by primary key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>UUID</em>) – Primary key of the entity to delete.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 

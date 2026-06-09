@@ -511,6 +511,20 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"full"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Execute the top-level program node for the requested mode.</span>
+
+<span class="sd">        In ``"full"`` mode it runs every rule and, if nothing matched, the</span>
+<span class="sd">        ``default`` statement. In ``"pre"`` / ``"post"`` modes (DSL_EXTEND) it</span>
+<span class="sd">        runs only the matching ``pre_rules`` / ``post_rules`` section, leaving</span>
+<span class="sd">        the DSL_FULL ``rules``/``default`` untouched.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (Dict[str, Any]): The program AST node.</span>
+<span class="sd">            ctx (ExecutionContext): Precomputed field values for this run.</span>
+<span class="sd">            state (_RunState): Mutable per-run state (trace, points, etc.).</span>
+<span class="sd">            mode (str): One of ``"full"``, ``"pre"`` or ``"post"``.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"full"</span><span class="p">:</span>
@@ -539,6 +553,20 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Evaluate a single rule's if / else-if / else cascade.</span>
+
+<span class="sd">        The base ``when`` is tested first; if truthy its ``then`` runs and the</span>
+<span class="sd">        rule ends. Otherwise each ``else_if`` is tried in order, then the</span>
+<span class="sd">        ``else`` body if present. Only one branch runs; the chosen branch (or</span>
+<span class="sd">        ``skip``) is recorded in the trace.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (Dict[str, Any]): The rule AST node.</span>
+<span class="sd">            ctx (ExecutionContext): Precomputed field values for this run.</span>
+<span class="sd">            state (_RunState): Mutable per-run state (trace, points, etc.).</span>
+<span class="sd">            depth (int): Current recursion depth (for the depth guard).</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_depth</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
 
@@ -610,6 +638,16 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Run the ordered statements of a matched rule branch.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            statements (Optional[List[Dict[str, Any]]]): Statement nodes to</span>
+<span class="sd">                execute; ``None`` is treated as empty.</span>
+<span class="sd">            ctx (ExecutionContext): Precomputed field values for this run.</span>
+<span class="sd">            state (_RunState): Mutable per-run state (trace, points, etc.).</span>
+<span class="sd">            depth (int): Current recursion depth.</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">statements</span> <span class="ow">or</span> <span class="p">[]:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_statement</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">)</span>
 
@@ -623,6 +661,21 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Execute one statement node, mutating run state accordingly.</span>
+
+<span class="sd">        Handles the statement node types (e.g. set points/case, emit callback</span>
+<span class="sd">        data, set working data, veto, return) and raises on unknown types.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (Dict[str, Any]): The statement AST node.</span>
+<span class="sd">            ctx (ExecutionContext): Precomputed field values for this run.</span>
+<span class="sd">            state (_RunState): Mutable per-run state updated in place.</span>
+<span class="sd">            depth (int): Current recursion depth.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DslValidationError: If the statement node type is unknown.</span>
+<span class="sd">        """</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_yield</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_depth</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
@@ -786,6 +839,21 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Evaluate a condition node to a boolean.</span>
+
+<span class="sd">        Handles logical (and/or/not) and comparison nodes, and falls back to</span>
+<span class="sd">        the truthiness of a bare expression.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (Dict[str, Any]): The condition AST node.</span>
+<span class="sd">            ctx (ExecutionContext): Precomputed field values for this run.</span>
+<span class="sd">            state (_RunState): Mutable per-run state.</span>
+<span class="sd">            depth (int): Current recursion depth.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: The truth value of the condition.</span>
+<span class="sd">        """</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_yield</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_depth</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
@@ -885,6 +953,24 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Evaluate an expression node to a Python value.</span>
+
+<span class="sd">        Handles literals, whitelisted field lookups (read from ``ctx``),</span>
+<span class="sd">        arithmetic nodes and function calls, raising on unknown node types.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (Dict[str, Any]): The expression AST node.</span>
+<span class="sd">            ctx (ExecutionContext): Precomputed field values for this run.</span>
+<span class="sd">            state (_RunState): Mutable per-run state.</span>
+<span class="sd">            depth (int): Current recursion depth.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The computed value of the expression.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DslValidationError: If the expression node type is unknown.</span>
+<span class="sd">        """</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_yield</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_depth</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
@@ -1011,6 +1097,17 @@
     <span class="c1"># ----- guards ----------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">_RunState</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Count one executed node and enforce the runtime node budget.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state (_RunState): Run state whose ``count`` is incremented.</span>
+<span class="sd">            node (Dict[str, Any]): Node being executed (reported on error).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DslLimitExceededError: If the executed-node count exceeds</span>
+<span class="sd">                ``_max_nodes``.</span>
+<span class="sd">        """</span>
         <span class="n">state</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">count</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_nodes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DslLimitExceededError</span><span class="p">(</span>
@@ -1022,6 +1119,16 @@
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Enforce the runtime recursion-depth budget.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            depth (int): Current recursion depth.</span>
+<span class="sd">            node (Dict[str, Any]): Node being executed (reported on error).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DslLimitExceededError: If ``depth`` exceeds ``_max_depth``.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_depth</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DslLimitExceededError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
@@ -1032,6 +1139,15 @@
             <span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_maybe_yield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">_RunState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Periodically yield to the event loop during long runs.</span>
+
+<span class="sd">        Every ``_yield_every`` executed nodes this awaits ``asyncio.sleep(0)``</span>
+<span class="sd">        so a heavy program does not starve other coroutines.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state (_RunState): Run state whose ``count`` drives the cadence.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">count</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">count</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yield_every</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
@@ -1075,6 +1191,17 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_apply_compare</span><span class="p">(</span><span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Apply a comparison operator to two operands.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        op (str): One of ``&lt;``, ``&lt;=``, ``==``, ``!=``, ``&gt;=``, ``&gt;``.</span>
+<span class="sd">        left (Any): Left-hand operand.</span>
+<span class="sd">        right (Any): Right-hand operand.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: The result of the comparison.</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">_COMPARE_HANDLERS</span><span class="p">[</span><span class="n">op</span><span class="p">](</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">))</span>
 
 
@@ -1089,6 +1216,17 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_apply_arith</span><span class="p">(</span><span class="n">op</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Apply a binary arithmetic operator to two operands.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        op (str): One of ``+``, ``-``, ``*``, ``/``, ``min``, ``max``.</span>
+<span class="sd">        left (Any): Left-hand operand.</span>
+<span class="sd">        right (Any): Right-hand operand.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Any: The result of the operation.</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">_ARITH_HANDLERS</span><span class="p">[</span><span class="n">op</span><span class="p">](</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
 
 
@@ -1104,6 +1242,17 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_apply_func</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Apply a whitelisted DSL function to its arguments.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): Function name; ``"int"`` (truncate toward zero) or</span>
+<span class="sd">            ``"clamp"`` (``value, lo, hi`` → bounded value).</span>
+<span class="sd">        args (List[Any]): Positional arguments for the function.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Any: The function's result.</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">_FUNC_HANDLERS</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="n">args</span><span class="p">)</span>
 </pre></div>
 

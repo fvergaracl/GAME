@@ -369,7 +369,17 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#api-app-services-user-game-config-service--page-root" class="md-nav__link">app.services.user_game_config_service module</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.user_game_config_service.UserGameConfigService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserGameConfigService</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_game_config_service.UserGameConfigService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserGameConfigService</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.user_game_config_service.UserGameConfigService.get_user_config" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserGameConfigService.get_user_config()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_game_config_service.UserGameConfigService.create_user_config" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserGameConfigService.create_user_config()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_game_config_service.UserGameConfigService.update_user_config" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserGameConfigService.update_user_config()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_game_config_service.UserGameConfigService.delete_user_config" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserGameConfigService.delete_user_config()</span></code></a>
+        </li></ul>
+            </nav>
         </li></ul>
             </nav>
         </li>
@@ -399,6 +409,84 @@
 <dd class="field-odd"><p><strong>repository</strong> (<a class="reference internal" href="app.repository.user_game_config_repository.html#app.repository.user_game_config_repository.UserGameConfigRepository" title="app.repository.user_game_config_repository.UserGameConfigRepository"><em>UserGameConfigRepository</em></a>)</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_game_config_service.UserGameConfigService.get_user_config">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_user_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_game_config_service.html#UserGameConfigService.get_user_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_game_config_service.UserGameConfigService.get_user_config" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch the per-user configuration for a game.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<em>UUID</em>) – Internal user identifier.</p></li>
+<li><p><strong>game_id</strong> (<em>UUID</em>) – Internal game identifier.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Optional[UserGameConfigResponse]</em> – The config, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the
+user has none for that game.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>UserGameConfigResponse</em> | None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_game_config_service.UserGameConfigService.create_user_config">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_user_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_game_config_service.html#UserGameConfigService.create_user_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_game_config_service.UserGameConfigService.create_user_config" title="Link to this definition">¶</a></dt>
+<dd><p>Create (or upsert) a user’s configuration for a game.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> (<em>CreateUserGameConfig</em>) – Config payload (user, game,
+experiment group and config data).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>UserGameConfigResponse</em> – The persisted configuration.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>UserGameConfigResponse</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_game_config_service.UserGameConfigService.update_user_config">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_user_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_game_config_service.html#UserGameConfigService.update_user_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_game_config_service.UserGameConfigService.update_user_config" title="Link to this definition">¶</a></dt>
+<dd><p>Update an existing user’s game configuration.</p>
+<p>Falls back to the current values for any field omitted in <code class="docutils literal notranslate"><span class="pre">schema</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<em>UUID</em>) – Internal user identifier.</p></li>
+<li><p><strong>game_id</strong> (<em>UUID</em>) – Internal game identifier.</p></li>
+<li><p><strong>schema</strong> (<em>UpdateUserGameConfig</em>) – Fields to update.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Optional[UserGameConfigResponse]</em> – The updated config, or <code class="docutils literal notranslate"><span class="pre">None</span></code>
+if no config exists for that user/game.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>UserGameConfigResponse</em> | None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_game_config_service.UserGameConfigService.delete_user_config">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_user_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_game_config_service.html#UserGameConfigService.delete_user_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_game_config_service.UserGameConfigService.delete_user_config" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a user’s configuration for a game.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_id</strong> (<em>UUID</em>) – Internal user identifier.</p></li>
+<li><p><strong>game_id</strong> (<em>UUID</em>) – Internal game identifier.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>bool</em> – <code class="docutils literal notranslate"><span class="pre">True</span></code> if a configuration was deleted, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 

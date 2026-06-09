@@ -369,7 +369,13 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#api-app-services-wallet-service--page-root" class="md-nav__link">app.services.wallet_service module</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService.get_wallet_by_user_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService.get_wallet_by_user_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.wallet_service.WalletService.preview_convert" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">WalletService.preview_convert()</span></code></a>
+        </li></ul>
+            </nav>
         </li></ul>
             </nav>
         </li>
@@ -402,6 +408,48 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.wallet_service.WalletService.get_wallet_by_user_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_wallet_by_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_service.html#WalletService.get_wallet_by_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_service.WalletService.get_wallet_by_user_id" title="Link to this definition">¶</a></dt>
+<dd><p>Return the wallet belonging to an external user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>externalUserId</strong> – External identifier of the user.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>BaseWallet</em> – The user’s wallet with coin/point balances and rate.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the user or their wallet does not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>BaseWallet</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.wallet_service.WalletService.preview_convert">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preview_convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/wallet_service.html#WalletService.preview_convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.wallet_service.WalletService.preview_convert" title="Link to this definition">¶</a></dt>
+<dd><p>Preview converting points to coins without persisting anything.</p>
+<p>Computes the coins a points amount would yield at the wallet’s current
+conversion rate and the resulting balances, for display before the user
+confirms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – Payload with <code class="docutils literal notranslate"><span class="pre">externalUserId</span></code> and <code class="docutils literal notranslate"><span class="pre">points</span></code> to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ResponsePreviewConvertPoints</em> – The projected conversion result and
+post-conversion balances.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the user or their wallet does not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ResponsePreviewConvertPoints</em></p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 

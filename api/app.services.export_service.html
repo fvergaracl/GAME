@@ -373,7 +373,17 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.services.export_service.ExportService.audit_start" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.audit_start()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.services.export_service.ExportService.audit_finish" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.audit_finish()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.services.export_service.ExportService.list_history" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.list_history()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.export_service.ExportService.iter_users" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.iter_users()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.export_service.ExportService.iter_user_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.iter_user_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.export_service.ExportService.iter_user_interactions" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.iter_user_interactions()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.export_service.ExportService.iter_wallet_transactions" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.iter_wallet_transactions()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.export_service.ExportService.iter_dataset" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.iter_dataset()</span></code></a>
         </li>
@@ -382,6 +392,12 @@
         <li class="md-nav__item"><a href="#app.services.export_service.ExportService.format_as_json" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.format_as_json()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.export_service.ExportService.format_as_xlsx" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.format_as_xlsx()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.export_service.ExportService.format_iterator" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.format_iterator()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.export_service.ExportService.media_type_for" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.media_type_for()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.export_service.ExportService.filename_for" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">ExportService.filename_for()</span></code></a>
         </li></ul>
             </nav>
         </li></ul>
@@ -450,6 +466,23 @@ recorded with status=”started”.</p>
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="app.services.export_service.ExportService.audit_finish">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">audit_finish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audit_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/export_service.html#ExportService.audit_finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.export_service.ExportService.audit_finish" title="Link to this definition">¶</a></dt>
+<dd><p>Mark an export audit row finished with its final row count and status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>audit_id</strong> (<em>str</em>) – Id of the audit row started by <code class="docutils literal notranslate"><span class="pre">audit_start</span></code>.</p></li>
+<li><p><strong>row_count</strong> (<em>int</em>) – Number of rows actually streamed.</p></li>
+<li><p><strong>status</strong> (<em>str</em>) – Terminal status (e.g. completed/failed).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="app.services.export_service.ExportService.list_history">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/export_service.html#ExportService.list_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.export_service.ExportService.list_history" title="Link to this definition">¶</a></dt>
 <dd><p>Return recent audit rows mapped onto the public entry schema, hiding
@@ -464,6 +497,75 @@ internal fields (raw apiKey/oauth_user_id are dropped — only the
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>List</em>[<em>ExportAuditLogEntry</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.export_service.ExportService.iter_users">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_users</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/export_service.html#ExportService.iter_users"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.export_service.ExportService.iter_users" title="Link to this definition">¶</a></dt>
+<dd><p>Stream user rows as plain dicts for export.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filters</strong> (<em>ExportFilters</em>) – Date range and row limit (game/task
+filters do not apply to users).</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Dict[str, Any]</em> – One serializable user record per row.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>AsyncIterator</em>[<em>Dict</em>[str, <em>Any</em>]]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.export_service.ExportService.iter_user_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_user_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/export_service.html#ExportService.iter_user_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.export_service.ExportService.iter_user_points" title="Link to this definition">¶</a></dt>
+<dd><p>Stream user-point rows (joined with user/task/game) as dicts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filters</strong> (<em>ExportFilters</em>) – Date range, row limit and optional
+game/task filters.</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Dict[str, Any]</em> – One serializable user-point record per row.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>AsyncIterator</em>[<em>Dict</em>[str, <em>Any</em>]]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.export_service.ExportService.iter_user_interactions">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_user_interactions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/export_service.html#ExportService.iter_user_interactions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.export_service.ExportService.iter_user_interactions" title="Link to this definition">¶</a></dt>
+<dd><p>Stream user-action (interaction) rows as dicts.</p>
+<p>Backed by the <code class="docutils literal notranslate"><span class="pre">useractions</span></code> table; game/task filters are ignored here
+because those ids only live inside the JSON <code class="docutils literal notranslate"><span class="pre">data</span></code> column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filters</strong> (<em>ExportFilters</em>) – Date range and row limit.</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Dict[str, Any]</em> – One serializable interaction record per row.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>AsyncIterator</em>[<em>Dict</em>[str, <em>Any</em>]]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.export_service.ExportService.iter_wallet_transactions">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iter_wallet_transactions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/export_service.html#ExportService.iter_wallet_transactions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.export_service.ExportService.iter_wallet_transactions" title="Link to this definition">¶</a></dt>
+<dd><p>Stream wallet-transaction rows (joined with the owning user) as dicts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filters</strong> (<em>ExportFilters</em>) – Date range and row limit (game/task
+filters do not apply).</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Dict[str, Any]</em> – One serializable transaction record per row.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>AsyncIterator</em>[<em>Dict</em>[str, <em>Any</em>]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -534,6 +636,64 @@ working if the dependency is missing.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>AsyncIterator</em>[bytes]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.export_service.ExportService.format_iterator">
+<span class="sig-name descname"><span class="pre">format_iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/export_service.html#ExportService.format_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.export_service.ExportService.format_iterator" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap a row iterator in the byte-stream formatter for the chosen format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_type</strong> (<em>str</em>) – Dataset name, used to resolve column order.</p></li>
+<li><p><strong>export_format</strong> (<em>str</em>) – One of <code class="docutils literal notranslate"><span class="pre">csv</span></code>/<code class="docutils literal notranslate"><span class="pre">json</span></code>/<code class="docutils literal notranslate"><span class="pre">xlsx</span></code>.</p></li>
+<li><p><strong>rows</strong> (<em>AsyncIterator</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – The dataset rows to encode.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>AsyncIterator[bytes]</em> – An async iterator yielding encoded chunks.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>InternalServerError</strong> – If <code class="docutils literal notranslate"><span class="pre">export_format</span></code> is unknown.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>AsyncIterator</em>[bytes]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.export_service.ExportService.media_type_for">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media_type_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">export_format</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/export_service.html#ExportService.media_type_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.export_service.ExportService.media_type_for" title="Link to this definition">¶</a></dt>
+<dd><p>Return the HTTP <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> for an export format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>export_format</strong> (<em>str</em>) – One of <code class="docutils literal notranslate"><span class="pre">csv</span></code>/<code class="docutils literal notranslate"><span class="pre">json</span></code>/<code class="docutils literal notranslate"><span class="pre">xlsx</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>str</em> – The matching media type.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.export_service.ExportService.filename_for">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filename_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_format</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/export_service.html#ExportService.filename_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.export_service.ExportService.filename_for" title="Link to this definition">¶</a></dt>
+<dd><p>Build a timestamped download filename for an export.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset_type</strong> (<em>str</em>) – Dataset name used as the filename stem.</p></li>
+<li><p><strong>export_format</strong> (<em>str</em>) – Format extension (<code class="docutils literal notranslate"><span class="pre">csv</span></code>/<code class="docutils literal notranslate"><span class="pre">json</span></code>/<code class="docutils literal notranslate"><span class="pre">xlsx</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>str</em> – A name like <code class="docutils literal notranslate"><span class="pre">users_20260609T120000Z.csv</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>

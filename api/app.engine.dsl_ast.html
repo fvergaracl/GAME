@@ -377,6 +377,8 @@
         </li>
         <li class="md-nav__item"><a href="#app.engine.dsl_ast.is_known_field_path" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">is_known_field_path()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.engine.dsl_ast.is_valid_case_name" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">is_valid_case_name()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.engine.dsl_ast.enumerate_field_paths" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">enumerate_field_paths()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.engine.dsl_ast.iter_program_rules" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">iter_program_rules()</span></code></a>
@@ -471,6 +473,24 @@ context-restricted by validator), or a well-formed data.* key.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.dsl_ast.is_valid_case_name">
+<span class="sig-prename descclassname"><span class="pre">app.engine.dsl_ast.</span></span><span class="sig-name descname"><span class="pre">is_valid_case_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/dsl_ast.html#is_valid_case_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.dsl_ast.is_valid_case_name" title="Link to this definition">¶</a></dt>
+<dd><p>Return whether <code class="docutils literal notranslate"><span class="pre">value</span></code> is a syntactically valid case name.</p>
+<p>A valid case name is a string matching the case-name pattern
+(<code class="docutils literal notranslate"><span class="pre">_CASE_NAME_RE</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>Any</em>) – Candidate value to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>bool</em> – <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">value</span></code> is a well-formed case name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>

@@ -407,6 +407,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">user_points_analytics_service</span> <span class="o">=</span> <span class="n">user_points_analytics_service</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">strategy_definition_service</span><span class="p">)</span>
 
+<div class="viewcode-block" id="DslSimulationService.simulate">
+<a class="viewcode-back" href="../../../api/app.services.dsl_simulation_service.html#app.services.dsl_simulation_service.DslSimulationService.simulate">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -414,6 +416,24 @@
         <span class="n">realmId</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">request</span><span class="p">:</span> <span class="n">SimulationRequest</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimulationResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Run a custom strategy's AST against simulated input without persisting.</span>
+
+<span class="sd">        Loads the strategy definition (scoped to ``realmId``) and executes its</span>
+<span class="sd">        AST over the provided simulation request, returning the computed points</span>
+<span class="sd">        and trace so authors can preview behaviour before publishing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (str): Strategy definition identifier.</span>
+<span class="sd">            realmId (Any): Realm/tenant the strategy belongs to.</span>
+<span class="sd">            request (SimulationRequest): Simulated event input.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            SimulationResponse: The simulated scoring result and trace.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DslValidationError: If the strategy has no AST to simulate.</span>
+<span class="sd">        """</span>
         <span class="n">definition</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_service</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span>
         <span class="p">)</span>
@@ -428,7 +448,8 @@
                 <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">"strategyId"</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_ast</span><span class="p">(</span><span class="n">definition</span><span class="o">.</span><span class="n">astJson</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_ast</span><span class="p">(</span><span class="n">definition</span><span class="o">.</span><span class="n">astJson</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="DslSimulationService.simulate_inline">
 <a class="viewcode-back" href="../../../api/app.services.dsl_simulation_service.html#app.services.dsl_simulation_service.DslSimulationService.simulate_inline">[docs]</a>

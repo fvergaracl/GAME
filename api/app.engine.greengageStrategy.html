@@ -459,20 +459,40 @@ minutes elapsed, using the floor of the time range.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.engine.greengageStrategy.GREENGAGEGamificationStrategy.generate_logic_graph">
 <span class="sig-name descname"><span class="pre">generate_logic_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'png'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greengageStrategy.html#GREENGAGEGamificationStrategy.generate_logic_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.generate_logic_graph" title="Link to this definition">¶</a></dt>
-<dd><p>Generates a logic graph for the strategy.</p>
+<dd><p>Render this strategy’s decision tree as a Graphviz diagram.</p>
+<p>Builds a labelled flowchart (legend, decision nodes and the Case
+1.1–4.2 outcomes) describing how minutes, records and global/personal
+averages map to a point award. Used by the dashboard to visualize the
+strategy.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>str</em> – The logic graph as a string.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>format</strong> (<em>str</em>) – Graphviz output format (e.g. <code class="docutils literal notranslate"><span class="pre">"png"</span></code>, <code class="docutils literal notranslate"><span class="pre">"svg"</span></code>).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>graphviz.Digraph</em> – The constructed diagram.</p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="app.engine.greengageStrategy.GREENGAGEGamificationStrategy.calculate_points">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/greengageStrategy.html#GREENGAGEGamificationStrategy.calculate_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.calculate_points" title="Link to this definition">¶</a></dt>
-<dd><p>Calculates the points for the strategy.</p>
+<dd><p>Award points from reported effort minutes and task complexity.</p>
+<p>Requires a numeric <code class="docutils literal notranslate"><span class="pre">minutes</span></code> value in <code class="docutils literal notranslate"><span class="pre">data</span></code>. The award follows
+the Case 1.1–4.2 decision tree (see <a class="reference internal" href="#app.engine.greengageStrategy.GREENGAGEGamificationStrategy.generate_logic_graph" title="app.engine.greengageStrategy.GREENGAGEGamificationStrategy.generate_logic_graph"><code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_logic_graph()</span></code></a>),
+weighting the configured default points by total complexity and the
+user’s history/averages.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>int</em> – The basic points variable.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalGameId</strong> – External identifier of the game.</p></li>
+<li><p><strong>externalTaskId</strong> – External identifier of the task.</p></li>
+<li><p><strong>externalUserId</strong> – External identifier of the user.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – Event payload; must contain an integer <code class="docutils literal notranslate"><span class="pre">minutes</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>tuple</em> – <code class="docutils literal notranslate"><span class="pre">(points,</span> <span class="pre">caseName)</span></code> on success, or <code class="docutils literal notranslate"><span class="pre">(-1,</span> <span class="pre">message)</span></code>
+when <code class="docutils literal notranslate"><span class="pre">minutes</span></code> is missing or invalid.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -400,10 +400,23 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="app.engine.constantEffortStrategy.ConstantEffortStrategy.calculate_points">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/engine/constantEffortStrategy.html#ConstantEffortStrategy.calculate_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.engine.constantEffortStrategy.ConstantEffortStrategy.calculate_points" title="Link to this definition">¶</a></dt>
-<dd><p>Calculates the points for the strategy.</p>
+<dd><p>Award points for sustained effort within a rolling time window.</p>
+<p>If the user already has measurements in the last
+<code class="docutils literal notranslate"><span class="pre">variable_constant_effort_interval_minutes</span></code> minutes, the award scales
+with how consistent they have been (<code class="docutils literal notranslate"><span class="pre">ConstantEffortReward</span></code>);
+otherwise a flat basic point is granted (<code class="docutils literal notranslate"><span class="pre">BasicReward</span></code>).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>int</em> – The basic points variable.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalGameId</strong> – External identifier of the game.</p></li>
+<li><p><strong>externalTaskId</strong> – External identifier of the task.</p></li>
+<li><p><strong>externalUserId</strong> – External identifier of the user.</p></li>
+<li><p><strong>data</strong> – Optional event payload (unused by this strategy).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>tuple[int, str]</em> – The points to award and the case name describing
+which branch produced them.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -374,6 +374,10 @@
         <li class="md-nav__item"><a href="#app.services.dashboard_service.DashboardService.dashboard_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DashboardService.dashboard_repository</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.dashboard_service.DashboardService.__init__" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DashboardService.__init__()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.dashboard_service.DashboardService.get_dashboard_summary" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DashboardService.get_dashboard_summary()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.dashboard_service.DashboardService.get_dashboard_summary_logs" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DashboardService.get_dashboard_summary_logs()</span></code></a>
         </li></ul>
             </nav>
         </li></ul>
@@ -442,6 +446,46 @@ instance.</p></li>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.dashboard_service.DashboardService.get_dashboard_summary">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_dashboard_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_by</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/dashboard_service.html#DashboardService.get_dashboard_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.dashboard_service.DashboardService.get_dashboard_summary" title="Link to this definition">¶</a></dt>
+<dd><p>Return the dashboard activity summary for a date range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> – Inclusive lower bound of the reporting window.</p></li>
+<li><p><strong>end_date</strong> – Inclusive upper bound of the reporting window.</p></li>
+<li><p><strong>group_by</strong> – Bucketing granularity (e.g. <code class="docutils literal notranslate"><span class="pre">"day"</span></code>/<code class="docutils literal notranslate"><span class="pre">"month"</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – Aggregated summary metrics produced by the repository.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.dashboard_service.DashboardService.get_dashboard_summary_logs">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_dashboard_summary_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_by</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/dashboard_service.html#DashboardService.get_dashboard_summary_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.dashboard_service.DashboardService.get_dashboard_summary_logs" title="Link to this definition">¶</a></dt>
+<dd><p>Return the dashboard log-activity summary for a date range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_date</strong> – Inclusive lower bound of the reporting window.</p></li>
+<li><p><strong>end_date</strong> – Inclusive upper bound of the reporting window.</p></li>
+<li><p><strong>group_by</strong> – Bucketing granularity (e.g. <code class="docutils literal notranslate"><span class="pre">"day"</span></code>/<code class="docutils literal notranslate"><span class="pre">"month"</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – Aggregated log metrics produced by the repository.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
 </dd>
 </dl>
 </dd></dl>

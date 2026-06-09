@@ -393,6 +393,8 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session_factory</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
+<div class="viewcode-block" id="AbuseLimitCounterRepository.increment_and_get">
+<a class="viewcode-back" href="../../../api/app.repository.abuse_limit_counter_repository.html#app.repository.abuse_limit_counter_repository.AbuseLimitCounterRepository.increment_and_get">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">increment_and_get</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">scope_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -400,6 +402,24 @@
         <span class="n">window_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">window_start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Atomically increment a rate-limit bucket and return its new value.</span>
+
+<span class="sd">        Concurrency-safe: it first tries an atomic ``counter = counter + 1``</span>
+<span class="sd">        update; if the bucket does not yet exist it inserts it, and if a</span>
+<span class="sd">        concurrent insert collides it rolls back and retries the update. The</span>
+<span class="sd">        ``window_start`` is normalized to UTC.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scope_type (str): Dimension being limited (e.g. ``"ip"``,</span>
+<span class="sd">                ``"api_key"``).</span>
+<span class="sd">            scope_value (str): Concrete value within ``scope_type``.</span>
+<span class="sd">            window_name (str): Name of the limit window (e.g. ``"per_minute"``).</span>
+<span class="sd">            window_start (datetime): Start of the bucket's time window.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The counter value after this increment.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">window_start</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">window_start</span> <span class="o">=</span> <span class="n">window_start</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
 
@@ -449,7 +469,8 @@
                     <span class="o">.</span><span class="n">execution_options</span><span class="p">(</span><span class="n">synchronize_session</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_counter</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_counter</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_filters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -458,6 +479,13 @@
         <span class="n">window_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">window_start</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Build the equality filters that uniquely identify a counter bucket.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: SQLAlchemy boolean expressions for scope type/value,</span>
+<span class="sd">            window name and window start, used in ``WHERE`` clauses.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">scopeType</span> <span class="o">==</span> <span class="n">scope_type</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">scopeValue</span> <span class="o">==</span> <span class="n">scope_value</span><span class="p">,</span>
@@ -466,6 +494,16 @@
         <span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_read_counter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Read the current counter value for a bucket within ``session``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session (AsyncSession): Active session to query within.</span>
+<span class="sd">            filters: Bucket-identifying filters from :meth:`_build_filters`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The stored counter, or ``0`` when the bucket is absent.</span>
+<span class="sd">        """</span>
         <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
             <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">counter</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">*</span><span class="n">filters</span><span class="p">))</span>
         <span class="p">)</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>

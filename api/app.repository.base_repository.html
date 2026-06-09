@@ -369,7 +369,27 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#api-app-repository-base-repository--page-root" class="md-nav__link">app.repository.base_repository module</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository</span></code></a>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.read_by_options" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.read_by_options()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.read_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.read_by_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.read_by_column" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.read_by_column()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.create" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.create()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.update" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.update()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.update_attr" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.update_attr()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.whole_update" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.whole_update()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.delete_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.delete_by_id()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.repository.base_repository.BaseRepository.read_by_columns" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">BaseRepository.read_by_columns()</span></code></a>
+        </li></ul>
+            </nav>
         </li></ul>
             </nav>
         </li>
@@ -400,6 +420,205 @@ SQLAlchemy 2.0’s <code class="docutils literal notranslate"><span class="pre">
 <dd class="field-odd"><p><strong>session_factory</strong> (<em>Callable</em><em>[</em><em>[</em><em>...</em><em>]</em><em>, </em><em>AbstractAsyncContextManager</em><em>[</em><em>AsyncSession</em><em>]</em><em>]</em>)</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.read_by_options">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_by_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.read_by_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.read_by_options" title="Link to this definition">¶</a></dt>
+<dd><p>Run a filtered, ordered and paginated query from a search schema.</p>
+<p>Non-null fields on <code class="docutils literal notranslate"><span class="pre">schema</span></code> are turned into <code class="docutils literal notranslate"><span class="pre">WHERE</span></code> conditions;
+<code class="docutils literal notranslate"><span class="pre">ordering</span></code>, <code class="docutils literal notranslate"><span class="pre">page</span></code> and <code class="docutils literal notranslate"><span class="pre">page_size</span></code> drive sorting and pagination
+(a <code class="docutils literal notranslate"><span class="pre">page_size</span></code> of <code class="docutils literal notranslate"><span class="pre">"all"</span></code> disables the limit). The total row count
+ignoring pagination is computed alongside the page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schema</strong> – Search schema whose non-null fields become filters and
+which may carry <code class="docutils literal notranslate"><span class="pre">ordering</span></code>/<code class="docutils literal notranslate"><span class="pre">page</span></code>/<code class="docutils literal notranslate"><span class="pre">page_size</span></code>.</p></li>
+<li><p><strong>eager</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, eagerly join the model’s <code class="docutils literal notranslate"><span class="pre">eagers</span></code>
+relationships.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict</em> – <code class="docutils literal notranslate"><span class="pre">{"items":</span> <span class="pre">[...],</span> <span class="pre">"search_options":</span> <span class="pre">{page,</span> <span class="pre">page_size,</span>
+<span class="pre">ordering,</span> <span class="pre">total_count}}</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.read_by_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_raise_exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Not</span> <span class="pre">found</span> <span class="pre">id</span> <span class="pre">:</span> <span class="pre">{id}'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.read_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.read_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch a single row by primary key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Primary-key value to look up.</p></li>
+<li><p><strong>eager</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, eagerly join the model’s <code class="docutils literal notranslate"><span class="pre">eagers</span></code>
+relationships.</p></li>
+<li><p><strong>not_found_raise_exception</strong> (<em>bool</em>) – Raise <code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code>
+when no row matches; when <code class="docutils literal notranslate"><span class="pre">False</span></code> return <code class="docutils literal notranslate"><span class="pre">None</span></code> instead.</p></li>
+<li><p><strong>not_found_message</strong> (<em>str</em>) – Format string for the not-found error
+(<code class="docutils literal notranslate"><span class="pre">{id}</span></code> is substituted).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The matching model instance, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when missing and
+<code class="docutils literal notranslate"><span class="pre">not_found_raise_exception</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If no row matches and the flag is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.read_by_column">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_by_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_one</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_raise_exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Not</span> <span class="pre">found</span> <span class="pre">{column}</span> <span class="pre">:</span> <span class="pre">{value}'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.read_by_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.read_by_column" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch rows whose <code class="docutils literal notranslate"><span class="pre">column</span></code> equals <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>column</strong> (<em>str</em>) – Name of the model attribute to filter on.</p></li>
+<li><p><strong>value</strong> – Value the column must equal.</p></li>
+<li><p><strong>eager</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, eagerly join the model’s <code class="docutils literal notranslate"><span class="pre">eagers</span></code>
+relationships.</p></li>
+<li><p><strong>only_one</strong> (<em>bool</em>) – Return the first match when <code class="docutils literal notranslate"><span class="pre">True</span></code>; otherwise
+return the full list of matches.</p></li>
+<li><p><strong>not_found_raise_exception</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">only_one</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+raise <code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code> if nothing matches.</p></li>
+<li><p><strong>not_found_message</strong> (<em>str</em>) – Format string for the not-found error
+(<code class="docutils literal notranslate"><span class="pre">{column}</span></code> and <code class="docutils literal notranslate"><span class="pre">{value}</span></code> are substituted).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A single instance (or <code class="docutils literal notranslate"><span class="pre">None</span></code>) when <code class="docutils literal notranslate"><span class="pre">only_one</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+otherwise a list of matching instances.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If <code class="docutils literal notranslate"><span class="pre">only_one</span></code> and nothing matches and the flag is
+    <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.create">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_commit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.create" title="Link to this definition">¶</a></dt>
+<dd><p>Insert a new row built from <code class="docutils literal notranslate"><span class="pre">schema</span></code>.</p>
+<p>Supports two modes: a self-managed session (<code class="docutils literal notranslate"><span class="pre">session=None</span></code>,
+<code class="docutils literal notranslate"><span class="pre">auto_commit=True</span></code>) that opens, commits and closes its own session,
+or an externally-managed session passed by the caller so the insert
+can take part in a larger transaction (<code class="docutils literal notranslate"><span class="pre">auto_commit=False</span></code> flushes
+instead of committing).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schema</strong> – Pydantic schema dumped into the model’s constructor.</p></li>
+<li><p><strong>session</strong> (<em>Optional</em><em>[</em><em>AsyncSession</em><em>]</em>) – Caller-managed session to reuse;
+a new one is opened when <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>auto_commit</strong> (<em>bool</em>) – Commit immediately when <code class="docutils literal notranslate"><span class="pre">True</span></code>; otherwise
+only flush (requires an external <code class="docutils literal notranslate"><span class="pre">session</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The persisted (and refreshed) model instance.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">auto_commit=False</span></code> is requested without an
+    external session.</p></li>
+<li><p><strong>DuplicatedError</strong> – If the insert violates a uniqueness constraint.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.update">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.update" title="Link to this definition">¶</a></dt>
+<dd><p>Partially update a row, ignoring <code class="docutils literal notranslate"><span class="pre">None</span></code> fields on <code class="docutils literal notranslate"><span class="pre">schema</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Primary key of the row to update.</p></li>
+<li><p><strong>schema</strong> – Pydantic schema; only its non-null fields are written.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The refreshed model instance after the update.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.update_attr">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.update_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.update_attr" title="Link to this definition">¶</a></dt>
+<dd><p>Update a single column of a row.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Primary key of the row to update.</p></li>
+<li><p><strong>column</strong> (<em>str</em>) – Name of the column to set.</p></li>
+<li><p><strong>value</strong> – New value for the column.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The refreshed model instance after the update.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.whole_update">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">whole_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.whole_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.whole_update" title="Link to this definition">¶</a></dt>
+<dd><p>Fully replace a row’s columns from <code class="docutils literal notranslate"><span class="pre">schema</span></code> (including <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+<p>Unlike <a class="reference internal" href="#app.repository.base_repository.BaseRepository.update" title="app.repository.base_repository.BaseRepository.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code></a>, every field on <code class="docutils literal notranslate"><span class="pre">schema</span></code> is written, so this
+performs a complete overwrite rather than a partial patch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Primary key of the row to update.</p></li>
+<li><p><strong>schema</strong> – Pydantic schema dumped in full into the update.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The refreshed model instance after the update.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.delete_by_id">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.delete_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.delete_by_id" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a row by primary key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> – Primary key of the row to delete.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotFoundError</strong> – If no row matches <code class="docutils literal notranslate"><span class="pre">id</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.base_repository.BaseRepository.read_by_columns">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_by_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_one</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">not_found_raise_exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/base_repository.html#BaseRepository.read_by_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.base_repository.BaseRepository.read_by_columns" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch rows matching several equality filters combined with <code class="docutils literal notranslate"><span class="pre">AND</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filters</strong> (<em>dict</em>) – Mapping of column name to required value; all
+conditions must hold (<code class="docutils literal notranslate"><span class="pre">AND</span></code>).</p></li>
+<li><p><strong>eager</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, eagerly join the model’s <code class="docutils literal notranslate"><span class="pre">eagers</span></code>
+relationships.</p></li>
+<li><p><strong>only_one</strong> (<em>bool</em>) – Return the first match when <code class="docutils literal notranslate"><span class="pre">True</span></code>; otherwise
+return all matches.</p></li>
+<li><p><strong>not_found_raise_exception</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">only_one</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+raise <code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundError</span></code> if nothing matches.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A single instance (or <code class="docutils literal notranslate"><span class="pre">None</span></code>) when <code class="docutils literal notranslate"><span class="pre">only_one</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+otherwise a list of matching instances.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If <code class="docutils literal notranslate"><span class="pre">only_one</span></code> and nothing matches and the flag is
+    <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 

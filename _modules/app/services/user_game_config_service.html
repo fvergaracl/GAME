@@ -380,26 +380,69 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repository</span><span class="p">:</span> <span class="n">UserGameConfigRepository</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">repository</span> <span class="o">=</span> <span class="n">repository</span>
 
+<div class="viewcode-block" id="UserGameConfigService.get_user_config">
+<a class="viewcode-back" href="../../../api/app.services.user_game_config_service.html#app.services.user_game_config_service.UserGameConfigService.get_user_config">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_config</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="n">UUID</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UserGameConfigResponse</span><span class="p">]:</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_by_user_and_game</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">game_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">UserGameConfigResponse</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="k">if</span> <span class="n">config</span> <span class="k">else</span> <span class="kc">None</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Fetch the per-user configuration for a game.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            user_id (UUID): Internal user identifier.</span>
+<span class="sd">            game_id (UUID): Internal game identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[UserGameConfigResponse]: The config, or ``None`` if the</span>
+<span class="sd">            user has none for that game.</span>
+<span class="sd">        """</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_by_user_and_game</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">game_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">UserGameConfigResponse</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="k">if</span> <span class="n">config</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="UserGameConfigService.create_user_config">
+<a class="viewcode-back" href="../../../api/app.services.user_game_config_service.html#app.services.user_game_config_service.UserGameConfigService.create_user_config">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_user_config</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">CreateUserGameConfig</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserGameConfigResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Create (or upsert) a user's configuration for a game.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            schema (CreateUserGameConfig): Config payload (user, game,</span>
+<span class="sd">                experiment group and config data).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            UserGameConfigResponse: The persisted configuration.</span>
+<span class="sd">        """</span>
         <span class="n">config</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">create_or_update</span><span class="p">(</span>
             <span class="n">schema</span><span class="o">.</span><span class="n">userId</span><span class="p">,</span>
             <span class="n">schema</span><span class="o">.</span><span class="n">gameId</span><span class="p">,</span>
             <span class="n">schema</span><span class="o">.</span><span class="n">experimentGroup</span><span class="p">,</span>
             <span class="n">schema</span><span class="o">.</span><span class="n">configData</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">UserGameConfigResponse</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">UserGameConfigResponse</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="UserGameConfigService.update_user_config">
+<a class="viewcode-back" href="../../../api/app.services.user_game_config_service.html#app.services.user_game_config_service.UserGameConfigService.update_user_config">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_user_config</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">UpdateUserGameConfig</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UserGameConfigResponse</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Update an existing user's game configuration.</span>
+
+<span class="sd">        Falls back to the current values for any field omitted in ``schema``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            user_id (UUID): Internal user identifier.</span>
+<span class="sd">            game_id (UUID): Internal game identifier.</span>
+<span class="sd">            schema (UpdateUserGameConfig): Fields to update.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Optional[UserGameConfigResponse]: The updated config, or ``None``</span>
+<span class="sd">            if no config exists for that user/game.</span>
+<span class="sd">        """</span>
         <span class="n">existing_config</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">get_by_user_and_game</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">game_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">existing_config</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -410,10 +453,24 @@
             <span class="n">schema</span><span class="o">.</span><span class="n">experimentGroup</span> <span class="ow">or</span> <span class="n">existing_config</span><span class="o">.</span><span class="n">experimentGroup</span><span class="p">,</span>
             <span class="n">schema</span><span class="o">.</span><span class="n">configData</span> <span class="ow">or</span> <span class="n">existing_config</span><span class="o">.</span><span class="n">configData</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">UserGameConfigResponse</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">updated_config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">UserGameConfigResponse</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">updated_config</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="UserGameConfigService.delete_user_config">
+<a class="viewcode-back" href="../../../api/app.services.user_game_config_service.html#app.services.user_game_config_service.UserGameConfigService.delete_user_config">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_user_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Delete a user's configuration for a game.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            user_id (UUID): Internal user identifier.</span>
+<span class="sd">            game_id (UUID): Internal game identifier.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: ``True`` if a configuration was deleted, ``False`` otherwise.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">repository</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">game_id</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
 

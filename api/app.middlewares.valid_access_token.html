@@ -371,6 +371,8 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#app.middlewares.valid_access_token.CustomOAuth2AuthorizationCodeBearer" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">CustomOAuth2AuthorizationCodeBearer</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.middlewares.valid_access_token.valid_access_token" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">valid_access_token()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.middlewares.valid_access_token.refresh_access_token" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">refresh_access_token()</span></code></a>
         </li></ul>
             </nav>
@@ -406,6 +408,28 @@
 <li><p><strong>description</strong> (<em>Annotated</em><em>[</em><em>str</em><em> | </em><em>None</em><em>, </em><em>Doc</em><em>(</em><em>'\n                Security scheme description.\n\n                It will be included in the generated OpenAPI</em><em> (</em><em>e.g. visible at `/docs`</em><em>)</em><em>.\n                '</em><em>)</em><em>]</em>)</p></li>
 <li><p><strong>auto_error</strong> (<em>Annotated</em><em>[</em><em>bool</em><em>, </em><em>Doc</em><em>(</em><em>'\n                By default</em><em>, </em><em>if no HTTP Authorization header is provided</em><em>, </em><em>required for\n                OAuth2 authentication</em><em>, </em><em>it will automatically cancel the request and\n                send the client an error.\n\n                If `auto_error` is set to `False`</em><em>, </em><em>when the HTTP Authorization header\n                is not available</em><em>, </em><em>instead</em><em> of </em><em>erroring out</em><em>, </em><em>the dependency result will\n                be `None`.\n\n                This is useful when you want to have optional authentication.\n\n                It is also useful when you want to have authentication that can be\n                provided in one</em><em> of </em><em>multiple optional ways</em><em> (</em><em>for example</em><em>, </em><em>with OAuth2\n</em><em>                or </em><em>in a cookie</em><em>)</em><em>.\n                '</em><em>)</em><em>]</em>)</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.middlewares.valid_access_token.valid_access_token">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.middlewares.valid_access_token.</span></span><span class="sig-name descname"><span class="pre">valid_access_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">access_token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/middlewares/valid_access_token.html#valid_access_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.middlewares.valid_access_token.valid_access_token" title="Link to this definition">¶</a></dt>
+<dd><p>Validate a Keycloak-issued JWT access token.</p>
+<p>Fetches the realm signing key (offloaded to a worker thread so the JWKS
+roundtrip does not block the event loop) and verifies the token’s
+signature, expiry, issuer and audience. Each failure mode is mapped to an
+appropriate HTTP status carried inside the returned <code class="docutils literal notranslate"><span class="pre">Response</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>access_token</strong> (<em>str</em>) – The bearer token extracted by <code class="docutils literal notranslate"><span class="pre">oauth_2_scheme</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Response</em> – <code class="docutils literal notranslate"><span class="pre">Response.ok</span></code> with the decoded/normalized claims on
+success; <code class="docutils literal notranslate"><span class="pre">Response.fail</span></code> wrapping an <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code> (401/403/500)
+describing why validation failed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Response</em></p>
 </dd>
 </dl>
 </dd></dl>

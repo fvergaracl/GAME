@@ -389,9 +389,23 @@
 <div class="viewcode-block" id="PointsQueryMixin">
 <a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PointsQueryMixin</span><span class="p">(</span><span class="n">UserPointsContext</span><span class="p">):</span>
+<div class="viewcode-block" id="PointsQueryMixin.query_user_points">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.query_user_points">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query_user_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">read_by_options</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Run a filtered, paginated query over the ``user_points`` table.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            schema: Search schema with filters and ordering/pagination.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: Items plus search metadata, as returned by the repository.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">read_by_options</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PointsQueryMixin.get_users_by_gameId">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_users_by_gameId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_users_by_gameId</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gameId</span><span class="p">,</span>
@@ -401,6 +415,27 @@
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ListTasksWithUsers</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        List a game's tasks and, per task, the users who earned points.</span>
+
+<span class="sd">        For each user the response includes their first action timestamp on</span>
+<span class="sd">        that task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId: Internal game identifier.</span>
+<span class="sd">            api_key (str): Caller's API key, used when ``enforce_scope``.</span>
+<span class="sd">            oauth_user_id (str): Caller's OAuth subject, used when scoping.</span>
+<span class="sd">            is_admin (bool): Whether the caller has the admin role.</span>
+<span class="sd">            enforce_scope (bool): When ``True``, verify the caller may access</span>
+<span class="sd">                the game before returning data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ListTasksWithUsers: Tasks each paired with their participating</span>
+<span class="sd">            users.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the game or its tasks do not exist.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
@@ -452,8 +487,11 @@
                     <span class="p">)</span>
             <span class="n">all_tasks</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"externalTaskId"</span><span class="p">:</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="s2">"users"</span><span class="p">:</span> <span class="n">all_externalUserId</span><span class="p">}</span>
             <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TasksWithUsers</span><span class="p">(</span><span class="o">**</span><span class="n">all_tasks</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">ListTasksWithUsers</span><span class="p">(</span><span class="n">gameId</span><span class="o">=</span><span class="n">gameId</span><span class="p">,</span> <span class="n">tasks</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ListTasksWithUsers</span><span class="p">(</span><span class="n">gameId</span><span class="o">=</span><span class="n">gameId</span><span class="p">,</span> <span class="n">tasks</span><span class="o">=</span><span class="n">response</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_points_by_user_list">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_points_by_user_list">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_user_list</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">users_list</span><span class="p">,</span>
@@ -463,9 +501,26 @@
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">UserGamePoints</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Fetch per-game point totals for a list of users, concurrently.</span>
+
+<span class="sd">        Fans out one :meth:`get_all_points_by_externalUserId` call per user,</span>
+<span class="sd">        bounded by a concurrency semaphore.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            users_list: External user identifiers to look up.</span>
+<span class="sd">            api_key (str): Caller's API key, used when ``enforce_scope``.</span>
+<span class="sd">            oauth_user_id (str): Caller's OAuth subject, used when scoping.</span>
+<span class="sd">            is_admin (bool): Whether the caller has the admin role.</span>
+<span class="sd">            enforce_scope (bool): When ``True``, enforce per-user access checks.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[UserGamePoints]: One aggregate result per requested user.</span>
+<span class="sd">        """</span>
         <span class="n">semaphore</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="n">FANOUT_LIMIT</span><span class="p">)</span>
 
         <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserGamePoints</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">"""Fetch one user's totals under the shared concurrency semaphore."""</span>
             <span class="k">async</span> <span class="k">with</span> <span class="n">semaphore</span><span class="p">:</span>
                 <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_points_by_externalUserId</span><span class="p">(</span>
                     <span class="n">user</span><span class="p">,</span>
@@ -475,8 +530,11 @@
                     <span class="n">enforce_scope</span><span class="o">=</span><span class="n">enforce_scope</span><span class="p">,</span>
                 <span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">_fetch</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">users_list</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">_fetch</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">users_list</span><span class="p">]))</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_points_by_externalUserId">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_points_by_externalUserId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_externalUserId</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">externalUserId</span><span class="p">,</span>
@@ -486,6 +544,25 @@
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AllPointsByGame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return a user's points across every game they participate in.</span>
+
+<span class="sd">        Resolves the user, finds the games behind their points rows, and</span>
+<span class="sd">        aggregates each game's detailed points concurrently.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+<span class="sd">            api_key (str): Caller's API key, used when ``enforce_scope``.</span>
+<span class="sd">            oauth_user_id (str): Caller's OAuth subject, used when scoping.</span>
+<span class="sd">            is_admin (bool): Whether the caller has the admin role.</span>
+<span class="sd">            enforce_scope (bool): When ``True``, verify access to the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[AllPointsByGame]: Detailed points grouped per game.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the user does not exist.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
             <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_user</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="p">,</span>
@@ -510,6 +587,7 @@
         <span class="n">semaphore</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="n">FANOUT_LIMIT</span><span class="p">)</span>
 
         <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch</span><span class="p">(</span><span class="n">task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AllPointsByGame</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">"""Resolve a task's game and fetch its detailed points, bounded."""</span>
             <span class="k">async</span> <span class="k">with</span> <span class="n">semaphore</span><span class="p">:</span>
                 <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
                     <span class="s2">"id"</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">gameId</span><span class="p">,</span> <span class="n">not_found_raise_exception</span><span class="o">=</span><span class="kc">True</span>
@@ -550,8 +628,11 @@
                                 <span class="p">],</span>
                             <span class="p">)</span>
                         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_response</span>
+        <span class="k">return</span> <span class="n">new_response</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_points_by_gameId">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_points_by_gameId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_gameId</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gameId</span><span class="p">,</span>
@@ -561,6 +642,22 @@
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AllPointsByGame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Aggregate all points awarded within a game.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId: Internal game identifier.</span>
+<span class="sd">            api_key (str): Caller's API key, used when ``enforce_scope``.</span>
+<span class="sd">            oauth_user_id (str): Caller's OAuth subject, used when scoping.</span>
+<span class="sd">            is_admin (bool): Whether the caller has the admin role.</span>
+<span class="sd">            enforce_scope (bool): When ``True``, verify access to the game.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            AllPointsByGame: The game's aggregated points.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the game does not exist.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
@@ -605,8 +702,11 @@
             <span class="n">created_at</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">created_at</span><span class="p">),</span>
             <span class="n">task</span><span class="o">=</span><span class="n">game_points</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">response</span>
+        <span class="k">return</span> <span class="n">response</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_points_by_gameId_with_details">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_points_by_gameId_with_details">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_by_gameId_with_details</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gameId</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
@@ -616,6 +716,25 @@
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AllPointsByGame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Aggregate a game's points including per-award detail.</span>
+
+<span class="sd">        Like :meth:`get_points_by_gameId` but the result carries the detailed</span>
+<span class="sd">        per-award breakdown for each task/user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId (UUID): Internal game identifier.</span>
+<span class="sd">            api_key (str): Caller's API key, used when ``enforce_scope``.</span>
+<span class="sd">            oauth_user_id (str): Caller's OAuth subject, used when scoping.</span>
+<span class="sd">            is_admin (bool): Whether the caller has the admin role.</span>
+<span class="sd">            enforce_scope (bool): When ``True``, verify access to the game.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            AllPointsByGame: The game's aggregated points with detail.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the game does not exist.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
@@ -661,8 +780,11 @@
             <span class="n">created_at</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">created_at</span><span class="p">),</span>
             <span class="n">task</span><span class="o">=</span><span class="n">game_points</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">response</span>
+        <span class="k">return</span> <span class="n">response</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_points_of_user_in_game">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_points_of_user_in_game">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_user_in_game</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">gameId</span><span class="p">,</span>
@@ -673,6 +795,23 @@
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PointsAssignedToUser</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return one user's point awards within a single game.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gameId: Internal game identifier.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+<span class="sd">            api_key (str): Caller's API key, used when ``enforce_scope``.</span>
+<span class="sd">            oauth_user_id (str): Caller's OAuth subject, used when scoping.</span>
+<span class="sd">            is_admin (bool): Whether the caller has the admin role.</span>
+<span class="sd">            enforce_scope (bool): When ``True``, verify access to the game.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[PointsAssignedToUser]: The user's awards in the game.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the game or user does not exist.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
             <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_game</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="p">,</span>
@@ -714,11 +853,27 @@
                                 <span class="n">timesAwarded</span><span class="o">=</span><span class="n">point</span><span class="o">.</span><span class="n">timesAwarded</span><span class="p">,</span>
                             <span class="p">)</span>
                         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">response</span>
+        <span class="k">return</span> <span class="n">response</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_users_points_by_externalGameId">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalGameId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalGameId</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ResponseGetPointsByGame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return per-user point totals for a game identified by external id.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalGameId: External identifier of the game.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[ResponseGetPointsByGame]: Aggregated points per user/task in</span>
+<span class="sd">            the game.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the game or its tasks do not exist.</span>
+<span class="sd">        """</span>
         <span class="n">game</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalGameId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalGameId</span><span class="p">,</span>
@@ -755,11 +910,27 @@
                     <span class="p">)</span>
                 <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">response</span>
+        <span class="k">return</span> <span class="n">response</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_users_points_by_externalTaskId">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalTaskId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalTaskId</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ResponseGetPointsByTask</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return per-user point totals for a task identified by external id.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[ResponseGetPointsByTask]: Aggregated points per user on the</span>
+<span class="sd">            task.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the task does not exist.</span>
+<span class="sd">        """</span>
         <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalTaskId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
@@ -777,11 +948,27 @@
                         <span class="n">externalUserId</span><span class="o">=</span><span class="n">point</span><span class="o">.</span><span class="n">externalUserId</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">point</span><span class="o">.</span><span class="n">points</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
-        <span class="k">return</span> <span class="n">cleaned_points_by_task</span>
+        <span class="k">return</span> <span class="n">cleaned_points_by_task</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_users_points_by_externalTaskId_and_externalUserId">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalTaskId_and_externalUserId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_users_points_by_externalTaskId_and_externalUserId</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return a single user's points on a single task (both by external id).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The user's points for that task.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the task or user does not exist.</span>
+<span class="sd">        """</span>
         <span class="n">task</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalTaskId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalTaskId</span><span class="p">,</span>
@@ -797,8 +984,11 @@
             <span class="p">{</span><span class="s2">"taskId"</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">"userId"</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">points</span>
+        <span class="k">return</span> <span class="n">points</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_all_points_by_externalUserId">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_all_points_by_externalUserId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_points_by_externalUserId</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">externalUserId</span><span class="p">,</span>
@@ -808,6 +998,22 @@
         <span class="n">is_admin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enforce_scope</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserGamePoints</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return one user's points aggregated across all their games.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+<span class="sd">            api_key (str): Caller's API key, used when ``enforce_scope``.</span>
+<span class="sd">            oauth_user_id (str): Caller's OAuth subject, used when scoping.</span>
+<span class="sd">            is_admin (bool): Whether the caller has the admin role.</span>
+<span class="sd">            enforce_scope (bool): When ``True``, verify access to the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            UserGamePoints: The user's points grouped by game.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the user does not exist.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">enforce_scope</span><span class="p">:</span>
             <span class="n">user_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_authorized_user</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="p">,</span>
@@ -888,11 +1094,27 @@
             <span class="n">points</span><span class="o">=</span><span class="n">total_points</span><span class="p">,</span>
             <span class="n">timesAwarded</span><span class="o">=</span><span class="n">total_times_awarded</span><span class="p">,</span>
             <span class="n">games</span><span class="o">=</span><span class="n">games</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_points_of_user">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_points_of_user">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_user</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResponsePointsByExternalUserId</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return a user's total points plus a per-task breakdown.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalUserId: External identifier of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ResponsePointsByExternalUserId: The summed total and the per-task</span>
+<span class="sd">            points list.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFoundError: If the user does not exist.</span>
+<span class="sd">        """</span>
         <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">users_repository</span><span class="o">.</span><span class="n">read_by_column</span><span class="p">(</span>
             <span class="n">column</span><span class="o">=</span><span class="s2">"externalUserId"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="n">externalUserId</span><span class="p">,</span>
@@ -912,17 +1134,45 @@
             <span class="n">points</span><span class="o">=</span><span class="n">total_points</span><span class="p">,</span>
             <span class="n">points_by_task</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>  <span class="c1"># noqa</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">response</span>
+        <span class="k">return</span> <span class="n">response</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_points_of_simulated_task">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_points_of_simulated_task">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_of_simulated_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">simulationHash</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return points rows produced by a specific simulation run of a task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            externalTaskId: External identifier of the task.</span>
+<span class="sd">            simulationHash: Hash identifying the simulation run.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The points rows belonging to that simulation.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_of_simulated_task</span><span class="p">(</span>
             <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">simulationHash</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="PointsQueryMixin.get_all_point_of_tasks_list">
+<a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin.get_all_point_of_tasks_list">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_point_of_tasks_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_ids_tasks</span><span class="p">,</span> <span class="n">withData</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return all points rows for a list of task ids.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            list_ids_tasks: Internal task ids to fetch points for.</span>
+<span class="sd">            withData (bool): When ``True``, include the full JSON ``data``</span>
+<span class="sd">                column; otherwise return a lighter projection.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The matching points rows.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_all_point_of_tasks_list</span><span class="p">(</span>
             <span class="n">list_ids_tasks</span><span class="p">,</span> <span class="n">withData</span>
         <span class="p">)</span></div>
+</div>
 
 </pre></div>
 

@@ -370,7 +370,37 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#api-app-services-user-points-queries--page-root" class="md-nav__link">app.services.user_points.queries module</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin</span></code></a>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.query_user_points" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.query_user_points()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_users_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_users_by_gameId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_points_by_user_list" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_points_by_user_list()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_points_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_points_by_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_points_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_points_by_gameId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_points_by_gameId_with_details" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_points_by_gameId_with_details()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_points_of_user_in_game" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_points_of_user_in_game()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalGameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_users_points_by_externalGameId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalTaskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_users_points_by_externalTaskId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalTaskId_and_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_users_points_by_externalTaskId_and_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_all_points_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_all_points_by_externalUserId()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_points_of_user" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_points_of_user()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_points_of_simulated_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_points_of_simulated_task()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#app.services.user_points.queries.PointsQueryMixin.get_all_point_of_tasks_list" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PointsQueryMixin.get_all_point_of_tasks_list()</span></code></a>
+        </li></ul>
+            </nav>
         </li></ul>
             </nav>
         </li>
@@ -398,6 +428,326 @@ These methods never mutate state; the write path lives in
 <dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.user_points.queries.</span></span><span class="sig-name descname"><span class="pre">PointsQueryMixin</span></span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">UserPointsContext</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.query_user_points">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_user_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.query_user_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.query_user_points" title="Link to this definition">¶</a></dt>
+<dd><p>Run a filtered, paginated query over the <code class="docutils literal notranslate"><span class="pre">user_points</span></code> table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>schema</strong> – Search schema with filters and ordering/pagination.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – Items plus search metadata, as returned by the repository.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_users_by_gameId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_users_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_users_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_users_by_gameId" title="Link to this definition">¶</a></dt>
+<dd><p>List a game’s tasks and, per task, the users who earned points.</p>
+<p>For each user the response includes their first action timestamp on
+that task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> – Internal game identifier.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – Caller’s API key, used when <code class="docutils literal notranslate"><span class="pre">enforce_scope</span></code>.</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>str</em>) – Caller’s OAuth subject, used when scoping.</p></li>
+<li><p><strong>is_admin</strong> (<em>bool</em>) – Whether the caller has the admin role.</p></li>
+<li><p><strong>enforce_scope</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, verify the caller may access
+the game before returning data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ListTasksWithUsers</em> – Tasks each paired with their participating
+users.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the game or its tasks do not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ListTasksWithUsers</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_points_by_user_list">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_user_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users_list</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_points_by_user_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_points_by_user_list" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch per-game point totals for a list of users, concurrently.</p>
+<p>Fans out one <a class="reference internal" href="#app.services.user_points.queries.PointsQueryMixin.get_all_points_by_externalUserId" title="app.services.user_points.queries.PointsQueryMixin.get_all_points_by_externalUserId"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_all_points_by_externalUserId()</span></code></a> call per user,
+bounded by a concurrency semaphore.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>users_list</strong> – External user identifiers to look up.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – Caller’s API key, used when <code class="docutils literal notranslate"><span class="pre">enforce_scope</span></code>.</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>str</em>) – Caller’s OAuth subject, used when scoping.</p></li>
+<li><p><strong>is_admin</strong> (<em>bool</em>) – Whether the caller has the admin role.</p></li>
+<li><p><strong>enforce_scope</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, enforce per-user access checks.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>list[UserGamePoints]</em> – One aggregate result per requested user.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<em>UserGamePoints</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_points_by_externalUserId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_points_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd><p>Return a user’s points across every game they participate in.</p>
+<p>Resolves the user, finds the games behind their points rows, and
+aggregates each game’s detailed points concurrently.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalUserId</strong> – External identifier of the user.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – Caller’s API key, used when <code class="docutils literal notranslate"><span class="pre">enforce_scope</span></code>.</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>str</em>) – Caller’s OAuth subject, used when scoping.</p></li>
+<li><p><strong>is_admin</strong> (<em>bool</em>) – Whether the caller has the admin role.</p></li>
+<li><p><strong>enforce_scope</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, verify access to the user.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>list[AllPointsByGame]</em> – Detailed points grouped per game.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the user does not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<em>AllPointsByGame</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_points_by_gameId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_points_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_points_by_gameId" title="Link to this definition">¶</a></dt>
+<dd><p>Aggregate all points awarded within a game.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> – Internal game identifier.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – Caller’s API key, used when <code class="docutils literal notranslate"><span class="pre">enforce_scope</span></code>.</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>str</em>) – Caller’s OAuth subject, used when scoping.</p></li>
+<li><p><strong>is_admin</strong> (<em>bool</em>) – Whether the caller has the admin role.</p></li>
+<li><p><strong>enforce_scope</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, verify access to the game.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>AllPointsByGame</em> – The game’s aggregated points.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the game does not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>AllPointsByGame</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_points_by_gameId_with_details">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_gameId_with_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_points_by_gameId_with_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_points_by_gameId_with_details" title="Link to this definition">¶</a></dt>
+<dd><p>Aggregate a game’s points including per-award detail.</p>
+<p>Like <a class="reference internal" href="#app.services.user_points.queries.PointsQueryMixin.get_points_by_gameId" title="app.services.user_points.queries.PointsQueryMixin.get_points_by_gameId"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_points_by_gameId()</span></code></a> but the result carries the detailed
+per-award breakdown for each task/user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> (<em>UUID</em>) – Internal game identifier.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – Caller’s API key, used when <code class="docutils literal notranslate"><span class="pre">enforce_scope</span></code>.</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>str</em>) – Caller’s OAuth subject, used when scoping.</p></li>
+<li><p><strong>is_admin</strong> (<em>bool</em>) – Whether the caller has the admin role.</p></li>
+<li><p><strong>enforce_scope</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, verify access to the game.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>AllPointsByGame</em> – The game’s aggregated points with detail.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the game does not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>AllPointsByGame</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_points_of_user_in_game">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_of_user_in_game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_points_of_user_in_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_points_of_user_in_game" title="Link to this definition">¶</a></dt>
+<dd><p>Return one user’s point awards within a single game.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameId</strong> – Internal game identifier.</p></li>
+<li><p><strong>externalUserId</strong> – External identifier of the user.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – Caller’s API key, used when <code class="docutils literal notranslate"><span class="pre">enforce_scope</span></code>.</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>str</em>) – Caller’s OAuth subject, used when scoping.</p></li>
+<li><p><strong>is_admin</strong> (<em>bool</em>) – Whether the caller has the admin role.</p></li>
+<li><p><strong>enforce_scope</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, verify access to the game.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>list[PointsAssignedToUser]</em> – The user’s awards in the game.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the game or user does not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<em>PointsAssignedToUser</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalGameId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_users_points_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_users_points_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalGameId" title="Link to this definition">¶</a></dt>
+<dd><p>Return per-user point totals for a game identified by external id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>externalGameId</strong> – External identifier of the game.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>list[ResponseGetPointsByGame]</em> – Aggregated points per user/task in
+the game.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the game or its tasks do not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<em>ResponseGetPointsByGame</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalTaskId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_users_points_by_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalTaskId" title="Link to this definition">¶</a></dt>
+<dd><p>Return per-user point totals for a task identified by external id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>externalTaskId</strong> – External identifier of the task.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>list[ResponseGetPointsByTask]</em> – Aggregated points per user on the
+task.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the task does not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[<em>ResponseGetPointsByTask</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalTaskId_and_externalUserId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_users_points_by_externalTaskId_and_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_users_points_by_externalTaskId_and_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_users_points_by_externalTaskId_and_externalUserId" title="Link to this definition">¶</a></dt>
+<dd><p>Return a single user’s points on a single task (both by external id).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalTaskId</strong> – External identifier of the task.</p></li>
+<li><p><strong>externalUserId</strong> – External identifier of the user.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – The user’s points for that task.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the task or user does not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_all_points_by_externalUserId">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_points_by_externalUserId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_all_points_by_externalUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_all_points_by_externalUserId" title="Link to this definition">¶</a></dt>
+<dd><p>Return one user’s points aggregated across all their games.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalUserId</strong> – External identifier of the user.</p></li>
+<li><p><strong>api_key</strong> (<em>str</em>) – Caller’s API key, used when <code class="docutils literal notranslate"><span class="pre">enforce_scope</span></code>.</p></li>
+<li><p><strong>oauth_user_id</strong> (<em>str</em>) – Caller’s OAuth subject, used when scoping.</p></li>
+<li><p><strong>is_admin</strong> (<em>bool</em>) – Whether the caller has the admin role.</p></li>
+<li><p><strong>enforce_scope</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, verify access to the user.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>UserGamePoints</em> – The user’s points grouped by game.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the user does not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>UserGamePoints</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_points_of_user">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_of_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_points_of_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_points_of_user" title="Link to this definition">¶</a></dt>
+<dd><p>Return a user’s total points plus a per-task breakdown.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>externalUserId</strong> – External identifier of the user.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ResponsePointsByExternalUserId</em> – The summed total and the per-task
+points list.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotFoundError</strong> – If the user does not exist.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ResponsePointsByExternalUserId</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_points_of_simulated_task">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_of_simulated_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulationHash</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_points_of_simulated_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_points_of_simulated_task" title="Link to this definition">¶</a></dt>
+<dd><p>Return points rows produced by a specific simulation run of a task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>externalTaskId</strong> – External identifier of the task.</p></li>
+<li><p><strong>simulationHash</strong> – Hash identifying the simulation run.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – The points rows belonging to that simulation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.services.user_points.queries.PointsQueryMixin.get_all_point_of_tasks_list">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_point_of_tasks_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_ids_tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">withData</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/user_points/queries.html#PointsQueryMixin.get_all_point_of_tasks_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.user_points.queries.PointsQueryMixin.get_all_point_of_tasks_list" title="Link to this definition">¶</a></dt>
+<dd><p>Return all points rows for a list of task ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_ids_tasks</strong> – Internal task ids to fetch points for.</p></li>
+<li><p><strong>withData</strong> (<em>bool</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, include the full JSON <code class="docutils literal notranslate"><span class="pre">data</span></code>
+column; otherwise return a lighter projection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Any</em> – The matching points rows.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Any</em></p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 
