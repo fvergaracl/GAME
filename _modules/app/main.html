@@ -467,7 +467,7 @@
 <span class="sd">            ``dsl_execution_observer`` to flush.</span>
 <span class="sd">    """</span>
     <span class="k">yield</span>
-    <span class="c1"># Sprint 13: flush the DSL execution-log queue so a graceful</span>
+    <span class="c1"># Flush the DSL execution-log queue so a graceful</span>
     <span class="c1"># shutdown doesn't drop buffered audit rows. ``aclose`` is</span>
     <span class="c1"># idempotent and tolerant of an observer that never enqueued.</span>
     <span class="n">observer</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">"dsl_execution_observer"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -619,7 +619,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">db</span><span class="p">()</span>
-        <span class="c1"># Sprint 13: expose the singleton execution-log observer so the</span>
+        <span class="c1"># Expose the singleton execution-log observer so the</span>
         <span class="c1"># lifespan shutdown hook can flush its background queue.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">dsl_execution_observer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dsl_execution_observer</span><span class="p">()</span>
         <span class="c1"># Added before CORSMiddleware on purpose: add_middleware prepends, so</span>
@@ -637,7 +637,7 @@
                 <span class="n">allow_headers</span><span class="o">=</span><span class="p">[</span><span class="s2">"*"</span><span class="p">],</span>
             <span class="p">)</span>
 
-        <span class="c1"># Sprint 11 follow-up: expose Prometheus /metrics.  Wired here</span>
+        <span class="c1"># Expose Prometheus /metrics.  Wired here</span>
         <span class="c1"># (after CORS, before include_router) so the instrumentor sees</span>
         <span class="c1"># every request middleware but does NOT itself sit behind any</span>
         <span class="c1"># router-level auth dependency. The custom DSL counters in</span>

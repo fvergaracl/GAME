@@ -477,7 +477,7 @@
                 <span class="n">resolved</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">is_parent_field_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-                <span class="c1"># Sprint 7: parent.* fields land here only when the</span>
+                <span class="c1"># Parent.* fields land here only when the</span>
                 <span class="c1"># caller provided ``parent_result`` (DSL_EXTEND post</span>
                 <span class="c1"># phase). Outside of that the validator should have</span>
                 <span class="c1"># rejected the AST already (parent.* paths are only</span>
@@ -489,7 +489,7 @@
             <span class="c1"># field unresolved and let the interpreter surface a clean</span>
             <span class="c1"># error rather than silently returning None.</span>
 
-        <span class="c1"># Sprint 7: inject parent.* AFTER the regular resolution loop so</span>
+        <span class="c1"># Inject parent.* AFTER the regular resolution loop so</span>
         <span class="c1"># post-rule execution can read the parent built-in's output via</span>
         <span class="c1"># the same ``ctx.resolved_fields`` lookup used for analytics.</span>
         <span class="c1"># Mock state still wins (mocks were already applied above) -</span>

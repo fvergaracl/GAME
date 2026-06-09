@@ -590,7 +590,7 @@
             <span class="n">context</span><span class="o">=</span><span class="s2">"rule"</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="c1"># Sprint 7: pre_rules and post_rules are real now. Each entry is a</span>
+    <span class="c1"># Pre_rules and post_rules are real now. Each entry is a</span>
     <span class="c1"># rule-shaped node, but the contained statements are restricted to</span>
     <span class="c1"># the section's allowed set (set_data/veto in pre, set_points/</span>
     <span class="c1"># set_case_name in post, set_callback_data in both).</span>
@@ -613,7 +613,7 @@
                 <span class="n">context</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span>
             <span class="p">)</span>
 
-    <span class="c1"># Sprint 7: parent_variables is an optional declarative override map</span>
+    <span class="c1"># Parent_variables is an optional declarative override map</span>
     <span class="c1"># applied to a fresh copy of the parent built-in before its</span>
     <span class="c1"># calculate_points runs. Keys must be strings, values must be JSON</span>
     <span class="c1"># scalars (the registry-level "does this variable exist?" check</span>
@@ -982,7 +982,7 @@
                 <span class="n">code</span><span class="o">=</span><span class="s2">"DSL_FIELD_PATH_NOT_ALLOWED"</span><span class="p">,</span>
                 <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">"nodeId"</span><span class="p">:</span> <span class="n">nid</span><span class="p">,</span> <span class="s2">"path"</span><span class="p">:</span> <span class="n">path</span><span class="p">},</span>
             <span class="p">)</span>
-        <span class="c1"># Sprint 7: parent.points / parent.case_name are only meaningful</span>
+        <span class="c1"># Parent.points / parent.case_name are only meaningful</span>
         <span class="c1"># inside post_rules - using them in main rules or pre_rules</span>
         <span class="c1"># would read uninitialised state. Reject early with a clear</span>
         <span class="c1"># message rather than letting the interpreter return None.</span>
@@ -1111,7 +1111,7 @@
             <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Unknown statement node type: '</span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s2">'."</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"X-Node-Id"</span><span class="p">:</span> <span class="n">parent_id</span><span class="p">},</span>
         <span class="p">)</span>
-    <span class="c1"># Sprint 7: enforce per-section statement whitelisting BEFORE any</span>
+    <span class="c1"># Enforce per-section statement whitelisting BEFORE any</span>
     <span class="c1"># shape validation so the error message points the designer at the</span>
     <span class="c1"># real problem ("you can't veto from a main rule") rather than a</span>
     <span class="c1"># generic structural mismatch downstream.</span>
@@ -1169,7 +1169,7 @@
         <span class="k">return</span>
 
     <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">NODE_SET_DATA</span><span class="p">:</span>
-        <span class="c1"># Sprint 7: writes into the working_data dict passed to the</span>
+        <span class="c1"># Writes into the working_data dict passed to the</span>
         <span class="c1"># parent built-in. The interpreter mutates a copy of data, so</span>
         <span class="c1"># pre-rule mutations are local to this request.</span>
         <span class="n">_assert_keys</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">(</span><span class="s2">"key"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span> <span class="n">node_id</span><span class="o">=</span><span class="n">nid</span><span class="p">)</span>
@@ -1200,7 +1200,7 @@
         <span class="k">return</span>
 
     <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">NODE_VETO</span><span class="p">:</span>
-        <span class="c1"># Sprint 7: halts the whole DSL_EXTEND pipeline (parent is NOT</span>
+        <span class="c1"># Halts the whole DSL_EXTEND pipeline (parent is NOT</span>
         <span class="c1"># invoked, post_rules are NOT run). Final result is</span>
         <span class="c1"># (0, case_name, current callback_data).</span>
         <span class="n">_assert_keys</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">(</span><span class="s2">"case_name"</span><span class="p">,),</span> <span class="n">node_id</span><span class="o">=</span><span class="n">nid</span><span class="p">)</span>
@@ -1216,7 +1216,7 @@
         <span class="k">return</span>
 
     <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">NODE_SET_POINTS</span><span class="p">:</span>
-        <span class="c1"># Sprint 7: post-rule override of the parent's points. Unlike</span>
+        <span class="c1"># Post-rule override of the parent's points. Unlike</span>
         <span class="c1"># assign_points (which halts the rule), set_points lets the</span>
         <span class="c1"># remaining statements in the post-rule keep running, so a</span>
         <span class="c1"># designer can chain set_points + set_callback_data.</span>
@@ -1232,7 +1232,7 @@
         <span class="k">return</span>
 
     <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">NODE_SET_CASE_NAME</span><span class="p">:</span>
-        <span class="c1"># Sprint 7: post-rule override of the parent's caseName. The</span>
+        <span class="c1"># Post-rule override of the parent's caseName. The</span>
         <span class="c1"># value is an expression so it can be computed (e.g. a literal</span>
         <span class="c1"># text block, or even derived from data.* - though the latter</span>
         <span class="c1"># is unusual). The runtime checks the resolved value is a</span>

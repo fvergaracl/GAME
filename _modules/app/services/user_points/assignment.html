@@ -548,7 +548,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task not found with externalTaskId: </span><span class="si">{</span><span class="n">externalTaskId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">strategyId</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">strategyId</span>
-        <span class="c1"># Sprint 5: a single async resolver handles both built-in</span>
+        <span class="c1"># A single async resolver handles both built-in</span>
         <span class="c1"># registry ids and ``custom:&lt;uuid&gt;`` DSL strategies (scoped by</span>
         <span class="c1"># realmId so a tenant can't invoke another tenant's strategy).</span>
         <span class="c1"># The resolver raises NotFoundError itself when the strategy is</span>

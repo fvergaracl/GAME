@@ -395,7 +395,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.dsl_interpreter</span><span class="w"> </span><span class="kn">import</span> <span class="n">DslInterpreter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.strategy_definition_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionRead</span>
 
-<span class="c1"># Sprint 13: the idempotency hash is a canonical-JSON dump of the AST</span>
+<span class="c1"># The idempotency hash is a canonical-JSON dump of the AST</span>
 <span class="c1"># plus a SHA-256 - pure CPU, but ``UserPointsService`` constructs a fresh</span>
 <span class="c1"># ``DslStrategy`` on every scoring call, so a busy strategy re-hashes the</span>
 <span class="c1"># same multi-KB AST thousands of times a minute. We memoise the result</span>
@@ -487,17 +487,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span> <span class="o">=</span> <span class="n">definition</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_interpreter</span> <span class="o">=</span> <span class="n">interpreter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_analytics</span> <span class="o">=</span> <span class="n">analytics_service</span>
-        <span class="c1"># Sprint 7: when set, calculate_points runs the DSL_EXTEND</span>
+        <span class="c1"># When set, calculate_points runs the DSL_EXTEND</span>
         <span class="c1"># pipeline (pre_rules → parent.calculate_points → post_rules).</span>
         <span class="c1"># Injected by StrategyService.get_strategy_instance only when</span>
         <span class="c1"># the definition is DSL_EXTEND.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parent_strategy</span> <span class="o">=</span> <span class="n">parent_strategy</span>
-        <span class="c1"># Sprint 11: observer sink for metrics + sampled persistence.</span>
+        <span class="c1"># Observer sink for metrics + sampled persistence.</span>
         <span class="c1"># Optional so unit tests instantiating DslStrategy without the</span>
         <span class="c1"># container keep working unchanged. The container wires the</span>
         <span class="c1"># real DslExecutionObserver in production.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_observer</span> <span class="o">=</span> <span class="n">observer</span>
-        <span class="c1"># Sprint 11: filled by _run_phase on every interpreter call so</span>
+        <span class="c1"># Filled by _run_phase on every interpreter call so</span>
         <span class="c1"># the calculate_points wrapper can hand the observer a trace</span>
         <span class="c1"># without threading return values through DSL_EXTEND's three</span>
         <span class="c1"># phases. Reset at the top of every calculate_points entry.</span>
@@ -516,7 +516,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The AST-derived hash stored as ``hash_version``.</span>
 <span class="sd">        """</span>
-        <span class="c1"># Sprint 13: published definitions hit the process-wide LRU so the</span>
+        <span class="c1"># Published definitions hit the process-wide LRU so the</span>
         <span class="c1"># same AST isn't re-hashed on every scoring call; drafts (whose</span>
         <span class="c1"># (id, version) key is not stable) always recompute.</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"PUBLISHED"</span><span class="p">:</span>
@@ -577,7 +577,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_trace</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_nodes_executed</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="c1"># Sprint 11: every execution gets a single observation envelope</span>
+        <span class="c1"># Every execution gets a single observation envelope</span>
         <span class="c1"># so metrics + sampled persistence cover both DSL_FULL and</span>
         <span class="c1"># DSL_EXTEND (and both success and failure) on one code path.</span>
         <span class="c1"># The envelope is intentionally outside _calculate_dsl_* so it</span>
@@ -667,8 +667,6 @@
                     <span class="k">pass</span></div>
 
 
-    <span class="c1"># ----- DSL_FULL (Sprint 5) ----------------------------------------------</span>
-
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_dsl_full</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">externalGameId</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -707,8 +705,6 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_result</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
-    <span class="c1"># ----- DSL_EXTEND (Sprint 7) --------------------------------------------</span>
-
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_dsl_extend</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">externalGameId</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -735,7 +731,7 @@
         <span class="n">ast_post</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"post_rules"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="n">parent_variable_overrides</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"parent_variables"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
 
-        <span class="c1"># Sprint 13: DSL_EXTEND builds up to two ExecutionContexts (pre +</span>
+        <span class="c1"># DSL_EXTEND builds up to two ExecutionContexts (pre +</span>
         <span class="c1"># post) for the same user and request window. Share one analytics</span>
         <span class="c1"># memo across both so each analytics field (a DB round-trip)</span>
         <span class="c1"># resolves once instead of twice. Static and data.* fields are not</span>
@@ -828,8 +824,6 @@
             <span class="n">parent_result</span><span class="o">=</span><span class="n">parent_result</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_result</span><span class="p">(</span><span class="n">post_result</span><span class="p">)</span>
-
-    <span class="c1"># ----- shared helpers ---------------------------------------------------</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_run_phase</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

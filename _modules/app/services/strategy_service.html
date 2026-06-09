@@ -375,7 +375,7 @@
 <span class="c1"># Prefix used to address DB-persisted custom strategies from the existing</span>
 <span class="c1"># ``Games.strategyId`` / ``Tasks.strategyId`` columns. Anything without this</span>
 <span class="c1"># prefix is resolved against the in-process registry, preserving the</span>
-<span class="c1"># pre-Sprint-3 behaviour. See the Sprint 3 compat-layer notes in the</span>
+<span class="c1"># legacy registry behaviour. See the compat-layer notes in the</span>
 <span class="c1"># roadmap.</span>
 <span class="n">CUSTOM_STRATEGY_PREFIX</span> <span class="o">=</span> <span class="s2">"custom:"</span>
 
@@ -471,7 +471,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_strategy_definition_service</span> <span class="o">=</span> <span class="n">strategy_definition_service</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dsl_interpreter</span> <span class="o">=</span> <span class="n">dsl_interpreter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_analytics_service</span> <span class="o">=</span> <span class="n">analytics_service</span>
-        <span class="c1"># Sprint 11: passed straight through to ``DslStrategy``. Optional</span>
+        <span class="c1"># Passed straight through to ``DslStrategy``. Optional</span>
         <span class="c1"># so the legacy two-arg construction style in tests still works</span>
         <span class="c1"># - metrics + persistence become no-ops in that case.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_execution_observer</span> <span class="o">=</span> <span class="n">execution_observer</span></div>
@@ -647,7 +647,7 @@
             <span class="nb">id</span><span class="o">=</span><span class="n">uuid_part</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span>
         <span class="p">)</span>
 
-        <span class="c1"># Sprint 7: DSL_EXTEND wraps a built-in parent with pre/post</span>
+        <span class="c1"># DSL_EXTEND wraps a built-in parent with pre/post</span>
         <span class="c1"># rules. Resolve the parent here (sync registry lookup) and</span>
         <span class="c1"># hand it to DslStrategy as a constructor dependency. If the</span>
         <span class="c1"># parent id stored in the row no longer references an existing</span>

@@ -440,15 +440,13 @@
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">())</span></div>
 
 
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1"># Sprint 10 - aggregations for the dashboard observability view.</span>
+    <span class="c1"># Aggregations for the dashboard observability view.</span>
     <span class="c1">#</span>
     <span class="c1"># All four queries scope by strategyId + optional time range. We hit</span>
     <span class="c1"># the same indexed columns (strategyId, status, created_at) so the</span>
     <span class="c1"># planner can use index-only scans even on large execution-log</span>
     <span class="c1"># tables. Each returns a plain dict/list so the service can compose</span>
     <span class="c1"># them into a single response without ORM-layer roundtrips.</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">strategyId</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sinceDt</span><span class="p">,</span> <span class="n">untilDt</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>

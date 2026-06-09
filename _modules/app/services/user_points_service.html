@@ -421,7 +421,7 @@
         <span class="c1"># When constructed via DI (the production path) the container</span>
         <span class="c1"># injects a fully-wired StrategyService that can resolve</span>
         <span class="c1"># ``custom:&lt;uuid&gt;`` ids against the DB. The no-arg fallback</span>
-        <span class="c1"># preserves the pre-Sprint-5 behaviour for tests that build this</span>
+        <span class="c1"># preserves the legacy behaviour for tests that build this</span>
         <span class="c1"># service positionally and monkey-patch ``self.strategy_service``.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span> <span class="o">=</span> <span class="n">strategy_service</span> <span class="ow">or</span> <span class="n">StrategyService</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">user_points_repository</span><span class="p">)</span></div>

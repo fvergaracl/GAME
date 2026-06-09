@@ -418,7 +418,7 @@
     <span class="n">case_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">callback_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="n">trace</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
-    <span class="c1"># Sprint 7: DSL_EXTEND-only outputs. ``working_data`` is the dict</span>
+    <span class="c1"># DSL_EXTEND-only outputs. ``working_data`` is the dict</span>
     <span class="c1"># that pre-rules mutated via set_data - the orchestrator hands it</span>
     <span class="c1"># to the parent built-in. ``vetoed`` signals that a pre-rule veto</span>
     <span class="c1"># fired so the orchestrator skips parent + post entirely.</span>
@@ -494,14 +494,14 @@
             <span class="s2">"case_name"</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">case_name</span><span class="p">,</span>
             <span class="s2">"callback_data"</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">callback_data</span><span class="p">,</span>
             <span class="s2">"trace"</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span>
-            <span class="c1"># Sprint 7 outputs. They are no-ops for DSL_FULL callers</span>
+            <span class="c1"># These outputs are no-ops for DSL_FULL callers</span>
             <span class="c1"># (working_data stays empty, vetoed stays False) so the</span>
-            <span class="c1"># existing Sprint 5 contract is unchanged.</span>
+            <span class="c1"># existing contract is unchanged.</span>
             <span class="s2">"working_data"</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">working_data</span><span class="p">,</span>
             <span class="s2">"vetoed"</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">vetoed</span><span class="p">,</span>
         <span class="p">}</span>
 
-    <span class="c1"># ----- top-level dispatch ----------------------------------------------</span>
+    <span class="c1"># top-level dispatch</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_run_program</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -536,7 +536,7 @@
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_statement</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># Sprint 7: DSL_EXTEND phases. ``pre`` and ``post`` walk a</span>
+        <span class="c1"># DSL_EXTEND phases. ``pre`` and ``post`` walk a</span>
         <span class="c1"># distinct section of the program and ignore the others - the</span>
         <span class="c1"># main ``rules`` + ``default`` are exclusively the DSL_FULL</span>
         <span class="c1"># path. This keeps the two execution models from accidentally</span>
@@ -651,7 +651,7 @@
         <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">statements</span> <span class="ow">or</span> <span class="p">[]:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_statement</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">)</span>
 
-    <span class="c1"># ----- statements ------------------------------------------------------</span>
+    <span class="c1"># statements</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_run_statement</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -722,7 +722,7 @@
             <span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># Sprint 7: DSL_EXTEND pre-rule statements. set_data writes into</span>
+        <span class="c1"># DSL_EXTEND pre-rule statements. set_data writes into</span>
         <span class="c1"># ``state.working_data`` - the dict the orchestrator hands to the</span>
         <span class="c1"># parent built-in's ``calculate_points``. veto raises _DslHalt</span>
         <span class="c1"># with state.vetoed=True so the orchestrator skips both the</span>
@@ -756,7 +756,7 @@
             <span class="p">)</span>
             <span class="k">raise</span> <span class="n">_DslHalt</span><span class="p">()</span>
 
-        <span class="c1"># Sprint 7: DSL_EXTEND post-rule statements. set_points mutates</span>
+        <span class="c1"># DSL_EXTEND post-rule statements. set_points mutates</span>
         <span class="c1"># ``state.points`` WITHOUT halting (unlike assign_points) so a</span>
         <span class="c1"># designer can chain set_points + set_callback_data inside a</span>
         <span class="c1"># single post-rule. set_case_name overrides the caseName</span>
@@ -829,7 +829,7 @@
             <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">"nodeId"</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"id"</span><span class="p">),</span> <span class="s2">"nodeType"</span><span class="p">:</span> <span class="n">ntype</span><span class="p">},</span>
         <span class="p">)</span>
 
-    <span class="c1"># ----- conditions ------------------------------------------------------</span>
+    <span class="c1"># conditions</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_eval_condition</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -943,7 +943,7 @@
         <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_expression</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-    <span class="c1"># ----- expressions -----------------------------------------------------</span>
+    <span class="c1"># expressions</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_eval_expression</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1094,7 +1094,7 @@
             <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"X-Node-Id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"id"</span><span class="p">))},</span>
         <span class="p">)</span>
 
-    <span class="c1"># ----- guards ----------------------------------------------------------</span>
+    <span class="c1"># guards</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">_RunState</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -1160,7 +1160,7 @@
         <span class="s2">"case_name"</span><span class="p">,</span>
         <span class="s2">"callback_data"</span><span class="p">,</span>
         <span class="s2">"matched"</span><span class="p">,</span>
-        <span class="c1"># Sprint 7: DSL_EXTEND state. ``working_data`` is the dict that</span>
+        <span class="c1"># DSL_EXTEND state. ``working_data`` is the dict that</span>
         <span class="c1"># set_data writes to during pre_rules - the orchestrator reads</span>
         <span class="c1"># it back to hand to the parent built-in's calculate_points.</span>
         <span class="c1"># ``vetoed`` signals that a pre_rules veto fired so the</span>
@@ -1230,7 +1230,7 @@
     <span class="k">return</span> <span class="n">_ARITH_HANDLERS</span><span class="p">[</span><span class="n">op</span><span class="p">](</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
 
 
-<span class="c1"># Sprint 6: handlers for the ``func_call`` node. Kept separate from the</span>
+<span class="c1"># Handlers for the ``func_call`` node. Kept separate from the</span>
 <span class="c1"># binary arith table because the arities and signatures differ. ``int``</span>
 <span class="c1"># truncates toward zero (mirroring Python's built-in and matching</span>
 <span class="c1"># ``constantEffortStrategy.py:53`` semantics - not rounding). ``clamp``</span>

@@ -481,9 +481,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">export_audit_log_repository</span> <span class="o">=</span> <span class="n">export_audit_log_repository</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">export_audit_log_repository</span><span class="p">)</span>
 
-    <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Audit</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
 <div class="viewcode-block" id="ExportService.audit_start">
 <a class="viewcode-back" href="../../../api/app.services.export_service.html#app.services.export_service.ExportService.audit_start">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">audit_start</span><span class="p">(</span>
@@ -570,9 +568,7 @@
         <span class="p">]</span></div>
 
 
-    <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Query helpers</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply_date_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">filters</span><span class="p">:</span> <span class="n">ExportFilters</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Add ``created_at`` range filters to a select statement.</span>
@@ -599,9 +595,7 @@
             <span class="k">async</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">row</span>
 
-    <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Dataset iterators (each yields plain dicts)</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
 <div class="viewcode-block" id="ExportService.iter_users">
 <a class="viewcode-back" href="../../../api/app.services.export_service.html#app.services.export_service.ExportService.iter_users">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">iter_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filters</span><span class="p">:</span> <span class="n">ExportFilters</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
@@ -786,9 +780,7 @@
             <span class="p">}</span></div>
 
 
-    <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Dispatcher</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
 <div class="viewcode-block" id="ExportService.iter_dataset">
 <a class="viewcode-back" href="../../../api/app.services.export_service.html#app.services.export_service.ExportService.iter_dataset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">iter_dataset</span><span class="p">(</span>
@@ -815,9 +807,7 @@
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span></div>
 
 
-    <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Formatters (return async generators of bytes ready for StreamingResponse)</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
 <div class="viewcode-block" id="ExportService.format_as_csv">
 <a class="viewcode-back" href="../../../api/app.services.export_service.html#app.services.export_service.ExportService.format_as_csv">[docs]</a>
     <span class="nd">@staticmethod</span>
@@ -902,9 +892,7 @@
         <span class="k">yield</span> <span class="n">buffer</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
 
 
-    <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Dispatch wrapper: dataset + format → (media_type, filename, body_iter)</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
 <div class="viewcode-block" id="ExportService.format_iterator">
 <a class="viewcode-back" href="../../../api/app.services.export_service.html#app.services.export_service.ExportService.format_iterator">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">format_iterator</span><span class="p">(</span>

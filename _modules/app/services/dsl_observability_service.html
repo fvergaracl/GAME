@@ -435,7 +435,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span> <span class="o">=</span> <span class="n">execution_log_repository</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rng</span> <span class="o">=</span> <span class="n">rng</span> <span class="ow">or</span> <span class="n">random</span>
-        <span class="c1"># Sprint 13: lazily-created bounded queue + drain worker. Both are</span>
+        <span class="c1"># Lazily-created bounded queue + drain worker. Both are</span>
         <span class="c1"># created on the first enqueue (which always happens inside the</span>
         <span class="c1"># running event loop), so constructing the observer outside a loop</span>
         <span class="c1"># - as the DI container Singleton does at import time - is safe.</span>
@@ -477,7 +477,7 @@
 <span class="sd">        not just the interpreter walk, because that is what the SLO</span>
 <span class="sd">        speaks to ("a scoring event taking &gt;250ms is user-visible").</span>
 <span class="sd">        """</span>
-        <span class="c1"># --- metrics ------------------------------------------------</span>
+        <span class="c1"># metrics</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">dsl_metrics</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span>
                 <span class="n">realm</span><span class="o">=</span><span class="n">realmId</span><span class="p">,</span>
@@ -494,7 +494,7 @@
                 <span class="n">status</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="c1"># --- sampled persistence ------------------------------------</span>
+        <span class="c1"># sampled persistence</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_config_module</span><span class="o">.</span><span class="n">configs</span><span class="o">.</span><span class="n">DSL_EXECUTION_LOG_ENABLED</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repository</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -540,16 +540,14 @@
             <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="c1"># Sprint 13: hand off to the background worker instead of awaiting</span>
+        <span class="c1"># Hand off to the background worker instead of awaiting</span>
         <span class="c1"># the DB write here. ``_enqueue`` never blocks and never raises -</span>
         <span class="c1"># a full queue drops the row (counted) so a slow database can't</span>
         <span class="c1"># apply backpressure to the scoring hot-path.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_enqueue</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span><span class="p">,</span> <span class="n">strategyType</span><span class="o">=</span><span class="n">strategyType</span><span class="p">)</span></div>
 
 
-    <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1"># Sprint 13 - background drain worker.</span>
-    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Background drain worker.</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_enqueue</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
