@@ -1,6 +1,6 @@
 // Sprint 10: compact language switcher used in the strategy editor
 // toolbar. Sits next to the Save/Test buttons rather than in the
-// global header so the change is self-contained — global app
+// global header so the change is self-contained - global app
 // internationalisation is intentionally out of scope for this sprint.
 //
 // The component is reactive: changing the dropdown calls

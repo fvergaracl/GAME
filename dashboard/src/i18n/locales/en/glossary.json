@@ -20,7 +20,7 @@
   "terms": {
     "rule": {
       "title": "Rule (when → then)",
-      "body": "The basic unit of the DSL. A rule evaluates a condition (\"when\") and, if it matches, runs its actions (\"then\") — typically assigning points. You can chain several with \"else if\" / \"else\" branches."
+      "body": "The basic unit of the DSL. A rule evaluates a condition (\"when\") and, if it matches, runs its actions (\"then\") - typically assigning points. You can chain several with \"else if\" / \"else\" branches."
     },
     "preRule": {
       "title": "Pre-rule",
@@ -55,11 +55,11 @@
       "body": "Changes the value of a variable exposed by the parent strategy (e.g. its multiplier or threshold) without rewriting it. It's applied before the parent runs its logic."
     },
     "dslFull": {
-      "title": "DSL_FULL — From scratch",
+      "title": "DSL_FULL - From scratch",
       "body": "Self-contained strategy: you define every rule. Pick this when you already know what you want to model and don't need to reuse anything from the built-ins."
     },
     "dslExtend": {
-      "title": "DSL_EXTEND — Extend",
+      "title": "DSL_EXTEND - Extend",
       "body": "Strategy that wraps another one: adds pre-rules and/or post-rules around a parent without rewriting it. You inherit its behaviour and only change what you need."
     },
     "lifecycle": {
@@ -80,7 +80,7 @@
     },
     "assignment": {
       "title": "Assignment",
-      "body": "1-to-1 relationship between a Game (or a Task) and the strategy it uses for scoring. Only published strategies can be assigned. Changing the assignment redirects from the next event onward — it does not recompute past events."
+      "body": "1-to-1 relationship between a Game (or a Task) and the strategy it uses for scoring. Only published strategies can be assigned. Changing the assignment redirects from the next event onward - it does not recompute past events."
     }
   }
 }

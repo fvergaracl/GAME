@@ -1,5 +1,5 @@
 """
-Sprint 11 — wiring test: DslStrategy.calculate_points always invokes
+Sprint 11 - wiring test: DslStrategy.calculate_points always invokes
 the observer, exactly once, in both success and failure paths.
 
 The observer is mocked so this test doesn't reach into Prometheus or

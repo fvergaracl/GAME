@@ -25,7 +25,7 @@ def _make_mock_service(rows):
 
     We can't reuse `ExportService.format_iterator` directly because it
     dispatches through ``self.format_as_csv`` etc., and ``self`` is an
-    AsyncMock — every attribute access yields an AsyncMock that returns a
+    AsyncMock - every attribute access yields an AsyncMock that returns a
     coroutine, breaking ``async for``. So we route to the underlying
     staticmethods explicitly.
     """

@@ -1,7 +1,7 @@
 """
 AST node definitions and the field-access whitelist for the strategy DSL.
 
-This module is pure data + small pure helpers — no I/O, no service
+This module is pure data + small pure helpers - no I/O, no service
 dependencies, no async. It is imported by the validator, the interpreter,
 and the execution context. Keeping it dependency-free is what allows the
 adversarial test suite to import the whitelist directly and assert on it
@@ -12,14 +12,14 @@ Two pieces live here:
 1. The grammar of allowed nodes: ``NODE_*`` constants plus the operator
    whitelists used by ``compare`` and ``arith`` nodes.
 
-2. The ``FIELD_RESOLVERS`` map — the only legal targets of a ``field``
+2. The ``FIELD_RESOLVERS`` map - the only legal targets of a ``field``
    node's ``path``. Anything outside this map (or the ``data.<key>``
    prefix) is rejected at validation time, not at runtime. This is what
    keeps a malicious tenant from writing ``{"type":"field","path":"__builtins__"}``
    and getting an interpreter handler to evaluate it.
 
-The ``data.*`` namespace is open — keys are arbitrary because callers
-supply ``data`` per-event — but the resolver only snapshots scalar values
+The ``data.*`` namespace is open - keys are arbitrary because callers
+supply ``data`` per-event - but the resolver only snapshots scalar values
 from the request payload, never live attribute lookups.
 """
 
@@ -32,7 +32,7 @@ from typing import Any, Callable, Dict, Iterable, Optional, Set, Tuple
 # Node types ----------------------------------------------------------------
 # The handler tables in dsl_validator and dsl_interpreter dispatch on these
 # strings. Adding a node here without adding a handler will be caught by the
-# validator (unknown type) — the constants are intentionally exhaustive.
+# validator (unknown type) - the constants are intentionally exhaustive.
 
 NODE_PROGRAM = "program"
 # A rule node carries ``when`` (condition) + ``then`` (statement list) and,
@@ -125,7 +125,7 @@ STATEMENT_NODE_TYPES: Set[str] = {
 # "pre" (program.pre_rules[]), "post" (program.post_rules[]).
 #
 # IMPORTANT: dashboard/src/views/strategies/dsl/whitelists.js mirrors
-# this map for client-side validation — keep them in sync.
+# this map for client-side validation - keep them in sync.
 STATEMENT_ALLOWED_CONTEXTS: Dict[str, Set[str]] = {
     NODE_ASSIGN_POINTS: {"rule", "default"},
     NODE_SET_CALLBACK_DATA: {"rule", "default", "pre", "post"},
@@ -147,7 +147,7 @@ ALLOWED_ARITH_OPS: Set[str] = {"+", "-", "*", "/", "min", "max"}
 # Keeping the arity explicit so the validator can reject bad call shapes
 # without consulting the interpreter handler table.
 # IMPORTANT: dashboard/src/views/strategies/dsl/whitelists.js mirrors
-# this set for client-side validation — keep them in sync.
+# this set for client-side validation - keep them in sync.
 ALLOWED_FUNC_NAMES: Set[str] = {"int", "clamp"}
 FUNC_ARITY: Dict[str, int] = {"int": 1, "clamp": 3}
 
@@ -288,7 +288,7 @@ FIELD_RESOLVERS: Dict[str, FieldResolution] = dict(
 )
 
 
-# Sprint 7: paths exposed only inside ``post_rules`` — they carry the
+# Sprint 7: paths exposed only inside ``post_rules`` - they carry the
 # parent built-in's result after the pre→parent→post pipeline. They are
 # NOT in FIELD_RESOLVERS because their value is injected directly into
 # ExecutionContext.resolved_fields by ``DslStrategy`` after the parent
@@ -305,7 +305,7 @@ def is_valid_data_path(path: str) -> bool:
 
 
 def is_parent_field_path(path: str) -> bool:
-    """``parent.points`` / ``parent.case_name`` — only valid in post_rules."""
+    """``parent.points`` / ``parent.case_name`` - only valid in post_rules."""
     return path in PARENT_FIELD_PATHS
 
 
@@ -337,7 +337,7 @@ def is_valid_case_name(value: Any) -> bool:
 
 # Field enumeration ---------------------------------------------------------
 # ExecutionContext uses this to build a precompute list. It walks the AST
-# permissively (will not raise on unknown nodes — that is the validator's
+# permissively (will not raise on unknown nodes - that is the validator's
 # job) so the same code path is safe to call after validation has passed.
 
 

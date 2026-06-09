@@ -110,7 +110,7 @@ class StrategyUsageRead(BaseModel):
     Answers "which games/tasks run this exact strategy version" so the
     dashboard can show the blast radius before an admin reassigns,
     archives or rolls back a strategy. ``strategyId`` is the assignable
-    id (``custom:<uuid>``) — the value actually stored on the consumers,
+    id (``custom:<uuid>``) - the value actually stored on the consumers,
     not the bare definition id.
     """
 
@@ -130,7 +130,7 @@ class StrategyTemplateRead(BaseModel):
 
     Templates live on disk under ``app/engine/dsl_templates/user/`` and
     seed the "Usar una plantilla" path in the Blockly editor. They are
-    NOT persisted rows — the editor copies the AST + blocklyXml into a
+    NOT persisted rows - the editor copies the AST + blocklyXml into a
     fresh DRAFT when the designer picks one. The shape mirrors what the
     file format is so the loader can `model_validate` each JSON directly.
     """
@@ -154,7 +154,7 @@ class StrategyDefinitionImport(BaseModel):
 
       * ``astJson`` is required (the whole point of importing is the AST).
       * ``blocklyXml`` is required so the imported strategy is editable in
-        the visual editor — a bare-AST import would leave a useless blank
+        the visual editor - a bare-AST import would leave a useless blank
         workspace.
 
     Unknown keys (``exportedAt``, ``exportedFromVersion``) are ignored so

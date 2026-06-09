@@ -1,4 +1,4 @@
-# `gd_or` — Logical OR
+# `gd_or` - Logical OR
 
 True when **at least one** argument is true. Short-circuits on the
 first `true`. The arguments must each be a condition (compare, and,

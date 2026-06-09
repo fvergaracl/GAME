@@ -1,4 +1,4 @@
-# `gd_pre_rule` — Pre-rule (DSL_EXTEND)
+# `gd_pre_rule` - Pre-rule (DSL_EXTEND)
 
 A rule that runs **before** the parent built-in. Available statements
 in the `then` slot are `gd_set_data`, `gd_veto`,

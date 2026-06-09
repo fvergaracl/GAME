@@ -4,7 +4,7 @@
 // /strategies/blocks-help/:slug), which opens this in a new tab so the
 // designer can read the docs side-by-side without losing editor state.
 // The content is the real docs/dsl/blocks/<slug>.md bundled at build
-// time (see blockDocs.js) — no duplication, no network fetch.
+// time (see blockDocs.js) - no duplication, no network fetch.
 //
 // We render the markdown source in a monospace block rather than pulling
 // in a markdown renderer dependency: these docs are written with aligned

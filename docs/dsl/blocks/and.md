@@ -1,4 +1,4 @@
-# `gd_and` — Logical AND
+# `gd_and` - Logical AND
 
 True when **both** arguments are true. Evaluates left-to-right with
 short-circuit: if the first argument is false, the second is not

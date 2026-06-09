@@ -1,4 +1,4 @@
-// Sprint 2 (CRUD management) — duplicate a Game (deep copy).
+// Sprint 2 (CRUD management) - duplicate a Game (deep copy).
 //
 // The backend POST /games/{id}/duplicate does the heavy lifting: it clones
 // the game's platform/strategy/params and every task with its own params

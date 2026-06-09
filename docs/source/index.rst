@@ -1,8 +1,8 @@
-:og:description: GAME (Goals And Motivation Engine) — an adaptive,
+:og:description: GAME (Goals And Motivation Engine) - an adaptive,
    programmable gamification engine for shaping participation and incentives.
 
 ==================================
-GAME — Goals And Motivation Engine
+GAME - Goals And Motivation Engine
 ==================================
 
 .. rubric:: An adaptive, programmable gamification engine
@@ -10,15 +10,15 @@ GAME — Goals And Motivation Engine
 **GAME** turns user activity into points, coins, and behavioral incentives
 through *programmable scoring strategies*. Unlike static points APIs whose
 rules are frozen at design time, GAME lets a strategy react to behavior,
-context, and system state — so incentives can be **redistributed** toward
+context, and system state - so incentives can be **redistributed** toward
 under-engaged users, tasks, or regions instead of amplifying the
 participation inequality that fixed rules tend to reinforce.
 
 It runs in two shapes:
 
-* as a **complete gamification backend** — manage games, tasks, users,
+* as a **complete gamification backend** - manage games, tasks, users,
   point assignment, and wallets; or
-* as a **scoring microservice** — your system owns the application logic
+* as a **scoring microservice** - your system owns the application logic
   and calls GAME only to compute *how many points* an event is worth.
 
 ----
@@ -26,7 +26,7 @@ It runs in two shapes:
 .. admonition:: New here? Start with the path that matches your goal
    :class: tip
 
-   This documentation follows the `Diátaxis <https://diataxis.fr/>`_ model —
+   This documentation follows the `Diátaxis <https://diataxis.fr/>`_ model -
    it separates *learning-oriented* tutorials, *task-oriented* how-to guides,
    *understanding-oriented* explanation, and dry *reference*. Pick your lane:
 
@@ -127,8 +127,8 @@ At a glance
      - Python ≥ 3.12 · FastAPI/Starlette · SQLModel/SQLAlchemy 2.0 (async) ·
        PostgreSQL · Keycloak (OIDC) · Redis (optional)
    * - Architecture
-     - Layered — *endpoint → service → strategy engine → repository →
-       database* — wired by a dependency-injection container
+     - Layered - *endpoint → service → strategy engine → repository →
+       database* - wired by a dependency-injection container
    * - Scoring
      - Built-in deterministic & adaptive strategies, plus a sandboxed
        **DSL** (no-code, Blockly-authored) with hard CPU/size limits
@@ -140,13 +140,13 @@ At a glance
        execution traces, KPI rollups
    * - Reproducibility
      - Deterministic execution, simulation mode (``isSimulated``),
-       versionable strategies — usable as an experimental research platform
+       versionable strategies - usable as an experimental research platform
 
 ----
 
 .. seealso::
 
-   * **Interactive API** — every deployment serves Swagger UI at ``/docs``
+   * **Interactive API** - every deployment serves Swagger UI at ``/docs``
      and ReDoc at ``/redocs`` generated from the live OpenAPI schema.
-   * **Source** — https://github.com/fvergaracl/GAME
-   * **License** — Apache-2.0
+   * **Source** - https://github.com/fvergaracl/GAME
+   * **License** - Apache-2.0

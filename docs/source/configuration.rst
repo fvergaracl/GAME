@@ -17,13 +17,13 @@ How configuration works
   development.
 * ``ENV`` selects the profile. ``ENV=test`` swaps in ``TestConfigs`` (SQLite,
   localhost DB). ``prod``/``stage`` activate **fail-fast** validation.
-* Several values are validated at import time — a bad value raises before the
+* Several values are validated at import time - a bad value raises before the
   app serves a single request (see *Fail-fast guards* below).
 
 .. tip::
 
    Copy ``.env.sample`` to ``.env`` and edit. In production, inject values
-   through the environment or a secret manager — do **not** ship a ``.env``
+   through the environment or a secret manager - do **not** ship a ``.env``
    with real secrets.
 
 Core / application
@@ -58,7 +58,7 @@ Core / application
    * - ``METRICS_ENABLED``
      - ``true``
      - Expose Prometheus ``/metrics``. Disable (or firewall the path) in
-       production — it is unauthenticated at the app level. See
+       production - it is unauthenticated at the app level. See
        :doc:`observability`.
 
 Database
@@ -153,7 +153,7 @@ Authentication (Keycloak)
    * - ``SECRET_KEY``
      - ``""``
      - Signs simulation payloads. **Boot blocks in ``prod``/``stage``** if
-       empty. (Historically defaulted to the truthy string ``"None"`` — now
+       empty. (Historically defaulted to the truthy string ``"None"`` - now
        falsy.)
 
 Security: CORS & proxies

@@ -31,19 +31,19 @@ Every running instance generates its API reference from the code:
      - ``/openapi.json``
      - Generate clients/SDKs.
 
-Each endpoint in the code carries rich OpenAPI metadata — summaries,
-per-status response examples, and request/response schemas — so the generated
+Each endpoint in the code carries rich OpenAPI metadata - summaries,
+per-status response examples, and request/response schemas - so the generated
 docs are detailed, not skeletal.
 
 Conventions
 ===========
 
-* **Base path** — every path below is relative to ``/api/v1``.
-* **Auth** — unless noted, endpoints accept ``X-API-Key`` *or* a Keycloak
+* **Base path** - every path below is relative to ``/api/v1``.
+* **Auth** - unless noted, endpoints accept ``X-API-Key`` *or* a Keycloak
   bearer token (:doc:`authentication`). A few are OAuth2-only.
-* **Ids** — ``{gameId}``/``{taskId}`` are internal UUIDs; ``{externalTaskId}``
+* **Ids** - ``{gameId}``/``{taskId}`` are internal UUIDs; ``{externalTaskId}``
   /``{externalUserId}`` are your strings (:doc:`domain-model`).
-* **Errors** — ``401`` (no/invalid creds), ``403`` (out of scope / rejected
+* **Errors** - ``401`` (no/invalid creds), ``403`` (out of scope / rejected
   key), ``404`` (not found), ``422`` (validation), ``429`` (rate limit),
   ``500`` (server error).
 
@@ -324,5 +324,5 @@ Analytics, exports & ops
 .. note::
 
    This catalog is maintained by hand for orientation. When in doubt, trust
-   ``/openapi.json`` from your deployment — it is generated from the code and
+   ``/openapi.json`` from your deployment - it is generated from the code and
    cannot drift.

@@ -1,9 +1,9 @@
-// Sprint B — regression net for the editor's load/hydration path.
+// Sprint B - regression net for the editor's load/hydration path.
 //
 // Locks in the Sprint A fix: Blockly is injected exactly once per editing
 // session and saved content hydrates that same instance instead of being
 // disposed and re-injected blank (the "editor opens empty when I edit a
-// strategy" bug — see the diagnosis doc, F1/F2).
+// strategy" bug - see the diagnosis doc, F1/F2).
 
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -52,7 +52,7 @@ vi.mock('../../keycloak', () => ({
   default: { token: null, authenticated: false },
 }))
 
-// Decorative / heavy lazy children — stubbed to keep the tree shallow.
+// Decorative / heavy lazy children - stubbed to keep the tree shallow.
 vi.mock('./glossary/GlossaryHint', () => ({ default: () => null }))
 vi.mock('./EditorTour', () => ({ default: () => null }))
 vi.mock('./TemplatePickerModal', () => ({ default: () => null }))
@@ -159,7 +159,7 @@ const survivingWorkspace = () => {
 const waitForHydration = async (ws) =>
   waitFor(() => expect(ws.getAllBlocks(false).length).toBeGreaterThan(0))
 
-describe('StrategyEditor — load/hydration', () => {
+describe('StrategyEditor - load/hydration', () => {
   beforeAll(() => {
     // The editor re-registers on mount; the call is idempotent.
     registerDslBlocks()
@@ -169,7 +169,7 @@ describe('StrategyEditor — load/hydration', () => {
     vi.clearAllMocks()
   })
 
-  it('F1 — editing an existing strategy hydrates the single workspace (no blank canvas)', async () => {
+  it('F1 - editing an existing strategy hydrates the single workspace (no blank canvas)', async () => {
     await renderEditor(makeRow())
 
     await waitFor(() => expect(Blockly.inject).toHaveBeenCalled())
@@ -182,7 +182,7 @@ describe('StrategyEditor — load/hydration', () => {
     expect(workspaceToAst(ws)).toEqual(BASIC_ENGAGEMENT_AST)
   })
 
-  it('F2 — switching FULL↔EXTEND mid-edit keeps the blocks (toolbox swaps in place)', async () => {
+  it('F2 - switching FULL↔EXTEND mid-edit keeps the blocks (toolbox swaps in place)', async () => {
     await renderEditor(makeRow())
 
     await waitFor(() => expect(Blockly.inject).toHaveBeenCalled())
@@ -219,8 +219,8 @@ describe('StrategyEditor — load/hydration', () => {
   })
 })
 
-// Sprint C — robust loading (F4) and data-loss guards (F3).
-describe('StrategyEditor — robust load / data-loss guards', () => {
+// Sprint C - robust loading (F4) and data-loss guards (F3).
+describe('StrategyEditor - robust load / data-loss guards', () => {
   beforeAll(() => {
     registerDslBlocks()
   })
@@ -236,7 +236,7 @@ describe('StrategyEditor — robust load / data-loss guards', () => {
     .t('alerts.loadFailed', { ns: 'editor', error: ERROR_SENTINEL })
     .split(ERROR_SENTINEL)[0]
 
-  it('F4 — a corrupt blocklyXml surfaces a clear error instead of a silent blank canvas', async () => {
+  it('F4 - a corrupt blocklyXml surfaces a clear error instead of a silent blank canvas', async () => {
     await renderEditor(makeRow({ blocklyXml: '{ this is : not valid json' }))
 
     await waitFor(() => expect(Blockly.inject).toHaveBeenCalled())
@@ -251,7 +251,7 @@ describe('StrategyEditor — robust load / data-loss guards', () => {
     expect(ws.getAllBlocks(false)).toHaveLength(0)
   })
 
-  it('F3 — loading a DRAFT leaves it clean so an untouched canvas is never autosaved over', async () => {
+  it('F3 - loading a DRAFT leaves it clean so an untouched canvas is never autosaved over', async () => {
     const api = await import('../../api')
     await renderEditor(makeRow())
 

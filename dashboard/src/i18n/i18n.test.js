@@ -4,13 +4,13 @@
 // ``blocks``. These tests pin three things:
 //
 //   1. Every DSL error code we expect the backend to emit has a non-
-//      empty translation in both locales — drift between backend codes
+//      empty translation in both locales - drift between backend codes
 //      and frontend bundles is otherwise silent.
 //   2. ``dslErrorMessage`` falls back to the generic ``errors.fallback``
 //      template when the code isn't translated, so the user always sees
 //      a sentence (never the bare DSL_* identifier).
 //   3. ``translateDslError`` extracts the structured ``{code, params}``
-//      from axios errors and from bare detail bodies — both shapes
+//      from axios errors and from bare detail bodies - both shapes
 //      reach the editor in practice.
 
 import { describe, expect, it } from 'vitest'
@@ -28,7 +28,7 @@ import enBlocks from './locales/en/blocks.json'
 
 // Initialise a fresh i18n instance synchronously so tests don't depend
 // on the global one in src/i18n/index.js (which calls LanguageDetector
-// and reads from window.localStorage — not available the same way
+// and reads from window.localStorage - not available the same way
 // inside vitest's jsdom env between test files).
 async function setupI18n(lng) {
   await i18n.use(initReactI18next).init({

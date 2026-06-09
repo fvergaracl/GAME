@@ -1,4 +1,4 @@
-# DSL Strategy Editor — User Documentation
+# DSL Strategy Editor - User Documentation
 
 This is the entry point for game designers using the Strategy Editor in
 the GAME dashboard. The editor lets you define how points are awarded
@@ -12,8 +12,8 @@ emits the first `assign_points` it reaches inside a matching rule.
 
 Two creation modes are available from the editor:
 
-* **DSL_FULL** — you write the whole strategy from scratch.
-* **DSL_EXTEND** — you start from a built-in (e.g. `default`) and
+* **DSL_FULL** - you write the whole strategy from scratch.
+* **DSL_EXTEND** - you start from a built-in (e.g. `default`) and
   layer `pre_rules` (which may mutate the input or veto the
   assignment) and `post_rules` (which may multiply points, override
   case names, or add callback data).
@@ -76,7 +76,7 @@ code. See the [runbook](runbook.md) for what to do next.
 
 Every strategy has a **Test** button in the editor. It calls
 `POST /v1/strategies/custom/{id}/simulate` and shows you the full
-node-by-node trace — exactly what would happen at runtime. Use this
+node-by-node trace - exactly what would happen at runtime. Use this
 liberally: simulation never touches `UserPoints`, the wallet, or any
 other production data.
 
@@ -109,7 +109,7 @@ The persistence write is drained off the scoring hot-path by a
 background worker fed from a bounded in-process queue
 (`DSL_EXECUTION_LOG_QUEUE_MAXSIZE`, default 1000). Scoring only pays the
 enqueue, never the DB round-trip. If the database falls behind and the
-queue fills, rows are dropped — counted by
-`dsl_execution_log_dropped_total` — rather than slowing down scoring. A
+queue fills, rows are dropped - counted by
+`dsl_execution_log_dropped_total` - rather than slowing down scoring. A
 non-zero drop rate means the sink is saturated, not that scoring is at
 risk. On shutdown the queue is flushed so no buffered rows are lost.

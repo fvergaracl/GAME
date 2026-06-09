@@ -1,4 +1,4 @@
-// Sprint 2 — "Mis estrategias" library view.
+// Sprint 2 - "Mis estrategias" library view.
 //
 // Solves discoverability: before this view a saved DRAFT was unreachable
 // from the menu (the editor only offered create/template/extend/import),
@@ -8,7 +8,7 @@
 // Server-side filters (status/type) re-query the API; the name search is
 // client-side over the loaded page. Per-row actions cover the lifecycle:
 // open in the editor, duplicate, publish/archive (admin), view history,
-// export the bundle. Pagination at scale is deferred to Sprint 6 — here
+// export the bundle. Pagination at scale is deferred to Sprint 6 - here
 // we load a generous page and filter in memory.
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -76,7 +76,7 @@ const LIBRARY_TOUR_STEPS = [
   { target: '[data-tour="library-help"]', i18n: 'help', placement: 'bottom' },
 ]
 
-// Generous page size — real pagination/search is Sprint 6. This keeps the
+// Generous page size - real pagination/search is Sprint 6. This keeps the
 // library usable for the hundreds-of-strategies range without a "next page".
 const PAGE_LIMIT = 200
 
@@ -112,7 +112,7 @@ const isCurrentUserAdmin = () => {
 }
 
 const formatDate = (iso) => {
-  if (!iso) return '—'
+  if (!iso) return '-'
   try {
     return new Date(iso).toLocaleDateString()
   } catch {
@@ -197,7 +197,7 @@ const StrategyLibraryView = () => {
 
   const parentLabel = useCallback(
     (parentStrategyId) => {
-      if (!parentStrategyId) return '—'
+      if (!parentStrategyId) return '-'
       return builtInIndex.get(parentStrategyId) || parentStrategyId
     },
     [builtInIndex],
@@ -503,7 +503,7 @@ const StrategyLibraryView = () => {
                         {row.type === 'DSL_EXTEND' ? (
                           <code>{parentLabel(row.parentStrategyId)}</code>
                         ) : (
-                          <span className="text-medium-emphasis">—</span>
+                          <span className="text-medium-emphasis">-</span>
                         )}
                       </CTableDataCell>
                       <CTableDataCell>{formatDate(row.created_at)}</CTableDataCell>
@@ -513,7 +513,7 @@ const StrategyLibraryView = () => {
                             <code>{row.createdBy}</code>
                           </small>
                         ) : (
-                          <span className="text-medium-emphasis">—</span>
+                          <span className="text-medium-emphasis">-</span>
                         )}
                       </CTableDataCell>
                       <CTableDataCell {...(isFirst ? { 'data-tour': 'library-row-actions' } : {})}>

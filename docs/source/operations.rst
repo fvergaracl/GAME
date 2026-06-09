@@ -88,7 +88,7 @@ Production deployment
 =====================
 
 #. **Configure** the environment for ``ENV=prod`` (or ``stage``). The
-   fail-fast guards will block boot on missing secrets — that is intended; see
+   fail-fast guards will block boot on missing secrets - that is intended; see
    :doc:`configuration` and :doc:`security`.
 #. **Run migrations** before serving traffic (see below).
 #. **Deploy** the image with your orchestrator (Compose, Kubernetes, or a
@@ -107,11 +107,11 @@ Manifests live under ``kubernetes/`` and a helper script
 ``deploy-kubernetes.sh`` is provided. See ``KUBERNETES_SETUP.md`` for the full
 walkthrough. Operational notes:
 
-* Define **liveness/readiness probes** — ``GET /api/v1/kpi/health_check`` is a
+* Define **liveness/readiness probes** - ``GET /api/v1/kpi/health_check`` is a
   natural readiness target.
 * Provide configuration via ``ConfigMap`` (non-secret) and ``Secret``
   (``SECRET_KEY``, DB password, ``KEYCLOAK_CLIENT_SECRET``).
-* Roll back with ``kubectl rollout undo deployment/<name>`` — Kubernetes keeps
+* Roll back with ``kubectl rollout undo deployment/<name>`` - Kubernetes keeps
   the deployment history.
 
 Database migrations (Alembic)
@@ -134,8 +134,8 @@ golden rule: **migrate before the new code serves traffic**, in CI/CD.
 Health, readiness & graceful shutdown
 =====================================
 
-* **Health** — ``GET /api/v1/kpi/health_check``.
-* **Graceful shutdown** — the FastAPI lifespan hook flushes the DSL
+* **Health** - ``GET /api/v1/kpi/health_check``.
+* **Graceful shutdown** - the FastAPI lifespan hook flushes the DSL
   execution-log queue on shutdown (``observer.aclose()``) so buffered audit
   rows aren't lost. Give the container a few seconds of termination grace so
   the flush completes.
@@ -159,7 +159,7 @@ Scaling guidance
      - Use ``redis`` so limits and key revocations are global, not per-worker.
    * - **DSL trace sink**
      - Watch ``dsl_execution_log_dropped_total``; if non-zero, the trace DB is
-       behind — raise ``DSL_EXECUTION_LOG_QUEUE_MAXSIZE`` or lower the sample
+       behind - raise ``DSL_EXECUTION_LOG_QUEUE_MAXSIZE`` or lower the sample
        rate. Scoring is unaffected (:doc:`observability`).
 
 Load & performance testing

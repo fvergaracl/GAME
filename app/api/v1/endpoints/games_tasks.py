@@ -832,7 +832,7 @@ async def delete_task(
     Delete a task by ``gameId`` + ``taskId``.
 
     Sprint 0 (CRUD): the dashboard's task management view needs to retire
-    individual tasks. Mirrors ``delete_game_by_id`` — the cascade lives in
+    individual tasks. Mirrors ``delete_game_by_id`` - the cascade lives in
     the repository so params/points go before the task row.
     """
     auth = audit.auth

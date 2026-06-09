@@ -1,7 +1,7 @@
 // Sprint 5: saveable simulation scenarios. A "scenario" is the full set of
 // test inputs (ids, event data, mock overrides, accumulated-field values,
 // single/cumulative mode + step). Designers iterate on the same handful of
-// inputs over and over — saving them as named presets means they stop
+// inputs over and over - saving them as named presets means they stop
 // re-typing "user with 5 measurements, 30s avg time" every session.
 //
 // Persistence is localStorage (per browser), not the backend: scenarios are
@@ -22,7 +22,7 @@ function readScenarios() {
     const parsed = JSON.parse(raw)
     return Array.isArray(parsed) ? parsed : []
   } catch {
-    // Corrupt / unavailable storage — degrade to an empty list rather
+    // Corrupt / unavailable storage - degrade to an empty list rather
     // than crashing the editor.
     return []
   }

@@ -1,7 +1,7 @@
-# `gd_field` — Field
+# `gd_field` - Field
 
 Read a value precomputed by the engine before your strategy runs. The
-dropdown only lists paths the engine knows how to compute — there is
+dropdown only lists paths the engine knows how to compute - there is
 no way to read arbitrary attributes.
 
 ## Available paths
@@ -29,8 +29,8 @@ no way to read arbitrary attributes.
 
 * Field values are precomputed in a single batch before your AST runs.
   This means using the same field 10 times costs the same as using it
-  once — no N+1.
+  once - no N+1.
 * `data.<key>` reads come from `gd_field_data` instead.
 * Paths starting with `parent.` (e.g. `parent.points`,
-  `parent.case_name`) are only valid in `post_rules` — see
+  `parent.case_name`) are only valid in `post_rules` - see
   [`gd_field_parent`](field-parent.md).

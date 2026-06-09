@@ -59,7 +59,7 @@ class ExecutionContext:
         short-circuits both, useful for the simulate endpoint and for
         tests that don't want a real DB.
 
-        Sprint 13 — ``analytics_cache`` is an optional caller-owned dict
+        Sprint 13 - ``analytics_cache`` is an optional caller-owned dict
         memoising analytics-field values *within a single scoring call*.
         DSL_EXTEND builds two contexts (pre + post) for the same user and
         request window; passing the same dict to both means each analytics
@@ -67,7 +67,7 @@ class ExecutionContext:
         ``analytics``-kind fields are cached: static fields are pure CPU,
         and ``data.*`` fields legitimately differ between phases because
         pre-rules may mutate ``data``. Pass ``None`` (the default) to opt
-        out — DSL_FULL builds a single context and gains nothing.
+        out - DSL_FULL builds a single context and gains nothing.
         """
         data_payload: Dict[str, Any] = dict(data or {})
         mocks = mock_state or {}
@@ -118,14 +118,14 @@ class ExecutionContext:
                 # we leave the slot unset so the interpreter surfaces a
                 # clean error.
                 continue
-            # Validator should have caught this — if it didn't, leave the
+            # Validator should have caught this - if it didn't, leave the
             # field unresolved and let the interpreter surface a clean
             # error rather than silently returning None.
 
         # Sprint 7: inject parent.* AFTER the regular resolution loop so
         # post-rule execution can read the parent built-in's output via
         # the same ``ctx.resolved_fields`` lookup used for analytics.
-        # Mock state still wins (mocks were already applied above) —
+        # Mock state still wins (mocks were already applied above) -
         # this only fills in slots the simulation didn't override.
         if parent_result is not None:
             for parent_path in PARENT_FIELD_PATHS:

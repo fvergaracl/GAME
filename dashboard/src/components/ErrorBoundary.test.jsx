@@ -1,4 +1,4 @@
-// Sprint 9 — ErrorBoundary unit tests. Verifies the boundary catches
+// Sprint 9 - ErrorBoundary unit tests. Verifies the boundary catches
 // render errors, shows the recovery UI, and resets cleanly when the
 // caller clicks "Reintentar".
 

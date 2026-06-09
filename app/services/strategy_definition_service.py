@@ -13,7 +13,7 @@ Implements the versioning rules called out in the Sprint 3 plan:
 * Archiving moves a row out of the active set without deleting history.
 
 Tenancy is enforced at this layer: every read/write takes ``realmId``
-and we never accept it from the caller body — the endpoint resolves it
+and we never accept it from the caller body - the endpoint resolves it
 from the auth context and passes it in.
 """
 
@@ -38,7 +38,7 @@ from app.services.base_service import BaseService
 # Kept in sync with ``CUSTOM_STRATEGY_PREFIX`` in
 # ``app/services/strategy_service.py``. We inline the literal here
 # instead of importing it because ``StrategyService`` already imports
-# this module — pulling the constant back the other way would create a
+# this module - pulling the constant back the other way would create a
 # circular module dependency (same reason ``_validate_payload`` doesn't
 # resolve parent strategies; see comment below).
 _CUSTOM_STRATEGY_PREFIX = "custom:"
@@ -70,7 +70,7 @@ class StrategyDefinitionService(BaseService):
         ``game_repository`` and ``task_repository`` are optional so legacy
         call sites that only need CRUD/lifecycle (most tests, the
         simulation service) keep working without a wider DI graph. The
-        Sprint 9 rollback flow requires both — when missing,
+        Sprint 9 rollback flow requires both - when missing,
         :meth:`rollback` raises a precise error rather than silently
         leaving cascade UPDATEs undone.
         """
@@ -114,7 +114,7 @@ class StrategyDefinitionService(BaseService):
         DSL_EXTEND must carry a parent; DSL_FULL must not. We don't yet
         validate that ``parentStrategyId`` resolves to a real registry
         entry because the registry is loaded lazily and importing it
-        here would create a circular dependency — that check lives in
+        here would create a circular dependency - that check lives in
         the endpoint via :class:`StrategyService`.
         """
         if type_value == StrategyDefinitionType.DSL_EXTEND.value:
@@ -281,7 +281,7 @@ class StrategyDefinitionService(BaseService):
         * On a PUBLISHED row: fork a new DRAFT at ``version + 1`` with
           the patched fields applied, leaving the published row
           untouched so it keeps running until an explicit publish.
-        * On an ARCHIVED row: refuse — archived strategies are
+        * On an ARCHIVED row: refuse - archived strategies are
           immutable.
         """
         row = await self.strategy_definition_repository.get_for_realm(
@@ -487,14 +487,14 @@ class StrategyDefinitionService(BaseService):
         strategy version (Sprint 6).
 
         Consumers store the assignable id ``custom:<uuid>``, so usage is
-        an exact match on that string — the same value the rollback
+        an exact match on that string - the same value the rollback
         cascade rewrites. We report per-version (not per-family) because
         each published version is a distinct uuid that games point at
         individually; that matches what an admin needs to see before
         reassigning, archiving or rolling back *this* version.
 
         Tenant-scoped via ``get_for_realm``: a cross-realm id 404s.
-        No cross-tenant leak through the usage lists either — a game can
+        No cross-tenant leak through the usage lists either - a game can
         only be assigned a strategy validated to live in its own realm,
         so every consumer of ``custom:<uuid>`` shares the strategy's
         realm.
@@ -574,12 +574,12 @@ class StrategyDefinitionService(BaseService):
           * 404 if ``id`` doesn't resolve (or is in another realm).
           * 404 if ``target_version`` isn't a version of that family.
           * 409 if the requested target is the row that's already PUBLISHED
-            — rolling back to the current state would be a no-op that
+            - rolling back to the current state would be a no-op that
             falsely advertises a status change in the audit log.
         """
         if self.game_repository is None or self.task_repository is None:
             # Defensive: rollback writes to Games/Tasks. If those weren't
-            # wired we'd silently leave the cascade undone — much worse
+            # wired we'd silently leave the cascade undone - much worse
             # than refusing the operation up front.
             raise BadRequestError(
                 detail=(
@@ -612,7 +612,7 @@ class StrategyDefinitionService(BaseService):
         )
 
         if displaced is not None and str(displaced.id) == str(target.id):
-            # Target is already the live PUBLISHED row — rollback would be
+            # Target is already the live PUBLISHED row - rollback would be
             # a no-op and would obscure intent in the audit trail.
             raise ConflictError(
                 detail=(
@@ -624,7 +624,7 @@ class StrategyDefinitionService(BaseService):
         # Order matters: archive the displaced row first, then promote
         # the target, then run the cascade. If a failure interrupts the
         # sequence the worst observable state is "0 PUBLISHED in family"
-        # for a few ms — preferable to leaving two PUBLISHED rows.
+        # for a few ms - preferable to leaving two PUBLISHED rows.
         if displaced is not None:
             await self.strategy_definition_repository.set_status(
                 id=str(displaced.id),

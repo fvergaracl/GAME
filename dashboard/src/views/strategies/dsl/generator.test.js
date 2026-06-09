@@ -1,4 +1,4 @@
-// Sprint 6: generator tests — snapshot-style assertions that pin the
+// Sprint 6: generator tests - snapshot-style assertions that pin the
 // workspace→AST mapping. Each test builds a known workspace using the
 // headless Blockly API (no DOM, no react), runs ``workspaceToAst``,
 // and checks the JSON shape matches what the backend interpreter
@@ -53,7 +53,7 @@ function connectChildStatement(parent, inputName, child) {
   input.connection.connect(child.previousConnection)
 }
 
-describe('workspaceToAst — empty workspace', () => {
+describe('workspaceToAst - empty workspace', () => {
   it('produces a program with no rules and no default', () => {
     const ws = makeWorkspace()
 
@@ -63,7 +63,7 @@ describe('workspaceToAst — empty workspace', () => {
   })
 })
 
-describe('workspaceToAst — basic engagement rule', () => {
+describe('workspaceToAst - basic engagement rule', () => {
   it('reproduces the BasicEngagement scenario from default.py', () => {
     // Build the workspace equivalent of:
     //   when task.measurements_count < 2
@@ -123,12 +123,12 @@ describe('workspaceToAst — basic engagement rule', () => {
     })
 
     // Sanity: the generator output must pass the client-side validator
-    // — anything the editor produces should round-trip cleanly.
+    // - anything the editor produces should round-trip cleanly.
     expect(validateAst(ast).ok).toBe(true)
   })
 })
 
-describe('workspaceToAst — default branch from a top-level assign_points', () => {
+describe('workspaceToAst - default branch from a top-level assign_points', () => {
   it('treats an unparented assign_points as program.default', () => {
     const ws = makeWorkspace()
 
@@ -155,14 +155,14 @@ describe('workspaceToAst — default branch from a top-level assign_points', () 
   })
 })
 
-describe('workspaceToAst — func_call with int and clamp', () => {
+describe('workspaceToAst - func_call with int and clamp', () => {
   it('emits the expected nested func_call structure for clamp(int(x), 1, 100)', () => {
     const ws = makeWorkspace()
 
     const rule = newBlock(ws, 'gd_rule', 'r1')
     const whenLit = newBlock(ws, 'gd_literal_number', 'wl')
     whenLit.setFieldValue('1', 'VALUE')
-    // Bare expression as condition — passes through.
+    // Bare expression as condition - passes through.
     connectChildToInput(rule, 'WHEN', whenLit)
 
     const assign = newBlock(ws, 'gd_assign_points', 'a1')
@@ -216,14 +216,14 @@ describe('workspaceToAst — func_call with int and clamp', () => {
 })
 
 // =========================================================================
-// Sprint 7 — DSL_EXTEND generator tests.
+// Sprint 7 - DSL_EXTEND generator tests.
 //
 // Verify the top-level routing of gd_pre_rule / gd_post_rule into
 // program.pre_rules / post_rules, the parent_variables map emission,
 // and that the resulting AST passes the client-side validator.
 // =========================================================================
 
-describe('workspaceToAst — Sprint 7 pre/post + parent_variables', () => {
+describe('workspaceToAst - Sprint 7 pre/post + parent_variables', () => {
   it('emits pre_rules from top-level gd_pre_rule blocks', () => {
     const ws = makeWorkspace()
     const preRule = newBlock(ws, 'gd_pre_rule', 'pr1')
@@ -337,7 +337,7 @@ describe('workspaceToAst — Sprint 7 pre/post + parent_variables', () => {
   })
 })
 
-describe('workspaceToAst — invalid output still validates structurally', () => {
+describe('workspaceToAst - invalid output still validates structurally', () => {
   it('a rule whose then is empty produces an empty array (caught by validator)', () => {
     const ws = makeWorkspace()
     const rule = newBlock(ws, 'gd_rule', 'r1')
@@ -350,12 +350,12 @@ describe('workspaceToAst — invalid output still validates structurally', () =>
     expect(ast.rules[0].then).toEqual([])
     const result = validateAst(ast)
     expect(result.ok).toBe(false)
-    // The validator must flag the empty `then` — that's the contract.
+    // The validator must flag the empty `then` - that's the contract.
     expect(result.errors.some((e) => /non-empty array of statements/.test(e.message))).toBe(true)
   })
 })
 
-describe('workspaceToAst — else-if / else branches (mutator)', () => {
+describe('workspaceToAst - else-if / else branches (mutator)', () => {
   // Small helper: an assign_points statement with a literal number value.
   function assignBlock(ws, id, value, caseName) {
     const assign = newBlock(ws, 'gd_assign_points', id)

@@ -129,7 +129,7 @@ class TaskService(BaseService):
         create rows without an id, delete rows omitted from the list);
         omit ``params`` to leave them untouched.
 
-        ``strategyId`` accepts both built-ins and ``custom:<uuid>`` —
+        ``strategyId`` accepts both built-ins and ``custom:<uuid>`` -
         validated by :meth:`_validate_strategy_assignment` with the
         caller's tenant boundary.
         """
@@ -154,7 +154,7 @@ class TaskService(BaseService):
         if not task:
             raise NotFoundError(detail=f"Task not found by taskId: {taskId}")
         if str(task.gameId) != str(gameId):
-            # Mismatched parent — 404 instead of 400 so we don't leak
+            # Mismatched parent - 404 instead of 400 so we don't leak
             # which other game the task actually belongs to.
             raise NotFoundError(
                 detail=(f"Task {taskId} does not belong to game {gameId}.")

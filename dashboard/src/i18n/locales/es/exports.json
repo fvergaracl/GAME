@@ -2,7 +2,7 @@
   "data": {
     "headerTitle": "Exportar datos",
     "headerSubtitle": "Descarga un conjunto de datos",
-    "intro": "Elige un conjunto de datos, un formato y filtros opcionales. La descarga empieza en tu navegador en cuanto el servidor esté listo — sin correo ni tareas en segundo plano. Cada solicitud queda registrada en Historial de exportaciones.",
+    "intro": "Elige un conjunto de datos, un formato y filtros opcionales. La descarga empieza en tu navegador en cuanto el servidor esté listo - sin correo ni tareas en segundo plano. Cada solicitud queda registrada en Historial de exportaciones.",
     "dataset": "Conjunto de datos",
     "datasets": {
       "users": "Usuarios",

@@ -2,7 +2,7 @@
 ``BaseStrategy`` adapter that runs a persisted DSL ``StrategyDefinition``.
 
 This class is built in Sprint 4 but NOT connected to ``UserPointsService``
-yet — that wiring is Sprint 5's "modify BaseStrategy.calculate_points to
+yet - that wiring is Sprint 5's "modify BaseStrategy.calculate_points to
 delegate" item. Until then the adapter is exercised only by the simulate
 endpoint and by tests.
 
@@ -10,7 +10,7 @@ Notable choice: ``_generate_hash_of_calculate_points`` is overridden to
 hash the canonicalized AST (sorted JSON keys) instead of the Python
 source of the method. The built-in strategies still use the inspect-based
 hash inherited from ``BaseStrategy``, so existing ``UserPoints``
-idempotency keys remain valid — only DSL strategies opt into the new
+idempotency keys remain valid - only DSL strategies opt into the new
 hash scheme.
 """
 
@@ -33,7 +33,7 @@ from app.engine.dsl_interpreter import DslInterpreter
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
 
 # Sprint 13: the idempotency hash is a canonical-JSON dump of the AST
-# plus a SHA-256 — pure CPU, but ``UserPointsService`` constructs a fresh
+# plus a SHA-256 - pure CPU, but ``UserPointsService`` constructs a fresh
 # ``DslStrategy`` on every scoring call, so a busy strategy re-hashes the
 # same multi-KB AST thousands of times a minute. We memoise the result
 # keyed by ``(strategyId, version)``.
@@ -41,8 +41,8 @@ from app.schema.strategy_definition_schema import StrategyDefinitionRead
 # Only PUBLISHED definitions are cached: editing a DRAFT patches the row
 # *in place* without bumping the version (see
 # ``StrategyDefinitionService.update_strategy``), so ``(id, version)`` is
-# not a stable key for drafts. PUBLISHED rows are immutable — an edit
-# forks a new version — so the key is 1:1 with the AST, and scoring only
+# not a stable key for drafts. PUBLISHED rows are immutable - an edit
+# forks a new version - so the key is 1:1 with the AST, and scoring only
 # ever runs published strategies anyway. The simulate path (drafts)
 # recomputes, which is fine: it isn't the hot path.
 #
@@ -111,7 +111,7 @@ class DslStrategy(BaseStrategy):
     ) -> None:
         # Skip the parent ``__init__`` because it eagerly computes the
         # hash from ``inspect.getsource(self.calculate_points)``, which
-        # would hash THIS class's Python source — useless for DSL.
+        # would hash THIS class's Python source - useless for DSL.
         self.debug = False
         self.strategy_name = definition.name
         self.strategy_description = definition.description
@@ -372,7 +372,7 @@ class DslStrategy(BaseStrategy):
         # pre-rules mutate ``data`` between the two builds.
         analytics_cache: dict = {}
 
-        # Phase 1 — pre_rules. We build a context that doesn't carry
+        # Phase 1 - pre_rules. We build a context that doesn't carry
         # parent.* fields (those paths are validator-rejected outside
         # post_rules anyway). The interpreter copies ``data`` into
         # state.working_data so set_data mutations are local to this
@@ -402,7 +402,7 @@ class DslStrategy(BaseStrategy):
                 return self._format_result(pre_result)
             working_data = pre_result["working_data"]
 
-        # Phase 2 — parent built-in. We only shallow-copy when there
+        # Phase 2 - parent built-in. We only shallow-copy when there
         # are variable overrides; otherwise we reuse the registry
         # singleton directly. This matters because (a) skipping the
         # copy when unnecessary avoids paying for ``__dict__``
@@ -410,7 +410,7 @@ class DslStrategy(BaseStrategy):
         # the original instance (e.g. ``parent.last_call_args``) only
         # see the call when the orchestrator targets the original.
         # When overrides exist we DO need the copy so the next request
-        # — or another DSL_EXTEND row that shares the same parent —
+        # - or another DSL_EXTEND row that shares the same parent -
         # doesn't inherit this realm's tweaked variables.
         parent_instance = self._parent_strategy
         if parent_variable_overrides:
@@ -424,7 +424,7 @@ class DslStrategy(BaseStrategy):
         )
         parent_result = _normalize_parent_tuple(parent_tuple)
 
-        # Phase 3 — post_rules. The state is bootstrapped from
+        # Phase 3 - post_rules. The state is bootstrapped from
         # parent_result so set_points / set_case_name mutate from the
         # parent's output as the starting point. The new ExecutionContext
         # carries parent.* fields so post-rule conditions can branch on
@@ -470,7 +470,7 @@ class DslStrategy(BaseStrategy):
     ) -> dict:
         """Run one phase under the per-call timeout and return the raw
         DslExecutionResult dict (which carries working_data and vetoed
-        for pre/post phases — see the TypedDict in dsl_interpreter).
+        for pre/post phases - see the TypedDict in dsl_interpreter).
 
         Sprint 11: the trace produced by each phase is appended to
         ``self._last_trace`` so the calculate_points wrapper hands the

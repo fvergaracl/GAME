@@ -419,7 +419,7 @@ app/
 
 The full documentation is published as a **Sphinx site** (GitHub Pages, built
 from [`docs/source/`](docs/source/) on every push to `main`) and is organized
-along the [Diátaxis](https://diataxis.fr/) model — tutorials, how-to guides,
+along the [Diátaxis](https://diataxis.fr/) model - tutorials, how-to guides,
 explanation, and reference. Every running instance also serves an interactive
 API reference at `/docs` (Swagger UI) and `/redocs` (ReDoc).
 
@@ -457,13 +457,13 @@ GAME is designed to support **scientific reproducibility and deterministic evalu
 
 To guarantee reproducible behavior:
 
-- **Deterministic execution** — Given the same inputs (tasks, parameters, timestamps, and configuration), strategies produce identical outputs.
-- **Explicit parameterization** — All scoring behavior is driven by explicit strategy parameters stored in the database, avoiding hidden state.
-- **Simulation mode** — The engine supports simulation runs (`isSimulated=true`) to evaluate strategies without affecting production data.
-- **Seeded stochastic components** — Any stochastic behavior (if used) should be seeded to allow repeatable experiments.
-- **Stable time reference** — Strategies relying on time use controlled timestamps, enabling replay of historical scenarios.
-- **Versionable strategies** — Strategy logic can be versioned, allowing comparison across experimental conditions.
-- **Traceable execution** — Logs and scoring outputs allow reconstruction of scoring decisions for auditing and research validation.
+- **Deterministic execution** - Given the same inputs (tasks, parameters, timestamps, and configuration), strategies produce identical outputs.
+- **Explicit parameterization** - All scoring behavior is driven by explicit strategy parameters stored in the database, avoiding hidden state.
+- **Simulation mode** - The engine supports simulation runs (`isSimulated=true`) to evaluate strategies without affecting production data.
+- **Seeded stochastic components** - Any stochastic behavior (if used) should be seeded to allow repeatable experiments.
+- **Stable time reference** - Strategies relying on time use controlled timestamps, enabling replay of historical scenarios.
+- **Versionable strategies** - Strategy logic can be versioned, allowing comparison across experimental conditions.
+- **Traceable execution** - Logs and scoring outputs allow reconstruction of scoring decisions for auditing and research validation.
 
 These properties allow GAME to be used not only as an operational system, but also as a **reproducible experimental platform** for studying adaptive incentive mechanisms.
 

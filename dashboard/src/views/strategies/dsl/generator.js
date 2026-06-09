@@ -1,4 +1,4 @@
-// Sprint 6: AST generator — walks a Blockly workspace and emits JSON
+// Sprint 6: AST generator - walks a Blockly workspace and emits JSON
 // matching app/engine/dsl_ast.py's grammar exactly.
 //
 // We deliberately do NOT extend ``Blockly.Generator`` / use
@@ -7,7 +7,7 @@
 // and explicit control over what becomes a rule vs a default.
 //
 // Each generator function is pure and testable without React or the
-// DOM — a unit test can ``new Blockly.Workspace()``, populate it with
+// DOM - a unit test can ``new Blockly.Workspace()``, populate it with
 // ``workspace.newBlock('gd_rule')`` etc., and snapshot the output.
 //
 // Convention: every emitted node carries ``id = block.id`` so the
@@ -76,7 +76,7 @@ export function workspaceToAst(workspace) {
       // Limit to one: extras silently win-last (the order Blockly returns).
       defaultStmt = blockToAssignPoints(block)
     }
-    // Other top-level blocks are ignored — they're orphans waiting to be
+    // Other top-level blocks are ignored - they're orphans waiting to be
     // wired up. We don't crash on them so the designer can keep drafting.
   }
 
@@ -91,13 +91,13 @@ export function workspaceToAst(workspace) {
 }
 
 // gd_parent_variable_override uses two FieldTextInputs (variable name +
-// value) for simplicity — the editor pre-fills them from the parent
+// value) for simplicity - the editor pre-fills them from the parent
 // schema. We coerce the value string into a JSON scalar: numeric
 // strings parse to numbers, "true"/"false"/"null" map to those
 // literals, anything else stays a string. The validator and backend
 // will reject non-scalars like arrays/objects.
 // Accepts integers, decimals (incl. leading-dot / trailing-dot) and
-// scientific notation, with an optional sign — e.g. 42, -1.5, .5, 1.,
+// scientific notation, with an optional sign - e.g. 42, -1.5, .5, 1.,
 // 1e3, -2.5E-4. Deliberately excludes hex/octal/Infinity/NaN so a stray
 // "0x10" or "Infinity" stays a string the backend will reject loudly
 // rather than silently coercing to something unexpected.
@@ -250,7 +250,7 @@ function blockToCondition(block) {
   if (block.type === 'gd_and') return blockToAnd(block)
   if (block.type === 'gd_or') return blockToOr(block)
   if (block.type === 'gd_not') return blockToNot(block)
-  // Bare expression as condition — passes through to expression conversion.
+  // Bare expression as condition - passes through to expression conversion.
   return blockToExpression(block)
 }
 
@@ -389,6 +389,6 @@ function _missingLiteral(id) {
   // We emit a literal-false sentinel for any unwired input so the AST is
   // still structurally complete. The validator will catch the empty
   // workspace as a separate error ("rule.then must be non-empty" etc.)
-  // — designers should not see this surface in normal use.
+  // - designers should not see this surface in normal use.
   return { type: 'literal', id, value: false }
 }

@@ -2,7 +2,7 @@
 //
 // Fetches /v1/strategies/custom/templates on open and renders a grid of
 // CCards. Selecting one fires ``onSelect(template)`` and closes the
-// modal — the StrategyEditor handles the actual workspace loading so
+// modal - the StrategyEditor handles the actual workspace loading so
 // the modal stays render-only.
 
 import React, { useEffect, useState } from 'react'
@@ -32,7 +32,7 @@ const TemplatePickerModal = ({ visible, onClose, onSelect }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Re-fetch every time the modal opens — the list is small (~4 items)
+  // Re-fetch every time the modal opens - the list is small (~4 items)
   // and templates may have been edited between sessions. The trade-off
   // vs. caching is favoured by simplicity here.
   useEffect(() => {

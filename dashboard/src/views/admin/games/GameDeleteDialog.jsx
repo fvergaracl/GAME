@@ -1,15 +1,15 @@
-// Sprint 2 (CRUD management) — delete a Game with a blast-radius preview.
+// Sprint 2 (CRUD management) - delete a Game with a blast-radius preview.
 //
 // Deleting a game cascades to its tasks (and their params) server-side, so
 // before asking the admin to confirm we fetch the game's tasks and show how
-// many will go with it. The count is loaded lazily when the dialog opens —
+// many will go with it. The count is loaded lazily when the dialog opens -
 // the list view doesn't carry task counts, and fetching per-row up front
 // would be wasteful for a confirmation the user may never trigger.
 //
 // We render ConfirmDialog (the shared, a11y-wired confirm modal) rather than
 // hand-rolling a modal: it already flips initial focus to Cancel for
 // destructive (danger) actions and blocks dismissal while busy. A failure to
-// count tasks is non-blocking — the user can still delete; we just omit the
+// count tasks is non-blocking - the user can still delete; we just omit the
 // blast-radius line rather than trapping them behind a transient read error.
 
 import React, { useEffect, useState } from 'react'

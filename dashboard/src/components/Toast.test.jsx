@@ -1,4 +1,4 @@
-// Sprint 11 — ToastProvider + useToast tests.
+// Sprint 11 - ToastProvider + useToast tests.
 //
 // Verifies the centralised feedback layer that replaces the per-view
 // CAlert pairs. Pulls i18n into the test runtime so the localised
@@ -134,7 +134,7 @@ describe('ToastProvider', () => {
   })
 
   it('returns no-op handlers when used outside a provider', () => {
-    // No provider wrapping — useToast() should still hand back a usable
+    // No provider wrapping - useToast() should still hand back a usable
     // shape so callers don't have to guard with conditionals.
     let api
     render(<Harness onReady={(a) => (api = a)} />)

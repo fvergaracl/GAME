@@ -1,4 +1,4 @@
-"""Repository layer — persistence abstraction.
+"""Repository layer - persistence abstraction.
 
 Repositories wrap SQLAlchemy 2.0 ``AsyncSession`` access behind a small CRUD
 vocabulary (see :class:`app.repository.base_repository.BaseRepository`). They

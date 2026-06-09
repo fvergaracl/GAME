@@ -89,10 +89,10 @@ const FALLBACK_LABELS = {
   case: 'caso',
   setCallback: 'guardar dato',
   equals: '=',
-  preWhen: 'PRE — cuando',
-  postWhen: 'POST — cuando',
+  preWhen: 'PRE - cuando',
+  postWhen: 'POST - cuando',
   setData: 'set data',
-  vetoCase: 'VETO — caso',
+  vetoCase: 'VETO - caso',
   setPoints: 'set puntos',
   setCaseName: 'set caseName',
   parent: 'padre.',
@@ -117,7 +117,7 @@ const tooltip = (blockKey) => {
 
 // Sprint 4: human-readable field catalog. The whitelisted analytic paths
 // (``user.measurements_count``, ``all.avg_time``, …) are cryptic, so the
-// dropdown shows a localised label with the canonical path in parens —
+// dropdown shows a localised label with the canonical path in parens -
 // e.g. "Mediciones del usuario (user.measurements_count)". The path stays
 // the stored value so the generated AST and the docs/whitelist are
 // unaffected. Falls back to the bare path before i18next initialises (and
@@ -133,7 +133,7 @@ const fieldLabel = (path) => {
 
 // Dropdown option generators. Passed as functions (not static arrays) so
 // Blockly re-runs them every time the menu opens AND when rendering the
-// selected label — that's what makes the labels re-localise live when the
+// selected label - that's what makes the labels re-localise live when the
 // language switcher fires, without re-injecting the workspace. The stored
 // value is always the path, so a label change never invalidates a saved
 // selection.
@@ -385,7 +385,7 @@ function defineRuleBlock(Blockly, name, { whenLabel, colour, tooltipKey, helpUrl
 let _registered = false
 
 /**
- * Register all DSL blocks with the Blockly registry. Idempotent — calling
+ * Register all DSL blocks with the Blockly registry. Idempotent - calling
  * this twice is a no-op for the registry but DOES update the cached
  * ``t`` reference so future Blockly ``init`` calls reflect the new
  * locale (used by the language switcher).
@@ -402,7 +402,7 @@ export function registerDslBlocks(tFn) {
   // ``defineRuleBlock``. The mixin is adapted from Blockly's built-in
   // ``controls_if`` mutator: the base branch keeps the existing WHEN/THEN
   // input names (so previously-saved workspaces still load), and extra
-  // branches use IF{n}/DO{n} (n>=1) plus a single ELSE statement input —
+  // branches use IF{n}/DO{n} (n>=1) plus a single ELSE statement input -
   // exactly the names controls_if uses for its dynamic clauses.
   registerRuleMutator(Blockly)
 
@@ -434,7 +434,7 @@ export function registerDslBlocks(tFn) {
     },
   }
 
-  // ---- gd_and / gd_or (binary for MVP — mutator for variadic in S7) ------
+  // ---- gd_and / gd_or (binary for MVP - mutator for variadic in S7) ------
   Blockly.Blocks.gd_and = {
     init() {
       this.appendValueInput('A').setCheck('Boolean').appendField(label('and'))
@@ -585,7 +585,7 @@ export function registerDslBlocks(tFn) {
 
   // ---- gd_assign_points --------------------------------------------------
   // Terminator: no nextStatement. Mirrors the interpreter's halt-on-first-
-  // ``assign_points`` semantics — once you assign, the rule is done.
+  // ``assign_points`` semantics - once you assign, the rule is done.
   Blockly.Blocks.gd_assign_points = {
     init() {
       this.appendValueInput('VALUE').setCheck('Number').appendField(label('assignPoints'))
@@ -709,7 +709,7 @@ export function registerDslBlocks(tFn) {
   }
 
   // ---- gd_field_parent ---------------------------------------------------
-  // Reads parent.points or parent.case_name. Only valid in post_rules —
+  // Reads parent.points or parent.case_name. Only valid in post_rules -
   // the client-side validator catches mis-placement.
   Blockly.Blocks.gd_field_parent = {
     init() {
@@ -729,7 +729,7 @@ export function registerDslBlocks(tFn) {
   // ---- gd_parent_variable_override --------------------------------------
   // Top-level block that emits an entry into program.parent_variables.
   // The VARIABLE dropdown is intentionally a single editable text field
-  // here — the dynamic flyout in StrategyEditor.jsx pre-fills the
+  // here - the dynamic flyout in StrategyEditor.jsx pre-fills the
   // correct value and variable name from the parent's schema, so the
   // designer never has to type a variable name by hand in normal use.
   Blockly.Blocks.gd_parent_variable_override = {
@@ -752,9 +752,9 @@ export function registerDslBlocks(tFn) {
 // The toolbox used to be two hand-written XML strings with hard-coded
 // Spanish category names ("Cuándo", "Compara", …), so an English-locale
 // designer saw an English editor with Spanish category labels. We now
-// describe each mode's toolbox as data — category ``key`` (an i18n key
+// describe each mode's toolbox as data - category ``key`` (an i18n key
 // under ``editor:toolbox.categories``), ``colour`` and the list of block
-// types — and build the XML from ``t()`` at render time. The same data
+// types - and build the XML from ``t()`` at render time. The same data
 // drives the block-search catalog so the two never drift.
 // ===========================================================================
 
@@ -827,7 +827,7 @@ export const buildExtendToolbox = (t) => buildToolboxXml(TOOLBOX_CATEGORIES_EXTE
  * block ``type`` plus its localised search ``label`` and owning
  * ``category`` name so results can be filtered by free text and shown
  * with context. Custom/dynamic categories (PARENT_OVERRIDES) are skipped
- * — their blocks are pre-filled from the parent schema, not searched.
+ * - their blocks are pre-filled from the parent schema, not searched.
  */
 export function buildBlockCatalog(mode, t) {
   const categories = mode === 'DSL_EXTEND' ? TOOLBOX_CATEGORIES_EXTEND : TOOLBOX_CATEGORIES_FULL
@@ -856,7 +856,7 @@ export function buildBlockCatalog(mode, t) {
  *
  * Structure is copied from the vetted engagement_basico.json template
  * (all field paths are whitelisted). Block ``id`` attributes are
- * intentionally omitted so Blockly mints fresh ones — avoids any id
+ * intentionally omitted so Blockly mints fresh ones - avoids any id
  * collision and matches a genuinely new rule.
  */
 export const STARTER_RULE_XML = `

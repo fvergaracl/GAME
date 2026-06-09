@@ -1,6 +1,6 @@
 // Regression: switching between games keeps GameTasksView mounted (only the
 // :gameId route param changes), so per-game state must be reset on gameId
-// change. Otherwise the previous game's rows — or an open edit modal — survive
+// change. Otherwise the previous game's rows - or an open edit modal - survive
 // the navigation and acting on them targets a task from the old game under the
 // new gameId, which the backend rejects with a cross-game 404.
 

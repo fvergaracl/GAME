@@ -21,11 +21,11 @@ the backend.
 | Build tool         | Vite (`npm start` dev server, `npm run build` production)        |
 | UI kit             | CoreUI React (`@coreui/react`) + CoreUI icons                    |
 | Routing            | `react-router-dom` v6 (`BrowserRouter`, lazy routes)            |
-| Global state       | Redux (`react-redux`) — UI/theme only; server data is per-view   |
+| Global state       | Redux (`react-redux`) - UI/theme only; server data is per-view   |
 | HTTP               | Axios, centralized in [`src/api.js`](../src/api.js)             |
 | Auth               | Keycloak (`keycloak-js`), OIDC + PKCE                            |
 | i18n               | `i18next` + `react-i18next`, **Spanish-first**, full English     |
-| Strategy editor    | Blockly (lazy-loaded — ~1.5 MB, only when the editor opens)      |
+| Strategy editor    | Blockly (lazy-loaded - ~1.5 MB, only when the editor opens)      |
 | Charts             | Chart.js via `@coreui/react-chartjs`                            |
 | Tests              | Vitest + Testing Library (`npm test`)                            |
 
@@ -39,14 +39,14 @@ so the first paint already reflects the session:
 1. `i18n` is imported for its side effect, initializing `i18next` before render
    so the first paint uses the resolved language.
 2. `keycloak.init({ onLoad: 'check-sso', pkceMethod: 'S256', … })` silently
-   restores an existing session via a hidden `silent-check-sso.html` iframe —
+   restores an existing session via a hidden `silent-check-sso.html` iframe -
    **no forced redirect**. After an explicit login, Keycloak redirects back
    with `?code=…`, which `keycloak-js` consumes during this same `init()` call.
 3. On success, a token-refresh loop is installed: `onTokenExpired` and a 60 s
    interval call `updateToken()` so the session never drops on idle views
    (Keycloak's default access-token lifespan is 5 min).
 4. **Boot never blocks on Keycloak.** If Keycloak is unreachable, `init()`
-   rejects, the error is logged, and the app still renders — public routes work
+   rejects, the error is logged, and the app still renders - public routes work
    and admin actions surface a `401` from the backend.
 5. `renderApp()` mounts `<Provider store={store}><App /></Provider>` regardless,
    via `.finally()`.
@@ -122,7 +122,7 @@ single configured Axios instance and thin `getRequest`/`postRequest`/
 
 Errors are normalized for display by `src/utils/errors.js` (`extractError`),
 which views render inline. A backend "Network Error" with no status usually
-means a masked `500` (the backend wraps errors so CORS headers survive) — check
+means a masked `500` (the backend wraps errors so CORS headers survive) - check
 the API logs, per the backend
 [observability guide](../../docs/source/observability.rst).
 
@@ -132,9 +132,9 @@ the API logs, per the backend
 
 There are **two** kinds of state, deliberately kept apart:
 
-1. **Global (Redux, [`src/store.js`](../src/store.js))** — UI/theme concerns
+1. **Global (Redux, [`src/store.js`](../src/store.js))** - UI/theme concerns
    only (sidebar show/fold, color mode). It is *not* a server cache.
-2. **Per-view local state (`useState`/`useEffect`)** — each view owns the data
+2. **Per-view local state (`useState`/`useEffect`)** - each view owns the data
    it fetches and re-fetches. Lists reload after each mutation via a
    `refreshTick` counter pattern (bump a number → an effect keyed on it
    re-fetches). This keeps each screen self-contained and predictable.
@@ -146,7 +146,7 @@ There are **two** kinds of state, deliberately kept apart:
 - The dashboard and backend share a Keycloak realm. Configure the client via
   `VITE_KEYCLOAK_URL`, `VITE_KEYCLOAK_REALM`, `VITE_KEYCLOAK_CLIENT_ID`
   (see [`src/keycloak.js`](../src/keycloak.js)).
-- The admin panel **requires the `AdministratorGAME` realm role** — the same
+- The admin panel **requires the `AdministratorGAME` realm role** - the same
   role the backend treats as admin (see the backend
   [authentication guide](../../docs/source/authentication.rst)). Without it, the
   backend rejects privileged actions (e.g. API-key creation) with `403`.
@@ -160,7 +160,7 @@ There are **two** kinds of state, deliberately kept apart:
 namespaces (e.g. `management`). Copy lives in
 `src/i18n/locales/{es,en}/<namespace>.json`, **Spanish-first** with complete
 English. Views pull their namespace with `useTranslation('management')` and
-reference keys via `t('…')` — never hard-code user-facing strings.
+reference keys via `t('…')` - never hard-code user-facing strings.
 
 ---
 
@@ -191,7 +191,7 @@ Conventions every management view follows:
 the pattern:
 
 - **Keyed on the internal `gameId`** from the URL (`useParams`), so task
-  mutations target rows by their internal UUID — what the backend expects.
+  mutations target rows by their internal UUID - what the backend expects.
 - **Best-effort header label.** It calls `getGame(gameId)` only to show the
   human `externalGameId`; a failure there is non-blocking and falls back to the
   raw id, because the task list itself doesn't depend on it.
@@ -199,20 +199,20 @@ the pattern:
   server-paginated here (`listGameTasks` returns the whole set), so search is a
   light **client-side** filter over `externalTaskId`.
 - **Per-game state reset (subtle, important).** Navigating between games only
-  changes the `:gameId` route param — the component stays mounted. An effect
+  changes the `:gameId` route param - the component stays mounted. An effect
   keyed on `[gameId]` clears tasks, search, error, and every open modal. Without
   it, the previous game's rows or an open modal would survive the switch and act
   on a task belonging to the *old* game under the *new* `gameId`, which the
   backend correctly rejects as a cross-game `404`.
 - **Dedicated modals** for each action: `TaskFormModal` (create/edit),
-  `TaskBulkModal` (bulk create), `TaskDuplicateModal`, `TaskDeleteDialog` — each
+  `TaskBulkModal` (bulk create), `TaskDuplicateModal`, `TaskDeleteDialog` - each
   closing through the unsaved-changes guard where it edits.
 - **Status as a badge.** Free-string task status is mapped to a color
   (`open`→success, `closed`→secondary, anything else→neutral) so unexpected
   values stay visible rather than disappearing.
 
-This combination — internal-id keying, best-effort labels, `refreshTick`
-reloads, explicit per-route-param reset, inline errors, and i18n copy — is the
+This combination - internal-id keying, best-effort labels, `refreshTick`
+reloads, explicit per-route-param reset, inline errors, and i18n copy - is the
 template to copy when adding a new management surface.
 
 ---

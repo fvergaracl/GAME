@@ -112,7 +112,7 @@ async def test_create_with_external_session_and_auto_commit_false_flushes_only(
             session=session,
             auto_commit=False,
         )
-        # No commit yet — visible inside the same transaction only.
+        # No commit yet - visible inside the same transaction only.
         assert created.id is not None
         await session.rollback()
 

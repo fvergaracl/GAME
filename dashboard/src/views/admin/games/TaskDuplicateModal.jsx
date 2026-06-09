@@ -1,4 +1,4 @@
-// Sprint 3 (CRUD management) — duplicate a Task within the same game.
+// Sprint 3 (CRUD management) - duplicate a Task within the same game.
 //
 // Mirror of GameDuplicateModal: the backend POST
 // /games/{gameId}/tasks/{taskId}/duplicate deep-copies the source task's
@@ -6,7 +6,7 @@
 // "open" status). This modal only collects that new id, with the same slug
 // validation and a "copy-of-…" pre-fill so the common case is one click.
 //
-// taskId here is the INTERNAL uuid (task.id) — the duplicate route is keyed
+// taskId here is the INTERNAL uuid (task.id) - the duplicate route is keyed
 // on it, not on the external id. Uniqueness can't be checked client-side, so
 // a collision returns 409 and is surfaced inline via extractError.
 

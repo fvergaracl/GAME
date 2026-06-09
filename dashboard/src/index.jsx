@@ -6,7 +6,7 @@ import 'core-js'
 import App from './App'
 import store from './store'
 import keycloak from './keycloak'
-// Sprint 10: side-effect import — initialises i18next before App
+// Sprint 10: side-effect import - initialises i18next before App
 // renders so the first paint uses the resolved language.
 import './i18n'
 
@@ -46,7 +46,7 @@ keycloak
     }
   })
   .catch((err) => {
-    // Boot must not block if Keycloak is unreachable — public routes still
+    // Boot must not block if Keycloak is unreachable - public routes still
     // work; admin actions will surface a 401 from the backend.
     console.error('Keycloak init failed:', err)
   })

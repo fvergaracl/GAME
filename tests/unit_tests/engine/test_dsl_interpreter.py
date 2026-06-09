@@ -667,7 +667,7 @@ async def test_no_match_without_else_is_noop():
 @pytest.mark.asyncio
 async def test_else_branch_falls_through_to_next_rule_when_non_halting():
     """An else branch that only sets callback data (no assign_points) must
-    not halt — execution falls through to the next rule, exactly like a
+    not halt - execution falls through to the next rule, exactly like a
     non-halting then branch does."""
     ast = {
         "type": "program",

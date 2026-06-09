@@ -1,5 +1,5 @@
 """
-Sprint 10 — observability endpoints for custom strategies.
+Sprint 10 - observability endpoints for custom strategies.
 
 Exposes the data the backend already collects (via
 :class:`DslExecutionObserver` writing into ``strategyexecutionlog``)
@@ -68,7 +68,7 @@ async def get_strategy_metrics(
       * case-name breakdown (which rule branch fired)
       * points distribution + nodes-executed summary
 
-    Tenant-scoped via the underlying ``get_strategy`` call — 404s on
+    Tenant-scoped via the underlying ``get_strategy`` call - 404s on
     cross-realm probes before the metrics query runs.
     """
     realm = _resolve_realm_id(auth)
@@ -90,12 +90,12 @@ async def compare_strategies(
     idA: str = Query(
         ...,
         alias="a",
-        description="Strategy A — id of the baseline.",
+        description="Strategy A - id of the baseline.",
     ),
     idB: str = Query(
         ...,
         alias="b",
-        description="Strategy B — id of the variant being compared.",
+        description="Strategy B - id of the variant being compared.",
     ),
     sinceDt: Optional[datetime] = Query(
         default=None,

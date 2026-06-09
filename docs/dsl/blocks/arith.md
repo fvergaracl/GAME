@@ -1,4 +1,4 @@
-# `gd_arith` — Arithmetic
+# `gd_arith` - Arithmetic
 
 Binary arithmetic between two expressions.
 

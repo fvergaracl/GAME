@@ -1,4 +1,4 @@
-# `gd_not` — Logical NOT
+# `gd_not` - Logical NOT
 
 Negates one condition.
 

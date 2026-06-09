@@ -2,12 +2,12 @@
 //
 // Pins three things so the glossary doesn't drift silently:
 //   1. Every entry in GLOSSARY_TERMS has a non-empty title + body in
-//      both ES and EN — adding a term without translating it is a
+//      both ES and EN - adding a term without translating it is a
 //      detectable mistake instead of a quietly-missing card.
 //   2. ``related`` cross-links and ``BLOCK_TO_TERM`` only point at ids
 //      that exist in the index; otherwise navigating to a related term
 //      would land on the "noTerm" empty state.
-//   3. Every ``BLOCK_TO_TERM`` key is a real custom block type — i.e. it
+//   3. Every ``BLOCK_TO_TERM`` key is a real custom block type - i.e. it
 //      shows up in HELP_SLUGS (the source of truth for block types in
 //      this dashboard).
 

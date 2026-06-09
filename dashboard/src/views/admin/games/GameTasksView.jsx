@@ -1,4 +1,4 @@
-// Sprint 3 (CRUD management) — per-game task management.
+// Sprint 3 (CRUD management) - per-game task management.
 //
 // Reached from a game row's "Ver tareas" action (route
 // /admin/games/:gameId/tasks). It lists the game's tasks and is the home for
@@ -48,9 +48,9 @@ import TaskBulkModal from './TaskBulkModal'
 const CLOSED_MODAL = { mode: null, task: null }
 
 const formatDate = (value) => {
-  if (!value) return '—'
+  if (!value) return '-'
   const d = new Date(value)
-  return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString()
+  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleString()
 }
 
 const strategyIdOf = (task) => task?.strategy?.id || task?.strategyId || ''
@@ -90,7 +90,7 @@ const GameTasksView = () => {
   // Switching games keeps this component mounted (only the :gameId route
   // param changes), so without an explicit reset the previous game's rows and
   // any open modal would survive the navigation. Acting on them then targets a
-  // task that belongs to the old game under the new gameId — which the backend
+  // task that belongs to the old game under the new gameId - which the backend
   // correctly rejects with a cross-game 404. Drop all per-game state up front
   // so the old game's tasks can never be edited/duplicated/deleted here.
   useEffect(() => {
@@ -242,7 +242,7 @@ const GameTasksView = () => {
                       {stratId ? (
                         <code>{stratId}</code>
                       ) : (
-                        <span className="text-medium-emphasis">—</span>
+                        <span className="text-medium-emphasis">-</span>
                       )}
                     </CTableDataCell>
                     <CTableDataCell>
@@ -253,7 +253,7 @@ const GameTasksView = () => {
                           })}
                         </CBadge>
                       ) : (
-                        <span className="text-medium-emphasis">—</span>
+                        <span className="text-medium-emphasis">-</span>
                       )}
                     </CTableDataCell>
                     <CTableDataCell>

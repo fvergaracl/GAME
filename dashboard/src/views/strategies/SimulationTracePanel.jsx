@@ -2,7 +2,7 @@
 // the blocks the designer built, instead of the old flat list of JSON.
 //
 // The backend trace is a flat array of { nodeId, type, value, branch }
-// entries — one per AST node the interpreter touched. On its own that's
+// entries - one per AST node the interpreter touched. On its own that's
 // hard to read. Here we walk the *AST* (the exact structure on the canvas)
 // and annotate each node with its trace outcome, so a designer sees which
 // rule's condition was true/false and which rule actually granted points
@@ -59,7 +59,7 @@ function TruthPill({ entry, t }) {
 }
 
 function ConditionNode({ node, byId, t }) {
-  if (!node) return <span className="text-medium-emphasis">—</span>
+  if (!node) return <span className="text-medium-emphasis">-</span>
   const entry = byId.get(node.id)
 
   if (node.type === 'and' || node.type === 'or') {

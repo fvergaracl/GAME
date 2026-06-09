@@ -1,4 +1,4 @@
-// Sprint 11 — StrategyAssignmentsView integration tests.
+// Sprint 11 - StrategyAssignmentsView integration tests.
 //
 // The assignments view is the only surface that mutates production
 // scoring (a PATCH to game.strategyId reshapes points generation for
@@ -175,7 +175,7 @@ describe('StrategyAssignmentsView', () => {
     await act(async () => {
       fireEvent.change(search, { target: { value: 'foo' } })
     })
-    // The debounce is 300ms — wait it out with real timers.
+    // The debounce is 300ms - wait it out with real timers.
     await waitFor(
       () => {
         expect(api.listGames.mock.calls.length).toBeGreaterThan(initialCalls)
@@ -195,7 +195,7 @@ describe('StrategyAssignmentsView', () => {
     // The "Cambiar" button on the first row opens the picker.
     const changeButtons = screen.getAllByRole('button', { name: /^Cambiar$/ })
     fireEvent.click(changeButtons[0])
-    // Picker stub records its props — verify it was opened with the
+    // Picker stub records its props - verify it was opened with the
     // row's current strategyId so the "Actual" badge is correct.
     expect(pickerRecorded.visible).toBe(true)
     expect(pickerRecorded.currentStrategyId).toBe('default')
@@ -223,7 +223,7 @@ describe('StrategyAssignmentsView', () => {
   it('surfaces a warning when single PATCH fails', async () => {
     const api = await importMockedApi()
     api.patchGameStrategy.mockRejectedValueOnce({
-      response: { status: 409, data: { detail: 'Conflict — strategy mid-publish.' } },
+      response: { status: 409, data: { detail: 'Conflict - strategy mid-publish.' } },
     })
     await renderView()
     fireEvent.click(screen.getAllByRole('button', { name: /^Cambiar$/ })[0])
@@ -236,7 +236,7 @@ describe('StrategyAssignmentsView', () => {
     })
     await waitFor(() => {
       expect(
-        screen.getAllByText('Conflict — strategy mid-publish.').length,
+        screen.getAllByText('Conflict - strategy mid-publish.').length,
       ).toBeGreaterThan(0)
     })
   })

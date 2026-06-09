@@ -3,7 +3,7 @@
 // client-side validator so the designer gets immediate feedback before
 // the AST round-trips through the backend.
 //
-// IMPORTANT: keep in lockstep with app/engine/dsl_ast.py — see the
+// IMPORTANT: keep in lockstep with app/engine/dsl_ast.py - see the
 // note in the constant-block at the top of that file. Drift here means
 // either the editor offers a path the backend rejects (bad UX) or the
 // editor refuses a path the backend would accept (silent feature loss).
@@ -23,7 +23,7 @@ export const FIELD_PATHS = [
 ]
 
 // Sprint 7: paths that read the parent built-in's result in DSL_EXTEND
-// mode. The validator only accepts these inside post_rules — using
+// mode. The validator only accepts these inside post_rules - using
 // them anywhere else would read uninitialised state because the
 // parent hasn't run yet.
 export const PARENT_FIELD_PATHS = ['parent.points', 'parent.case_name']
@@ -36,7 +36,7 @@ export const FUNC_NAMES = ['int', 'clamp']
 export const FUNC_ARITY = { int: 1, clamp: 3 }
 
 // Sprint 7: per-section statement whitelisting. Mirrors
-// ``STATEMENT_ALLOWED_CONTEXTS`` in app/engine/dsl_ast.py — the
+// ``STATEMENT_ALLOWED_CONTEXTS`` in app/engine/dsl_ast.py - the
 // validator uses this map to reject set_data outside pre_rules,
 // set_points outside post_rules, etc.
 export const STATEMENT_ALLOWED_CONTEXTS = {
@@ -55,11 +55,11 @@ export const STATEMENT_ALLOWED_CONTEXTS = {
 // update time so a malformed editor state never poisons the DB.
 export const PARENT_VARIABLE_KEY_PREFIX = 'variable_'
 
-// Mirrors app/engine/dsl_ast.py _CASE_NAME_RE — printable ASCII, 1-200
+// Mirrors app/engine/dsl_ast.py _CASE_NAME_RE - printable ASCII, 1-200
 // chars, no control bytes.
 export const CASE_NAME_REGEX = /^[\x20-\x7E]{1,200}$/
 
-// Mirrors app/engine/dsl_ast.py is_valid_data_path — data.<key> with
+// Mirrors app/engine/dsl_ast.py is_valid_data_path - data.<key> with
 // alphanumeric/underscore key.
 export const DATA_PATH_REGEX = /^data\.[A-Za-z0-9_]+$/
 

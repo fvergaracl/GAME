@@ -1,4 +1,4 @@
-// Strategy Editor view — embeds a Blockly workspace alongside a "Probar"
+// Strategy Editor view - embeds a Blockly workspace alongside a "Probar"
 // simulate panel (editor 2/3 width, simulate panel 1/3).
 //
 // State is intentionally simple (no Redux): the workspace is mutated
@@ -63,7 +63,7 @@ import EditorTour from './EditorTour'
 import GlossaryHint from './glossary/GlossaryHint'
 import { SkeletonCard } from '../../components/Skeleton'
 
-// Lazy-load the heavy on-demand surfaces — none are reachable on first
+// Lazy-load the heavy on-demand surfaces - none are reachable on first
 // paint, and SimulationRunsChart in particular pulls in chart.js.
 const SimulationRunsChart = React.lazy(() => import('./SimulationRunsChart'))
 const SimulationScenarios = React.lazy(() => import('./SimulationScenarios'))
@@ -119,7 +119,7 @@ const INITIAL_SIM_FORM = {
 // backend with sequential simulate calls.
 const MAX_CUMULATIVE_RUNS = 50
 
-// Idle delay before autosaving a dirty DRAFT — long enough to fire on a
+// Idle delay before autosaving a dirty DRAFT - long enough to fire on a
 // real pause, not mid-typing.
 const AUTOSAVE_DELAY_MS = 4000
 
@@ -129,7 +129,7 @@ const AUTOSAVE_DELAY_MS = 4000
 const composeClean = (ast, name, description) =>
   JSON.stringify({ ast, name: (name || '').trim(), description: (description || '').trim() })
 
-// True when an AST carries something worth persisting — at least one rule
+// True when an AST carries something worth persisting - at least one rule
 // (main / pre / post) or a default statement. The autosave data-loss guard
 // uses it to refuse overwriting a saved-with-content version with an empty
 // canvas (F3).
@@ -209,7 +209,7 @@ const StrategyEditor = () => {
   const [simResult, setSimResult] = useState(null)
   const [simError, setSimError] = useState(null)
   const [isSimulating, setIsSimulating] = useState(false)
-  // The exact AST that produced ``simResult`` — kept so the trace panel
+  // The exact AST that produced ``simResult`` - kept so the trace panel
   // walks the same tree the interpreter ran (node ids line up 1:1).
   const [simAst, setSimAst] = useState(null)
   // A pinned previous run, shown side-by-side with the current result to
@@ -227,7 +227,7 @@ const StrategyEditor = () => {
   const [cumulativeRuns, setCumulativeRuns] = useState(5)
   const [simRuns, setSimRuns] = useState(null)
 
-  // History modal visibility — only meaningful once ``strategyId`` is set.
+  // History modal visibility - only meaningful once ``strategyId`` is set.
   const [historyOpen, setHistoryOpen] = useState(false)
   const isAdmin = useMemo(() => isCurrentUserAdmin(), [])
 
@@ -331,7 +331,7 @@ const StrategyEditor = () => {
         return changed ? next : prev
       })
     } catch {
-      // Malformed AST mid-edit — keep the last known field set.
+      // Malformed AST mid-edit - keep the last known field set.
     }
     // Signal "the workspace changed" so the dirty/autosave effect
     // recomputes. We bump a counter rather than compute dirtiness here
@@ -357,7 +357,7 @@ const StrategyEditor = () => {
       trashcan: true,
       scrollbars: true,
       sounds: false,
-      // Conservative zoom defaults — designers tend to over-zoom otherwise.
+      // Conservative zoom defaults - designers tend to over-zoom otherwise.
       zoom: { controls: true, wheel: true, startScale: 0.9 },
     })
     workspaceRef.current = workspace
@@ -385,7 +385,7 @@ const StrategyEditor = () => {
 
   // ----- Blockly content hydration -----------------------------------------
   // Split out from injection so loading content never disposes/re-injects
-  // the workspace — it operates on the mounted instance via ``workspaceRef``.
+  // the workspace - it operates on the mounted instance via ``workspaceRef``.
   // A queued template / imported bundle / starter seed is applied here;
   // resetting the pending flag afterwards is safe since we don't tear the
   // workspace down. Also runs with no pending content so a fresh empty
@@ -396,7 +396,7 @@ const StrategyEditor = () => {
 
     // Resolve the single queued content source (if any) up front so the
     // try/finally can clear the right flag whether the load succeeds or
-    // throws — a corrupt payload must not re-trigger the effect forever.
+    // throws - a corrupt payload must not re-trigger the effect forever.
     let pending = null
     if (pendingTemplate) {
       pending = { xml: pendingTemplate.blocklyXml, clear: () => setPendingTemplate(null) }
@@ -461,7 +461,7 @@ const StrategyEditor = () => {
     if (!routeStrategyId) return
     let cancelled = false
     setLoadError(null)
-    // F3: a (re)load is in flight — disable autosave until this row's content
+    // F3: a (re)load is in flight - disable autosave until this row's content
     // hydrates so we never PUT a stale/blank canvas over the row being loaded.
     hydratedRef.current = false
     baselineHasContentRef.current = false
@@ -481,10 +481,10 @@ const StrategyEditor = () => {
         }
         if (row.blocklyXml) {
           // Queue for the workspace effect to hydrate. Don't try to load
-          // here — the workspace may not be mounted yet on first render.
+          // here - the workspace may not be mounted yet on first render.
           setPendingImportBundle({ blocklyXml: row.blocklyXml })
         } else {
-          // Nothing to hydrate — the row IS loaded, so it's safe to arm
+          // Nothing to hydrate - the row IS loaded, so it's safe to arm
           // autosave. (The hydration effect only flips ``hydratedRef`` when
           // it has pending content to apply.)
           hydratedRef.current = true
@@ -565,7 +565,7 @@ const StrategyEditor = () => {
   const handleTemplateSelected = useCallback((tpl) => {
     // Prime the editor with the template's metadata and queue the
     // Blockly XML for hydration once the workspace mounts. We don't
-    // touch workspaceRef here — the workspace effect handles that
+    // touch workspaceRef here - the workspace effect handles that
     // after Blockly.inject runs.
     setStrategyName(`${tpl.name} (copia)`)
     setDescription(tpl.description || '')
@@ -591,7 +591,7 @@ const StrategyEditor = () => {
       return
     }
     // Persist Blockly's modern JSON state so a round-trip lands on the
-    // exact same workspace shape — block positions and collapsed flags
+    // exact same workspace shape - block positions and collapsed flags
     // included. The backend will accept this string in the blocklyXml
     // field; the loader (loadWorkspaceFromSerialized) sniffs the format
     // on the way back in.
@@ -653,7 +653,7 @@ const StrategyEditor = () => {
         })
         // Land the user in /strategies/editor/:newId so the editor's
         // load-by-id effect picks up the freshly persisted draft and
-        // hydrates the workspace from scratch — avoids edge cases where
+        // hydrates the workspace from scratch - avoids edge cases where
         // a half-loaded workspace remains from the previous session.
         navigate(`/strategies/editor/${created.id}`)
       } catch (err) {
@@ -666,8 +666,8 @@ const StrategyEditor = () => {
   )
 
   // Record a "clean" baseline after a successful save/autosave.
-  // ``cleanComposite`` is the exact (AST + name + description) persisted —
-  // NOT the live workspace — so edits made *during* an in-flight save
+  // ``cleanComposite`` is the exact (AST + name + description) persisted -
+  // NOT the live workspace - so edits made *during* an in-flight save
   // aren't swallowed. Bumping ``workspaceRev`` re-runs the dirty effect,
   // which stays dirty if the user kept editing while the request was in
   // flight.
@@ -773,7 +773,7 @@ const StrategyEditor = () => {
     if (isSaving || isAutosaving) return
     if (!strategyName.trim()) return
     if (mode === 'DSL_EXTEND' && !parentId) return
-    // F3: never autosave before the row's content has hydrated — otherwise
+    // F3: never autosave before the row's content has hydrated - otherwise
     // the blank canvas shown during the load window could be PUT over the
     // saved blocks (data loss).
     if (!hydratedRef.current) return
@@ -783,7 +783,7 @@ const StrategyEditor = () => {
     } catch {
       return
     }
-    // F3: refuse to clobber a baseline that has content with an empty canvas —
+    // F3: refuse to clobber a baseline that has content with an empty canvas -
     // a transient blank/partial canvas (failed hydration, mid-clear) must not
     // wipe saved blocks. A deliberate full delete still persists via Save.
     if (!astHasContent(ast) && baselineHasContentRef.current) return
@@ -851,7 +851,7 @@ const StrategyEditor = () => {
       return
     }
 
-    // DSL_EXTEND only makes sense against a parent — guard so the designer
+    // DSL_EXTEND only makes sense against a parent - guard so the designer
     // gets a clear message.
     if (mode === 'DSL_EXTEND' && !parentId) {
       setSimError(t('alerts.noParentSim'))
@@ -1018,7 +1018,7 @@ const StrategyEditor = () => {
   }, [workspaceRev, strategyName, description, doAutosave])
 
   // Warn before a full-page unload (tab close / reload) when there's
-  // unsaved work. In-app route changes aren't covered — useBlocker needs a
+  // unsaved work. In-app route changes aren't covered - useBlocker needs a
   // data router, which this app's BrowserRouter setup doesn't use.
   useEffect(() => {
     if (!isDirty) return undefined
@@ -1421,7 +1421,7 @@ const StrategyEditor = () => {
                 {isImporting && <CSpinner size="sm" className="me-2" />}
                 {t('buttons.importJson')}
               </CButton>
-              {/* Only meaningful for already-persisted strategies — a
+              {/* Only meaningful for already-persisted strategies - a
                   brand-new draft has nothing to compare against yet. */}
               {strategyId && (
                 <CButton
@@ -1435,7 +1435,7 @@ const StrategyEditor = () => {
               )}
               {/* Admin-only lifecycle controls. Gated by role (UX hint; the
                   server enforces require_admin) and by the backend state
-                  machine — Publish only from DRAFT, Archive from DRAFT or
+                  machine - Publish only from DRAFT, Archive from DRAFT or
                   PUBLISHED. */}
               {canPublish && (
                 <CButton
@@ -1727,7 +1727,7 @@ const StrategyEditor = () => {
                       <tr key={r.run}>
                         <td>{r.run}</td>
                         <td>{r.points}</td>
-                        <td>{r.caseName || '—'}</td>
+                        <td>{r.caseName || '-'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1800,8 +1800,8 @@ const StrategyEditor = () => {
                         </tr>
                         <tr>
                           <td>{t('simulate.ruleColumn')}</td>
-                          <td>{comparison.caseName || '—'}</td>
-                          <td>{simResult.caseName || '—'}</td>
+                          <td>{comparison.caseName || '-'}</td>
+                          <td>{simResult.caseName || '-'}</td>
                           <td />
                         </tr>
                         {comparison.total != null && simRuns && (
@@ -1950,7 +1950,7 @@ function loadWorkspaceFromSerialized(workspace, serialized) {
   const trimmed = String(serialized).trim()
   if (!trimmed) return
   // F4: parse BEFORE clearing so a malformed payload throws while the
-  // existing canvas is still intact — a corrupt blocklyXml then leaves the
+  // existing canvas is still intact - a corrupt blocklyXml then leaves the
   // workspace as-is for the caller to flag, instead of silently blanking it.
   if (trimmed.startsWith('<')) {
     const dom = Blockly.utils.xml.textToDom(trimmed)
@@ -1994,7 +1994,7 @@ function _buildParentOverrideFlyout(workspace, parentSchema) {
 
     blocks.push(block)
   }
-  // Silence the unused-arg lint without dropping the workspace param —
+  // Silence the unused-arg lint without dropping the workspace param -
   // future revisions of this callback may need workspace to build
   // shadow blocks or pre-connected inputs.
   void workspace

@@ -28,7 +28,7 @@
   "autosave": {
     "saving": "Autosaving…",
     "savedAt": "Autosaved at {{time}}",
-    "error": "Autosave failed — use Save to retry."
+    "error": "Autosave failed - use Save to retry."
   },
   "form": {
     "name": "Name",
@@ -37,7 +37,7 @@
     "modeFull": "Start from scratch",
     "modeExtend": "Extend existing",
     "parent": "Parent strategy",
-    "selectParent": "— Select parent —"
+    "selectParent": "- Select parent -"
   },
   "buttons": {
     "save": "Save draft",
@@ -71,10 +71,10 @@
       "calc": "Calculate",
       "values": "Values",
       "assign": "Assign",
-      "preWhen": "Pre — When",
-      "preActions": "Pre — Actions",
-      "postWhen": "Post — When",
-      "postActions": "Post — Actions",
+      "preWhen": "Pre - When",
+      "preActions": "Pre - Actions",
+      "postWhen": "Post - When",
+      "postActions": "Post - Actions",
       "parent": "Parent",
       "parentOverrides": "Parent overrides",
       "assignCallback": "Assign (callback)"
@@ -128,7 +128,7 @@
     "runsHint": "We run the strategy this many times in a row, adding the \"+ per submission\" step to each accumulated value so you can see how points evolve.",
     "fieldsTitle": "Accumulated values your strategy reads",
     "fieldsHint": "These are the values your rules depend on. Set a starting value for each.",
-    "noFields": "This strategy doesn't read any accumulated values — just fill the test data above and run it.",
+    "noFields": "This strategy doesn't read any accumulated values - just fill the test data above and run it.",
     "stepLabel": "+ per submission",
     "fields": {
       "user.measurements_count": "Times this user already submitted the task",
@@ -163,8 +163,8 @@
       "then": "Then:",
       "elseIf": "Else if #{{n}}:",
       "else": "Else:",
-      "and": "And — all hold:",
-      "or": "Or — any holds:",
+      "and": "And - all hold:",
+      "or": "Or - any holds:",
       "not": "Not:",
       "true": "true",
       "false": "false",
@@ -175,7 +175,7 @@
       "ruleSkipped": "Did not match",
       "ruleNotEvaluated": "Not evaluated",
       "assignPoints": "Grants {{points}} points (case: {{caseName}})",
-      "veto": "Veto — 0 points (case: {{caseName}})",
+      "veto": "Veto - 0 points (case: {{caseName}})",
       "setPoints": "Sets points = {{value}}",
       "setCaseName": "Sets case = {{value}}",
       "setCallbackData": "Stores callback data {{key}} = {{value}}",
@@ -274,10 +274,10 @@
     "last": "Got it",
     "steps": {
       "welcome": "Welcome to the strategy editor. Here you can design point rules without writing code.",
-      "name": "Give your strategy a clear name — you'll see it when assigning it to a game or task.",
+      "name": "Give your strategy a clear name - you'll see it when assigning it to a game or task.",
       "mode": "Pick whether you start from scratch or extend an existing strategy.",
       "workspace": "Drag blocks from the side panel onto this canvas. Snap them together like puzzle pieces to form rules.",
-      "simulate": "When you have a rule, test it here with a fictitious user and task. Set the accumulated values it reads, or switch to \"several submissions\" to watch points evolve — nothing is persisted to production.",
+      "simulate": "When you have a rule, test it here with a fictitious user and task. Set the accumulated values it reads, or switch to \"several submissions\" to watch points evolve - nothing is persisted to production.",
       "save": "Save as draft as often as you like. It only reaches production when an admin publishes the version.",
       "history": "Every save creates a version. From here you can view history and roll back."
     }

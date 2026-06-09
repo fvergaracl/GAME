@@ -1,9 +1,9 @@
-// Sprint 3 (CRUD management) — create / edit a Task within a game.
+// Sprint 3 (CRUD management) - create / edit a Task within a game.
 //
 // Same react-hook-form + CForm shell as GameFormModal, shaping the two modes:
 //
 //   • Create (POST /games/{id}/tasks): externalTaskId (req), strategyId
-//     (opt — empty inherits the game's strategy) and params {key,value}.
+//     (opt - empty inherits the game's strategy) and params {key,value}.
 //
 //   • Edit (PATCH /games/{id}/tasks/{taskId}): PatchTask accepts
 //     { strategyId, status, params }. externalTaskId stays immutable (shown
@@ -59,7 +59,7 @@ const buildStatusOptions = (currentValue) => {
   return options
 }
 
-// See GameFormModal.coerceValue — re-narrow obvious numbers/booleans so a
+// See GameFormModal.coerceValue - re-narrow obvious numbers/booleans so a
 // "10" param stays numeric instead of becoming the string "10".
 const coerceValue = (raw) => {
   if (typeof raw !== 'string') return raw
@@ -127,7 +127,7 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
   // whether the admin actually changed each one (and skip no-op fields).
   const currentStrategyId = isEdit ? task?.strategy?.id || task?.strategyId || '' : ''
   const currentStatus = isEdit ? task?.status || '' : ''
-  // Params the task currently has — used to seed the editor in edit mode.
+  // Params the task currently has - used to seed the editor in edit mode.
   const existingParams = isEdit ? task?.taskParams || task?.params || [] : []
 
   const inheritLabel = t('tasks.form.inheritGame')
@@ -212,7 +212,7 @@ const TaskFormModal = ({ visible, mode, gameId, task, onClose, onSaved }) => {
           })
         }
         if (Object.keys(payload).length === 0) {
-          // Nothing changed — close without hitting the API (PATCH 409s on an
+          // Nothing changed - close without hitting the API (PATCH 409s on an
           // empty patch anyway).
           onClose?.()
           return

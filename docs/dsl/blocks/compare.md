@@ -1,4 +1,4 @@
-# `gd_compare` — Compare
+# `gd_compare` - Compare
 
 Compare two values and return a boolean. Operands can be any
 expression: literals, fields, arithmetic, function calls.

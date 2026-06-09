@@ -1,5 +1,5 @@
 """
-Sprint 5 integration test — full path ``UserPointsService → StrategyService
+Sprint 5 integration test - full path ``UserPointsService → StrategyService
 → DslStrategy`` for a ``custom:<uuid>`` task strategy.
 
 This test does NOT spin up a database. It mocks ``StrategyDefinitionService.
@@ -10,7 +10,7 @@ get_strategy`` to return a ``StrategyDefinitionRead`` with the on-disk
      strategy id through the new async ``get_strategy_instance``.
   2. The DSL interpreter actually runs (returns the expected case_name).
   3. ``StrategyDefinitionService.get_strategy`` is awaited with the
-     correct ``realmId`` — the multi-tenant isolation property the
+     correct ``realmId`` - the multi-tenant isolation property the
      roadmap calls out as the highest-impact risk.
 
 The reason for not using the in-memory aiosqlite conftest is that the
@@ -112,7 +112,7 @@ class TestUserPointsServiceDslWiring(unittest.IsolatedAsyncioTestCase):
             setattr(self.analytics_service, method, AsyncMock(return_value=value))
 
         # ----- strategy_service: real instance with mocks injected. This is
-        # the wiring under test — we exercise the production constructor.
+        # the wiring under test - we exercise the production constructor.
         self.strategy_service = StrategyService(
             strategy_definition_service=self.definition_service,
             dsl_interpreter=DslInterpreter(max_nodes=1000, max_depth=32),

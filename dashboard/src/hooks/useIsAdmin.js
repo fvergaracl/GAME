@@ -1,4 +1,4 @@
-// Sprint 0 (CRUD management) — single source of truth for the admin check.
+// Sprint 0 (CRUD management) - single source of truth for the admin check.
 //
 // Before this hook the ``AdministratorGAME`` role lookup was copy-pasted in
 // at least three places, each subtly different:
@@ -61,7 +61,7 @@ const collectRoles = (parsed) => {
   return roles
 }
 
-// Pure resolver — exported so non-React code (and tests) can reuse it
+// Pure resolver - exported so non-React code (and tests) can reuse it
 // without a hook. Returns a boolean.
 export const resolveIsAdmin = (kc = keycloak) => {
   const parsed = kc?.tokenParsed || (kc?.token ? decodeToken(kc.token) : null)
@@ -69,7 +69,7 @@ export const resolveIsAdmin = (kc = keycloak) => {
 }
 
 // React hook. ``keycloak`` is a module singleton (not React state), so
-// there's nothing reactive to memoise on — the decode is a cheap synchronous
+// there's nothing reactive to memoise on - the decode is a cheap synchronous
 // read of the current token, recomputed each render to always reflect the
 // live session. Components that gate the admin nav re-render on auth changes
 // anyway (see AppSidebar's effect on ``keycloak.authenticated``).

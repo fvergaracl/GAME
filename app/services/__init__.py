@@ -1,4 +1,4 @@
-"""Service layer — business logic and orchestration.
+"""Service layer - business logic and orchestration.
 
 Services own domain rules, transactional behavior, and multi-repository
 workflows. They are the only layer that composes persistence operations into

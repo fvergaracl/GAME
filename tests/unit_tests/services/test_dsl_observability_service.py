@@ -1,5 +1,5 @@
 """
-Sprint 11 — sampled persistence + metrics emission for DSL executions.
+Sprint 11 - sampled persistence + metrics emission for DSL executions.
 
 The observer is the bridge between ``DslStrategy.calculate_points`` and
 two side-channels: the Prometheus registry and the
@@ -263,7 +263,7 @@ class TestObserverPersistence(unittest.IsolatedAsyncioTestCase):
 
 
 class TestObserverQueue(unittest.IsolatedAsyncioTestCase):
-    """Sprint 13 — the DB write is drained off the hot-path by a
+    """Sprint 13 - the DB write is drained off the hot-path by a
     background worker fed from a bounded queue."""
 
     async def _record_error(self, observer, *, strategyId="q1"):

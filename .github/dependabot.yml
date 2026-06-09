@@ -1,11 +1,11 @@
-# Dependabot configuration — automated dependency & supply-chain updates.
+# Dependabot configuration - automated dependency & supply-chain updates.
 # Covers every ecosystem present in the repo: the Poetry backend, the React
 # dashboard, the GitHub Actions used by CI, and the Docker base images.
 # Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates
 version: 2
 updates:
   # ---------------------------------------------------------------------------
-  # Python backend (Poetry — reads pyproject.toml + poetry.lock)
+  # Python backend (Poetry - reads pyproject.toml + poetry.lock)
   # ---------------------------------------------------------------------------
   - package-ecosystem: "pip"
     directory: "/"
@@ -26,7 +26,7 @@ updates:
         update-types: ["minor", "patch"]
 
   # ---------------------------------------------------------------------------
-  # Dashboard (npm — reads dashboard/package.json + package-lock.json)
+  # Dashboard (npm - reads dashboard/package.json + package-lock.json)
   # ---------------------------------------------------------------------------
   - package-ecosystem: "npm"
     directory: "/dashboard"
@@ -45,7 +45,7 @@ updates:
         update-types: ["minor", "patch"]
 
   # ---------------------------------------------------------------------------
-  # GitHub Actions (keeps CI action versions current — closes H11 long-term)
+  # GitHub Actions (keeps CI action versions current - closes H11 long-term)
   # ---------------------------------------------------------------------------
   - package-ecosystem: "github-actions"
     directory: "/"

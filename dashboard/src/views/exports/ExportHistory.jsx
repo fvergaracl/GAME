@@ -141,12 +141,12 @@ const ExportHistory = () => {
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell className="text-end">
-                        {row.rowCount >= 0 ? row.rowCount : '—'}
+                        {row.rowCount >= 0 ? row.rowCount : '-'}
                       </CTableDataCell>
                       <CTableDataCell className="text-end">{row.rowLimit}</CTableDataCell>
                       <CTableDataCell>
                         <span className="text-truncate d-inline-block" style={{ maxWidth: 180 }}>
-                          {row.requestedBy || '—'}
+                          {row.requestedBy || '-'}
                         </span>
                       </CTableDataCell>
                       <CTableDataCell>
@@ -165,7 +165,7 @@ const ExportHistory = () => {
 }
 
 function formatTimestamp(value) {
-  if (!value) return '—'
+  if (!value) return '-'
   try {
     return new Date(value).toLocaleString()
   } catch {

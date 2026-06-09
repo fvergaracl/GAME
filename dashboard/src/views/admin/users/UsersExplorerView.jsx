@@ -1,15 +1,15 @@
-// Sprint 5 (CRUD management) — read-only Users explorer.
+// Sprint 5 (CRUD management) - read-only Users explorer.
 //
 // Users aren't a real CRUD entity in GAME: rows are created implicitly the
 // first time points/actions land for an externalUserId, so there's nothing to
-// create/edit/delete here. This view is therefore a lookup tool — type an
+// create/edit/delete here. This view is therefore a lookup tool - type an
 // externalUserId, see that user's points (grouped by game/task) and wallet
 // (balances + transaction history).
 //
 // Both reads are independent endpoints (getUserPoints, getUserWallet) so we
 // fan them out with Promise.allSettled: an existing user with no points still
 // has a wallet, and a brand-new user may have neither. The "not found" state
-// is only shown when BOTH endpoints 404 — that's the signal the externalUserId
+// is only shown when BOTH endpoints 404 - that's the signal the externalUserId
 // doesn't exist at all (each endpoint raises NotFoundError for unknown users).
 //
 // No mutations live here yet; the layout leaves room for a future "convert
@@ -47,16 +47,16 @@ import { SkeletonText } from '../../../components/Skeleton'
 const is404 = (err) => err?.response?.status === 404
 
 const formatDate = (value) => {
-  if (!value) return '—'
+  if (!value) return '-'
   const d = new Date(value)
   return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString()
 }
 
-// Points are integers; coins are floats with a small magnitude — show up to
+// Points are integers; coins are floats with a small magnitude - show up to
 // two decimals but drop trailing zeros so "12.00" reads as "12".
 const formatNumber = (value) => {
   const n = Number(value)
-  if (!Number.isFinite(n)) return '—'
+  if (!Number.isFinite(n)) return '-'
   return n.toLocaleString(undefined, { maximumFractionDigits: 2 })
 }
 
@@ -88,7 +88,7 @@ const flattenPoints = (games, externalUserId) => {
   return { rows, total }
 }
 
-// Small icon + value + label stat card. Kept local to this view — the
+// Small icon + value + label stat card. Kept local to this view - the
 // dashboard's WidgetKpi is chart-driven and a poor fit for a single scalar.
 const StatCard = ({ icon, label, value, hint }) => (
   <CCard className="h-100">
@@ -236,21 +236,21 @@ const UsersExplorerView = () => {
                 <StatCard
                   icon={cilStar}
                   label={t('users.summary.pointsBalance')}
-                  value={balances ? formatNumber(balances.pointsBalance) : '—'}
+                  value={balances ? formatNumber(balances.pointsBalance) : '-'}
                 />
               </CCol>
               <CCol xs={12} sm={6} xl={3}>
                 <StatCard
                   icon={cilMoney}
                   label={t('users.summary.coinsBalance')}
-                  value={balances ? formatNumber(balances.coinsBalance) : '—'}
+                  value={balances ? formatNumber(balances.coinsBalance) : '-'}
                 />
               </CCol>
               <CCol xs={12} sm={6} xl={3}>
                 <StatCard
                   icon={cilWallet}
                   label={t('users.summary.conversionRate')}
-                  value={balances ? formatNumber(balances.conversionRate) : '—'}
+                  value={balances ? formatNumber(balances.conversionRate) : '-'}
                   hint={
                     balances && Number(balances.conversionRate) > 0
                       ? t('users.summary.conversionRateHelp', {

@@ -1,5 +1,5 @@
 """
-Sprint 10 — endpoint-level tests for /v1/strategies/custom/{id}/metrics
+Sprint 10 - endpoint-level tests for /v1/strategies/custom/{id}/metrics
 and /v1/strategies/custom/compare.
 
 Mirrors the calling pattern in ``test_endpoint_strategies_custom.py``:

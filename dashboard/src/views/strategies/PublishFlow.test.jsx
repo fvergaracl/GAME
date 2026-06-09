@@ -1,14 +1,14 @@
-// Sprint 11 — editor publish/lifecycle flow tests.
+// Sprint 11 - editor publish/lifecycle flow tests.
 //
 // The full StrategyEditor mounts Blockly, so a head-on integration
 // test there would pull in 1.5MB of canvas code we don't need to
 // exercise here. Instead we cover the two pieces of the publish flow
 // that are independently mountable (and historically untested):
 //
-//   * ``StrategyVersionHistoryModal``  — the rollback control plane
+//   * ``StrategyVersionHistoryModal``  - the rollback control plane
 //     that re-publishes an older version and archives the current one.
 //     Admin-gated, with a confirmation step.
-//   * ``StrategyPickerModal``           — used by the editor's parent
+//   * ``StrategyPickerModal``           - used by the editor's parent
 //     picker (DSL_EXTEND) and by the assignments view. Verifies the
 //     custom-vs-built-in tabs and the onSelect contract.
 //
@@ -67,7 +67,7 @@ const VERSIONS_FIXTURE = [
   },
 ]
 
-describe('StrategyVersionHistoryModal — publish/rollback flow', () => {
+describe('StrategyVersionHistoryModal - publish/rollback flow', () => {
   beforeEach(async () => {
     const api = await importMockedApi()
     api.listStrategyVersions.mockResolvedValue(VERSIONS_FIXTURE)
@@ -180,7 +180,7 @@ describe('StrategyVersionHistoryModal — publish/rollback flow', () => {
 
 // ---- StrategyPickerModal -----------------------------------------------
 
-describe('StrategyPickerModal — picker contract', () => {
+describe('StrategyPickerModal - picker contract', () => {
   beforeEach(async () => {
     const api = await importMockedApi()
     api.listBuiltInStrategies.mockResolvedValue([

@@ -42,7 +42,7 @@ class InlineSimulationRequest(SimulationRequest):
 
     The id-based ``/{id}/simulate`` route loads a *persisted* strategy,
     which forced the editor to save a hidden DRAFT on every "Probar"
-    click just to get an id — accumulating orphan rows in the DB. This
+    click just to get an id - accumulating orphan rows in the DB. This
     request carries the AST directly so the designer can test the exact
     blocks on the canvas (including unsaved edits) without persisting
     anything.

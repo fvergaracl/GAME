@@ -1,8 +1,8 @@
-// Sprint 3 (CRUD management) — bulk-create tasks in a game.
+// Sprint 3 (CRUD management) - bulk-create tasks in a game.
 //
 // POST /games/{gameId}/tasks/bulk takes a list of task payloads and returns a
 // PARTITIONED result: { succesfully_created, failed_to_create:[{task,error}] }.
-// That partial-success shape is the whole point of this modal — the admin
+// That partial-success shape is the whole point of this modal - the admin
 // pastes one externalTaskId per line, optionally pins a shared strategy, and
 // we report exactly which ids landed and which collided, then re-seed the box
 // with only the failures so a retry is one edit away.
@@ -163,7 +163,7 @@ const TaskBulkModal = ({ visible, gameId, onClose, onCreated }) => {
                 {failures.map((f, i) => (
                   <li key={`${f.externalTaskId}-${i}`}>
                     <code>{f.externalTaskId}</code>
-                    {f.error ? ` — ${f.error}` : ''}
+                    {f.error ? ` - ${f.error}` : ''}
                   </li>
                 ))}
               </ul>

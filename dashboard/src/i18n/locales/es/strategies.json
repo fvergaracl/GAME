@@ -16,7 +16,7 @@
         "intro": "Cada fila es un Game de tu realm con la estrategia que usa para puntuar. Expande la fila para ver sus tasks y reasignarlas individualmente.",
         "search": "Filtra por external_game_id si tienes muchos juegos. La paginación es real (no carga todo en memoria).",
         "selection": "Marca varios games para reasignarlos en bloque a la misma estrategia, con preview de impacto.",
-        "change": "Pulsa «Cambiar» para abrir el picker: built-ins + custom strategies publicadas. Las borrador/archivadas no aparecen — sólo las publicadas se asignan.",
+        "change": "Pulsa «Cambiar» para abrir el picker: built-ins + custom strategies publicadas. Las borrador/archivadas no aparecen - sólo las publicadas se asignan.",
         "help": "Si dudas qué significa «estrategia padre» u otros términos del DSL, abre la Ayuda de la barra superior."
       }
     },

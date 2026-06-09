@@ -1,4 +1,4 @@
-# `gd_set_callback_data` — Set callback data
+# `gd_set_callback_data` - Set callback data
 
 Add a key/value to the `callbackData` dict returned alongside points.
 Useful when the caller wants context about *why* the points were

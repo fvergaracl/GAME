@@ -1,4 +1,4 @@
-// Sprint 9 — AST diffing for the version history modal.
+// Sprint 9 - AST diffing for the version history modal.
 //
 // Compares two DSL ``program`` ASTs (the JSON shape emitted by
 // ``workspaceToAst`` in generator.js) and returns a structured diff
@@ -8,7 +8,7 @@
 // When a designer edits a workspace the ids of preserved blocks are
 // kept across PUT/version-fork roundtrips, so id-based matching
 // reliably distinguishes "same rule, body changed" from "rule replaced".
-// Falls back to positional matching only for nodes without ids — in
+// Falls back to positional matching only for nodes without ids - in
 // practice the generator always emits ids, but the fallback keeps the
 // diff useful for hand-authored ASTs and imports.
 //
@@ -20,7 +20,7 @@ const KIND_REMOVED = 'removed'
 const KIND_MODIFIED = 'modified'
 const KIND_UNCHANGED = 'unchanged'
 
-// Stable structural equality — JSON.stringify is "good enough" given
+// Stable structural equality - JSON.stringify is "good enough" given
 // the AST is plain JSON and the ordering convention is fixed by the
 // generator. We sort object keys to be tolerant of payloads that
 // round-tripped through different serialisers (the backend stores

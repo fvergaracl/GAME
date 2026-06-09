@@ -1,4 +1,4 @@
-// Sprint 11 — centralized toast/feedback system.
+// Sprint 11 - centralized toast/feedback system.
 //
 // Until Sprint 11 every view rolled its own success/error pair as
 // CAlerts mounted inline (StrategyLibraryView, StrategyAssignmentsView,
@@ -16,13 +16,13 @@
 // pause-on-hover, and accessible labelling via the t() helpers.
 //
 // Design constraints honoured:
-//   * No external dependency — uses the CToaster/CToast already
+//   * No external dependency - uses the CToaster/CToast already
 //     shipped with @coreui/react so dark mode "just works" via the
 //     existing tokens.
 //   * Headless API: callers pass plain strings (or {title, message}
 //     objects). The provider handles colour mapping, role=alert, and
 //     dismiss button accessibility.
-//   * SSR/test-safe — works without a window because CToaster is a
+//   * SSR/test-safe - works without a window because CToaster is a
 //     plain React component, not a portal.
 //   * Drop-in for existing views: ``toast.error(extractError(err))``
 //     replaces ``setActionError(extractError(err))`` 1:1.
@@ -51,8 +51,8 @@ const VALID_KINDS = ['success', 'danger', 'warning', 'info']
 // Public shape returned by useToast(). Documented here so call sites
 // don't have to re-derive it from the implementation.
 //
-//   toast.success(message, opts?)        — convenience for kind:'success'
-//   toast.error(message, opts?)          — alias for kind:'danger'
+//   toast.success(message, opts?)        - convenience for kind:'success'
+//   toast.error(message, opts?)          - alias for kind:'danger'
 //   toast.warning(message, opts?)
 //   toast.info(message, opts?)
 //   toast.show({ kind, message, title?, autohideMs?, id? })

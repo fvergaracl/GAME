@@ -39,7 +39,7 @@ Prerequisites
 Two ways to run
 ===============
 
-Path A — Docker Compose (fastest)
+Path A - Docker Compose (fastest)
 ---------------------------------
 
 Brings up the API, PostgreSQL, and (optionally) Keycloak together:
@@ -65,7 +65,7 @@ An "integrated" profile is also available via the ``Makefile``:
 The API listens on ``http://localhost:8000``. See :doc:`operations` for the
 full Compose / Kubernetes story.
 
-Path B — Local Poetry
+Path B - Local Poetry
 ---------------------
 
 Run the API directly against a PostgreSQL you provide:
@@ -135,7 +135,7 @@ Your first end-to-end flow
 
 This walks the canonical loop: get a credential, create a game, add a task,
 award points, and read them back. It uses an **API key** (header
-``X-API-Key``) — the simplest credential for server-to-server use.
+``X-API-Key``) - the simplest credential for server-to-server use.
 
 1. Obtain an API key
 --------------------
@@ -170,7 +170,7 @@ token from Keycloak (see :doc:`authentication` for the realm setup):
      -d '{"externalGameId":"game-001","platform":"web","strategyId":"default"}' \
      | jq -r '.gameId')
 
-The response includes the internal ``gameId`` (a UUID). Keep it — you will
+The response includes the internal ``gameId`` (a UUID). Keep it - you will
 address the game by this id.
 
 3. Create a task
@@ -215,7 +215,7 @@ Sample response::
 
    To preview a score **without persisting anything**, send
    ``"isSimulated": true`` in the body. No ``UserPoints`` row, no wallet
-   movement — ideal for testing a strategy. See :doc:`strategies`.
+   movement - ideal for testing a strategy. See :doc:`strategies`.
 
 5. Read the points back
 -----------------------

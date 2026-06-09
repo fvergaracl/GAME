@@ -1,4 +1,4 @@
-// Sprint 4 (CRUD management) — API key listing with revoke.
+// Sprint 4 (CRUD management) - API key listing with revoke.
 //
 // The table is the only place an admin closes out an API key's lifecycle.
 // Revocation is irreversible server-side (the row stays but flips to
@@ -6,7 +6,7 @@
 // routes through the shared ConfirmDialog rather than firing on a single
 // click. After a successful revoke we toast and ask the parent to refresh;
 // the key reappears marked "Revoked" via the status badge, which is why the
-// previous non-functional view/edit placeholder buttons were dropped —
+// previous non-functional view/edit placeholder buttons were dropped -
 // revoke is the only action the backend actually supports here.
 
 import React, { useState } from 'react'
@@ -131,7 +131,7 @@ const ApiKeyTable = ({ apiKeys, onRevoked }) => {
                         </div>
                       </CTableDataCell>
                       <CTableDataCell>
-                        {apiKey.created_at ? new Date(apiKey.created_at).toLocaleString() : '—'}
+                        {apiKey.created_at ? new Date(apiKey.created_at).toLocaleString() : '-'}
                       </CTableDataCell>
                       <CTableDataCell>
                         <CBadge color={isActive ? 'success' : 'secondary'}>

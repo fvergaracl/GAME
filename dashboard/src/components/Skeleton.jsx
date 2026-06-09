@@ -1,4 +1,4 @@
-// Sprint 9 — Skeleton placeholders.
+// Sprint 9 - Skeleton placeholders.
 //
 // Replaces "spinner inside an empty card" loading states. A skeleton
 // keeps the layout stable (no content shift) and signals shape so the
@@ -57,7 +57,7 @@ Skeleton.propTypes = {
 }
 
 // Paragraph-shaped block. Use this when you don't know what the content
-// will look like — it's the safe default.
+// will look like - it's the safe default.
 export const SkeletonText = ({ lines = 3, lastWidth = '60%' }) => (
   <div role="status" aria-busy="true" aria-label="Loading">
     {Array.from({ length: lines }).map((_, i) => (
@@ -107,7 +107,7 @@ SkeletonTable.propTypes = {
   hasActions: PropTypes.bool,
 }
 
-// Card-shaped block — title + a few lines.
+// Card-shaped block - title + a few lines.
 export const SkeletonCard = ({ lines = 3 }) => (
   <div className="p-3" role="status" aria-busy="true" aria-label="Loading">
     <Skeleton variant="title" ariaLabel="" />

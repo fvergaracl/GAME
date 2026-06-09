@@ -10,7 +10,7 @@ in a module-global cache. These tests pin three things:
   * The cache is honoured on the second call (the on-disk files are
     static; re-reading them on every request would be wasted I/O).
   * The DSL_EXTEND template references an existing built-in parent
-    ('default') — the editor would otherwise show a broken card.
+    ('default') - the editor would otherwise show a broken card.
 """
 
 import json
@@ -35,7 +35,7 @@ def test_loader_returns_all_shipped_templates():
     templates = templates_loader.load_user_templates()
     ids = {t.id for t in templates}
     # Sprint 8 ships exactly four user-facing templates. Adding new ones
-    # is fine — this assertion just ensures none of the originals were
+    # is fine - this assertion just ensures none of the originals were
     # accidentally deleted or renamed.
     assert {
         "engagement_basico",
@@ -53,7 +53,7 @@ def test_each_template_carries_full_schema():
         assert t.name, "template name must be non-empty"
         assert t.astJson, "template astJson must be non-empty"
         assert t.blocklyXml, (
-            "template blocklyXml must be non-empty — without it the "
+            "template blocklyXml must be non-empty - without it the "
             "editor cannot display the template visually"
         )
         # AST validates standalone (the loader already does this on first
@@ -65,7 +65,7 @@ def test_dsl_extend_template_references_known_parent_shape():
     """Shape-only check: the DSL_EXTEND template must set parentStrategyId.
 
     A 'default' parent is the only one currently shipped in the registry
-    — the runtime resolution is verified separately by the endpoint
+    - the runtime resolution is verified separately by the endpoint
     test ``test_import_dsl_extend_validates_parent``.
     """
     templates = templates_loader.load_user_templates()
@@ -78,7 +78,7 @@ def test_loader_caches_after_first_call(monkeypatch):
     """Second call must hit the cache, not the disk again.
 
     Implementation detail (the cache) is worth pinning because the
-    endpoint hits the loader once per request — a regression turning
+    endpoint hits the loader once per request - a regression turning
     this into per-request disk I/O would be a silent perf bug.
     """
     templates_loader.load_user_templates()

@@ -1,8 +1,8 @@
-// Sprint 1–2 (CRUD management) — Games management view.
+// Sprint 1–2 (CRUD management) - Games management view.
 //
 // The admin's home for the game lifecycle: a server-paginated, searchable
 // table of games with create + edit (Sprint 1) and delete + duplicate
-// (Sprint 2). "Ver tareas" lands in Sprint 3 — the per-row actions dropdown
+// (Sprint 2). "Ver tareas" lands in Sprint 3 - the per-row actions dropdown
 // is the seam each action plugs into.
 //
 // Reuses the StrategyAssignmentsView shape (server pagination + debounced
@@ -50,9 +50,9 @@ const PAGE_SIZE_OPTIONS = [10, 20, 50]
 const CLOSED_MODAL = { mode: null, gameId: null }
 
 const formatDate = (value) => {
-  if (!value) return '—'
+  if (!value) return '-'
   const d = new Date(value)
-  return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString()
+  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleString()
 }
 
 const GamesManagementView = () => {
@@ -221,12 +221,12 @@ const GamesManagementView = () => {
                     <CTableDataCell>
                       <code>{game.externalGameId}</code>
                     </CTableDataCell>
-                    <CTableDataCell>{game.platform || '—'}</CTableDataCell>
+                    <CTableDataCell>{game.platform || '-'}</CTableDataCell>
                     <CTableDataCell>
                       {game.strategyId ? (
                         <code>{game.strategyId}</code>
                       ) : (
-                        <span className="text-medium-emphasis">—</span>
+                        <span className="text-medium-emphasis">-</span>
                       )}
                     </CTableDataCell>
                     <CTableDataCell>

@@ -11,7 +11,7 @@ Grafana for the metrics surfaced in [Sprint 11](../).
 * [A published strategy is emitting wrong points](#wrong-points)
 * [Latency alert fired (p99 > 250ms)](#latency)
 * [Error rate alert fired](#errors)
-* [Sandbox concerns — did a tenant exceed the limits?](#limits)
+* [Sandbox concerns - did a tenant exceed the limits?](#limits)
 * [Strategy is taking down a realm](#kill-switch)
 
 ---
@@ -21,7 +21,7 @@ Grafana for the metrics surfaced in [Sprint 11](../).
 > "Tenant X says their users are getting +50% points everywhere, looks
 > like a regression in their custom strategy."
 
-### Step 1 — confirm which strategy is running
+### Step 1 - confirm which strategy is running
 
 ```sql
 SELECT g.id, g."externalGameId", g."strategyId"
@@ -38,7 +38,7 @@ FROM strategydefinition
 WHERE id = '<uuid>';
 ```
 
-### Step 2 — pull the most recent executions
+### Step 2 - pull the most recent executions
 
 ```sql
 SELECT created_at, status, "errorCode", points, "caseName",
@@ -56,12 +56,12 @@ Patterns to look for:
 * `caseName` is one you don't recognise → check post-rules for a
   `set_case_name` override.
 
-### Step 3 — replay the failing input
+### Step 3 - replay the failing input
 
 For any row of interest, pull the `trace` JSONB column. Each entry
 points back to a `nodeId` from the AST. Then call the simulate
 endpoint with the same `externalGameId`, `externalTaskId`,
-`externalUserId`, and `data` — simulate is side-effect-free.
+`externalUserId`, and `data` - simulate is side-effect-free.
 
 ```bash
 curl -X POST .../v1/strategies/custom/<uuid>/simulate \
@@ -74,10 +74,10 @@ curl -X POST .../v1/strategies/custom/<uuid>/simulate \
   }'
 ```
 
-The response carries the same trace shape — diff against the persisted
+The response carries the same trace shape - diff against the persisted
 one to confirm reproducibility.
 
-### Step 4 — rollback
+### Step 4 - rollback
 
 ```bash
 # from the dashboard
@@ -91,10 +91,10 @@ curl -X POST .../v1/strategies/custom/<uuid>/rollback/<version>
 ```
 
 Rollback archives the broken version and re-publishes the older one.
-The change applies on the next scoring event — no UserPoints are
+The change applies on the next scoring event - no UserPoints are
 rewritten retroactively.
 
-### Step 5 — root-cause
+### Step 5 - root-cause
 
 After rollback, edit the broken version (it's `ARCHIVED` now; the
 editor lets you copy it back into a `DRAFT`), reproduce the bug with
@@ -178,7 +178,7 @@ Error codes are listed in `app/core/exceptions.py` (search for
 | `DSL_LIMIT_EXCEEDED`          | Hit the node-count or depth cap.                |
 | `DSL_ARITH_DIV_BY_ZERO`       | A `/` operator ran with a zero denominator.     |
 | `DSL_COMPARE_TYPE_MISMATCH`   | Compared a number to a string (or null).        |
-| `DSL_FIELD_NOT_PRECOMPUTED`   | Field path bypassed the validator (bug — page!).|
+| `DSL_FIELD_NOT_PRECOMPUTED`   | Field path bypassed the validator (bug - page!).|
 
 ### Pull the failing rows
 
@@ -215,8 +215,8 @@ If you suspect a tenant is trying to break out of the sandbox:
   payloads that bypass the dashboard validator and POSTing them raw.
 * `DSL_UNKNOWN_STATEMENT` / `DSL_UNKNOWN_EXPRESSION` similar.
 
-The interpreter table-dispatches on node type — there is no
-`getattr`/`eval` path — so even a successful bypass cannot execute
+The interpreter table-dispatches on node type - there is no
+`getattr`/`eval` path - so even a successful bypass cannot execute
 arbitrary Python. But the field whitelist is the perimeter for what a
 strategy can READ; do not relax it without a security review.
 

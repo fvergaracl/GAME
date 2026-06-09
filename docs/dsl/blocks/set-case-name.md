@@ -1,4 +1,4 @@
-# `gd_set_case_name` — Set case name (post-rules only)
+# `gd_set_case_name` - Set case name (post-rules only)
 
 Override the case name the parent strategy emitted.
 
@@ -23,7 +23,7 @@ then set_points = parent.points * 1.5
 
 ## Notes
 
-* `value` must evaluate to a string — `DSL_SET_CASE_NAME_NOT_STRING`
+* `value` must evaluate to a string - `DSL_SET_CASE_NAME_NOT_STRING`
   otherwise.
 * Like all post-rule statements, this does not halt.
 * The new case name shows up in analytics. Renaming an existing case

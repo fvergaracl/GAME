@@ -86,7 +86,7 @@ autodoc_typehints = "description"
 #   ``:members:`` already, so leaf modules are fully documented. The package
 #   index pages (``app.services``, ``app.repository``, …) deliberately omit it
 #   so re-exported symbols in their ``__init__`` are not documented a second
-#   time under their canonical name — which would make every type reference to
+#   time under their canonical name - which would make every type reference to
 #   them ambiguous ("more than one target found").
 # * ``undoc-members`` is off so the Google-style ``Attributes:`` block in each
 #   model docstring is the single source for columns; otherwise autodoc would
@@ -129,7 +129,7 @@ html_title = "GAME (Goals And Motivation Engine)"
 google_analytics_account = os.getenv("GOOGLE_ANALYTICS_ACCOUNT", None)
 
 html_theme_options = {
-    "nav_title": "GAME — Goals And Motivation Engine",
+    "nav_title": "GAME - Goals And Motivation Engine",
     "color_primary": "blue",
     "color_accent": "light-blue",
     "repo_url": "https://github.com/fvergaracl/GAME",

@@ -70,8 +70,8 @@ class PointsAssignmentMixin(PointsPersistenceMixin):
 
         strategyId = task.strategyId
         # Same async resolver used by ``assign_points_to_user``. This
-        # endpoint doesn't actually invoke ``calculate_points`` — it just
-        # verifies the strategy exists for the realm — but using the
+        # endpoint doesn't actually invoke ``calculate_points`` - it just
+        # verifies the strategy exists for the realm - but using the
         # same resolver keeps custom and built-in ids consistent.
         realm_id = resolve_realm_id(api_key=api_key, oauth_user_id=oauth_user_id)
         strategy_instance = await self.strategy_service.get_strategy_instance(

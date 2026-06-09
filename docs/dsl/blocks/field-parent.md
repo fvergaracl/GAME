@@ -1,4 +1,4 @@
-# `gd_field_parent` — Field (parent.\*)
+# `gd_field_parent` - Field (parent.\*)
 
 (`post_rules` only) Read a value from the parent strategy's result. The
 engine populates these paths after the parent runs and before

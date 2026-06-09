@@ -97,7 +97,7 @@ class StrategyService(BaseService):
         self._analytics_service = analytics_service
         # Sprint 11: passed straight through to ``DslStrategy``. Optional
         # so the legacy two-arg construction style in tests still works
-        # — metrics + persistence become no-ops in that case.
+        # - metrics + persistence become no-ops in that case.
         self._execution_observer = execution_observer
 
     def list_all_strategies(self) -> list[dict[str, Any]]:
@@ -218,7 +218,7 @@ class StrategyService(BaseService):
     ) -> BaseStrategy:
         """
         Single async entrypoint that returns something with
-        ``calculate_points(...)`` — either a built-in registry singleton
+        ``calculate_points(...)`` - either a built-in registry singleton
         or a freshly-constructed ``DslStrategy`` wrapping a DB-persisted
         AST.
 
@@ -231,7 +231,7 @@ class StrategyService(BaseService):
         injected at construction.
 
         Raises ``InternalServerError`` if the DSL collaborators were not
-        wired — a clearer signal than ``AttributeError`` for ops.
+        wired - a clearer signal than ``AttributeError`` for ops.
         """
         if not is_custom_strategy_id(strategy_id):
             return self.get_Class_by_id(strategy_id)
@@ -262,7 +262,7 @@ class StrategyService(BaseService):
         # parent id stored in the row no longer references an existing
         # built-in (e.g. removed from the registry between persist and
         # execution), ``get_Class_by_id`` raises NotFoundError with a
-        # clear message — better than a silent KeyError at run time.
+        # clear message - better than a silent KeyError at run time.
         parent_strategy = None
         if definition.type == "DSL_EXTEND":
             if not definition.parentStrategyId:

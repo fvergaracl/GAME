@@ -47,7 +47,7 @@ jobs:
       # and audits exactly the packages this project resolves.
       - name: Run pip-audit
         # Advisory-only for now: the backend still pins a few dependencies with
-        # known, separately-tracked CVEs (python-jose, cryptography — see M7 in
+        # known, separately-tracked CVEs (python-jose, cryptography - see M7 in
         # internal_notes/mejoras.md). Flip `continue-on-error` to false once the
         # dependency-modernization sprint lands so this becomes a hard gate.
         continue-on-error: true

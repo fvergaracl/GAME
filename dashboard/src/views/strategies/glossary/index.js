@@ -4,7 +4,7 @@
 // popovers (GlossaryHint), the help button in the app header, the
 // Library/Assignments tours and the related-concepts section of
 // BlockHelpView. Each entry's user-visible strings live under the
-// ``glossary`` i18n namespace — the data here only carries structural
+// ``glossary`` i18n namespace - the data here only carries structural
 // metadata (related concepts, optional pointer to the per-block doc).
 //
 // Adding a new term:
@@ -44,7 +44,7 @@ export const GLOSSARY_INDEX = Object.fromEntries(GLOSSARY_TERMS.map((term) => [t
 
 // Maps custom Blockly block types to the closest glossary entry so the
 // right-click "Help" page can surface a related-concepts panel
-// (complements C5 / HELP_URLS — Sprint 3 wires the per-block doc, this
+// (complements C5 / HELP_URLS - Sprint 3 wires the per-block doc, this
 // adds the conceptual cross-link).
 export const BLOCK_TO_TERM = {
   gd_rule: 'rule',

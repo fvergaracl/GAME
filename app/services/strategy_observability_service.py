@@ -10,7 +10,7 @@ deltas.
 The repository already does the heavy lifting (SUM/COUNT/GROUP BY in
 the DB); this service is responsible for:
 
-  * Combining 5 narrow queries into one response — the dashboard fetches
+  * Combining 5 narrow queries into one response - the dashboard fetches
     once per page load.
   * Computing percentiles + histograms in Python from a bounded sample,
     because SQLite (used in tests) doesn't have ``percentile_cont`` and
@@ -189,7 +189,7 @@ class StrategyObservabilityService:
         """Build the per-strategy metrics card.
 
         Resolves the strategy first so the response includes name +
-        version + status — and so cross-realm probes 404 before we
+        version + status - and so cross-realm probes 404 before we
         spend a query on the execution log.
         """
         strategy = await self._strategy_definition_service.get_strategy(
@@ -260,7 +260,7 @@ class StrategyObservabilityService:
             StrategyMetricsResponse: The aggregated metrics.
         """
         # Strategy executions persist with the bare definition id
-        # (StrategyDefinitionLog.strategyId — see how the observer is
+        # (StrategyDefinitionLog.strategyId - see how the observer is
         # called from DslStrategy._run_phase). We pass that id verbatim
         # rather than the assignable ``custom:<uuid>`` form.
         strat_id = strategy.id

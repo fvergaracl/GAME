@@ -4,7 +4,7 @@
 // surfaces a game designer interacts with (strategy editor, block
 // tooltips, interpreter error codes). Other surfaces (admin tables,
 // existing CoreUI shell) stay in Spanish for now and will inherit
-// translations as needed — i18next falls back to the key string when a
+// translations as needed - i18next falls back to the key string when a
 // translation is missing, which keeps untranslated screens readable.
 //
 // Language selection priority:
@@ -14,11 +14,11 @@
 //      no preference is recorded yet (so a fresh designer in es-ES sees
 //      Spanish, a fresh one in en-US sees English).
 //   3. Spanish fallback. The team is Spain-based and Spanish copy is
-//      the source of truth for the editor — English is a translation,
+//      the source of truth for the editor - English is a translation,
 //      not the canonical language.
 //
 // Blockly's locale messages (workspace/category UI) are loaded by
-// ``applyBlocklyLocale`` in StrategyEditor.jsx — i18next only owns the
+// ``applyBlocklyLocale`` in StrategyEditor.jsx - i18next only owns the
 // React tree's strings. The two systems are kept in lockstep by the
 // editor reacting to ``i18n.on('languageChanged', ...)``.
 
@@ -82,7 +82,7 @@ const resources = {
 }
 
 // Initialise once per page load. We intentionally don't expose the
-// promise — i18next renders synchronously after init when resources are
+// promise - i18next renders synchronously after init when resources are
 // inlined (no Suspense boundary required).
 i18n
   .use(LanguageDetector)

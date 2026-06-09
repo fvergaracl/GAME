@@ -1,12 +1,12 @@
 """
-Sprint 7 — DSL_EXTEND end-to-end tests for the 3-phase pipeline.
+Sprint 7 - DSL_EXTEND end-to-end tests for the 3-phase pipeline.
 
 This module exercises ``DslStrategy`` with a ``parent_strategy``
 injected (the path that ``StrategyService.get_strategy_instance`` builds
 when a custom strategy row carries ``type=DSL_EXTEND``). The parent is
 a tiny mock that lets each test pin a deterministic
 ``(points, case_name, callback_data)`` tuple and assert what data the
-parent saw — which is how we prove that pre-rule ``set_data`` actually
+parent saw - which is how we prove that pre-rule ``set_data`` actually
 reaches the parent built-in.
 
 Companion module: ``test_default_extend_parity.py`` (S7 control gate
@@ -137,7 +137,7 @@ def _always_true_when() -> Dict[str, Any]:
 @pytest.mark.asyncio
 async def test_pre_rule_mutates_data_passed_to_parent():
     """``set_data`` in pre_rules writes into the dict that the parent
-    built-in receives — proves the pre→parent handoff works."""
+    built-in receives - proves the pre→parent handoff works."""
     ast = {
         "type": "program",
         "id": "p",
@@ -174,7 +174,7 @@ async def test_pre_rule_mutates_data_passed_to_parent():
 @pytest.mark.asyncio
 async def test_pre_rule_veto_skips_parent_and_post():
     """A pre-rule ``veto`` short-circuits both the parent call and the
-    post_rules — the final result is (0, veto_case_name)."""
+    post_rules - the final result is (0, veto_case_name)."""
     ast = {
         "type": "program",
         "id": "p",
@@ -221,7 +221,7 @@ async def test_pre_rule_veto_skips_parent_and_post():
 
 @pytest.mark.asyncio
 async def test_pre_rule_with_false_condition_does_not_mutate():
-    """A pre-rule whose ``when`` is false should not run its body —
+    """A pre-rule whose ``when`` is false should not run its body -
     the parent sees the original data untouched."""
     ast = {
         "type": "program",
@@ -261,7 +261,7 @@ async def test_pre_rule_with_false_condition_does_not_mutate():
 @pytest.mark.asyncio
 async def test_post_rule_set_points_overrides_parent_using_arith():
     """A post-rule can read ``parent.points`` and overwrite it via
-    arithmetic — this is the canonical "multiply parent's reward"
+    arithmetic - this is the canonical "multiply parent's reward"
     workflow."""
     ast = {
         "type": "program",
@@ -342,7 +342,7 @@ async def test_post_rule_set_case_name_overrides_parent():
 
 @pytest.mark.asyncio
 async def test_post_rule_set_callback_data_accumulates_over_parent():
-    """Parent's callback_data passes through, then post-rule appends —
+    """Parent's callback_data passes through, then post-rule appends -
     the final callback_data is the merge (post-rule key wins on collision
     because the last write wins)."""
     ast = {
@@ -390,7 +390,7 @@ async def test_post_rule_set_callback_data_accumulates_over_parent():
 @pytest.mark.asyncio
 async def test_post_rule_branches_on_parent_case_name():
     """Reading ``parent.case_name`` lets the designer route post-actions
-    by which case the parent emitted — a critical extensibility hook."""
+    by which case the parent emitted - a critical extensibility hook."""
     ast = {
         "type": "program",
         "id": "p",
@@ -441,7 +441,7 @@ async def test_post_rule_branches_on_parent_case_name():
 @pytest.mark.asyncio
 async def test_parent_variables_override_applied_to_copy():
     """``parent_variables`` overrides the parent's ``variable_*`` BEFORE
-    calculate_points runs — and only on a copy, so the registry
+    calculate_points runs - and only on a copy, so the registry
     singleton is unaffected for the next request."""
     ast = {
         "type": "program",
@@ -467,7 +467,7 @@ async def test_parent_variables_override_applied_to_copy():
 
 def test_parent_variables_rejects_non_variable_key():
     """The validator refuses keys that don't follow the ``variable_*``
-    convention — pre-empts injection of arbitrary parent attributes."""
+    convention - pre-empts injection of arbitrary parent attributes."""
     ast = {
         "type": "program",
         "id": "p",
@@ -481,7 +481,7 @@ def test_parent_variables_rejects_non_variable_key():
 
 
 def test_parent_variables_rejects_non_scalar_value():
-    """``parent_variables`` values must be JSON scalars — no nested
+    """``parent_variables`` values must be JSON scalars - no nested
     objects or arrays (they'd not round-trip through set_variables
     predictably)."""
     ast = {
@@ -500,7 +500,7 @@ def test_parent_variables_rejects_non_scalar_value():
 
 
 def test_validator_rejects_field_parent_points_in_main_rule():
-    """``parent.points`` only makes sense in post_rules — using it in
+    """``parent.points`` only makes sense in post_rules - using it in
     a main rule would read uninitialised state."""
     ast = {
         "type": "program",
@@ -536,7 +536,7 @@ def test_validator_rejects_field_parent_points_in_main_rule():
 
 
 def test_validator_rejects_set_data_in_main_rule():
-    """``set_data`` is pre-only — using it in a main rule is a designer
+    """``set_data`` is pre-only - using it in a main rule is a designer
     bug worth catching at validation time."""
     ast = {
         "type": "program",
@@ -562,7 +562,7 @@ def test_validator_rejects_set_data_in_main_rule():
 
 
 def test_validator_rejects_set_points_in_pre_rule():
-    """``set_points`` is post-only — pre-rules don't have meaningful
+    """``set_points`` is post-only - pre-rules don't have meaningful
     points to set yet."""
     ast = {
         "type": "program",
@@ -588,7 +588,7 @@ def test_validator_rejects_set_points_in_pre_rule():
 
 
 def test_validator_accepts_field_parent_points_in_post_rule():
-    """Happy path counterpart to the rejection tests — confirms the
+    """Happy path counterpart to the rejection tests - confirms the
     field path IS valid in post_rules context."""
     ast = {
         "type": "program",

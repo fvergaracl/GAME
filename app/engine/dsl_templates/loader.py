@@ -10,7 +10,7 @@ verbatim.
 Boot semantics:
     * The loader caches the parsed list in a module-global. First call
       walks the directory, validates every AST, and freezes the cache.
-    * Validation runs through ``dsl_validator.validate_ast`` — a broken
+    * Validation runs through ``dsl_validator.validate_ast`` - a broken
       template raises at boot time instead of poisoning the editor.
     * The fixtures under ``dsl_templates/`` (``default_v0_0_2.json``,
       ``constant_effort_v0_0_1.json``) are S5 paridad artefacts, not
@@ -35,7 +35,7 @@ def load_user_templates() -> List[StrategyTemplateRead]:
     """Return the cached list of user-facing templates, loading on first call.
 
     Each template's ``astJson`` is run through ``validate_ast`` before
-    being added to the cache. A failure here is intentional and loud —
+    being added to the cache. A failure here is intentional and loud -
     we'd rather fail boot than serve a malformed template that the
     designer would only discover when "Guardar" rejects it.
     """

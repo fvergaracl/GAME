@@ -1,4 +1,4 @@
-// Sprint 6 (CRUD management) — shared "discard unsaved changes?" guard.
+// Sprint 6 (CRUD management) - shared "discard unsaved changes?" guard.
 //
 // Every management form modal (game/task create-edit, duplicate, bulk) can
 // be dismissed three ways: the header X, the Cancel button and the Esc key.
@@ -8,10 +8,10 @@
 //
 //   const handleClose = useUnsavedGuard({ dirty, blocked: busy, onClose })
 //
-// ``dirty``   — is there anything the user would lose by closing now?
-// ``blocked`` — an in-flight request: swallow the close entirely so the
+// ``dirty``   - is there anything the user would lose by closing now?
+// ``blocked`` - an in-flight request: swallow the close entirely so the
 //               modal can't be dismissed mid-save and desync the UI.
-// ``onClose`` — the real close callback, run only once we're clear to go.
+// ``onClose`` - the real close callback, run only once we're clear to go.
 //
 // The prompt uses window.confirm: it's keyboard-operable and announced by
 // screen readers, and avoids nesting a second CModal inside the form modal

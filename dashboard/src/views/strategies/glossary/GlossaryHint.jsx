@@ -1,4 +1,4 @@
-// Sprint 8: ``<GlossaryHint term="...">`` — small ⓘ trigger that opens
+// Sprint 8: ``<GlossaryHint term="...">`` - small ⓘ trigger that opens
 // the glossary modal at a specific term.
 //
 // Two modes:
@@ -24,7 +24,7 @@ const GlossaryHint = ({ term, children = null, className = '', ariaLabel = '' })
   const exists = !!GLOSSARY_INDEX[term]
 
   // If the term id is wrong we render the children (if any) but no
-  // trigger — better than a dead button. In dev this surfaces fast
+  // trigger - better than a dead button. In dev this surfaces fast
   // because the ⓘ simply doesn't appear next to the offending label.
   if (!exists) {
     if (children) return <>{children}</>

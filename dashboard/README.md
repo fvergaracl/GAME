@@ -5,17 +5,17 @@ configures the engine (games, tasks and their strategies), issues API keys for
 integrating apps, exports data, and inspects per-user points and wallets.
 
 > 🏗️ **New to the codebase?** Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-> — boot sequence, routing, the HTTP/auth layer, state model, i18n, and the
+> - boot sequence, routing, the HTTP/auth layer, state model, i18n, and the
 > management-module CRUD pattern (with `GameTasksView` as a worked example).
 
 ## Features
 
-- **Games** — create, edit, duplicate (deep copy incl. tasks/params) and delete games.
-- **Tasks** — per-game task lifecycle: create (single or bulk), edit, duplicate and delete.
-- **Strategies** — author DSL strategies in the Blockly editor, publish/version them, and assign them to games/tasks.
-- **API keys** — create and revoke integration keys.
-- **Users** — read-only explorer for a user's points (by game/task) and wallet balance/transactions.
-- **Exports & observability** — download datasets and review strategy execution metrics.
+- **Games** - create, edit, duplicate (deep copy incl. tasks/params) and delete games.
+- **Tasks** - per-game task lifecycle: create (single or bulk), edit, duplicate and delete.
+- **Strategies** - author DSL strategies in the Blockly editor, publish/version them, and assign them to games/tasks.
+- **API keys** - create and revoke integration keys.
+- **Users** - read-only explorer for a user's points (by game/task) and wallet balance/transactions.
+- **Exports & observability** - download datasets and review strategy execution metrics.
 
 ## Management module
 

@@ -45,7 +45,7 @@ class StrategyDefinitionRepository(BaseRepository):
 
         ``realmId=None`` is treated as "global"; callers that want every
         row across realms must pass it explicitly via a separate admin
-        helper (not implemented yet — Sprint 3 keeps tenancy strict).
+        helper (not implemented yet - Sprint 3 keeps tenancy strict).
         """
         stmt = select(self.model).where(self.model.realmId == realmId)
         if status is not None:

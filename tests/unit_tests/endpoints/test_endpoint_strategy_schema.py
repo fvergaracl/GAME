@@ -1,4 +1,4 @@
-"""Sprint 7 — tests for ``GET /v1/strategies/{id}/schema``.
+"""Sprint 7 - tests for ``GET /v1/strategies/{id}/schema``.
 
 The endpoint inspects the built-in registry via ``StrategyService.
 get_Class_by_id`` and shapes the response as a ``StrategySchema``
@@ -39,7 +39,7 @@ def _instance_mock(
 ):
     """Builds a MagicMock that quacks like a registered BaseStrategy.
 
-    Only the methods the schema endpoint reaches into are stubbed —
+    Only the methods the schema endpoint reaches into are stubbed -
     keeping the test honest about which surface of BaseStrategy is the
     contract for the new endpoint."""
     instance = MagicMock()
@@ -75,7 +75,7 @@ async def test_get_schema_returns_typed_variables_ordered_by_name():
             audit=_audit(),
         )
 
-    # Variables sorted alphabetically — keeps UI rendering stable.
+    # Variables sorted alphabetically - keeps UI rendering stable.
     names_in_order = [v.name for v in result.variables]
     assert names_in_order == sorted(names_in_order)
 
@@ -119,7 +119,7 @@ async def test_get_schema_404s_when_strategy_not_in_registry():
 @pytest.mark.asyncio
 async def test_get_schema_audits_failure_path():
     """Errors must be audited before re-raising so ops can trace what
-    happened — mirrors the pattern used by the other strategy endpoints."""
+    happened - mirrors the pattern used by the other strategy endpoints."""
     service = MagicMock()
     service.get_Class_by_id.side_effect = RuntimeError("boom")
 

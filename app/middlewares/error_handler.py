@@ -3,7 +3,7 @@
 Starlette builds its middleware stack with ``ServerErrorMiddleware`` as the
 **outermost** layer, sitting *above* the user-added ``CORSMiddleware``. So an
 unhandled exception (a real 500) is rendered by ``ServerErrorMiddleware`` and
-never passes back through ``CORSMiddleware`` — the response ships **without**
+never passes back through ``CORSMiddleware`` - the response ships **without**
 ``Access-Control-Allow-Origin``. The browser then blocks the cross-origin
 response and the dashboard shows a bare *"Network Error"* instead of the real
 status/message (see ``reference_network_error_means_500``).
@@ -15,7 +15,7 @@ flows back out through ``CORSMiddleware`` and gets its CORS headers. The
 traceback is still logged (and forwarded to Sentry) so observability is
 unchanged.
 
-``HTTPException`` and its subclasses never reach here — Starlette's
+``HTTPException`` and its subclasses never reach here - Starlette's
 ``ExceptionMiddleware`` (also inside CORS) already turns them into proper 4xx
 responses with CORS headers. Only genuine, unhandled errors are caught.
 """
@@ -36,7 +36,7 @@ class CatchUnhandledErrorsMiddleware:
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
-            # websocket / lifespan — nothing to translate.
+            # websocket / lifespan - nothing to translate.
             await self.app(scope, receive, send)
             return
 
@@ -63,7 +63,7 @@ class CatchUnhandledErrorsMiddleware:
             sentry_sdk.capture_exception(exc)
 
             if response_started:
-                # Headers/body already in flight — we cannot replace the
+                # Headers/body already in flight - we cannot replace the
                 # response; re-raise so the server tears the connection down.
                 raise
 

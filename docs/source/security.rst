@@ -44,7 +44,7 @@ through the same rules:
    * - **Admin** (``AdministratorGAME``)
      - Every game and every user. Bypasses scoping.
    * - **API key**
-     - Scoped to rows whose ``apiKey_used`` matches the key — i.e. the data
+     - Scoped to rows whose ``apiKey_used`` matches the key - i.e. the data
        *that key created*. A key cannot read another key's games/users.
    * - **OAuth non-admin**
      - Scoped to games whose ``oauth_user_id`` matches the token subject;
@@ -58,7 +58,7 @@ The enforcement helpers raise precise errors:
 * ``get_authorized_user`` → analogous, for user-addressed endpoints.
 
 Because the check lives below the HTTP layer, adding a new endpoint that
-forgets to scope is a *visible* omission — the service method it calls demands
+forgets to scope is a *visible* omission - the service method it calls demands
 the scoping kwargs.
 
 Abuse prevention & rate limiting
@@ -99,9 +99,9 @@ Counter backend
 
 The counter store is pluggable via ``ABUSE_PREVENTION_BACKEND``:
 
-* ``database`` (default) — increments a row in ``AbuseLimitCounter``. Simple,
+* ``database`` (default) - increments a row in ``AbuseLimitCounter``. Simple,
   but a hot row under load.
-* ``redis`` — atomic ``INCR`` + ``EXPIRE`` against ``REDIS_URL`` (~50 µs vs.
+* ``redis`` - atomic ``INCR`` + ``EXPIRE`` against ``REDIS_URL`` (~50 µs vs.
   ~5 ms for the Postgres UPDATE, and naturally shared across instances).
   Recommended for multi-replica deployments.
 
@@ -110,15 +110,15 @@ Trusted proxies (don't let clients forge their IP)
 
 Per-IP limits are only meaningful if the client IP can be trusted. When GAME
 runs behind a reverse proxy/ingress, the real client IP arrives in
-``X-Forwarded-For`` / ``X-Real-IP`` — headers a client could otherwise forge to
+``X-Forwarded-For`` / ``X-Real-IP`` - headers a client could otherwise forge to
 dodge per-IP limits.
 
 ``TRUSTED_PROXY_IPS`` is the gate. It is a comma-separated list of IPs/CIDRs
 allowed to set forwarding headers:
 
-* **Empty (default)** — no proxy is trusted; forwarding headers are ignored and
+* **Empty (default)** - no proxy is trusted; forwarding headers are ignored and
   the socket peer is used. This is the secure default.
-* **Set** to your proxy/ingress IP(s) — only then are forwarding headers
+* **Set** to your proxy/ingress IP(s) - only then are forwarding headers
   honored.
 
 Malformed entries are rejected **at startup**, so a typo fails fast instead of
@@ -133,7 +133,7 @@ not JSON). The middleware is only attached when origins are configured.
 Two safety behaviors:
 
 * **Wildcard is rejected in protected environments.** With ``ENV=prod`` or
-  ``stage``, ``BACKEND_CORS_ORIGINS=*`` raises at startup — a wildcard combined
+  ``stage``, ``BACKEND_CORS_ORIGINS=*`` raises at startup - a wildcard combined
   with credentialed requests would let any site act on the user's behalf.
 * **CORS wraps the error handler.** The middleware ordering (see
   :doc:`architecture`) guarantees even a ``500`` carries CORS headers, so the
@@ -152,8 +152,8 @@ setting is missing or left at an insecure default:
    * - Guard
      - Boot blocks if…
    * - ``SECRET_KEY``
-     - empty. (It previously defaulted to the literal string ``"None"`` —
-       truthy — which silently signed payloads with the word "None". Now it
+     - empty. (It previously defaulted to the literal string ``"None"`` -
+       truthy - which silently signed payloads with the word "None". Now it
        resolves to ``""`` and is rejected in protected envs.)
    * - ``KEYCLOAK_CLIENT_SECRET``
      - missing or equal to the shipped dev placeholder.
@@ -168,7 +168,7 @@ These checks run once at import of ``app.core.config`` and turn a class of
 
 .. important::
 
-   Manage secrets via the environment or a secret manager — **never** commit
+   Manage secrets via the environment or a secret manager - **never** commit
    real secrets, and don't ship a ``.env`` with production values. See
    :doc:`configuration`.
 

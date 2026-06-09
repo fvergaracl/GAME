@@ -1,6 +1,6 @@
 // Sprint 6: client-side AST validator tests.
 //
-// Targets the rejection paths the validator is responsible for — the
+// Targets the rejection paths the validator is responsible for - the
 // dashboard MUST refuse any AST shape the backend would reject, so we
 // pin the contract here. Happy-path coverage rides on generator.test.js
 // (the generator's output is fed through validateAst).
@@ -16,7 +16,7 @@ const _errors = (ast) => {
   return r.errors
 }
 
-describe('validateAst — happy path', () => {
+describe('validateAst - happy path', () => {
   it('accepts a minimal program with one rule', () => {
     _ok({
       type: 'program',
@@ -54,7 +54,7 @@ describe('validateAst — happy path', () => {
   })
 })
 
-describe('validateAst — root + structure', () => {
+describe('validateAst - root + structure', () => {
   it('rejects non-program root', () => {
     const errs = _errors({ type: 'rule', id: 'x' })
     expect(errs[0].message).toMatch(/AST root must be a 'program'/)
@@ -82,7 +82,7 @@ describe('validateAst — root + structure', () => {
   })
 })
 
-describe('validateAst — field paths', () => {
+describe('validateAst - field paths', () => {
   it('rejects field.path outside the whitelist', () => {
     const errs = _errors({
       type: 'program',
@@ -172,7 +172,7 @@ describe('validateAst — field paths', () => {
   })
 })
 
-describe('validateAst — operators', () => {
+describe('validateAst - operators', () => {
   it('rejects arith.op outside ALLOWED_ARITH_OPS', () => {
     const errs = _errors({
       type: 'program',
@@ -260,7 +260,7 @@ describe('validateAst — operators', () => {
   })
 })
 
-describe('validateAst — func_call', () => {
+describe('validateAst - func_call', () => {
   it('rejects unknown func_call name', () => {
     const errs = _errors({
       type: 'program',
@@ -354,7 +354,7 @@ describe('validateAst — func_call', () => {
   })
 })
 
-describe('validateAst — case_name', () => {
+describe('validateAst - case_name', () => {
   it('rejects empty case_name', () => {
     const errs = _errors({
       type: 'program',
@@ -403,7 +403,7 @@ describe('validateAst — case_name', () => {
 })
 
 // =========================================================================
-// Sprint 7 — DSL_EXTEND validation tests.
+// Sprint 7 - DSL_EXTEND validation tests.
 //
 // The validator gained per-section statement whitelisting plus support
 // for parent.* field paths (post-only) and the parent_variables map.
@@ -418,7 +418,7 @@ const _ruleWith = (stmt) => ({
   then: [stmt],
 })
 
-describe('validateAst — Sprint 7 pre/post sections', () => {
+describe('validateAst - Sprint 7 pre/post sections', () => {
   it('accepts a pre_rules section with a set_data statement', () => {
     _ok({
       type: 'program',
@@ -562,7 +562,7 @@ describe('validateAst — Sprint 7 pre/post sections', () => {
   })
 })
 
-describe('validateAst — Sprint 7 parent_variables', () => {
+describe('validateAst - Sprint 7 parent_variables', () => {
   it('accepts a parent_variables map with scalar values', () => {
     _ok({
       type: 'program',
@@ -631,7 +631,7 @@ describe('validateAst — Sprint 7 parent_variables', () => {
   })
 })
 
-describe('validateAst — else-if / else branches', () => {
+describe('validateAst - else-if / else branches', () => {
   const assign = (id, caseName) => ({
     type: 'assign_points',
     id,

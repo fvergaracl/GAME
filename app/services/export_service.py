@@ -175,7 +175,7 @@ class ExportService(BaseService):
     ) -> List[ExportAuditLogEntry]:
         """
         Return recent audit rows mapped onto the public entry schema, hiding
-        internal fields (raw apiKey/oauth_user_id are dropped — only the
+        internal fields (raw apiKey/oauth_user_id are dropped - only the
         ``requestedBy`` display string survives).
         """
         rows = await self.export_audit_log_repository.list_recent(
@@ -408,7 +408,7 @@ class ExportService(BaseService):
     ) -> AsyncIterator[Dict[str, Any]]:
         """
         Returns the row iterator for the requested dataset. Raises 500 if the
-        dataset name is unknown — this should never happen because the
+        dataset name is unknown - this should never happen because the
         endpoint layer already validated the path.
         """
         mapping = {
@@ -476,7 +476,7 @@ class ExportService(BaseService):
     ) -> AsyncIterator[bytes]:
         """
         Build an XLSX file using openpyxl write-only mode. The library buffers
-        rows internally as it writes them out to a zip stream — for the 100k
+        rows internally as it writes them out to a zip stream - for the 100k
         row cap this stays well below 200MB resident.
 
         openpyxl is imported lazily so the rest of the export pipeline keeps

@@ -96,7 +96,7 @@ const ExportData = () => {
           <CCardBody>
             <p className="text-body-secondary small">
               Pick a dataset, format and optional filters. The download starts in your browser as
-              soon as the server is ready — no email, no background job. Each request is recorded in{' '}
+              soon as the server is ready - no email, no background job. Each request is recorded in{' '}
               <em>Export history</em>.
             </p>
 

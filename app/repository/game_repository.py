@@ -104,7 +104,7 @@ class GameRepository(BaseRepository):
                 where_clause = and_(filter_options, or_(*scope_filters))
 
             # total_count is the number of matching *games*, independent of
-            # the current page — the dashboard needs it to render page
+            # the current page - the dashboard needs it to render page
             # controls. Counting here (not len(items)) is what makes real
             # pagination possible.
             total_count = int(

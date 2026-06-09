@@ -12,7 +12,7 @@ The DSL Strategy Engine
 Why a DSL at all?
 =================
 
-Custom scoring logic is **user-supplied** — authored in a browser by people
+Custom scoring logic is **user-supplied** - authored in a browser by people
 who are not GAME developers. Running arbitrary user code on the scoring
 hot-path is a non-starter, so GAME defines a small, total, sandboxed
 **domain-specific language**. A strategy is a JSON **AST** (abstract syntax
@@ -34,13 +34,13 @@ A custom strategy travels through four stages::
 Runs synchronously, with **no I/O**, on every create/update (and again, cheaply,
 before each simulation). It enforces three things in order:
 
-#. **Shape** — every node has the required keys with the expected types (a
+#. **Shape** - every node has the required keys with the expected types (a
    rule has a ``when``; a literal is a scalar, not a dict).
-#. **Whitelist** — ``node.type``, ``compare.op``, ``arith.op``, and
+#. **Whitelist** - ``node.type``, ``compare.op``, ``arith.op``, and
    ``field.path`` must each appear in the corresponding allow-list in
    ``dsl_ast``. Unknown names are rejected here, before they can reach the
    interpreter.
-#. **Limits** — a *static* node count and recursion depth are computed during
+#. **Limits** - a *static* node count and recursion depth are computed during
    the walk and bounded by ``DSL_MAX_NODES`` / ``DSL_MAX_DEPTH``, so a
    billion-node tree can never be persisted, let alone executed.
 
@@ -53,7 +53,7 @@ key for traces and error messages.
 
 Before a walk, ``ExecutionContext.build_for_ast`` **precomputes** every
 analytics value the AST references (the ``field`` paths) into a frozen
-dictionary. The interpreter then does pure dictionary lookups — it never
+dictionary. The interpreter then does pure dictionary lookups - it never
 reaches back into the database or computes analytics mid-walk. This is what
 keeps execution bounded and deterministic.
 
@@ -63,15 +63,15 @@ keeps execution bounded and deterministic.
 The interpreter **is the sandbox**. It walks the AST node-by-node, dispatching
 on ``node["type"]`` through a **fixed handler table**. Its hard guarantees:
 
-* **No dynamic Python** — no ``eval``, no ``exec``, no ``getattr`` on
+* **No dynamic Python** - no ``eval``, no ``exec``, no ``getattr`` on
   AST-supplied strings. A node type absent from the handler table is rejected
-  as ``DslValidationError`` (defence in depth — the validator should already
+  as ``DslValidationError`` (defence in depth - the validator should already
   have caught it).
-* **Frozen field access** — reading a ``field`` is a lookup in the precomputed
+* **Frozen field access** - reading a ``field`` is a lookup in the precomputed
   frozen dict; AST strings can never address arbitrary attributes.
-* **Bounded** — node count and recursion depth are re-checked at runtime, so
+* **Bounded** - node count and recursion depth are re-checked at runtime, so
   even a future feature like macros couldn't blow the limits.
-* **Actually cancellable** — the walk ``await asyncio.sleep(0)`` every
+* **Actually cancellable** - the walk ``await asyncio.sleep(0)`` every
   ``yield_every`` (default **64**) node visits. Without that yield a CPU-bound
   tree would run to completion and *then* notice the timeout; the yield lets
   ``asyncio.wait_for`` cancel it mid-walk. (This is the failure mode that
@@ -100,7 +100,7 @@ is how ``DSL_EXTEND`` strategies wrap a built-in parent (orchestrated by
    * - Mode
      - Behavior
    * - ``full``
-     - Main ``rules`` + ``default`` — the ``DSL_FULL`` path.
+     - Main ``rules`` + ``default`` - the ``DSL_FULL`` path.
    * - ``pre``
      - Only ``pre_rules``. ``initial_data`` is cloned into
        ``working_data`` so ``set_data`` can mutate the input the parent will
@@ -165,8 +165,8 @@ Built-ins are ordinary Python (not DSL). They:
 #. implement the async ``calculate_points`` scoring method, and
 #. register a **stable public id** with ``@register_strategy(id=...)``.
 
-``BaseStrategy`` also computes a ``hash_version`` — a SHA-256 of the
-``calculate_points`` source — so a logic change is detectable as a version
+``BaseStrategy`` also computes a ``hash_version`` - a SHA-256 of the
+``calculate_points`` source - so a logic change is detectable as a version
 change. The registry (``strategy_registry.py``) is explicit and
 opt-in; ``all_engine_strategies.py`` discovers modules in ``app/engine`` via
 ``pkgutil`` (CWD-independent), and **external packages** can contribute
@@ -185,8 +185,8 @@ Every production DSL run is observed by the singleton ``DslExecutionObserver``
   (default 5%).
 
 The DB write is drained off the hot-path by a background worker fed from a
-bounded in-process queue, so scoring only pays the enqueue. The full model —
-queue sizing, drop counting, graceful flush on shutdown — is in
+bounded in-process queue, so scoring only pays the enqueue. The full model -
+queue sizing, drop counting, graceful flush on shutdown - is in
 :doc:`observability`.
 
 Source map

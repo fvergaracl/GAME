@@ -1,9 +1,9 @@
-// Sprint D (F5) — coverage for the SWR fetcher's error shaping.
+// Sprint D (F5) - coverage for the SWR fetcher's error shaping.
 //
 // Before this sprint the fetcher threw ``new Error(response.statusText)`` on a
 // non-2xx response. That error had no ``.response``, so the shared
 // ``extractError`` helper fell back to the bare HTTP status and the backend's
-// FastAPI ``detail`` was lost on read (GET) views — only axios mutations kept
+// FastAPI ``detail`` was lost on read (GET) views - only axios mutations kept
 // it. The fetcher now mirrors the axios error shape so ``extractError`` can
 // surface the real message everywhere. These tests pin that contract.
 

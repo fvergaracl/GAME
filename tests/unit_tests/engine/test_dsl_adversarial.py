@@ -7,7 +7,7 @@ rejected by ``validate_ast`` BEFORE the interpreter ever sees it; if any
 of these started to "execute" silently we would have lost the sandbox
 guarantees and the whole DSL roadmap would have to be paused.
 
-Failures here are critical — do not weaken assertions to make a test
+Failures here are critical - do not weaken assertions to make a test
 pass without first re-evaluating the threat model.
 """
 
@@ -324,7 +324,7 @@ async def test_runtime_rejects_unknown_node_if_validator_bypassed():
 #
 # The new func_call node carries a string ``name`` that selects a handler;
 # the validator must refuse any name outside ALLOWED_FUNC_NAMES and any
-# arity mismatch — both happen *before* the value reaches the interpreter
+# arity mismatch - both happen *before* the value reaches the interpreter
 # dispatch table, so a malicious tenant can't smuggle in
 # ``func_call os.system`` and have the runtime try to honour it.
 # ---------------------------------------------------------------------------

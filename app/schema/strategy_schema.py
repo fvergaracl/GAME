@@ -167,7 +167,7 @@ class BaseStrategy(ModelBaseInfo):
     )
 
 
-# Sprint 7 — schema endpoint payload --------------------------------------
+# Sprint 7 - schema endpoint payload --------------------------------------
 #
 # ``/v1/strategies/{id}/schema`` returns a richer representation of a
 # built-in than ``GET /v1/strategies/{id}``: the variables list is
@@ -205,7 +205,7 @@ class StrategySchema(BaseModel):
     """Editor-facing schema of a built-in strategy.
 
     Returned by ``GET /v1/strategies/{id}/schema``. Mirrors ``Strategy``
-    fields plus an ordered, typed view of the variables — designed so
+    fields plus an ordered, typed view of the variables - designed so
     the DSL_EXTEND editor can render the "Parent overrides" category
     of the Blockly toolbox without inspecting Python objects from JS.
     """

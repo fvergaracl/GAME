@@ -1,8 +1,8 @@
 """
-Sprint 13 — the AST idempotency hash is memoised by ``(id, version)`` for
+Sprint 13 - the AST idempotency hash is memoised by ``(id, version)`` for
 PUBLISHED definitions so ``DslStrategy.__init__`` doesn't re-hash the same
 multi-KB AST on every scoring call. Drafts (whose ``(id, version)`` key is
-not stable — edits patch in place) always recompute.
+not stable - edits patch in place) always recompute.
 """
 
 from __future__ import annotations
@@ -87,7 +87,7 @@ class TestPublishedHashCache(unittest.TestCase):
         # cache: even a *different* AST returns the first cached hash,
         # proving the lookup keys on (id, version) and never re-hashes.
         # (In production a published row is immutable, so this collision
-        # can't happen — the test forces it to observe the cache hit.)
+        # can't happen - the test forces it to observe the cache hit.)
         s2 = _make(_read(_ast(999)))
         self.assertEqual(s2.hash_version, s1.hash_version)
 
@@ -98,7 +98,7 @@ class TestPublishedHashCache(unittest.TestCase):
         self.assertNotIn(("hc-1", 2), dsl_strategy._PUBLISHED_HASH_CACHE)
 
         # Editing a draft in place (same id/version, new AST) yields a
-        # fresh hash — drafts are not memoised.
+        # fresh hash - drafts are not memoised.
         s2 = _make(_read(_ast(999), status="DRAFT"))
         self.assertNotEqual(s2.hash_version, s1.hash_version)
         self.assertEqual(s2.hash_version, _compute_ast_hash(_ast(999)))

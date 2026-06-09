@@ -1,4 +1,4 @@
-// Sprint 0 (CRUD management) — repeatable {key, value} params editor.
+// Sprint 0 (CRUD management) - repeatable {key, value} params editor.
 //
 // Both the Game and Task forms expose the same "strategy params" grid: a
 // list of key/value pairs the admin can grow or trim. Rather than build it

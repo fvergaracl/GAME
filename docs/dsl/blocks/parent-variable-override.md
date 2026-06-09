@@ -1,4 +1,4 @@
-# `gd_parent_variable_override` — Override parent variable
+# `gd_parent_variable_override` - Override parent variable
 
 Adjust a per-realm variable on the parent built-in **without** writing
 custom logic. Variables come from the parent strategy's
@@ -32,7 +32,7 @@ parent_variables:
 
 ## Notes
 
-* The override is **per-realm**, not global — your custom strategy
+* The override is **per-realm**, not global - your custom strategy
   carries its own copy of the parent variables; other realms still see
   the original defaults.
 * Only keys present in `parent.get_variables()` are accepted; unknown

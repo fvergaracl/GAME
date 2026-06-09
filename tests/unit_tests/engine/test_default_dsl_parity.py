@@ -1,5 +1,5 @@
 """
-Parity tests for Sprint 5 — gate that blocks Sprint 6.
+Parity tests for Sprint 5 - gate that blocks Sprint 6.
 
 The DSL infrastructure built in Sprint 4 ships with no proof that the AST
 grammar can actually express a real production strategy. This module is
@@ -8,7 +8,7 @@ JSON-AST rewrite of ``app/engine/default.py``) and runs both
 implementations against the eight scenarios already covered by
 ``tests/unit_tests/engine/test_default.py``.
 
-Every scenario must agree on ``(points, case_name)`` — if even one
+Every scenario must agree on ``(points, case_name)`` - if even one
 diverges, ``test_default.py`` and the parity test cannot both be true and
 S6 is blocked by the roadmap's control gate.
 

@@ -119,7 +119,7 @@ async def db_session(async_engine) -> AsyncIterator[AsyncSession]:
 @pytest.fixture
 def asyncmock_session_factory():
     """
-    Factory helper for tests that need a fully mocked async session — used by
+    Factory helper for tests that need a fully mocked async session - used by
     cases that exercise postgres-only code paths (``ON CONFLICT DO UPDATE``)
     which aiosqlite cannot execute as-is.
     """

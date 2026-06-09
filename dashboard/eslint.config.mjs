@@ -5,7 +5,7 @@
 // react-hooks "recommended" + Prettier integration, with the React
 // version auto-detected. Prettier formatting options live in
 // ``.prettierrc.js`` and are picked up automatically by
-// eslint-plugin-prettier — no need to duplicate them here.
+// eslint-plugin-prettier - no need to duplicate them here.
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import prettierRecommended from 'eslint-plugin-prettier/recommended'

@@ -1,4 +1,4 @@
-# `gd_veto` — Veto (pre-rules only)
+# `gd_veto` - Veto (pre-rules only)
 
 Cancel the rest of the pipeline. After a veto fires:
 

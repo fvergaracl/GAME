@@ -1,5 +1,5 @@
 """
-Sprint 10 — tests for ``StrategyObservabilityService``.
+Sprint 10 - tests for ``StrategyObservabilityService``.
 
 The service composes 5 narrow repository queries into one response. We
 mock the repository at AsyncMock level so we can assert:
@@ -11,7 +11,7 @@ mock the repository at AsyncMock level so we can assert:
   * Success/error rates are derived from the breakdown, not re-queried.
   * A/B comparison computes B - A deltas server-side and the per-event
     points average uses the run count of each side (not totals).
-  * Tenant scoping passes through to ``StrategyDefinitionService`` —
+  * Tenant scoping passes through to ``StrategyDefinitionService`` -
     a foreign realm propagates the 404 before any aggregation runs.
 """
 
@@ -92,7 +92,7 @@ class TestStatusBreakdown:
 
     def test_unknown_status_lumped_into_other(self):
         # If the engine ever ships a new status code we don't know about,
-        # the dashboard mustn't crash — bucket it into ``other`` instead.
+        # the dashboard mustn't crash - bucket it into ``other`` instead.
         out = _status_breakdown({"ok": 1, "weird": 3})
         assert out.other == 3
         assert out.total == 4

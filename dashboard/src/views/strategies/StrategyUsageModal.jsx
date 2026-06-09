@@ -1,9 +1,9 @@
-// Sprint 6 — strategy usage / reverse-lookup modal.
+// Sprint 6 - strategy usage / reverse-lookup modal.
 //
 // "¿Dónde se usa esta estrategia?" Opened from the library, it lists the
 // games and tasks currently assigned to a specific strategy version
 // (GET /strategies/custom/{id}/usage) so an admin can see the blast
-// radius before archiving or rolling back — and, from the same place,
+// radius before archiving or rolling back - and, from the same place,
 // reassign every consumer to another strategy in one bulk action.
 
 import React, { useCallback, useEffect, useState } from 'react'
@@ -171,7 +171,7 @@ const StrategyUsageModal = ({
                         className="d-flex justify-content-between align-items-center"
                       >
                         <code>{game.externalGameId || game.gameId}</code>
-                        <CBadge color="secondary">{game.platform || '—'}</CBadge>
+                        <CBadge color="secondary">{game.platform || '-'}</CBadge>
                       </CListGroupItem>
                     ))}
                   </CListGroup>

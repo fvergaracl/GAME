@@ -1,4 +1,4 @@
-// Sprint 9 — version history modal.
+// Sprint 9 - version history modal.
 //
 // Renders the version timeline of a strategy family alongside a
 // per-section AST diff between two selected versions, and exposes a
@@ -8,7 +8,7 @@
 // so consumers never end up pointing at an ARCHIVED row.
 //
 // We render the diff as a JSON-ish text block coloured by kind rather
-// than wiring two Blockly workspaces — readability for a designer
+// than wiring two Blockly workspaces - readability for a designer
 // reviewing changes is higher and it keeps the bundle smaller.
 
 import React, { useEffect, useMemo, useState } from 'react'
@@ -55,7 +55,7 @@ const KIND_COLOR = {
 }
 
 const formatDate = (iso) => {
-  if (!iso) return '—'
+  if (!iso) return '-'
   try {
     return new Date(iso).toLocaleString()
   } catch {

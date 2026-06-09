@@ -146,7 +146,7 @@ class PointsSimulationMixin(UserPointsContext):
 
         for strategy_id_applied, tasks in grouped_by_strategyId.items():
             # Custom DSL strategies don't implement ``simulate_strategy``
-            # — they use the dedicated DSL simulate endpoint. Skip them
+            # - they use the dedicated DSL simulate endpoint. Skip them
             # here so a game that mixes built-in and custom strategies
             # still returns sensible simulator output for the built-ins.
             if is_custom_strategy_id(strategy_id_applied):

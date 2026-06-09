@@ -37,13 +37,13 @@ Create a game
      "strategyId": "default"
    }
 
-* ``externalGameId`` — *your* identifier for the campaign (unique per key).
-* ``platform`` — free-form label for where the game runs.
-* ``strategyId`` — the **default** strategy for the game's tasks. Use a
+* ``externalGameId`` - *your* identifier for the campaign (unique per key).
+* ``platform`` - free-form label for where the game runs.
+* ``strategyId`` - the **default** strategy for the game's tasks. Use a
   built-in id (e.g. ``default``) or a custom one (``custom:<uuid>``). Omit to
   fall back to ``default``.
 
-The response includes the internal ``gameId`` (UUID) — address the game by
+The response includes the internal ``gameId`` (UUID) - address the game by
 this id thereafter.
 
 Read, update, duplicate, delete
@@ -60,7 +60,7 @@ Read, update, duplicate, delete
    * - Get one game
      - ``GET /games/{gameId}``
    * - Update game (partial)
-     - ``PATCH /games/{gameId}`` — including switching ``strategyId``
+     - ``PATCH /games/{gameId}`` - including switching ``strategyId``
    * - Duplicate a game (with its tasks/params)
      - ``POST /games/{gameId}/duplicate``
    * - Delete a game
@@ -100,7 +100,7 @@ own.
    * - Get one task (by external id)
      - ``GET /games/{gameId}/tasks/{externalTaskId}``
    * - Update a task (partial)
-     - ``PATCH /games/{gameId}/tasks/{taskId}`` — including its params/strategy
+     - ``PATCH /games/{gameId}/tasks/{taskId}`` - including its params/strategy
    * - Duplicate a task
      - ``POST /games/{gameId}/tasks/{taskId}/duplicate``
    * - Delete a task
@@ -139,13 +139,13 @@ Response::
 
 Key behaviors:
 
-* **Lazy users** — an unknown ``externalUserId`` is created on the fly;
+* **Lazy users** - an unknown ``externalUserId`` is created on the fly;
   ``isACreatedUser`` tells you whether that happened.
-* **``data``** — an arbitrary payload passed to the strategy and stored with
+* **``data``** - an arbitrary payload passed to the strategy and stored with
   the award. Adaptive strategies read it (e.g. completion time).
-* **``caseName``** — the human-readable reason the awarding rule fired; the
+* **``caseName``** - the human-readable reason the awarding rule fired; the
   same field appears in analytics.
-* **``isSimulated``** — when ``true``, scoring runs but **nothing is
+* **``isSimulated``** - when ``true``, scoring runs but **nothing is
   persisted** (no points, no wallet movement). See :doc:`strategies`.
 
 Idempotency

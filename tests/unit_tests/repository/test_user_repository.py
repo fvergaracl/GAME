@@ -111,7 +111,7 @@ async def test_get_or_create_with_external_session_flushes_only(
 ):
     """
     When a caller-managed session is supplied with ``auto_commit=False``, the
-    repository must flush but not commit — leaving the transaction open for
+    repository must flush but not commit - leaving the transaction open for
     the caller to compose with other operations.
     """
     async with session_factory() as session:

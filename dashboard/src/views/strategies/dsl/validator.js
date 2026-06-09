@@ -1,6 +1,6 @@
 // Sprint 6: client-side AST validator.
 //
-// This is a *thin mirror* of app/engine/dsl_validator.py — its job is
+// This is a *thin mirror* of app/engine/dsl_validator.py - its job is
 // purely UX: catch obvious mistakes (unknown field path, wrong arity,
 // invalid case_name) before the backend round-trip so the designer
 // gets feedback within the same paint frame. The backend remains the
@@ -93,7 +93,7 @@ function validateExpression(node, errors, nodeCount, context = 'rule') {
       )
       return
     }
-    // Sprint 7: parent.* only inside post_rules — mirrors backend.
+    // Sprint 7: parent.* only inside post_rules - mirrors backend.
     if (PARENT_FIELD_PATH_SET.has(node.path) && context !== 'post') {
       fail(errors, node.id, `field.path '${node.path}' is only available inside post_rules.`)
     }
@@ -155,7 +155,7 @@ function validateCondition(node, errors, nodeCount, context = 'rule') {
     validateExpression(node.right, errors, nodeCount, context)
     return
   }
-  // literal / field as bare condition — delegate to expression validation.
+  // literal / field as bare condition - delegate to expression validation.
   validateExpression(node, errors, nodeCount, context)
 }
 
@@ -218,7 +218,7 @@ function validateStatement(node, errors, nodeCount, context = 'rule') {
     validateExpression(node.value, errors, nodeCount, context)
     return
   }
-  // return — no extra keys.
+  // return - no extra keys.
 }
 
 /**
@@ -309,7 +309,7 @@ export function validateAst(ast) {
           })
         }
       }
-      // Sprint 12: optional else branch — a non-empty statement list.
+      // Sprint 12: optional else branch - a non-empty statement list.
       if (rule.else != null) {
         if (!Array.isArray(rule.else) || rule.else.length === 0) {
           fail(

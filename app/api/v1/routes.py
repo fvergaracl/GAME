@@ -23,7 +23,7 @@ router_list = [
     # Sprint 10: the observability router shares the
     # ``/strategies/custom`` prefix with strategies_custom_router and
     # owns a literal ``/compare`` path. FastAPI matches routes in
-    # include-order, so this router has to come first — otherwise the
+    # include-order, so this router has to come first - otherwise the
     # ``/{id}`` route on strategies_custom_router would swallow
     # ``/compare`` and 404 with "Custom strategy not found: compare".
     strategy_observability_router,

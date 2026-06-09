@@ -9,7 +9,7 @@
 // IMPORTANT: ``path`` values mirror the analytics resolvers in
 // app/engine/dsl_ast.py (FIELD_RESOLVERS) and FIELD_PATHS in
 // ./whitelists.js. The static id paths (externalGameId/TaskId/UserId)
-// and data.* paths are intentionally excluded — the former have their
+// and data.* paths are intentionally excluded - the former have their
 // own inputs in the panel, the latter flow through the Event data box.
 
 // ``kind`` drives the default per-submission step in cumulative mode:
@@ -63,7 +63,7 @@ export function usedAccumulationFields(ast) {
 // is ``{ [path]: { value, step } }``; only paths in ``usedPaths`` with a
 // finite numeric value are emitted, so an unused field never shadows the
 // real analytics call. ``runIndex`` (0-based) shifts each value by
-// step*runIndex for the cumulative mode — runIndex 0 yields the base.
+// step*runIndex for the cumulative mode - runIndex 0 yields the base.
 export function buildMockState(fieldValues, usedPaths, runIndex = 0) {
   const mock = {}
   for (const path of usedPaths) {

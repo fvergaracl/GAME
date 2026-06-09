@@ -8,7 +8,7 @@ one fetch, plus an A/B comparison payload built by running the same
 aggregation against two strategy ids and computing deltas server-side.
 
 Why aggregations land here rather than just exposing raw rows:
-  * The log is sampled — emitting per-event JSON would let the UI
+  * The log is sampled - emitting per-event JSON would let the UI
     silently under-count, which defeats the point of an observability
     view ("the strategy looks fine, but actually it's timing out 30%
     of the time").
@@ -45,7 +45,7 @@ class CaseCount(BaseModel):
     """A ``case_name`` returned by the strategy and how often it fired.
 
     ``caseName`` is ``None`` when the strategy fell through every rule
-    and returned its defaultPoints — that is the "default" bucket the
+    and returned its defaultPoints - that is the "default" bucket the
     dashboard renders separately.
     """
 
@@ -120,7 +120,7 @@ class MetricsDelta(BaseModel):
 
 
 class StrategyComparisonResponse(BaseModel):
-    """A/B comparison payload — two metric snapshots plus deltas.
+    """A/B comparison payload - two metric snapshots plus deltas.
 
     Deltas are ``B - A`` so a positive ``successRate`` delta means B is
     healthier, a positive ``p95Ms`` means B is slower. The UI surfaces

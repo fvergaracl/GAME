@@ -349,7 +349,7 @@ class Configs(BaseSettings):
 
     # DSL interpreter limits (Sprint 4). The validator rejects ASTs whose
     # static node count or depth exceeds these thresholds, so runtime should
-    # never hit them — they are belt-and-braces guards in case future changes
+    # never hit them - they are belt-and-braces guards in case future changes
     # introduce dynamic expansion. The wall-clock timeout is the backstop
     # against a CPU-bound walk; the interpreter yields cooperatively every
     # ~64 nodes so asyncio.wait_for can actually cancel it.

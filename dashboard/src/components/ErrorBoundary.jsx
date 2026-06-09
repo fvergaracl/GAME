@@ -1,4 +1,4 @@
-// Sprint 9 — section-level error boundary.
+// Sprint 9 - section-level error boundary.
 //
 // React error boundaries are still class-only (no hook equivalent), so
 // this is the one class component in the dashboard. Wraps a section
@@ -34,7 +34,7 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, info) {
     // We don't have a remote logger wired in (the existing 40 print()
     // ports cited in mejoras.md cover the backend, not the dashboard).
-    // ``console.error`` is the right escape hatch — it goes to the
+    // ``console.error`` is the right escape hatch - it goes to the
     // browser devtools and to any in-page error overlay during dev.
     // eslint-disable-next-line no-console
     console.error(`[ErrorBoundary:${this.props.section || 'unknown'}]`, error, info?.componentStack)
@@ -95,7 +95,7 @@ class ErrorBoundary extends React.Component {
 
 ErrorBoundary.propTypes = {
   children: PropTypes.node,
-  // Used in console diagnostics — pass the route/section name to
+  // Used in console diagnostics - pass the route/section name to
   // disambiguate when multiple boundaries are active.
   section: PropTypes.string,
   title: PropTypes.string,

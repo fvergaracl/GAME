@@ -70,7 +70,7 @@ class StrategyExecutionLogRepository(BaseRepository):
             return list(result.scalars().all())
 
     # ------------------------------------------------------------------
-    # Sprint 10 — aggregations for the dashboard observability view.
+    # Sprint 10 - aggregations for the dashboard observability view.
     #
     # All four queries scope by strategyId + optional time range. We hit
     # the same indexed columns (strategyId, status, created_at) so the
@@ -144,7 +144,7 @@ class StrategyExecutionLogRepository(BaseRepository):
         untilDt: Optional[datetime] = None,
         limit: int = 10,
     ) -> List[Dict[str, Any]]:
-        """Which rule cases the strategy is firing — null caseName = no
+        """Which rule cases the strategy is firing - null caseName = no
         rule matched (fell back to defaultPoints)."""
         stmt = (
             select(self.model.caseName, func.count())
@@ -205,7 +205,7 @@ class StrategyExecutionLogRepository(BaseRepository):
         """
         Sample of raw durations used to compute p50/p95/p99 in the
         service layer. Bounded at 1000 rows so we don't fetch the whole
-        log when a busy strategy has millions of entries — that yields
+        log when a busy strategy has millions of entries - that yields
         ±2% accuracy on p95 which is fine for the UI.
         """
         stmt = (

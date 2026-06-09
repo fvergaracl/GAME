@@ -71,7 +71,7 @@
     }
   },
   "loading": "Cargando…",
-  "none": "—",
+  "none": "-",
   "noDescription": "Sin descripción.",
   "unknownError": "Error desconocido al contactar el backend."
 }

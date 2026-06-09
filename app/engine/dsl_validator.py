@@ -3,7 +3,7 @@ Structural validator for strategy ASTs.
 
 Runs synchronously and without I/O. Called on every create/update so a
 malformed AST never lands in the database, and called again by the
-simulate service as a cheap idempotent guard — the second call is fast
+simulate service as a cheap idempotent guard - the second call is fast
 because the AST has already been parsed by Pydantic into plain dict/list/
 scalar values.
 
@@ -15,7 +15,7 @@ The validator enforces three things, in order:
 2. **Whitelist**: ``compare.op``, ``arith.op``, ``field.path``, and
    ``node.type`` must all appear in the corresponding allow-list in
    ``dsl_ast``. The interpreter never invokes ``getattr`` on a node type
-   string, but the validator is the first line of defence — by the time
+   string, but the validator is the first line of defence - by the time
    the AST reaches the handler table any unknown name has already been
    rejected with ``DslValidationError``.
 3. **Limits**: a static node count and recursion depth are computed
@@ -251,7 +251,7 @@ def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
     # applied to a fresh copy of the parent built-in before its
     # calculate_points runs. Keys must be strings, values must be JSON
     # scalars (the registry-level "does this variable exist?" check
-    # happens at create/update time in StrategyDefinitionService — here
+    # happens at create/update time in StrategyDefinitionService - here
     # we only enforce the AST shape).
     parent_vars = node.get(PARENT_VARIABLES_KEY)
     if parent_vars is not None:
@@ -617,7 +617,7 @@ def _validate_expression(
                 params={"nodeId": nid, "path": path},
             )
         # Sprint 7: parent.points / parent.case_name are only meaningful
-        # inside post_rules — using them in main rules or pre_rules
+        # inside post_rules - using them in main rules or pre_rules
         # would read uninitialised state. Reject early with a clear
         # message rather than letting the interpreter return None.
         if is_parent_field_path(path) and context != "post":
@@ -791,7 +791,7 @@ def _validate_statement(
                 detail="set_callback_data.key must be a non-empty string.",
                 headers={"X-Node-Id": nid},
             )
-        # value may be a full expression — the interpreter will resolve it.
+        # value may be a full expression - the interpreter will resolve it.
         _validate_expression(
             node["value"],
             parent_id=nid,
@@ -868,7 +868,7 @@ def _validate_statement(
     if ntype == NODE_SET_CASE_NAME:
         # Sprint 7: post-rule override of the parent's caseName. The
         # value is an expression so it can be computed (e.g. a literal
-        # text block, or even derived from data.* — though the latter
+        # text block, or even derived from data.* - though the latter
         # is unusual). The runtime checks the resolved value is a
         # printable ASCII string.
         _assert_keys(node, ("value",), node_id=nid)

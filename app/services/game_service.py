@@ -302,7 +302,7 @@ class GameService(BaseService):
         recreated via :meth:`create` so all the creation guards (slug
         validation, externalGameId uniqueness, strategy existence) run
         against the copy exactly as they would for a fresh game. Tasks are
-        recreated directly through the repositories — the duplicate just
+        recreated directly through the repositories - the duplicate just
         needs the rows, not the elaborate per-task response shaping.
 
         Duplicated tasks start in the default ``open`` status: a copy is a
@@ -398,7 +398,7 @@ class GameService(BaseService):
             and must be PUBLISHED. We refuse DRAFT/ARCHIVED to avoid
             assigning a strategy that the resolver can't execute (DRAFT
             never runs; ARCHIVED would only run by accident if a prior
-            rollback left dangling references — which the Sprint 9
+            rollback left dangling references - which the Sprint 9
             cascade is precisely designed to prevent).
 
         Raises ``NotFoundError`` for unknown ids, ``BadRequestError`` for

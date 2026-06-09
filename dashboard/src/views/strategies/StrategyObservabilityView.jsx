@@ -1,4 +1,4 @@
-// Sprint 10 — Strategy observability view.
+// Sprint 10 - Strategy observability view.
 //
 // Surfaces metrics the backend already collects via DslExecutionObserver
 // (status mix, latency percentiles, top errors, case-name breakdown,
@@ -8,7 +8,7 @@
 //
 // Picker design: a plain CFormSelect listing every strategy in the
 // realm. Bigger UX (search, sort by error rate, "compare against this
-// one" CTA) lives a click away in the A/B comparison view — this page
+// one" CTA) lives a click away in the A/B comparison view - this page
 // is the "what is happening with strategy X" surface.
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -39,7 +39,7 @@ import { getStrategyMetrics, listCustomStrategies } from '../../api'
 import { extractError } from '../../utils/errors'
 import { SkeletonCard } from '../../components/Skeleton'
 
-// Window options — fixed presets cover the realistic ranges. A custom
+// Window options - fixed presets cover the realistic ranges. A custom
 // date-range picker would be overkill for now (the underlying data is
 // downsampled at 5% so multi-day windows are common anyway).
 const WINDOW_OPTIONS = ['all', '24h', '7d', '30d']
@@ -54,7 +54,7 @@ const windowToSinceIso = (key) => {
 const formatPct = (value) => `${(value * 100).toFixed(1)}%`
 const formatMs = (value) => `${value.toFixed(1)} ms`
 const formatNum = (value, digits = 0) =>
-  Number.isFinite(value) ? value.toFixed(digits) : '—'
+  Number.isFinite(value) ? value.toFixed(digits) : '-'
 
 const STATUS_COLORS = {
   ok: 'success',
@@ -94,7 +94,7 @@ function HistogramBars({ buckets, emptyLabel }) {
   )
 }
 
-// One ratio chip — used in the status card to display ok / error /
+// One ratio chip - used in the status card to display ok / error /
 // timeout percentages without a third-party chart dependency.
 function StatChip({ color, label, value, sub }) {
   return (
@@ -201,7 +201,7 @@ const StrategyObservabilityView = () => {
     navigate(`/strategies/compare${target}`)
   }
 
-  // Stacked status bar — proportions for ok / error / timeout / limit.
+  // Stacked status bar - proportions for ok / error / timeout / limit.
   // CProgressStacked rejects 0-value children silently, so filter out
   // empties before mapping (otherwise the gaps render as wide separators).
   const statusBars = useMemo(() => {

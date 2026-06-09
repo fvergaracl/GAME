@@ -1,6 +1,6 @@
-# `gd_func_call` — Function call
+# `gd_func_call` - Function call
 
-A whitelisted built-in function. No user-defined functions exist —
+A whitelisted built-in function. No user-defined functions exist -
 this is intentional, so the sandbox cannot grow new attack surfaces
 through tenant code.
 
@@ -36,6 +36,6 @@ assign  clamp(data.score_raw, 0, 100)  points
 
 ## Notes
 
-If you find yourself wanting a new function, file a ticket — adding
+If you find yourself wanting a new function, file a ticket - adding
 one is a backend change because the function must be vetted before
 landing in the sandbox.

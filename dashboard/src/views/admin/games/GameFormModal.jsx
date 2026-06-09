@@ -1,4 +1,4 @@
-// Sprint 1 (CRUD management) — create / edit a Game.
+// Sprint 1 (CRUD management) - create / edit a Game.
 //
 // Mirrors the react-hook-form + CForm + CFormFeedback pattern from
 // ApikeysCreation, but rendered inside a CModal so the same component
@@ -49,7 +49,7 @@ import ParamsEditor from '../../../components/ParamsEditor'
 import useUnsavedGuard from '../../../components/useUnsavedGuard'
 
 // Suggested platforms for the select. The backend stores a free string,
-// so this is just a convenience list — an existing game on an off-list
+// so this is just a convenience list - an existing game on an off-list
 // platform keeps its value (we inject it as an extra option in edit mode).
 export const PLATFORM_PRESETS = ['web', 'mobile', 'ios', 'android', 'desktop']
 
@@ -130,7 +130,7 @@ const GameFormModal = ({ visible, mode, gameId, onClose, onSaved }) => {
   const isEdit = mode === 'edit'
 
   // On open: load the strategy picklist (built-ins + published customs) and,
-  // for edit, the game itself — then seed the form. Strategy-list failures
+  // for edit, the game itself - then seed the form. Strategy-list failures
   // degrade gracefully (we still get "default"); a game fetch failure is
   // surfaced as a blocking error.
   useEffect(() => {

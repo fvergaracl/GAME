@@ -1,6 +1,6 @@
 // Sprint 6: minimal Vitest setup, separated from vite.config.mjs so the
 // production bundle doesn't pull in jsdom or test-only deps. Coverage
-// is intentionally limited to the new DSL editor surface — full
+// is intentionally limited to the new DSL editor surface - full
 // frontend test coverage is deferred to a later sprint.
 
 import { defineConfig } from 'vitest/config'

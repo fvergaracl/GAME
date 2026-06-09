@@ -6,7 +6,7 @@
 // chooser without a popup.
 //
 // The tour targets ``data-tour="<name>"`` selectors so the StrategyEditor
-// JSX is free to restructure as long as the data-attributes survive —
+// JSX is free to restructure as long as the data-attributes survive -
 // CSS-class selectors would be brittle against the dashboard's Bootstrap
 // theme overrides.
 
@@ -91,7 +91,7 @@ const EditorTour = ({ runRequest = 'auto', onFinished = null, hasHistory = false
       const { action, index, status, type } = data
       if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
         // Move on when the user clicks next/skip OR when the step's
-        // target isn't on screen — better to advance than freeze.
+        // target isn't on screen - better to advance than freeze.
         setStepIndex(index + (action === ACTIONS.PREV ? -1 : 1))
         return
       }
@@ -118,7 +118,7 @@ const EditorTour = ({ runRequest = 'auto', onFinished = null, hasHistory = false
       locale={locale}
       styles={{
         // Sprint 9: same dark-mode-friendly token-driven palette as
-        // OnboardingTour — the colour is no longer hardcoded.
+        // OnboardingTour - the colour is no longer hardcoded.
         options: {
           zIndex: 10000,
           primaryColor: 'var(--cui-primary, #321fdb)',

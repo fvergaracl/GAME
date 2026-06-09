@@ -233,7 +233,7 @@ class BadRequestError(HTTPException):
 # dict ``{"code": ..., "params": ..., "message": ...}`` so the frontend
 # can render a localised message via i18n while servers, logs, and pytest
 # assertions keep using the English ``message`` fallback. Legacy callers
-# that pass a bare string keep their existing shape — FastAPI returns
+# that pass a bare string keep their existing shape - FastAPI returns
 # ``{"detail": "<string>"}`` exactly as before.
 
 

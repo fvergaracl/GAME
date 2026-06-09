@@ -37,15 +37,15 @@ Metrics (Prometheus)
 When ``METRICS_ENABLED=true`` (the default), the app mounts
 ``prometheus_fastapi_instrumentator`` at ``/metrics``. It is wired *after*
 CORS but *before* the routers, so it observes every request middleware yet
-does not sit behind router-level auth — i.e. ``/metrics`` itself is unguarded
+does not sit behind router-level auth - i.e. ``/metrics`` itself is unguarded
 at the app level and must be protected at the ingress (or disabled) in
 production.
 
 You get out of the box:
 
-* **HTTP metrics** — request counts, durations, and status classes
+* **HTTP metrics** - request counts, durations, and status classes
   (status codes are grouped; untemplated paths and ``/metrics`` are excluded).
-* **DSL metrics** — custom counters defined in ``app/engine/dsl_metrics.py``,
+* **DSL metrics** - custom counters defined in ``app/engine/dsl_metrics.py``,
   which live in the default ``prometheus_client`` registry and are therefore
   exported automatically:
 
@@ -74,16 +74,16 @@ Logging
 
 Logging is configured at startup (``app/main.py``):
 
-* **Format** — plain text in ``dev``; structured **JSON** in ``prod``/``stage``
+* **Format** - plain text in ``dev``; structured **JSON** in ``prod``/``stage``
   (via ``python-json-logger``), with renamed fields
   (``timestamp``/``level``/``logger``) ready for ingestion.
-* **Level** — ``LOG_LEVEL`` env var (default ``INFO``).
-* **Scope** — root plus the uvicorn/gunicorn loggers, all to stdout (so a
+* **Level** - ``LOG_LEVEL`` env var (default ``INFO``).
+* **Scope** - root plus the uvicorn/gunicorn loggers, all to stdout (so a
   container platform collects them).
 
 On top of stdout logging, the **audit trail** (``AuditLogger`` /
 ``app/util/add_log.py``) writes structured ``Logs`` rows tagged with the
-module, level, message, ``api_key``, ``oauth_user_id``, and a correlation id —
+module, level, message, ``api_key``, ``oauth_user_id``, and a correlation id -
 so a request can be reconstructed from the database, not just the log stream.
 
 .. admonition:: The "Network Error" trap
@@ -103,7 +103,7 @@ Set ``SENTRY_DSN`` to enable Sentry. Configuration (``app/main.py``):
 * ``SENTRY_ENVIRONMENT`` and ``SENTRY_RELEASE`` tag events.
 * ``send_default_pii=True`` and ``traces_sample_rate=1.0`` are set; continuous
   profiling auto-starts. **Review these for your privacy/cost posture** before
-  enabling in production — full-rate tracing and PII capture are convenient in
+  enabling in production - full-rate tracing and PII capture are convenient in
   staging but may be too much at scale.
 
 Strategy execution traces
@@ -136,8 +136,8 @@ drained by a background worker:
 * On graceful shutdown the lifespan hook **flushes** the queue
   (``observer.aclose()``) so buffered rows are not lost.
 
-So a non-zero drop rate is an alert that the *sink* is saturated — increase the
-sample budget's headroom or the queue size, or speed up the DB — but scoring
+So a non-zero drop rate is an alert that the *sink* is saturated - increase the
+sample budget's headroom or the queue size, or speed up the DB - but scoring
 itself is never the bottleneck.
 
 Why both metrics and traces? Metrics tell you a strategy got slow or started
@@ -182,7 +182,7 @@ What to alert on
    * - Signal
      - Why it matters
    * - ``dsl_execution_errors_total`` rising
-     - A published strategy is failing — users aren't being scored as
+     - A published strategy is failing - users aren't being scored as
        intended.
    * - ``dsl_execution_duration_seconds`` p99 near 500 ms
      - Strategies are approaching the wall-clock limit; some events may be

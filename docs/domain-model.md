@@ -1,4 +1,4 @@
-# GAME — Domain Model
+# GAME - Domain Model
 
 Complete entity-relationship diagram for the GAME (Goals And Motivation Engine) schema.
 Every entity, attribute, and foreign-key relationship is captured below.
@@ -256,7 +256,7 @@ erDiagram
     OAuthUsers      ||--o{ ApiKey             : "owns"
     ApiKey          ||--o{ OAuthUsers         : "used by"
 
-    %% ApiKey audit trail — every BaseModel entity records which key created it
+    %% ApiKey audit trail - every BaseModel entity records which key created it
     ApiKey          ||--o{ Users              : "audit"
     ApiKey          ||--o{ Games              : "audit"
     ApiKey          ||--o{ GameParams         : "audit"

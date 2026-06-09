@@ -4,7 +4,7 @@ DslSimulationService behavioural tests.
 The service composes three pieces: the strategy lookup (tenant scoped),
 the precompute, and the timeout-wrapped interpreter run. These tests
 mock the strategy definition service so we never need a DB and exercise
-the actual interpreter + context — that way a regression in either
+the actual interpreter + context - that way a regression in either
 shows up here too.
 """
 
@@ -252,7 +252,7 @@ async def test_simulate_translates_timeout_to_dsl_timeout_error():
 
 @pytest.mark.asyncio
 async def test_simulate_inline_runs_ast_without_db_lookup():
-    """Inline simulate must NOT touch the strategy definition service —
+    """Inline simulate must NOT touch the strategy definition service -
     that's the whole point of fix C7 (no orphan DRAFT rows)."""
     svc, strategy_service, _ = _service()
 

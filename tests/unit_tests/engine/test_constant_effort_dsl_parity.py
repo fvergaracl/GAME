@@ -1,5 +1,5 @@
 """
-Sprint 6 parity test — gate that ``constantEffortStrategy`` can be
+Sprint 6 parity test - gate that ``constantEffortStrategy`` can be
 expressed as a DSL AST that produces identical outputs to the Python
 implementation.
 
@@ -12,7 +12,7 @@ in Sprint 5). It exercises the AST extensions introduced in Sprint 6:
 * The ``user.recent_measurements_count`` field resolver that wraps the
   asynchronous ``get_user_task_measurements_count_the_last_seconds``
   analytics call (with the strategy's default 5-minute window hardcoded
-  in the resolver — see the Sprint 6 plan §A.1.2 for why).
+  in the resolver - see the Sprint 6 plan §A.1.2 for why).
 
 Note on parity scope: the Python helper computes
 ``normalized = (consistent_effort_count / 100) * 100``, which always

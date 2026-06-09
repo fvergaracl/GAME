@@ -14,14 +14,14 @@ call (the wiring lives in :mod:`app.engine.dsl_strategy`):
    after the incident. OK runs are sampled at
    :data:`_config_module.configs.DSL_EXECUTION_LOG_SAMPLE_RATE` (default 5 %).
 
-Sprint 13 — hot-path: ``record`` no longer ``await``\\s the DB write.
+Sprint 13 - hot-path: ``record`` no longer ``await``\\s the DB write.
 The metrics emit + sampling decision stay synchronous (microseconds),
 and the chosen row is handed to a bounded in-process queue drained by a
 background worker task. Scoring therefore pays only the enqueue, never a
 DB round-trip. If the worker falls behind and the queue fills (a slow or
 down database), rows are dropped and counted via
 ``dsl_execution_log_dropped_total`` rather than blocking the scoring
-call — the audit log is best-effort by design. Call :meth:`aclose`
+call - the audit log is best-effort by design. Call :meth:`aclose`
 on shutdown to flush the queue and stop the worker cleanly.
 
 The service is wired with ``random.Random`` so tests can pass a
@@ -73,7 +73,7 @@ class DslExecutionObserver:
         # Sprint 13: lazily-created bounded queue + drain worker. Both are
         # created on the first enqueue (which always happens inside the
         # running event loop), so constructing the observer outside a loop
-        # — as the DI container Singleton does at import time — is safe.
+        # - as the DI container Singleton does at import time - is safe.
         self._queue_maxsize = (
             queue_maxsize
             if queue_maxsize is not None
@@ -174,13 +174,13 @@ class DslExecutionObserver:
         )
 
         # Sprint 13: hand off to the background worker instead of awaiting
-        # the DB write here. ``_enqueue`` never blocks and never raises —
+        # the DB write here. ``_enqueue`` never blocks and never raises -
         # a full queue drops the row (counted) so a slow database can't
         # apply backpressure to the scoring hot-path.
         self._enqueue(row, realmId=realmId, strategyType=strategyType)
 
     # ------------------------------------------------------------------
-    # Sprint 13 — background drain worker.
+    # Sprint 13 - background drain worker.
     # ------------------------------------------------------------------
 
     def _enqueue(
@@ -249,7 +249,7 @@ class DslExecutionObserver:
     async def drain(self) -> None:
         """Block until every queued row has been processed.
 
-        Mainly for tests and graceful shutdown — production scoring never
+        Mainly for tests and graceful shutdown - production scoring never
         calls this. No-op if nothing has been enqueued yet.
         """
         if self._queue is not None:

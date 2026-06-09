@@ -28,7 +28,7 @@ const fetcher = async (url, options) => {
   if (!response.ok) {
     // Mirror the axios error shape ({ response: { status, data } }) so the
     // shared extractError helper can surface the backend's FastAPI ``detail``
-    // in read (SWR) views too — previously we only threw statusText, so
+    // in read (SWR) views too - previously we only threw statusText, so
     // extractError fell back to the bare HTTP status and the real message was
     // lost on GET endpoints (it was only preserved on axios mutations).
     const data = await response.json().catch(() => null)

@@ -86,13 +86,13 @@ SECRET_KEY=secret
 ## Docker Compose files 🐳
 
 The repository ships several Compose files for different scenarios. Pick the
-one that matches what you want to run — they are **not** meant to be combined:
+one that matches what you want to run - they are **not** meant to be combined:
 
 | You want to…                                                                 | Use this file                       | Bundles                                                                 | Env file        |
 | ---------------------------------------------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------- | --------------- |
 | Run the **production** stack (api in `prod` target, exposed on port 80)      | `docker-compose.yml`                | api · Postgres · health-check · Prometheus · Grafana                    | `.env.prod`     |
 | Run the **full local dev** stack with everything wired up (hot reload)       | `docker-compose-dev.yml`            | api · Postgres · Keycloak (realm import) · dashboard · health-check · Prometheus · Grafana | `.env`          |
-| Run dev **against a Postgres you already manage** (no bundled DB)            | `docker-compose-dev-withoutDB.yml`  | api · Keycloak · health-check · Prometheus · Grafana — joined to the **external** `greencrowd` network | `.env`          |
+| Run dev **against a Postgres you already manage** (no bundled DB)            | `docker-compose-dev-withoutDB.yml`  | api · Keycloak · health-check · Prometheus · Grafana - joined to the **external** `greencrowd` network | `.env`          |
 | Embed GAME inside the **Greengage interlink-project** deployment             | `docker-compose.devintegrated.yml`  | api only (joins the interlink-project's services)                      | `.env.integrated` |
 
 Notes:

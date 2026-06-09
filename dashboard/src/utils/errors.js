@@ -1,4 +1,4 @@
-// Sprint 9 — shared error extraction utility.
+// Sprint 9 - shared error extraction utility.
 //
 // Before this module each fetching view shipped its own ``extractError``
 // (StrategyEditor, StrategyLibraryView, StrategyAssignmentsView,
@@ -11,18 +11,18 @@
 // a human-readable string suitable for a CAlert and never throws.
 //
 // Options (all optional):
-//   * fallback   — string used when no message can be derived.
-//   * t          — i18next ``t`` function. When present, special-case
+//   * fallback   - string used when no message can be derived.
+//   * t          - i18next ``t`` function. When present, special-case
 //                  responses (403) and the generic fallback get a
 //                  localised wording; without it the wording stays in
 //                  Spanish (the source locale).
-//   * forbidden  — override message for HTTP 403 (overrides t() default).
+//   * forbidden  - override message for HTTP 403 (overrides t() default).
 //
 // Inputs handled:
-//   * FastAPI HTTPException bodies — ``{ detail: "..." }`` or
+//   * FastAPI HTTPException bodies - ``{ detail: "..." }`` or
 //     ``{ detail: { message: "..." } }``.
 //   * ``responseType: 'blob'`` requests where the error body is a Blob
-//     the caller can't read synchronously — we degrade to the status
+//     the caller can't read synchronously - we degrade to the status
 //     code instead of leaking ``[object Blob]``.
 //   * Network errors with no ``response`` (axios sets ``err.message``).
 //   * Bare ``Error`` instances and arbitrary thrown values.

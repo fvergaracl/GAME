@@ -257,7 +257,7 @@ class Container(containers.DeclarativeContainer):
         user_points_repository=user_points_repository,
     )
 
-    # Shared DSL interpreter — stateless apart from per-call walk state, so a
+    # Shared DSL interpreter - stateless apart from per-call walk state, so a
     # single Factory-built instance is safe to reuse across requests.
     dsl_interpreter = providers.Factory(
         DslInterpreter,

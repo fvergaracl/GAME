@@ -5,11 +5,11 @@
 persistence concerns live in separate modules without changing the single
 DI-injected class that endpoints and strategy engines depend on:
 
-* :class:`PointsQueryMixin` — read-only aggregations and lookups.
-* :class:`PointsAssignmentMixin` — the scoring/write path (also brings the
+* :class:`PointsQueryMixin` - read-only aggregations and lookups.
+* :class:`PointsAssignmentMixin` - the scoring/write path (also brings the
   persistence helpers it builds on).
-* :class:`PointsSimulationMixin` — non-persisting simulation of built-ins.
-* :class:`PointsPersistenceMixin` — the atomic points/wallet/transaction write.
+* :class:`PointsSimulationMixin` - non-persisting simulation of built-ins.
+* :class:`PointsPersistenceMixin` - the atomic points/wallet/transaction write.
 """
 
 import logging

@@ -5,7 +5,7 @@ We call the endpoint functions directly with mocked services and auth
 contexts, mirroring the existing pattern in
 ``test_endpoint_strategy.py``. The point is to lock down the tenant
 resolution, the admin gates, and the audit logging on success/failure
-paths — the underlying service is exercised in
+paths - the underlying service is exercised in
 ``test_strategy_definition_service``.
 """
 
@@ -239,7 +239,7 @@ from app.core.exceptions import NotFoundError  # noqa: E402
 @pytest.mark.asyncio
 async def test_create_with_dsl_extend_rejects_unknown_parent():
     """A DSL_EXTEND payload whose parentStrategyId is not in the
-    registry must 404 before the service.create call — proves the
+    registry must 404 before the service.create call - proves the
     new ``_ensure_parent_strategy_exists`` guard is wired correctly."""
     service = MagicMock()
     service.create = AsyncMock()
@@ -305,7 +305,7 @@ async def test_create_with_dsl_extend_passes_when_parent_exists():
 
 @pytest.mark.asyncio
 async def test_create_with_dsl_full_skips_parent_check():
-    """For DSL_FULL payloads the parent check is a no-op — confirms
+    """For DSL_FULL payloads the parent check is a no-op - confirms
     the early-return guard in _ensure_parent_strategy_exists."""
     service = MagicMock()
     service.create = AsyncMock(return_value=_read_stub())
@@ -431,7 +431,7 @@ async def test_import_creates_draft_when_name_is_unique():
 @pytest.mark.asyncio
 async def test_import_renames_on_name_collision():
     """When the realm already has a strategy with the same name, import
-    must auto-rename rather than 400 — otherwise a support engineer
+    must auto-rename rather than 400 - otherwise a support engineer
     re-running an import would have to manually delete prior attempts."""
     service = MagicMock()
     service.name_exists = AsyncMock(return_value=True)
@@ -459,7 +459,7 @@ async def test_import_renames_on_name_collision():
 @pytest.mark.asyncio
 async def test_import_rejects_malformed_ast_before_db_roundtrip():
     """A bad AST must 400 (via DslValidationError) and never touch
-    name_exists / create — proves the upfront validation guard."""
+    name_exists / create - proves the upfront validation guard."""
     service = MagicMock()
     service.name_exists = AsyncMock()
     service.create = AsyncMock()
@@ -470,7 +470,7 @@ async def test_import_rejects_malformed_ast_before_db_roundtrip():
         astJson={
             "type": "program",
             "id": "program",
-            # rules must be a list — passing a dict trips validate_ast.
+            # rules must be a list - passing a dict trips validate_ast.
             "rules": {"oops": "not_a_list"},
         },
     )
@@ -492,7 +492,7 @@ async def test_import_rejects_malformed_ast_before_db_roundtrip():
 @pytest.mark.asyncio
 async def test_import_dsl_extend_validates_parent_against_registry():
     """DSL_EXTEND import with an unknown parent must 404 before
-    create — same guard as the regular create endpoint."""
+    create - same guard as the regular create endpoint."""
     service = MagicMock()
     service.name_exists = AsyncMock()
     service.create = AsyncMock()
@@ -525,7 +525,7 @@ async def test_import_dsl_extend_validates_parent_against_registry():
 @pytest.mark.asyncio
 async def test_import_logs_failure_with_audit():
     """An exception inside service.create must trigger an audit ERROR
-    log — same audit-on-failure pattern as the create endpoint."""
+    log - same audit-on-failure pattern as the create endpoint."""
     service = MagicMock()
     service.name_exists = AsyncMock(return_value=False)
     service.create = AsyncMock(side_effect=RuntimeError("boom"))
@@ -552,7 +552,7 @@ async def test_import_logs_failure_with_audit():
 @pytest.mark.asyncio
 async def test_list_versions_passes_resolved_realm():
     """``GET /{id}/versions`` resolves the realm from the auth context
-    and delegates straight to the service. Doesn't require admin —
+    and delegates straight to the service. Doesn't require admin -
     history is a read-only audit affordance."""
     service = MagicMock()
     service.list_versions = AsyncMock(
@@ -582,7 +582,7 @@ async def test_list_versions_passes_resolved_realm():
 @pytest.mark.asyncio
 async def test_get_usage_passes_resolved_realm():
     """``GET /{id}/usage`` resolves the realm from the auth context and
-    delegates to the service. Read-only — no admin gate (an author needs
+    delegates to the service. Read-only - no admin gate (an author needs
     to see the blast radius before asking an admin to reassign)."""
     service = MagicMock()
     service.get_usage = AsyncMock(

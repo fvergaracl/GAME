@@ -1,4 +1,4 @@
-// Sprint 10 — A/B comparison view.
+// Sprint 10 - A/B comparison view.
 //
 // Two strategies, same time window, rendered side by side with deltas
 // computed server-side (B - A). The intended use is the README's
@@ -47,7 +47,7 @@ const windowToSinceIso = (key) => {
 const formatPct = (value) => `${(value * 100).toFixed(1)}%`
 const formatMs = (value) => `${value.toFixed(1)} ms`
 const formatNumber = (value, digits = 1) =>
-  Number.isFinite(value) ? value.toFixed(digits) : '—'
+  Number.isFinite(value) ? value.toFixed(digits) : '-'
 
 // One row of the deltas table. ``better`` says whether a positive
 // delta is good (success rate) or bad (latency, error rate). We render
@@ -59,7 +59,7 @@ function DeltaRow({ label, valueA, valueB, delta, betterDirection, format }) {
   const sign = Math.sign(delta) * betterDirection
   const color = sign > 0 ? 'success' : sign < 0 ? 'danger' : 'secondary'
   const { t } = useTranslation('strategies')
-  const flavor = sign > 0 ? t('compare.betterLabel') : sign < 0 ? t('compare.worseLabel') : '—'
+  const flavor = sign > 0 ? t('compare.betterLabel') : sign < 0 ? t('compare.worseLabel') : '-'
   const formatted = format(delta)
   const prefix = delta > 0 ? '+' : ''
   return (
@@ -78,7 +78,7 @@ function DeltaRow({ label, valueA, valueB, delta, betterDirection, format }) {
   )
 }
 
-// Stacked status bar (proportions ok / error / timeout / limit) — same
+// Stacked status bar (proportions ok / error / timeout / limit) - same
 // helper as in the observability view, kept inline because it's tiny
 // and varies (no "other" bucket on the comparison summary).
 function StatusBar({ breakdown }) {

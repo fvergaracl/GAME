@@ -1,5 +1,5 @@
-// Sprint 9 — strategy assignments admin view.
-// Sprint 6 — reworked for scale: server-side pagination + search instead
+// Sprint 9 - strategy assignments admin view.
+// Sprint 6 - reworked for scale: server-side pagination + search instead
 // of pulling every game with page_size=all, plus multi-select bulk
 // reassignment with a confirmation/impact step.
 //
@@ -89,7 +89,7 @@ const buildStrategyLabelIndex = (builtIns, customs) => {
 
 const StrategyAssignmentsView = () => {
   const { t } = useTranslation('strategies')
-  // Sprint 11: shared feedback channel — see ToastProvider in
+  // Sprint 11: shared feedback channel - see ToastProvider in
   // DefaultLayout. Falls back to no-ops outside a provider.
   const toast = useToast()
   const [tourRunRequest, setTourRunRequest] = useState('auto')
@@ -244,7 +244,7 @@ const StrategyAssignmentsView = () => {
 
   const renderStrategyLabel = useCallback(
     (strategyId) => {
-      if (!strategyId) return <span className="text-medium-emphasis">—</span>
+      if (!strategyId) return <span className="text-medium-emphasis">-</span>
       const entry = labelIndex.get(strategyId)
       if (entry) {
         return (
@@ -271,7 +271,7 @@ const StrategyAssignmentsView = () => {
 
   const labelFor = useCallback(
     (strategyId) => {
-      if (!strategyId) return '—'
+      if (!strategyId) return '-'
       return labelIndex.get(strategyId)?.label || strategyId
     },
     [labelIndex],

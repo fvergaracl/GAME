@@ -226,7 +226,7 @@ class TestExportServiceIterators(unittest.IsolatedAsyncioTestCase):
     Iterator-level tests that snapshot the compiled SQL and the keys each
     iterator yields. These exist because S1 shipped with
     iter_user_interactions targeting a non-existent ``userinteractions``
-    table — a bug that bypassed all existing tests (which mock the iterator)
+    table - a bug that bypassed all existing tests (which mock the iterator)
     and only surfaced via a manual smoke test against Postgres.
     """
 

@@ -9,13 +9,13 @@
 //     can sit under e.g. ``strategies:library.tour.*`` (the i18next
 //     ``strategies`` ns is shared across views; the prefix scopes per
 //     view).
-//   * the ``steps`` array — { target, placement, i18n, spotlightClicks? }
+//   * the ``steps`` array - { target, placement, i18n, spotlightClicks? }
 //     where ``i18n`` is the leaf under ``<keyPrefix>.steps.``.
 //   * ``runRequest`` controlled by the parent: 'auto' on mount honours
 //     the seen flag; 'manual' always runs; null stops.
 //
 // Skip-on-missing-target (TARGET_NOT_FOUND) advances rather than
-// freezing — the same defensive behaviour EditorTour uses for the
+// freezing - the same defensive behaviour EditorTour uses for the
 // history step that only exists once a strategy has been saved.
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'

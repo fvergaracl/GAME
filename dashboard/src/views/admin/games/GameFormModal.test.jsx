@@ -1,4 +1,4 @@
-// Sprint 6 (CRUD management) — GameFormModal validation + submit tests.
+// Sprint 6 (CRUD management) - GameFormModal validation + submit tests.
 //
 // The form is the only client-side gate on a game's externalGameId (the
 // backend re-validates, but a bad slug there is a 422 round-trip the user

@@ -53,7 +53,7 @@ $ENV_SAMPLE     = ".env.sample"
 $MARKER_FILE    = ".game_initialized"
 $API_HEALTH_URL = "http://localhost:8000/api/v1/kpi"
 
-# "native" | "wsl" — set in Check-Docker
+# "native" | "wsl" - set in Check-Docker
 $script:DockerMode = "native"
 
 # ---------------------------------------------------------------------------

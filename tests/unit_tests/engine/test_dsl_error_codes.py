@@ -10,7 +10,7 @@ identifiers so the contract doesn't drift silently.
 
 The detail body for a coded error is a dict (``{code, params, message}``)
 so the FastAPI HTTPException response keeps the structure. Legacy raises
-that haven't been migrated still emit a bare string detail — the helper
+that haven't been migrated still emit a bare string detail - the helper
 ``_assert_code`` asserts the structured shape only when ``code`` is set.
 """
 

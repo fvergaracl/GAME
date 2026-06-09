@@ -1,10 +1,10 @@
 """
-Sprint 10 — integration tests for the aggregation queries on
+Sprint 10 - integration tests for the aggregation queries on
 ``StrategyExecutionLogRepository``.
 
 Runs the real repository against the in-memory aiosqlite engine the
 existing repository test suite uses (see ``conftest.py``). Verifies
-that the SQL the service relies on is valid — type coercion (Numeric
+that the SQL the service relies on is valid - type coercion (Numeric
 → float, Integer → int), grouping, ordering, and the time-window
 filter all behave as the service expects.
 """
@@ -71,7 +71,7 @@ async def seeded(repo):
             None,
             base + timedelta(minutes=8),
         ),
-        # Unrelated strategy — must not bleed into s1's aggregates.
+        # Unrelated strategy - must not bleed into s1's aggregates.
         ("s2", "ok", None, 1.0, 1.0, "Other", base),
     ]
     for strat_id, status, code, dur, pts, case, ts in rows:
@@ -135,7 +135,7 @@ async def test_count_by_case_name_includes_default_null_bucket(repo, seeded):
 async def test_duration_and_nodes_summary_numeric_types(repo, seeded):
     out = await repo.duration_and_nodes_summary(strategyId="s1")
     # Count is the *number of rows* for this strategy, not just OK ones
-    # — used by the service to compute success rate from the breakdown.
+    # - used by the service to compute success rate from the breakdown.
     assert out["count"] == 9
     # max duration is the timeout row.
     assert out["durationMaxMs"] == pytest.approx(999.0)
@@ -164,7 +164,7 @@ async def test_sample_points_filters_null_points(repo, seeded):
 
 @pytest.mark.asyncio
 async def test_time_window_filter_excludes_rows_before_since(repo, seeded):
-    # Only keep rows from the 6th minute onwards — the four errors +
+    # Only keep rows from the 6th minute onwards - the four errors +
     # timeout, not the OK runs.
     cutoff = seeded + timedelta(minutes=6)
     out = await repo.count_by_status(strategyId="s1", sinceDt=cutoff)

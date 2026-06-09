@@ -1,8 +1,8 @@
-// Sprint 5 (CRUD management) — UsersExplorerView integration tests.
+// Sprint 5 (CRUD management) - UsersExplorerView integration tests.
 //
 // The explorer is read-only, so the regression surface is narrow but the
 // state machine isn't: a lookup fans out to two independent endpoints and the
-// view has to tell three outcomes apart — both succeed (render), both 404
+// view has to tell three outcomes apart - both succeed (render), both 404
 // (the user doesn't exist), or one 404 (the user exists but has no points /
 // no wallet). These tests pin that branching plus the points-total math.
 

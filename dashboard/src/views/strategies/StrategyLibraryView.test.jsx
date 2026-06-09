@@ -1,4 +1,4 @@
-// Sprint 11 — StrategyLibraryView integration tests.
+// Sprint 11 - StrategyLibraryView integration tests.
 //
 // The library is the discoverability surface (Sprint 2) and the entry
 // point to the publish/archive lifecycle from outside the editor
@@ -213,7 +213,7 @@ describe('StrategyLibraryView', () => {
     expect(screen.getByText('Speed bonus')).toBeInTheDocument()
     expect(screen.getByText('Onboarding boost')).toBeInTheDocument()
     // Parent id "default" should resolve to its human name from the
-    // builtIn index — not the raw id.
+    // builtIn index - not the raw id.
     expect(screen.getByText('Default points')).toBeInTheDocument()
     // Version column.
     expect(screen.getByText('v1')).toBeInTheDocument()
@@ -283,7 +283,7 @@ describe('StrategyLibraryView', () => {
   it('publishes a draft and surfaces success feedback', async () => {
     const api = await importMockedApi()
     await renderView({ isAdmin: true })
-    // Row 1 is a DRAFT — admin should see Publicar in its dropdown.
+    // Row 1 is a DRAFT - admin should see Publicar in its dropdown.
     fireEvent.click(getRowMenuItem('Speed bonus', 'Publicar'))
     // Confirmation modal pops; click "Sí, publicar".
     const confirmBtn = await screen.findByRole('button', { name: /Sí, publicar/i })
@@ -293,7 +293,7 @@ describe('StrategyLibraryView', () => {
     })
     expect(api.publishCustomStrategy).toHaveBeenCalledWith('strat-1')
     await waitFor(() => {
-      // The inline CAlert + the toast both render the same message —
+      // The inline CAlert + the toast both render the same message -
       // assert via ``getAllByText`` so the dual render is intentional.
       expect(
         screen.getAllByText(/publicada \(v1\)\. Ahora es la versión en producción\./i)
@@ -315,7 +315,7 @@ describe('StrategyLibraryView', () => {
       await flushMicrotasks()
     })
     await waitFor(() => {
-      // CAlert + toast — both render the extractError output.
+      // CAlert + toast - both render the extractError output.
       expect(screen.getAllByText('AST validation failed.').length).toBeGreaterThan(0)
     })
   })

@@ -1,4 +1,4 @@
-// Sprint 9 — strategy picker modal.
+// Sprint 9 - strategy picker modal.
 //
 // Two-tab modal used by the admin "Asignación" view to choose which
 // strategy gets assigned to a Game or one of its Tasks. Built-ins live
@@ -51,7 +51,7 @@ const StrategyPickerModal = ({ visible, currentStrategyId = null, onClose, onSel
     let cancelled = false
     setIsLoading(true)
     setError(null)
-    // Fire both lists in parallel — the modal is small and admins will
+    // Fire both lists in parallel - the modal is small and admins will
     // flip between tabs frequently, so paying both costs up-front keeps
     // tab switching instant.
     Promise.all([

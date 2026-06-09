@@ -1,5 +1,5 @@
 """
-Sprint 7 control gate — DSL_EXTEND parity for ``default.py``.
+Sprint 7 control gate - DSL_EXTEND parity for ``default.py``.
 
 The roadmap calls out one specific acceptance test for S7:
 
@@ -52,7 +52,7 @@ _ANALYTICS_METHODS = (
 
 
 def _build_analytics_mocks(returns: Dict[str, int]):
-    """Same factory shape used by ``test_default_dsl_parity`` —
+    """Same factory shape used by ``test_default_dsl_parity`` -
     sync MagicMock for the Python parent, AsyncMock for the DSL
     ExecutionContext.precompute calls."""
     py_mock = MagicMock()
@@ -113,7 +113,7 @@ _BONUS_POST_RULE_AST = {
 
 # Same 8 scenarios as test_default_dsl_parity (which itself mirrors
 # the canonical test_default.py). Plus the "is first time" flag the
-# bonus rule keys on — derived from get_user_task_measurements_count.
+# bonus rule keys on - derived from get_user_task_measurements_count.
 _SCENARIOS = [
     pytest.param(
         {"count_measurements_by_external_task_id": 1},
@@ -214,7 +214,7 @@ async def test_default_extended_with_first_time_bonus_matches_baseline_plus_bonu
     the same case_name (user_count == 0).
 
     The condition variable is the analytics method
-    ``get_user_task_measurements_count`` — when 0, the post-rule fires.
+    ``get_user_task_measurements_count`` - when 0, the post-rule fires.
     """
     validate_ast(_BONUS_POST_RULE_AST)
 
@@ -265,7 +265,7 @@ async def test_default_extended_with_first_time_bonus_matches_baseline_plus_bonu
     expected_points = baseline_expected[0] + (5 if user_count == 0 else 0)
     expected_case_name = baseline_expected[1]
 
-    # The case_name MUST pass through unchanged — set_points doesn't
+    # The case_name MUST pass through unchanged - set_points doesn't
     # touch it, so the parent's case is what the post-rule emits.
     assert extended_result[:2] == (expected_points, expected_case_name), (
         f"Parity mismatch: baseline={baseline_result[:2]} "

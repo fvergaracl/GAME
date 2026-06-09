@@ -11,7 +11,7 @@ import { SkeletonCard } from './components/Skeleton'
 // using routes.js.
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 // Quick API stays available as a standalone route at /quick-api for
-// backward compatibility — before this commit it was the *only*
+// backward compatibility - before this commit it was the *only*
 // thing rendered and at least one ops workflow likely bookmarked it.
 const QuickApiDashboard = React.lazy(() => import('./views/quick-api/QuickApiDashboard'))
 

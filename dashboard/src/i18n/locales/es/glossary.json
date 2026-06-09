@@ -20,7 +20,7 @@
   "terms": {
     "rule": {
       "title": "Regla (cuando → entonces)",
-      "body": "Unidad básica del DSL. Una regla evalúa una condición (\"cuando\") y, si se cumple, ejecuta sus acciones (\"entonces\") — típicamente asignar puntos. Pueden encadenarse varias con ramas «si no, si» / «si no»."
+      "body": "Unidad básica del DSL. Una regla evalúa una condición (\"cuando\") y, si se cumple, ejecuta sus acciones (\"entonces\") - típicamente asignar puntos. Pueden encadenarse varias con ramas «si no, si» / «si no»."
     },
     "preRule": {
       "title": "Pre-regla",
@@ -55,11 +55,11 @@
       "body": "Cambia el valor de una variable expuesta por la estrategia padre (p. ej. el multiplicador o el umbral) sin reescribirla. Se aplica antes de que el padre ejecute su lógica."
     },
     "dslFull": {
-      "title": "DSL_FULL — Desde cero",
+      "title": "DSL_FULL - Desde cero",
       "body": "Estrategia autónoma: tú defines todas las reglas. Se elige cuando ya sabes qué quieres modelar y no necesitas reutilizar nada de las built-ins."
     },
     "dslExtend": {
-      "title": "DSL_EXTEND — Extiende",
+      "title": "DSL_EXTEND - Extiende",
       "body": "Estrategia que envuelve a otra: añade pre-reglas y/o post-reglas alrededor de un padre sin reescribirlo. Heredas su comportamiento y sólo cambias lo que necesites."
     },
     "lifecycle": {
@@ -80,7 +80,7 @@
     },
     "assignment": {
       "title": "Asignación",
-      "body": "Relación 1:1 entre un Game (o una Task) y la estrategia que usa para puntuar. Sólo se pueden asignar estrategias publicadas. Cambiar la asignación redirige a partir del siguiente evento — no recalcula eventos pasados."
+      "body": "Relación 1:1 entre un Game (o una Task) y la estrategia que usa para puntuar. Sólo se pueden asignar estrategias publicadas. Cambiar la asignación redirige a partir del siguiente evento - no recalcula eventos pasados."
     }
   }
 }

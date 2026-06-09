@@ -28,7 +28,7 @@
   "autosave": {
     "saving": "Guardando automáticamente…",
     "savedAt": "Autoguardado a las {{time}}",
-    "error": "Falló el autoguardado — usa Guardar para reintentar."
+    "error": "Falló el autoguardado - usa Guardar para reintentar."
   },
   "form": {
     "name": "Nombre",
@@ -37,7 +37,7 @@
     "modeFull": "Crear desde cero",
     "modeExtend": "Extender existente",
     "parent": "Estrategia padre",
-    "selectParent": "— Selecciona padre —"
+    "selectParent": "- Selecciona padre -"
   },
   "buttons": {
     "save": "Guardar borrador",
@@ -71,10 +71,10 @@
       "calc": "Calcula",
       "values": "Valores",
       "assign": "Asigna",
-      "preWhen": "Pre — Cuándo",
-      "preActions": "Pre — Acciones",
-      "postWhen": "Post — Cuándo",
-      "postActions": "Post — Acciones",
+      "preWhen": "Pre - Cuándo",
+      "preActions": "Pre - Acciones",
+      "postWhen": "Post - Cuándo",
+      "postActions": "Post - Acciones",
       "parent": "Padre",
       "parentOverrides": "Overrides padre",
       "assignCallback": "Asigna (callback)"
@@ -128,7 +128,7 @@
     "runsHint": "Ejecutamos la estrategia esta cantidad de veces seguidas, sumando el paso \"+ por envío\" a cada valor acumulado para ver cómo evolucionan los puntos.",
     "fieldsTitle": "Valores acumulados que usa tu estrategia",
     "fieldsHint": "Son los valores de los que dependen tus reglas. Define un valor inicial para cada uno.",
-    "noFields": "Esta estrategia no usa valores acumulados — completa solo los datos de arriba y ejecútala.",
+    "noFields": "Esta estrategia no usa valores acumulados - completa solo los datos de arriba y ejecútala.",
     "stepLabel": "+ por envío",
     "fields": {
       "user.measurements_count": "Veces que este usuario ya envió la tarea",
@@ -163,8 +163,8 @@
       "then": "Entonces:",
       "elseIf": "Si no, si #{{n}}:",
       "else": "Si no:",
-      "and": "Y — se cumplen todas:",
-      "or": "O — se cumple alguna:",
+      "and": "Y - se cumplen todas:",
+      "or": "O - se cumple alguna:",
       "not": "No se cumple:",
       "true": "verdadero",
       "false": "falso",
@@ -175,7 +175,7 @@
       "ruleSkipped": "No se cumplió",
       "ruleNotEvaluated": "No evaluada",
       "assignPoints": "Otorga {{points}} puntos (caso: {{caseName}})",
-      "veto": "Veta — 0 puntos (caso: {{caseName}})",
+      "veto": "Veta - 0 puntos (caso: {{caseName}})",
       "setPoints": "Fija puntos = {{value}}",
       "setCaseName": "Fija el caso = {{value}}",
       "setCallbackData": "Guarda dato de callback {{key}} = {{value}}",
@@ -274,10 +274,10 @@
     "last": "Entendido",
     "steps": {
       "welcome": "Bienvenido al editor de estrategias. Aquí puedes diseñar reglas de puntos sin escribir código.",
-      "name": "Pon un nombre claro a tu estrategia — lo verás cuando la asignes a un juego o tarea.",
+      "name": "Pon un nombre claro a tu estrategia - lo verás cuando la asignes a un juego o tarea.",
       "mode": "Elige si empiezas de cero o extiendes una estrategia existente.",
       "workspace": "Arrastra bloques desde la barra lateral hasta este lienzo. Conéctalos como piezas de puzzle para formar reglas.",
-      "simulate": "Cuando tengas una regla, pruébala aquí con un usuario y tarea ficticios. Define los valores acumulados que lee, o cambia a \"varios envíos\" para ver cómo evolucionan los puntos — no se guarda nada en producción.",
+      "simulate": "Cuando tengas una regla, pruébala aquí con un usuario y tarea ficticios. Define los valores acumulados que lee, o cambia a \"varios envíos\" para ver cómo evolucionan los puntos - no se guarda nada en producción.",
       "save": "Guarda como borrador todas las veces que quieras. Sólo entra en producción cuando un admin publique la versión.",
       "history": "Cada vez que guardas, queda una versión. Desde aquí puedes ver el historial y hacer rollback."
     }

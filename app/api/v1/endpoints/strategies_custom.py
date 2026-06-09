@@ -1,5 +1,5 @@
 """
-CRUD endpoints for custom (DB-persisted) strategies — Sprint 3.
+CRUD endpoints for custom (DB-persisted) strategies - Sprint 3.
 
 These endpoints are kept under a separate router (``/v1/strategies/custom``)
 so the legacy ``/v1/strategies`` listing of built-ins keeps a clean schema
@@ -243,7 +243,7 @@ async def list_strategy_templates(
     auth: AuthContext = Depends(require_authenticated),
 ) -> List[StrategyTemplateRead]:
     """Return the curated templates that seed the editor's
-    "Usar una plantilla" CTA. Tenant-agnostic — every authenticated
+    "Usar una plantilla" CTA. Tenant-agnostic - every authenticated
     caller sees the same list. The loader validates ASTs at boot, so
     everything returned here is guaranteed to round-trip through the
     editor and through ``POST /import`` without further checks.
@@ -346,7 +346,7 @@ async def simulate_inline_strategy(
     The editor's "Probar" button previously had to create a hidden DRAFT
     just to obtain an id for ``/{id}/simulate``, leaving orphan rows after
     every test iteration. This route takes the AST directly so simulation
-    tests the exact blocks on the canvas — unsaved edits included — and
+    tests the exact blocks on the canvas - unsaved edits included - and
     leaves no trace in the database. Declared before the ``/{id}`` routes
     so the literal ``/simulate`` path is matched first.
     """
@@ -427,7 +427,7 @@ async def update_custom_strategy(
     realm = _resolve_realm_id(auth)
     await audit.info("Update custom strategy", {"id": id})
     try:
-        # Sprint 7: same registry check as create — only relevant when
+        # Sprint 7: same registry check as create - only relevant when
         # the PUT explicitly carries type+parentStrategyId.
         _ensure_parent_strategy_exists(
             payload.type,
@@ -569,7 +569,7 @@ async def get_custom_strategy_usage(
 
     Returns the games and tasks currently assigned to this exact
     strategy version plus their counts, so the dashboard can preview the
-    blast radius before reassigning, archiving or rolling back — and
+    blast radius before reassigning, archiving or rolling back - and
     drive a bulk reassignment of all of them.
     """
     realm = _resolve_realm_id(auth)
@@ -597,7 +597,7 @@ async def rollback_strategy(
     pointed at the previously-published UUID.
 
     Audit log captures the cascade counts so an operator can verify
-    after-the-fact how many consumers were redirected — the response
+    after-the-fact how many consumers were redirected - the response
     body contains only the newly-published strategy.
     """
     realm = _resolve_realm_id(auth)

@@ -72,7 +72,7 @@ Campaign hierarchy
      - Meaning
    * - **Games**
      - A campaign/project. Carries an ``externalGameId`` (your identifier), a
-       ``platform``, and a ``strategyId`` — the *default* scoring strategy for
+       ``platform``, and a ``strategyId`` - the *default* scoring strategy for
        its tasks. If unset, the built-in ``default`` strategy applies.
    * - **GameParams**
      - Key/value configuration attached to a game (e.g. base points). These
@@ -179,7 +179,7 @@ that contributes four columns to *every* table:
      - Refreshed on update.
    * - ``apiKey_used`` / ``oauth_user_id``
      - FK / string
-     - The credential that performed the write — the audit + scoping anchor.
+     - The credential that performed the write - the audit + scoping anchor.
 
 Because ``apiKey_used`` is stamped on every write, GAME can answer "who
 created this?" for any row and can *scope* reads so one API key only sees the
@@ -205,7 +205,7 @@ Idempotency & concurrency
 
 * Point assignment accepts an **idempotency key** (request header, surfaced
   into the event ``data`` as ``eventId``). A repeated request with the same
-  key does not create a second ``UserPoints`` row — safe to retry.
+  key does not create a second ``UserPoints`` row - safe to retry.
 * Writes are **transactional**; wallet movement and points persistence happen
   together so a partial failure does not leave a points row without its
   wallet effect.
@@ -213,7 +213,7 @@ Idempotency & concurrency
 Where to go next
 ================
 
-* :doc:`integrating` — the request/response shapes for creating games, tasks,
+* :doc:`integrating` - the request/response shapes for creating games, tasks,
   and awarding points.
-* :doc:`strategies` — how ``strategyId`` resolution and scoring actually work.
-* :doc:`codebase` — the generated reference for ``app/model`` and the rest.
+* :doc:`strategies` - how ``strategyId`` resolution and scoring actually work.
+* :doc:`codebase` - the generated reference for ``app/model`` and the rest.

@@ -6,7 +6,7 @@
 //   1. Add the code constant here.
 //   2. Add an i18n entry under both ``locales/es/errors.json`` and
 //      ``locales/en/errors.json``.
-// The test suite (``i18n.test.js``) enforces (2) — it iterates this
+// The test suite (``i18n.test.js``) enforces (2) - it iterates this
 // array and asserts every code resolves to a non-empty translation in
 // both locales.
 

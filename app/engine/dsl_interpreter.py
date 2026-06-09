@@ -2,7 +2,7 @@
 Walker-based interpreter for the strategy DSL.
 
 This is the sandbox. It walks the JSON AST node-by-node, dispatching on
-``node["type"]`` through a fixed handler table — no ``getattr``, no
+``node["type"]`` through a fixed handler table - no ``getattr``, no
 ``eval``, no ``exec``. Anything not in the handler table is rejected as
 ``DslValidationError`` (the validator should have caught it; the runtime
 check is defence in depth).
@@ -12,13 +12,13 @@ Hard guarantees:
 * No code path exposes Python attribute lookup to AST-supplied strings.
 * Field access is a frozen-dict lookup; the resolved values were
   precomputed by ``ExecutionContext.build_for_ast``.
-* Node count and recursion depth are bounded — the validator already
+* Node count and recursion depth are bounded - the validator already
   rejects programs that would exceed them; the runtime guards exist so
   that future dynamic expansion (e.g. macros) still can't blow out.
 * ``await asyncio.sleep(0)`` every ``yield_every`` visits gives the
   event loop a chance to actually cancel the coroutine when
   ``asyncio.wait_for`` fires. Without it a CPU-bound walk would run to
-  completion and only *then* see the timeout — which is what
+  completion and only *then* see the timeout - which is what
   ``RestrictedPython``-style sandboxes generally get wrong.
 
 Execution semantics mirror ``app/engine/default.py``:
@@ -54,7 +54,7 @@ class DslExecutionResult(TypedDict, total=False):
     callback_data: Dict[str, Any]
     trace: List[Dict[str, Any]]
     # Sprint 7: DSL_EXTEND-only outputs. ``working_data`` is the dict
-    # that pre-rules mutated via set_data — the orchestrator hands it
+    # that pre-rules mutated via set_data - the orchestrator hands it
     # to the parent built-in. ``vetoed`` signals that a pre-rule veto
     # fired so the orchestrator skips parent + post entirely.
     working_data: Dict[str, Any]
@@ -91,14 +91,14 @@ class DslInterpreter:
 
         ``mode`` selects which section of the program runs:
 
-        * ``"full"`` — main ``rules`` + ``default`` (DSL_FULL behaviour;
+        * ``"full"`` - main ``rules`` + ``default`` (DSL_FULL behaviour;
           this is the unchanged Sprint 5 path).
-        * ``"pre"`` — only ``pre_rules`` (DSL_EXTEND phase 1). The
+        * ``"pre"`` - only ``pre_rules`` (DSL_EXTEND phase 1). The
           ``initial_data`` dict is cloned into ``state.working_data`` so
           ``set_data`` statements can mutate it; the orchestrator
           (``DslStrategy``) reads ``state.working_data`` back out to
           pass to the parent built-in.
-        * ``"post"`` — only ``post_rules`` (DSL_EXTEND phase 3). The
+        * ``"post"`` - only ``post_rules`` (DSL_EXTEND phase 3). The
           ``parent_result`` dict bootstraps the run state (points,
           case_name, callback_data) so ``set_points`` /
           ``set_case_name`` / ``set_callback_data`` mutate from the
@@ -171,7 +171,7 @@ class DslInterpreter:
             return
 
         # Sprint 7: DSL_EXTEND phases. ``pre`` and ``post`` walk a
-        # distinct section of the program and ignore the others — the
+        # distinct section of the program and ignore the others - the
         # main ``rules`` + ``default`` are exclusively the DSL_FULL
         # path. This keeps the two execution models from accidentally
         # mixing state ("set_data" leaking into a DSL_FULL run, etc.).
@@ -209,7 +209,7 @@ class DslInterpreter:
         # ends. Otherwise each ``else_if`` branch is tried in order, and the
         # first whose condition is truthy runs its ``then`` and ends the
         # rule. If none match and an ``else`` body exists, it runs. This
-        # only decides which statement stack runs inside the rule — the
+        # only decides which statement stack runs inside the rule - the
         # program-level rule chaining and ``default`` are unchanged (a
         # non-halting branch still falls through to the next rule).
         matched = await self._eval_condition(node["when"], ctx, state, depth=depth + 1)
@@ -357,7 +357,7 @@ class DslInterpreter:
             return
 
         # Sprint 7: DSL_EXTEND pre-rule statements. set_data writes into
-        # ``state.working_data`` — the dict the orchestrator hands to the
+        # ``state.working_data`` - the dict the orchestrator hands to the
         # parent built-in's ``calculate_points``. veto raises _DslHalt
         # with state.vetoed=True so the orchestrator skips both the
         # parent call and the entire post_rules phase.
@@ -795,7 +795,7 @@ class _RunState:
         "callback_data",
         "matched",
         # Sprint 7: DSL_EXTEND state. ``working_data`` is the dict that
-        # set_data writes to during pre_rules — the orchestrator reads
+        # set_data writes to during pre_rules - the orchestrator reads
         # it back to hand to the parent built-in's calculate_points.
         # ``vetoed`` signals that a pre_rules veto fired so the
         # orchestrator skips parent + post entirely.
@@ -867,7 +867,7 @@ def _apply_arith(op: str, left: Any, right: Any) -> Any:
 # Sprint 6: handlers for the ``func_call`` node. Kept separate from the
 # binary arith table because the arities and signatures differ. ``int``
 # truncates toward zero (mirroring Python's built-in and matching
-# ``constantEffortStrategy.py:53`` semantics — not rounding). ``clamp``
+# ``constantEffortStrategy.py:53`` semantics - not rounding). ``clamp``
 # is (value, lo, hi) → max(lo, min(value, hi)).
 _FUNC_HANDLERS = {
     "int": lambda args: int(args[0]),

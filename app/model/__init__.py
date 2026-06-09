@@ -1,4 +1,4 @@
-"""Model layer — the database schema.
+"""Model layer - the database schema.
 
 SQLModel/SQLAlchemy table definitions for every persisted entity. Each model
 inherits :class:`app.model.base_model.BaseModel`, which contributes the common

@@ -2,7 +2,7 @@
 Unit tests for :class:`StrategyDefinitionService`.
 
 These exercise the versioning / lifecycle rules in isolation using a
-hand-rolled fake repository — the underlying repository is covered by
+hand-rolled fake repository - the underlying repository is covered by
 integration tests separately. The fake is intentionally tiny (just
 enough state to drive the service's branches) so the test reads like a
 spec for the service's behaviour.
@@ -401,7 +401,7 @@ class TestPublishLifecycle(_Base):
             apiKey_used=None,
             oauth_user_id=None,
         )
-        # Publish v2 — should archive v1.
+        # Publish v2 - should archive v1.
         await self.service.publish(id=v2.id, realmId="realm-a")
 
         archived_v1 = await self.service.get_strategy(id=v1.id, realmId="realm-a")
@@ -646,7 +646,7 @@ class TestRollback(unittest.IsolatedAsyncioTestCase):
 
     async def test_rollback_can_be_initiated_from_a_draft_seed(self):
         """An admin browsing history may click on v1 (ARCHIVED) to
-        rollback to it — current published is still v2 and must get
+        rollback to it - current published is still v2 and must get
         archived + reassigned."""
         v1, v2 = await self._build_two_versions()
         # After publish(v2), v1 was archived. Click on v1 to rollback.
@@ -659,7 +659,7 @@ class TestRollback(unittest.IsolatedAsyncioTestCase):
 
     async def test_rollback_requires_assignment_repositories(self):
         """Without game/task repos wired the cascade would silently
-        skip — refuse the operation up front."""
+        skip - refuse the operation up front."""
         bare_service = StrategyDefinitionService(
             strategy_definition_repository=self.repo,
         )

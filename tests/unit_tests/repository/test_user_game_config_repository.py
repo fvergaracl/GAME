@@ -1,7 +1,7 @@
 """
 Integration tests for ``UserGameConfigRepository``. Covers the three async
 methods that the ``UserGameConfigService`` invokes
-(``get_by_user_and_game`` / ``create_or_update`` / ``delete``) — these were
+(``get_by_user_and_game`` / ``create_or_update`` / ``delete``) - these were
 missing from the repository, even though the service awaited them, so they
 existed only as ``AsyncMock`` shapes in service-layer tests.
 """
