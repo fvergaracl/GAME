@@ -84,9 +84,25 @@ class ApiKeyService(BaseService):
                 return generated
 
     async def create_api_key(self, apikeyPostBody) -> Any:
+        """
+        Persist a new API-key record.
+
+        Args:
+            apikeyPostBody: Schema describing the API key to store (including
+                its prefix and hash).
+
+        Returns:
+            Any: The created API-key entity.
+        """
         return await self.apikey_repository.create(apikeyPostBody)
 
     async def get_all_api_keys(self) -> Any:
+        """
+        Return every API-key record.
+
+        Returns:
+            Any: All stored API-key entities.
+        """
         return await self.apikey_repository.read_all()
 
     async def revoke_api_key_by_prefix(self, prefix: str) -> Any:
@@ -112,13 +128,26 @@ class ApiKeyService(BaseService):
     async def get_api_key_header(
         api_key: str = Security(api_key_header),
     ) -> Response:
-        from app.core.container import Container
-
         """
         Authenticate a request based on the value of the ``X-API-Key``
         header. The value is hashed and compared against the canonical
         ``apiKeyHash`` column; the plaintext is never stored or returned.
+
+        A short-lived cache (when ``API_KEY_HEADER_CACHE_TTL_SECONDS`` > 0)
+        avoids a DB lookup on every request.
+
+        Args:
+            api_key (str): The raw ``X-API-Key`` header value.
+
+        Returns:
+            Response: ``Response.ok`` with the normalized key info on success,
+            or ``Response.fail`` when the header is absent.
+
+        Raises:
+            ForbiddenError: If the key is missing, unknown or inactive.
         """
+        from app.core.container import Container
+
         if api_key is None:
             return Response.fail(error=ForbiddenError("API key not provided."))
         key_hash = hash_api_key(api_key)

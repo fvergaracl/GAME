@@ -29,6 +29,24 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
     async def calculate_points(
         self, externalGameId, externalTaskId, externalUserId, data=None
     ):
+        """
+        Award points for sustained effort within a rolling time window.
+
+        If the user already has measurements in the last
+        ``variable_constant_effort_interval_minutes`` minutes, the award scales
+        with how consistent they have been (``ConstantEffortReward``);
+        otherwise a flat basic point is granted (``BasicReward``).
+
+        Args:
+            externalGameId: External identifier of the game.
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+            data: Optional event payload (unused by this strategy).
+
+        Returns:
+            tuple[int, str]: The points to award and the case name describing
+            which branch produced them.
+        """
         task_measurements_count = self.user_points_analytics_service.get_user_task_measurements_count_the_last_seconds(
             externalTaskId,
             externalUserId,
@@ -43,5 +61,16 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
         return 1, "BasicReward"
 
     def _calculate_points_from_consistency(self, consistent_effort_count):
+        """
+        Map a consistent-effort streak to a bounded point value.
+
+        Args:
+            consistent_effort_count: Number of consecutive in-window
+                measurements (including the current one).
+
+        Returns:
+            int: Points normalized against ``variable_max_points`` and clamped
+            to the range ``[1, variable_max_points]``.
+        """
         normalized_points = (consistent_effort_count / self.variable_max_points) * 100
         return min(max(int(normalized_points), 1), self.variable_max_points)

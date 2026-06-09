@@ -49,6 +49,24 @@ class DslSimulationService(BaseService):
         realmId: Any,
         request: SimulationRequest,
     ) -> SimulationResponse:
+        """
+        Run a custom strategy's AST against simulated input without persisting.
+
+        Loads the strategy definition (scoped to ``realmId``) and executes its
+        AST over the provided simulation request, returning the computed points
+        and trace so authors can preview behaviour before publishing.
+
+        Args:
+            id (str): Strategy definition identifier.
+            realmId (Any): Realm/tenant the strategy belongs to.
+            request (SimulationRequest): Simulated event input.
+
+        Returns:
+            SimulationResponse: The simulated scoring result and trace.
+
+        Raises:
+            DslValidationError: If the strategy has no AST to simulate.
+        """
         definition = await self.strategy_definition_service.get_strategy(
             id=id, realmId=realmId
         )

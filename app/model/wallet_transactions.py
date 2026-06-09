@@ -86,6 +86,19 @@ class WalletTransactions(BaseModel, table=True):
         )
 
     def make_hashable(self, obj):
+        """
+        Recursively convert a nested structure into a hashable form.
+
+        Lists/tuples become tuples and dicts become sorted tuples of
+        ``(key, value)`` pairs, so the JSON ``data`` field can be folded into
+        ``__hash__``. Scalars are returned unchanged.
+
+        Args:
+            obj: The value (possibly nested list/dict) to make hashable.
+
+        Returns:
+            A hashable equivalent of ``obj``.
+        """
         if isinstance(obj, (tuple, list)):
             return tuple(self.make_hashable(e) for e in obj)
         elif isinstance(obj, dict):

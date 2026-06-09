@@ -22,6 +22,7 @@ class UserPointsAnalyticsService(BaseService):
         super().__init__(user_points_repository)
 
     async def count_measurements_by_external_task_id(self, external_task_id) -> Any:
+        """Count all points rows recorded for an external task."""
         return await self.user_points_repository.count_measurements_by_external_task_id(
             external_task_id
         )
@@ -29,6 +30,7 @@ class UserPointsAnalyticsService(BaseService):
     async def get_user_task_measurements_count(
         self, externalTaskId, externalUserId
     ) -> Any:
+        """Count a user's awards on a given external task."""
         return await self.user_points_repository.get_user_task_measurements_count(
             externalTaskId, externalUserId
         )
@@ -36,6 +38,7 @@ class UserPointsAnalyticsService(BaseService):
     async def get_user_task_measurements_count_the_last_seconds(
         self, externalTaskId, externalUserId, seconds
     ) -> Any:
+        """Count a user's awards on a task within the last ``seconds``."""
         return await self.user_points_repository.get_user_task_measurements_count_the_last_seconds(
             externalTaskId, externalUserId, seconds
         )
@@ -43,6 +46,8 @@ class UserPointsAnalyticsService(BaseService):
     async def get_avg_time_between_tasks_by_user_and_game_task(
         self, externalGameId, externalTaskId, externalUserId
     ) -> Any:
+        """Average seconds between a user's consecutive awards on a task
+        (``-1`` with fewer than two awards)."""
         return await self.user_points_repository.get_avg_time_between_tasks_by_user_and_game_task(  # noqa
             externalGameId, externalTaskId, externalUserId
         )
@@ -50,11 +55,14 @@ class UserPointsAnalyticsService(BaseService):
     async def get_avg_time_between_tasks_for_all_users(
         self, externalGameId, externalTaskId
     ) -> Any:
+        """Average seconds between consecutive awards on a task across all
+        users (``-1`` with fewer than two awards)."""
         return await self.user_points_repository.get_avg_time_between_tasks_for_all_users(  # noqa
             externalGameId, externalTaskId
         )
 
     async def get_last_window_time_diff(self, externalTaskId, externalUserId) -> Any:
+        """Seconds between a user's two most recent awards on a task."""
         return await self.user_points_repository.get_last_window_time_diff(
             externalTaskId, externalUserId
         )
@@ -62,11 +70,13 @@ class UserPointsAnalyticsService(BaseService):
     async def get_new_last_window_time_diff(
         self, externalTaskId, externalUserId, externalGameId
     ) -> Any:
+        """Seconds elapsed since a user's most recent award on a task."""
         return await self.user_points_repository.get_new_last_window_time_diff(
             externalTaskId, externalUserId, externalGameId
         )
 
     async def get_user_task_measurements(self, externalTaskId, externalUserId) -> Any:
+        """Return the ordered timestamps of a user's awards on a task."""
         return await self.user_points_repository.get_user_task_measurements(
             externalTaskId, externalUserId
         )

@@ -22,6 +22,17 @@ logger = logging.getLogger(__name__)
 
 
 def _env_to_bool(key: str, default: bool) -> bool:
+    """
+    Read an environment variable and coerce it to a boolean.
+
+    Args:
+        key (str): Name of the environment variable to read.
+        default (bool): Value returned when the variable is unset.
+
+    Returns:
+        bool: ``True`` when the value is one of ``1/true/yes/on``
+        (case-insensitive), otherwise ``False``; ``default`` if unset.
+    """
     value = os.getenv(key)
     if value is None:
         return default
@@ -29,6 +40,17 @@ def _env_to_bool(key: str, default: bool) -> bool:
 
 
 def _env_to_int(key: str, default: int) -> int:
+    """
+    Read an environment variable and coerce it to an integer.
+
+    Args:
+        key (str): Name of the environment variable to read.
+        default (int): Value returned when the variable is unset or cannot be
+            parsed as an integer.
+
+    Returns:
+        int: The parsed integer, or ``default`` on missing/invalid input.
+    """
     value = os.getenv(key)
     if value is None:
         return default
@@ -365,6 +387,18 @@ class Configs(BaseSettings):
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
     def _coerce_cors_origins(cls, value: Union[str, List[str], None]) -> List[str]:
+        """
+        Normalize the ``BACKEND_CORS_ORIGINS`` setting into a list of strings.
+
+        Accepts a comma-separated string, an existing list, or ``None`` and
+        returns a clean list of origins (empty when unset).
+
+        Args:
+            value (Union[str, List[str], None]): Raw setting value.
+
+        Returns:
+            List[str]: The parsed list of allowed CORS origins.
+        """
         # Treat BACKEND_CORS_ORIGINS as a plain comma-separated list instead
         # of JSON, so operators can write
         # ``BACKEND_CORS_ORIGINS=https://a.example,https://b.example``.
@@ -379,6 +413,19 @@ class Configs(BaseSettings):
     def _coerce_trusted_proxy_ips(
         cls, value: Union[str, List, None]
     ) -> List[Union[IPv4Network, IPv6Network]]:
+        """
+        Normalize the ``TRUSTED_PROXY_IPS`` setting into IP network objects.
+
+        Accepts a comma-separated string of CIDRs/addresses, an existing list,
+        or ``None`` and returns parsed network objects (empty when unset).
+
+        Args:
+            value (Union[str, List, None]): Raw setting value.
+
+        Returns:
+            List[Union[IPv4Network, IPv6Network]]: Parsed trusted proxy
+            networks used to validate ``X-Forwarded-For`` peers.
+        """
         if value is None or value == "":
             return []
         if isinstance(value, str):

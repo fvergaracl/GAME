@@ -29,6 +29,24 @@ class BaseRepository:
         self.model = model
 
     async def read_by_options(self, schema, eager: bool = False):
+        """
+        Run a filtered, ordered and paginated query from a search schema.
+
+        Non-null fields on ``schema`` are turned into ``WHERE`` conditions;
+        ``ordering``, ``page`` and ``page_size`` drive sorting and pagination
+        (a ``page_size`` of ``"all"`` disables the limit). The total row count
+        ignoring pagination is computed alongside the page.
+
+        Args:
+            schema: Search schema whose non-null fields become filters and
+                which may carry ``ordering``/``page``/``page_size``.
+            eager (bool): When ``True``, eagerly join the model's ``eagers``
+                relationships.
+
+        Returns:
+            dict: ``{"items": [...], "search_options": {page, page_size,
+            ordering, total_count}}``.
+        """
         async with self.session_factory() as session:
             schema_as_dict = schema.model_dump(exclude_none=True)
             ordering = schema_as_dict.get("ordering", configs.ORDERING)
@@ -74,6 +92,25 @@ class BaseRepository:
         not_found_raise_exception: bool = True,
         not_found_message: str = "Not found id : {id}",
     ):
+        """
+        Fetch a single row by primary key.
+
+        Args:
+            id: Primary-key value to look up.
+            eager (bool): When ``True``, eagerly join the model's ``eagers``
+                relationships.
+            not_found_raise_exception (bool): Raise :class:`NotFoundError`
+                when no row matches; when ``False`` return ``None`` instead.
+            not_found_message (str): Format string for the not-found error
+                (``{id}`` is substituted).
+
+        Returns:
+            The matching model instance, or ``None`` when missing and
+            ``not_found_raise_exception`` is ``False``.
+
+        Raises:
+            NotFoundError: If no row matches and the flag is ``True``.
+        """
         async with self.session_factory() as session:
             stmt = select(self.model).filter(self.model.id == id)
             if eager:
@@ -93,6 +130,29 @@ class BaseRepository:
         not_found_raise_exception: bool = True,
         not_found_message: str = "Not found {column} : {value}",
     ):
+        """
+        Fetch rows whose ``column`` equals ``value``.
+
+        Args:
+            column (str): Name of the model attribute to filter on.
+            value: Value the column must equal.
+            eager (bool): When ``True``, eagerly join the model's ``eagers``
+                relationships.
+            only_one (bool): Return the first match when ``True``; otherwise
+                return the full list of matches.
+            not_found_raise_exception (bool): When ``only_one`` is ``True``,
+                raise :class:`NotFoundError` if nothing matches.
+            not_found_message (str): Format string for the not-found error
+                (``{column}`` and ``{value}`` are substituted).
+
+        Returns:
+            A single instance (or ``None``) when ``only_one`` is ``True``,
+            otherwise a list of matching instances.
+
+        Raises:
+            NotFoundError: If ``only_one`` and nothing matches and the flag is
+                ``True``.
+        """
         async with self.session_factory() as session:
             stmt = select(self.model).filter(getattr(self.model, column) == value)
             if eager:
@@ -114,6 +174,30 @@ class BaseRepository:
         session: Optional[AsyncSession] = None,
         auto_commit: bool = True,
     ):
+        """
+        Insert a new row built from ``schema``.
+
+        Supports two modes: a self-managed session (``session=None``,
+        ``auto_commit=True``) that opens, commits and closes its own session,
+        or an externally-managed session passed by the caller so the insert
+        can take part in a larger transaction (``auto_commit=False`` flushes
+        instead of committing).
+
+        Args:
+            schema: Pydantic schema dumped into the model's constructor.
+            session (Optional[AsyncSession]): Caller-managed session to reuse;
+                a new one is opened when ``None``.
+            auto_commit (bool): Commit immediately when ``True``; otherwise
+                only flush (requires an external ``session``).
+
+        Returns:
+            The persisted (and refreshed) model instance.
+
+        Raises:
+            ValueError: If ``auto_commit=False`` is requested without an
+                external session.
+            DuplicatedError: If the insert violates a uniqueness constraint.
+        """
         if session is None and not auto_commit:
             raise ValueError(
                 "auto_commit=False requires an external session managed by the caller."
@@ -141,6 +225,16 @@ class BaseRepository:
         return entity
 
     async def update(self, id, schema):
+        """
+        Partially update a row, ignoring ``None`` fields on ``schema``.
+
+        Args:
+            id: Primary key of the row to update.
+            schema: Pydantic schema; only its non-null fields are written.
+
+        Returns:
+            The refreshed model instance after the update.
+        """
         async with self.session_factory() as session:
             await session.execute(
                 sa_update(self.model)
@@ -151,6 +245,17 @@ class BaseRepository:
             return await self.read_by_id(id)
 
     async def update_attr(self, id, column: str, value):
+        """
+        Update a single column of a row.
+
+        Args:
+            id: Primary key of the row to update.
+            column (str): Name of the column to set.
+            value: New value for the column.
+
+        Returns:
+            The refreshed model instance after the update.
+        """
         async with self.session_factory() as session:
             await session.execute(
                 sa_update(self.model)
@@ -161,6 +266,19 @@ class BaseRepository:
             return await self.read_by_id(id)
 
     async def whole_update(self, id, schema):
+        """
+        Fully replace a row's columns from ``schema`` (including ``None``).
+
+        Unlike :meth:`update`, every field on ``schema`` is written, so this
+        performs a complete overwrite rather than a partial patch.
+
+        Args:
+            id: Primary key of the row to update.
+            schema: Pydantic schema dumped in full into the update.
+
+        Returns:
+            The refreshed model instance after the update.
+        """
         async with self.session_factory() as session:
             await session.execute(
                 sa_update(self.model)
@@ -171,6 +289,15 @@ class BaseRepository:
             return await self.read_by_id(id)
 
     async def delete_by_id(self, id):
+        """
+        Delete a row by primary key.
+
+        Args:
+            id: Primary key of the row to delete.
+
+        Raises:
+            NotFoundError: If no row matches ``id``.
+        """
         async with self.session_factory() as session:
             stmt = select(self.model).filter(self.model.id == id)
             entity = (await session.execute(stmt)).scalars().first()
@@ -186,6 +313,27 @@ class BaseRepository:
         only_one: bool = True,
         not_found_raise_exception: bool = True,
     ):
+        """
+        Fetch rows matching several equality filters combined with ``AND``.
+
+        Args:
+            filters (dict): Mapping of column name to required value; all
+                conditions must hold (``AND``).
+            eager (bool): When ``True``, eagerly join the model's ``eagers``
+                relationships.
+            only_one (bool): Return the first match when ``True``; otherwise
+                return all matches.
+            not_found_raise_exception (bool): When ``only_one`` is ``True``,
+                raise :class:`NotFoundError` if nothing matches.
+
+        Returns:
+            A single instance (or ``None``) when ``only_one`` is ``True``,
+            otherwise a list of matching instances.
+
+        Raises:
+            NotFoundError: If ``only_one`` and nothing matches and the flag is
+                ``True``.
+        """
         async with self.session_factory() as session:
             stmt = select(self.model)
             if eager:

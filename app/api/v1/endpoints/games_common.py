@@ -10,6 +10,16 @@ from app.core.exceptions import (ConflictError, DuplicatedError, InternalServerE
 
 
 def _extract_api_key_from_header(api_key_header) -> Optional[str]:
+    """
+    Pull the raw API key string out of the parsed header dependency.
+
+    Args:
+        api_key_header: The object returned by the API-key header dependency,
+            whose ``data.apiKey`` holds the key when present.
+
+    Returns:
+        Optional[str]: The API key, or ``None`` when absent.
+    """
     return getattr(getattr(api_key_header, "data", None), "apiKey", None)
 
 
@@ -18,6 +28,18 @@ def _game_access_kwargs(
     oauth_user_id: Optional[str],
     is_admin: bool = False,
 ) -> dict:
+    """
+    Build the keyword arguments used to scope game-access checks.
+
+    Args:
+        api_key (Optional[str]): Caller's API key, if any.
+        oauth_user_id (Optional[str]): Caller's OAuth subject, if any.
+        is_admin (bool): Whether the caller has the admin role.
+
+    Returns:
+        dict: ``{api_key, oauth_user_id, is_admin, enforce_scope=True}`` for
+        passing into game-access service calls.
+    """
     return {
         "api_key": api_key,
         "oauth_user_id": oauth_user_id,
@@ -81,6 +103,16 @@ def _resolve_idempotency_key(request: Request) -> Optional[str]:
 
 
 def _extract_db_error_code(exc: Exception) -> Optional[str]:
+    """
+    Extract the PostgreSQL ``SQLSTATE`` code from a SQLAlchemy exception.
+
+    Args:
+        exc (Exception): The raised database exception.
+
+    Returns:
+        Optional[str]: The driver ``pgcode`` (e.g. ``"23505"``), or ``None``
+        when unavailable.
+    """
     orig = getattr(exc, "orig", None)
     if orig is None:
         return None
@@ -95,6 +127,22 @@ def _map_write_exception(
     *,
     correlation_id: str,
 ):
+    """
+    Translate an exception from a write path into a client-facing HTTP error.
+
+    Domain errors pass through unchanged; duplicate/idempotency collisions
+    become ``409 Conflict``; validation and bad-value errors become
+    ``422``; recognized PostgreSQL ``SQLSTATE`` codes are mapped to the
+    closest HTTP status; anything else becomes a ``500`` carrying the
+    ``correlation_id`` so the caller can reference it on retry.
+
+    Args:
+        exc (Exception): The exception raised while performing the write.
+        correlation_id (str): Identifier echoed back in the 500 fallback.
+
+    Returns:
+        Exception: An ``HTTPException`` (or domain error subclass) to raise.
+    """
     if isinstance(exc, NotFoundError):
         return exc
     if isinstance(exc, ConflictError):

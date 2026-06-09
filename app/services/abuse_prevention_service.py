@@ -68,6 +68,18 @@ class AbusePreventionService:
 
     @staticmethod
     def _peer_is_trusted_proxy(ip: Optional[str]) -> bool:
+        """
+        Return whether ``ip`` falls within a configured trusted-proxy network.
+
+        Used to decide if ``X-Forwarded-For`` can be trusted to derive the real
+        client IP.
+
+        Args:
+            ip (Optional[str]): The direct peer IP to test.
+
+        Returns:
+            bool: ``True`` if ``ip`` is valid and within ``TRUSTED_PROXY_IPS``.
+        """
         if not ip:
             return False
         trusted = configs.TRUSTED_PROXY_IPS
@@ -153,6 +165,23 @@ class AbusePreventionService:
         max_allowed: int,
         error_detail: str,
     ) -> None:
+        """
+        Increment one rate-limit bucket and raise if it exceeds the cap.
+
+        No-ops when the scope value is empty or the cap is non-positive.
+
+        Args:
+            scope_type (str): Dimension being limited (``api_key``/``ip``/...).
+            scope_value (Optional[str]): Concrete value within ``scope_type``.
+            window_name (str): Name of the time window/bucket.
+            window_start (datetime): Start of the bucket window.
+            ttl_seconds (int): TTL applied to the bucket.
+            max_allowed (int): Maximum requests allowed in the window.
+            error_detail (str): Message used when the limit is exceeded.
+
+        Raises:
+            TooManyRequestsError: If the counter exceeds ``max_allowed``.
+        """
         if not scope_value:
             return
         if max_allowed <= 0:
@@ -170,6 +199,15 @@ class AbusePreventionService:
 
     @staticmethod
     def _normalize_scope_value(value: Optional[str]) -> Optional[str]:
+        """
+        Trim a scope value, collapsing blanks to ``None``.
+
+        Args:
+            value (Optional[str]): Raw scope value.
+
+        Returns:
+            Optional[str]: The stripped value, or ``None`` if empty/blank.
+        """
         if value is None:
             return None
         normalized = value.strip()
@@ -179,6 +217,15 @@ class AbusePreventionService:
 
     @staticmethod
     def _normalize_now(now: Optional[datetime]) -> datetime:
+        """
+        Return ``now`` as a UTC-aware datetime, defaulting to the current time.
+
+        Args:
+            now (Optional[datetime]): Caller-supplied time, naive or aware.
+
+        Returns:
+            datetime: A timezone-aware UTC datetime.
+        """
         if now is None:
             return datetime.now(timezone.utc)
         if now.tzinfo is None:
@@ -187,6 +234,16 @@ class AbusePreventionService:
 
     @staticmethod
     def _get_window_bucket_start(now: datetime, window_seconds: int) -> datetime:
+        """
+        Align ``now`` down to the start of its fixed-size time bucket.
+
+        Args:
+            now (datetime): The reference time.
+            window_seconds (int): Bucket width in seconds.
+
+        Returns:
+            datetime: UTC start of the bucket containing ``now``.
+        """
         now = now.astimezone(timezone.utc)
         unix_now = int(now.timestamp())
         bucket_start = unix_now - (unix_now % window_seconds)
@@ -194,6 +251,15 @@ class AbusePreventionService:
 
     @staticmethod
     def _get_daily_bucket_start(now: datetime) -> datetime:
+        """
+        Return midnight UTC of ``now``'s day (the daily-quota bucket start).
+
+        Args:
+            now (datetime): The reference time.
+
+        Returns:
+            datetime: UTC start of the current day.
+        """
         now = now.astimezone(timezone.utc)
         return datetime(
             year=now.year,
@@ -204,6 +270,16 @@ class AbusePreventionService:
 
     @staticmethod
     def _ttl_for_seconds(window_seconds: int) -> int:
+        """
+        Compute a bucket TTL from a window length plus a skew buffer.
+
+        Args:
+            window_seconds (int): The window length in seconds.
+
+        Returns:
+            int: TTL in seconds (window plus ``RATE_LIMIT_TTL_BUFFER_SECONDS``)
+            so buckets survive clock skew between instances and Redis.
+        """
         # Extra buffer absorbs clock skew between API instances and Redis so
         # a bucket cannot die just before the next request promotes it.
         buffer = max(1, int(configs.RATE_LIMIT_TTL_BUFFER_SECONDS))

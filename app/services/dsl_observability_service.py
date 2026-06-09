@@ -220,6 +220,13 @@ class DslExecutionObserver:
             self._worker = asyncio.ensure_future(self._drain_loop())
 
     async def _drain_loop(self) -> None:
+        """
+        Background worker that persists queued execution-log rows.
+
+        Runs forever, pulling rows off the queue and writing each to the
+        repository. Persistence failures are logged at WARNING and swallowed so
+        the worker keeps draining and a bad row never escapes the loop.
+        """
         assert self._queue is not None
         while True:
             row = await self._queue.get()
@@ -289,4 +296,5 @@ class NoopDslExecutionObserver:
     """
 
     async def record(self, **_: Any) -> None:
+        """No-op observer hook; discards all execution observations."""
         return None

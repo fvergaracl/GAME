@@ -25,6 +25,15 @@ from app.services.user_points._base import FANOUT_LIMIT, UserPointsContext
 
 class PointsQueryMixin(UserPointsContext):
     async def query_user_points(self, schema) -> Any:
+        """
+        Run a filtered, paginated query over the ``user_points`` table.
+
+        Args:
+            schema: Search schema with filters and ordering/pagination.
+
+        Returns:
+            Any: Items plus search metadata, as returned by the repository.
+        """
         return await self.user_points_repository.read_by_options(schema)
 
     async def get_users_by_gameId(
@@ -36,6 +45,27 @@ class PointsQueryMixin(UserPointsContext):
         is_admin: bool = False,
         enforce_scope: bool = False,
     ) -> ListTasksWithUsers:
+        """
+        List a game's tasks and, per task, the users who earned points.
+
+        For each user the response includes their first action timestamp on
+        that task.
+
+        Args:
+            gameId: Internal game identifier.
+            api_key (str): Caller's API key, used when ``enforce_scope``.
+            oauth_user_id (str): Caller's OAuth subject, used when scoping.
+            is_admin (bool): Whether the caller has the admin role.
+            enforce_scope (bool): When ``True``, verify the caller may access
+                the game before returning data.
+
+        Returns:
+            ListTasksWithUsers: Tasks each paired with their participating
+            users.
+
+        Raises:
+            NotFoundError: If the game or its tasks do not exist.
+        """
         if enforce_scope:
             game = await get_authorized_game(
                 self.game_repository,
@@ -98,9 +128,26 @@ class PointsQueryMixin(UserPointsContext):
         is_admin: bool = False,
         enforce_scope: bool = False,
     ) -> list[UserGamePoints]:
+        """
+        Fetch per-game point totals for a list of users, concurrently.
+
+        Fans out one :meth:`get_all_points_by_externalUserId` call per user,
+        bounded by a concurrency semaphore.
+
+        Args:
+            users_list: External user identifiers to look up.
+            api_key (str): Caller's API key, used when ``enforce_scope``.
+            oauth_user_id (str): Caller's OAuth subject, used when scoping.
+            is_admin (bool): Whether the caller has the admin role.
+            enforce_scope (bool): When ``True``, enforce per-user access checks.
+
+        Returns:
+            list[UserGamePoints]: One aggregate result per requested user.
+        """
         semaphore = asyncio.Semaphore(FANOUT_LIMIT)
 
         async def _fetch(user) -> UserGamePoints:
+            """Fetch one user's totals under the shared concurrency semaphore."""
             async with semaphore:
                 return await self.get_all_points_by_externalUserId(
                     user,
@@ -121,6 +168,25 @@ class PointsQueryMixin(UserPointsContext):
         is_admin: bool = False,
         enforce_scope: bool = False,
     ) -> list[AllPointsByGame]:
+        """
+        Return a user's points across every game they participate in.
+
+        Resolves the user, finds the games behind their points rows, and
+        aggregates each game's detailed points concurrently.
+
+        Args:
+            externalUserId: External identifier of the user.
+            api_key (str): Caller's API key, used when ``enforce_scope``.
+            oauth_user_id (str): Caller's OAuth subject, used when scoping.
+            is_admin (bool): Whether the caller has the admin role.
+            enforce_scope (bool): When ``True``, verify access to the user.
+
+        Returns:
+            list[AllPointsByGame]: Detailed points grouped per game.
+
+        Raises:
+            NotFoundError: If the user does not exist.
+        """
         if enforce_scope:
             user = await get_authorized_user(
                 self.users_repository,
@@ -145,6 +211,7 @@ class PointsQueryMixin(UserPointsContext):
         semaphore = asyncio.Semaphore(FANOUT_LIMIT)
 
         async def _fetch(task) -> AllPointsByGame:
+            """Resolve a task's game and fetch its detailed points, bounded."""
             async with semaphore:
                 game = await self.game_repository.read_by_column(
                     "id", task.gameId, not_found_raise_exception=True
@@ -196,6 +263,22 @@ class PointsQueryMixin(UserPointsContext):
         is_admin: bool = False,
         enforce_scope: bool = False,
     ) -> AllPointsByGame:
+        """
+        Aggregate all points awarded within a game.
+
+        Args:
+            gameId: Internal game identifier.
+            api_key (str): Caller's API key, used when ``enforce_scope``.
+            oauth_user_id (str): Caller's OAuth subject, used when scoping.
+            is_admin (bool): Whether the caller has the admin role.
+            enforce_scope (bool): When ``True``, verify access to the game.
+
+        Returns:
+            AllPointsByGame: The game's aggregated points.
+
+        Raises:
+            NotFoundError: If the game does not exist.
+        """
         if enforce_scope:
             game = await get_authorized_game(
                 self.game_repository,
@@ -251,6 +334,25 @@ class PointsQueryMixin(UserPointsContext):
         is_admin: bool = False,
         enforce_scope: bool = False,
     ) -> AllPointsByGame:
+        """
+        Aggregate a game's points including per-award detail.
+
+        Like :meth:`get_points_by_gameId` but the result carries the detailed
+        per-award breakdown for each task/user.
+
+        Args:
+            gameId (UUID): Internal game identifier.
+            api_key (str): Caller's API key, used when ``enforce_scope``.
+            oauth_user_id (str): Caller's OAuth subject, used when scoping.
+            is_admin (bool): Whether the caller has the admin role.
+            enforce_scope (bool): When ``True``, verify access to the game.
+
+        Returns:
+            AllPointsByGame: The game's aggregated points with detail.
+
+        Raises:
+            NotFoundError: If the game does not exist.
+        """
         if enforce_scope:
             game = await get_authorized_game(
                 self.game_repository,
@@ -308,6 +410,23 @@ class PointsQueryMixin(UserPointsContext):
         is_admin: bool = False,
         enforce_scope: bool = False,
     ) -> list[PointsAssignedToUser]:
+        """
+        Return one user's point awards within a single game.
+
+        Args:
+            gameId: Internal game identifier.
+            externalUserId: External identifier of the user.
+            api_key (str): Caller's API key, used when ``enforce_scope``.
+            oauth_user_id (str): Caller's OAuth subject, used when scoping.
+            is_admin (bool): Whether the caller has the admin role.
+            enforce_scope (bool): When ``True``, verify access to the game.
+
+        Returns:
+            list[PointsAssignedToUser]: The user's awards in the game.
+
+        Raises:
+            NotFoundError: If the game or user does not exist.
+        """
         if enforce_scope:
             game = await get_authorized_game(
                 self.game_repository,
@@ -354,6 +473,19 @@ class PointsQueryMixin(UserPointsContext):
     async def get_users_points_by_externalGameId(
         self, externalGameId
     ) -> list[ResponseGetPointsByGame]:
+        """
+        Return per-user point totals for a game identified by external id.
+
+        Args:
+            externalGameId: External identifier of the game.
+
+        Returns:
+            list[ResponseGetPointsByGame]: Aggregated points per user/task in
+            the game.
+
+        Raises:
+            NotFoundError: If the game or its tasks do not exist.
+        """
         game = await self.game_repository.read_by_column(
             column="externalGameId",
             value=externalGameId,
@@ -395,6 +527,19 @@ class PointsQueryMixin(UserPointsContext):
     async def get_users_points_by_externalTaskId(
         self, externalTaskId
     ) -> list[ResponseGetPointsByTask]:
+        """
+        Return per-user point totals for a task identified by external id.
+
+        Args:
+            externalTaskId: External identifier of the task.
+
+        Returns:
+            list[ResponseGetPointsByTask]: Aggregated points per user on the
+            task.
+
+        Raises:
+            NotFoundError: If the task does not exist.
+        """
         task = await self.task_repository.read_by_column(
             column="externalTaskId",
             value=externalTaskId,
@@ -417,6 +562,19 @@ class PointsQueryMixin(UserPointsContext):
     async def get_users_points_by_externalTaskId_and_externalUserId(
         self, externalTaskId, externalUserId
     ) -> Any:
+        """
+        Return a single user's points on a single task (both by external id).
+
+        Args:
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+
+        Returns:
+            Any: The user's points for that task.
+
+        Raises:
+            NotFoundError: If the task or user does not exist.
+        """
         task = await self.task_repository.read_by_column(
             column="externalTaskId",
             value=externalTaskId,
@@ -443,6 +601,22 @@ class PointsQueryMixin(UserPointsContext):
         is_admin: bool = False,
         enforce_scope: bool = False,
     ) -> UserGamePoints:
+        """
+        Return one user's points aggregated across all their games.
+
+        Args:
+            externalUserId: External identifier of the user.
+            api_key (str): Caller's API key, used when ``enforce_scope``.
+            oauth_user_id (str): Caller's OAuth subject, used when scoping.
+            is_admin (bool): Whether the caller has the admin role.
+            enforce_scope (bool): When ``True``, verify access to the user.
+
+        Returns:
+            UserGamePoints: The user's points grouped by game.
+
+        Raises:
+            NotFoundError: If the user does not exist.
+        """
         if enforce_scope:
             user_data = await get_authorized_user(
                 self.users_repository,
@@ -528,6 +702,19 @@ class PointsQueryMixin(UserPointsContext):
     async def get_points_of_user(
         self, externalUserId
     ) -> ResponsePointsByExternalUserId:
+        """
+        Return a user's total points plus a per-task breakdown.
+
+        Args:
+            externalUserId: External identifier of the user.
+
+        Returns:
+            ResponsePointsByExternalUserId: The summed total and the per-task
+            points list.
+
+        Raises:
+            NotFoundError: If the user does not exist.
+        """
         user = await self.users_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
@@ -550,11 +737,32 @@ class PointsQueryMixin(UserPointsContext):
         return response
 
     async def get_points_of_simulated_task(self, externalTaskId, simulationHash) -> Any:
+        """
+        Return points rows produced by a specific simulation run of a task.
+
+        Args:
+            externalTaskId: External identifier of the task.
+            simulationHash: Hash identifying the simulation run.
+
+        Returns:
+            Any: The points rows belonging to that simulation.
+        """
         return await self.user_points_repository.get_points_of_simulated_task(
             externalTaskId, simulationHash
         )
 
     async def get_all_point_of_tasks_list(self, list_ids_tasks, withData=False) -> Any:
+        """
+        Return all points rows for a list of task ids.
+
+        Args:
+            list_ids_tasks: Internal task ids to fetch points for.
+            withData (bool): When ``True``, include the full JSON ``data``
+                column; otherwise return a lighter projection.
+
+        Returns:
+            Any: The matching points rows.
+        """
         return await self.user_points_repository.get_all_point_of_tasks_list(
             list_ids_tasks, withData
         )

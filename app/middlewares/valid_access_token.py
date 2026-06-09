@@ -37,6 +37,16 @@ _JWKS_CLIENT: Optional[PyJWKClient] = None
 
 
 def _get_jwks_client() -> PyJWKClient:
+    """
+    Return the lazily-built, process-wide ``PyJWKClient`` singleton.
+
+    The client points at the Keycloak realm's JWKS endpoint and caches signing
+    keys for its ``lifespan`` so repeated token validations avoid a JWKS HTTP
+    roundtrip on every request.
+
+    Returns:
+        PyJWKClient: The shared signing-key client.
+    """
     global _JWKS_CLIENT
     if _JWKS_CLIENT is None:
         url = f"{configs.KEYCLOAK_URL_DOCKER}/realms/{configs.KEYCLOAK_REALM}/protocol/openid-connect/certs"
@@ -73,6 +83,21 @@ oauth_2_scheme = CustomOAuth2AuthorizationCodeBearer(
 
 
 def _normalize_subject_claim(payload: dict[str, Any]) -> dict[str, Any]:
+    """
+    Ensure the token payload has a usable ``sub`` claim.
+
+    Keycloak access tokens do not always carry ``sub`` (e.g. client-credential
+    tokens). This copies the payload and fills ``sub`` from the first non-empty
+    fallback claim in :data:`SUBJECT_FALLBACK_CLAIMS`
+    (``preferred_username``, ``email``, ``client_id``, ``azp``).
+
+    Args:
+        payload (dict[str, Any]): Decoded JWT claims.
+
+    Returns:
+        dict[str, Any]: A copy of the payload with ``sub`` normalized when a
+        suitable fallback exists.
+    """
     normalized = dict(payload)
     for claim_name in SUBJECT_FALLBACK_CLAIMS:
         claim_value = normalized.get(claim_name)
@@ -83,6 +108,20 @@ def _normalize_subject_claim(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _build_token_response(payload: dict[str, Any]) -> Response:
+    """
+    Wrap a decoded JWT payload into a success/failure :class:`Response`.
+
+    Normalizes the subject claim and rejects tokens that still lack a usable
+    ``sub`` after normalization.
+
+    Args:
+        payload (dict[str, Any]): Decoded JWT claims.
+
+    Returns:
+        Response: ``Response.ok`` with the normalized claims, or
+        ``Response.fail`` carrying a 401 ``HTTPException`` when no subject is
+        present.
+    """
     normalized = _normalize_subject_claim(payload)
     subject = normalized.get("sub")
     if not isinstance(subject, str) or not subject.strip():
@@ -95,6 +134,22 @@ def _build_token_response(payload: dict[str, Any]) -> Response:
 async def valid_access_token(
     access_token: Annotated[str, Depends(oauth_2_scheme)],
 ) -> Response:
+    """
+    Validate a Keycloak-issued JWT access token.
+
+    Fetches the realm signing key (offloaded to a worker thread so the JWKS
+    roundtrip does not block the event loop) and verifies the token's
+    signature, expiry, issuer and audience. Each failure mode is mapped to an
+    appropriate HTTP status carried inside the returned ``Response``.
+
+    Args:
+        access_token (str): The bearer token extracted by ``oauth_2_scheme``.
+
+    Returns:
+        Response: ``Response.ok`` with the decoded/normalized claims on
+        success; ``Response.fail`` wrapping an ``HTTPException`` (401/403/500)
+        describing why validation failed.
+    """
     try:
         jwks_client = _get_jwks_client()
         # PyJWKClient does sync HTTP under the hood; offload to a worker thread

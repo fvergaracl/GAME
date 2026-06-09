@@ -56,6 +56,19 @@ def _build_filters(
     dateTo: Optional[datetime],
     limit: int,
 ) -> ExportFilters:
+    """
+    Assemble query parameters into an :class:`ExportFilters` value object.
+
+    Args:
+        externalGameId (Optional[str]): Game filter, if any.
+        externalTaskId (Optional[str]): Task filter, if any.
+        dateFrom (Optional[datetime]): Inclusive lower bound on ``created_at``.
+        dateTo (Optional[datetime]): Inclusive upper bound on ``created_at``.
+        limit (int): Maximum number of rows to emit.
+
+    Returns:
+        ExportFilters: The bundled filters passed to the export service.
+    """
     return ExportFilters(
         externalGameId=externalGameId,
         externalTaskId=externalTaskId,
@@ -66,6 +79,15 @@ def _build_filters(
 
 
 def _content_disposition(filename: str) -> str:
+    """
+    Build a ``Content-Disposition`` header value forcing a file download.
+
+    Args:
+        filename (str): Suggested download filename.
+
+    Returns:
+        str: An ``attachment; filename="..."`` header value.
+    """
     return f'attachment; filename="{filename}"'
 
 
@@ -106,6 +128,7 @@ async def _stream_export(
     row_counter = {"n": 0}
 
     async def _counted_rows():
+        """Yield dataset rows while tallying them into ``row_counter``."""
         async for row in service.iter_dataset(dataset_type, filters):
             row_counter["n"] += 1
             yield row
@@ -115,6 +138,11 @@ async def _stream_export(
     )
 
     async def _wrapped():
+        """Stream formatted chunks, finalizing the audit row on completion.
+
+        Marks the audit row COMPLETED once the body is fully streamed, or
+        FAILED (and re-raises) if the underlying generator errors mid-stream.
+        """
         try:
             async for chunk in body_iter:
                 yield chunk
@@ -207,6 +235,21 @@ async def list_export_history(
     auth: AuthContext = Depends(require_admin),
     service: ExportService = Depends(Provide[Container.export_service]),
 ) -> List[ExportAuditLogEntry]:
+    """
+    Return recent rows from the export audit log (admin-only).
+
+    With ``scope="mine"`` results are limited to exports triggered by the
+    calling admin; ``scope="all"`` returns the full feed.
+
+    Args:
+        scope (str): ``mine`` (default) or ``all``.
+        limit (int): Maximum rows to return (capped at 200).
+        auth (AuthContext): Authenticated admin context.
+        service (ExportService): Injected export service.
+
+    Returns:
+        List[ExportAuditLogEntry]: The matching audit-log entries.
+    """
     oauth_user_id = auth.oauth_user_id if scope == "mine" else None
     return await service.list_history(limit=limit, oauth_user_id=oauth_user_id)
 
@@ -230,6 +273,21 @@ async def export_users(
     service: ExportService = Depends(Provide[Container.export_service]),
     audit: AuditLogger = Depends(audit_log("exports")),
 ):
+    """
+    Stream the users dataset as CSV/XLSX/JSON (admin-only).
+
+    Args:
+        format (ExportFormat): Output format (csv | xlsx | json).
+        dateFrom (Optional[datetime]): Inclusive lower bound on ``created_at``.
+        dateTo (Optional[datetime]): Inclusive upper bound on ``created_at``.
+        limit (int): Maximum rows to emit (hard cap 100,000).
+        auth (AuthContext): Authenticated admin context.
+        service (ExportService): Injected export service.
+        audit (AuditLogger): Request-scoped audit logger.
+
+    Returns:
+        StreamingResponse: The exported users as a downloadable file.
+    """
     filters = _build_filters(None, None, dateFrom, dateTo, limit)
     return await _stream_export(
         dataset_type=ExportDatasetType.USERS.value,
@@ -263,6 +321,26 @@ async def export_user_points(
     service: ExportService = Depends(Provide[Container.export_service]),
     audit: AuditLogger = Depends(audit_log("exports")),
 ):
+    """
+    Stream user-point assignments as CSV/XLSX/JSON (admin-only).
+
+    Rows are joined with their externalUserId/externalTaskId/externalGameId
+    and may be filtered by game, task and date range.
+
+    Args:
+        format (ExportFormat): Output format (csv | xlsx | json).
+        externalGameId (Optional[str]): Game filter.
+        externalTaskId (Optional[str]): Task filter.
+        dateFrom (Optional[datetime]): Inclusive lower bound on ``created_at``.
+        dateTo (Optional[datetime]): Inclusive upper bound on ``created_at``.
+        limit (int): Maximum rows to emit (hard cap 100,000).
+        auth (AuthContext): Authenticated admin context.
+        service (ExportService): Injected export service.
+        audit (AuditLogger): Request-scoped audit logger.
+
+    Returns:
+        StreamingResponse: The exported user points as a downloadable file.
+    """
     filters = _build_filters(externalGameId, externalTaskId, dateFrom, dateTo, limit)
     return await _stream_export(
         dataset_type=ExportDatasetType.USER_POINTS.value,
@@ -295,6 +373,25 @@ async def export_user_interactions(
     service: ExportService = Depends(Provide[Container.export_service]),
     audit: AuditLogger = Depends(audit_log("exports")),
 ):
+    """
+    Stream user-interaction events as CSV/XLSX/JSON (admin-only).
+
+    May be filtered by game, task and date range.
+
+    Args:
+        format (ExportFormat): Output format (csv | xlsx | json).
+        externalGameId (Optional[str]): Game filter.
+        externalTaskId (Optional[str]): Task filter.
+        dateFrom (Optional[datetime]): Inclusive lower bound on ``created_at``.
+        dateTo (Optional[datetime]): Inclusive upper bound on ``created_at``.
+        limit (int): Maximum rows to emit (hard cap 100,000).
+        auth (AuthContext): Authenticated admin context.
+        service (ExportService): Injected export service.
+        audit (AuditLogger): Request-scoped audit logger.
+
+    Returns:
+        StreamingResponse: The exported interactions as a downloadable file.
+    """
     filters = _build_filters(externalGameId, externalTaskId, dateFrom, dateTo, limit)
     return await _stream_export(
         dataset_type=ExportDatasetType.USER_INTERACTIONS.value,
@@ -325,6 +422,24 @@ async def export_wallet_transactions(
     service: ExportService = Depends(Provide[Container.export_service]),
     audit: AuditLogger = Depends(audit_log("exports")),
 ):
+    """
+    Stream wallet transactions as CSV/XLSX/JSON (admin-only).
+
+    Rows are joined with the owning externalUserId and may be filtered by
+    date range.
+
+    Args:
+        format (ExportFormat): Output format (csv | xlsx | json).
+        dateFrom (Optional[datetime]): Inclusive lower bound on ``created_at``.
+        dateTo (Optional[datetime]): Inclusive upper bound on ``created_at``.
+        limit (int): Maximum rows to emit (hard cap 100,000).
+        auth (AuthContext): Authenticated admin context.
+        service (ExportService): Injected export service.
+        audit (AuditLogger): Request-scoped audit logger.
+
+    Returns:
+        StreamingResponse: The exported transactions as a downloadable file.
+    """
     filters = _build_filters(None, None, dateFrom, dateTo, limit)
     return await _stream_export(
         dataset_type=ExportDatasetType.WALLET_TRANSACTIONS.value,

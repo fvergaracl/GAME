@@ -36,6 +36,25 @@ class SocioBeeStrategy(BaseStrategy):  # noqa
     async def calculate_points(
         self, externalGameId, externalTaskId, externalUserId, data=None
     ):
+        """
+        Score an event by comparing the user's pace to the global average.
+
+        Until the task has enough history a flat basic award is granted
+        (``BasicEngagement``). Once history exists, the user's average time
+        between tasks is compared to all users' average and individual/global
+        adjustment points are added or subtracted accordingly, returning the
+        case name of the branch taken.
+
+        Args:
+            externalGameId: External identifier of the game.
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+            data: Optional event payload (unused by this strategy).
+
+        Returns:
+            tuple[int, str]: The points to award and the case name describing
+            which branch produced them.
+        """
         task_measurements_count = (
             self.user_points_analytics_service.count_measurements_by_external_task_id(
                 externalTaskId

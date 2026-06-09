@@ -81,6 +81,15 @@ class StrategyDefinitionService(BaseService):
 
     @staticmethod
     def _to_read(row: StrategyDefinition) -> StrategyDefinitionRead:
+        """
+        Map a ``StrategyDefinition`` ORM row to its public read schema.
+
+        Args:
+            row (StrategyDefinition): The persisted definition row.
+
+        Returns:
+            StrategyDefinitionRead: The API-facing representation.
+        """
         return StrategyDefinitionRead(
             id=str(row.id),
             realmId=row.realmId,
@@ -147,6 +156,18 @@ class StrategyDefinitionService(BaseService):
         type: Optional[str] = None,
         limit: int = 100,
     ) -> List[StrategyDefinitionRead]:
+        """
+        List strategy definitions for a realm, optionally filtered.
+
+        Args:
+            realmId (Optional[str]): Realm/tenant to scope to.
+            status (Optional[str]): Optional lifecycle-status filter.
+            type (Optional[str]): Optional strategy-type filter.
+            limit (int): Maximum rows to return.
+
+        Returns:
+            List[StrategyDefinitionRead]: The matching definitions.
+        """
         rows = await self.strategy_definition_repository.list_for_realm(
             realmId=realmId, status=status, type=type, limit=limit
         )
@@ -158,6 +179,19 @@ class StrategyDefinitionService(BaseService):
         id: str,
         realmId: Optional[str],
     ) -> StrategyDefinitionRead:
+        """
+        Fetch one strategy definition scoped to a realm.
+
+        Args:
+            id (str): Strategy definition identifier.
+            realmId (Optional[str]): Realm/tenant the strategy must belong to.
+
+        Returns:
+            StrategyDefinitionRead: The matching definition.
+
+        Raises:
+            NotFoundError: If no matching strategy exists in the realm.
+        """
         row = await self.strategy_definition_repository.get_for_realm(
             id=id, realmId=realmId
         )
@@ -174,6 +208,27 @@ class StrategyDefinitionService(BaseService):
         apiKey_used: Optional[str],
         oauth_user_id: Optional[str],
     ) -> StrategyDefinitionRead:
+        """
+        Create a new strategy-definition draft.
+
+        Validates the type/parent combination and any provided AST, rejects a
+        name that already exists in the realm, and persists the draft as
+        version 1.
+
+        Args:
+            payload (StrategyDefinitionCreate): The strategy to create.
+            realmId (Optional[str]): Realm/tenant that will own it.
+            createdBy (Optional[str]): Identity recorded as the author.
+            apiKey_used (Optional[str]): API key used for the request, if any.
+            oauth_user_id (Optional[str]): OAuth subject, if any.
+
+        Returns:
+            StrategyDefinitionRead: The newly created draft.
+
+        Raises:
+            BadRequestError: If the type/parent combination is invalid.
+            DuplicatedError: If a strategy with the same name already exists.
+        """
         type_value = payload.type.value
         self._validate_payload(type_value, payload.parentStrategyId)
         if payload.astJson is not None:
@@ -316,6 +371,24 @@ class StrategyDefinitionService(BaseService):
         id: str,
         realmId: Optional[str],
     ) -> StrategyDefinitionRead:
+        """
+        Publish a draft strategy, archiving any previously-published sibling.
+
+        Idempotent: re-publishing an already-published row is a no-op. If
+        another version of the same name is published, it is archived first so
+        only one published version exists per name.
+
+        Args:
+            id (str): Strategy definition identifier.
+            realmId (Optional[str]): Realm/tenant the strategy must belong to.
+
+        Returns:
+            StrategyDefinitionRead: The published strategy.
+
+        Raises:
+            NotFoundError: If no matching strategy exists in the realm.
+            ConflictError: If the strategy is archived.
+        """
         row = await self.strategy_definition_repository.get_for_realm(
             id=id, realmId=realmId
         )
@@ -349,6 +422,21 @@ class StrategyDefinitionService(BaseService):
         id: str,
         realmId: Optional[str],
     ) -> StrategyDefinitionRead:
+        """
+        Archive a strategy so it can no longer be published or assigned.
+
+        Idempotent: archiving an already-archived row returns it unchanged.
+
+        Args:
+            id (str): Strategy definition identifier.
+            realmId (Optional[str]): Realm/tenant the strategy must belong to.
+
+        Returns:
+            StrategyDefinitionRead: The archived strategy.
+
+        Raises:
+            NotFoundError: If no matching strategy exists in the realm.
+        """
         row = await self.strategy_definition_repository.get_for_realm(
             id=id, realmId=realmId
         )

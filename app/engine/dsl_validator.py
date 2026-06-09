@@ -90,6 +90,16 @@ class _State:
         self.node_count = 0
 
     def step(self, node_id: str) -> None:
+        """
+        Count one visited node and enforce the AST node-count budget.
+
+        Args:
+            node_id (str): Id of the node being visited (reported on error).
+
+        Raises:
+            DslValidationError: If the running node count exceeds
+                ``max_nodes``.
+        """
         self.node_count += 1
         if self.node_count > self.max_nodes:
             raise DslValidationError(
@@ -102,6 +112,17 @@ class _State:
 
 
 def _require_type(node: Any, expected: str, *, parent_id: str) -> None:
+    """
+    Assert that ``node`` is a dict whose ``type`` equals ``expected``.
+
+    Args:
+        node (Any): Candidate AST node.
+        expected (str): The required node ``type``.
+        parent_id (str): Id of the enclosing node, used in error reporting.
+
+    Raises:
+        DslValidationError: If ``node`` is not a dict or has the wrong type.
+    """
     if not isinstance(node, dict):
         raise DslValidationError(
             detail=f"Expected node of type '{expected}', got {type(node).__name__}.",
@@ -128,6 +149,22 @@ def _node_id(node: Dict[str, Any], parent_id: str, type_hint: str, index: int) -
 def _assert_keys(
     node: Dict[str, Any], required: tuple, *, node_id: str, allowed_extra: tuple = ()
 ) -> None:
+    """
+    Validate that a node has all required keys and no unexpected ones.
+
+    ``type`` and ``id`` are always permitted in addition to ``required`` and
+    ``allowed_extra``.
+
+    Args:
+        node (Dict[str, Any]): The AST node to check.
+        required (tuple): Keys that must be present.
+        node_id (str): Id of the node, used in error reporting.
+        allowed_extra (tuple): Additional optional keys to permit.
+
+    Raises:
+        DslValidationError: If a required key is missing or an unknown key is
+            present.
+    """
     for key in required:
         if key not in node:
             raise DslValidationError(
@@ -146,6 +183,16 @@ def _assert_keys(
 
 
 def _validate_program(node: Dict[str, Any], *, state: _State) -> None:
+    """
+    Validate the top-level ``program`` node and recurse into its rules.
+
+    Args:
+        node (Dict[str, Any]): The program AST node.
+        state (_State): Shared validation state tracking node/depth budgets.
+
+    Raises:
+        DslValidationError: If the program node or any descendant is invalid.
+    """
     nid = _node_id(node, "p", NODE_PROGRAM, 0)
     state.step(nid)
     _require_type(node, NODE_PROGRAM, parent_id="root")
@@ -282,6 +329,21 @@ def _validate_rule(
     depth: int,
     context: str = "rule",
 ) -> None:
+    """
+    Validate a single ``rule`` node and its condition/branches.
+
+    Args:
+        node (Any): The rule AST node.
+        parent_id (str): Id of the enclosing node, for error reporting.
+        index (int): Position of this rule among its siblings.
+        state (_State): Shared validation state (node/depth budgets).
+        depth (int): Current nesting depth.
+        context (str): Logical context label (e.g. ``"rule"``) controlling
+            which constructs are allowed.
+
+    Raises:
+        DslValidationError: If the rule or any descendant is invalid.
+    """
     if not isinstance(node, dict):
         raise DslValidationError(
             detail="program.rules[*] must be objects.",
@@ -386,6 +448,20 @@ def _validate_condition(
     depth: int,
     context: str = "rule",
 ) -> None:
+    """
+    Validate a condition node (logical/comparison) and its operands.
+
+    Args:
+        node (Any): The condition AST node.
+        parent_id (str): Id of the enclosing node, for error reporting.
+        index (int): Position of this node among its siblings.
+        state (_State): Shared validation state (node/depth budgets).
+        depth (int): Current nesting depth.
+        context (str): Logical context label controlling allowed constructs.
+
+    Raises:
+        DslValidationError: If the condition or any operand is invalid.
+    """
     if not isinstance(node, dict):
         raise DslValidationError(
             detail="Condition must be an object.",
@@ -479,6 +555,20 @@ def _validate_expression(
     depth: int,
     context: str = "rule",
 ) -> None:
+    """
+    Validate an expression node (field/literal/arith/func) and its children.
+
+    Args:
+        node (Any): The expression AST node.
+        parent_id (str): Id of the enclosing node, for error reporting.
+        index (int): Position of this node among its siblings.
+        state (_State): Shared validation state (node/depth budgets).
+        depth (int): Current nesting depth.
+        context (str): Logical context label controlling allowed constructs.
+
+    Raises:
+        DslValidationError: If the expression or any sub-expression is invalid.
+    """
     if not isinstance(node, dict):
         raise DslValidationError(
             detail="Expression must be an object.",
@@ -619,6 +709,20 @@ def _validate_statement(
     depth: int,
     context: str = "rule",
 ) -> None:
+    """
+    Validate a statement node (e.g. ``set``, ``emit``, ``return``).
+
+    Args:
+        node (Any): The statement AST node.
+        parent_id (str): Id of the enclosing node, for error reporting.
+        index (int): Position of this statement among its siblings.
+        state (_State): Shared validation state (node/depth budgets).
+        depth (int): Current nesting depth.
+        context (str): Logical context label controlling allowed constructs.
+
+    Raises:
+        DslValidationError: If the statement or any sub-node is invalid.
+    """
     if not isinstance(node, dict):
         raise DslValidationError(
             detail="Statement must be an object.",
@@ -784,6 +888,17 @@ def _validate_statement(
 
 
 def _check_depth(depth: int, node_id: str, state: _State) -> None:
+    """
+    Enforce the maximum AST nesting depth.
+
+    Args:
+        depth (int): Current nesting depth.
+        node_id (str): Id of the node being visited (reported on error).
+        state (_State): Validation state carrying ``max_depth``.
+
+    Raises:
+        DslValidationError: If ``depth`` exceeds ``state.max_depth``.
+    """
     if depth > state.max_depth:
         raise DslValidationError(
             detail=(

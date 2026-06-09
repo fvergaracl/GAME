@@ -47,6 +47,25 @@ class GameRepository(BaseRepository):
         oauth_user_id=None,
         is_admin: bool = False,
     ):
+        """
+        List games visible to the caller, filtered, ordered and paginated.
+
+        Non-null fields on ``schema`` become filters and drive
+        ordering/pagination. Unless ``is_admin`` is ``True``, results are
+        restricted to games owned by the supplied ``api_key`` /
+        ``oauth_user_id``.
+
+        Args:
+            schema: Search schema with optional filters and
+                ordering/page/page_size.
+            api_key: API key of the caller, used for ownership scoping.
+            oauth_user_id: OAuth subject of the caller, used for scoping.
+            is_admin (bool): When ``True``, bypass ownership scoping and list
+                all games.
+
+        Returns:
+            A paginated result with the matching games and search metadata.
+        """
         async with self.session_factory() as session:
             schema_as_dict = schema.model_dump(exclude_none=True)
             ordering = schema_as_dict.get("ordering", configs.ORDERING)
@@ -152,6 +171,18 @@ class GameRepository(BaseRepository):
             )
 
     async def get_game_by_id(self, id: str):
+        """
+        Fetch a game together with its configured parameters.
+
+        Args:
+            id (str): Internal game identifier.
+
+        Returns:
+            BaseGameResult: The game and its ``params`` (id/key/value).
+
+        Raises:
+            NotFoundError: If no game has the given id.
+        """
         async with self.session_factory() as session:
             game = (
                 (await session.execute(select(self.model).filter(self.model.id == id)))
@@ -183,6 +214,21 @@ class GameRepository(BaseRepository):
             )
 
     async def patch_game_by_id(self, gameId: str, schema):
+        """
+        Partially update a game's columns from ``schema``.
+
+        Only non-null fields on ``schema`` are written to the row.
+
+        Args:
+            gameId (str): Internal game identifier.
+            schema: Patch schema whose non-null fields are applied.
+
+        Returns:
+            The updated game.
+
+        Raises:
+            NotFoundError: If no game has the given id.
+        """
         async with self.session_factory() as session:
             game = (
                 (
@@ -263,6 +309,15 @@ class GameRepository(BaseRepository):
             return int(result.rowcount or 0)
 
     async def delete_game_by_id(self, game_id: str):
+        """
+        Delete a game by its internal identifier.
+
+        Args:
+            game_id (str): Internal game identifier.
+
+        Raises:
+            NotFoundError: If no game has the given id.
+        """
         try:
             async with self.session_factory() as session:
                 game = (

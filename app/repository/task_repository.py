@@ -76,6 +76,16 @@ class TaskRepository(BaseRepository):
             }
 
     async def read_by_gameId_and_externalTaskId(self, gameId, externalTaskId: str):
+        """
+        Look up a task by its game and external identifier.
+
+        Args:
+            gameId: Internal identifier of the owning game.
+            externalTaskId (str): External identifier of the task.
+
+        Returns:
+            Tasks | None: The matching task, or ``None`` if not found.
+        """
         async with self.session_factory() as session:
             stmt = select(self.model).filter(
                 self.model.gameId == gameId,
@@ -84,6 +94,18 @@ class TaskRepository(BaseRepository):
             return (await session.execute(stmt)).scalars().first()
 
     async def get_points_and_users_by_taskId(self, taskId):
+        """
+        Fetch a task by its internal id, raising if it does not exist.
+
+        Args:
+            taskId: Internal task identifier.
+
+        Returns:
+            Tasks: The matching task.
+
+        Raises:
+            NotFoundError: If no task has the given id.
+        """
         async with self.session_factory() as session:
             stmt = select(self.model).filter(self.model.id == taskId)
             result = (await session.execute(stmt)).scalars().first()

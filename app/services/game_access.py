@@ -39,6 +39,23 @@ async def get_authorized_user(
     oauth_user_id: str | None = None,
     is_admin: bool = False,
 ) -> Any:
+    """
+    Load a user and assert the caller is allowed to access them.
+
+    Args:
+        user_repository: Repository used to look the user up.
+        external_user_id (str): External identifier of the user.
+        api_key (str | None): Caller's API key, for ownership scoping.
+        oauth_user_id (str | None): Caller's OAuth subject, for scoping.
+        is_admin (bool): Whether the caller has the admin role.
+
+    Returns:
+        Any: The authorized user entity.
+
+    Raises:
+        NotFoundError: If the user does not exist.
+        ForbiddenError: If the caller may not access the user.
+    """
     user = await user_repository.read_by_column(
         "externalUserId", external_user_id, not_found_raise_exception=True
     )
@@ -85,6 +102,23 @@ async def get_authorized_game(
     oauth_user_id: str | None = None,
     is_admin: bool = False,
 ) -> Any:
+    """
+    Load a game and assert the caller is allowed to access it.
+
+    Args:
+        game_repository: Repository used to look the game up.
+        game_id: Internal identifier of the game.
+        api_key (str | None): Caller's API key, for ownership scoping.
+        oauth_user_id (str | None): Caller's OAuth subject, for scoping.
+        is_admin (bool): Whether the caller has the admin role.
+
+    Returns:
+        Any: The authorized game entity.
+
+    Raises:
+        NotFoundError: If the game does not exist.
+        ForbiddenError: If the caller may not access the game.
+    """
     game = await game_repository.read_by_id(
         game_id,
         not_found_raise_exception=False,

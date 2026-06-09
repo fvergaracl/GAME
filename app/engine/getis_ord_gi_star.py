@@ -23,6 +23,7 @@ def _build_rook_weights(rows: int, cols: int) -> np.ndarray:
     weights = np.zeros((n, n), dtype=float)
 
     def idx(r: int, c: int) -> int:
+        """Flatten a ``(row, col)`` cell coordinate into a 1D matrix index."""
         return r * cols + c
 
     for r in range(rows):

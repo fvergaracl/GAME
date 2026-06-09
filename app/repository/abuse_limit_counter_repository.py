@@ -35,6 +35,24 @@ class AbuseLimitCounterRepository(BaseRepository):
         window_name: str,
         window_start: datetime,
     ) -> int:
+        """
+        Atomically increment a rate-limit bucket and return its new value.
+
+        Concurrency-safe: it first tries an atomic ``counter = counter + 1``
+        update; if the bucket does not yet exist it inserts it, and if a
+        concurrent insert collides it rolls back and retries the update. The
+        ``window_start`` is normalized to UTC.
+
+        Args:
+            scope_type (str): Dimension being limited (e.g. ``"ip"``,
+                ``"api_key"``).
+            scope_value (str): Concrete value within ``scope_type``.
+            window_name (str): Name of the limit window (e.g. ``"per_minute"``).
+            window_start (datetime): Start of the bucket's time window.
+
+        Returns:
+            int: The counter value after this increment.
+        """
         if window_start.tzinfo is None:
             window_start = window_start.replace(tzinfo=timezone.utc)
 
@@ -93,6 +111,13 @@ class AbuseLimitCounterRepository(BaseRepository):
         window_name: str,
         window_start: datetime,
     ):
+        """
+        Build the equality filters that uniquely identify a counter bucket.
+
+        Returns:
+            tuple: SQLAlchemy boolean expressions for scope type/value,
+            window name and window start, used in ``WHERE`` clauses.
+        """
         return (
             self.model.scopeType == scope_type,
             self.model.scopeValue == scope_value,
@@ -101,6 +126,16 @@ class AbuseLimitCounterRepository(BaseRepository):
         )
 
     async def _read_counter(self, session: AsyncSession, filters) -> int:
+        """
+        Read the current counter value for a bucket within ``session``.
+
+        Args:
+            session (AsyncSession): Active session to query within.
+            filters: Bucket-identifying filters from :meth:`_build_filters`.
+
+        Returns:
+            int: The stored counter, or ``0`` when the bucket is absent.
+        """
         value = (
             await session.execute(select(self.model.counter).where(*filters))
         ).scalar()

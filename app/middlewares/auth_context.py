@@ -35,6 +35,14 @@ class AuditLogger:
     async def info(
         self, message: str, details: Optional[Dict[str, Any]] = None
     ) -> None:
+        """
+        Write an ``INFO``-level audit log row for this request.
+
+        Args:
+            message (str): Human-readable description of the event.
+            details (Optional[Dict[str, Any]]): Structured context to attach;
+                defaults to an empty dict.
+        """
         await add_log(
             self.module,
             "INFO",
@@ -48,6 +56,14 @@ class AuditLogger:
     async def success(
         self, message: str, details: Optional[Dict[str, Any]] = None
     ) -> None:
+        """
+        Write a ``SUCCESS``-level audit log row for this request.
+
+        Args:
+            message (str): Human-readable description of the event.
+            details (Optional[Dict[str, Any]]): Structured context to attach;
+                defaults to an empty dict.
+        """
         await add_log(
             self.module,
             "SUCCESS",
@@ -61,6 +77,14 @@ class AuditLogger:
     async def error(
         self, message: str, details: Optional[Dict[str, Any]] = None
     ) -> None:
+        """
+        Write an ``ERROR``-level audit log row for this request.
+
+        Args:
+            message (str): Human-readable description of the failure.
+            details (Optional[Dict[str, Any]]): Structured context to attach;
+                defaults to an empty dict.
+        """
         await add_log(
             self.module,
             "ERROR",
@@ -159,6 +183,7 @@ def audit_log(module: str) -> Callable:
         auth: AuthContext = Depends(get_auth_context),
         service_log: LogsService = Depends(Provide[Container.logs_service]),
     ) -> AuditLogger:
+        """Resolve the request's auth context and bind it to an AuditLogger."""
         return AuditLogger(module, service_log, auth)
 
     return _audit_log_dependency

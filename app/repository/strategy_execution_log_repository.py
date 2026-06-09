@@ -80,6 +80,20 @@ class StrategyExecutionLogRepository(BaseRepository):
     # ------------------------------------------------------------------
 
     def _apply_window(self, stmt, strategyId: str, sinceDt, untilDt):
+        """
+        Scope a statement to one strategy and an optional time range.
+
+        Args:
+            stmt: The SQLAlchemy select statement to constrain.
+            strategyId (str): Strategy whose logs to include.
+            sinceDt: Lower bound on ``created_at`` (inclusive); ignored if
+                ``None``.
+            untilDt: Upper bound on ``created_at`` (inclusive); ignored if
+                ``None``.
+
+        Returns:
+            The statement with the added ``WHERE`` clauses.
+        """
         stmt = stmt.where(self.model.strategyId == strategyId)
         if sinceDt is not None:
             stmt = stmt.where(self.model.created_at >= sinceDt)

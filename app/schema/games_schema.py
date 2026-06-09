@@ -126,6 +126,7 @@ class PostCreateGame(BaseModel):
     )
 
     def example():
+        """Return a sample creation payload used as the OpenAPI example."""
         return {
             "externalGameId": "game-readme-001",
             "platform": "web",
@@ -183,6 +184,7 @@ class DuplicateGame(BaseModel):
     )
 
     def example():
+        """Return a sample duplication payload used as the OpenAPI example."""
         return {"externalGameId": "copy-of-game-readme-001"}
 
 

@@ -99,6 +99,20 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
         return response
 
     def generate_logic_graph(self, format="png"):
+        """
+        Render this strategy's decision tree as a Graphviz diagram.
+
+        Builds a labelled flowchart (legend, decision nodes and the Case
+        1.1–4.2 outcomes) describing how minutes, records and global/personal
+        averages map to a point award. Used by the dashboard to visualize the
+        strategy.
+
+        Args:
+            format (str): Graphviz output format (e.g. ``"png"``, ``"svg"``).
+
+        Returns:
+            graphviz.Digraph: The constructed diagram.
+        """
         dot = Digraph(comment="Points Calculation Logic", format=format)
 
         # Set overall graph attributes
@@ -173,6 +187,24 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
     async def calculate_points(
         self, externalGameId, externalTaskId, externalUserId, data
     ):
+        """
+        Award points from reported effort minutes and task complexity.
+
+        Requires a numeric ``minutes`` value in ``data``. The award follows
+        the Case 1.1–4.2 decision tree (see :meth:`generate_logic_graph`),
+        weighting the configured default points by total complexity and the
+        user's history/averages.
+
+        Args:
+            externalGameId: External identifier of the game.
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+            data (dict): Event payload; must contain an integer ``minutes``.
+
+        Returns:
+            tuple: ``(points, caseName)`` on success, or ``(-1, message)``
+            when ``minutes`` is missing or invalid.
+        """
         minutes = data.get("minutes", None)
         if minutes is None:
             return (-1, 'The "minutes" field is required into the data')

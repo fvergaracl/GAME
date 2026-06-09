@@ -51,11 +51,33 @@ class DashboardService(BaseService):
         super().__init__(dashboard_repository)
 
     async def get_dashboard_summary(self, start_date, end_date, group_by) -> Any:
+        """
+        Return the dashboard activity summary for a date range.
+
+        Args:
+            start_date: Inclusive lower bound of the reporting window.
+            end_date: Inclusive upper bound of the reporting window.
+            group_by: Bucketing granularity (e.g. ``"day"``/``"month"``).
+
+        Returns:
+            Any: Aggregated summary metrics produced by the repository.
+        """
         return await self.dashboard_repository.get_dashboard_summary(
             start_date, end_date, group_by
         )
 
     async def get_dashboard_summary_logs(self, start_date, end_date, group_by) -> Any:
+        """
+        Return the dashboard log-activity summary for a date range.
+
+        Args:
+            start_date: Inclusive lower bound of the reporting window.
+            end_date: Inclusive upper bound of the reporting window.
+            group_by: Bucketing granularity (e.g. ``"day"``/``"month"``).
+
+        Returns:
+            Any: Aggregated log metrics produced by the repository.
+        """
         return await self.dashboard_repository.get_dashboard_summary_logs(
             start_date, end_date, group_by
         )

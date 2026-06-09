@@ -145,6 +145,20 @@ class DslInterpreter:
         *,
         mode: str = "full",
     ) -> None:
+        """
+        Execute the top-level program node for the requested mode.
+
+        In ``"full"`` mode it runs every rule and, if nothing matched, the
+        ``default`` statement. In ``"pre"`` / ``"post"`` modes (DSL_EXTEND) it
+        runs only the matching ``pre_rules`` / ``post_rules`` section, leaving
+        the DSL_FULL ``rules``/``default`` untouched.
+
+        Args:
+            node (Dict[str, Any]): The program AST node.
+            ctx (ExecutionContext): Precomputed field values for this run.
+            state (_RunState): Mutable per-run state (trace, points, etc.).
+            mode (str): One of ``"full"``, ``"pre"`` or ``"post"``.
+        """
         self._step(state, node)
 
         if mode == "full":
@@ -173,6 +187,20 @@ class DslInterpreter:
         *,
         depth: int,
     ) -> None:
+        """
+        Evaluate a single rule's if / else-if / else cascade.
+
+        The base ``when`` is tested first; if truthy its ``then`` runs and the
+        rule ends. Otherwise each ``else_if`` is tried in order, then the
+        ``else`` body if present. Only one branch runs; the chosen branch (or
+        ``skip``) is recorded in the trace.
+
+        Args:
+            node (Dict[str, Any]): The rule AST node.
+            ctx (ExecutionContext): Precomputed field values for this run.
+            state (_RunState): Mutable per-run state (trace, points, etc.).
+            depth (int): Current recursion depth (for the depth guard).
+        """
         self._step(state, node)
         self._check_depth(depth, node)
 
@@ -244,6 +272,16 @@ class DslInterpreter:
         *,
         depth: int,
     ) -> None:
+        """
+        Run the ordered statements of a matched rule branch.
+
+        Args:
+            statements (Optional[List[Dict[str, Any]]]): Statement nodes to
+                execute; ``None`` is treated as empty.
+            ctx (ExecutionContext): Precomputed field values for this run.
+            state (_RunState): Mutable per-run state (trace, points, etc.).
+            depth (int): Current recursion depth.
+        """
         for stmt in statements or []:
             await self._run_statement(stmt, ctx, state, depth=depth)
 
@@ -257,6 +295,21 @@ class DslInterpreter:
         *,
         depth: int,
     ) -> None:
+        """
+        Execute one statement node, mutating run state accordingly.
+
+        Handles the statement node types (e.g. set points/case, emit callback
+        data, set working data, veto, return) and raises on unknown types.
+
+        Args:
+            node (Dict[str, Any]): The statement AST node.
+            ctx (ExecutionContext): Precomputed field values for this run.
+            state (_RunState): Mutable per-run state updated in place.
+            depth (int): Current recursion depth.
+
+        Raises:
+            DslValidationError: If the statement node type is unknown.
+        """
         await self._maybe_yield(state)
         self._step(state, node)
         self._check_depth(depth, node)
@@ -420,6 +473,21 @@ class DslInterpreter:
         *,
         depth: int,
     ) -> bool:
+        """
+        Evaluate a condition node to a boolean.
+
+        Handles logical (and/or/not) and comparison nodes, and falls back to
+        the truthiness of a bare expression.
+
+        Args:
+            node (Dict[str, Any]): The condition AST node.
+            ctx (ExecutionContext): Precomputed field values for this run.
+            state (_RunState): Mutable per-run state.
+            depth (int): Current recursion depth.
+
+        Returns:
+            bool: The truth value of the condition.
+        """
         await self._maybe_yield(state)
         self._step(state, node)
         self._check_depth(depth, node)
@@ -519,6 +587,24 @@ class DslInterpreter:
         *,
         depth: int,
     ) -> Any:
+        """
+        Evaluate an expression node to a Python value.
+
+        Handles literals, whitelisted field lookups (read from ``ctx``),
+        arithmetic nodes and function calls, raising on unknown node types.
+
+        Args:
+            node (Dict[str, Any]): The expression AST node.
+            ctx (ExecutionContext): Precomputed field values for this run.
+            state (_RunState): Mutable per-run state.
+            depth (int): Current recursion depth.
+
+        Returns:
+            Any: The computed value of the expression.
+
+        Raises:
+            DslValidationError: If the expression node type is unknown.
+        """
         await self._maybe_yield(state)
         self._step(state, node)
         self._check_depth(depth, node)
@@ -645,6 +731,17 @@ class DslInterpreter:
     # ----- guards ----------------------------------------------------------
 
     def _step(self, state: _RunState, node: Dict[str, Any]) -> None:
+        """
+        Count one executed node and enforce the runtime node budget.
+
+        Args:
+            state (_RunState): Run state whose ``count`` is incremented.
+            node (Dict[str, Any]): Node being executed (reported on error).
+
+        Raises:
+            DslLimitExceededError: If the executed-node count exceeds
+                ``_max_nodes``.
+        """
         state.count += 1
         if state.count > self._max_nodes:
             raise DslLimitExceededError(
@@ -656,6 +753,16 @@ class DslInterpreter:
             )
 
     def _check_depth(self, depth: int, node: Dict[str, Any]) -> None:
+        """
+        Enforce the runtime recursion-depth budget.
+
+        Args:
+            depth (int): Current recursion depth.
+            node (Dict[str, Any]): Node being executed (reported on error).
+
+        Raises:
+            DslLimitExceededError: If ``depth`` exceeds ``_max_depth``.
+        """
         if depth > self._max_depth:
             raise DslLimitExceededError(
                 detail=(
@@ -666,6 +773,15 @@ class DslInterpreter:
             )
 
     async def _maybe_yield(self, state: _RunState) -> None:
+        """
+        Periodically yield to the event loop during long runs.
+
+        Every ``_yield_every`` executed nodes this awaits ``asyncio.sleep(0)``
+        so a heavy program does not starve other coroutines.
+
+        Args:
+            state (_RunState): Run state whose ``count`` drives the cadence.
+        """
         if state.count and state.count % self._yield_every == 0:
             await asyncio.sleep(0)
 
@@ -709,6 +825,17 @@ _COMPARE_HANDLERS = {
 
 
 def _apply_compare(op: str, left: Any, right: Any) -> bool:
+    """
+    Apply a comparison operator to two operands.
+
+    Args:
+        op (str): One of ``<``, ``<=``, ``==``, ``!=``, ``>=``, ``>``.
+        left (Any): Left-hand operand.
+        right (Any): Right-hand operand.
+
+    Returns:
+        bool: The result of the comparison.
+    """
     return bool(_COMPARE_HANDLERS[op](left, right))
 
 
@@ -723,6 +850,17 @@ _ARITH_HANDLERS = {
 
 
 def _apply_arith(op: str, left: Any, right: Any) -> Any:
+    """
+    Apply a binary arithmetic operator to two operands.
+
+    Args:
+        op (str): One of ``+``, ``-``, ``*``, ``/``, ``min``, ``max``.
+        left (Any): Left-hand operand.
+        right (Any): Right-hand operand.
+
+    Returns:
+        Any: The result of the operation.
+    """
     return _ARITH_HANDLERS[op](left, right)
 
 
@@ -738,4 +876,15 @@ _FUNC_HANDLERS = {
 
 
 def _apply_func(name: str, args: List[Any]) -> Any:
+    """
+    Apply a whitelisted DSL function to its arguments.
+
+    Args:
+        name (str): Function name; ``"int"`` (truncate toward zero) or
+            ``"clamp"`` (``value, lo, hi`` → bounded value).
+        args (List[Any]): Positional arguments for the function.
+
+    Returns:
+        Any: The function's result.
+    """
     return _FUNC_HANDLERS[name](args)

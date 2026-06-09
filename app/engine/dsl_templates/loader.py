@@ -53,6 +53,20 @@ def reset_cache_for_tests() -> None:
 
 
 def _scan_templates_dir(directory: Path) -> List[StrategyTemplateRead]:
+    """
+    Load and validate every JSON strategy template in a directory.
+
+    Each ``*.json`` file is parsed, validated against
+    :class:`StrategyTemplateRead`, and its embedded AST is checked with
+    ``validate_ast`` so only round-trippable templates are returned. A missing
+    directory yields an empty list.
+
+    Args:
+        directory (Path): Directory to scan for template files.
+
+    Returns:
+        List[StrategyTemplateRead]: Validated templates, sorted by filename.
+    """
     if not directory.exists():
         return []
     templates: List[StrategyTemplateRead] = []

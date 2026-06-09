@@ -36,6 +36,7 @@ class CreateTaskParams(BaseTaskParams):
     ...
 
     def example():
+        """Return a sample task-parameter payload for the OpenAPI docs."""
         return {"key": "variable_bonus_points", "value": 20}
 
 

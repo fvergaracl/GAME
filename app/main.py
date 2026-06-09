@@ -20,6 +20,14 @@ from app.util.class_object import singleton
 
 
 def _configure_logging() -> None:
+    """
+    Configure the root logger and uvicorn/gunicorn loggers process-wide.
+
+    Emits structured JSON logs in ``prod``/``stage`` environments and
+    human-readable plain text everywhere else. The log level is taken from
+    the ``LOG_LEVEL`` environment variable (defaulting to ``INFO``). Called
+    once at import time so handlers are in place before the app is built.
+    """
     use_json = configs.ENV in {"prod", "stage"}
     level = os.getenv("LOG_LEVEL", "INFO").upper()
     config = {
@@ -81,6 +89,18 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """
+    FastAPI lifespan context manager handling graceful shutdown.
+
+    Yields immediately on startup (no startup work needed) and, on shutdown,
+    flushes the buffered DSL execution-log queue so a graceful stop does not
+    drop pending audit rows. The flush is best-effort: failures are logged
+    and swallowed so they never block shutdown.
+
+    Args:
+        app (FastAPI): The application instance whose ``state`` may hold the
+            ``dsl_execution_observer`` to flush.
+    """
     yield
     # Sprint 13: flush the DSL execution-log queue so a graceful
     # shutdown doesn't drop buffered audit rows. ``aclose`` is

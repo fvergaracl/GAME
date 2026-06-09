@@ -29,6 +29,16 @@ class UserPointsRepository(BaseRepository):
     async def get_first_user_points_in_external_task_id_by_user_id(
         self, externalTaskId, externalUserId
     ):
+        """
+        Return the earliest points row for a user on a given external task.
+
+        Args:
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+
+        Returns:
+            UserPoints | None: The oldest matching points row, or ``None``.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(UserPoints)
@@ -70,6 +80,17 @@ class UserPointsRepository(BaseRepository):
         return (await session.execute(stmt)).scalars().first()
 
     async def get_all_UserPoints_by_gameId(self, gameId):
+        """
+        Aggregate points per (task, user) for every task in a game.
+
+        Args:
+            gameId: Internal game identifier.
+
+        Returns:
+            list: Rows of ``(externalTaskId, externalUserId, points,
+            timesAwarded)`` where ``points`` is the summed total and
+            ``timesAwarded`` the number of awards.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(
@@ -86,6 +107,16 @@ class UserPointsRepository(BaseRepository):
             return (await session.execute(stmt)).all()
 
     async def get_all_UserPoints_by_taskId(self, taskId):
+        """
+        Aggregate points per user for a single task.
+
+        Args:
+            taskId: Internal task identifier.
+
+        Returns:
+            list: Rows of ``(externalUserId, points, timesAwarded)`` with the
+            summed points and award count per user.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(
@@ -100,6 +131,20 @@ class UserPointsRepository(BaseRepository):
             return (await session.execute(stmt)).all()
 
     async def get_all_UserPoints_by_taskId_with_details(self, taskId):
+        """
+        Aggregate points per user for a task, including per-award detail.
+
+        Like :meth:`get_all_UserPoints_by_taskId` but also returns a
+        ``pointsData`` array aggregating each award's ``points``, ``caseName``,
+        ``data``, ``description`` and ``created_at``.
+
+        Args:
+            taskId: Internal task identifier.
+
+        Returns:
+            list: Rows of ``(externalUserId, points, timesAwarded,
+            pointsData)``.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(
@@ -128,6 +173,17 @@ class UserPointsRepository(BaseRepository):
             return (await session.execute(stmt)).all()
 
     async def get_points_and_users_by_taskId(self, taskId):
+        """
+        Aggregate points per user for a task with a compact award breakdown.
+
+        Args:
+            taskId: Internal task identifier.
+
+        Returns:
+            list: Rows of ``(externalUserId, points, timesAwarded,
+            pointsData)`` where ``pointsData`` aggregates each award's
+            ``points``, ``caseName`` and ``created_at``.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(
@@ -152,6 +208,15 @@ class UserPointsRepository(BaseRepository):
             return (await session.execute(stmt)).all()
 
     async def get_task_by_externalUserId(self, externalUserId):
+        """
+        Return all tasks a user has earned points on.
+
+        Args:
+            externalUserId: External identifier of the user.
+
+        Returns:
+            list[Tasks]: Distinct tasks linked to the user's points rows.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(Tasks)
@@ -162,6 +227,16 @@ class UserPointsRepository(BaseRepository):
             return (await session.execute(stmt)).scalars().all()
 
     async def get_task_and_sum_points_by_userId(self, userId):
+        """
+        Sum a user's points grouped by task.
+
+        Args:
+            userId: Internal user identifier.
+
+        Returns:
+            list: Rows of ``(externalTaskId, points)`` with the total points
+            the user earned on each task.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(
@@ -177,6 +252,15 @@ class UserPointsRepository(BaseRepository):
             return (await session.execute(stmt)).all()
 
     async def get_user_measurement_count(self, userId):
+        """
+        Count how many points rows (measurements) a user has.
+
+        Args:
+            userId: Internal user identifier.
+
+        Returns:
+            int: Number of points rows for the user.
+        """
         async with self.session_factory() as session:
             stmt = select(func.count(UserPoints.id).label("measurement_count")).filter(
                 UserPoints.userId == userId
@@ -185,6 +269,16 @@ class UserPointsRepository(BaseRepository):
             return result.measurement_count
 
     async def get_time_taken_for_last_task(self, userId):
+        """
+        Return the timestamp of a user's most recent points row.
+
+        Args:
+            userId: Internal user identifier.
+
+        Returns:
+            datetime | None: The maximum ``created_at`` for the user, or
+            ``None`` if they have no rows.
+        """
         async with self.session_factory() as session:
             stmt = select(
                 func.max(UserPoints.created_at).label("last_task_time")
@@ -193,6 +287,16 @@ class UserPointsRepository(BaseRepository):
             return result.last_task_time
 
     async def get_individual_calculation(self, userId):
+        """
+        Return a user's average points per award.
+
+        Args:
+            userId: Internal user identifier.
+
+        Returns:
+            float | None: Mean of ``points`` across the user's rows, or
+            ``None`` if they have none.
+        """
         async with self.session_factory() as session:
             stmt = select(func.avg(UserPoints.points).label("average_points")).filter(
                 UserPoints.userId == userId
@@ -201,12 +305,29 @@ class UserPointsRepository(BaseRepository):
             return result.average_points
 
     async def get_global_calculation(self):
+        """
+        Return the average points per award across all users.
+
+        Returns:
+            float | None: Mean of ``points`` over every points row, or
+            ``None`` if the table is empty.
+        """
         async with self.session_factory() as session:
             stmt = select(func.avg(UserPoints.points).label("average_points"))
             result = (await session.execute(stmt)).one()
             return result.average_points
 
     async def get_start_time_for_last_task(self, userId):
+        """
+        Return the timestamp of a user's earliest points row.
+
+        Args:
+            userId: Internal user identifier.
+
+        Returns:
+            datetime | None: The minimum ``created_at`` for the user, or
+            ``None`` if they have no rows.
+        """
         async with self.session_factory() as session:
             stmt = select(func.min(UserPoints.created_at).label("start_time")).filter(
                 UserPoints.userId == userId
@@ -215,6 +336,15 @@ class UserPointsRepository(BaseRepository):
             return result.start_time
 
     async def count_measurements_by_external_task_id(self, external_task_id):
+        """
+        Count all points rows recorded for an external task.
+
+        Args:
+            external_task_id: External identifier of the task.
+
+        Returns:
+            int: Number of points rows linked to the task.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(func.count(UserPoints.taskId).label("measurement_count"))
@@ -225,6 +355,16 @@ class UserPointsRepository(BaseRepository):
             return result.measurement_count
 
     async def get_user_task_measurements(self, externalTaskId, externalUserId):
+        """
+        Return the ordered timestamps of a user's awards on a task.
+
+        Args:
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+
+        Returns:
+            list: Rows of ``(timestamp,)`` ordered chronologically.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(UserPoints.created_at.label("timestamp"))
@@ -237,6 +377,16 @@ class UserPointsRepository(BaseRepository):
             return (await session.execute(stmt)).all()
 
     async def get_user_task_measurements_count(self, externalTaskId, externalUserId):
+        """
+        Count a user's awards on a given external task.
+
+        Args:
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+
+        Returns:
+            int: Number of points rows for the user on that task.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(func.count(UserPoints.taskId).label("measurement_count"))
@@ -251,6 +401,17 @@ class UserPointsRepository(BaseRepository):
     async def get_user_task_measurements_count_the_last_seconds(
         self, externalTaskId, externalUserId, seconds
     ):
+        """
+        Count a user's recent awards on a task within a time window.
+
+        Args:
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+            seconds: Length of the look-back window, in seconds.
+
+        Returns:
+            int: Number of points rows created within the last ``seconds``.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(func.count(UserPoints.taskId).label("measurement_count"))
@@ -266,6 +427,18 @@ class UserPointsRepository(BaseRepository):
     async def get_avg_time_between_tasks_by_user_and_game_task(
         self, externalGameId, externalTaskId, externalUserId
     ):
+        """
+        Average the gap between a user's consecutive awards on a task.
+
+        Args:
+            externalGameId: External identifier of the game.
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+
+        Returns:
+            float: Mean seconds between consecutive awards, or ``-1`` when the
+            user has fewer than two awards.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(UserPoints.created_at)
@@ -291,6 +464,17 @@ class UserPointsRepository(BaseRepository):
     async def get_avg_time_between_tasks_for_all_users(
         self, externalGameId, externalTaskId
     ):
+        """
+        Average the gap between consecutive awards on a task across all users.
+
+        Args:
+            externalGameId: External identifier of the game.
+            externalTaskId: External identifier of the task.
+
+        Returns:
+            float: Mean seconds between consecutive awards, or ``-1`` when
+            fewer than two awards exist.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(UserPoints.created_at)
@@ -312,6 +496,17 @@ class UserPointsRepository(BaseRepository):
             return sum(time_diffs) / len(time_diffs)
 
     async def get_last_window_time_diff(self, externalTaskId, externalUserId):
+        """
+        Return seconds between a user's two most recent awards on a task.
+
+        Args:
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+
+        Returns:
+            float: Seconds between the last two awards, or ``0`` when the user
+            has fewer than two.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(UserPoints)
@@ -333,6 +528,20 @@ class UserPointsRepository(BaseRepository):
     async def get_new_last_window_time_diff(
         self, externalTaskId, externalUserId, externalGameId
     ):
+        """
+        Return seconds elapsed since a user's most recent award on a task.
+
+        Measures the gap between *now* and the user's latest award (scoped by
+        game and task), normalizing both timestamps to UTC.
+
+        Args:
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+            externalGameId: External identifier of the game.
+
+        Returns:
+            float: Seconds since the last award, or ``0`` if the user has none.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(UserPoints)
@@ -365,6 +574,16 @@ class UserPointsRepository(BaseRepository):
     async def count_personal_records_by_external_game_id(
         self, externalGameId, externalUserId
     ):
+        """
+        Count a user's total awards across a game.
+
+        Args:
+            externalGameId: External identifier of the game.
+            externalUserId: External identifier of the user.
+
+        Returns:
+            int: Number of points rows for the user within the game.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(func.count(UserPoints.id).label("record_count"))
@@ -380,6 +599,17 @@ class UserPointsRepository(BaseRepository):
     async def user_has_record_before_in_externalTaskId_last_min(
         self, externalTaskId, externalUserId, minutes
     ):
+        """
+        Check whether a user earned points on a task within recent minutes.
+
+        Args:
+            externalTaskId: External identifier of the task.
+            externalUserId: External identifier of the user.
+            minutes: Length of the look-back window, in minutes.
+
+        Returns:
+            bool: ``True`` if at least one award exists within the window.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(func.count(UserPoints.id))
@@ -393,6 +623,19 @@ class UserPointsRepository(BaseRepository):
             return count > 0
 
     async def get_global_avg_by_external_game_id(self, externalGameId):
+        """
+        Average the ``data["minutes"]`` measurement across a whole game.
+
+        Considers only rows with a positive ``minutes`` value in their JSON
+        ``data`` payload.
+
+        Args:
+            externalGameId: External identifier of the game.
+
+        Returns:
+            float: Mean ``minutes`` over all users, or ``-1`` when no
+            qualifying rows exist.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(
@@ -411,6 +654,20 @@ class UserPointsRepository(BaseRepository):
     async def get_personal_avg_by_external_game_id(
         self, externalGameId, externalUserId
     ):
+        """
+        Average one user's ``data["minutes"]`` measurement across a game.
+
+        Considers only rows with a positive ``minutes`` value in their JSON
+        ``data`` payload.
+
+        Args:
+            externalGameId: External identifier of the game.
+            externalUserId: External identifier of the user.
+
+        Returns:
+            float: Mean ``minutes`` for the user, or ``-1`` when no qualifying
+            rows exist.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(
@@ -431,6 +688,18 @@ class UserPointsRepository(BaseRepository):
     async def get_points_of_simulated_task(
         self, externalTaskId: str, simulationHash: str
     ):
+        """
+        Return points rows produced by a specific strategy simulation run.
+
+        Matches rows whose JSON ``data`` carries the given ``simulationHash``.
+
+        Args:
+            externalTaskId (str): External identifier of the task.
+            simulationHash (str): Hash identifying the simulation run.
+
+        Returns:
+            list[UserPoints]: Points rows belonging to that simulation.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(UserPoints)
@@ -468,6 +737,15 @@ class UserPointsRepository(BaseRepository):
             return (await session.execute(stmt)).scalars().all()
 
     async def get_last_task_by_userId(self, userId):
+        """
+        Return a user's most recent points row.
+
+        Args:
+            userId: Internal user identifier.
+
+        Returns:
+            UserPoints | None: The latest award by ``created_at``, or ``None``.
+        """
         async with self.session_factory() as session:
             stmt = (
                 select(UserPoints)

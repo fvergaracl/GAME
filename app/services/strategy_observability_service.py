@@ -245,6 +245,20 @@ class StrategyObservabilityService:
         sinceDt: Optional[datetime],
         untilDt: Optional[datetime],
     ) -> StrategyMetricsResponse:
+        """
+        Assemble the metrics response for one strategy over a time window.
+
+        Aggregates execution counts, status/error breakdowns and latency
+        percentiles for the strategy within the optional date range.
+
+        Args:
+            strategy (StrategyDefinitionRead): The strategy to report on.
+            sinceDt (Optional[datetime]): Inclusive lower time bound.
+            untilDt (Optional[datetime]): Inclusive upper time bound.
+
+        Returns:
+            StrategyMetricsResponse: The aggregated metrics.
+        """
         # Strategy executions persist with the bare definition id
         # (StrategyDefinitionLog.strategyId — see how the observer is
         # called from DslStrategy._run_phase). We pass that id verbatim

@@ -155,6 +155,14 @@ class ExportService(BaseService):
         row_count: int,
         status: str,
     ) -> None:
+        """
+        Mark an export audit row finished with its final row count and status.
+
+        Args:
+            audit_id (str): Id of the audit row started by ``audit_start``.
+            row_count (int): Number of rows actually streamed.
+            status (str): Terminal status (e.g. completed/failed).
+        """
         await self.export_audit_log_repository.mark_finished(
             audit_id, row_count=row_count, status=status
         )
@@ -192,6 +200,17 @@ class ExportService(BaseService):
     # Query helpers
     # ------------------------------------------------------------------
     def _apply_date_filters(self, stmt, model, filters: ExportFilters):
+        """
+        Add ``created_at`` range filters to a select statement.
+
+        Args:
+            stmt: The SQLAlchemy select to constrain.
+            model: The mapped model exposing ``created_at``.
+            filters (ExportFilters): Carries optional ``dateFrom``/``dateTo``.
+
+        Returns:
+            The statement with any provided date bounds applied.
+        """
         if filters.dateFrom is not None:
             stmt = stmt.filter(model.created_at >= filters.dateFrom)
         if filters.dateTo is not None:
@@ -210,6 +229,16 @@ class ExportService(BaseService):
     # Dataset iterators (each yields plain dicts)
     # ------------------------------------------------------------------
     async def iter_users(self, filters: ExportFilters) -> AsyncIterator[Dict[str, Any]]:
+        """
+        Stream user rows as plain dicts for export.
+
+        Args:
+            filters (ExportFilters): Date range and row limit (game/task
+                filters do not apply to users).
+
+        Yields:
+            Dict[str, Any]: One serializable user record per row.
+        """
         stmt = select(
             Users.id,
             Users.externalUserId,
@@ -233,6 +262,16 @@ class ExportService(BaseService):
     async def iter_user_points(
         self, filters: ExportFilters
     ) -> AsyncIterator[Dict[str, Any]]:
+        """
+        Stream user-point rows (joined with user/task/game) as dicts.
+
+        Args:
+            filters (ExportFilters): Date range, row limit and optional
+                game/task filters.
+
+        Yields:
+            Dict[str, Any]: One serializable user-point record per row.
+        """
         stmt = (
             select(
                 UserPoints.id,
@@ -275,6 +314,18 @@ class ExportService(BaseService):
     async def iter_user_interactions(
         self, filters: ExportFilters
     ) -> AsyncIterator[Dict[str, Any]]:
+        """
+        Stream user-action (interaction) rows as dicts.
+
+        Backed by the ``useractions`` table; game/task filters are ignored here
+        because those ids only live inside the JSON ``data`` column.
+
+        Args:
+            filters (ExportFilters): Date range and row limit.
+
+        Yields:
+            Dict[str, Any]: One serializable interaction record per row.
+        """
         # Backed by the ``useractions`` table (model: UserActions). The legacy
         # ``UserInteractions`` model has no corresponding table, so any query
         # against it raises UndefinedTableError at runtime.
@@ -307,6 +358,16 @@ class ExportService(BaseService):
     async def iter_wallet_transactions(
         self, filters: ExportFilters
     ) -> AsyncIterator[Dict[str, Any]]:
+        """
+        Stream wallet-transaction rows (joined with the owning user) as dicts.
+
+        Args:
+            filters (ExportFilters): Date range and row limit (game/task
+                filters do not apply).
+
+        Yields:
+            Dict[str, Any]: One serializable transaction record per row.
+        """
         # gameId/taskId filters don't apply to wallet transactions; we keep the
         # parameter signature uniform but ignore those filters here.
         stmt = (
@@ -452,6 +513,20 @@ class ExportService(BaseService):
         export_format: str,
         rows: AsyncIterator[Dict[str, Any]],
     ) -> AsyncIterator[bytes]:
+        """
+        Wrap a row iterator in the byte-stream formatter for the chosen format.
+
+        Args:
+            dataset_type (str): Dataset name, used to resolve column order.
+            export_format (str): One of ``csv``/``json``/``xlsx``.
+            rows (AsyncIterator[Dict[str, Any]]): The dataset rows to encode.
+
+        Returns:
+            AsyncIterator[bytes]: An async iterator yielding encoded chunks.
+
+        Raises:
+            InternalServerError: If ``export_format`` is unknown.
+        """
         columns = DATASET_COLUMNS[dataset_type]
         if export_format == ExportFormat.CSV.value:
             return self.format_as_csv(rows, columns)
@@ -463,6 +538,15 @@ class ExportService(BaseService):
 
     @staticmethod
     def media_type_for(export_format: str) -> str:
+        """
+        Return the HTTP ``Content-Type`` for an export format.
+
+        Args:
+            export_format (str): One of ``csv``/``json``/``xlsx``.
+
+        Returns:
+            str: The matching media type.
+        """
         return {
             ExportFormat.CSV.value: "text/csv; charset=utf-8",
             ExportFormat.JSON.value: "application/json",
@@ -473,5 +557,15 @@ class ExportService(BaseService):
 
     @staticmethod
     def filename_for(dataset_type: str, export_format: str) -> str:
+        """
+        Build a timestamped download filename for an export.
+
+        Args:
+            dataset_type (str): Dataset name used as the filename stem.
+            export_format (str): Format extension (``csv``/``json``/``xlsx``).
+
+        Returns:
+            str: A name like ``users_20260609T120000Z.csv``.
+        """
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         return f"{dataset_type}_{timestamp}.{export_format}"

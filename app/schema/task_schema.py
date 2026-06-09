@@ -86,6 +86,7 @@ class CreateTaskPost(BaseModel):
     )
 
     def example():
+        """Return a sample single-task creation payload for the OpenAPI docs."""
         return {
             "externalTaskId": "string",
             "strategyId": "default",
@@ -107,6 +108,7 @@ class CreateTasksPost(BaseModel):
     )
 
     def example():
+        """Return a sample bulk-task creation payload for the OpenAPI docs."""
         return {
             "tasks": [CreateTaskPost.example()],
             "strategyId": "default",
@@ -344,6 +346,7 @@ class DuplicateTask(BaseModel):
     )
 
     def example():
+        """Return a sample task-duplication payload for the OpenAPI docs."""
         return {"externalTaskId": "copy-of-task-login"}
 
 
@@ -464,6 +467,7 @@ class AddActionDidByUserInTask(BaseModel):
     )
 
     def example():
+        """Return a sample user-action payload for the OpenAPI docs."""
         return {
             "typeAction": "TASK_COMPLETED",
             "data": {"source": "mobile-app", "durationSeconds": 84},

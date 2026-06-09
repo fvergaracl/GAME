@@ -142,6 +142,23 @@ async def create_custom_strategy(
     strategy_service: StrategyService = Depends(Provide[Container.strategy_service]),
     audit: AuditLogger = Depends(audit_log("strategies_custom")),
 ) -> StrategyDefinitionRead:
+    """
+    Create a new custom-strategy draft in the caller's realm.
+
+    Validates that the referenced parent strategy exists (for DSL-extend
+    types) and persists the draft, recording audit entries on success/failure.
+
+    Args:
+        payload (StrategyDefinitionCreate): The strategy definition to create.
+        auth (AuthContext): Authenticated caller context.
+        service (StrategyDefinitionService): Injected definition service.
+        strategy_service (StrategyService): Injected registry service used to
+            validate the parent strategy.
+        audit (AuditLogger): Request-scoped audit logger.
+
+    Returns:
+        StrategyDefinitionRead: The newly created draft.
+    """
     realm = _resolve_realm_id(auth)
     await audit.info(
         "Create custom strategy",
@@ -193,6 +210,21 @@ async def list_custom_strategies(
         Provide[Container.strategy_definition_service]
     ),
 ) -> List[StrategyDefinitionRead]:
+    """
+    List custom strategies belonging to the caller's realm.
+
+    Args:
+        status_filter (Optional[str]): Optional lifecycle filter
+            (DRAFT/PUBLISHED/ARCHIVED).
+        type_filter (Optional[str]): Optional type filter
+            (BUILT_IN/DSL_EXTEND/DSL_FULL).
+        limit (int): Maximum rows to return (1–500).
+        auth (AuthContext): Authenticated caller context.
+        service (StrategyDefinitionService): Injected definition service.
+
+    Returns:
+        List[StrategyDefinitionRead]: The matching strategy definitions.
+    """
     realm = _resolve_realm_id(auth)
     return await service.list_strategies(
         realmId=realm,
@@ -346,6 +378,17 @@ async def get_custom_strategy(
         Provide[Container.strategy_definition_service]
     ),
 ) -> StrategyDefinitionRead:
+    """
+    Fetch a single custom strategy by id, scoped to the caller's realm.
+
+    Args:
+        id (str): Strategy definition identifier.
+        auth (AuthContext): Authenticated caller context.
+        service (StrategyDefinitionService): Injected definition service.
+
+    Returns:
+        StrategyDefinitionRead: The requested strategy definition.
+    """
     realm = _resolve_realm_id(auth)
     return await service.get_strategy(id=id, realmId=realm)
 
@@ -366,6 +409,21 @@ async def update_custom_strategy(
     strategy_service: StrategyService = Depends(Provide[Container.strategy_service]),
     audit: AuditLogger = Depends(audit_log("strategies_custom")),
 ) -> StrategyDefinitionRead:
+    """
+    Edit a custom strategy, forking a new draft when it is already published.
+
+    Args:
+        id (str): Strategy definition identifier.
+        payload (StrategyDefinitionUpdate): The fields to update.
+        auth (AuthContext): Authenticated caller context.
+        service (StrategyDefinitionService): Injected definition service.
+        strategy_service (StrategyService): Injected registry service used to
+            validate any referenced parent strategy.
+        audit (AuditLogger): Request-scoped audit logger.
+
+    Returns:
+        StrategyDefinitionRead: The updated (or newly forked) draft.
+    """
     realm = _resolve_realm_id(auth)
     await audit.info("Update custom strategy", {"id": id})
     try:
@@ -406,6 +464,18 @@ async def publish_custom_strategy(
     ),
     audit: AuditLogger = Depends(audit_log("strategies_custom")),
 ) -> StrategyDefinitionRead:
+    """
+    Publish a draft strategy so it becomes usable by games (admin-only).
+
+    Args:
+        id (str): Strategy definition identifier.
+        auth (AuthContext): Authenticated admin context.
+        service (StrategyDefinitionService): Injected definition service.
+        audit (AuditLogger): Request-scoped audit logger.
+
+    Returns:
+        StrategyDefinitionRead: The published strategy definition.
+    """
     realm = _resolve_realm_id(auth)
     await audit.info("Publish custom strategy", {"id": id})
     try:
@@ -432,6 +502,18 @@ async def archive_custom_strategy(
     ),
     audit: AuditLogger = Depends(audit_log("strategies_custom")),
 ) -> StrategyDefinitionRead:
+    """
+    Archive a strategy so it can no longer be assigned (admin-only).
+
+    Args:
+        id (str): Strategy definition identifier.
+        auth (AuthContext): Authenticated admin context.
+        service (StrategyDefinitionService): Injected definition service.
+        audit (AuditLogger): Request-scoped audit logger.
+
+    Returns:
+        StrategyDefinitionRead: The archived strategy definition.
+    """
     realm = _resolve_realm_id(auth)
     await audit.info("Archive custom strategy", {"id": id})
     try:

@@ -43,6 +43,11 @@ class CatchUnhandledErrorsMiddleware:
         response_started = False
 
         async def send_wrapper(message):
+            """Track whether the response has started before forwarding it.
+
+            Records the first ``http.response.start`` so the outer handler
+            knows it can no longer safely replace the response with a 500.
+            """
             nonlocal response_started
             if message["type"] == "http.response.start":
                 response_started = True

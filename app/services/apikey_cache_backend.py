@@ -30,15 +30,23 @@ logger = logging.getLogger(__name__)
 class ApiKeyCacheBackend(Protocol):
     """Cache the resolved ``(apiKey, active)`` tuple keyed by sha256 hash."""
 
-    async def get(self, cache_key: str) -> Optional[SimpleNamespace]: ...
+    async def get(self, cache_key: str) -> Optional[SimpleNamespace]:
+        """Return the cached value for ``cache_key``, or ``None`` if absent."""
+        ...
 
     async def set(
         self, cache_key: str, value: SimpleNamespace, ttl_seconds: int
-    ) -> None: ...
+    ) -> None:
+        """Store ``value`` under ``cache_key`` with a ``ttl_seconds`` lifetime."""
+        ...
 
-    async def delete(self, cache_key: str) -> None: ...
+    async def delete(self, cache_key: str) -> None:
+        """Remove the entry for ``cache_key`` if present."""
+        ...
 
-    async def clear(self) -> None: ...
+    async def clear(self) -> None:
+        """Remove every cached entry."""
+        ...
 
 
 class InMemoryApiKeyCacheBackend:
@@ -56,11 +64,27 @@ class InMemoryApiKeyCacheBackend:
         self._lock: Optional[asyncio.Lock] = None
 
     def _get_lock(self) -> asyncio.Lock:
+        """
+        Return the asyncio lock, binding it to the current loop on first use.
+
+        Returns:
+            asyncio.Lock: The lazily-created per-instance lock.
+        """
         if self._lock is None:
             self._lock = asyncio.Lock()
         return self._lock
 
     async def get(self, cache_key: str) -> Optional[SimpleNamespace]:
+        """
+        Return the cached value for ``cache_key``, evicting it if expired.
+
+        Args:
+            cache_key (str): The lookup key (sha256 of the API key plaintext).
+
+        Returns:
+            Optional[SimpleNamespace]: The cached ``(apiKey, active)`` value,
+            or ``None`` if absent or past its TTL.
+        """
         now = monotonic()
         async with self._get_lock():
             entry = self._store.get(cache_key)
@@ -75,6 +99,14 @@ class InMemoryApiKeyCacheBackend:
     async def set(
         self, cache_key: str, value: SimpleNamespace, ttl_seconds: int
     ) -> None:
+        """
+        Cache ``value`` under ``cache_key`` for ``ttl_seconds`` (no-op if ≤ 0).
+
+        Args:
+            cache_key (str): The lookup key.
+            value (SimpleNamespace): The ``(apiKey, active)`` value to store.
+            ttl_seconds (int): Lifetime in seconds; values ≤ 0 are ignored.
+        """
         if ttl_seconds <= 0:
             return
         expires_at = monotonic() + ttl_seconds
@@ -82,13 +114,21 @@ class InMemoryApiKeyCacheBackend:
             self._store[cache_key] = (expires_at, value)
 
     async def delete(self, cache_key: str) -> None:
+        """
+        Remove the cached entry for ``cache_key`` if present.
+
+        Args:
+            cache_key (str): The lookup key to evict.
+        """
         async with self._get_lock():
             self._store.pop(cache_key, None)
 
     async def clear(self) -> None:
+        """Remove every cached entry (async wrapper over ``sync_clear``)."""
         self.sync_clear()
 
     def sync_clear(self) -> None:
+        """Clear the store synchronously and reset the lock for a new loop."""
         # dict.clear() is atomic under the GIL; resetting the lock lets the
         # next async caller bind it to the current event loop.
         self._store.clear()
@@ -107,9 +147,28 @@ class RedisApiKeyCacheBackend:
         self._key_prefix = key_prefix
 
     def _build_key(self, cache_key: str) -> str:
+        """
+        Namespace a cache key with the configured Redis prefix.
+
+        Args:
+            cache_key (str): The bare lookup key.
+
+        Returns:
+            str: The prefixed Redis key.
+        """
         return f"{self._key_prefix}{cache_key}"
 
     async def get(self, cache_key: str) -> Optional[SimpleNamespace]:
+        """
+        Read and deserialize a cached value from Redis.
+
+        Args:
+            cache_key (str): The lookup key.
+
+        Returns:
+            Optional[SimpleNamespace]: The decoded ``(apiKey, active)`` value,
+            or ``None`` if the key is absent.
+        """
         raw = await self._client.get(self._build_key(cache_key))
         if raw is None:
             return None
@@ -121,6 +180,14 @@ class RedisApiKeyCacheBackend:
     async def set(
         self, cache_key: str, value: SimpleNamespace, ttl_seconds: int
     ) -> None:
+        """
+        Store ``value`` as JSON in Redis with a server-side TTL (no-op if ≤ 0).
+
+        Args:
+            cache_key (str): The lookup key.
+            value (SimpleNamespace): The ``(apiKey, active)`` value to store.
+            ttl_seconds (int): Expiry passed to Redis ``SET ... EX``.
+        """
         if ttl_seconds <= 0:
             return
         payload = json.dumps({"apiKey": value.apiKey, "active": value.active})
@@ -129,9 +196,16 @@ class RedisApiKeyCacheBackend:
         )
 
     async def delete(self, cache_key: str) -> None:
+        """
+        Delete a single cached entry from Redis.
+
+        Args:
+            cache_key (str): The lookup key to evict.
+        """
         await self._client.delete(self._build_key(cache_key))
 
     async def clear(self) -> None:
+        """Delete every entry under the key prefix via a bounded SCAN + DEL."""
         # SCAN + DEL is bounded and non-blocking for other clients; only
         # called from admin/maintenance paths, never the request hot path.
         pattern = f"{self._key_prefix}*"

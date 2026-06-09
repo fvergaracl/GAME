@@ -17,6 +17,18 @@ class WalletService(BaseService):
         super().__init__(wallet_repository)
 
     async def get_wallet_by_user_id(self, externalUserId) -> BaseWallet:
+        """
+        Return the wallet belonging to an external user.
+
+        Args:
+            externalUserId: External identifier of the user.
+
+        Returns:
+            BaseWallet: The user's wallet with coin/point balances and rate.
+
+        Raises:
+            NotFoundError: If the user or their wallet does not exist.
+        """
         user = await self.user_repository.read_by_column(
             column="externalUserId",
             value=externalUserId,
@@ -41,6 +53,23 @@ class WalletService(BaseService):
         )
 
     async def preview_convert(self, schema) -> ResponsePreviewConvertPoints:
+        """
+        Preview converting points to coins without persisting anything.
+
+        Computes the coins a points amount would yield at the wallet's current
+        conversion rate and the resulting balances, for display before the user
+        confirms.
+
+        Args:
+            schema: Payload with ``externalUserId`` and ``points`` to convert.
+
+        Returns:
+            ResponsePreviewConvertPoints: The projected conversion result and
+            post-conversion balances.
+
+        Raises:
+            NotFoundError: If the user or their wallet does not exist.
+        """
         user = await self.user_repository.read_by_column(
             column="externalUserId",
             value=schema.externalUserId,

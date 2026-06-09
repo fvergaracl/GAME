@@ -53,6 +53,18 @@ _PUBLISHED_HASH_CACHE_MAXSIZE = 512
 
 
 def _compute_ast_hash(ast: Optional[dict]) -> str:
+    """
+    Return a stable sha256 hex digest of a DSL AST.
+
+    The AST is serialized with sorted keys and compact separators so logically
+    equivalent ASTs always hash identically.
+
+    Args:
+        ast (Optional[dict]): The strategy AST (``None`` is treated as ``{}``).
+
+    Returns:
+        str: The hex-encoded sha256 digest.
+    """
     canonical = json.dumps(ast or {}, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
@@ -60,6 +72,21 @@ def _compute_ast_hash(ast: Optional[dict]) -> str:
 def _cached_published_ast_hash(
     strategy_id: str, version: int, ast: Optional[dict]
 ) -> str:
+    """
+    Return the AST hash for a published strategy, memoized in a process LRU.
+
+    Published ``(strategy_id, version)`` pairs are immutable, so their hash is
+    cached to avoid re-hashing on every scoring call; the LRU is bounded by
+    ``_PUBLISHED_HASH_CACHE_MAXSIZE``.
+
+    Args:
+        strategy_id (str): The strategy definition id.
+        version (int): The published version number.
+        ast (Optional[dict]): The strategy AST to hash on a cache miss.
+
+    Returns:
+        str: The hex-encoded sha256 digest.
+    """
     key = (strategy_id, version)
     cached = _PUBLISHED_HASH_CACHE.get(key)
     if cached is not None:
@@ -114,6 +141,16 @@ class DslStrategy(BaseStrategy):
         self.hash_version = self._generate_hash_of_calculate_points()
 
     def _generate_hash_of_calculate_points(self) -> str:
+        """
+        Compute the version hash identifying this strategy's scoring logic.
+
+        Published definitions reuse the process-wide LRU
+        (:func:`_cached_published_ast_hash`); drafts, whose ``(id, version)``
+        is not stable, are hashed fresh each time.
+
+        Returns:
+            str: The AST-derived hash stored as ``hash_version``.
+        """
         # Sprint 13: published definitions hit the process-wide LRU so the
         # same AST isn't re-hashed on every scoring call; drafts (whose
         # (id, version) key is not stable) always recompute.
@@ -126,6 +163,12 @@ class DslStrategy(BaseStrategy):
         return _compute_ast_hash(self._definition.astJson)
 
     def get_strategy_id(self) -> str:
+        """
+        Return the public id for this custom strategy.
+
+        Returns:
+            str: The id in the form ``"custom:<definition id>"``.
+        """
         return f"custom:{self._definition.id}"
 
     async def calculate_points(
@@ -135,6 +178,26 @@ class DslStrategy(BaseStrategy):
         externalUserId: Optional[str] = None,
         data: Optional[dict] = None,
     ) -> Tuple:
+        """
+        Score an event by running this custom strategy's DSL program.
+
+        Dispatches to the DSL_FULL pipeline, or the DSL_EXTEND pipeline
+        (pre-rules → parent strategy → post-rules) when a parent strategy is
+        configured. Every call is wrapped in a single observability envelope
+        that records timing, status, node count and trace for metrics and
+        sampled persistence, regardless of success or failure.
+
+        Args:
+            externalGameId (Optional[str]): External identifier of the game.
+            externalTaskId (Optional[str]): External identifier of the task.
+            externalUserId (Optional[str]): External identifier of the user.
+            data (Optional[dict]): Event payload available to the program.
+
+        Returns:
+            tuple: ``(points, case_name)`` or ``(points, case_name,
+            callback_data)`` produced by the program; ``(0, None)`` when the
+            definition has no AST.
+        """
         if self._definition.astJson is None:
             return 0, None
 
@@ -242,6 +305,21 @@ class DslStrategy(BaseStrategy):
         externalUserId: Optional[str],
         data: Optional[dict],
     ) -> Tuple:
+        """
+        Run the DSL_FULL pipeline: build a context and execute the program.
+
+        Constructs an :class:`ExecutionContext` (precomputing the whitelisted
+        fields the AST references) and runs the program's single phase.
+
+        Args:
+            externalGameId (Optional[str]): External identifier of the game.
+            externalTaskId (Optional[str]): External identifier of the task.
+            externalUserId (Optional[str]): External identifier of the user.
+            data (Optional[dict]): Event payload available to the program.
+
+        Returns:
+            tuple: The ``(points, case_name[, callback_data])`` result.
+        """
         ctx = await ExecutionContext.build_for_ast(
             self._definition.astJson,
             externalGameId=externalGameId,
@@ -428,6 +506,17 @@ class DslStrategy(BaseStrategy):
         return dict(result)
 
     def _format_result(self, run: dict) -> Tuple:
+        """
+        Convert an internal run dict into the public result tuple.
+
+        Args:
+            run (dict): Run result with ``points``, ``case_name`` and optional
+                ``callback_data``.
+
+        Returns:
+            tuple: ``(points, case_name, callback_data)`` when callback data is
+            present, otherwise ``(points, case_name)``.
+        """
         cb = run.get("callback_data") or {}
         if cb:
             return run["points"], run.get("case_name"), cb

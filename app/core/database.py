@@ -88,11 +88,28 @@ class Database:
         )
 
     async def create_database(self) -> None:
+        """
+        Create all tables declared on the metadata if they do not yet exist.
+
+        Runs ``BaseModel.metadata.create_all`` inside a transactional
+        connection. Intended for bootstrapping local/test databases;
+        production schema changes go through migrations.
+        """
         async with self._engine.begin() as conn:
             await conn.run_sync(BaseModel.metadata.create_all)
 
     @asynccontextmanager
     async def session(self) -> AsyncIterator[AsyncSession]:
+        """
+        Yield a managed ``AsyncSession`` for a unit of work.
+
+        The session is rolled back automatically if the wrapped block raises,
+        and is always closed on exit. Used as ``async with database.session()
+        as s:`` by every repository.
+
+        Yields:
+            AsyncSession: An active database session bound to the engine.
+        """
         session: AsyncSession = self._session_factory()
         try:
             yield session

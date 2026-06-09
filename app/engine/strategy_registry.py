@@ -41,6 +41,7 @@ def register_strategy(id: str, *, version: str | None = None) -> Callable[[T], T
         raise ValueError("Strategy id must be a non-empty string")
 
     def decorator(cls: T) -> T:
+        """Stamp the id/version onto ``cls`` and add it to the registry."""
         existing = _REGISTRY.get(id)
         if existing is not None and existing is not cls:
             raise ValueError(

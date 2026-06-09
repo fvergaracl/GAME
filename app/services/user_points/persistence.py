@@ -17,12 +17,34 @@ from app.services.user_points._base import UserPointsContext
 class PointsPersistenceMixin(UserPointsContext):
     @staticmethod
     def _extract_points(data) -> int | None:
+        """
+        Read a ``points`` value from a dict or object payload.
+
+        Args:
+            data: Either a mapping or an object exposing ``points``.
+
+        Returns:
+            int | None: The points value, or ``None`` if absent.
+        """
         if isinstance(data, dict):
             return data.get("points")
         return getattr(data, "points", None)
 
     @staticmethod
     def _extract_idempotency_key(data) -> str | None:
+        """
+        Derive an idempotency key from common identifier fields.
+
+        Checks ``eventId``, ``idempotencyKey`` and ``correlationId`` in order
+        and returns the first non-empty string value.
+
+        Args:
+            data: The event payload (only dicts are inspected).
+
+        Returns:
+            str | None: The stripped idempotency key, or ``None`` if none
+            present.
+        """
         if not isinstance(data, dict):
             return None
         for key in ("eventId", "idempotencyKey", "correlationId"):

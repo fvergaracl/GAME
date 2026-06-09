@@ -265,6 +265,19 @@ def get_dynamic_values_from_tasks(
 
 
 def assign_random_scores(min_value: int, max_value: int):
+    """
+    Generate random scores for each GREENCROWD scoring dimension.
+
+    Used to seed simulations/tests with plausible per-dimension values.
+
+    Args:
+        min_value (int): Inclusive lower bound for each random score.
+        max_value (int): Inclusive upper bound for each random score.
+
+    Returns:
+        dict: Random integer scores keyed by dimension (``DIM_BP``,
+        ``DIM_TD``, ``DIM_LBE``, ``DIM_PP``, ``DIM_S``).
+    """
     return {
         "DIM_BP": random.randint(min_value, max_value),
         "DIM_TD": random.randint(min_value, max_value),
@@ -298,6 +311,19 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         self.time_slots = [(0, 6), (6, 12), (12, 18), (18, 24)]
 
     def generate_logic_graph(self, format="png"):
+        """
+        Render the GREENCROWD scoring logic as a Graphviz diagram.
+
+        Produces a labelled flowchart of the five scoring dimensions (base
+        points, location-based equity, time diversity, personal performance and
+        streak bonus) for display in the dashboard.
+
+        Args:
+            format (str): Graphviz output format (e.g. ``"png"``, ``"svg"``).
+
+        Returns:
+            graphviz.Digraph: The constructed diagram.
+        """
         dot = Digraph(comment="GREENCROWD Points Calculation Logic", format=format)
         dot.attr("node", shape="box", style="filled", fillcolor="lightgray")
         dot.attr("edge", fontsize="10")

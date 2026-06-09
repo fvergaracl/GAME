@@ -187,12 +187,40 @@ class FieldResolution:
 
 
 def _static(path: str, getter: Callable[[Any], Any]) -> Tuple[str, FieldResolution]:
+    """
+    Build a ``(path, FieldResolution)`` entry for a static field.
+
+    Static fields are read directly off the context (no analytics call).
+
+    Args:
+        path (str): The whitelisted field path (e.g. ``"externalGameId"``).
+        getter (Callable): Function extracting the value from the context.
+
+    Returns:
+        tuple: ``(path, FieldResolution)`` for inclusion in
+        :data:`FIELD_RESOLVERS`.
+    """
     return path, FieldResolution(path=path, kind="static", method=None, arg_fn=getter)
 
 
 def _analytics(
     path: str, method: str, arg_fn: Callable[[Any], Tuple[Any, ...]]
 ) -> Tuple[str, FieldResolution]:
+    """
+    Build a ``(path, FieldResolution)`` entry for an analytics-backed field.
+
+    Analytics fields are resolved by calling ``method`` on the analytics
+    service with positional args produced by ``arg_fn``.
+
+    Args:
+        path (str): The whitelisted field path.
+        method (str): Name of the analytics-service method to invoke.
+        arg_fn (Callable): Builds the positional-args tuple from the context.
+
+    Returns:
+        tuple: ``(path, FieldResolution)`` for inclusion in
+        :data:`FIELD_RESOLVERS`.
+    """
     return path, FieldResolution(
         path=path, kind="analytics", method=method, arg_fn=arg_fn
     )
@@ -292,6 +320,18 @@ def is_known_field_path(path: str) -> bool:
 
 
 def is_valid_case_name(value: Any) -> bool:
+    """
+    Return whether ``value`` is a syntactically valid case name.
+
+    A valid case name is a string matching the case-name pattern
+    (``_CASE_NAME_RE``).
+
+    Args:
+        value (Any): Candidate value to check.
+
+    Returns:
+        bool: ``True`` if ``value`` is a well-formed case name.
+    """
     return isinstance(value, str) and bool(_CASE_NAME_RE.match(value))
 
 
@@ -309,6 +349,16 @@ def enumerate_field_paths(ast: Any) -> Set[str]:
 
 
 def _walk_collect(node: Any, acc: Set[str]) -> None:
+    """
+    Recursively collect every ``field`` node ``path`` into ``acc``.
+
+    Walks dicts and lists permissively (never raising on unknown nodes), so it
+    is safe to run before or after validation.
+
+    Args:
+        node (Any): Current AST node (dict, list or scalar).
+        acc (Set[str]): Accumulator mutated in place with discovered paths.
+    """
     if isinstance(node, dict):
         if node.get("type") == NODE_FIELD:
             path = node.get("path")

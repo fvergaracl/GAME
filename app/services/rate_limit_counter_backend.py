@@ -33,7 +33,9 @@ class RateLimitCounterBackend(Protocol):
         window_name: str,
         window_start: datetime,
         ttl_seconds: int,
-    ) -> int: ...
+    ) -> int:
+        """Increment the bucket's counter and return its new value."""
+        ...
 
 
 class DatabaseRateLimitCounterBackend:
@@ -56,6 +58,22 @@ class DatabaseRateLimitCounterBackend:
         window_start: datetime,
         ttl_seconds: int,
     ) -> int:
+        """
+        Increment a DB-backed rate-limit counter and return its value.
+
+        ``ttl_seconds`` is ignored: the bucket's ``window_start`` already
+        encodes window boundaries, so expiry is handled offline.
+
+        Args:
+            scope_type (str): Dimension being limited.
+            scope_value (str): Concrete value within ``scope_type``.
+            window_name (str): Name of the time window/bucket.
+            window_start (datetime): Start of the bucket window.
+            ttl_seconds (int): Ignored by this backend.
+
+        Returns:
+            int: The counter value after the increment.
+        """
         del ttl_seconds  # bucket key carries window semantics for the DB backend
         return await self._repository.increment_and_get(
             scope_type=scope_type,
@@ -83,6 +101,17 @@ class RedisRateLimitCounterBackend:
 
     @staticmethod
     def _bucket_epoch(window_start: datetime) -> int:
+        """
+        Return the UTC unix timestamp of a bucket's window start.
+
+        Args:
+            window_start (datetime): Start of the bucket window (naive treated
+                as UTC).
+
+        Returns:
+            int: Unix epoch seconds, used to make the Redis key unique per
+            window.
+        """
         if window_start.tzinfo is None:
             window_start = window_start.replace(tzinfo=timezone.utc)
         else:
@@ -96,6 +125,18 @@ class RedisRateLimitCounterBackend:
         window_name: str,
         window_start: datetime,
     ) -> str:
+        """
+        Build the Redis key uniquely identifying a rate-limit bucket.
+
+        Args:
+            scope_type (str): Dimension being limited.
+            scope_value (str): Concrete value within ``scope_type``.
+            window_name (str): Name of the time window.
+            window_start (datetime): Start of the bucket window.
+
+        Returns:
+            str: The fully-qualified, prefixed Redis key.
+        """
         return (
             f"{self._key_prefix}{window_name}:{scope_type}:"
             f"{scope_value}:{self._bucket_epoch(window_start)}"
@@ -109,6 +150,23 @@ class RedisRateLimitCounterBackend:
         window_start: datetime,
         ttl_seconds: int,
     ) -> int:
+        """
+        Increment a Redis-backed rate-limit counter and return its value.
+
+        Uses a single ``MULTI/EXEC`` pipeline of ``SET key 0 EX ttl NX`` (plant
+        a TTL'd zero on the first hit) followed by ``INCR`` so a key is never
+        visible without a TTL.
+
+        Args:
+            scope_type (str): Dimension being limited.
+            scope_value (str): Concrete value within ``scope_type``.
+            window_name (str): Name of the time window/bucket.
+            window_start (datetime): Start of the bucket window.
+            ttl_seconds (int): Key TTL (clamped to ≥ 1 second).
+
+        Returns:
+            int: The counter value after the increment.
+        """
         key = self._build_key(scope_type, scope_value, window_name, window_start)
         ttl = max(1, int(ttl_seconds))
 

@@ -18,8 +18,26 @@ class Response:
 
     @classmethod
     def ok(cls, data):
+        """
+        Build a successful response wrapping the given payload.
+
+        Args:
+            data: The payload to return to the caller.
+
+        Returns:
+            Response: A response with ``sucess=True`` and ``data`` set.
+        """
         return cls(sucess=True, data=data)
 
     @classmethod
     def fail(cls, error):
+        """
+        Build a failed response wrapping the given error.
+
+        Args:
+            error: The error description to return to the caller.
+
+        Returns:
+            Response: A response with ``sucess=False`` and ``error`` set.
+        """
         return cls(sucess=False, error=error)
