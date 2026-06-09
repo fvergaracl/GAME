@@ -48,8 +48,8 @@
     <title>app.services.strategy_observability_service &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.services.strategy_observability_service </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -373,7 +373,7 @@
 <span class="sd">The repository already does the heavy lifting (SUM/COUNT/GROUP BY in</span>
 <span class="sd">the DB); this service is responsible for:</span>
 
-<span class="sd">  * Combining 5 narrow queries into one response — the dashboard fetches</span>
+<span class="sd">  * Combining 5 narrow queries into one response - the dashboard fetches</span>
 <span class="sd">    once per page load.</span>
 <span class="sd">  * Computing percentiles + histograms in Python from a bounded sample,</span>
 <span class="sd">    because SQLite (used in tests) doesn't have ``percentile_cont`` and</span>
@@ -556,7 +556,7 @@
 <span class="w">        </span><span class="sd">"""Build the per-strategy metrics card.</span>
 
 <span class="sd">        Resolves the strategy first so the response includes name +</span>
-<span class="sd">        version + status — and so cross-realm probes 404 before we</span>
+<span class="sd">        version + status - and so cross-realm probes 404 before we</span>
 <span class="sd">        spend a query on the execution log.</span>
 <span class="sd">        """</span>
         <span class="n">strategy</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy_definition_service</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">(</span>
@@ -631,7 +631,7 @@
 <span class="sd">            StrategyMetricsResponse: The aggregated metrics.</span>
 <span class="sd">        """</span>
         <span class="c1"># Strategy executions persist with the bare definition id</span>
-        <span class="c1"># (StrategyDefinitionLog.strategyId — see how the observer is</span>
+        <span class="c1"># (StrategyDefinitionLog.strategyId - see how the observer is</span>
         <span class="c1"># called from DslStrategy._run_phase). We pass that id verbatim</span>
         <span class="c1"># rather than the assignable ``custom:&lt;uuid&gt;`` form.</span>
         <span class="n">strat_id</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">id</span>

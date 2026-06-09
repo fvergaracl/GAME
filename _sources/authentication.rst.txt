@@ -38,7 +38,7 @@ the bearer token is validated. If neither is valid the request fails with
 
 .. note::
 
-   A handful of endpoints require **OAuth2 specifically** and reject API keys —
+   A handful of endpoints require **OAuth2 specifically** and reject API keys -
    notably the per-user *simulation* endpoint
    (``GET /games/{gameId}/users/{externalUserId}/points/simulated``), which is
    bound to the token's own subject. Those endpoints use the stricter
@@ -52,7 +52,7 @@ Issuing a key
 -------------
 
 Keys are minted by ``POST /api/v1/apikey/create``, which is itself
-OAuth2-protected — so you need a bearer token (and the admin role) to create
+OAuth2-protected - so you need a bearer token (and the admin role) to create
 one:
 
 .. code-block:: bash
@@ -110,7 +110,7 @@ validation (``app/middlewares/valid_access_token.py``) is strict:
    * **expiry**, with 30 s of clock-skew leeway.
 
 #. The **subject** is taken from ``sub``, falling back through
-   ``preferred_username``, ``email``, ``client_id``, ``azp`` — so both user
+   ``preferred_username``, ``email``, ``client_id``, ``azp`` - so both user
    and service-account tokens resolve to a stable subject.
 
 Failure modes map to precise responses:
@@ -173,7 +173,7 @@ Identity bootstrapping
 The first time a valid token is seen for a new subject, GAME creates an
 ``OAuthUsers`` record (``provider=keycloak``, ``status=active``) and writes a
 single ``auth / OAuth user bootstrapped`` audit log entry. No manual user
-provisioning is required — authenticating once is enough to register the
+provisioning is required - authenticating once is enough to register the
 identity.
 
 The per-request auth context

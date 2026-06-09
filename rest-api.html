@@ -49,8 +49,8 @@
     <title>REST API Reference &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> REST API Reference </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -486,19 +486,19 @@ live OpenAPI schema your deployment serves.</p>
 </tr>
 </tbody>
 </table>
-<p>Each endpoint in the code carries rich OpenAPI metadata — summaries,
-per-status response examples, and request/response schemas — so the generated
+<p>Each endpoint in the code carries rich OpenAPI metadata - summaries,
+per-status response examples, and request/response schemas - so the generated
 docs are detailed, not skeletal.</p>
 </section>
 <section id="conventions">
 <h2 id="conventions">Conventions<a class="headerlink" href="#conventions" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Base path</strong> — every path below is relative to <code class="docutils literal notranslate"><span class="pre">/api/v1</span></code>.</p></li>
-<li><p><strong>Auth</strong> — unless noted, endpoints accept <code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code> <em>or</em> a Keycloak
+<li><p><strong>Base path</strong> - every path below is relative to <code class="docutils literal notranslate"><span class="pre">/api/v1</span></code>.</p></li>
+<li><p><strong>Auth</strong> - unless noted, endpoints accept <code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code> <em>or</em> a Keycloak
 bearer token (<a class="reference internal" href="authentication.html"><span class="doc">Authentication</span></a>). A few are OAuth2-only.</p></li>
-<li><p><strong>Ids</strong> — <code class="docutils literal notranslate"><span class="pre">{gameId}</span></code>/<code class="docutils literal notranslate"><span class="pre">{taskId}</span></code> are internal UUIDs; <code class="docutils literal notranslate"><span class="pre">{externalTaskId}</span></code>
+<li><p><strong>Ids</strong> - <code class="docutils literal notranslate"><span class="pre">{gameId}</span></code>/<code class="docutils literal notranslate"><span class="pre">{taskId}</span></code> are internal UUIDs; <code class="docutils literal notranslate"><span class="pre">{externalTaskId}</span></code>
 /<code class="docutils literal notranslate"><span class="pre">{externalUserId}</span></code> are your strings (<a class="reference internal" href="domain-model.html"><span class="doc">Domain Model</span></a>).</p></li>
-<li><p><strong>Errors</strong> — <code class="docutils literal notranslate"><span class="pre">401</span></code> (no/invalid creds), <code class="docutils literal notranslate"><span class="pre">403</span></code> (out of scope / rejected
+<li><p><strong>Errors</strong> - <code class="docutils literal notranslate"><span class="pre">401</span></code> (no/invalid creds), <code class="docutils literal notranslate"><span class="pre">403</span></code> (out of scope / rejected
 key), <code class="docutils literal notranslate"><span class="pre">404</span></code> (not found), <code class="docutils literal notranslate"><span class="pre">422</span></code> (validation), <code class="docutils literal notranslate"><span class="pre">429</span></code> (rate limit),
 <code class="docutils literal notranslate"><span class="pre">500</span></code> (server error).</p></li>
 </ul>
@@ -895,7 +895,7 @@ key), <code class="docutils literal notranslate"><span class="pre">404</span></c
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This catalog is maintained by hand for orientation. When in doubt, trust
-<code class="docutils literal notranslate"><span class="pre">/openapi.json</span></code> from your deployment — it is generated from the code and
+<code class="docutils literal notranslate"><span class="pre">/openapi.json</span></code> from your deployment - it is generated from the code and
 cannot drift.</p>
 </div>
 </section>

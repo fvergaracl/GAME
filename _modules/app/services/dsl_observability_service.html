@@ -48,8 +48,8 @@
     <title>app.services.dsl_observability_service &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.services.dsl_observability_service </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -377,14 +377,14 @@
 <span class="sd">   after the incident. OK runs are sampled at</span>
 <span class="sd">   :data:`_config_module.configs.DSL_EXECUTION_LOG_SAMPLE_RATE` (default 5 %).</span>
 
-<span class="sd">Sprint 13 — hot-path: ``record`` no longer ``await``\\s the DB write.</span>
+<span class="sd">Sprint 13 - hot-path: ``record`` no longer ``await``\\s the DB write.</span>
 <span class="sd">The metrics emit + sampling decision stay synchronous (microseconds),</span>
 <span class="sd">and the chosen row is handed to a bounded in-process queue drained by a</span>
 <span class="sd">background worker task. Scoring therefore pays only the enqueue, never a</span>
 <span class="sd">DB round-trip. If the worker falls behind and the queue fills (a slow or</span>
 <span class="sd">down database), rows are dropped and counted via</span>
 <span class="sd">``dsl_execution_log_dropped_total`` rather than blocking the scoring</span>
-<span class="sd">call — the audit log is best-effort by design. Call :meth:`aclose`</span>
+<span class="sd">call - the audit log is best-effort by design. Call :meth:`aclose`</span>
 <span class="sd">on shutdown to flush the queue and stop the worker cleanly.</span>
 
 <span class="sd">The service is wired with ``random.Random`` so tests can pass a</span>
@@ -438,7 +438,7 @@
         <span class="c1"># Sprint 13: lazily-created bounded queue + drain worker. Both are</span>
         <span class="c1"># created on the first enqueue (which always happens inside the</span>
         <span class="c1"># running event loop), so constructing the observer outside a loop</span>
-        <span class="c1"># — as the DI container Singleton does at import time — is safe.</span>
+        <span class="c1"># - as the DI container Singleton does at import time - is safe.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_queue_maxsize</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">queue_maxsize</span>
             <span class="k">if</span> <span class="n">queue_maxsize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -541,14 +541,14 @@
         <span class="p">)</span>
 
         <span class="c1"># Sprint 13: hand off to the background worker instead of awaiting</span>
-        <span class="c1"># the DB write here. ``_enqueue`` never blocks and never raises —</span>
+        <span class="c1"># the DB write here. ``_enqueue`` never blocks and never raises -</span>
         <span class="c1"># a full queue drops the row (counted) so a slow database can't</span>
         <span class="c1"># apply backpressure to the scoring hot-path.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_enqueue</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">realmId</span><span class="o">=</span><span class="n">realmId</span><span class="p">,</span> <span class="n">strategyType</span><span class="o">=</span><span class="n">strategyType</span><span class="p">)</span></div>
 
 
     <span class="c1"># ------------------------------------------------------------------</span>
-    <span class="c1"># Sprint 13 — background drain worker.</span>
+    <span class="c1"># Sprint 13 - background drain worker.</span>
     <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_enqueue</span><span class="p">(</span>
@@ -619,7 +619,7 @@
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">drain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Block until every queued row has been processed.</span>
 
-<span class="sd">        Mainly for tests and graceful shutdown — production scoring never</span>
+<span class="sd">        Mainly for tests and graceful shutdown - production scoring never</span>
 <span class="sd">        calls this. No-op if nothing has been enqueued yet.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

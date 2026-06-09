@@ -49,8 +49,8 @@
     <title>app.services.strategy_observability_service module &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
-    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c695c7af" />
+    <script src="../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.services.strategy_observability_service module </span>
         </div>
       </div>
@@ -176,7 +176,7 @@
       
     </a>
     <a href="../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -405,7 +405,7 @@ deltas.</p>
 the DB); this service is responsible for:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Combining 5 narrow queries into one response — the dashboard fetches
+<li><p>Combining 5 narrow queries into one response - the dashboard fetches
 once per page load.</p></li>
 <li><p>Computing percentiles + histograms in Python from a bounded sample,
 because SQLite (used in tests) doesn’t have <code class="docutils literal notranslate"><span class="pre">percentile_cont</span></code> and
@@ -434,7 +434,7 @@ cross-realm probes, so this service is implicitly tenant-aware.</p></li>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sinceDt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">untilDt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_observability_service.html#StrategyObservabilityService.get_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_observability_service.StrategyObservabilityService.get_metrics" title="Link to this definition">¶</a></dt>
 <dd><p>Build the per-strategy metrics card.</p>
 <p>Resolves the strategy first so the response includes name +
-version + status — and so cross-realm probes 404 before we
+version + status - and so cross-realm probes 404 before we
 spend a query on the execution log.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

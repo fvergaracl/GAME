@@ -49,8 +49,8 @@
     <title>app.services.strategy_definition_service module &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
-    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c695c7af" />
+    <script src="../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.services.strategy_definition_service module </span>
         </div>
       </div>
@@ -176,7 +176,7 @@
       
     </a>
     <a href="../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -428,7 +428,7 @@ family only ever has at most one live row.</p></li>
 <li><p>Archiving moves a row out of the active set without deleting history.</p></li>
 </ul>
 <p>Tenancy is enforced at this layer: every read/write takes <code class="docutils literal notranslate"><span class="pre">realmId</span></code>
-and we never accept it from the caller body — the endpoint resolves it
+and we never accept it from the caller body - the endpoint resolves it
 from the auth context and passes it in.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.services.strategy_definition_service.RollbackResult">
@@ -463,7 +463,7 @@ the DB.</p>
 <dd><p><code class="docutils literal notranslate"><span class="pre">game_repository</span></code> and <code class="docutils literal notranslate"><span class="pre">task_repository</span></code> are optional so legacy
 call sites that only need CRUD/lifecycle (most tests, the
 simulation service) keep working without a wider DI graph. The
-Sprint 9 rollback flow requires both — when missing,
+Sprint 9 rollback flow requires both - when missing,
 <a class="reference internal" href="#app.services.strategy_definition_service.StrategyDefinitionService.rollback" title="app.services.strategy_definition_service.StrategyDefinitionService.rollback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rollback()</span></code></a> raises a precise error rather than silently
 leaving cascade UPDATEs undone.</p>
 <dl class="field-list simple">
@@ -577,7 +577,7 @@ version 1.</p>
 <li><p>On a PUBLISHED row: fork a new DRAFT at <code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">+</span> <span class="pre">1</span></code> with
 the patched fields applied, leaving the published row
 untouched so it keeps running until an explicit publish.</p></li>
-<li><p>On an ARCHIVED row: refuse — archived strategies are
+<li><p>On an ARCHIVED row: refuse - archived strategies are
 immutable.</p></li>
 </ul>
 <dl class="field-list simple">
@@ -674,13 +674,13 @@ another realm, so cross-tenant probing returns nothing.</p>
 <dd><p>Reverse lookup: which games/tasks are assigned to this exact
 strategy version (Sprint 6).</p>
 <p>Consumers store the assignable id <code class="docutils literal notranslate"><span class="pre">custom:&lt;uuid&gt;</span></code>, so usage is
-an exact match on that string — the same value the rollback
+an exact match on that string - the same value the rollback
 cascade rewrites. We report per-version (not per-family) because
 each published version is a distinct uuid that games point at
 individually; that matches what an admin needs to see before
 reassigning, archiving or rolling back <em>this</em> version.</p>
 <p>Tenant-scoped via <code class="docutils literal notranslate"><span class="pre">get_for_realm</span></code>: a cross-realm id 404s.
-No cross-tenant leak through the usage lists either — a game can
+No cross-tenant leak through the usage lists either - a game can
 only be assigned a strategy validated to live in its own realm,
 so every consumer of <code class="docutils literal notranslate"><span class="pre">custom:&lt;uuid&gt;</span></code> shares the strategy’s
 realm.</p>
@@ -713,7 +713,7 @@ one to archive + reassign, regardless of which id was clicked.</p>
 <li><p>404 if <code class="docutils literal notranslate"><span class="pre">id</span></code> doesn’t resolve (or is in another realm).</p></li>
 <li><p>404 if <code class="docutils literal notranslate"><span class="pre">target_version</span></code> isn’t a version of that family.</p></li>
 <li><p>409 if the requested target is the row that’s already PUBLISHED
-— rolling back to the current state would be a no-op that
+- rolling back to the current state would be a no-op that
 falsely advertises a status change in the audit log.</p></li>
 </ul>
 </dd>

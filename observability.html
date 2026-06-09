@@ -49,8 +49,8 @@
     <title>Observability &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Observability </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -508,14 +508,14 @@ trail.</p></td>
 <p>When <code class="docutils literal notranslate"><span class="pre">METRICS_ENABLED=true</span></code> (the default), the app mounts
 <code class="docutils literal notranslate"><span class="pre">prometheus_fastapi_instrumentator</span></code> at <code class="docutils literal notranslate"><span class="pre">/metrics</span></code>. It is wired <em>after</em>
 CORS but <em>before</em> the routers, so it observes every request middleware yet
-does not sit behind router-level auth — i.e. <code class="docutils literal notranslate"><span class="pre">/metrics</span></code> itself is unguarded
+does not sit behind router-level auth - i.e. <code class="docutils literal notranslate"><span class="pre">/metrics</span></code> itself is unguarded
 at the app level and must be protected at the ingress (or disabled) in
 production.</p>
 <p>You get out of the box:</p>
 <ul class="simple">
-<li><p><strong>HTTP metrics</strong> — request counts, durations, and status classes
+<li><p><strong>HTTP metrics</strong> - request counts, durations, and status classes
 (status codes are grouped; untemplated paths and <code class="docutils literal notranslate"><span class="pre">/metrics</span></code> are excluded).</p></li>
-<li><p><strong>DSL metrics</strong> — custom counters defined in <code class="docutils literal notranslate"><span class="pre">app/engine/dsl_metrics.py</span></code>,
+<li><p><strong>DSL metrics</strong> - custom counters defined in <code class="docutils literal notranslate"><span class="pre">app/engine/dsl_metrics.py</span></code>,
 which live in the default <code class="docutils literal notranslate"><span class="pre">prometheus_client</span></code> registry and are therefore
 exported automatically:</p></li>
 </ul>
@@ -553,16 +553,16 @@ without extra wiring.</p>
 <h2 id="logging">Logging<a class="headerlink" href="#logging" title="Link to this heading">¶</a></h2>
 <p>Logging is configured at startup (<code class="docutils literal notranslate"><span class="pre">app/main.py</span></code>):</p>
 <ul class="simple">
-<li><p><strong>Format</strong> — plain text in <code class="docutils literal notranslate"><span class="pre">dev</span></code>; structured <strong>JSON</strong> in <code class="docutils literal notranslate"><span class="pre">prod</span></code>/<code class="docutils literal notranslate"><span class="pre">stage</span></code>
+<li><p><strong>Format</strong> - plain text in <code class="docutils literal notranslate"><span class="pre">dev</span></code>; structured <strong>JSON</strong> in <code class="docutils literal notranslate"><span class="pre">prod</span></code>/<code class="docutils literal notranslate"><span class="pre">stage</span></code>
 (via <code class="docutils literal notranslate"><span class="pre">python-json-logger</span></code>), with renamed fields
 (<code class="docutils literal notranslate"><span class="pre">timestamp</span></code>/<code class="docutils literal notranslate"><span class="pre">level</span></code>/<code class="docutils literal notranslate"><span class="pre">logger</span></code>) ready for ingestion.</p></li>
-<li><p><strong>Level</strong> — <code class="docutils literal notranslate"><span class="pre">LOG_LEVEL</span></code> env var (default <code class="docutils literal notranslate"><span class="pre">INFO</span></code>).</p></li>
-<li><p><strong>Scope</strong> — root plus the uvicorn/gunicorn loggers, all to stdout (so a
+<li><p><strong>Level</strong> - <code class="docutils literal notranslate"><span class="pre">LOG_LEVEL</span></code> env var (default <code class="docutils literal notranslate"><span class="pre">INFO</span></code>).</p></li>
+<li><p><strong>Scope</strong> - root plus the uvicorn/gunicorn loggers, all to stdout (so a
 container platform collects them).</p></li>
 </ul>
 <p>On top of stdout logging, the <strong>audit trail</strong> (<code class="docutils literal notranslate"><span class="pre">AuditLogger</span></code> /
 <code class="docutils literal notranslate"><span class="pre">app/util/add_log.py</span></code>) writes structured <code class="docutils literal notranslate"><span class="pre">Logs</span></code> rows tagged with the
-module, level, message, <code class="docutils literal notranslate"><span class="pre">api_key</span></code>, <code class="docutils literal notranslate"><span class="pre">oauth_user_id</span></code>, and a correlation id —
+module, level, message, <code class="docutils literal notranslate"><span class="pre">api_key</span></code>, <code class="docutils literal notranslate"><span class="pre">oauth_user_id</span></code>, and a correlation id -
 so a request can be reconstructed from the database, not just the log stream.</p>
 <div class="warning admonition">
 <p class="admonition-title">The “Network Error” trap</p>
@@ -580,7 +580,7 @@ so a request can be reconstructed from the database, not just the log stream.</p
 <li><p><code class="docutils literal notranslate"><span class="pre">SENTRY_ENVIRONMENT</span></code> and <code class="docutils literal notranslate"><span class="pre">SENTRY_RELEASE</span></code> tag events.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">send_default_pii=True</span></code> and <code class="docutils literal notranslate"><span class="pre">traces_sample_rate=1.0</span></code> are set; continuous
 profiling auto-starts. <strong>Review these for your privacy/cost posture</strong> before
-enabling in production — full-rate tracing and PII capture are convenient in
+enabling in production - full-rate tracing and PII capture are convenient in
 staging but may be too much at scale.</p></li>
 </ul>
 </section>
@@ -611,8 +611,8 @@ backpressure to scoring.</p></li>
 <li><p>On graceful shutdown the lifespan hook <strong>flushes</strong> the queue
 (<code class="docutils literal notranslate"><span class="pre">observer.aclose()</span></code>) so buffered rows are not lost.</p></li>
 </ul>
-<p>So a non-zero drop rate is an alert that the <em>sink</em> is saturated — increase the
-sample budget’s headroom or the queue size, or speed up the DB — but scoring
+<p>So a non-zero drop rate is an alert that the <em>sink</em> is saturated - increase the
+sample budget’s headroom or the queue size, or speed up the DB - but scoring
 itself is never the bottleneck.</p>
 <p>Why both metrics and traces? Metrics tell you a strategy got slow or started
 erroring <em>in aggregate</em>; the sampled traces let the strategy author and the
@@ -668,7 +668,7 @@ GET<span class="w"> </span>/api/v1/strategies/custom/compare<span class="w">    
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dsl_execution_errors_total</span></code> rising</p></td>
-<td><p>A published strategy is failing — users aren’t being scored as
+<td><p>A published strategy is failing - users aren’t being scored as
 intended.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dsl_execution_duration_seconds</span></code> p99 near 500 ms</p></td>

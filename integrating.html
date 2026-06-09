@@ -49,8 +49,8 @@
     <title>Integrating with GAME &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Integrating with GAME </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -527,13 +527,13 @@ against tasks to award <strong>points</strong>, which accrue into each user’s 
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">externalGameId</span></code> — <em>your</em> identifier for the campaign (unique per key).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">platform</span></code> — free-form label for where the game runs.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">strategyId</span></code> — the <strong>default</strong> strategy for the game’s tasks. Use a
+<li><p><code class="docutils literal notranslate"><span class="pre">externalGameId</span></code> - <em>your</em> identifier for the campaign (unique per key).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">platform</span></code> - free-form label for where the game runs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strategyId</span></code> - the <strong>default</strong> strategy for the game’s tasks. Use a
 built-in id (e.g. <code class="docutils literal notranslate"><span class="pre">default</span></code>) or a custom one (<code class="docutils literal notranslate"><span class="pre">custom:&lt;uuid&gt;</span></code>). Omit to
 fall back to <code class="docutils literal notranslate"><span class="pre">default</span></code>.</p></li>
 </ul>
-<p>The response includes the internal <code class="docutils literal notranslate"><span class="pre">gameId</span></code> (UUID) — address the game by
+<p>The response includes the internal <code class="docutils literal notranslate"><span class="pre">gameId</span></code> (UUID) - address the game by
 this id thereafter.</p>
 </section>
 <section id="read-update-duplicate-delete">
@@ -556,7 +556,7 @@ this id thereafter.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/games/{gameId}</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Update game (partial)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/games/{gameId}</span></code> — including switching <code class="docutils literal notranslate"><span class="pre">strategyId</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/games/{gameId}</span></code> - including switching <code class="docutils literal notranslate"><span class="pre">strategyId</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Duplicate a game (with its tasks/params)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/games/{gameId}/duplicate</span></code></p></td>
@@ -609,7 +609,7 @@ own.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/games/{gameId}/tasks/{externalTaskId}</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Update a task (partial)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/games/{gameId}/tasks/{taskId}</span></code> — including its params/strategy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/games/{gameId}/tasks/{taskId}</span></code> - including its params/strategy</p></td>
 </tr>
 <tr class="row-odd"><td><p>Duplicate a task</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/games/{gameId}/tasks/{taskId}/duplicate</span></code></p></td>
@@ -650,13 +650,13 @@ own.</p>
 </div>
 <p>Key behaviors:</p>
 <ul class="simple">
-<li><p><strong>Lazy users</strong> — an unknown <code class="docutils literal notranslate"><span class="pre">externalUserId</span></code> is created on the fly;
+<li><p><strong>Lazy users</strong> - an unknown <code class="docutils literal notranslate"><span class="pre">externalUserId</span></code> is created on the fly;
 <code class="docutils literal notranslate"><span class="pre">isACreatedUser</span></code> tells you whether that happened.</p></li>
-<li><p><strong>``data``</strong> — an arbitrary payload passed to the strategy and stored with
+<li><p><strong>``data``</strong> - an arbitrary payload passed to the strategy and stored with
 the award. Adaptive strategies read it (e.g. completion time).</p></li>
-<li><p><strong>``caseName``</strong> — the human-readable reason the awarding rule fired; the
+<li><p><strong>``caseName``</strong> - the human-readable reason the awarding rule fired; the
 same field appears in analytics.</p></li>
-<li><p><strong>``isSimulated``</strong> — when <code class="docutils literal notranslate"><span class="pre">true</span></code>, scoring runs but <strong>nothing is
+<li><p><strong>``isSimulated``</strong> - when <code class="docutils literal notranslate"><span class="pre">true</span></code>, scoring runs but <strong>nothing is
 persisted</strong> (no points, no wallet movement). See <a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a>.</p></li>
 </ul>
 <section id="idempotency">

@@ -48,8 +48,8 @@
     <title>app.engine.dsl_strategy &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.engine.dsl_strategy </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -365,7 +365,7 @@
 <span class="sd">``BaseStrategy`` adapter that runs a persisted DSL ``StrategyDefinition``.</span>
 
 <span class="sd">This class is built in Sprint 4 but NOT connected to ``UserPointsService``</span>
-<span class="sd">yet — that wiring is Sprint 5's "modify BaseStrategy.calculate_points to</span>
+<span class="sd">yet - that wiring is Sprint 5's "modify BaseStrategy.calculate_points to</span>
 <span class="sd">delegate" item. Until then the adapter is exercised only by the simulate</span>
 <span class="sd">endpoint and by tests.</span>
 
@@ -373,7 +373,7 @@
 <span class="sd">hash the canonicalized AST (sorted JSON keys) instead of the Python</span>
 <span class="sd">source of the method. The built-in strategies still use the inspect-based</span>
 <span class="sd">hash inherited from ``BaseStrategy``, so existing ``UserPoints``</span>
-<span class="sd">idempotency keys remain valid — only DSL strategies opt into the new</span>
+<span class="sd">idempotency keys remain valid - only DSL strategies opt into the new</span>
 <span class="sd">hash scheme.</span>
 <span class="sd">"""</span>
 
@@ -396,7 +396,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.strategy_definition_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionRead</span>
 
 <span class="c1"># Sprint 13: the idempotency hash is a canonical-JSON dump of the AST</span>
-<span class="c1"># plus a SHA-256 — pure CPU, but ``UserPointsService`` constructs a fresh</span>
+<span class="c1"># plus a SHA-256 - pure CPU, but ``UserPointsService`` constructs a fresh</span>
 <span class="c1"># ``DslStrategy`` on every scoring call, so a busy strategy re-hashes the</span>
 <span class="c1"># same multi-KB AST thousands of times a minute. We memoise the result</span>
 <span class="c1"># keyed by ``(strategyId, version)``.</span>
@@ -404,8 +404,8 @@
 <span class="c1"># Only PUBLISHED definitions are cached: editing a DRAFT patches the row</span>
 <span class="c1"># *in place* without bumping the version (see</span>
 <span class="c1"># ``StrategyDefinitionService.update_strategy``), so ``(id, version)`` is</span>
-<span class="c1"># not a stable key for drafts. PUBLISHED rows are immutable — an edit</span>
-<span class="c1"># forks a new version — so the key is 1:1 with the AST, and scoring only</span>
+<span class="c1"># not a stable key for drafts. PUBLISHED rows are immutable - an edit</span>
+<span class="c1"># forks a new version - so the key is 1:1 with the AST, and scoring only</span>
 <span class="c1"># ever runs published strategies anyway. The simulate path (drafts)</span>
 <span class="c1"># recomputes, which is fine: it isn't the hot path.</span>
 <span class="c1">#</span>
@@ -476,7 +476,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Skip the parent ``__init__`` because it eagerly computes the</span>
         <span class="c1"># hash from ``inspect.getsource(self.calculate_points)``, which</span>
-        <span class="c1"># would hash THIS class's Python source — useless for DSL.</span>
+        <span class="c1"># would hash THIS class's Python source - useless for DSL.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy_name</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy_description</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">description</span>
@@ -743,7 +743,7 @@
         <span class="c1"># pre-rules mutate ``data`` between the two builds.</span>
         <span class="n">analytics_cache</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="c1"># Phase 1 — pre_rules. We build a context that doesn't carry</span>
+        <span class="c1"># Phase 1 - pre_rules. We build a context that doesn't carry</span>
         <span class="c1"># parent.* fields (those paths are validator-rejected outside</span>
         <span class="c1"># post_rules anyway). The interpreter copies ``data`` into</span>
         <span class="c1"># state.working_data so set_data mutations are local to this</span>
@@ -773,7 +773,7 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_result</span><span class="p">(</span><span class="n">pre_result</span><span class="p">)</span>
             <span class="n">working_data</span> <span class="o">=</span> <span class="n">pre_result</span><span class="p">[</span><span class="s2">"working_data"</span><span class="p">]</span>
 
-        <span class="c1"># Phase 2 — parent built-in. We only shallow-copy when there</span>
+        <span class="c1"># Phase 2 - parent built-in. We only shallow-copy when there</span>
         <span class="c1"># are variable overrides; otherwise we reuse the registry</span>
         <span class="c1"># singleton directly. This matters because (a) skipping the</span>
         <span class="c1"># copy when unnecessary avoids paying for ``__dict__``</span>
@@ -781,7 +781,7 @@
         <span class="c1"># the original instance (e.g. ``parent.last_call_args``) only</span>
         <span class="c1"># see the call when the orchestrator targets the original.</span>
         <span class="c1"># When overrides exist we DO need the copy so the next request</span>
-        <span class="c1"># — or another DSL_EXTEND row that shares the same parent —</span>
+        <span class="c1"># - or another DSL_EXTEND row that shares the same parent -</span>
         <span class="c1"># doesn't inherit this realm's tweaked variables.</span>
         <span class="n">parent_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_strategy</span>
         <span class="k">if</span> <span class="n">parent_variable_overrides</span><span class="p">:</span>
@@ -795,7 +795,7 @@
         <span class="p">)</span>
         <span class="n">parent_result</span> <span class="o">=</span> <span class="n">_normalize_parent_tuple</span><span class="p">(</span><span class="n">parent_tuple</span><span class="p">)</span>
 
-        <span class="c1"># Phase 3 — post_rules. The state is bootstrapped from</span>
+        <span class="c1"># Phase 3 - post_rules. The state is bootstrapped from</span>
         <span class="c1"># parent_result so set_points / set_case_name mutate from the</span>
         <span class="c1"># parent's output as the starting point. The new ExecutionContext</span>
         <span class="c1"># carries parent.* fields so post-rule conditions can branch on</span>
@@ -841,7 +841,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Run one phase under the per-call timeout and return the raw</span>
 <span class="sd">        DslExecutionResult dict (which carries working_data and vetoed</span>
-<span class="sd">        for pre/post phases — see the TypedDict in dsl_interpreter).</span>
+<span class="sd">        for pre/post phases - see the TypedDict in dsl_interpreter).</span>
 
 <span class="sd">        Sprint 11: the trace produced by each phase is appended to</span>
 <span class="sd">        ``self._last_trace`` so the calculate_points wrapper hands the</span>

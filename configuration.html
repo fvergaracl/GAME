@@ -49,8 +49,8 @@
     <title>Configuration Reference &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Configuration Reference </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -546,13 +546,13 @@ from <strong>environment variables</strong>; a local <code class="docutils liter
 development.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ENV</span></code> selects the profile. <code class="docutils literal notranslate"><span class="pre">ENV=test</span></code> swaps in <code class="docutils literal notranslate"><span class="pre">TestConfigs</span></code> (SQLite,
 localhost DB). <code class="docutils literal notranslate"><span class="pre">prod</span></code>/<code class="docutils literal notranslate"><span class="pre">stage</span></code> activate <strong>fail-fast</strong> validation.</p></li>
-<li><p>Several values are validated at import time — a bad value raises before the
+<li><p>Several values are validated at import time - a bad value raises before the
 app serves a single request (see <em>Fail-fast guards</em> below).</p></li>
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Copy <code class="docutils literal notranslate"><span class="pre">.env.sample</span></code> to <code class="docutils literal notranslate"><span class="pre">.env</span></code> and edit. In production, inject values
-through the environment or a secret manager — do <strong>not</strong> ship a <code class="docutils literal notranslate"><span class="pre">.env</span></code>
+through the environment or a secret manager - do <strong>not</strong> ship a <code class="docutils literal notranslate"><span class="pre">.env</span></code>
 with real secrets.</p>
 </div>
 </section>
@@ -599,7 +599,7 @@ log format, and strategy debug output.</p></td>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">METRICS_ENABLED</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
 <td><p>Expose Prometheus <code class="docutils literal notranslate"><span class="pre">/metrics</span></code>. Disable (or firewall the path) in
-production — it is unauthenticated at the app level. See
+production - it is unauthenticated at the app level. See
 <a class="reference internal" href="observability.html"><span class="doc">Observability</span></a>.</p></td>
 </tr>
 </tbody>
@@ -734,7 +734,7 @@ shipped placeholder.</p></td>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">""</span></code></p></td>
 <td><p>Signs simulation payloads. <strong>Boot blocks in ``prod``/``stage``</strong> if
-empty. (Historically defaulted to the truthy string <code class="docutils literal notranslate"><span class="pre">"None"</span></code> — now
+empty. (Historically defaulted to the truthy string <code class="docutils literal notranslate"><span class="pre">"None"</span></code> - now
 falsy.)</p></td>
 </tr>
 </tbody>

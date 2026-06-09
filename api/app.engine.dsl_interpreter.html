@@ -49,8 +49,8 @@
     <title>app.engine.dsl_interpreter module &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
-    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c695c7af" />
+    <script src="../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.engine.dsl_interpreter module </span>
         </div>
       </div>
@@ -176,7 +176,7 @@
       
     </a>
     <a href="../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -391,7 +391,7 @@
 <span id="app-engine-dsl-interpreter-module"></span><h1 id="api-app-engine-dsl-interpreter--page-root">app.engine.dsl_interpreter module<a class="headerlink" href="#api-app-engine-dsl-interpreter--page-root" title="Link to this heading">¶</a></h1>
 <p>Walker-based interpreter for the strategy DSL.</p>
 <p>This is the sandbox. It walks the JSON AST node-by-node, dispatching on
-<code class="docutils literal notranslate"><span class="pre">node["type"]</span></code> through a fixed handler table — no <code class="docutils literal notranslate"><span class="pre">getattr</span></code>, no
+<code class="docutils literal notranslate"><span class="pre">node["type"]</span></code> through a fixed handler table - no <code class="docutils literal notranslate"><span class="pre">getattr</span></code>, no
 <code class="docutils literal notranslate"><span class="pre">eval</span></code>, no <code class="docutils literal notranslate"><span class="pre">exec</span></code>. Anything not in the handler table is rejected as
 <code class="docutils literal notranslate"><span class="pre">DslValidationError</span></code> (the validator should have caught it; the runtime
 check is defence in depth).</p>
@@ -400,13 +400,13 @@ check is defence in depth).</p>
 <li><p>No code path exposes Python attribute lookup to AST-supplied strings.</p></li>
 <li><p>Field access is a frozen-dict lookup; the resolved values were
 precomputed by <code class="docutils literal notranslate"><span class="pre">ExecutionContext.build_for_ast</span></code>.</p></li>
-<li><p>Node count and recursion depth are bounded — the validator already
+<li><p>Node count and recursion depth are bounded - the validator already
 rejects programs that would exceed them; the runtime guards exist so
 that future dynamic expansion (e.g. macros) still can’t blow out.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">asyncio.sleep(0)</span></code> every <code class="docutils literal notranslate"><span class="pre">yield_every</span></code> visits gives the
 event loop a chance to actually cancel the coroutine when
 <code class="docutils literal notranslate"><span class="pre">asyncio.wait_for</span></code> fires. Without it a CPU-bound walk would run to
-completion and only <em>then</em> see the timeout — which is what
+completion and only <em>then</em> see the timeout - which is what
 <code class="docutils literal notranslate"><span class="pre">RestrictedPython</span></code>-style sandboxes generally get wrong.</p></li>
 </ul>
 <p>Execution semantics mirror <code class="docutils literal notranslate"><span class="pre">app/engine/default.py</span></code>:</p>

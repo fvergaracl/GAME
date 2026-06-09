@@ -49,8 +49,8 @@
     <title>app.engine.dsl_strategy module &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
-    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c695c7af" />
+    <script src="../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.engine.dsl_strategy module </span>
         </div>
       </div>
@@ -176,7 +176,7 @@
       
     </a>
     <a href="../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -397,14 +397,14 @@
 <span id="app-engine-dsl-strategy-module"></span><h1 id="api-app-engine-dsl-strategy--page-root">app.engine.dsl_strategy module<a class="headerlink" href="#api-app-engine-dsl-strategy--page-root" title="Link to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code> adapter that runs a persisted DSL <code class="docutils literal notranslate"><span class="pre">StrategyDefinition</span></code>.</p>
 <p>This class is built in Sprint 4 but NOT connected to <code class="docutils literal notranslate"><span class="pre">UserPointsService</span></code>
-yet — that wiring is Sprint 5’s “modify BaseStrategy.calculate_points to
+yet - that wiring is Sprint 5’s “modify BaseStrategy.calculate_points to
 delegate” item. Until then the adapter is exercised only by the simulate
 endpoint and by tests.</p>
 <p>Notable choice: <code class="docutils literal notranslate"><span class="pre">_generate_hash_of_calculate_points</span></code> is overridden to
 hash the canonicalized AST (sorted JSON keys) instead of the Python
 source of the method. The built-in strategies still use the inspect-based
 hash inherited from <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code>, so existing <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code>
-idempotency keys remain valid — only DSL strategies opt into the new
+idempotency keys remain valid - only DSL strategies opt into the new
 hash scheme.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.engine.dsl_strategy.DslStrategy">

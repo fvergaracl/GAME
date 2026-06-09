@@ -48,8 +48,8 @@
     <title>app.engine.dsl_validator &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.engine.dsl_validator </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -366,7 +366,7 @@
 
 <span class="sd">Runs synchronously and without I/O. Called on every create/update so a</span>
 <span class="sd">malformed AST never lands in the database, and called again by the</span>
-<span class="sd">simulate service as a cheap idempotent guard — the second call is fast</span>
+<span class="sd">simulate service as a cheap idempotent guard - the second call is fast</span>
 <span class="sd">because the AST has already been parsed by Pydantic into plain dict/list/</span>
 <span class="sd">scalar values.</span>
 
@@ -378,7 +378,7 @@
 <span class="sd">2. **Whitelist**: ``compare.op``, ``arith.op``, ``field.path``, and</span>
 <span class="sd">   ``node.type`` must all appear in the corresponding allow-list in</span>
 <span class="sd">   ``dsl_ast``. The interpreter never invokes ``getattr`` on a node type</span>
-<span class="sd">   string, but the validator is the first line of defence — by the time</span>
+<span class="sd">   string, but the validator is the first line of defence - by the time</span>
 <span class="sd">   the AST reaches the handler table any unknown name has already been</span>
 <span class="sd">   rejected with ``DslValidationError``.</span>
 <span class="sd">3. **Limits**: a static node count and recursion depth are computed</span>
@@ -617,7 +617,7 @@
     <span class="c1"># applied to a fresh copy of the parent built-in before its</span>
     <span class="c1"># calculate_points runs. Keys must be strings, values must be JSON</span>
     <span class="c1"># scalars (the registry-level "does this variable exist?" check</span>
-    <span class="c1"># happens at create/update time in StrategyDefinitionService — here</span>
+    <span class="c1"># happens at create/update time in StrategyDefinitionService - here</span>
     <span class="c1"># we only enforce the AST shape).</span>
     <span class="n">parent_vars</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PARENT_VARIABLES_KEY</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">parent_vars</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -983,7 +983,7 @@
                 <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">"nodeId"</span><span class="p">:</span> <span class="n">nid</span><span class="p">,</span> <span class="s2">"path"</span><span class="p">:</span> <span class="n">path</span><span class="p">},</span>
             <span class="p">)</span>
         <span class="c1"># Sprint 7: parent.points / parent.case_name are only meaningful</span>
-        <span class="c1"># inside post_rules — using them in main rules or pre_rules</span>
+        <span class="c1"># inside post_rules - using them in main rules or pre_rules</span>
         <span class="c1"># would read uninitialised state. Reject early with a clear</span>
         <span class="c1"># message rather than letting the interpreter return None.</span>
         <span class="k">if</span> <span class="n">is_parent_field_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">context</span> <span class="o">!=</span> <span class="s2">"post"</span><span class="p">:</span>
@@ -1157,7 +1157,7 @@
                 <span class="n">detail</span><span class="o">=</span><span class="s2">"set_callback_data.key must be a non-empty string."</span><span class="p">,</span>
                 <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"X-Node-Id"</span><span class="p">:</span> <span class="n">nid</span><span class="p">},</span>
             <span class="p">)</span>
-        <span class="c1"># value may be a full expression — the interpreter will resolve it.</span>
+        <span class="c1"># value may be a full expression - the interpreter will resolve it.</span>
         <span class="n">_validate_expression</span><span class="p">(</span>
             <span class="n">node</span><span class="p">[</span><span class="s2">"value"</span><span class="p">],</span>
             <span class="n">parent_id</span><span class="o">=</span><span class="n">nid</span><span class="p">,</span>
@@ -1234,7 +1234,7 @@
     <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">NODE_SET_CASE_NAME</span><span class="p">:</span>
         <span class="c1"># Sprint 7: post-rule override of the parent's caseName. The</span>
         <span class="c1"># value is an expression so it can be computed (e.g. a literal</span>
-        <span class="c1"># text block, or even derived from data.* — though the latter</span>
+        <span class="c1"># text block, or even derived from data.* - though the latter</span>
         <span class="c1"># is unusual). The runtime checks the resolved value is a</span>
         <span class="c1"># printable ASCII string.</span>
         <span class="n">_assert_keys</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">(</span><span class="s2">"value"</span><span class="p">,),</span> <span class="n">node_id</span><span class="o">=</span><span class="n">nid</span><span class="p">)</span>

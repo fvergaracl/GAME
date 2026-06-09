@@ -49,8 +49,8 @@
     <title>Operations &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Operations </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -574,7 +574,7 @@ docker-compose<span class="w"> </span>up<span class="w"> </span>--scale<span cla
 <h2 id="production-deployment">Production deployment<a class="headerlink" href="#production-deployment" title="Link to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p><strong>Configure</strong> the environment for <code class="docutils literal notranslate"><span class="pre">ENV=prod</span></code> (or <code class="docutils literal notranslate"><span class="pre">stage</span></code>). The
-fail-fast guards will block boot on missing secrets — that is intended; see
+fail-fast guards will block boot on missing secrets - that is intended; see
 <a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a> and <a class="reference internal" href="security.html"><span class="doc">Security</span></a>.</p></li>
 <li><p><strong>Run migrations</strong> before serving traffic (see below).</p></li>
 <li><p><strong>Deploy</strong> the image with your orchestrator (Compose, Kubernetes, or a
@@ -593,11 +593,11 @@ limits and key revocations are consistent across replicas.</p></li>
 <code class="docutils literal notranslate"><span class="pre">deploy-kubernetes.sh</span></code> is provided. See <code class="docutils literal notranslate"><span class="pre">KUBERNETES_SETUP.md</span></code> for the full
 walkthrough. Operational notes:</p>
 <ul class="simple">
-<li><p>Define <strong>liveness/readiness probes</strong> — <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/v1/kpi/health_check</span></code> is a
+<li><p>Define <strong>liveness/readiness probes</strong> - <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/v1/kpi/health_check</span></code> is a
 natural readiness target.</p></li>
 <li><p>Provide configuration via <code class="docutils literal notranslate"><span class="pre">ConfigMap</span></code> (non-secret) and <code class="docutils literal notranslate"><span class="pre">Secret</span></code>
 (<code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code>, DB password, <code class="docutils literal notranslate"><span class="pre">KEYCLOAK_CLIENT_SECRET</span></code>).</p></li>
-<li><p>Roll back with <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">rollout</span> <span class="pre">undo</span> <span class="pre">deployment/&lt;name&gt;</span></code> — Kubernetes keeps
+<li><p>Roll back with <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">rollout</span> <span class="pre">undo</span> <span class="pre">deployment/&lt;name&gt;</span></code> - Kubernetes keeps
 the deployment history.</p></li>
 </ul>
 </section>
@@ -619,8 +619,8 @@ poetry<span class="w"> </span>run<span class="w"> </span>alembic<span class="w">
 <section id="health-readiness-graceful-shutdown">
 <h2 id="health-readiness-graceful-shutdown">Health, readiness &amp; graceful shutdown<a class="headerlink" href="#health-readiness-graceful-shutdown" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Health</strong> — <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/v1/kpi/health_check</span></code>.</p></li>
-<li><p><strong>Graceful shutdown</strong> — the FastAPI lifespan hook flushes the DSL
+<li><p><strong>Health</strong> - <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/v1/kpi/health_check</span></code>.</p></li>
+<li><p><strong>Graceful shutdown</strong> - the FastAPI lifespan hook flushes the DSL
 execution-log queue on shutdown (<code class="docutils literal notranslate"><span class="pre">observer.aclose()</span></code>) so buffered audit
 rows aren’t lost. Give the container a few seconds of termination grace so
 the flush completes.</p></li>
@@ -652,7 +652,7 @@ consider PgBouncer at high replica counts.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>DSL trace sink</strong></p></td>
 <td><p>Watch <code class="docutils literal notranslate"><span class="pre">dsl_execution_log_dropped_total</span></code>; if non-zero, the trace DB is
-behind — raise <code class="docutils literal notranslate"><span class="pre">DSL_EXECUTION_LOG_QUEUE_MAXSIZE</span></code> or lower the sample
+behind - raise <code class="docutils literal notranslate"><span class="pre">DSL_EXECUTION_LOG_QUEUE_MAXSIZE</span></code> or lower the sample
 rate. Scoring is unaffected (<a class="reference internal" href="observability.html"><span class="doc">Observability</span></a>).</p></td>
 </tr>
 </tbody>

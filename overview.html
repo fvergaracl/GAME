@@ -49,14 +49,14 @@
     <title>Overview &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Architecture" href="architecture.html" />
-    <link rel="prev" title="GAME — Goals And Motivation Engine" href="index.html" />
+    <link rel="prev" title="GAME - Goals And Motivation Engine" href="index.html" />
   
    
 
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Overview </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -479,21 +479,21 @@ vocabulary used throughout the rest of the documentation. No code.</p>
 <section id="what-is-game">
 <h2 id="what-is-game">What is GAME?<a class="headerlink" href="#what-is-game" title="Link to this heading">¶</a></h2>
 <p><strong>GAME (Goals And Motivation Engine)</strong> is an <em>adaptive gamification engine</em>.
-It accepts events — “a user completed a task”, “a measurement was submitted” —
+It accepts events - “a user completed a task”, “a measurement was submitted” -
 and decides how many <strong>points</strong> to award, why, and what side effects follow
 (coins, wallet movements, callbacks). The decision is made by a <strong>strategy</strong>:
 a unit of scoring logic bound to a game or an individual task.</p>
 <p>The defining idea is that strategies are <strong>programmable and adaptive</strong>. A
 strategy is not limited to “task X is worth N points”. It can read analytics
-about the user and the task — how many times the user has acted, how their
-completion time compares to their own history or to the global average — and
+about the user and the task - how many times the user has acted, how their
+completion time compares to their own history or to the global average - and
 shape the reward accordingly.</p>
 </section>
 <section id="the-problem-game-solves">
 <h2 id="the-problem-game-solves">The problem GAME solves<a class="headerlink" href="#the-problem-game-solves" title="Link to this heading">¶</a></h2>
 <p>Most gamification systems are <strong>static</strong>: rules and rewards are fixed at
 design time. Static rules produce predictable engagement curves and, in
-practice, tend to <em>reinforce participation inequality</em> — the users who are
+practice, tend to <em>reinforce participation inequality</em> - the users who are
 already active collect most of the rewards, while under-engaged users see no
 reason to start.</p>
 <p>GAME introduces <strong>adaptive gamification</strong>, enabling:</p>
@@ -555,7 +555,7 @@ only to compute the scoring outcome:</p>
 <li><p>The external system applies the result however it likes.</p></li>
 </ol>
 <p>Because scoring is deterministic given the same inputs (see <em>Reproducibility</em>
-below), the same event always yields the same score — which is what makes the
+below), the same event always yields the same score - which is what makes the
 microservice mode safe to retry and to reason about.</p>
 </section>
 </section>
@@ -569,10 +569,10 @@ concentrate. Typical scenarios:</p>
 <li><p>Reward a user’s <strong>first contributions</strong> generously to lower the activation
 barrier (basic engagement), then taper as they become regular.</p></li>
 <li><p>Pay a <strong>bonus</strong> when a user improves on their own previous performance, and
-a different bonus when they beat the global average — so both newcomers and
+a different bonus when they beat the global average - so both newcomers and
 top performers have a reason to act.</p></li>
-<li><p>Steer attention toward <strong>cold spots</strong> — tasks or regions with little
-activity — by making them temporarily worth more.</p></li>
+<li><p>Steer attention toward <strong>cold spots</strong> - tasks or regions with little
+activity - by making them temporarily worth more.</p></li>
 </ul>
 <p>The <a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a> guide shows how each of these is expressed, either with
 a built-in strategy or with the no-code DSL.</p>
@@ -586,20 +586,20 @@ early.</p>
 <p>GAME is built to support <strong>scientific reproducibility</strong> and deterministic
 evaluation of strategies:</p>
 <ul class="simple">
-<li><p><strong>Deterministic execution</strong> — identical inputs (tasks, parameters,
+<li><p><strong>Deterministic execution</strong> - identical inputs (tasks, parameters,
 timestamps, configuration) produce identical outputs.</p></li>
-<li><p><strong>Explicit parameterization</strong> — scoring is driven by explicit strategy
+<li><p><strong>Explicit parameterization</strong> - scoring is driven by explicit strategy
 parameters stored in the database; there is no hidden global state.</p></li>
-<li><p><strong>Simulation mode</strong> — strategies can be evaluated with <code class="docutils literal notranslate"><span class="pre">isSimulated=true</span></code>
+<li><p><strong>Simulation mode</strong> - strategies can be evaluated with <code class="docutils literal notranslate"><span class="pre">isSimulated=true</span></code>
 (and a dedicated simulate endpoint) <em>without</em> touching <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code>, the
 wallet, or any other production data.</p></li>
-<li><p><strong>Versionable strategies</strong> — custom strategies are versioned; publishing a
+<li><p><strong>Versionable strategies</strong> - custom strategies are versioned; publishing a
 new version never overwrites the running one until you say so.</p></li>
-<li><p><strong>Traceable execution</strong> — sampled execution traces let you reconstruct <em>why</em>
+<li><p><strong>Traceable execution</strong> - sampled execution traces let you reconstruct <em>why</em>
 a rule matched weeks after the fact.</p></li>
 </ul>
 <p>These properties let GAME double as a <strong>reproducible experimental platform</strong>
-for studying adaptive incentive mechanisms — see the <em>Research &amp; Publications</em>
+for studying adaptive incentive mechanisms - see the <em>Research &amp; Publications</em>
 section of the project <code class="docutils literal notranslate"><span class="pre">README</span></code> for the papers built on it.</p>
 </section>
 <section id="safety-under-failure">
@@ -609,8 +609,8 @@ section of the project <code class="docutils literal notranslate"><span class="p
 <li><p><strong>Idempotent</strong> point assignment where an idempotency key is supplied, so a
 retried request does not double-award.</p></li>
 <li><p>Transactional database behavior, safe under concurrent requests.</p></li>
-<li><p>Deterministic auth failures — no silent fallback to an unauthenticated path.</p></li>
-<li><p>Bounded strategy execution — the DSL interpreter cannot run away with CPU
+<li><p>Deterministic auth failures - no silent fallback to an unauthenticated path.</p></li>
+<li><p>Bounded strategy execution - the DSL interpreter cannot run away with CPU
 or memory (see <a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a>).</p></li>
 </ul>
 </section>
@@ -618,10 +618,10 @@ or memory (see <a class="reference internal" href="dsl-engine.html"><span class=
 <section id="where-to-go-next">
 <h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="architecture.html"><span class="doc">Architecture</span></a> — the layered design and the life of a request.</p></li>
-<li><p><a class="reference internal" href="domain-model.html"><span class="doc">Domain Model</span></a> — the entities (games, tasks, users, points, wallets…)
+<li><p><a class="reference internal" href="architecture.html"><span class="doc">Architecture</span></a> - the layered design and the life of a request.</p></li>
+<li><p><a class="reference internal" href="domain-model.html"><span class="doc">Domain Model</span></a> - the entities (games, tasks, users, points, wallets…)
 and how they relate.</p></li>
-<li><p><a class="reference internal" href="getting-started.html"><span class="doc">Getting Started</span></a> — install, configure, and make your first call.</p></li>
+<li><p><a class="reference internal" href="getting-started.html"><span class="doc">Getting Started</span></a> - install, configure, and make your first call.</p></li>
 </ul>
 </section>
 </section>
@@ -636,7 +636,7 @@ and how they relate.</p></li>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
           
-            <a href="index.html" title="GAME — Goals And Motivation Engine"
+            <a href="index.html" title="GAME - Goals And Motivation Engine"
                class="md-flex md-footer-nav__link md-footer-nav__link--prev"
                rel="prev">
               <div class="md-flex__cell md-flex__cell--shrink">
@@ -645,7 +645,7 @@ and how they relate.</p></li>
               <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
                 <span class="md-flex__ellipsis">
                   <span
-                      class="md-footer-nav__direction"> "Previous" </span> GAME — Goals And Motivation Engine </span>
+                      class="md-footer-nav__direction"> "Previous" </span> GAME - Goals And Motivation Engine </span>
               </div>
             </a>
           

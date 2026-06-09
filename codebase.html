@@ -49,8 +49,8 @@
     <title>Codebase Reference &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Codebase Reference </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -426,19 +426,19 @@ The fastest entry points by intent:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>The HTTP surface</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">app.api.v1.endpoints</span></code> — one module per resource group.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app.api.v1.endpoints</span></code> - one module per resource group.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Business logic</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">app.services</span></code> — the orchestration layer.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app.services</span></code> - the orchestration layer.</p></td>
 </tr>
 <tr class="row-even"><td><p>Persistence</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">app.repository</span></code> — async CRUD over SQLAlchemy.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app.repository</span></code> - async CRUD over SQLAlchemy.</p></td>
 </tr>
 <tr class="row-odd"><td><p>The schema</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">app.model</span></code> (tables) and <code class="docutils literal notranslate"><span class="pre">app.schema</span></code> (wire contracts).</p></td>
 </tr>
 <tr class="row-even"><td><p>The scoring engine</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">app.engine</span></code> — built-ins, registry, and the DSL pipeline.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app.engine</span></code> - built-ins, registry, and the DSL pipeline.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Wiring &amp; config</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">app.core</span></code> (config, container, database) and <code class="docutils literal notranslate"><span class="pre">app.middlewares</span></code>.</p></td>
@@ -449,7 +449,7 @@ The fastest entry points by intent:</p>
 <p class="admonition-title">Tip</p>
 <p>Docstrings here follow the <strong>Google style</strong> (parsed by <code class="docutils literal notranslate"><span class="pre">napoleon</span></code>).
 <code class="docutils literal notranslate"><span class="pre">[source]</span></code> links next to each entry jump to the code. When you add or
-change a public function, update its docstring — this page regenerates from
+change a public function, update its docstring - this page regenerates from
 it on every deploy.</p>
 </div>
 </section>

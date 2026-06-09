@@ -49,8 +49,8 @@
     <title>The DSL Strategy Engine &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> The DSL Strategy Engine </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -482,7 +482,7 @@ the per-block reference under <code class="docutils literal notranslate"><span c
 </div>
 <section id="why-a-dsl-at-all">
 <h2 id="why-a-dsl-at-all">Why a DSL at all?<a class="headerlink" href="#why-a-dsl-at-all" title="Link to this heading">¶</a></h2>
-<p>Custom scoring logic is <strong>user-supplied</strong> — authored in a browser by people
+<p>Custom scoring logic is <strong>user-supplied</strong> - authored in a browser by people
 who are not GAME developers. Running arbitrary user code on the scoring
 hot-path is a non-starter, so GAME defines a small, total, sandboxed
 <strong>domain-specific language</strong>. A strategy is a JSON <strong>AST</strong> (abstract syntax
@@ -502,13 +502,13 @@ scoring event ──► ExecutionContext.build_for_ast ──► DslInterpreter.
 <p>Runs synchronously, with <strong>no I/O</strong>, on every create/update (and again, cheaply,
 before each simulation). It enforces three things in order:</p>
 <ol class="arabic simple">
-<li><p><strong>Shape</strong> — every node has the required keys with the expected types (a
+<li><p><strong>Shape</strong> - every node has the required keys with the expected types (a
 rule has a <code class="docutils literal notranslate"><span class="pre">when</span></code>; a literal is a scalar, not a dict).</p></li>
-<li><p><strong>Whitelist</strong> — <code class="docutils literal notranslate"><span class="pre">node.type</span></code>, <code class="docutils literal notranslate"><span class="pre">compare.op</span></code>, <code class="docutils literal notranslate"><span class="pre">arith.op</span></code>, and
+<li><p><strong>Whitelist</strong> - <code class="docutils literal notranslate"><span class="pre">node.type</span></code>, <code class="docutils literal notranslate"><span class="pre">compare.op</span></code>, <code class="docutils literal notranslate"><span class="pre">arith.op</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">field.path</span></code> must each appear in the corresponding allow-list in
 <code class="docutils literal notranslate"><span class="pre">dsl_ast</span></code>. Unknown names are rejected here, before they can reach the
 interpreter.</p></li>
-<li><p><strong>Limits</strong> — a <em>static</em> node count and recursion depth are computed during
+<li><p><strong>Limits</strong> - a <em>static</em> node count and recursion depth are computed during
 the walk and bounded by <code class="docutils literal notranslate"><span class="pre">DSL_MAX_NODES</span></code> / <code class="docutils literal notranslate"><span class="pre">DSL_MAX_DEPTH</span></code>, so a
 billion-node tree can never be persisted, let alone executed.</p></li>
 </ol>
@@ -520,7 +520,7 @@ key for traces and error messages.</p>
 <h3 id="context-building-dsl-execution-context-py">2. Context building (<code class="docutils literal notranslate"><span class="pre">dsl_execution_context.py</span></code>)<a class="headerlink" href="#context-building-dsl-execution-context-py" title="Link to this heading">¶</a></h3>
 <p>Before a walk, <code class="docutils literal notranslate"><span class="pre">ExecutionContext.build_for_ast</span></code> <strong>precomputes</strong> every
 analytics value the AST references (the <code class="docutils literal notranslate"><span class="pre">field</span></code> paths) into a frozen
-dictionary. The interpreter then does pure dictionary lookups — it never
+dictionary. The interpreter then does pure dictionary lookups - it never
 reaches back into the database or computes analytics mid-walk. This is what
 keeps execution bounded and deterministic.</p>
 </section>
@@ -529,15 +529,15 @@ keeps execution bounded and deterministic.</p>
 <p>The interpreter <strong>is the sandbox</strong>. It walks the AST node-by-node, dispatching
 on <code class="docutils literal notranslate"><span class="pre">node["type"]</span></code> through a <strong>fixed handler table</strong>. Its hard guarantees:</p>
 <ul class="simple">
-<li><p><strong>No dynamic Python</strong> — no <code class="docutils literal notranslate"><span class="pre">eval</span></code>, no <code class="docutils literal notranslate"><span class="pre">exec</span></code>, no <code class="docutils literal notranslate"><span class="pre">getattr</span></code> on
+<li><p><strong>No dynamic Python</strong> - no <code class="docutils literal notranslate"><span class="pre">eval</span></code>, no <code class="docutils literal notranslate"><span class="pre">exec</span></code>, no <code class="docutils literal notranslate"><span class="pre">getattr</span></code> on
 AST-supplied strings. A node type absent from the handler table is rejected
-as <code class="docutils literal notranslate"><span class="pre">DslValidationError</span></code> (defence in depth — the validator should already
+as <code class="docutils literal notranslate"><span class="pre">DslValidationError</span></code> (defence in depth - the validator should already
 have caught it).</p></li>
-<li><p><strong>Frozen field access</strong> — reading a <code class="docutils literal notranslate"><span class="pre">field</span></code> is a lookup in the precomputed
+<li><p><strong>Frozen field access</strong> - reading a <code class="docutils literal notranslate"><span class="pre">field</span></code> is a lookup in the precomputed
 frozen dict; AST strings can never address arbitrary attributes.</p></li>
-<li><p><strong>Bounded</strong> — node count and recursion depth are re-checked at runtime, so
+<li><p><strong>Bounded</strong> - node count and recursion depth are re-checked at runtime, so
 even a future feature like macros couldn’t blow the limits.</p></li>
-<li><p><strong>Actually cancellable</strong> — the walk <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">asyncio.sleep(0)</span></code> every
+<li><p><strong>Actually cancellable</strong> - the walk <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">asyncio.sleep(0)</span></code> every
 <code class="docutils literal notranslate"><span class="pre">yield_every</span></code> (default <strong>64</strong>) node visits. Without that yield a CPU-bound
 tree would run to completion and <em>then</em> notice the timeout; the yield lets
 <code class="docutils literal notranslate"><span class="pre">asyncio.wait_for</span></code> cancel it mid-walk. (This is the failure mode that
@@ -571,7 +571,7 @@ is how <code class="docutils literal notranslate"><span class="pre">DSL_EXTEND</
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">full</span></code></p></td>
-<td><p>Main <code class="docutils literal notranslate"><span class="pre">rules</span></code> + <code class="docutils literal notranslate"><span class="pre">default</span></code> — the <code class="docutils literal notranslate"><span class="pre">DSL_FULL</span></code> path.</p></td>
+<td><p>Main <code class="docutils literal notranslate"><span class="pre">rules</span></code> + <code class="docutils literal notranslate"><span class="pre">default</span></code> - the <code class="docutils literal notranslate"><span class="pre">DSL_FULL</span></code> path.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pre</span></code></p></td>
 <td><p>Only <code class="docutils literal notranslate"><span class="pre">pre_rules</span></code>. <code class="docutils literal notranslate"><span class="pre">initial_data</span></code> is cloned into
@@ -656,8 +656,8 @@ production.</p>
 <li><p>implement the async <code class="docutils literal notranslate"><span class="pre">calculate_points</span></code> scoring method, and</p></li>
 <li><p>register a <strong>stable public id</strong> with <code class="docutils literal notranslate"><span class="pre">@register_strategy(id=...)</span></code>.</p></li>
 </ol>
-<p><code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code> also computes a <code class="docutils literal notranslate"><span class="pre">hash_version</span></code> — a SHA-256 of the
-<code class="docutils literal notranslate"><span class="pre">calculate_points</span></code> source — so a logic change is detectable as a version
+<p><code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code> also computes a <code class="docutils literal notranslate"><span class="pre">hash_version</span></code> - a SHA-256 of the
+<code class="docutils literal notranslate"><span class="pre">calculate_points</span></code> source - so a logic change is detectable as a version
 change. The registry (<code class="docutils literal notranslate"><span class="pre">strategy_registry.py</span></code>) is explicit and
 opt-in; <code class="docutils literal notranslate"><span class="pre">all_engine_strategies.py</span></code> discovers modules in <code class="docutils literal notranslate"><span class="pre">app/engine</span></code> via
 <code class="docutils literal notranslate"><span class="pre">pkgutil</span></code> (CWD-independent), and <strong>external packages</strong> can contribute
@@ -675,8 +675,8 @@ strategies through the <code class="docutils literal notranslate"><span class="p
 (default 5%).</p></li>
 </ul>
 <p>The DB write is drained off the hot-path by a background worker fed from a
-bounded in-process queue, so scoring only pays the enqueue. The full model —
-queue sizing, drop counting, graceful flush on shutdown — is in
+bounded in-process queue, so scoring only pays the enqueue. The full model -
+queue sizing, drop counting, graceful flush on shutdown - is in
 <a class="reference internal" href="observability.html"><span class="doc">Observability</span></a>.</p>
 </section>
 <section id="source-map">

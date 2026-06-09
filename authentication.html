@@ -49,8 +49,8 @@
     <title>Authentication &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Authentication </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -519,7 +519,7 @@ the bearer token is validated. If neither is valid the request fails with
 <code class="docutils literal notranslate"><span class="pre">401</span> <span class="pre">Invalid</span> <span class="pre">authentication</span> <span class="pre">credentials</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>A handful of endpoints require <strong>OAuth2 specifically</strong> and reject API keys —
+<p>A handful of endpoints require <strong>OAuth2 specifically</strong> and reject API keys -
 notably the per-user <em>simulation</em> endpoint
 (<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/games/{gameId}/users/{externalUserId}/points/simulated</span></code>), which is
 bound to the token’s own subject. Those endpoints use the stricter
@@ -532,7 +532,7 @@ which it requires.</p>
 <section id="issuing-a-key">
 <h3 id="issuing-a-key">Issuing a key<a class="headerlink" href="#issuing-a-key" title="Link to this heading">¶</a></h3>
 <p>Keys are minted by <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/v1/apikey/create</span></code>, which is itself
-OAuth2-protected — so you need a bearer token (and the admin role) to create
+OAuth2-protected - so you need a bearer token (and the admin role) to create
 one:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"http://localhost:8000/api/v1/apikey/create"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
@@ -587,7 +587,7 @@ that caches keys for 300 s.</p></li>
 </ul>
 </li>
 <li><p>The <strong>subject</strong> is taken from <code class="docutils literal notranslate"><span class="pre">sub</span></code>, falling back through
-<code class="docutils literal notranslate"><span class="pre">preferred_username</span></code>, <code class="docutils literal notranslate"><span class="pre">email</span></code>, <code class="docutils literal notranslate"><span class="pre">client_id</span></code>, <code class="docutils literal notranslate"><span class="pre">azp</span></code> — so both user
+<code class="docutils literal notranslate"><span class="pre">preferred_username</span></code>, <code class="docutils literal notranslate"><span class="pre">email</span></code>, <code class="docutils literal notranslate"><span class="pre">client_id</span></code>, <code class="docutils literal notranslate"><span class="pre">azp</span></code> - so both user
 and service-account tokens resolve to a stable subject.</p></li>
 </ol>
 <p>Failure modes map to precise responses:</p>
@@ -657,7 +657,7 @@ their subject.</p>
 <p>The first time a valid token is seen for a new subject, GAME creates an
 <code class="docutils literal notranslate"><span class="pre">OAuthUsers</span></code> record (<code class="docutils literal notranslate"><span class="pre">provider=keycloak</span></code>, <code class="docutils literal notranslate"><span class="pre">status=active</span></code>) and writes a
 single <code class="docutils literal notranslate"><span class="pre">auth</span> <span class="pre">/</span> <span class="pre">OAuth</span> <span class="pre">user</span> <span class="pre">bootstrapped</span></code> audit log entry. No manual user
-provisioning is required — authenticating once is enough to register the
+provisioning is required - authenticating once is enough to register the
 identity.</p>
 </section>
 <section id="the-per-request-auth-context">

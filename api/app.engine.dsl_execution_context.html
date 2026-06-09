@@ -49,8 +49,8 @@
     <title>app.engine.dsl_execution_context module &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
-    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c695c7af" />
+    <script src="../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.engine.dsl_execution_context module </span>
         </div>
       </div>
@@ -176,7 +176,7 @@
       
     </a>
     <a href="../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -431,7 +431,7 @@ each trigger at most one awaited call to the analytics service,
 and only when the AST actually references them. <code class="docutils literal notranslate"><span class="pre">mock_state</span></code>
 short-circuits both, useful for the simulate endpoint and for
 tests that don’t want a real DB.</p>
-<p>Sprint 13 — <code class="docutils literal notranslate"><span class="pre">analytics_cache</span></code> is an optional caller-owned dict
+<p>Sprint 13 - <code class="docutils literal notranslate"><span class="pre">analytics_cache</span></code> is an optional caller-owned dict
 memoising analytics-field values <em>within a single scoring call</em>.
 DSL_EXTEND builds two contexts (pre + post) for the same user and
 request window; passing the same dict to both means each analytics
@@ -439,7 +439,7 @@ method (a DB round-trip) runs once instead of twice. Only
 <code class="docutils literal notranslate"><span class="pre">analytics</span></code>-kind fields are cached: static fields are pure CPU,
 and <code class="docutils literal notranslate"><span class="pre">data.*</span></code> fields legitimately differ between phases because
 pre-rules may mutate <code class="docutils literal notranslate"><span class="pre">data</span></code>. Pass <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) to opt
-out — DSL_FULL builds a single context and gains nothing.</p>
+out - DSL_FULL builds a single context and gains nothing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

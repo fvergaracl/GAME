@@ -48,8 +48,8 @@
     <title>app.services.strategy_definition_service &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.services.strategy_definition_service </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -376,7 +376,7 @@
 <span class="sd">* Archiving moves a row out of the active set without deleting history.</span>
 
 <span class="sd">Tenancy is enforced at this layer: every read/write takes ``realmId``</span>
-<span class="sd">and we never accept it from the caller body — the endpoint resolves it</span>
+<span class="sd">and we never accept it from the caller body - the endpoint resolves it</span>
 <span class="sd">from the auth context and passes it in.</span>
 <span class="sd">"""</span>
 
@@ -401,7 +401,7 @@
 <span class="c1"># Kept in sync with ``CUSTOM_STRATEGY_PREFIX`` in</span>
 <span class="c1"># ``app/services/strategy_service.py``. We inline the literal here</span>
 <span class="c1"># instead of importing it because ``StrategyService`` already imports</span>
-<span class="c1"># this module — pulling the constant back the other way would create a</span>
+<span class="c1"># this module - pulling the constant back the other way would create a</span>
 <span class="c1"># circular module dependency (same reason ``_validate_payload`` doesn't</span>
 <span class="c1"># resolve parent strategies; see comment below).</span>
 <span class="n">_CUSTOM_STRATEGY_PREFIX</span> <span class="o">=</span> <span class="s2">"custom:"</span>
@@ -440,7 +440,7 @@
 <span class="sd">        ``game_repository`` and ``task_repository`` are optional so legacy</span>
 <span class="sd">        call sites that only need CRUD/lifecycle (most tests, the</span>
 <span class="sd">        simulation service) keep working without a wider DI graph. The</span>
-<span class="sd">        Sprint 9 rollback flow requires both — when missing,</span>
+<span class="sd">        Sprint 9 rollback flow requires both - when missing,</span>
 <span class="sd">        :meth:`rollback` raises a precise error rather than silently</span>
 <span class="sd">        leaving cascade UPDATEs undone.</span>
 <span class="sd">        """</span>
@@ -485,7 +485,7 @@
 <span class="sd">        DSL_EXTEND must carry a parent; DSL_FULL must not. We don't yet</span>
 <span class="sd">        validate that ``parentStrategyId`` resolves to a real registry</span>
 <span class="sd">        entry because the registry is loaded lazily and importing it</span>
-<span class="sd">        here would create a circular dependency — that check lives in</span>
+<span class="sd">        here would create a circular dependency - that check lives in</span>
 <span class="sd">        the endpoint via :class:`StrategyService`.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">type_value</span> <span class="o">==</span> <span class="n">StrategyDefinitionType</span><span class="o">.</span><span class="n">DSL_EXTEND</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
@@ -666,7 +666,7 @@
 <span class="sd">        * On a PUBLISHED row: fork a new DRAFT at ``version + 1`` with</span>
 <span class="sd">          the patched fields applied, leaving the published row</span>
 <span class="sd">          untouched so it keeps running until an explicit publish.</span>
-<span class="sd">        * On an ARCHIVED row: refuse — archived strategies are</span>
+<span class="sd">        * On an ARCHIVED row: refuse - archived strategies are</span>
 <span class="sd">          immutable.</span>
 <span class="sd">        """</span>
         <span class="n">row</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_repository</span><span class="o">.</span><span class="n">get_for_realm</span><span class="p">(</span>
@@ -884,14 +884,14 @@
 <span class="sd">        strategy version (Sprint 6).</span>
 
 <span class="sd">        Consumers store the assignable id ``custom:&lt;uuid&gt;``, so usage is</span>
-<span class="sd">        an exact match on that string — the same value the rollback</span>
+<span class="sd">        an exact match on that string - the same value the rollback</span>
 <span class="sd">        cascade rewrites. We report per-version (not per-family) because</span>
 <span class="sd">        each published version is a distinct uuid that games point at</span>
 <span class="sd">        individually; that matches what an admin needs to see before</span>
 <span class="sd">        reassigning, archiving or rolling back *this* version.</span>
 
 <span class="sd">        Tenant-scoped via ``get_for_realm``: a cross-realm id 404s.</span>
-<span class="sd">        No cross-tenant leak through the usage lists either — a game can</span>
+<span class="sd">        No cross-tenant leak through the usage lists either - a game can</span>
 <span class="sd">        only be assigned a strategy validated to live in its own realm,</span>
 <span class="sd">        so every consumer of ``custom:&lt;uuid&gt;`` shares the strategy's</span>
 <span class="sd">        realm.</span>
@@ -974,12 +974,12 @@
 <span class="sd">          * 404 if ``id`` doesn't resolve (or is in another realm).</span>
 <span class="sd">          * 404 if ``target_version`` isn't a version of that family.</span>
 <span class="sd">          * 409 if the requested target is the row that's already PUBLISHED</span>
-<span class="sd">            — rolling back to the current state would be a no-op that</span>
+<span class="sd">            - rolling back to the current state would be a no-op that</span>
 <span class="sd">            falsely advertises a status change in the audit log.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_repository</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_repository</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Defensive: rollback writes to Games/Tasks. If those weren't</span>
-            <span class="c1"># wired we'd silently leave the cascade undone — much worse</span>
+            <span class="c1"># wired we'd silently leave the cascade undone - much worse</span>
             <span class="c1"># than refusing the operation up front.</span>
             <span class="k">raise</span> <span class="n">BadRequestError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
@@ -1012,7 +1012,7 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">displaced</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">displaced</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">id</span><span class="p">):</span>
-            <span class="c1"># Target is already the live PUBLISHED row — rollback would be</span>
+            <span class="c1"># Target is already the live PUBLISHED row - rollback would be</span>
             <span class="c1"># a no-op and would obscure intent in the audit trail.</span>
             <span class="k">raise</span> <span class="n">ConflictError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
@@ -1024,7 +1024,7 @@
         <span class="c1"># Order matters: archive the displaced row first, then promote</span>
         <span class="c1"># the target, then run the cascade. If a failure interrupts the</span>
         <span class="c1"># sequence the worst observable state is "0 PUBLISHED in family"</span>
-        <span class="c1"># for a few ms — preferable to leaving two PUBLISHED rows.</span>
+        <span class="c1"># for a few ms - preferable to leaving two PUBLISHED rows.</span>
         <span class="k">if</span> <span class="n">displaced</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_definition_repository</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span>
                 <span class="nb">id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">displaced</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>

@@ -49,8 +49,8 @@
     <title>Getting Started &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Getting Started </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -237,9 +237,9 @@
         </li>
         <li class="md-nav__item"><a href="#two-ways-to-run" class="md-nav__link">Two ways to run</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#path-a-docker-compose-fastest" class="md-nav__link">Path A — Docker Compose (fastest)</a>
+        <li class="md-nav__item"><a href="#path-a-docker-compose-fastest" class="md-nav__link">Path A - Docker Compose (fastest)</a>
         </li>
-        <li class="md-nav__item"><a href="#path-b-local-poetry" class="md-nav__link">Path B — Local Poetry</a>
+        <li class="md-nav__item"><a href="#path-b-local-poetry" class="md-nav__link">Path B - Local Poetry</a>
         </li></ul>
             </nav>
         </li>
@@ -430,9 +430,9 @@
         </li>
         <li class="md-nav__item"><a href="#two-ways-to-run" class="md-nav__link">Two ways to run</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#path-a-docker-compose-fastest" class="md-nav__link">Path A — Docker Compose (fastest)</a>
+        <li class="md-nav__item"><a href="#path-a-docker-compose-fastest" class="md-nav__link">Path A - Docker Compose (fastest)</a>
         </li>
-        <li class="md-nav__item"><a href="#path-b-local-poetry" class="md-nav__link">Path B — Local Poetry</a>
+        <li class="md-nav__item"><a href="#path-b-local-poetry" class="md-nav__link">Path B - Local Poetry</a>
         </li></ul>
             </nav>
         </li>
@@ -520,7 +520,7 @@ without it.</p></td>
 <section id="two-ways-to-run">
 <h2 id="two-ways-to-run">Two ways to run<a class="headerlink" href="#two-ways-to-run" title="Link to this heading">¶</a></h2>
 <section id="path-a-docker-compose-fastest">
-<h3 id="path-a-docker-compose-fastest">Path A — Docker Compose (fastest)<a class="headerlink" href="#path-a-docker-compose-fastest" title="Link to this heading">¶</a></h3>
+<h3 id="path-a-docker-compose-fastest">Path A - Docker Compose (fastest)<a class="headerlink" href="#path-a-docker-compose-fastest" title="Link to this heading">¶</a></h3>
 <p>Brings up the API, PostgreSQL, and (optionally) Keycloak together:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/fvergaracl/GAME.git
 <span class="nb">cd</span><span class="w"> </span>GAME
@@ -541,7 +541,7 @@ make<span class="w"> </span>down<span class="w">         </span><span class="c1"
 full Compose / Kubernetes story.</p>
 </section>
 <section id="path-b-local-poetry">
-<h3 id="path-b-local-poetry">Path B — Local Poetry<a class="headerlink" href="#path-b-local-poetry" title="Link to this heading">¶</a></h3>
+<h3 id="path-b-local-poetry">Path B - Local Poetry<a class="headerlink" href="#path-b-local-poetry" title="Link to this heading">¶</a></h3>
 <p>Run the API directly against a PostgreSQL you provide:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/fvergaracl/GAME.git
 <span class="nb">cd</span><span class="w"> </span>GAME
@@ -602,7 +602,7 @@ poetry<span class="w"> </span>run<span class="w"> </span>uvicorn<span class="w">
 <h2 id="your-first-end-to-end-flow">Your first end-to-end flow<a class="headerlink" href="#your-first-end-to-end-flow" title="Link to this heading">¶</a></h2>
 <p>This walks the canonical loop: get a credential, create a game, add a task,
 award points, and read them back. It uses an <strong>API key</strong> (header
-<code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code>) — the simplest credential for server-to-server use.</p>
+<code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code>) - the simplest credential for server-to-server use.</p>
 <section id="obtain-an-api-key">
 <h3 id="obtain-an-api-key">1. Obtain an API key<a class="headerlink" href="#obtain-an-api-key" title="Link to this heading">¶</a></h3>
 <p>Creating a key is an OAuth2-protected operation, so you first need a bearer
@@ -632,7 +632,7 @@ token from Keycloak (see <a class="reference internal" href="authentication.html
 <span class="w">  </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">'.gameId'</span><span class="k">)</span>
 </pre></div>
 </div>
-<p>The response includes the internal <code class="docutils literal notranslate"><span class="pre">gameId</span></code> (a UUID). Keep it — you will
+<p>The response includes the internal <code class="docutils literal notranslate"><span class="pre">gameId</span></code> (a UUID). Keep it - you will
 address the game by this id.</p>
 </section>
 <section id="create-a-task">
@@ -672,7 +672,7 @@ its own.</p>
 <p class="admonition-title">Tip</p>
 <p>To preview a score <strong>without persisting anything</strong>, send
 <code class="docutils literal notranslate"><span class="pre">"isSimulated":</span> <span class="pre">true</span></code> in the body. No <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code> row, no wallet
-movement — ideal for testing a strategy. See <a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a>.</p>
+movement - ideal for testing a strategy. See <a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a>.</p>
 </div>
 </section>
 <section id="read-the-points-back">

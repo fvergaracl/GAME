@@ -49,8 +49,8 @@
     <title>Domain Model &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Domain Model </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -551,7 +551,7 @@ audit trail and the basis for per-key data scoping.</p></td>
 <tbody>
 <tr class="row-even"><td><p><strong>Games</strong></p></td>
 <td><p>A campaign/project. Carries an <code class="docutils literal notranslate"><span class="pre">externalGameId</span></code> (your identifier), a
-<code class="docutils literal notranslate"><span class="pre">platform</span></code>, and a <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> — the <em>default</em> scoring strategy for
+<code class="docutils literal notranslate"><span class="pre">platform</span></code>, and a <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> - the <em>default</em> scoring strategy for
 its tasks. If unset, the built-in <code class="docutils literal notranslate"><span class="pre">default</span></code> strategy applies.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>GameParams</strong></p></td>
@@ -702,7 +702,7 @@ that contributes four columns to <em>every</em> table:</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">apiKey_used</span></code> / <code class="docutils literal notranslate"><span class="pre">oauth_user_id</span></code></p></td>
 <td><p>FK / string</p></td>
-<td><p>The credential that performed the write — the audit + scoping anchor.</p></td>
+<td><p>The credential that performed the write - the audit + scoping anchor.</p></td>
 </tr>
 </tbody>
 </table>
@@ -729,7 +729,7 @@ your own domain keys and keep GAME loosely coupled to your system.</p></li>
 <ul class="simple">
 <li><p>Point assignment accepts an <strong>idempotency key</strong> (request header, surfaced
 into the event <code class="docutils literal notranslate"><span class="pre">data</span></code> as <code class="docutils literal notranslate"><span class="pre">eventId</span></code>). A repeated request with the same
-key does not create a second <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code> row — safe to retry.</p></li>
+key does not create a second <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code> row - safe to retry.</p></li>
 <li><p>Writes are <strong>transactional</strong>; wallet movement and points persistence happen
 together so a partial failure does not leave a points row without its
 wallet effect.</p></li>
@@ -738,10 +738,10 @@ wallet effect.</p></li>
 <section id="where-to-go-next">
 <h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="integrating.html"><span class="doc">Integrating with GAME</span></a> — the request/response shapes for creating games, tasks,
+<li><p><a class="reference internal" href="integrating.html"><span class="doc">Integrating with GAME</span></a> - the request/response shapes for creating games, tasks,
 and awarding points.</p></li>
-<li><p><a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a> — how <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> resolution and scoring actually work.</p></li>
-<li><p><a class="reference internal" href="codebase.html"><span class="doc">Codebase Reference</span></a> — the generated reference for <code class="docutils literal notranslate"><span class="pre">app/model</span></code> and the rest.</p></li>
+<li><p><a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a> - how <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> resolution and scoring actually work.</p></li>
+<li><p><a class="reference internal" href="codebase.html"><span class="doc">Codebase Reference</span></a> - the generated reference for <code class="docutils literal notranslate"><span class="pre">app/model</span></code> and the rest.</p></li>
 </ul>
 </section>
 </section>

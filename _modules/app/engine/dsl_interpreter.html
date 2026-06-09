@@ -48,8 +48,8 @@
     <title>app.engine.dsl_interpreter &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.engine.dsl_interpreter </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -365,7 +365,7 @@
 <span class="sd">Walker-based interpreter for the strategy DSL.</span>
 
 <span class="sd">This is the sandbox. It walks the JSON AST node-by-node, dispatching on</span>
-<span class="sd">``node["type"]`` through a fixed handler table — no ``getattr``, no</span>
+<span class="sd">``node["type"]`` through a fixed handler table - no ``getattr``, no</span>
 <span class="sd">``eval``, no ``exec``. Anything not in the handler table is rejected as</span>
 <span class="sd">``DslValidationError`` (the validator should have caught it; the runtime</span>
 <span class="sd">check is defence in depth).</span>
@@ -375,13 +375,13 @@
 <span class="sd">* No code path exposes Python attribute lookup to AST-supplied strings.</span>
 <span class="sd">* Field access is a frozen-dict lookup; the resolved values were</span>
 <span class="sd">  precomputed by ``ExecutionContext.build_for_ast``.</span>
-<span class="sd">* Node count and recursion depth are bounded — the validator already</span>
+<span class="sd">* Node count and recursion depth are bounded - the validator already</span>
 <span class="sd">  rejects programs that would exceed them; the runtime guards exist so</span>
 <span class="sd">  that future dynamic expansion (e.g. macros) still can't blow out.</span>
 <span class="sd">* ``await asyncio.sleep(0)`` every ``yield_every`` visits gives the</span>
 <span class="sd">  event loop a chance to actually cancel the coroutine when</span>
 <span class="sd">  ``asyncio.wait_for`` fires. Without it a CPU-bound walk would run to</span>
-<span class="sd">  completion and only *then* see the timeout — which is what</span>
+<span class="sd">  completion and only *then* see the timeout - which is what</span>
 <span class="sd">  ``RestrictedPython``-style sandboxes generally get wrong.</span>
 
 <span class="sd">Execution semantics mirror ``app/engine/default.py``:</span>
@@ -419,7 +419,7 @@
     <span class="n">callback_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="n">trace</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
     <span class="c1"># Sprint 7: DSL_EXTEND-only outputs. ``working_data`` is the dict</span>
-    <span class="c1"># that pre-rules mutated via set_data — the orchestrator hands it</span>
+    <span class="c1"># that pre-rules mutated via set_data - the orchestrator hands it</span>
     <span class="c1"># to the parent built-in. ``vetoed`` signals that a pre-rule veto</span>
     <span class="c1"># fired so the orchestrator skips parent + post entirely.</span>
     <span class="n">working_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
@@ -457,14 +457,14 @@
 
 <span class="sd">        ``mode`` selects which section of the program runs:</span>
 
-<span class="sd">        * ``"full"`` — main ``rules`` + ``default`` (DSL_FULL behaviour;</span>
+<span class="sd">        * ``"full"`` - main ``rules`` + ``default`` (DSL_FULL behaviour;</span>
 <span class="sd">          this is the unchanged Sprint 5 path).</span>
-<span class="sd">        * ``"pre"`` — only ``pre_rules`` (DSL_EXTEND phase 1). The</span>
+<span class="sd">        * ``"pre"`` - only ``pre_rules`` (DSL_EXTEND phase 1). The</span>
 <span class="sd">          ``initial_data`` dict is cloned into ``state.working_data`` so</span>
 <span class="sd">          ``set_data`` statements can mutate it; the orchestrator</span>
 <span class="sd">          (``DslStrategy``) reads ``state.working_data`` back out to</span>
 <span class="sd">          pass to the parent built-in.</span>
-<span class="sd">        * ``"post"`` — only ``post_rules`` (DSL_EXTEND phase 3). The</span>
+<span class="sd">        * ``"post"`` - only ``post_rules`` (DSL_EXTEND phase 3). The</span>
 <span class="sd">          ``parent_result`` dict bootstraps the run state (points,</span>
 <span class="sd">          case_name, callback_data) so ``set_points`` /</span>
 <span class="sd">          ``set_case_name`` / ``set_callback_data`` mutate from the</span>
@@ -537,7 +537,7 @@
             <span class="k">return</span>
 
         <span class="c1"># Sprint 7: DSL_EXTEND phases. ``pre`` and ``post`` walk a</span>
-        <span class="c1"># distinct section of the program and ignore the others — the</span>
+        <span class="c1"># distinct section of the program and ignore the others - the</span>
         <span class="c1"># main ``rules`` + ``default`` are exclusively the DSL_FULL</span>
         <span class="c1"># path. This keeps the two execution models from accidentally</span>
         <span class="c1"># mixing state ("set_data" leaking into a DSL_FULL run, etc.).</span>
@@ -575,7 +575,7 @@
         <span class="c1"># ends. Otherwise each ``else_if`` branch is tried in order, and the</span>
         <span class="c1"># first whose condition is truthy runs its ``then`` and ends the</span>
         <span class="c1"># rule. If none match and an ``else`` body exists, it runs. This</span>
-        <span class="c1"># only decides which statement stack runs inside the rule — the</span>
+        <span class="c1"># only decides which statement stack runs inside the rule - the</span>
         <span class="c1"># program-level rule chaining and ``default`` are unchanged (a</span>
         <span class="c1"># non-halting branch still falls through to the next rule).</span>
         <span class="n">matched</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_condition</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s2">"when"</span><span class="p">],</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -723,7 +723,7 @@
             <span class="k">return</span>
 
         <span class="c1"># Sprint 7: DSL_EXTEND pre-rule statements. set_data writes into</span>
-        <span class="c1"># ``state.working_data`` — the dict the orchestrator hands to the</span>
+        <span class="c1"># ``state.working_data`` - the dict the orchestrator hands to the</span>
         <span class="c1"># parent built-in's ``calculate_points``. veto raises _DslHalt</span>
         <span class="c1"># with state.vetoed=True so the orchestrator skips both the</span>
         <span class="c1"># parent call and the entire post_rules phase.</span>
@@ -1161,7 +1161,7 @@
         <span class="s2">"callback_data"</span><span class="p">,</span>
         <span class="s2">"matched"</span><span class="p">,</span>
         <span class="c1"># Sprint 7: DSL_EXTEND state. ``working_data`` is the dict that</span>
-        <span class="c1"># set_data writes to during pre_rules — the orchestrator reads</span>
+        <span class="c1"># set_data writes to during pre_rules - the orchestrator reads</span>
         <span class="c1"># it back to hand to the parent built-in's calculate_points.</span>
         <span class="c1"># ``vetoed`` signals that a pre_rules veto fired so the</span>
         <span class="c1"># orchestrator skips parent + post entirely.</span>
@@ -1233,7 +1233,7 @@
 <span class="c1"># Sprint 6: handlers for the ``func_call`` node. Kept separate from the</span>
 <span class="c1"># binary arith table because the arities and signatures differ. ``int``</span>
 <span class="c1"># truncates toward zero (mirroring Python's built-in and matching</span>
-<span class="c1"># ``constantEffortStrategy.py:53`` semantics — not rounding). ``clamp``</span>
+<span class="c1"># ``constantEffortStrategy.py:53`` semantics - not rounding). ``clamp``</span>
 <span class="c1"># is (value, lo, hi) → max(lo, min(value, hi)).</span>
 <span class="n">_FUNC_HANDLERS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"int"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>

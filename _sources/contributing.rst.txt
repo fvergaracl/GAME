@@ -21,7 +21,7 @@ Development setup
    poetry run alembic upgrade head
    poetry run uvicorn app.main:app --reload   # http://localhost:8000
 
-Read :doc:`architecture` before your first non-trivial change — the layer
+Read :doc:`architecture` before your first non-trivial change - the layer
 boundaries are enforced socially, not by the compiler, so knowing *which layer
 owns what* is how reviews go smoothly.
 
@@ -38,15 +38,15 @@ Where code goes
      - ``app/api/v1/endpoints/`` + register the router in
        ``app/api/v1/routes.py``.
    * - Business logic
-     - ``app/services/`` — never put it in an endpoint or repository.
+     - ``app/services/`` - never put it in an endpoint or repository.
    * - New persistence query
-     - ``app/repository/`` — keep it free of domain decisions.
+     - ``app/repository/`` - keep it free of domain decisions.
    * - New table
      - ``app/model/`` + an Alembic migration in ``migrations/``.
    * - Wire-format change
      - ``app/schema/`` (Pydantic).
    * - New scoring strategy
-     - ``app/engine/`` — subclass ``BaseStrategy`` and decorate with
+     - ``app/engine/`` - subclass ``BaseStrategy`` and decorate with
        ``@register_strategy(id=...)``.
    * - New dependency wiring
      - ``app/core/container.py``.
@@ -67,10 +67,10 @@ runners (they load ``.env`` for you):
      - ``./scripts/run_unit_tests.sh`` (``--fail-fast``, ``--cov``,
        ``--file <path>``). Fast, isolated, mock external dependencies.
    * - **E2E (controlled)**
-     - ``./scripts/run_e2e.sh`` — isolated SQLite, deterministic, no real
+     - ``./scripts/run_e2e.sh`` - isolated SQLite, deterministic, no real
        infra.
    * - **E2E (real infra)**
-     - ``./scripts/run_e2e.sh --real`` — real HTTP + PostgreSQL + Keycloak.
+     - ``./scripts/run_e2e.sh --real`` - real HTTP + PostgreSQL + Keycloak.
    * - **Load (k6)**
      - ``./scripts/run_load_test.sh --mode 100``.
 
@@ -87,7 +87,7 @@ Guidelines:
 * Every feature/fix ships with tests. Unit-test services in isolation;
   reserve real-infra E2E for integration behavior.
 * Because persistence is abstracted, services run against **SQLite** in tests
-  and **PostgreSQL** in production — keep repository queries portable.
+  and **PostgreSQL** in production - keep repository queries portable.
 * CI runs the suite with coverage; Codecov tracks the trend.
 
 Code style
@@ -95,7 +95,7 @@ Code style
 
 * **Python 3.12**, PEP 8. Formatting/linting is handled by **Ruff**
   (``ruff_cache`` is present); run it before pushing.
-* Public functions and classes get **Google-style docstrings** — they are not
+* Public functions and classes get **Google-style docstrings** - they are not
   decoration, they *are* the API reference (:doc:`codebase`) via ``napoleon``.
 * Match the surrounding code: the codebase favors small, well-named functions,
   explicit dependencies, and comments that explain *why* (often referencing the
@@ -105,7 +105,7 @@ Documentation
 =============
 
 Docs are part of the product, not an afterthought. The information
-architecture follows the `Diátaxis <https://diataxis.fr/>`_ model — every page
+architecture follows the `Diátaxis <https://diataxis.fr/>`_ model - every page
 declares *who it is for* and stays in its lane:
 
 .. list-table::
@@ -148,7 +148,7 @@ Where docs live
      - Canonical Mermaid ERD.
    * - Top-level ``*.md``
      - ``README``, ``SETUP``, ``DEPLOYMENT``, ``TESTING``, ``KUBERNETES_SETUP``
-       — entry points and quick references.
+       - entry points and quick references.
 
 Building the docs locally
 -------------------------

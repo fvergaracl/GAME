@@ -48,8 +48,8 @@
     <title>app.engine.dsl_ast &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.engine.dsl_ast </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -364,7 +364,7 @@
 <span></span><span class="sd">"""</span>
 <span class="sd">AST node definitions and the field-access whitelist for the strategy DSL.</span>
 
-<span class="sd">This module is pure data + small pure helpers — no I/O, no service</span>
+<span class="sd">This module is pure data + small pure helpers - no I/O, no service</span>
 <span class="sd">dependencies, no async. It is imported by the validator, the interpreter,</span>
 <span class="sd">and the execution context. Keeping it dependency-free is what allows the</span>
 <span class="sd">adversarial test suite to import the whitelist directly and assert on it</span>
@@ -375,14 +375,14 @@
 <span class="sd">1. The grammar of allowed nodes: ``NODE_*`` constants plus the operator</span>
 <span class="sd">   whitelists used by ``compare`` and ``arith`` nodes.</span>
 
-<span class="sd">2. The ``FIELD_RESOLVERS`` map — the only legal targets of a ``field``</span>
+<span class="sd">2. The ``FIELD_RESOLVERS`` map - the only legal targets of a ``field``</span>
 <span class="sd">   node's ``path``. Anything outside this map (or the ``data.&lt;key&gt;``</span>
 <span class="sd">   prefix) is rejected at validation time, not at runtime. This is what</span>
 <span class="sd">   keeps a malicious tenant from writing ``{"type":"field","path":"__builtins__"}``</span>
 <span class="sd">   and getting an interpreter handler to evaluate it.</span>
 
-<span class="sd">The ``data.*`` namespace is open — keys are arbitrary because callers</span>
-<span class="sd">supply ``data`` per-event — but the resolver only snapshots scalar values</span>
+<span class="sd">The ``data.*`` namespace is open - keys are arbitrary because callers</span>
+<span class="sd">supply ``data`` per-event - but the resolver only snapshots scalar values</span>
 <span class="sd">from the request payload, never live attribute lookups.</span>
 <span class="sd">"""</span>
 
@@ -395,7 +395,7 @@
 <span class="c1"># Node types ----------------------------------------------------------------</span>
 <span class="c1"># The handler tables in dsl_validator and dsl_interpreter dispatch on these</span>
 <span class="c1"># strings. Adding a node here without adding a handler will be caught by the</span>
-<span class="c1"># validator (unknown type) — the constants are intentionally exhaustive.</span>
+<span class="c1"># validator (unknown type) - the constants are intentionally exhaustive.</span>
 
 <span class="n">NODE_PROGRAM</span> <span class="o">=</span> <span class="s2">"program"</span>
 <span class="c1"># A rule node carries ``when`` (condition) + ``then`` (statement list) and,</span>
@@ -488,7 +488,7 @@
 <span class="c1"># "pre" (program.pre_rules[]), "post" (program.post_rules[]).</span>
 <span class="c1">#</span>
 <span class="c1"># IMPORTANT: dashboard/src/views/strategies/dsl/whitelists.js mirrors</span>
-<span class="c1"># this map for client-side validation — keep them in sync.</span>
+<span class="c1"># this map for client-side validation - keep them in sync.</span>
 <span class="n">STATEMENT_ALLOWED_CONTEXTS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">NODE_ASSIGN_POINTS</span><span class="p">:</span> <span class="p">{</span><span class="s2">"rule"</span><span class="p">,</span> <span class="s2">"default"</span><span class="p">},</span>
     <span class="n">NODE_SET_CALLBACK_DATA</span><span class="p">:</span> <span class="p">{</span><span class="s2">"rule"</span><span class="p">,</span> <span class="s2">"default"</span><span class="p">,</span> <span class="s2">"pre"</span><span class="p">,</span> <span class="s2">"post"</span><span class="p">},</span>
@@ -510,7 +510,7 @@
 <span class="c1"># Keeping the arity explicit so the validator can reject bad call shapes</span>
 <span class="c1"># without consulting the interpreter handler table.</span>
 <span class="c1"># IMPORTANT: dashboard/src/views/strategies/dsl/whitelists.js mirrors</span>
-<span class="c1"># this set for client-side validation — keep them in sync.</span>
+<span class="c1"># this set for client-side validation - keep them in sync.</span>
 <span class="n">ALLOWED_FUNC_NAMES</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"int"</span><span class="p">,</span> <span class="s2">"clamp"</span><span class="p">}</span>
 <span class="n">FUNC_ARITY</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"int"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"clamp"</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
 
@@ -654,7 +654,7 @@
 <span class="p">)</span>
 
 
-<span class="c1"># Sprint 7: paths exposed only inside ``post_rules`` — they carry the</span>
+<span class="c1"># Sprint 7: paths exposed only inside ``post_rules`` - they carry the</span>
 <span class="c1"># parent built-in's result after the pre→parent→post pipeline. They are</span>
 <span class="c1"># NOT in FIELD_RESOLVERS because their value is injected directly into</span>
 <span class="c1"># ExecutionContext.resolved_fields by ``DslStrategy`` after the parent</span>
@@ -676,7 +676,7 @@
 <div class="viewcode-block" id="is_parent_field_path">
 <a class="viewcode-back" href="../../../api/app.engine.dsl_ast.html#app.engine.dsl_ast.is_parent_field_path">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_parent_field_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""``parent.points`` / ``parent.case_name`` — only valid in post_rules."""</span>
+<span class="w">    </span><span class="sd">"""``parent.points`` / ``parent.case_name`` - only valid in post_rules."""</span>
     <span class="k">return</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">PARENT_FIELD_PATHS</span></div>
 
 
@@ -715,7 +715,7 @@
 
 <span class="c1"># Field enumeration ---------------------------------------------------------</span>
 <span class="c1"># ExecutionContext uses this to build a precompute list. It walks the AST</span>
-<span class="c1"># permissively (will not raise on unknown nodes — that is the validator's</span>
+<span class="c1"># permissively (will not raise on unknown nodes - that is the validator's</span>
 <span class="c1"># job) so the same code path is safe to call after validation has passed.</span>
 
 

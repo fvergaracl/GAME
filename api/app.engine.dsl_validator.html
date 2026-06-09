@@ -49,8 +49,8 @@
     <title>app.engine.dsl_validator module &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
-    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c695c7af" />
+    <script src="../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.engine.dsl_validator module </span>
         </div>
       </div>
@@ -176,7 +176,7 @@
       
     </a>
     <a href="../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -392,7 +392,7 @@
 <p>Structural validator for strategy ASTs.</p>
 <p>Runs synchronously and without I/O. Called on every create/update so a
 malformed AST never lands in the database, and called again by the
-simulate service as a cheap idempotent guard — the second call is fast
+simulate service as a cheap idempotent guard - the second call is fast
 because the AST has already been parsed by Pydantic into plain dict/list/
 scalar values.</p>
 <p>The validator enforces three things, in order:</p>
@@ -403,7 +403,7 @@ on a rule).</p></li>
 <li><p><strong>Whitelist</strong>: <code class="docutils literal notranslate"><span class="pre">compare.op</span></code>, <code class="docutils literal notranslate"><span class="pre">arith.op</span></code>, <code class="docutils literal notranslate"><span class="pre">field.path</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">node.type</span></code> must all appear in the corresponding allow-list in
 <code class="docutils literal notranslate"><span class="pre">dsl_ast</span></code>. The interpreter never invokes <code class="docutils literal notranslate"><span class="pre">getattr</span></code> on a node type
-string, but the validator is the first line of defence — by the time
+string, but the validator is the first line of defence - by the time
 the AST reaches the handler table any unknown name has already been
 rejected with <code class="docutils literal notranslate"><span class="pre">DslValidationError</span></code>.</p></li>
 <li><p><strong>Limits</strong>: a static node count and recursion depth are computed

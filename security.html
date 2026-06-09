@@ -49,8 +49,8 @@
     <title>Security &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Security </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -535,7 +535,7 @@ through the same rules:</p>
 <td><p>Every game and every user. Bypasses scoping.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>API key</strong></p></td>
-<td><p>Scoped to rows whose <code class="docutils literal notranslate"><span class="pre">apiKey_used</span></code> matches the key — i.e. the data
+<td><p>Scoped to rows whose <code class="docutils literal notranslate"><span class="pre">apiKey_used</span></code> matches the key - i.e. the data
 <em>that key created</em>. A key cannot read another key’s games/users.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>OAuth non-admin</strong></p></td>
@@ -552,7 +552,7 @@ out of scope.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">get_authorized_user</span></code> → analogous, for user-addressed endpoints.</p></li>
 </ul>
 <p>Because the check lives below the HTTP layer, adding a new endpoint that
-forgets to scope is a <em>visible</em> omission — the service method it calls demands
+forgets to scope is a <em>visible</em> omission - the service method it calls demands
 the scoping kwargs.</p>
 </section>
 <section id="abuse-prevention-rate-limiting">
@@ -601,9 +601,9 @@ production).</p>
 <h3 id="counter-backend">Counter backend<a class="headerlink" href="#counter-backend" title="Link to this heading">¶</a></h3>
 <p>The counter store is pluggable via <code class="docutils literal notranslate"><span class="pre">ABUSE_PREVENTION_BACKEND</span></code>:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">database</span></code> (default) — increments a row in <code class="docutils literal notranslate"><span class="pre">AbuseLimitCounter</span></code>. Simple,
+<li><p><code class="docutils literal notranslate"><span class="pre">database</span></code> (default) - increments a row in <code class="docutils literal notranslate"><span class="pre">AbuseLimitCounter</span></code>. Simple,
 but a hot row under load.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">redis</span></code> — atomic <code class="docutils literal notranslate"><span class="pre">INCR</span></code> + <code class="docutils literal notranslate"><span class="pre">EXPIRE</span></code> against <code class="docutils literal notranslate"><span class="pre">REDIS_URL</span></code> (~50 µs vs.
+<li><p><code class="docutils literal notranslate"><span class="pre">redis</span></code> - atomic <code class="docutils literal notranslate"><span class="pre">INCR</span></code> + <code class="docutils literal notranslate"><span class="pre">EXPIRE</span></code> against <code class="docutils literal notranslate"><span class="pre">REDIS_URL</span></code> (~50 µs vs.
 ~5 ms for the Postgres UPDATE, and naturally shared across instances).
 Recommended for multi-replica deployments.</p></li>
 </ul>
@@ -612,14 +612,14 @@ Recommended for multi-replica deployments.</p></li>
 <h3 id="trusted-proxies-don-t-let-clients-forge-their-ip">Trusted proxies (don’t let clients forge their IP)<a class="headerlink" href="#trusted-proxies-don-t-let-clients-forge-their-ip" title="Link to this heading">¶</a></h3>
 <p>Per-IP limits are only meaningful if the client IP can be trusted. When GAME
 runs behind a reverse proxy/ingress, the real client IP arrives in
-<code class="docutils literal notranslate"><span class="pre">X-Forwarded-For</span></code> / <code class="docutils literal notranslate"><span class="pre">X-Real-IP</span></code> — headers a client could otherwise forge to
+<code class="docutils literal notranslate"><span class="pre">X-Forwarded-For</span></code> / <code class="docutils literal notranslate"><span class="pre">X-Real-IP</span></code> - headers a client could otherwise forge to
 dodge per-IP limits.</p>
 <p><code class="docutils literal notranslate"><span class="pre">TRUSTED_PROXY_IPS</span></code> is the gate. It is a comma-separated list of IPs/CIDRs
 allowed to set forwarding headers:</p>
 <ul class="simple">
-<li><p><strong>Empty (default)</strong> — no proxy is trusted; forwarding headers are ignored and
+<li><p><strong>Empty (default)</strong> - no proxy is trusted; forwarding headers are ignored and
 the socket peer is used. This is the secure default.</p></li>
-<li><p><strong>Set</strong> to your proxy/ingress IP(s) — only then are forwarding headers
+<li><p><strong>Set</strong> to your proxy/ingress IP(s) - only then are forwarding headers
 honored.</p></li>
 </ul>
 <p>Malformed entries are rejected <strong>at startup</strong>, so a typo fails fast instead of
@@ -633,7 +633,7 @@ not JSON). The middleware is only attached when origins are configured.</p>
 <p>Two safety behaviors:</p>
 <ul class="simple">
 <li><p><strong>Wildcard is rejected in protected environments.</strong> With <code class="docutils literal notranslate"><span class="pre">ENV=prod</span></code> or
-<code class="docutils literal notranslate"><span class="pre">stage</span></code>, <code class="docutils literal notranslate"><span class="pre">BACKEND_CORS_ORIGINS=*</span></code> raises at startup — a wildcard combined
+<code class="docutils literal notranslate"><span class="pre">stage</span></code>, <code class="docutils literal notranslate"><span class="pre">BACKEND_CORS_ORIGINS=*</span></code> raises at startup - a wildcard combined
 with credentialed requests would let any site act on the user’s behalf.</p></li>
 <li><p><strong>CORS wraps the error handler.</strong> The middleware ordering (see
 <a class="reference internal" href="architecture.html"><span class="doc">Architecture</span></a>) guarantees even a <code class="docutils literal notranslate"><span class="pre">500</span></code> carries CORS headers, so the
@@ -656,8 +656,8 @@ setting is missing or left at an insecure default:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code></p></td>
-<td><p>empty. (It previously defaulted to the literal string <code class="docutils literal notranslate"><span class="pre">"None"</span></code> —
-truthy — which silently signed payloads with the word “None”. Now it
+<td><p>empty. (It previously defaulted to the literal string <code class="docutils literal notranslate"><span class="pre">"None"</span></code> -
+truthy - which silently signed payloads with the word “None”. Now it
 resolves to <code class="docutils literal notranslate"><span class="pre">""</span></code> and is rejected in protected envs.)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">KEYCLOAK_CLIENT_SECRET</span></code></p></td>
@@ -676,7 +676,7 @@ database named <code class="docutils literal notranslate"><span class="pre">game
 “works in dev, leaks in prod” mistakes into loud startup failures.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Manage secrets via the environment or a secret manager — <strong>never</strong> commit
+<p>Manage secrets via the environment or a secret manager - <strong>never</strong> commit
 real secrets, and don’t ship a <code class="docutils literal notranslate"><span class="pre">.env</span></code> with production values. See
 <a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a>.</p>
 </div>

@@ -23,15 +23,15 @@ The fastest entry points by intent:
    * - You want…
      - Start at
    * - The HTTP surface
-     - ``app.api.v1.endpoints`` — one module per resource group.
+     - ``app.api.v1.endpoints`` - one module per resource group.
    * - Business logic
-     - ``app.services`` — the orchestration layer.
+     - ``app.services`` - the orchestration layer.
    * - Persistence
-     - ``app.repository`` — async CRUD over SQLAlchemy.
+     - ``app.repository`` - async CRUD over SQLAlchemy.
    * - The schema
      - ``app.model`` (tables) and ``app.schema`` (wire contracts).
    * - The scoring engine
-     - ``app.engine`` — built-ins, registry, and the DSL pipeline.
+     - ``app.engine`` - built-ins, registry, and the DSL pipeline.
    * - Wiring & config
      - ``app.core`` (config, container, database) and ``app.middlewares``.
 
@@ -39,7 +39,7 @@ The fastest entry points by intent:
 
    Docstrings here follow the **Google style** (parsed by ``napoleon``).
    ``[source]`` links next to each entry jump to the code. When you add or
-   change a public function, update its docstring — this page regenerates from
+   change a public function, update its docstring - this page regenerates from
    it on every deploy.
 
 Full module index

@@ -17,8 +17,8 @@ A **strategy** is the scoring brain bound to a game (and optionally overridden
 per task). When an event arrives, GAME resolves the effective strategy and
 asks it for two things:
 
-* ``points`` — the integer reward, and
-* ``caseName`` — the human-readable label for *why* that amount was chosen
+* ``points`` - the integer reward, and
+* ``caseName`` - the human-readable label for *why* that amount was chosen
   (e.g. ``variable_basic_points``, ``PeakPerformerBonus``). The ``caseName``
   flows into responses, analytics, and audit so a decision is always
   explainable.
@@ -37,7 +37,7 @@ Strategies come in two families:
      - Scoring reacts to context: the user's history, the task's distribution,
        comparison to the global average, spatial state, etc.
 
-Both families are **deterministic given identical inputs** — adaptivity means
+Both families are **deterministic given identical inputs** - adaptivity means
 the inputs include behavioral/contextual analytics, not that the output is
 random. That is what makes GAME reproducible (see :doc:`overview`).
 
@@ -64,7 +64,7 @@ Built-in strategies
 ===================
 
 These ship with the engine. Each registers a **stable public id** (persisted
-on games and returned by the API) via ``@register_strategy`` — the id is
+on games and returned by the API) via ``@register_strategy`` - the id is
 guaranteed stable across class renames:
 
 .. list-table::
@@ -114,7 +114,7 @@ differently per game without code changes.
    New built-ins are plain classes that subclass ``BaseStrategy``, implement
    the scoring method, and decorate themselves with
    ``@register_strategy(id="...")``. Third-party packages can even contribute
-   strategies through the ``game.strategies`` entry-point group — no fork
+   strategies through the ``game.strategies`` entry-point group - no fork
    required. See :doc:`dsl-engine` and :doc:`codebase`.
 
 Custom strategies (the DSL)
@@ -143,7 +143,7 @@ Authoring modes
        points, override the case name, or add callback data), with optional
        per-realm ``parent_variables`` overrides.
 
-Templates give authors a running start — both engine templates
+Templates give authors a running start - both engine templates
 (``default``, ``constant_effort``) and ready-made examples such as
 *engagement_basico*, *recompensa_completar_tarea*, *bonus_por_velocidad*, and
 *bonus_extiende_default*:
@@ -195,21 +195,21 @@ Versioning guarantees
   Rollback also rewrites the ``strategyId`` on every game/task that pointed at
   the archived version, so the cascade reaches all consumers.
 
-This means you can experiment freely — nothing in production changes until you
+This means you can experiment freely - nothing in production changes until you
 press *Publish*.
 
 Simulate before you ship
 ========================
 
 Every strategy can be **simulated**: scoring runs and you get the full
-node-by-node trace, but **no production data is touched** — no ``UserPoints``,
+node-by-node trace, but **no production data is touched** - no ``UserPoints``,
 no wallet movement.
 
 Two ways to simulate:
 
-* **Per-event** — send ``"isSimulated": true`` to the points endpoint
+* **Per-event** - send ``"isSimulated": true`` to the points endpoint
   (:doc:`integrating`).
-* **Per-strategy** — call ``POST /strategies/custom/{id}/simulate`` (the
+* **Per-strategy** - call ``POST /strategies/custom/{id}/simulate`` (the
   editor's *Test* button) to dry-run a candidate strategy against sample
   input and inspect exactly which rule would fire and why.
 
@@ -218,7 +218,7 @@ There is also a per-user simulated view,
 bound to the caller's own subject), returning a ``simulationHash`` for
 integrity plus per-task projected points.
 
-Use simulation liberally — it is the safe way to validate a scoring change.
+Use simulation liberally - it is the safe way to validate a scoring change.
 
 Safety limits
 =============
@@ -244,8 +244,8 @@ rule cannot impact your tenant or others:
      - ``DSL_MAX_DEPTH``
 
 Hitting a limit rejects the event with a clear error code rather than
-degrading the service. The full execution model — how the interpreter yields
-cooperatively so the timeout can actually cancel it — is in :doc:`dsl-engine`.
+degrading the service. The full execution model - how the interpreter yields
+cooperatively so the timeout can actually cancel it - is in :doc:`dsl-engine`.
 
 Worked example: adaptive engagement
 ===================================

@@ -68,7 +68,7 @@ The same boundaries appear in the directory tree:
    * - Repository
      - ``app/repository/``
      - Thin persistence layer over SQLAlchemy ``AsyncSession``. CRUD and
-       queries only — no domain decisions.
+       queries only - no domain decisions.
    * - Model
      - ``app/model/``
      - SQLModel/SQLAlchemy table definitions (the database schema).
@@ -78,12 +78,12 @@ The same boundaries appear in the directory tree:
 
 Why this split matters:
 
-* **Pluggable strategies** — scoring logic is isolated in ``app/engine`` and
+* **Pluggable strategies** - scoring logic is isolated in ``app/engine`` and
   selected by id, so new strategies drop in without touching endpoints or
   repositories.
-* **Deterministic services** — business rules live in one layer, making them
+* **Deterministic services** - business rules live in one layer, making them
   unit-testable without HTTP or a real database.
-* **Reproducible behavior** — persistence is abstracted, so the same service
+* **Reproducible behavior** - persistence is abstracted, so the same service
   logic runs against PostgreSQL in production and SQLite in tests.
 
 The life of a scoring request
@@ -92,31 +92,31 @@ The life of a scoring request
 Tracing ``POST /api/v1/games/{gameId}/tasks/{externalTaskId}/points`` end to
 end (see ``app/api/v1/endpoints/games_points.py``):
 
-#. **Middleware** — the request passes through the outer middleware stack
+#. **Middleware** - the request passes through the outer middleware stack
    (CORS → unhandled-error catcher; see below) and, if metrics are enabled,
    the Prometheus instrumentator.
-#. **Auth dependency** — ``Depends(auth_api_key_or_oauth2)`` resolves an
+#. **Auth dependency** - ``Depends(auth_api_key_or_oauth2)`` resolves an
    ``X-API-Key`` header *or* an OAuth2 bearer token. Failure short-circuits
    with ``401``/``403`` before any business logic runs.
-#. **Audit context** — ``Depends(audit_log("game"))`` builds an
+#. **Audit context** - ``Depends(audit_log("game"))`` builds an
    ``AuditLogger`` bound to the authenticated principal (API key, OAuth user
    id, admin flag). Every meaningful step is logged with a correlation id.
-#. **Validation** — the JSON body is parsed into a Pydantic schema
+#. **Validation** - the JSON body is parsed into a Pydantic schema
    (``AsignPointsToExternalUserId``); malformed input yields ``422`` before
    the handler body executes.
-#. **Abuse prevention** — ``AbusePreventionService`` enforces per-API-key,
+#. **Abuse prevention** - ``AbusePreventionService`` enforces per-API-key,
    per-IP, and per-user rate limits and daily quotas; over-limit yields
    ``429`` (see :doc:`security`).
-#. **Service** — ``UserPointsService.assign_points_to_user`` orchestrates the
+#. **Service** - ``UserPointsService.assign_points_to_user`` orchestrates the
    work: resolve/lazily-create the user, load the task's effective strategy,
-   run scoring, persist ``UserPoints``, and move the wallet — within a
+   run scoring, persist ``UserPoints``, and move the wallet - within a
    transaction.
-#. **Strategy engine** — the resolved strategy computes ``points`` and a
+#. **Strategy engine** - the resolved strategy computes ``points`` and a
    ``caseName``. For custom strategies this runs the sandboxed DSL
    interpreter (:doc:`dsl-engine`).
-#. **Repository** — persistence happens through repositories over an async
+#. **Repository** - persistence happens through repositories over an async
    session; idempotency keys prevent double-awards on retry.
-#. **Response** — the service returns a domain object serialized by the
+#. **Response** - the service returns a domain object serialized by the
    response model. On any exception the endpoint maps it to a structured
    error (preserving the correlation id) and records an audit error.
 
@@ -152,8 +152,8 @@ Wiring is centralized in a single `dependency-injector
 <https://python-dependency-injector.ets-labs.org/>`_ container,
 ``app/core/container.py``:
 
-* ``db`` is a **Singleton** — one async engine/connection pool per process.
-* Repositories and services are **Factories** — a fresh instance per
+* ``db`` is a **Singleton** - one async engine/connection pool per process.
+* Repositories and services are **Factories** - a fresh instance per
   resolution, each handed the dependencies it declares.
 * A few components are deliberately **Singletons** because they carry
   process-wide state: the DSL execution-log observer (its sampling RNG and
@@ -172,19 +172,19 @@ service code.
 Async & persistence model
 =========================
 
-* The application is **async end to end** — FastAPI handlers, services, and
+* The application is **async end to end** - FastAPI handlers, services, and
   repositories are coroutines; persistence uses SQLAlchemy 2.0's
   ``AsyncSession`` over ``asyncpg``.
 * ``BaseRepository`` (``app/repository/base_repository.py``) provides the
-  common CRUD vocabulary — ``read_by_id``, ``read_by_options`` (paginated +
+  common CRUD vocabulary - ``read_by_id``, ``read_by_options`` (paginated +
   filtered + ordered), ``read_by_column(s)``, ``create``, ``update``,
-  ``whole_update``, ``delete_by_id`` — each opening a session from the
+  ``whole_update``, ``delete_by_id`` - each opening a session from the
   injected ``session_factory``.
 * ``create`` supports an **externally managed session** (``auto_commit=False``)
   so a service can compose several writes into one transaction; the default
   path commits per call.
 * Connection pooling is configured on the singleton engine (pool size,
-  overflow, pre-ping, recycle) and tuned via environment variables — see
+  overflow, pre-ping, recycle) and tuned via environment variables - see
   :doc:`configuration`.
 
 Because the app holds no per-request server state beyond the database, it is
@@ -206,6 +206,6 @@ page:
 Where to go next
 ================
 
-* :doc:`domain-model` — the entities these layers move around.
-* :doc:`dsl-engine` — the strategy engine in depth.
-* :doc:`codebase` — the auto-generated API reference for every module.
+* :doc:`domain-model` - the entities these layers move around.
+* :doc:`dsl-engine` - the strategy engine in depth.
+* :doc:`codebase` - the auto-generated API reference for every module.

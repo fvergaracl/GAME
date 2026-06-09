@@ -48,8 +48,8 @@
     <title>app.services.user_points.assignment &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.services.user_points.assignment </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -437,8 +437,8 @@
 
         <span class="n">strategyId</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">strategyId</span>
         <span class="c1"># Same async resolver used by ``assign_points_to_user``. This</span>
-        <span class="c1"># endpoint doesn't actually invoke ``calculate_points`` — it just</span>
-        <span class="c1"># verifies the strategy exists for the realm — but using the</span>
+        <span class="c1"># endpoint doesn't actually invoke ``calculate_points`` - it just</span>
+        <span class="c1"># verifies the strategy exists for the realm - but using the</span>
         <span class="c1"># same resolver keeps custom and built-in ids consistent.</span>
         <span class="n">realm_id</span> <span class="o">=</span> <span class="n">resolve_realm_id</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">oauth_user_id</span><span class="o">=</span><span class="n">oauth_user_id</span><span class="p">)</span>
         <span class="n">strategy_instance</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_service</span><span class="o">.</span><span class="n">get_strategy_instance</span><span class="p">(</span>

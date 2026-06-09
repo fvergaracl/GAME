@@ -48,8 +48,8 @@
     <title>app.middlewares.error_handler &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.middlewares.error_handler </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -366,7 +366,7 @@
 <span class="sd">Starlette builds its middleware stack with ``ServerErrorMiddleware`` as the</span>
 <span class="sd">**outermost** layer, sitting *above* the user-added ``CORSMiddleware``. So an</span>
 <span class="sd">unhandled exception (a real 500) is rendered by ``ServerErrorMiddleware`` and</span>
-<span class="sd">never passes back through ``CORSMiddleware`` — the response ships **without**</span>
+<span class="sd">never passes back through ``CORSMiddleware`` - the response ships **without**</span>
 <span class="sd">``Access-Control-Allow-Origin``. The browser then blocks the cross-origin</span>
 <span class="sd">response and the dashboard shows a bare *"Network Error"* instead of the real</span>
 <span class="sd">status/message (see ``reference_network_error_means_500``).</span>
@@ -378,7 +378,7 @@
 <span class="sd">traceback is still logged (and forwarded to Sentry) so observability is</span>
 <span class="sd">unchanged.</span>
 
-<span class="sd">``HTTPException`` and its subclasses never reach here — Starlette's</span>
+<span class="sd">``HTTPException`` and its subclasses never reach here - Starlette's</span>
 <span class="sd">``ExceptionMiddleware`` (also inside CORS) already turns them into proper 4xx</span>
 <span class="sd">responses with CORS headers. Only genuine, unhandled errors are caught.</span>
 <span class="sd">"""</span>
@@ -401,7 +401,7 @@
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"http"</span><span class="p">:</span>
-            <span class="c1"># websocket / lifespan — nothing to translate.</span>
+            <span class="c1"># websocket / lifespan - nothing to translate.</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -428,7 +428,7 @@
             <span class="n">sentry_sdk</span><span class="o">.</span><span class="n">capture_exception</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">response_started</span><span class="p">:</span>
-                <span class="c1"># Headers/body already in flight — we cannot replace the</span>
+                <span class="c1"># Headers/body already in flight - we cannot replace the</span>
                 <span class="c1"># response; re-raise so the server tears the connection down.</span>
                 <span class="k">raise</span>
 

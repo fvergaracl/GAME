@@ -48,8 +48,8 @@
     <title>app.services.export_service &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.services.export_service </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -548,7 +548,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ExportAuditLogEntry</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return recent audit rows mapped onto the public entry schema, hiding</span>
-<span class="sd">        internal fields (raw apiKey/oauth_user_id are dropped — only the</span>
+<span class="sd">        internal fields (raw apiKey/oauth_user_id are dropped - only the</span>
 <span class="sd">        ``requestedBy`` display string survives).</span>
 <span class="sd">        """</span>
         <span class="n">rows</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_audit_log_repository</span><span class="o">.</span><span class="n">list_recent</span><span class="p">(</span>
@@ -796,7 +796,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the row iterator for the requested dataset. Raises 500 if the</span>
-<span class="sd">        dataset name is unknown — this should never happen because the</span>
+<span class="sd">        dataset name is unknown - this should never happen because the</span>
 <span class="sd">        endpoint layer already validated the path.</span>
 <span class="sd">        """</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
@@ -873,7 +873,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Build an XLSX file using openpyxl write-only mode. The library buffers</span>
-<span class="sd">        rows internally as it writes them out to a zip stream — for the 100k</span>
+<span class="sd">        rows internally as it writes them out to a zip stream - for the 100k</span>
 <span class="sd">        row cap this stays well below 200MB resident.</span>
 
 <span class="sd">        openpyxl is imported lazily so the rest of the export pipeline keeps</span>

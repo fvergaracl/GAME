@@ -46,11 +46,11 @@
   
   
   
-    <title>GAME — Goals And Motivation Engine &#8212; GAME (Goals And Motivation Engine)</title>
+    <title>GAME - Goals And Motivation Engine &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -92,8 +92,8 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
-          <span class="md-header-nav__topic"> GAME — Goals And Motivation Engine </span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic"> GAME - Goals And Motivation Engine </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -167,7 +167,7 @@
       
     </a>
     <a href="#"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -344,7 +344,7 @@
 <nav class="md-nav md-nav--secondary">
     <label class="md-nav__title" for="__toc">"Contents"</label>
   <ul class="md-nav__list" data-md-scrollfix="">
-        <li class="md-nav__item"><a href="#index--page-root" class="md-nav__link">GAME — Goals And Motivation Engine</a><nav class="md-nav">
+        <li class="md-nav__item"><a href="#index--page-root" class="md-nav__link">GAME - Goals And Motivation Engine</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#audience-map" class="md-nav__link">Audience map</a>
         </li>
@@ -367,25 +367,25 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <section id="game-goals-and-motivation-engine">
-<h1 id="index--page-root">GAME — Goals And Motivation Engine<a class="headerlink" href="#index--page-root" title="Link to this heading">¶</a></h1>
+<h1 id="index--page-root">GAME - Goals And Motivation Engine<a class="headerlink" href="#index--page-root" title="Link to this heading">¶</a></h1>
 <p class="rubric">An adaptive, programmable gamification engine</p>
 <p><strong>GAME</strong> turns user activity into points, coins, and behavioral incentives
 through <em>programmable scoring strategies</em>. Unlike static points APIs whose
 rules are frozen at design time, GAME lets a strategy react to behavior,
-context, and system state — so incentives can be <strong>redistributed</strong> toward
+context, and system state - so incentives can be <strong>redistributed</strong> toward
 under-engaged users, tasks, or regions instead of amplifying the
 participation inequality that fixed rules tend to reinforce.</p>
 <p>It runs in two shapes:</p>
 <ul class="simple">
-<li><p>as a <strong>complete gamification backend</strong> — manage games, tasks, users,
+<li><p>as a <strong>complete gamification backend</strong> - manage games, tasks, users,
 point assignment, and wallets; or</p></li>
-<li><p>as a <strong>scoring microservice</strong> — your system owns the application logic
+<li><p>as a <strong>scoring microservice</strong> - your system owns the application logic
 and calls GAME only to compute <em>how many points</em> an event is worth.</p></li>
 </ul>
 <hr class="docutils"/>
 <div class="tip admonition">
 <p class="admonition-title">New here? Start with the path that matches your goal</p>
-<p>This documentation follows the <a class="reference external" href="https://diataxis.fr/">Diátaxis</a> model —
+<p>This documentation follows the <a class="reference external" href="https://diataxis.fr/">Diátaxis</a> model -
 it separates <em>learning-oriented</em> tutorials, <em>task-oriented</em> how-to guides,
 <em>understanding-oriented</em> explanation, and dry <em>reference</em>. Pick your lane:</p>
 <ul class="simple">
@@ -637,8 +637,8 @@ is written for:</p>
 PostgreSQL · Keycloak (OIDC) · Redis (optional)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Architecture</p></td>
-<td><p>Layered — <em>endpoint → service → strategy engine → repository →
-database</em> — wired by a dependency-injection container</p></td>
+<td><p>Layered - <em>endpoint → service → strategy engine → repository →
+database</em> - wired by a dependency-injection container</p></td>
 </tr>
 <tr class="row-even"><td><p>Scoring</p></td>
 <td><p>Built-in deterministic &amp; adaptive strategies, plus a sandboxed
@@ -654,7 +654,7 @@ execution traces, KPI rollups</p></td>
 </tr>
 <tr class="row-odd"><td><p>Reproducibility</p></td>
 <td><p>Deterministic execution, simulation mode (<code class="docutils literal notranslate"><span class="pre">isSimulated</span></code>),
-versionable strategies — usable as an experimental research platform</p></td>
+versionable strategies - usable as an experimental research platform</p></td>
 </tr>
 </tbody>
 </table>
@@ -662,10 +662,10 @@ versionable strategies — usable as an experimental research platform</p></td>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
-<li><p><strong>Interactive API</strong> — every deployment serves Swagger UI at <code class="docutils literal notranslate"><span class="pre">/docs</span></code>
+<li><p><strong>Interactive API</strong> - every deployment serves Swagger UI at <code class="docutils literal notranslate"><span class="pre">/docs</span></code>
 and ReDoc at <code class="docutils literal notranslate"><span class="pre">/redocs</span></code> generated from the live OpenAPI schema.</p></li>
-<li><p><strong>Source</strong> — <a class="reference external" href="https://github.com/fvergaracl/GAME">https://github.com/fvergaracl/GAME</a></p></li>
-<li><p><strong>License</strong> — Apache-2.0</p></li>
+<li><p><strong>Source</strong> - <a class="reference external" href="https://github.com/fvergaracl/GAME">https://github.com/fvergaracl/GAME</a></p></li>
+<li><p><strong>License</strong> - Apache-2.0</p></li>
 </ul>
 </div>
 </section>

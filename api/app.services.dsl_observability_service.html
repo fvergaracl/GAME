@@ -49,8 +49,8 @@
     <title>app.services.dsl_observability_service module &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
-    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c695c7af" />
+    <script src="../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.services.dsl_observability_service module </span>
         </div>
       </div>
@@ -176,7 +176,7 @@
       
     </a>
     <a href="../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -416,14 +416,14 @@ post-mortem can replay the input via <code class="docutils literal notranslate">
 after the incident. OK runs are sampled at
 <code class="xref py py-data docutils literal notranslate"><span class="pre">_config_module.configs.DSL_EXECUTION_LOG_SAMPLE_RATE</span></code> (default 5 %).</p></li>
 </ol>
-<p>Sprint 13 — hot-path: <code class="docutils literal notranslate"><span class="pre">record</span></code> no longer <code class="docutils literal notranslate"><span class="pre">await</span></code>s the DB write.
+<p>Sprint 13 - hot-path: <code class="docutils literal notranslate"><span class="pre">record</span></code> no longer <code class="docutils literal notranslate"><span class="pre">await</span></code>s the DB write.
 The metrics emit + sampling decision stay synchronous (microseconds),
 and the chosen row is handed to a bounded in-process queue drained by a
 background worker task. Scoring therefore pays only the enqueue, never a
 DB round-trip. If the worker falls behind and the queue fills (a slow or
 down database), rows are dropped and counted via
 <code class="docutils literal notranslate"><span class="pre">dsl_execution_log_dropped_total</span></code> rather than blocking the scoring
-call — the audit log is best-effort by design. Call <code class="xref py py-meth docutils literal notranslate"><span class="pre">aclose()</span></code>
+call - the audit log is best-effort by design. Call <code class="xref py py-meth docutils literal notranslate"><span class="pre">aclose()</span></code>
 on shutdown to flush the queue and stop the worker cleanly.</p>
 <p>The service is wired with <code class="docutils literal notranslate"><span class="pre">random.Random</span></code> so tests can pass a
 seeded instance and assert on exact rows persisted. In production the
@@ -485,7 +485,7 @@ speaks to (“a scoring event taking &gt;250ms is user-visible”).</p>
 <dt class="sig sig-object py" id="app.services.dsl_observability_service.DslExecutionObserver.drain">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/dsl_observability_service.html#DslExecutionObserver.drain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.dsl_observability_service.DslExecutionObserver.drain" title="Link to this definition">¶</a></dt>
 <dd><p>Block until every queued row has been processed.</p>
-<p>Mainly for tests and graceful shutdown — production scoring never
+<p>Mainly for tests and graceful shutdown - production scoring never
 calls this. No-op if nothing has been enqueued yet.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

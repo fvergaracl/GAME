@@ -49,8 +49,8 @@
     <title>app.services.strategy_service module &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
-    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c695c7af" />
+    <script src="../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.services.strategy_service module </span>
         </div>
       </div>
@@ -176,7 +176,7 @@
       
     </a>
     <a href="../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -592,7 +592,7 @@ strategy lookups.</p></li>
 <dt class="sig sig-object py" id="app.services.strategy_service.StrategyService.get_strategy_instance">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_strategy_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_service.html#StrategyService.get_strategy_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_service.StrategyService.get_strategy_instance" title="Link to this definition">¶</a></dt>
 <dd><p>Single async entrypoint that returns something with
-<code class="docutils literal notranslate"><span class="pre">calculate_points(...)</span></code> — either a built-in registry singleton
+<code class="docutils literal notranslate"><span class="pre">calculate_points(...)</span></code> - either a built-in registry singleton
 or a freshly-constructed <code class="docutils literal notranslate"><span class="pre">DslStrategy</span></code> wrapping a DB-persisted
 AST.</p>
 <p>For non-<code class="docutils literal notranslate"><span class="pre">custom:</span></code> ids this delegates to the sync
@@ -603,7 +603,7 @@ repository layer in <code class="docutils literal notranslate"><span class="pre"
 and wires the same shared <code class="docutils literal notranslate"><span class="pre">DslInterpreter</span></code> + analytics service
 injected at construction.</p>
 <p>Raises <code class="docutils literal notranslate"><span class="pre">InternalServerError</span></code> if the DSL collaborators were not
-wired — a clearer signal than <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> for ops.</p>
+wired - a clearer signal than <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> for ops.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

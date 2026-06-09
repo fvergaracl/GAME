@@ -48,8 +48,8 @@
     <title>app.services.strategy_service &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=ce06154d" />
-    <script src="../../../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=c695c7af" />
+    <script src="../../../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -89,7 +89,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.services.strategy_service </span>
         </div>
       </div>
@@ -171,7 +171,7 @@
       
     </a>
     <a href="../../../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -473,7 +473,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_analytics_service</span> <span class="o">=</span> <span class="n">analytics_service</span>
         <span class="c1"># Sprint 11: passed straight through to ``DslStrategy``. Optional</span>
         <span class="c1"># so the legacy two-arg construction style in tests still works</span>
-        <span class="c1"># — metrics + persistence become no-ops in that case.</span>
+        <span class="c1"># - metrics + persistence become no-ops in that case.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_execution_observer</span> <span class="o">=</span> <span class="n">execution_observer</span></div>
 
 
@@ -609,7 +609,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseStrategy</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Single async entrypoint that returns something with</span>
-<span class="sd">        ``calculate_points(...)`` — either a built-in registry singleton</span>
+<span class="sd">        ``calculate_points(...)`` - either a built-in registry singleton</span>
 <span class="sd">        or a freshly-constructed ``DslStrategy`` wrapping a DB-persisted</span>
 <span class="sd">        AST.</span>
 
@@ -622,7 +622,7 @@
 <span class="sd">        injected at construction.</span>
 
 <span class="sd">        Raises ``InternalServerError`` if the DSL collaborators were not</span>
-<span class="sd">        wired — a clearer signal than ``AttributeError`` for ops.</span>
+<span class="sd">        wired - a clearer signal than ``AttributeError`` for ops.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_custom_strategy_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_Class_by_id</span><span class="p">(</span><span class="n">strategy_id</span><span class="p">)</span>
@@ -653,7 +653,7 @@
         <span class="c1"># parent id stored in the row no longer references an existing</span>
         <span class="c1"># built-in (e.g. removed from the registry between persist and</span>
         <span class="c1"># execution), ``get_Class_by_id`` raises NotFoundError with a</span>
-        <span class="c1"># clear message — better than a silent KeyError at run time.</span>
+        <span class="c1"># clear message - better than a silent KeyError at run time.</span>
         <span class="n">parent_strategy</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">"DSL_EXTEND"</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">definition</span><span class="o">.</span><span class="n">parentStrategyId</span><span class="p">:</span>

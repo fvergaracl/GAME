@@ -49,8 +49,8 @@
     <title>Strategies &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -93,7 +93,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Strategies </span>
         </div>
       </div>
@@ -168,7 +168,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -510,8 +510,8 @@ reference lives under <code class="docutils literal notranslate"><span class="pr
 per task). When an event arrives, GAME resolves the effective strategy and
 asks it for two things:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">points</span></code> — the integer reward, and</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">caseName</span></code> — the human-readable label for <em>why</em> that amount was chosen
+<li><p><code class="docutils literal notranslate"><span class="pre">points</span></code> - the integer reward, and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">caseName</span></code> - the human-readable label for <em>why</em> that amount was chosen
 (e.g. <code class="docutils literal notranslate"><span class="pre">variable_basic_points</span></code>, <code class="docutils literal notranslate"><span class="pre">PeakPerformerBonus</span></code>). The <code class="docutils literal notranslate"><span class="pre">caseName</span></code>
 flows into responses, analytics, and audit so a decision is always
 explainable.</p></li>
@@ -537,7 +537,7 @@ comparison to the global average, spatial state, etc.</p></td>
 </tr>
 </tbody>
 </table>
-<p>Both families are <strong>deterministic given identical inputs</strong> — adaptivity means
+<p>Both families are <strong>deterministic given identical inputs</strong> - adaptivity means
 the inputs include behavioral/contextual analytics, not that the output is
 random. That is what makes GAME reproducible (see <a class="reference internal" href="overview.html"><span class="doc">Overview</span></a>).</p>
 </section>
@@ -569,7 +569,7 @@ own. Two id shapes exist:</p>
 <section id="built-in-strategies">
 <h2 id="built-in-strategies">Built-in strategies<a class="headerlink" href="#built-in-strategies" title="Link to this heading">¶</a></h2>
 <p>These ship with the engine. Each registers a <strong>stable public id</strong> (persisted
-on games and returned by the API) via <code class="docutils literal notranslate"><span class="pre">@register_strategy</span></code> — the id is
+on games and returned by the API) via <code class="docutils literal notranslate"><span class="pre">@register_strategy</span></code> - the id is
 guaranteed stable across class renames:</p>
 <table>
 <colgroup>
@@ -627,7 +627,7 @@ differently per game without code changes.</p>
 <p>New built-ins are plain classes that subclass <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code>, implement
 the scoring method, and decorate themselves with
 <code class="docutils literal notranslate"><span class="pre">@register_strategy(id="...")</span></code>. Third-party packages can even contribute
-strategies through the <code class="docutils literal notranslate"><span class="pre">game.strategies</span></code> entry-point group — no fork
+strategies through the <code class="docutils literal notranslate"><span class="pre">game.strategies</span></code> entry-point group - no fork
 required. See <a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a> and <a class="reference internal" href="codebase.html"><span class="doc">Codebase Reference</span></a>.</p>
 </div>
 </section>
@@ -662,7 +662,7 @@ per-realm <code class="docutils literal notranslate"><span class="pre">parent_va
 </tr>
 </tbody>
 </table>
-<p>Templates give authors a running start — both engine templates
+<p>Templates give authors a running start - both engine templates
 (<code class="docutils literal notranslate"><span class="pre">default</span></code>, <code class="docutils literal notranslate"><span class="pre">constant_effort</span></code>) and ready-made examples such as
 <em>engagement_basico</em>, <em>recompensa_completar_tarea</em>, <em>bonus_por_velocidad</em>, and
 <em>bonus_extiende_default</em>:</p>
@@ -728,20 +728,20 @@ explicitly publish the new one.</p></li>
 Rollback also rewrites the <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> on every game/task that pointed at
 the archived version, so the cascade reaches all consumers.</p></li>
 </ul>
-<p>This means you can experiment freely — nothing in production changes until you
+<p>This means you can experiment freely - nothing in production changes until you
 press <em>Publish</em>.</p>
 </section>
 </section>
 <section id="simulate-before-you-ship">
 <h2 id="simulate-before-you-ship">Simulate before you ship<a class="headerlink" href="#simulate-before-you-ship" title="Link to this heading">¶</a></h2>
 <p>Every strategy can be <strong>simulated</strong>: scoring runs and you get the full
-node-by-node trace, but <strong>no production data is touched</strong> — no <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code>,
+node-by-node trace, but <strong>no production data is touched</strong> - no <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code>,
 no wallet movement.</p>
 <p>Two ways to simulate:</p>
 <ul class="simple">
-<li><p><strong>Per-event</strong> — send <code class="docutils literal notranslate"><span class="pre">"isSimulated":</span> <span class="pre">true</span></code> to the points endpoint
+<li><p><strong>Per-event</strong> - send <code class="docutils literal notranslate"><span class="pre">"isSimulated":</span> <span class="pre">true</span></code> to the points endpoint
 (<a class="reference internal" href="integrating.html"><span class="doc">Integrating with GAME</span></a>).</p></li>
-<li><p><strong>Per-strategy</strong> — call <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/strategies/custom/{id}/simulate</span></code> (the
+<li><p><strong>Per-strategy</strong> - call <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/strategies/custom/{id}/simulate</span></code> (the
 editor’s <em>Test</em> button) to dry-run a candidate strategy against sample
 input and inspect exactly which rule would fire and why.</p></li>
 </ul>
@@ -749,7 +749,7 @@ input and inspect exactly which rule would fire and why.</p></li>
 <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/games/{gameId}/users/{externalUserId}/points/simulated</span></code> (OAuth2-only,
 bound to the caller’s own subject), returning a <code class="docutils literal notranslate"><span class="pre">simulationHash</span></code> for
 integrity plus per-task projected points.</p>
-<p>Use simulation liberally — it is the safe way to validate a scoring change.</p>
+<p>Use simulation liberally - it is the safe way to validate a scoring change.</p>
 </section>
 <section id="safety-limits">
 <h2 id="safety-limits">Safety limits<a class="headerlink" href="#safety-limits" title="Link to this heading">¶</a></h2>
@@ -783,8 +783,8 @@ rule cannot impact your tenant or others:</p>
 </tbody>
 </table>
 <p>Hitting a limit rejects the event with a clear error code rather than
-degrading the service. The full execution model — how the interpreter yields
-cooperatively so the timeout can actually cancel it — is in <a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a>.</p>
+degrading the service. The full execution model - how the interpreter yields
+cooperatively so the timeout can actually cancel it - is in <a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a>.</p>
 </section>
 <section id="worked-example-adaptive-engagement">
 <h2 id="worked-example-adaptive-engagement">Worked example: adaptive engagement<a class="headerlink" href="#worked-example-adaptive-engagement" title="Link to this heading">¶</a></h2>

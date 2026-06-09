@@ -49,8 +49,8 @@
     <title>Contributing &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -91,7 +91,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Contributing </span>
         </div>
       </div>
@@ -166,7 +166,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -474,7 +474,7 @@ poetry<span class="w"> </span>run<span class="w"> </span>alembic<span class="w">
 poetry<span class="w"> </span>run<span class="w"> </span>uvicorn<span class="w"> </span>app.main:app<span class="w"> </span>--reload<span class="w">   </span><span class="c1"># http://localhost:8000</span>
 </pre></div>
 </div>
-<p>Read <a class="reference internal" href="architecture.html"><span class="doc">Architecture</span></a> before your first non-trivial change — the layer
+<p>Read <a class="reference internal" href="architecture.html"><span class="doc">Architecture</span></a> before your first non-trivial change - the layer
 boundaries are enforced socially, not by the compiler, so knowing <em>which layer
 owns what</em> is how reviews go smoothly.</p>
 </section>
@@ -496,10 +496,10 @@ owns what</em> is how reviews go smoothly.</p>
 <code class="docutils literal notranslate"><span class="pre">app/api/v1/routes.py</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Business logic</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">app/services/</span></code> — never put it in an endpoint or repository.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app/services/</span></code> - never put it in an endpoint or repository.</p></td>
 </tr>
 <tr class="row-even"><td><p>New persistence query</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">app/repository/</span></code> — keep it free of domain decisions.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app/repository/</span></code> - keep it free of domain decisions.</p></td>
 </tr>
 <tr class="row-odd"><td><p>New table</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">app/model/</span></code> + an Alembic migration in <code class="docutils literal notranslate"><span class="pre">migrations/</span></code>.</p></td>
@@ -508,7 +508,7 @@ owns what</em> is how reviews go smoothly.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">app/schema/</span></code> (Pydantic).</p></td>
 </tr>
 <tr class="row-odd"><td><p>New scoring strategy</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">app/engine/</span></code> — subclass <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code> and decorate with
+<td><p><code class="docutils literal notranslate"><span class="pre">app/engine/</span></code> - subclass <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code> and decorate with
 <code class="docutils literal notranslate"><span class="pre">@register_strategy(id=...)</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p>New dependency wiring</p></td>
@@ -537,11 +537,11 @@ runners (they load <code class="docutils literal notranslate"><span class="pre">
 <code class="docutils literal notranslate"><span class="pre">--file</span> <span class="pre">&lt;path&gt;</span></code>). Fast, isolated, mock external dependencies.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>E2E (controlled)</strong></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">./scripts/run_e2e.sh</span></code> — isolated SQLite, deterministic, no real
+<td><p><code class="docutils literal notranslate"><span class="pre">./scripts/run_e2e.sh</span></code> - isolated SQLite, deterministic, no real
 infra.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>E2E (real infra)</strong></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">./scripts/run_e2e.sh</span> <span class="pre">--real</span></code> — real HTTP + PostgreSQL + Keycloak.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">./scripts/run_e2e.sh</span> <span class="pre">--real</span></code> - real HTTP + PostgreSQL + Keycloak.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Load (k6)</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">./scripts/run_load_test.sh</span> <span class="pre">--mode</span> <span class="pre">100</span></code>.</p></td>
@@ -559,7 +559,7 @@ poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> 
 <li><p>Every feature/fix ships with tests. Unit-test services in isolation;
 reserve real-infra E2E for integration behavior.</p></li>
 <li><p>Because persistence is abstracted, services run against <strong>SQLite</strong> in tests
-and <strong>PostgreSQL</strong> in production — keep repository queries portable.</p></li>
+and <strong>PostgreSQL</strong> in production - keep repository queries portable.</p></li>
 <li><p>CI runs the suite with coverage; Codecov tracks the trend.</p></li>
 </ul>
 </section>
@@ -568,7 +568,7 @@ and <strong>PostgreSQL</strong> in production — keep repository queries portab
 <ul class="simple">
 <li><p><strong>Python 3.12</strong>, PEP 8. Formatting/linting is handled by <strong>Ruff</strong>
 (<code class="docutils literal notranslate"><span class="pre">ruff_cache</span></code> is present); run it before pushing.</p></li>
-<li><p>Public functions and classes get <strong>Google-style docstrings</strong> — they are not
+<li><p>Public functions and classes get <strong>Google-style docstrings</strong> - they are not
 decoration, they <em>are</em> the API reference (<a class="reference internal" href="codebase.html"><span class="doc">Codebase Reference</span></a>) via <code class="docutils literal notranslate"><span class="pre">napoleon</span></code>.</p></li>
 <li><p>Match the surrounding code: the codebase favors small, well-named functions,
 explicit dependencies, and comments that explain <em>why</em> (often referencing the
@@ -578,7 +578,7 @@ sprint or the bug a guard prevents) rather than <em>what</em>.</p></li>
 <section id="documentation">
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
 <p>Docs are part of the product, not an afterthought. The information
-architecture follows the <a class="reference external" href="https://diataxis.fr/">Diátaxis</a> model — every page
+architecture follows the <a class="reference external" href="https://diataxis.fr/">Diátaxis</a> model - every page
 declares <em>who it is for</em> and stays in its lane:</p>
 <table>
 <colgroup>
@@ -639,7 +639,7 @@ push to <code class="docutils literal notranslate"><span class="pre">main</span>
 </tr>
 <tr class="row-even"><td><p>Top-level <code class="docutils literal notranslate"><span class="pre">*.md</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">README</span></code>, <code class="docutils literal notranslate"><span class="pre">SETUP</span></code>, <code class="docutils literal notranslate"><span class="pre">DEPLOYMENT</span></code>, <code class="docutils literal notranslate"><span class="pre">TESTING</span></code>, <code class="docutils literal notranslate"><span class="pre">KUBERNETES_SETUP</span></code>
-— entry points and quick references.</p></td>
+- entry points and quick references.</p></td>
 </tr>
 </tbody>
 </table>

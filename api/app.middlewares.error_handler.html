@@ -49,8 +49,8 @@
     <title>app.middlewares.error_handler module &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ce06154d" />
-    <script src="../_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=c695c7af" />
+    <script src="../_static/documentation_options.js?v=1d5c8875"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> app.middlewares.error_handler module </span>
         </div>
       </div>
@@ -176,7 +176,7 @@
       
     </a>
     <a href="../index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -393,7 +393,7 @@
 <p>Starlette builds its middleware stack with <code class="docutils literal notranslate"><span class="pre">ServerErrorMiddleware</span></code> as the
 <strong>outermost</strong> layer, sitting <em>above</em> the user-added <code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code>. So an
 unhandled exception (a real 500) is rendered by <code class="docutils literal notranslate"><span class="pre">ServerErrorMiddleware</span></code> and
-never passes back through <code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code> — the response ships <strong>without</strong>
+never passes back through <code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code> - the response ships <strong>without</strong>
 <code class="docutils literal notranslate"><span class="pre">Access-Control-Allow-Origin</span></code>. The browser then blocks the cross-origin
 response and the dashboard shows a bare <em>“Network Error”</em> instead of the real
 status/message (see <code class="docutils literal notranslate"><span class="pre">reference_network_error_means_500</span></code>).</p>
@@ -403,7 +403,7 @@ unhandled exception into a JSON <code class="docutils literal notranslate"><span
 flows back out through <code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code> and gets its CORS headers. The
 traceback is still logged (and forwarded to Sentry) so observability is
 unchanged.</p>
-<p><code class="docutils literal notranslate"><span class="pre">HTTPException</span></code> and its subclasses never reach here — Starlette’s
+<p><code class="docutils literal notranslate"><span class="pre">HTTPException</span></code> and its subclasses never reach here - Starlette’s
 <code class="docutils literal notranslate"><span class="pre">ExceptionMiddleware</span></code> (also inside CORS) already turns them into proper 4xx
 responses with CORS headers. Only genuine, unhandled errors are caught.</p>
 <dl class="py class">

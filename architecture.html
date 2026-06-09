@@ -49,8 +49,8 @@
     <title>Architecture &#8212; GAME (Goals And Motivation Engine)</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ce06154d" />
-    <script src="_static/documentation_options.js?v=63eb60af"></script>
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c695c7af" />
+    <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -92,7 +92,7 @@
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
-          <span class="md-header-nav__topic">GAME — Goals And Motivation Engine</span>
+          <span class="md-header-nav__topic">GAME - Goals And Motivation Engine</span>
           <span class="md-header-nav__topic"> Architecture </span>
         </div>
       </div>
@@ -167,7 +167,7 @@
       
     </a>
     <a href="index.html"
-       title="GAME (Goals And Motivation Engine)">GAME — Goals And Motivation Engine</a>
+       title="GAME (Goals And Motivation Engine)">GAME - Goals And Motivation Engine</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/fvergaracl/GAME" title="Go to repository" class="md-source" data-md-source="github">
@@ -530,7 +530,7 @@ multi-repository workflows live.</p></td>
 <tr class="row-odd"><td><p>Repository</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">app/repository/</span></code></p></td>
 <td><p>Thin persistence layer over SQLAlchemy <code class="docutils literal notranslate"><span class="pre">AsyncSession</span></code>. CRUD and
-queries only — no domain decisions.</p></td>
+queries only - no domain decisions.</p></td>
 </tr>
 <tr class="row-even"><td><p>Model</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">app/model/</span></code></p></td>
@@ -544,12 +544,12 @@ queries only — no domain decisions.</p></td>
 </table>
 <p>Why this split matters:</p>
 <ul class="simple">
-<li><p><strong>Pluggable strategies</strong> — scoring logic is isolated in <code class="docutils literal notranslate"><span class="pre">app/engine</span></code> and
+<li><p><strong>Pluggable strategies</strong> - scoring logic is isolated in <code class="docutils literal notranslate"><span class="pre">app/engine</span></code> and
 selected by id, so new strategies drop in without touching endpoints or
 repositories.</p></li>
-<li><p><strong>Deterministic services</strong> — business rules live in one layer, making them
+<li><p><strong>Deterministic services</strong> - business rules live in one layer, making them
 unit-testable without HTTP or a real database.</p></li>
-<li><p><strong>Reproducible behavior</strong> — persistence is abstracted, so the same service
+<li><p><strong>Reproducible behavior</strong> - persistence is abstracted, so the same service
 logic runs against PostgreSQL in production and SQLite in tests.</p></li>
 </ul>
 </section>
@@ -558,31 +558,31 @@ logic runs against PostgreSQL in production and SQLite in tests.</p></li>
 <p>Tracing <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/v1/games/{gameId}/tasks/{externalTaskId}/points</span></code> end to
 end (see <code class="docutils literal notranslate"><span class="pre">app/api/v1/endpoints/games_points.py</span></code>):</p>
 <ol class="arabic simple">
-<li><p><strong>Middleware</strong> — the request passes through the outer middleware stack
+<li><p><strong>Middleware</strong> - the request passes through the outer middleware stack
 (CORS → unhandled-error catcher; see below) and, if metrics are enabled,
 the Prometheus instrumentator.</p></li>
-<li><p><strong>Auth dependency</strong> — <code class="docutils literal notranslate"><span class="pre">Depends(auth_api_key_or_oauth2)</span></code> resolves an
+<li><p><strong>Auth dependency</strong> - <code class="docutils literal notranslate"><span class="pre">Depends(auth_api_key_or_oauth2)</span></code> resolves an
 <code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code> header <em>or</em> an OAuth2 bearer token. Failure short-circuits
 with <code class="docutils literal notranslate"><span class="pre">401</span></code>/<code class="docutils literal notranslate"><span class="pre">403</span></code> before any business logic runs.</p></li>
-<li><p><strong>Audit context</strong> — <code class="docutils literal notranslate"><span class="pre">Depends(audit_log("game"))</span></code> builds an
+<li><p><strong>Audit context</strong> - <code class="docutils literal notranslate"><span class="pre">Depends(audit_log("game"))</span></code> builds an
 <code class="docutils literal notranslate"><span class="pre">AuditLogger</span></code> bound to the authenticated principal (API key, OAuth user
 id, admin flag). Every meaningful step is logged with a correlation id.</p></li>
-<li><p><strong>Validation</strong> — the JSON body is parsed into a Pydantic schema
+<li><p><strong>Validation</strong> - the JSON body is parsed into a Pydantic schema
 (<code class="docutils literal notranslate"><span class="pre">AsignPointsToExternalUserId</span></code>); malformed input yields <code class="docutils literal notranslate"><span class="pre">422</span></code> before
 the handler body executes.</p></li>
-<li><p><strong>Abuse prevention</strong> — <code class="docutils literal notranslate"><span class="pre">AbusePreventionService</span></code> enforces per-API-key,
+<li><p><strong>Abuse prevention</strong> - <code class="docutils literal notranslate"><span class="pre">AbusePreventionService</span></code> enforces per-API-key,
 per-IP, and per-user rate limits and daily quotas; over-limit yields
 <code class="docutils literal notranslate"><span class="pre">429</span></code> (see <a class="reference internal" href="security.html"><span class="doc">Security</span></a>).</p></li>
-<li><p><strong>Service</strong> — <code class="docutils literal notranslate"><span class="pre">UserPointsService.assign_points_to_user</span></code> orchestrates the
+<li><p><strong>Service</strong> - <code class="docutils literal notranslate"><span class="pre">UserPointsService.assign_points_to_user</span></code> orchestrates the
 work: resolve/lazily-create the user, load the task’s effective strategy,
-run scoring, persist <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code>, and move the wallet — within a
+run scoring, persist <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code>, and move the wallet - within a
 transaction.</p></li>
-<li><p><strong>Strategy engine</strong> — the resolved strategy computes <code class="docutils literal notranslate"><span class="pre">points</span></code> and a
+<li><p><strong>Strategy engine</strong> - the resolved strategy computes <code class="docutils literal notranslate"><span class="pre">points</span></code> and a
 <code class="docutils literal notranslate"><span class="pre">caseName</span></code>. For custom strategies this runs the sandboxed DSL
 interpreter (<a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a>).</p></li>
-<li><p><strong>Repository</strong> — persistence happens through repositories over an async
+<li><p><strong>Repository</strong> - persistence happens through repositories over an async
 session; idempotency keys prevent double-awards on retry.</p></li>
-<li><p><strong>Response</strong> — the service returns a domain object serialized by the
+<li><p><strong>Response</strong> - the service returns a domain object serialized by the
 response model. On any exception the endpoint maps it to a structured
 error (preserving the correlation id) and records an audit error.</p></li>
 </ol>
@@ -615,8 +615,8 @@ the browser message.</p>
 <p>Wiring is centralized in a single <a class="reference external" href="https://python-dependency-injector.ets-labs.org/">dependency-injector</a> container,
 <code class="docutils literal notranslate"><span class="pre">app/core/container.py</span></code>:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">db</span></code> is a <strong>Singleton</strong> — one async engine/connection pool per process.</p></li>
-<li><p>Repositories and services are <strong>Factories</strong> — a fresh instance per
+<li><p><code class="docutils literal notranslate"><span class="pre">db</span></code> is a <strong>Singleton</strong> - one async engine/connection pool per process.</p></li>
+<li><p>Repositories and services are <strong>Factories</strong> - a fresh instance per
 resolution, each handed the dependencies it declares.</p></li>
 <li><p>A few components are deliberately <strong>Singletons</strong> because they carry
 process-wide state: the DSL execution-log observer (its sampling RNG and
@@ -634,19 +634,19 @@ service code.</p>
 <section id="async-persistence-model">
 <h2 id="async-persistence-model">Async &amp; persistence model<a class="headerlink" href="#async-persistence-model" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>The application is <strong>async end to end</strong> — FastAPI handlers, services, and
+<li><p>The application is <strong>async end to end</strong> - FastAPI handlers, services, and
 repositories are coroutines; persistence uses SQLAlchemy 2.0’s
 <code class="docutils literal notranslate"><span class="pre">AsyncSession</span></code> over <code class="docutils literal notranslate"><span class="pre">asyncpg</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">BaseRepository</span></code> (<code class="docutils literal notranslate"><span class="pre">app/repository/base_repository.py</span></code>) provides the
-common CRUD vocabulary — <code class="docutils literal notranslate"><span class="pre">read_by_id</span></code>, <code class="docutils literal notranslate"><span class="pre">read_by_options</span></code> (paginated +
+common CRUD vocabulary - <code class="docutils literal notranslate"><span class="pre">read_by_id</span></code>, <code class="docutils literal notranslate"><span class="pre">read_by_options</span></code> (paginated +
 filtered + ordered), <code class="docutils literal notranslate"><span class="pre">read_by_column(s)</span></code>, <code class="docutils literal notranslate"><span class="pre">create</span></code>, <code class="docutils literal notranslate"><span class="pre">update</span></code>,
-<code class="docutils literal notranslate"><span class="pre">whole_update</span></code>, <code class="docutils literal notranslate"><span class="pre">delete_by_id</span></code> — each opening a session from the
+<code class="docutils literal notranslate"><span class="pre">whole_update</span></code>, <code class="docutils literal notranslate"><span class="pre">delete_by_id</span></code> - each opening a session from the
 injected <code class="docutils literal notranslate"><span class="pre">session_factory</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">create</span></code> supports an <strong>externally managed session</strong> (<code class="docutils literal notranslate"><span class="pre">auto_commit=False</span></code>)
 so a service can compose several writes into one transaction; the default
 path commits per call.</p></li>
 <li><p>Connection pooling is configured on the singleton engine (pool size,
-overflow, pre-ping, recycle) and tuned via environment variables — see
+overflow, pre-ping, recycle) and tuned via environment variables - see
 <a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a>.</p></li>
 </ul>
 <p>Because the app holds no per-request server state beyond the database, it is
@@ -668,9 +668,9 @@ page:</p>
 <section id="where-to-go-next">
 <h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="domain-model.html"><span class="doc">Domain Model</span></a> — the entities these layers move around.</p></li>
-<li><p><a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a> — the strategy engine in depth.</p></li>
-<li><p><a class="reference internal" href="codebase.html"><span class="doc">Codebase Reference</span></a> — the auto-generated API reference for every module.</p></li>
+<li><p><a class="reference internal" href="domain-model.html"><span class="doc">Domain Model</span></a> - the entities these layers move around.</p></li>
+<li><p><a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a> - the strategy engine in depth.</p></li>
+<li><p><a class="reference internal" href="codebase.html"><span class="doc">Codebase Reference</span></a> - the auto-generated API reference for every module.</p></li>
 </ul>
 </section>
 </section>
