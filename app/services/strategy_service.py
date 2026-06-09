@@ -38,11 +38,12 @@ def resolve_realm_id(
 
     Same convention as ``_resolve_realm_id`` in
     ``app/api/v1/endpoints/strategies_custom.py``:
-      * API key present → its value *is* the realm.
-      * OAuth admin     → falls back to ``configs.KEYCLOAK_REALM``.
-      * Neither         → ``None`` (legacy unauthenticated path; any
-        attempt to load a ``custom:`` strategy will then 404, which is
-        the desired tenant-isolation behaviour).
+
+    * API key present → its value *is* the realm.
+    * OAuth admin → falls back to ``configs.KEYCLOAK_REALM``.
+    * Neither → ``None`` (legacy unauthenticated path; any attempt to load a
+      ``custom:`` strategy will then 404, which is the desired
+      tenant-isolation behaviour).
     """
     if api_key:
         return api_key
@@ -56,13 +57,13 @@ class StrategyService(BaseService):
     Service class for managing strategies.
 
     Resolution is a two-step routing:
-      * built-in strategies (registry-discovered ``BaseStrategy``
-        subclasses) keep their bare id, e.g. ``"default"``.
-      * persistent strategies authored from the dashboard live in the
-        ``strategydefinition`` table and are addressed as
-        ``"custom:<uuid>"``. The resolver returns a thin descriptor for
-        them; the DSL interpreter that actually runs the AST lands in
-        Sprint 4 and will plug into this same method.
+
+    * built-in strategies (registry-discovered ``BaseStrategy`` subclasses)
+      keep their bare id, e.g. ``"default"``.
+    * persistent strategies authored from the dashboard live in the
+      ``strategydefinition`` table and are addressed as ``"custom:<uuid>"``.
+      The resolver returns a thin descriptor for them; the DSL interpreter
+      that runs the AST plugs into this same method.
     """
 
     def __init__(
@@ -156,20 +157,34 @@ class StrategyService(BaseService):
         *,
         realmId: Optional[str] = None,
     ) -> dict[str, Any]:
-        """
-        Single resolution entrypoint for both code paths.
+        """Single resolution entrypoint for both code paths.
 
-        Returns a small descriptor:
-          * for built-ins:
-            ``{"kind": "BUILT_IN", "id": "default", "instance": <obj>}``
-          * for custom:
-            ``{"kind": "DSL_FULL"|"DSL_EXTEND", "id": "custom:<uuid>",
-               "definition": <StrategyDefinitionRead>}``
+        Returns a small descriptor. For built-ins::
 
-        Execution wiring (``BaseStrategy.calculate_points`` delegating to
-        the DSL interpreter when the descriptor is a DSL one) is wired
-        in Sprint 4; right now this method is here so call sites can
-        already adopt it.
+            {"kind": "BUILT_IN", "id": "default", "instance": <obj>}
+
+        For custom strategies::
+
+            {"kind": "DSL_FULL" | "DSL_EXTEND",
+             "id": "custom:<uuid>",
+             "definition": <StrategyDefinitionRead>}
+
+        Execution (``BaseStrategy.calculate_points`` delegating to the DSL
+        interpreter when the descriptor is a DSL one) plugs into this same
+        method.
+
+        Args:
+            strategy_id (str): A built-in id (e.g. ``"default"``) or a
+                ``"custom:<uuid>"`` id.
+            realmId (str, optional): Tenant boundary used to scope custom
+                strategy lookups.
+
+        Returns:
+            dict: The resolution descriptor described above.
+
+        Raises:
+            NotFoundError: If a ``custom:`` id is given but custom-strategy
+                resolution is not wired, or the definition is not found.
         """
         if is_custom_strategy_id(strategy_id):
             if self._strategy_definition_service is None:

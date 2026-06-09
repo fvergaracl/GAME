@@ -1,3 +1,12 @@
+"""Service layer — business logic and orchestration.
+
+Services own domain rules, transactional behavior, and multi-repository
+workflows. They are the only layer that composes persistence operations into
+units of work; endpoints orchestrate them, repositories serve them. Each
+service is provided by the DI container (``app/core/container.py``) with its
+dependencies injected, so it can be unit-tested in isolation.
+"""
+
 from app.services.abuse_prevention_service import AbusePreventionService
 from app.services.api_requests_service import ApiRequestsService
 from app.services.apikey_service import ApiKeyService

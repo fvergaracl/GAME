@@ -416,13 +416,37 @@ app/
 
 # Documentation
 
-- SETUP.md
-- TESTING.md
-- DEPLOYMENT.md
-- KUBERNETES_SETUP.md
-- strategies.md
-- troubleshooting.md
-- CONTRIBUTING.md
+The full documentation is published as a **Sphinx site** (GitHub Pages, built
+from [`docs/source/`](docs/source/) on every push to `main`) and is organized
+along the [Diátaxis](https://diataxis.fr/) model — tutorials, how-to guides,
+explanation, and reference. Every running instance also serves an interactive
+API reference at `/docs` (Swagger UI) and `/redocs` (ReDoc).
+
+**Start here, by goal:**
+
+| I want to…                         | Read                                                                 |
+| ---------------------------------- | -------------------------------------------------------------------- |
+| Make my first API call             | `docs/source/getting-started.rst` → `authentication.rst`             |
+| Integrate GAME into my product     | `integrating.rst`, `strategies.rst`, `rest-api.rst`                  |
+| Understand how it works            | `overview.rst`, `architecture.rst`, `dsl-engine.rst`, `domain-model.rst` |
+| Run it in production               | `configuration.rst`, `operations.rst`, `observability.rst`, `security.rst` |
+| Contribute code or docs            | `architecture.rst`, `codebase.rst`, `contributing.rst`               |
+
+**Reference material:**
+
+| Topic                  | Document                                                        |
+| ---------------------- | -------------------------------------------------------------- |
+| Local setup            | [SETUP.md](SETUP.md)                                           |
+| Deployment             | [DEPLOYMENT.md](DEPLOYMENT.md) · [KUBERNETES_SETUP.md](KUBERNETES_SETUP.md) |
+| Testing                | [TESTING.md](TESTING.md)                                       |
+| Strategy scenarios     | [strategies.md](strategies.md)                                |
+| Domain model (ERD)     | [docs/domain-model.md](docs/domain-model.md)                  |
+| DSL block reference    | [docs/dsl/](docs/dsl/) · [runbook](docs/dsl/runbook.md)       |
+| Troubleshooting        | [troubleshooting.md](troubleshooting.md)                      |
+| Contributing           | [CONTRIBUTING.md](CONTRIBUTING.md)                            |
+
+> Build the docs locally with `poetry run sphinx-build -b html docs/source _build/html`
+> (or `poetry run sphinx-autobuild docs/source _build/html` for live preview).
 
 ---
 

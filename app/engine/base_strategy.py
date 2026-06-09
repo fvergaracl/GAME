@@ -171,7 +171,7 @@ class BaseStrategy:
 
     def get_variables(self):
         """
-        Retrieves all variables that start with 'variable_'.
+        Retrieves all variables whose name starts with ``variable_``.
 
         Returns:
             dict: A dictionary of variable names and their values.

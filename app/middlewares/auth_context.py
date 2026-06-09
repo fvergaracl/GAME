@@ -129,22 +129,28 @@ async def get_auth_context(
 
 
 def audit_log(module: str) -> Callable:
-    """
-    Factory that returns a FastAPI dependency yielding an `AuditLogger`
-      pre-bound to `module` and the resolved `AuthContext`.
+    """Build a FastAPI dependency that yields a request-scoped ``AuditLogger``.
 
-    Usage:
+    The returned dependency resolves the request's :class:`AuthContext` and
+    binds it, together with ``module``, to a fresh ``AuditLogger``.
 
-        @router.get("/foo", dependencies=[Depends(auth_api_key_or_oauth2)])
-        async def foo(
-            audit: AuditLogger = Depends(audit_log("users")),
-        ):
-            await audit.info("Foo invoked", {...})
-            try:
-                ...
-            except Exception as e:
-                await audit.error("Foo failed", {"error": str(e)})
-                raise
+    Args:
+        module (str): Logical module name stamped on every emitted log row.
+
+    Returns:
+        Callable: A FastAPI dependency returning an ``AuditLogger``.
+
+    Example:
+        .. code-block:: python
+
+            @router.get("/foo", dependencies=[Depends(auth_api_key_or_oauth2)])
+            async def foo(audit: AuditLogger = Depends(audit_log("users"))):
+                await audit.info("Foo invoked", {...})
+                try:
+                    ...
+                except Exception as exc:
+                    await audit.error("Foo failed", {"error": str(exc)})
+                    raise
     """
 
     @inject

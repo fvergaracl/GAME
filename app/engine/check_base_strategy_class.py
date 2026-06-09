@@ -4,18 +4,15 @@ logger = logging.getLogger(__name__)
 
 
 def check_class_methods_and_variables(Class_to_check, debug=False):
-    """
-    Check if the class has all the methods and variables expected for a
-      base strategy.
+    """Check that a class exposes every method and variable a strategy needs.
 
     Args:
-    Class_to_check: class
-        The class to check.
+        Class_to_check: The strategy class to validate.
+        debug (bool): When ``True``, log which member is missing.
 
     Returns:
-    bool: True if the class has all the expected methods and variables,
-      False otherwise.
-
+        bool: ``True`` if the class has all the expected methods and
+        variables, ``False`` otherwise.
     """
     instance = Class_to_check()
 

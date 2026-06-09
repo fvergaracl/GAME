@@ -1,24 +1,23 @@
-"""
-transactions Types:
-{
-  "AssignPoints": "Assignment of points to the wallet.",
-  "ConvertPointsToCoins": "Conversion of points to coins in the wallet.",
-  "DepositCoins": "Deposit of coins into the wallet.",
-  "WithdrawCoins": "Withdrawal of coins from the wallet.",
-  "EarnRewards": "Earning rewards (points or coins) for specific activities.",
-  "RedeemRewards": "Redemption of points for rewards or services.",
-  "PurchaseWithPoints": "Purchase of items or services using points.",
-  "PurchaseWithCoins": "Purchase of items or services using coins.",
-  "RefundTransaction": "Refund of a previous transaction.",
-  "AdjustBalance": "Manual adjustment of the balance (for errors or
-  corrections).",
-  "TransferPoints": "Transfer of points to another user.",
-  "TransferCoins": "Transfer of coins to another user.",
-  "ExchangeCoins": "Exchange of coins for another type of currency or asset.",
-  "FeeDeduction": "Deduction of fees or commissions from the balance.",
-  "BonusPointsAward": "Awarding of bonus points."
-}
+"""Wallet transaction ledger model.
 
+The ``transactionType`` column is a free-form string; the values used across
+the system, and what each means, are::
+
+    AssignPoints          Assignment of points to the wallet.
+    ConvertPointsToCoins  Conversion of points to coins in the wallet.
+    DepositCoins          Deposit of coins into the wallet.
+    WithdrawCoins         Withdrawal of coins from the wallet.
+    EarnRewards           Earning rewards (points or coins) for activities.
+    RedeemRewards         Redemption of points for rewards or services.
+    PurchaseWithPoints    Purchase of items or services using points.
+    PurchaseWithCoins     Purchase of items or services using coins.
+    RefundTransaction     Refund of a previous transaction.
+    AdjustBalance         Manual adjustment of the balance (errors/fixes).
+    TransferPoints        Transfer of points to another user.
+    TransferCoins         Transfer of coins to another user.
+    ExchangeCoins         Exchange of coins for another currency or asset.
+    FeeDeduction          Deduction of fees or commissions from the balance.
+    BonusPointsAward      Awarding of bonus points.
 """
 
 from pydantic import ConfigDict

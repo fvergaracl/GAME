@@ -4,6 +4,10 @@ The web admin for the GAME gamification engine. From here an administrator
 configures the engine (games, tasks and their strategies), issues API keys for
 integrating apps, exports data, and inspects per-user points and wallets.
 
+> 🏗️ **New to the codebase?** Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+> — boot sequence, routing, the HTTP/auth layer, state model, i18n, and the
+> management-module CRUD pattern (with `GameTasksView` as a worked example).
+
 ## Features
 
 - **Games** — create, edit, duplicate (deep copy incl. tasks/params) and delete games.

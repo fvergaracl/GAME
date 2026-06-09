@@ -1,5 +1,12 @@
 # Deploying GAME 🌍
 
+> 📚 **Canonical reference:** the exhaustive operations guide — topology, the
+> `Makefile` targets, scaling, health/graceful-shutdown, and runbooks — lives
+> in the docs site at [`docs/source/operations.rst`](docs/source/operations.rst),
+> and **every** configuration variable in
+> [`docs/source/configuration.rst`](docs/source/configuration.rst). This page
+> is the quick-start.
+
 This guide provides step-by-step instructions for deploying the GAME project in both local development and production environments.
 
 ## Prerequisites

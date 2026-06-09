@@ -66,17 +66,15 @@ def get_random_values_from_tasks(all_records):
 
 
 def get_average_values_from_tasks(task, all_records):
-    """
-    Extracts all dimensions from the tasks and calculates
-     the average integer values
-    of the dimensions found in the tasks.
+    """Compute the average integer value of each dimension across tasks.
 
     Args:
-        all_records (list): A list of all tasks.
+        task: The current task (unused placeholder kept for signature
+            compatibility).
+        all_records (list): All task records to average over.
 
     Returns:
-        dict: A dictionary containing average integer values for each
-         dimension.
+        dict: Average integer value for each dimension.
     """
 
     dimensions = ["DIM_BP", "DIM_LBE", "DIM_TD", "DIM_PP", "DIM_S"]
@@ -421,44 +419,39 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
         userGroup: str = "dynamic",
         user_last_task: dict = None,
     ):
-        """
-        Simulates a strategy execution to estimate the points a user would
-        receive based on a given game strategy and task set, without
-        actually assigning the points.
+        """Estimate the points a user would receive, without assigning them.
 
-        Dimensions:
-            - Task Diversity Base Points (DIM_BP)
-            - Location-Based Equity (DIM_LBE)
-            - Time Diversity (DIM_TD)
-            - Personal Performance (DIM_PP)
-            - Streak Bonus (DIM_S)
+        Five dimensions contribute to the score:
+
+        * Task Diversity Base Points (``DIM_BP``)
+        * Location-Based Equity (``DIM_LBE``)
+        * Time Diversity (``DIM_TD``)
+        * Personal Performance (``DIM_PP``)
+        * Streak Bonus (``DIM_S``)
 
         Args:
-            data_to_simulate (dict, optional): A dictionary containing the
-            necessary data for simulating the strategy. Expected structure:
+            data_to_simulate (dict, optional): Data for the simulation, with
+                the structure shown below.
+            userGroup (str): The user group to simulate for; one of
+                ``random_range``, ``average_score``, ``dynamic_calculation``.
+            user_last_task (dict, optional): The user's last task.
 
-                {
-                    "task": dict # Single task object,
-                    "allTasks": list # List of all tasks,
-                    "externalUserId": str   # The external ID of the user for
-                    whom the simulation is run.
-                }
-            userGroup (str): The user group to simulate the strategy for.
-              Could be ["random_range", "average_score", "dynamic_calculation"]
-            user_last_task (dict, optional): The last task of the user.
+        The ``data_to_simulate`` payload is structured as::
+
+            {
+                "task": dict,            # single task object
+                "allTasks": list,        # all tasks
+                "externalUserId": str,   # the user the simulation is run for
+            }
 
         Returns:
-            list: A list of dictionaries containing the results of the strategy
-            simulation.
-            Structure:
-            [
+            list: One result dict per task, each structured as::
+
                 {
-                    "externalUserId": str,  # The external ID of the user.
-                    "dimensions": list,     # A list of dictionaries
-                    containing the points for each dimension.
-                    "totalSimulatedPoints": int,  # The total estimated points.
+                    "externalUserId": str,
+                    "dimensions": list,           # points per dimension
+                    "totalSimulatedPoints": int,  # total estimated points
                 }
-            ]
         """
 
         task_to_simulate = data_to_simulate.get("task")
@@ -585,30 +578,26 @@ class GREENCROWDGamificationStrategy(BaseStrategy):  # noqa
     async def calculate_points(
         self, externalGameId, externalTaskId, externalUserId, data
     ):
-        """
-        Calculate the points for the GREENCROWD gamification strategy.
+        """Calculate the points for the GREENCROWD gamification strategy.
 
         Args:
-            externalGameId (str): The external game ID.
-            externalTaskId (str): The external task ID.
-            externalUserId (str): The external user ID.
-            data (dict): The data containing the dimensions for the points
-              calculation. With the following structure:
-                {
-                    "experimentGroup": str,
-                    "simulationHash": str,
-                    "dimensions": [
-                        {
-                            "DIM_BP": int,
-                            "DIM_LBE": int,
-                            "DIM_TD": int,
-                            "DIM_PP": int,
-                            "DIM_S": int
-                        }...
-                    ]
-                }
+            externalGameId (str): The external game id.
+            externalTaskId (str): The external task id.
+            externalUserId (str): The external user id.
+            data (dict): The dimensions used for the calculation, with the
+                shape shown below.
 
+        The ``data`` payload is structured as::
 
+            {
+                "experimentGroup": str,
+                "simulationHash": str,
+                "dimensions": [
+                    {"DIM_BP": int, "DIM_LBE": int, "DIM_TD": int,
+                     "DIM_PP": int, "DIM_S": int},
+                    ...
+                ]
+            }
         """
         case_name = "-"
         points = -1

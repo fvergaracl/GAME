@@ -6,38 +6,21 @@ from app.model.base_model import BaseModel
 
 
 class Tasks(BaseModel, table=True):
-    """
-    Defines the `Tasks` table for managing tasks associated with games in a
-      SQL database.
+    """Table for tasks associated with games.
 
-    This model represents a task entity within a gaming context, uniquely
-      identified by an external ID.
-    Each task is linked to a specific game by its ID and can be optionally
-      associated with a predefined strategy.
+    A task is an activity inside a game, uniquely identified by an external
+    id. It is linked to a specific game and may carry its own strategy;
+    otherwise it inherits the game's strategy.
 
     Attributes:
-        externalTaskId (str): A unique identifier for the task, sourced
-          externally, ensuring each task can be distinctly referenced outside
-            the system.
-        gameId (UUID): The UUID of the game this task is associated with,
-          creating a foreign key relationship to the `games` table.
-        strategyId (str): The identifier for the strategy linked to this task,
-          which defaults to 'default' if not explicitly provided. This field
-            is not nullable, ensuring every task has a strategy associated.
-
-    Configurations:
-        orm_mode (bool): Enables ORM compatibility mode, allowing the model
-          to be used with ORM frameworks seamlessly.
-
-    Methods:
-        __str__(self): Returns a human-readable string representation of the
-          task, useful for logging and debugging.
-        __repr__(self): Provides a formal representation of the task,
-          identical to __str__ for consistency.
-        __eq__(self, other): Compares this task with another for equality,
-          considering all key attributes.
-        __hash__(self): Computes a hash based on the task's ID, external ID,
-          game ID, and strategy ID for use in hash-based collections.
+        externalTaskId (str): Caller-supplied identifier, unique per game, so
+            a task can be referenced from outside the system.
+        gameId (UUID): Foreign key to the ``games`` table.
+        strategyId (str): Identifier of the strategy bound to this task.
+            Defaults to ``default`` and is non-nullable, so every task always
+            has a strategy.
+        status (str): Lifecycle status of the task; defaults to ``open``.
+        apiKey_used (str): The API key that created the task (audit + scope).
     """
 
     externalTaskId: str = Field(sa_column=Column(String, nullable=False))

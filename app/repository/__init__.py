@@ -1,3 +1,13 @@
+"""Repository layer — persistence abstraction.
+
+Repositories wrap SQLAlchemy 2.0 ``AsyncSession`` access behind a small CRUD
+vocabulary (see :class:`app.repository.base_repository.BaseRepository`). They
+contain no business logic and make no domain decisions: services decide *what*
+to do, repositories decide *how to read/write it*. Because persistence is
+abstracted here, the same service code runs against PostgreSQL in production
+and SQLite in tests.
+"""
+
 from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
 from app.repository.api_requests_repository import ApiRequestsRepository
 from app.repository.apikey_repository import ApiKeyRepository

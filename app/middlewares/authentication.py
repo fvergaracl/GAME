@@ -9,25 +9,23 @@ async def auth_api_key_or_oauth2(
     # token is "Authorization: Bearer " got from the header
     oauth_2_scheme: str = Depends(oauth_2_scheme),
 ):
-    """
-    Authenticate using API Key or OAuth2.
+    """Authenticate a request using an API key or, failing that, OAuth2.
 
-    This function first attempts to authenticate the request using an API key.
-      If the API key is valid and present, it returns `True`. If the API key
-        authentication fails or no API key is provided, it falls back to
-          OAuth2 authentication using the provided OAuth2 token scheme.
+    The API key is tried first: if a valid key is present the request is
+    authenticated immediately. Otherwise the request falls back to OAuth2
+    bearer-token validation.
 
     Args:
-        api_key (str): The API key provided via the `Authorization` header.
-          Retrieved via `ApiKeyService.get_api_key_header`.
-        oauth_2_scheme (str): The OAuth2 token extracted from the
-          `Authorization` header, with the "Bearer" scheme. Retrieved via
-            `oauth_2_scheme`.
+        api_key (str): The API key resolved from the ``X-API-Key`` header
+            via ``ApiKeyService.get_api_key_header``.
+        oauth_2_scheme (str): The OAuth2 bearer token extracted from the
+            ``Authorization`` header.
 
     Returns:
-        bool: Returns `True` if either the API key or OAuth2 token is valid.
-          If both authentication mechanisms fail, an HTTP 401 exception is
-            raised.
+        bool: ``True`` if either credential is valid.
+
+    Raises:
+        HTTPException: ``401`` if both mechanisms fail.
     """
 
     if api_key and api_key.data:
@@ -39,23 +37,17 @@ async def auth_api_key_or_oauth2(
 async def auth_oauth2(
     oauth_2_scheme: str = Depends(oauth_2_scheme),
 ):
-    """
-    Authenticate using OAuth2 token.
-
-    This function attempts to authenticate the request using an OAuth2 token.
+    """Authenticate a request using an OAuth2 bearer token.
 
     Args:
-        oauth_2_scheme (str): The OAuth2 token extracted from the
-          `Authorization` header, with the "Bearer" scheme.
-            Retrieved via `oauth_2_scheme`.
+        oauth_2_scheme (str): The OAuth2 bearer token extracted from the
+            ``Authorization`` header.
 
     Returns:
-        bool: Returns `True` if the OAuth2 token is valid. Raises an HTTP 401
-          exception if token validation fails.
+        bool: ``True`` if the token is valid.
 
     Raises:
-        HTTPException: Raises a 401 Unauthorized error if OAuth2
-          authentication fails.
+        HTTPException: ``401`` if OAuth2 authentication fails.
     """
 
     try:

@@ -1,6 +1,11 @@
 
 # Running Tests for GAME 🧪
 
+> 📚 **See also:** the [Contributing](docs/source/contributing.rst) page in the
+> docs site documents the layered test suite (unit / E2E controlled / E2E real
+> infra / k6 load) and the one-command runners under `scripts/`. The
+> `poetry run pytest` commands below remain the low-level entry points.
+
 Testing is a critical part of the GAME project to ensure code quality, maintainability, and stability. This guide explains how to run tests, check code coverage, and write new tests for the project.
 
 ## Running Tests
