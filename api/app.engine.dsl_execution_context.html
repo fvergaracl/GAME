@@ -431,7 +431,7 @@ each trigger at most one awaited call to the analytics service,
 and only when the AST actually references them. <code class="docutils literal notranslate"><span class="pre">mock_state</span></code>
 short-circuits both, useful for the simulate endpoint and for
 tests that don’t want a real DB.</p>
-<p>Sprint 13 - <code class="docutils literal notranslate"><span class="pre">analytics_cache</span></code> is an optional caller-owned dict
+<p><code class="docutils literal notranslate"><span class="pre">analytics_cache</span></code> is an optional caller-owned dict
 memoising analytics-field values <em>within a single scoring call</em>.
 DSL_EXTEND builds two contexts (pre + post) for the same user and
 request window; passing the same dict to both means each analytics

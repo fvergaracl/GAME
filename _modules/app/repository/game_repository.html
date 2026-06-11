@@ -633,7 +633,7 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return all games whose ``strategyId`` matches the given value.</span>
 
-<span class="sd">        Used by the Sprint 9 rollback cascade to know which games will be</span>
+<span class="sd">        Used by the rollback cascade to know which games will be</span>
 <span class="sd">        reassigned to the rolled-back version (the actual UPDATE goes</span>
 <span class="sd">        through :meth:`bulk_update_strategy_id`; this helper is exposed</span>
 <span class="sd">        for audit logging and tests).</span>
@@ -649,7 +649,7 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Map internal game ``id`` → ``externalGameId`` for the given ids.</span>
 
-<span class="sd">        Used by the Sprint 6 strategy-usage view to render the parent game</span>
+<span class="sd">        Used by the strategy-usage view to render the parent game</span>
 <span class="sd">        of a task-level assignment by its human-readable external id</span>
 <span class="sd">        instead of a raw UUID, in a single query rather than N reads.</span>
 <span class="sd">        """</span>
@@ -676,7 +676,7 @@
 <span class="sd">        ``new_strategy_id`` in a single UPDATE. Returns the row count so</span>
 <span class="sd">        the caller can log/audit the cascade.</span>
 
-<span class="sd">        Used by the Sprint 9 rollback flow: when a published custom</span>
+<span class="sd">        Used by the rollback flow: when a published custom</span>
 <span class="sd">        strategy is rolled back, the games that pointed at the previous</span>
 <span class="sd">        UUID get reassigned to the target UUID in one trip so no game is</span>
 <span class="sd">        left referring to an ARCHIVED row.</span>

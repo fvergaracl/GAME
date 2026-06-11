@@ -395,7 +395,7 @@
             
   <section id="module-app.services.strategy_observability_service">
 <span id="app-services-strategy-observability-service-module"></span><h1 id="api-app-services-strategy-observability-service--page-root">app.services.strategy_observability_service module<a class="headerlink" href="#api-app-services-strategy-observability-service--page-root" title="Link to this heading">¶</a></h1>
-<p>Observability aggregation service (Sprint 10).</p>
+<p>Observability aggregation service.</p>
 <p>Reads from the same <code class="docutils literal notranslate"><span class="pre">strategyexecutionlog</span></code> table the engine writes
 via <code class="xref py py-class docutils literal notranslate"><span class="pre">DslExecutionObserver</span></code> and shapes it into the metrics view
 the dashboard renders for a single strategy, plus the A/B comparison
@@ -420,7 +420,7 @@ cross-realm probes, so this service is implicitly tenant-aware.</p></li>
 <dt class="sig sig-object py" id="app.services.strategy_observability_service.StrategyObservabilityService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.strategy_observability_service.</span></span><span class="sig-name descname"><span class="pre">StrategyObservabilityService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">execution_log_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy_definition_service</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_observability_service.html#StrategyObservabilityService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_observability_service.StrategyObservabilityService" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Single entrypoint for the Sprint 10 dashboard view + A/B view.</p>
+<p>Single entrypoint for the dashboard view + A/B view.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

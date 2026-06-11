@@ -364,7 +364,7 @@
 <span></span><span class="sd">"""</span>
 <span class="sd">Service for the persistent strategy model.</span>
 
-<span class="sd">Implements the versioning rules called out in the Sprint 3 plan:</span>
+<span class="sd">Implements the versioning rules for the persistent strategy model:</span>
 
 <span class="sd">* Creating uses ``version=1`` and ``status=DRAFT``.</span>
 <span class="sd">* Editing a draft mutates the row in place.</span>
@@ -440,7 +440,7 @@
 <span class="sd">        ``game_repository`` and ``task_repository`` are optional so legacy</span>
 <span class="sd">        call sites that only need CRUD/lifecycle (most tests, the</span>
 <span class="sd">        simulation service) keep working without a wider DI graph. The</span>
-<span class="sd">        Sprint 9 rollback flow requires both - when missing,</span>
+<span class="sd">        The rollback flow requires both - when missing,</span>
 <span class="sd">        :meth:`rollback` raises a precise error rather than silently</span>
 <span class="sd">        leaving cascade UPDATEs undone.</span>
 <span class="sd">        """</span>
@@ -512,7 +512,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Whether any version of ``(realmId, name)`` already exists.</span>
 
-<span class="sd">        Used by the import endpoint (Sprint 8) to decide whether the</span>
+<span class="sd">        Used by the import endpoint to decide whether the</span>
 <span class="sd">        incoming bundle needs an auto-rename to avoid colliding with</span>
 <span class="sd">        the ``UNIQUE(realmId, name, version)`` constraint.</span>
 <span class="sd">        """</span>
@@ -881,7 +881,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StrategyUsageRead</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reverse lookup: which games/tasks are assigned to this exact</span>
-<span class="sd">        strategy version (Sprint 6).</span>
+<span class="sd">        strategy version.</span>
 
 <span class="sd">        Consumers store the assignable id ``custom:&lt;uuid&gt;``, so usage is</span>
 <span class="sd">        an exact match on that string - the same value the rollback</span>

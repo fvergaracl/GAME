@@ -416,7 +416,7 @@
   <section id="module-app.services.strategy_definition_service">
 <span id="app-services-strategy-definition-service-module"></span><h1 id="api-app-services-strategy-definition-service--page-root">app.services.strategy_definition_service module<a class="headerlink" href="#api-app-services-strategy-definition-service--page-root" title="Link to this heading">¶</a></h1>
 <p>Service for the persistent strategy model.</p>
-<p>Implements the versioning rules called out in the Sprint 3 plan:</p>
+<p>Implements the versioning rules for the persistent strategy model:</p>
 <ul class="simple">
 <li><p>Creating uses <code class="docutils literal notranslate"><span class="pre">version=1</span></code> and <code class="docutils literal notranslate"><span class="pre">status=DRAFT</span></code>.</p></li>
 <li><p>Editing a draft mutates the row in place.</p></li>
@@ -463,7 +463,7 @@ the DB.</p>
 <dd><p><code class="docutils literal notranslate"><span class="pre">game_repository</span></code> and <code class="docutils literal notranslate"><span class="pre">task_repository</span></code> are optional so legacy
 call sites that only need CRUD/lifecycle (most tests, the
 simulation service) keep working without a wider DI graph. The
-Sprint 9 rollback flow requires both - when missing,
+The rollback flow requires both - when missing,
 <a class="reference internal" href="#app.services.strategy_definition_service.StrategyDefinitionService.rollback" title="app.services.strategy_definition_service.StrategyDefinitionService.rollback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rollback()</span></code></a> raises a precise error rather than silently
 leaving cascade UPDATEs undone.</p>
 <dl class="field-list simple">
@@ -479,7 +479,7 @@ leaving cascade UPDATEs undone.</p>
 <dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.name_exists">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.name_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.name_exists" title="Link to this definition">¶</a></dt>
 <dd><p>Whether any version of <code class="docutils literal notranslate"><span class="pre">(realmId,</span> <span class="pre">name)</span></code> already exists.</p>
-<p>Used by the import endpoint (Sprint 8) to decide whether the
+<p>Used by the import endpoint to decide whether the
 incoming bundle needs an auto-rename to avoid colliding with
 the <code class="docutils literal notranslate"><span class="pre">UNIQUE(realmId,</span> <span class="pre">name,</span> <span class="pre">version)</span></code> constraint.</p>
 <dl class="field-list simple">
@@ -672,7 +672,7 @@ another realm, so cross-tenant probing returns nothing.</p>
 <dt class="sig sig-object py" id="app.services.strategy_definition_service.StrategyDefinitionService.get_usage">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/strategy_definition_service.html#StrategyDefinitionService.get_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.strategy_definition_service.StrategyDefinitionService.get_usage" title="Link to this definition">¶</a></dt>
 <dd><p>Reverse lookup: which games/tasks are assigned to this exact
-strategy version (Sprint 6).</p>
+strategy version.</p>
 <p>Consumers store the assignable id <code class="docutils literal notranslate"><span class="pre">custom:&lt;uuid&gt;</span></code>, so usage is
 an exact match on that string - the same value the rollback
 cascade rewrites. We report per-version (not per-family) because

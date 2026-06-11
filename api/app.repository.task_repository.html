@@ -461,7 +461,7 @@
 <dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository.patch_by_id">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.patch_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository.patch_by_id" title="Link to this definition">¶</a></dt>
 <dd><p>Apply a small <code class="docutils literal notranslate"><span class="pre">fields</span></code> dict to the task identified by
-<code class="docutils literal notranslate"><span class="pre">taskId</span></code>. Returns the refreshed row. Used by the Sprint 9
+<code class="docutils literal notranslate"><span class="pre">taskId</span></code>. Returns the refreshed row. Used by the
 <code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/games/{gameId}/tasks/{taskId}</span></code> flow so the assignments
 admin view can rewrite <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> (and <code class="docutils literal notranslate"><span class="pre">status</span></code>) without a
 full upsert.</p>
@@ -487,7 +487,7 @@ Returns <code class="docutils literal notranslate"><span class="pre">True</span>
 <dt class="sig sig-object py" id="app.repository.task_repository.TaskRepository.list_by_strategy_id">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_by_strategy_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.list_by_strategy_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository.list_by_strategy_id" title="Link to this definition">¶</a></dt>
 <dd><p>Return all tasks whose <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> matches the given value.</p>
-<p>Sprint 9 rollback cascade companion to
+<p>Rollback cascade companion to
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">GameRepository.list_by_strategy_id()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -500,7 +500,7 @@ Returns <code class="docutils literal notranslate"><span class="pre">True</span>
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bulk_update_strategy_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_strategy_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_strategy_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/task_repository.html#TaskRepository.bulk_update_strategy_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.task_repository.TaskRepository.bulk_update_strategy_id" title="Link to this definition">¶</a></dt>
 <dd><p>Rewrite every task’s <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> from <code class="docutils literal notranslate"><span class="pre">old_strategy_id</span></code> to
 <code class="docutils literal notranslate"><span class="pre">new_strategy_id</span></code> in a single UPDATE. Returns the row count.</p>
-<p>Sprint 9 rollback cascade companion to
+<p>Rollback cascade companion to
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">GameRepository.bulk_update_strategy_id()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

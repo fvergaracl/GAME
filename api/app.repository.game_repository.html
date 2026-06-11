@@ -479,7 +479,7 @@ all games.</p></li>
 <dt class="sig sig-object py" id="app.repository.game_repository.GameRepository.list_by_strategy_id">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_by_strategy_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository.list_by_strategy_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_repository.GameRepository.list_by_strategy_id" title="Link to this definition">¶</a></dt>
 <dd><p>Return all games whose <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> matches the given value.</p>
-<p>Used by the Sprint 9 rollback cascade to know which games will be
+<p>Used by the rollback cascade to know which games will be
 reassigned to the rolled-back version (the actual UPDATE goes
 through <a class="reference internal" href="#app.repository.game_repository.GameRepository.bulk_update_strategy_id" title="app.repository.game_repository.GameRepository.bulk_update_strategy_id"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bulk_update_strategy_id()</span></code></a>; this helper is exposed
 for audit logging and tests).</p>
@@ -493,7 +493,7 @@ for audit logging and tests).</p>
 <dt class="sig sig-object py" id="app.repository.game_repository.GameRepository.list_external_ids">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_external_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/game_repository.html#GameRepository.list_external_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.game_repository.GameRepository.list_external_ids" title="Link to this definition">¶</a></dt>
 <dd><p>Map internal game <code class="docutils literal notranslate"><span class="pre">id</span></code> → <code class="docutils literal notranslate"><span class="pre">externalGameId</span></code> for the given ids.</p>
-<p>Used by the Sprint 6 strategy-usage view to render the parent game
+<p>Used by the strategy-usage view to render the parent game
 of a task-level assignment by its human-readable external id
 instead of a raw UUID, in a single query rather than N reads.</p>
 <dl class="field-list simple">
@@ -508,7 +508,7 @@ instead of a raw UUID, in a single query rather than N reads.</p>
 <dd><p>Rewrite every game’s <code class="docutils literal notranslate"><span class="pre">strategyId</span></code> from <code class="docutils literal notranslate"><span class="pre">old_strategy_id</span></code> to
 <code class="docutils literal notranslate"><span class="pre">new_strategy_id</span></code> in a single UPDATE. Returns the row count so
 the caller can log/audit the cascade.</p>
-<p>Used by the Sprint 9 rollback flow: when a published custom
+<p>Used by the rollback flow: when a published custom
 strategy is rolled back, the games that pointed at the previous
 UUID get reassigned to the target UUID in one trip so no game is
 left referring to an ARCHIVED row.</p>

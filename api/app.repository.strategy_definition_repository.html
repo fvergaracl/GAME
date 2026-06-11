@@ -427,7 +427,7 @@ SQL adapter.</p>
 <dd><p>List rows visible to a tenant, most recent first.</p>
 <p><code class="docutils literal notranslate"><span class="pre">realmId=None</span></code> is treated as “global”; callers that want every
 row across realms must pass it explicitly via a separate admin
-helper (not implemented yet - Sprint 3 keeps tenancy strict).</p>
+helper (not implemented yet - tenancy stays strict).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -464,7 +464,7 @@ don’t leak existence across realms.</p>
 <dt class="sig sig-object py" id="app.repository.strategy_definition_repository.StrategyDefinitionRepository.list_versions">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_versions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/strategy_definition_repository.html#StrategyDefinitionRepository.list_versions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.strategy_definition_repository.StrategyDefinitionRepository.list_versions" title="Link to this definition">¶</a></dt>
 <dd><p>Return every row in a <code class="docutils literal notranslate"><span class="pre">(realmId,</span> <span class="pre">name)</span></code> family, newest version
-first. Used by the history endpoint planned for Sprint 9 and
+first. Used by the history endpoint and
 already useful from the service when looking for the latest draft
 or published sibling.</p>
 <dl class="field-list simple">
@@ -517,7 +517,7 @@ the next draft version atomically.</p>
 <dt class="sig sig-object py" id="app.repository.strategy_definition_repository.StrategyDefinitionRepository.get_version">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realmId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/strategy_definition_repository.html#StrategyDefinitionRepository.get_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.strategy_definition_repository.StrategyDefinitionRepository.get_version" title="Link to this definition">¶</a></dt>
 <dd><p>Fetch a specific <code class="docutils literal notranslate"><span class="pre">(realmId,</span> <span class="pre">name,</span> <span class="pre">version)</span></code> row.</p>
-<p>Used by the rollback flow (Sprint 9) to locate the target version
+<p>Used by the rollback flow to locate the target version
 being promoted back to PUBLISHED. Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> when the version
 does not exist in the family; the service maps that to a 404 so we
 don’t leak cross-family info.</p>

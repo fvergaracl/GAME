@@ -407,12 +407,12 @@
             
   <section id="module-app.repository.strategy_execution_log_repository">
 <span id="app-repository-strategy-execution-log-repository-module"></span><h1 id="api-app-repository-strategy-execution-log-repository--page-root">app.repository.strategy_execution_log_repository module<a class="headerlink" href="#api-app-repository-strategy-execution-log-repository--page-root" title="Link to this heading">¶</a></h1>
-<p>Repository for <code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog</span></code> rows (Sprint 11).</p>
+<p>Repository for <code class="docutils literal notranslate"><span class="pre">StrategyExecutionLog</span></code> rows.</p>
 <p>Writes are best-effort: the engine never blocks scoring on the audit
 log, so the service layer wraps the insert in its own try/except. The
 read methods power the runbook UI and the post-mortem command-line
 helpers.</p>
-<p>Sprint 10 adds aggregation queries used by the observability dashboard:
+<p>Aggregation queries power the observability dashboard:
 counts grouped by status / error code / case name, a percentile-friendly
 sample of durations, and a time-bucketed timeseries. All of them are
 single round-trips so the dashboard renders in one fetch.</p>

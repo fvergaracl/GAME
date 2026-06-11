@@ -396,10 +396,8 @@
   <section id="module-app.engine.dsl_strategy">
 <span id="app-engine-dsl-strategy-module"></span><h1 id="api-app-engine-dsl-strategy--page-root">app.engine.dsl_strategy module<a class="headerlink" href="#api-app-engine-dsl-strategy--page-root" title="Link to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code> adapter that runs a persisted DSL <code class="docutils literal notranslate"><span class="pre">StrategyDefinition</span></code>.</p>
-<p>This class is built in Sprint 4 but NOT connected to <code class="docutils literal notranslate"><span class="pre">UserPointsService</span></code>
-yet - that wiring is Sprint 5’s “modify BaseStrategy.calculate_points to
-delegate” item. Until then the adapter is exercised only by the simulate
-endpoint and by tests.</p>
+<p>This adapter is what <code class="docutils literal notranslate"><span class="pre">StrategyService</span></code> instantiates for <code class="docutils literal notranslate"><span class="pre">custom:</span></code> ids;
+it is also exercised directly by the simulate endpoint and by tests.</p>
 <p>Notable choice: <code class="docutils literal notranslate"><span class="pre">_generate_hash_of_calculate_points</span></code> is overridden to
 hash the canonicalized AST (sorted JSON keys) instead of the Python
 source of the method. The built-in strategies still use the inspect-based

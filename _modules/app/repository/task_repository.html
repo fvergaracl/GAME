@@ -492,7 +492,7 @@
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">patch_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskId</span><span class="p">,</span> <span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Apply a small ``fields`` dict to the task identified by</span>
-<span class="sd">        ``taskId``. Returns the refreshed row. Used by the Sprint 9</span>
+<span class="sd">        ``taskId``. Returns the refreshed row. Used by the</span>
 <span class="sd">        ``PATCH /games/{gameId}/tasks/{taskId}`` flow so the assignments</span>
 <span class="sd">        admin view can rewrite ``strategyId`` (and ``status``) without a</span>
 <span class="sd">        full upsert.</span>
@@ -566,7 +566,7 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return all tasks whose ``strategyId`` matches the given value.</span>
 
-<span class="sd">        Sprint 9 rollback cascade companion to</span>
+<span class="sd">        Rollback cascade companion to</span>
 <span class="sd">        :meth:`GameRepository.list_by_strategy_id`.</span>
 <span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
@@ -583,7 +583,7 @@
 <span class="sd">        Rewrite every task's ``strategyId`` from ``old_strategy_id`` to</span>
 <span class="sd">        ``new_strategy_id`` in a single UPDATE. Returns the row count.</span>
 
-<span class="sd">        Sprint 9 rollback cascade companion to</span>
+<span class="sd">        Rollback cascade companion to</span>
 <span class="sd">        :meth:`GameRepository.bulk_update_strategy_id`.</span>
 <span class="sd">        """</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>

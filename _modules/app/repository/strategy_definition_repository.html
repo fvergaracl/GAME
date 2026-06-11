@@ -412,7 +412,7 @@
 
 <span class="sd">        ``realmId=None`` is treated as "global"; callers that want every</span>
 <span class="sd">        row across realms must pass it explicitly via a separate admin</span>
-<span class="sd">        helper (not implemented yet - Sprint 3 keeps tenancy strict).</span>
+<span class="sd">        helper (not implemented yet - tenancy stays strict).</span>
 <span class="sd">        """</span>
         <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">realmId</span> <span class="o">==</span> <span class="n">realmId</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -458,7 +458,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">StrategyDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return every row in a ``(realmId, name)`` family, newest version</span>
-<span class="sd">        first. Used by the history endpoint planned for Sprint 9 and</span>
+<span class="sd">        first. Used by the history endpoint and</span>
 <span class="sd">        already useful from the service when looking for the latest draft</span>
 <span class="sd">        or published sibling.</span>
 <span class="sd">        """</span>
@@ -539,7 +539,7 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fetch a specific ``(realmId, name, version)`` row.</span>
 
-<span class="sd">        Used by the rollback flow (Sprint 9) to locate the target version</span>
+<span class="sd">        Used by the rollback flow to locate the target version</span>
 <span class="sd">        being promoted back to PUBLISHED. Returns ``None`` when the version</span>
 <span class="sd">        does not exist in the family; the service maps that to a 404 so we</span>
 <span class="sd">        don't leak cross-family info.</span>

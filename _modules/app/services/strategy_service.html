@@ -454,13 +454,13 @@
 <span class="sd">        Initializes the StrategyService.</span>
 
 <span class="sd">        ``strategy_definition_service`` is optional so legacy call sites</span>
-<span class="sd">        that only need built-ins still work after the Sprint 3 wiring.</span>
+<span class="sd">        that only need built-ins still work after the custom-strategy wiring.</span>
 <span class="sd">        When it's omitted, attempting to resolve a ``custom:`` id raises</span>
 <span class="sd">        ``NotFoundError`` with a clear message rather than silently</span>
 <span class="sd">        crashing.</span>
 
 <span class="sd">        ``dsl_interpreter`` and ``analytics_service`` are required to</span>
-<span class="sd">        instantiate ``DslStrategy`` for ``custom:`` ids (Sprint 5 wiring).</span>
+<span class="sd">        instantiate ``DslStrategy`` for ``custom:`` ids.</span>
 <span class="sd">        They are optional kwargs to preserve the legacy</span>
 <span class="sd">        ``StrategyService()`` no-arg call style still in use by tests and</span>
 <span class="sd">        by ``UserPointsService.__init__`` until the container injection</span>
@@ -528,7 +528,7 @@
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span>
                 <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">"Strategy '</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">' is a DSL strategy. Use the async "</span>
-                    <span class="s2">"resolve() method (DSL execution arrives in Sprint 4)."</span>
+                    <span class="s2">"resolve() method."</span>
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="n">all_engine_strategies</span><span class="p">():</span>

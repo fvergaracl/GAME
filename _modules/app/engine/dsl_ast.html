@@ -684,8 +684,8 @@
 <div class="viewcode-block" id="is_known_field_path">
 <a class="viewcode-back" href="../../../api/app.engine.dsl_ast.html#app.engine.dsl_ast.is_known_field_path">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_known_field_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Either a whitelisted analytic/static path, a parent.* path (Sprint 7,</span>
-<span class="sd">    context-restricted by validator), or a well-formed data.* key."""</span>
+<span class="w">    </span><span class="sd">"""Either a whitelisted analytic/static path, a parent.* path</span>
+<span class="sd">    (context-restricted by validator), or a well-formed data.* key."""</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">path</span> <span class="ow">in</span> <span class="n">FIELD_RESOLVERS</span>
         <span class="ow">or</span> <span class="n">is_parent_field_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
