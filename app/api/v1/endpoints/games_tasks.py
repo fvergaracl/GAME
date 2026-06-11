@@ -702,7 +702,7 @@ async def get_task_by_gameId_taskId(
     )
 
 
-summary_patch_task = "Update a Task (Sprint 9)"
+summary_patch_task = "Update a Task"
 description_patch_task = """
 Partially updates a task identified by ``gameId`` + ``taskId``.
 
@@ -749,7 +749,7 @@ async def patch_task(
     """
     Update a task by ``gameId`` + ``taskId``.
 
-    Sprint 9: introduced to let the assignments admin view (and any
+    Introduced to let the assignments admin view (and any
     integration that wants to reassign a strategy) target individual
     tasks. Body fields are all optional and patched in-place; the
     service validates ``strategyId`` against built-ins and custom
@@ -831,7 +831,7 @@ async def delete_task(
     """
     Delete a task by ``gameId`` + ``taskId``.
 
-    Sprint 0 (CRUD): the dashboard's task management view needs to retire
+    The dashboard's task management view needs to retire
     individual tasks. Mirrors ``delete_game_by_id`` - the cascade lives in
     the repository so params/points go before the task row.
     """
@@ -909,7 +909,7 @@ async def duplicate_task(
     """
     Duplicate a task within the same game.
 
-    Sprint 0 (CRUD): gives the dashboard a one-click "clone this task"
+    Gives the dashboard a one-click "clone this task"
     action. Reuses the task creation path under the hood so uniqueness and
     param insertion behave exactly like a manual create.
     """

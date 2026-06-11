@@ -1,5 +1,5 @@
 """
-Loader for user-facing strategy templates (Sprint 8).
+Loader for user-facing strategy templates.
 
 Templates live as JSON files inside ``app/engine/dsl_templates/user/``
 and seed the "Usar una plantilla" CTA in the Blockly editor. Each file

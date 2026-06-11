@@ -1,5 +1,5 @@
 """
-Observability sink for DSL strategy executions (Sprint 11, Sprint 13).
+Observability sink for DSL strategy executions.
 
 This service does *two* things for every ``DslStrategy.calculate_points``
 call (the wiring lives in :mod:`app.engine.dsl_strategy`):
@@ -14,7 +14,7 @@ call (the wiring lives in :mod:`app.engine.dsl_strategy`):
    after the incident. OK runs are sampled at
    :data:`_config_module.configs.DSL_EXECUTION_LOG_SAMPLE_RATE` (default 5 %).
 
-Sprint 13 - hot-path: ``record`` no longer ``await``\\s the DB write.
+Hot-path: ``record`` no longer ``await``\\s the DB write.
 The metrics emit + sampling decision stay synchronous (microseconds),
 and the chosen row is handed to a bounded in-process queue drained by a
 background worker task. Scoring therefore pays only the enqueue, never a

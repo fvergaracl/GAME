@@ -45,7 +45,7 @@ class StrategyDefinitionRepository(BaseRepository):
 
         ``realmId=None`` is treated as "global"; callers that want every
         row across realms must pass it explicitly via a separate admin
-        helper (not implemented yet - Sprint 3 keeps tenancy strict).
+        helper (not implemented yet - tenancy stays strict).
         """
         stmt = select(self.model).where(self.model.realmId == realmId)
         if status is not None:
@@ -85,7 +85,7 @@ class StrategyDefinitionRepository(BaseRepository):
     ) -> List[StrategyDefinition]:
         """
         Return every row in a ``(realmId, name)`` family, newest version
-        first. Used by the history endpoint planned for Sprint 9 and
+        first. Used by the history endpoint and
         already useful from the service when looking for the latest draft
         or published sibling.
         """
@@ -157,7 +157,7 @@ class StrategyDefinitionRepository(BaseRepository):
         """
         Fetch a specific ``(realmId, name, version)`` row.
 
-        Used by the rollback flow (Sprint 9) to locate the target version
+        Used by the rollback flow to locate the target version
         being promoted back to PUBLISHED. Returns ``None`` when the version
         does not exist in the family; the service maps that to a 404 so we
         don't leak cross-family info.

@@ -1,5 +1,5 @@
 """
-Sampled persistence of DSL strategy executions (Sprint 11).
+Sampled persistence of DSL strategy executions.
 
 Every call to ``DslStrategy.calculate_points`` produces a result + a node
 trace + a duration. Persisting *all* of them would inflate the database

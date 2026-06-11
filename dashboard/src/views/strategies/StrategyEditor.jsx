@@ -43,7 +43,7 @@ import {
   simulateInlineStrategy,
   updateCustomStrategy,
 } from '../../api'
-import keycloak from '../../keycloak'
+import useIsAdmin from '../../hooks/useIsAdmin'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import { translateDslError } from '../../i18n/errorMap'
 import { extractError } from '../../utils/errors'
@@ -61,6 +61,7 @@ import { validateAst } from './dsl/validator'
 import { buildMockState, usedAccumulationFields } from './dsl/simFields'
 import EditorTour from './EditorTour'
 import GlossaryHint from './glossary/GlossaryHint'
+import { STATUS_BADGE } from './lifecycleStatus'
 import { SkeletonCard } from '../../components/Skeleton'
 
 // Lazy-load the heavy on-demand surfaces - none are reachable on first
@@ -81,30 +82,6 @@ function applyBlocklyLocale(lang) {
   // Object.assign copies them into Blockly.Msg without disturbing
   // app-specific custom entries.
   Object.assign(Blockly.Msg, bundle.default || bundle)
-}
-
-// Inline admin-token decoder so the "Hacer rollback" CTA inside the
-// history modal stays disabled for non-admins. The server-side
-// ``require_admin`` gate is the authoritative check; this is just a
-// UX hint to avoid showing a button that would always 403.
-const isCurrentUserAdmin = () => {
-  try {
-    const token = keycloak?.token
-    if (!token) return false
-    const payload = token.split('.')[1]
-    const decoded = JSON.parse(atob(payload))
-    return decoded?.resource_access?.account?.roles?.includes('AdministratorGAME') || false
-  } catch {
-    return false
-  }
-}
-
-// Maps the backend lifecycle status to a CoreUI badge colour. Kept in
-// sync with StrategyVersionHistoryModal's STATUS_BADGE.
-const STATUS_BADGE = {
-  DRAFT: 'secondary',
-  PUBLISHED: 'success',
-  ARCHIVED: 'dark',
 }
 
 const INITIAL_SIM_FORM = {
@@ -229,7 +206,7 @@ const StrategyEditor = () => {
 
   // History modal visibility - only meaningful once ``strategyId`` is set.
   const [historyOpen, setHistoryOpen] = useState(false)
-  const isAdmin = useMemo(() => isCurrentUserAdmin(), [])
+  const isAdmin = useIsAdmin()
 
   // Lifecycle (publish / archive). ``status`` mirrors the backend's
   // DRAFT→PUBLISHED→ARCHIVED state machine to gate which CTA shows;

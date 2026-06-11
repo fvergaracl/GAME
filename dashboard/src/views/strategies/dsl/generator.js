@@ -42,12 +42,12 @@ const BLOCK_TO_AST = {
  *
  * Top-level routing:
  * * ``gd_rule`` blocks → ``program.rules[]`` (DSL_FULL behaviour).
- * * ``gd_pre_rule`` blocks → ``program.pre_rules[]`` (Sprint 7).
- * * ``gd_post_rule`` blocks → ``program.post_rules[]`` (Sprint 7).
+ * * ``gd_pre_rule`` blocks → ``program.pre_rules[]``.
+ * * ``gd_post_rule`` blocks → ``program.post_rules[]``.
  * * A floating ``gd_assign_points`` (no previous connection) →
  *   ``program.default``.
  * * ``gd_parent_variable_override`` blocks → ``program.parent_variables``
- *   map (Sprint 7).
+ *   map.
  *
  * @param {Blockly.Workspace} workspace
  * @returns {object} AST root (always type 'program')

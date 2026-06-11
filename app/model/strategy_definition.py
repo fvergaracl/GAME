@@ -2,13 +2,13 @@
 Persistent model for user-authored strategies.
 
 The legacy engine (see :mod:`app.engine`) loads ``BaseStrategy`` subclasses
-discovered at import time. Sprint 3 introduces a second path: strategies
+discovered at import time. A second path covers strategies
 expressed as a JSON AST and stored per-tenant in Postgres, so that game
 designers can create or extend strategies from the dashboard without
 touching Python code.
 
 This model only stores the **definition**. Execution lives in the DSL
-interpreter that lands in Sprint 4. Until then, ``astJson`` is opaque to
+interpreter. At this layer ``astJson`` is opaque to
 the engine and rows are addressable via the ``custom:<id>`` prefix on
 ``Games.strategyId`` / ``Tasks.strategyId`` (see the compat layer in
 :mod:`app.services.strategy_service`).

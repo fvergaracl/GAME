@@ -34,6 +34,7 @@ import { useTranslation } from 'react-i18next'
 
 import { deleteApiKey } from '../../../api'
 import { extractError } from '../../../utils/errors'
+import { formatDateTime } from '../../../utils/date'
 import { useToast } from '../../../components/Toast'
 import ConfirmDialog from '../../../components/ConfirmDialog'
 
@@ -131,7 +132,7 @@ const ApiKeyTable = ({ apiKeys, onRevoked }) => {
                         </div>
                       </CTableDataCell>
                       <CTableDataCell>
-                        {apiKey.created_at ? new Date(apiKey.created_at).toLocaleString() : '-'}
+                        {formatDateTime(apiKey.created_at)}
                       </CTableDataCell>
                       <CTableDataCell>
                         <CBadge color={isActive ? 'success' : 'secondary'}>

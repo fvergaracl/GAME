@@ -1,5 +1,5 @@
 """
-CRUD endpoints for custom (DB-persisted) strategies - Sprint 3.
+CRUD endpoints for custom (DB-persisted) strategies.
 
 These endpoints are kept under a separate router (``/v1/strategies/custom``)
 so the legacy ``/v1/strategies`` listing of built-ins keeps a clean schema
@@ -47,7 +47,7 @@ router = APIRouter(
 
 def _resolve_realm_id(auth: AuthContext) -> str:
     """
-    Convention used by Sprint 3:
+    Convention used here:
       * API-key caller → its api key value is the tenant boundary.
       * OAuth admin    → the configured Keycloak realm is the boundary.
 
@@ -71,7 +71,7 @@ async def require_authenticated(
 ) -> AuthContext:
     """
     Lightweight gate: reject anonymous callers. We don't gate by the
-    AdministratorGAME role here because the Sprint 3 plan calls for a
+    AdministratorGAME role here because we want a
     finer-grained policy (``StrategyAuthor`` edits drafts, only admins
     publish). Until that role exists in Keycloak the publish/archive
     endpoints additionally enforce the admin check below.
@@ -105,7 +105,7 @@ def _ensure_parent_strategy_exists(
     parent_strategy_id,
     strategy_service: StrategyService,
 ) -> None:
-    """Sprint 7: when a DSL_EXTEND row is created/updated, verify the
+    """When a DSL_EXTEND row is created/updated, verify the
     referenced parentStrategyId actually resolves to a built-in. The
     service-level _validate_payload only checks presence/absence;
     cross-checking the registry has to live at the endpoint layer
@@ -237,7 +237,7 @@ async def list_custom_strategies(
 @router.get(
     "/templates",
     response_model=List[StrategyTemplateRead],
-    summary="List built-in user-facing templates (Sprint 8)",
+    summary="List built-in user-facing templates",
 )
 async def list_strategy_templates(
     auth: AuthContext = Depends(require_authenticated),
@@ -255,7 +255,7 @@ async def list_strategy_templates(
     "/import",
     response_model=StrategyDefinitionRead,
     status_code=status.HTTP_201_CREATED,
-    summary="Import a strategy bundle as a new DRAFT (Sprint 8)",
+    summary="Import a strategy bundle as a new DRAFT",
 )
 @inject
 async def import_custom_strategy(
@@ -330,7 +330,7 @@ async def import_custom_strategy(
 @router.post(
     "/simulate",
     response_model=SimulationResponse,
-    summary="Dry-run an inline AST without persisting a draft (Sprint 5)",
+    summary="Dry-run an inline AST without persisting a draft",
 )
 @inject
 async def simulate_inline_strategy(
@@ -529,7 +529,7 @@ async def archive_custom_strategy(
 @router.get(
     "/{id}/versions",
     response_model=List[StrategyDefinitionRead],
-    summary="List the version history of a strategy family (Sprint 9)",
+    summary="List the version history of a strategy family",
 )
 @inject
 async def list_strategy_versions(
@@ -554,7 +554,7 @@ async def list_strategy_versions(
 @router.get(
     "/{id}/usage",
     response_model=StrategyUsageRead,
-    summary="List games/tasks assigned to this strategy (Sprint 6)",
+    summary="List games/tasks assigned to this strategy",
 )
 @inject
 async def get_custom_strategy_usage(
@@ -565,7 +565,7 @@ async def get_custom_strategy_usage(
     ),
 ) -> StrategyUsageRead:
     """
-    Reverse lookup of a strategy's consumers (Sprint 6).
+    Reverse lookup of a strategy's consumers.
 
     Returns the games and tasks currently assigned to this exact
     strategy version plus their counts, so the dashboard can preview the
@@ -579,7 +579,7 @@ async def get_custom_strategy_usage(
 @router.post(
     "/{id}/rollback/{version}",
     response_model=StrategyDefinitionRead,
-    summary="Roll back to a previous version (admin-only, Sprint 9)",
+    summary="Roll back to a previous version (admin-only)",
 )
 @inject
 async def rollback_strategy(

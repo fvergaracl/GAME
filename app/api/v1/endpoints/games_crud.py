@@ -753,7 +753,7 @@ async def duplicate_game(
     """
     Duplicate a game (deep copy) under a new externalGameId.
 
-    Sprint 0 (CRUD): backs the dashboard's "Duplicate" action so an admin
+    Backs the dashboard's "Duplicate" action so an admin
     can clone an existing game - with all its tasks and params - as the
     starting point for a new one.
     """

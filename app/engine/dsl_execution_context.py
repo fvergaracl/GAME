@@ -59,7 +59,7 @@ class ExecutionContext:
         short-circuits both, useful for the simulate endpoint and for
         tests that don't want a real DB.
 
-        Sprint 13 - ``analytics_cache`` is an optional caller-owned dict
+        ``analytics_cache`` is an optional caller-owned dict
         memoising analytics-field values *within a single scoring call*.
         DSL_EXTEND builds two contexts (pre + post) for the same user and
         request window; passing the same dict to both means each analytics

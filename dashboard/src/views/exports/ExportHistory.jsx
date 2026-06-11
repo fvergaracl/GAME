@@ -19,6 +19,7 @@ import {
 } from '@coreui/react'
 import { getExportHistory } from '../../api'
 import { extractError } from '../../utils/errors'
+import { formatDateTime } from '../../utils/date'
 import { SkeletonTable } from '../../components/Skeleton'
 
 const STATUS_COLORS = {
@@ -132,7 +133,7 @@ const ExportHistory = () => {
                 <CTableBody>
                   {rows.map((row) => (
                     <CTableRow key={row.id}>
-                      <CTableDataCell>{formatTimestamp(row.created_at)}</CTableDataCell>
+                      <CTableDataCell>{formatDateTime(row.created_at)}</CTableDataCell>
                       <CTableDataCell>{row.datasetType}</CTableDataCell>
                       <CTableDataCell>{row.format}</CTableDataCell>
                       <CTableDataCell>
@@ -162,15 +163,6 @@ const ExportHistory = () => {
       </CCol>
     </CRow>
   )
-}
-
-function formatTimestamp(value) {
-  if (!value) return '-'
-  try {
-    return new Date(value).toLocaleString()
-  } catch {
-    return value
-  }
 }
 
 function summarizeFilters(filters) {

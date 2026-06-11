@@ -416,7 +416,7 @@ const _ruleWith = (stmt) => ({
   then: [stmt],
 })
 
-describe('validateAst - Sprint 7 pre/post sections', () => {
+describe('validateAst - pre/post sections', () => {
   it('accepts a pre_rules section with a set_data statement', () => {
     _ok({
       type: 'program',
@@ -560,7 +560,7 @@ describe('validateAst - Sprint 7 pre/post sections', () => {
   })
 })
 
-describe('validateAst - Sprint 7 parent_variables', () => {
+describe('validateAst - parent_variables', () => {
   it('accepts a parent_variables map with scalar values', () => {
     _ok({
       type: 'program',

@@ -39,6 +39,7 @@ import { cilArrowLeft, cilLayers, cilPlus } from '@coreui/icons'
 
 import { getGame, listGameTasks } from '../../../api'
 import { extractError } from '../../../utils/errors'
+import { formatDateTime } from '../../../utils/date'
 import { SkeletonTable } from '../../../components/Skeleton'
 import TaskFormModal from './TaskFormModal'
 import TaskDuplicateModal from './TaskDuplicateModal'
@@ -46,12 +47,6 @@ import TaskDeleteDialog from './TaskDeleteDialog'
 import TaskBulkModal from './TaskBulkModal'
 
 const CLOSED_MODAL = { mode: null, task: null }
-
-const formatDate = (value) => {
-  if (!value) return '-'
-  const d = new Date(value)
-  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleString()
-}
 
 const strategyIdOf = (task) => task?.strategy?.id || task?.strategyId || ''
 
@@ -261,7 +256,7 @@ const GameTasksView = () => {
                     </CTableDataCell>
                     <CTableDataCell>
                       <span className="text-medium-emphasis small">
-                        {formatDate(task.created_at)}
+                        {formatDateTime(task.created_at)}
                       </span>
                     </CTableDataCell>
                     <CTableDataCell className="text-end">

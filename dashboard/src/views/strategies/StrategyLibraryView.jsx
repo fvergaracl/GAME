@@ -53,12 +53,14 @@ import {
   listCustomStrategies,
   publishCustomStrategy,
 } from '../../api'
-import keycloak from '../../keycloak'
+import useIsAdmin from '../../hooks/useIsAdmin'
 import { extractError } from '../../utils/errors'
+import { formatDate } from '../../utils/date'
 import { SkeletonTable } from '../../components/Skeleton'
 import { useToast } from '../../components/Toast'
 import GlossaryHint from './glossary/GlossaryHint'
 import OnboardingTour from './OnboardingTour'
+import { STATUS_BADGE } from './lifecycleStatus'
 import StrategyUsageModal from './StrategyUsageModal'
 import StrategyVersionHistoryModal from './StrategyVersionHistoryModal'
 
@@ -80,12 +82,6 @@ const LIBRARY_TOUR_STEPS = [
 // library usable for the hundreds-of-strategies range without a "next page".
 const PAGE_LIMIT = 200
 
-const STATUS_BADGE = {
-  DRAFT: 'secondary',
-  PUBLISHED: 'success',
-  ARCHIVED: 'dark',
-}
-
 const STATUS_LABEL = {
   DRAFT: 'Borrador',
   PUBLISHED: 'Publicada',
@@ -97,32 +93,9 @@ const TYPE_LABEL = {
   DSL_EXTEND: 'Extiende',
 }
 
-// UX-only admin hint (the server enforces require_admin on publish/archive).
-// Mirrors the decoder in StrategyEditor.jsx.
-const isCurrentUserAdmin = () => {
-  try {
-    const token = keycloak?.token
-    if (!token) return false
-    const payload = token.split('.')[1]
-    const decoded = JSON.parse(atob(payload))
-    return decoded?.resource_access?.account?.roles?.includes('AdministratorGAME') || false
-  } catch {
-    return false
-  }
-}
-
-const formatDate = (iso) => {
-  if (!iso) return '-'
-  try {
-    return new Date(iso).toLocaleDateString()
-  } catch {
-    return iso
-  }
-}
-
 const StrategyLibraryView = () => {
   const navigate = useNavigate()
-  const isAdmin = useMemo(() => isCurrentUserAdmin(), [])
+  const isAdmin = useIsAdmin()
   const { t } = useTranslation('strategies')
   // UseToast() returns no-op handlers when no ToastProvider
   // is mounted (e.g. test harnesses), so this is safe to call

@@ -92,7 +92,7 @@ class DslInterpreter:
         ``mode`` selects which section of the program runs:
 
         * ``"full"`` - main ``rules`` + ``default`` (DSL_FULL behaviour;
-          this is the unchanged Sprint 5 path).
+          this is the unchanged path).
         * ``"pre"`` - only ``pre_rules`` (DSL_EXTEND phase 1). The
           ``initial_data`` dict is cloned into ``state.working_data`` so
           ``set_data`` statements can mutate it; the orchestrator

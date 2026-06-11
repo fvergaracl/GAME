@@ -1,12 +1,12 @@
 """
-Repository for ``StrategyExecutionLog`` rows (Sprint 11).
+Repository for ``StrategyExecutionLog`` rows.
 
 Writes are best-effort: the engine never blocks scoring on the audit
 log, so the service layer wraps the insert in its own try/except. The
 read methods power the runbook UI and the post-mortem command-line
 helpers.
 
-Sprint 10 adds aggregation queries used by the observability dashboard:
+Aggregation queries power the observability dashboard:
 counts grouped by status / error code / case name, a percentile-friendly
 sample of durations, and a time-bucketed timeseries. All of them are
 single round-trips so the dashboard renders in one fetch.

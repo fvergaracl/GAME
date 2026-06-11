@@ -841,7 +841,7 @@ export function buildBlockCatalog(mode, t) {
 }
 
 /**
- * Sprint 11: starter rule seeded into a brand-new DSL_FULL workspace
+ * Starter rule seeded into a brand-new DSL_FULL workspace
  * ("Crear estrategia vacía"). A blank canvas made every first
  * Save/Test fail with "rule.then must be a non-empty array of
  * statements" because the designer hadn't connected an action yet.
@@ -886,7 +886,7 @@ export const STARTER_RULE_XML = `
 `.trim()
 
 /**
- * Sprint 10: refresh the cached ``t`` reference and re-tooltip every
+ * Refresh the cached ``t`` reference and re-tooltip every
  * existing block. Called by the editor when the language changes.
  * Updates the prototype's tooltip via re-running each ``init()``-like
  * setter on the live blocks, which is the cheapest way to push the

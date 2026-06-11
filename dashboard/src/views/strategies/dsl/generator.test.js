@@ -221,7 +221,7 @@ describe('workspaceToAst - func_call with int and clamp', () => {
 // program.pre_rules / post_rules, the parent_variables map emission,
 // and that the resulting AST passes the client-side validator.
 
-describe('workspaceToAst - Sprint 7 pre/post + parent_variables', () => {
+describe('workspaceToAst - pre/post + parent_variables', () => {
   it('emits pre_rules from top-level gd_pre_rule blocks', () => {
     const ws = makeWorkspace()
     const preRule = newBlock(ws, 'gd_pre_rule', 'pr1')

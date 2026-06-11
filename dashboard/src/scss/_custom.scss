@@ -1,7 +1,7 @@
-// Sprint 9 - shared resilience primitives.
+// Shared resilience primitives.
 //
 // Skeletons replace the "blank space then content pops in" pattern that
-// shipped in Sprint 6 (a CSpinner inside an otherwise empty card). They
+// shipped earlier (a CSpinner inside an otherwise empty card). They
 // are driven entirely from CoreUI tokens so they pick up dark mode for
 // free via ``--cui-tertiary-bg`` / ``--cui-secondary-bg``.
 
@@ -54,7 +54,7 @@
 }
 
 // Range-picker popover anchored under the "Custom Range" button on the
-// dashboard. Lives in CSS so the inline-style stack from Sprint 6
+// dashboard. Lives in CSS so the previous inline-style stack
 // (which broke dark mode) is fully retired.
 .gd-date-popover {
   top: 100%;

@@ -38,7 +38,7 @@ class SimulationRequest(BaseModel):
 
 
 class InlineSimulationRequest(SimulationRequest):
-    """Sprint 5 (fix C7): dry-run an AST supplied inline.
+    """Dry-run an AST supplied inline.
 
     The id-based ``/{id}/simulate`` route loads a *persisted* strategy,
     which forced the editor to save a hidden DRAFT on every "Probar"

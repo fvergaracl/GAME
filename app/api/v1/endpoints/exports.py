@@ -5,7 +5,7 @@ Exposes streaming CSV/XLSX/JSON dumps of the four operational datasets the
 business team needs to inspect (users, user-points, user-interactions,
 wallet-transactions). Requires a Keycloak OIDC token with the
 ``AdministratorGAME`` role - plain API keys cannot pull bulk data through
-these endpoints by design (see Sprint 1 plan: an API key with realm scope
+these endpoints by design (an API key with realm scope
 should not be able to dump cross-tenant data).
 """
 

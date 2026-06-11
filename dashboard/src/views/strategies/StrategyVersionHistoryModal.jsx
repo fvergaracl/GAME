@@ -32,13 +32,9 @@ import {
 
 import { listStrategyVersions, rollbackStrategy } from '../../api'
 import { extractError } from '../../utils/errors'
+import { formatDateTime } from '../../utils/date'
 import { DIFF_KINDS, diffPrograms } from './dsl/diffAst'
-
-const STATUS_BADGE = {
-  DRAFT: 'secondary',
-  PUBLISHED: 'success',
-  ARCHIVED: 'dark',
-}
+import { STATUS_BADGE } from './lifecycleStatus'
 
 const KIND_LABEL = {
   [DIFF_KINDS.ADDED]: 'Añadida',
@@ -52,15 +48,6 @@ const KIND_COLOR = {
   [DIFF_KINDS.REMOVED]: 'danger',
   [DIFF_KINDS.MODIFIED]: 'warning',
   [DIFF_KINDS.UNCHANGED]: 'secondary',
-}
-
-const formatDate = (iso) => {
-  if (!iso) return '-'
-  try {
-    return new Date(iso).toLocaleString()
-  } catch {
-    return iso
-  }
 }
 
 const prettyJson = (value) => {
@@ -272,7 +259,7 @@ const StrategyVersionHistoryModal = ({
                       <strong>v{v.version}</strong>
                       <CBadge color={STATUS_BADGE[v.status] || 'secondary'}>{v.status}</CBadge>
                     </div>
-                    <div className="small text-medium-emphasis">{formatDate(v.created_at)}</div>
+                    <div className="small text-medium-emphasis">{formatDateTime(v.created_at)}</div>
                     {v.createdBy && (
                       <div className="small text-medium-emphasis">
                         Por <code>{v.createdBy}</code>

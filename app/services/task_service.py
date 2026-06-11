@@ -280,7 +280,7 @@ class TaskService(BaseService):
         """
         Resolve a task that must belong to ``gameId``, honouring scope.
 
-        Shared guard for the Sprint 0 ``delete``/``duplicate`` task flows
+        Shared guard for the ``delete``/``duplicate`` task flows
         (and a sibling of the inline checks in :meth:`patch_task_by_id`):
         the game has to exist (and be in the caller's scope when
         ``enforce_scope`` is set), the task has to exist, and it has to be
@@ -329,7 +329,7 @@ class TaskService(BaseService):
         Delete a task (and its params/points) identified by
         ``gameId`` + ``taskId``.
 
-        Sprint 0 full-stack addition mirroring
+        Full-stack addition mirroring
         :meth:`GameService.delete_game_by_id`: the cascade lives in
         :meth:`TaskRepository.delete_task_by_id` so task params and the
         user-points rows that reference the task go before the task row.

@@ -1,5 +1,5 @@
 """
-Pydantic schemas for the persistent strategy model (Sprint 3).
+Pydantic schemas for the persistent strategy model.
 
 Three layers:
   * ``Create…`` – input payload for ``POST /v1/strategies/custom``.
@@ -87,7 +87,7 @@ class StrategyDefinitionRead(BaseModel):
 
 
 class StrategyUsageGame(BaseModel):
-    """A game directly assigned to the strategy (Sprint 6 reverse lookup)."""
+    """A game directly assigned to the strategy (reverse lookup)."""
 
     gameId: str
     externalGameId: Optional[str] = None
@@ -95,7 +95,7 @@ class StrategyUsageGame(BaseModel):
 
 
 class StrategyUsageTask(BaseModel):
-    """A task whose strategy overrides its game's default (Sprint 6)."""
+    """A task whose strategy overrides its game's default."""
 
     taskId: str
     externalTaskId: Optional[str] = None
@@ -126,7 +126,7 @@ class StrategyUsageRead(BaseModel):
 
 class StrategyTemplateRead(BaseModel):
     """
-    Outbound view of a built-in user-facing template (Sprint 8).
+    Outbound view of a built-in user-facing template.
 
     Templates live on disk under ``app/engine/dsl_templates/user/`` and
     seed the "Usar una plantilla" path in the Blockly editor. They are
@@ -146,7 +146,7 @@ class StrategyTemplateRead(BaseModel):
 
 class StrategyDefinitionImport(BaseModel):
     """
-    Input payload for ``POST /v1/strategies/custom/import`` (Sprint 8).
+    Input payload for ``POST /v1/strategies/custom/import``.
 
     Matches the bundle produced by the dashboard's "Exportar JSON" action
     so an export → import round-trip lands a structurally identical

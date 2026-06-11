@@ -257,7 +257,7 @@ class GameRepository(BaseRepository):
         """
         Return all games whose ``strategyId`` matches the given value.
 
-        Used by the Sprint 9 rollback cascade to know which games will be
+        Used by the rollback cascade to know which games will be
         reassigned to the rolled-back version (the actual UPDATE goes
         through :meth:`bulk_update_strategy_id`; this helper is exposed
         for audit logging and tests).
@@ -270,7 +270,7 @@ class GameRepository(BaseRepository):
         """
         Map internal game ``id`` → ``externalGameId`` for the given ids.
 
-        Used by the Sprint 6 strategy-usage view to render the parent game
+        Used by the strategy-usage view to render the parent game
         of a task-level assignment by its human-readable external id
         instead of a raw UUID, in a single query rather than N reads.
         """
@@ -294,7 +294,7 @@ class GameRepository(BaseRepository):
         ``new_strategy_id`` in a single UPDATE. Returns the row count so
         the caller can log/audit the cascade.
 
-        Used by the Sprint 9 rollback flow: when a published custom
+        Used by the rollback flow: when a published custom
         strategy is rolled back, the games that pointed at the previous
         UUID get reassigned to the target UUID in one trip so no game is
         left referring to an ARCHIVED row.

@@ -1,7 +1,7 @@
 """
 Service for the persistent strategy model.
 
-Implements the versioning rules called out in the Sprint 3 plan:
+Implements the versioning rules for the persistent strategy model:
 
 * Creating uses ``version=1`` and ``status=DRAFT``.
 * Editing a draft mutates the row in place.
@@ -70,7 +70,7 @@ class StrategyDefinitionService(BaseService):
         ``game_repository`` and ``task_repository`` are optional so legacy
         call sites that only need CRUD/lifecycle (most tests, the
         simulation service) keep working without a wider DI graph. The
-        Sprint 9 rollback flow requires both - when missing,
+        The rollback flow requires both - when missing,
         :meth:`rollback` raises a precise error rather than silently
         leaving cascade UPDATEs undone.
         """
@@ -139,7 +139,7 @@ class StrategyDefinitionService(BaseService):
     ) -> bool:
         """Whether any version of ``(realmId, name)`` already exists.
 
-        Used by the import endpoint (Sprint 8) to decide whether the
+        Used by the import endpoint to decide whether the
         incoming bundle needs an auto-rename to avoid colliding with
         the ``UNIQUE(realmId, name, version)`` constraint.
         """
@@ -484,7 +484,7 @@ class StrategyDefinitionService(BaseService):
     ) -> StrategyUsageRead:
         """
         Reverse lookup: which games/tasks are assigned to this exact
-        strategy version (Sprint 6).
+        strategy version.
 
         Consumers store the assignable id ``custom:<uuid>``, so usage is
         an exact match on that string - the same value the rollback

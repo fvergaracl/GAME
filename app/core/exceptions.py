@@ -248,7 +248,7 @@ def _build_dsl_detail(
 
     When ``code`` is provided, return a structured dict the frontend can
     translate. Otherwise return ``detail`` unchanged so legacy raises
-    that still pass a bare string serialise identically to pre-Sprint-10.
+    that still pass a bare string serialise identically to the old format.
     """
     if code is None:
         return detail

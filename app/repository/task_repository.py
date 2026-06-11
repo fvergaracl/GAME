@@ -116,7 +116,7 @@ class TaskRepository(BaseRepository):
     async def patch_by_id(self, taskId, fields: dict):
         """
         Apply a small ``fields`` dict to the task identified by
-        ``taskId``. Returns the refreshed row. Used by the Sprint 9
+        ``taskId``. Returns the refreshed row. Used by the
         ``PATCH /games/{gameId}/tasks/{taskId}`` flow so the assignments
         admin view can rewrite ``strategyId`` (and ``status``) without a
         full upsert.
@@ -184,7 +184,7 @@ class TaskRepository(BaseRepository):
         """
         Return all tasks whose ``strategyId`` matches the given value.
 
-        Sprint 9 rollback cascade companion to
+        Rollback cascade companion to
         :meth:`GameRepository.list_by_strategy_id`.
         """
         async with self.session_factory() as session:
@@ -198,7 +198,7 @@ class TaskRepository(BaseRepository):
         Rewrite every task's ``strategyId`` from ``old_strategy_id`` to
         ``new_strategy_id`` in a single UPDATE. Returns the row count.
 
-        Sprint 9 rollback cascade companion to
+        Rollback cascade companion to
         :meth:`GameRepository.bulk_update_strategy_id`.
         """
         async with self.session_factory() as session:

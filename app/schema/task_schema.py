@@ -243,7 +243,7 @@ class CreateTaskPostSuccesfullyCreated(SuccesfullyCreated):
 
 class PatchTask(BaseModel):
     """
-    Request schema for a partial task update (Sprint 9).
+    Request schema for a partial task update.
 
     Attributes:
         strategyId (Optional[str]): New strategy id to assign to the

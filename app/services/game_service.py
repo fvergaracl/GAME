@@ -398,7 +398,7 @@ class GameService(BaseService):
             and must be PUBLISHED. We refuse DRAFT/ARCHIVED to avoid
             assigning a strategy that the resolver can't execute (DRAFT
             never runs; ARCHIVED would only run by accident if a prior
-            rollback left dangling references - which the Sprint 9
+            rollback left dangling references - which the
             cascade is precisely designed to prevent).
 
         Raises ``NotFoundError`` for unknown ids, ``BadRequestError`` for

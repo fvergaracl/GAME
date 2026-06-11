@@ -89,7 +89,7 @@ class DslSimulationService(BaseService):
         realmId: Any,
         request: InlineSimulationRequest,
     ) -> SimulationResponse:
-        """Sprint 5 (fix C7): dry-run an AST supplied inline.
+        """Dry-run an AST supplied inline.
 
         No DB lookup and nothing persisted, so "Probar" no longer spawns
         orphan DRAFT rows and tests the exact AST on the editor canvas

@@ -1,5 +1,5 @@
 """
-Prometheus metrics for the DSL strategy engine (Sprint 11).
+Prometheus metrics for the DSL strategy engine.
 
 Three metrics, scraped by the standard ``/metrics`` endpoint exposed by
 ``prometheus_fastapi_instrumentator`` (already in pyproject.toml):

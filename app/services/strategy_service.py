@@ -78,13 +78,13 @@ class StrategyService(BaseService):
         Initializes the StrategyService.
 
         ``strategy_definition_service`` is optional so legacy call sites
-        that only need built-ins still work after the Sprint 3 wiring.
+        that only need built-ins still work after the custom-strategy wiring.
         When it's omitted, attempting to resolve a ``custom:`` id raises
         ``NotFoundError`` with a clear message rather than silently
         crashing.
 
         ``dsl_interpreter`` and ``analytics_service`` are required to
-        instantiate ``DslStrategy`` for ``custom:`` ids (Sprint 5 wiring).
+        instantiate ``DslStrategy`` for ``custom:`` ids.
         They are optional kwargs to preserve the legacy
         ``StrategyService()`` no-arg call style still in use by tests and
         by ``UserPointsService.__init__`` until the container injection
@@ -143,7 +143,7 @@ class StrategyService(BaseService):
             raise NotFoundError(
                 detail=(
                     f"Strategy '{id}' is a DSL strategy. Use the async "
-                    "resolve() method (DSL execution arrives in Sprint 4)."
+                    "resolve() method."
                 )
             )
         for strategy in all_engine_strategies():

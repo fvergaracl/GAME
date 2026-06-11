@@ -1,5 +1,5 @@
 """
-Observability aggregation service (Sprint 10).
+Observability aggregation service.
 
 Reads from the same ``strategyexecutionlog`` table the engine writes
 via :class:`DslExecutionObserver` and shapes it into the metrics view
@@ -168,7 +168,7 @@ def _status_breakdown(raw: dict) -> StatusBreakdown:
 
 
 class StrategyObservabilityService:
-    """Single entrypoint for the Sprint 10 dashboard view + A/B view."""
+    """Single entrypoint for the dashboard view + A/B view."""
 
     def __init__(
         self,

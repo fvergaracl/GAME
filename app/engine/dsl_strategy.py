@@ -1,10 +1,8 @@
 """
 ``BaseStrategy`` adapter that runs a persisted DSL ``StrategyDefinition``.
 
-This class is built in Sprint 4 but NOT connected to ``UserPointsService``
-yet - that wiring is Sprint 5's "modify BaseStrategy.calculate_points to
-delegate" item. Until then the adapter is exercised only by the simulate
-endpoint and by tests.
+This adapter is what ``StrategyService`` instantiates for ``custom:`` ids;
+it is also exercised directly by the simulate endpoint and by tests.
 
 Notable choice: ``_generate_hash_of_calculate_points`` is overridden to
 hash the canonicalized AST (sorted JSON keys) instead of the Python
@@ -466,7 +464,7 @@ class DslStrategy(BaseStrategy):
         DslExecutionResult dict (which carries working_data and vetoed
         for pre/post phases - see the TypedDict in dsl_interpreter).
 
-        Sprint 11: the trace produced by each phase is appended to
+        The trace produced by each phase is appended to
         ``self._last_trace`` so the calculate_points wrapper hands the
         observer a single sequential trace for the whole pipeline (pre
         + post for DSL_EXTEND, just the full run for DSL_FULL). Node

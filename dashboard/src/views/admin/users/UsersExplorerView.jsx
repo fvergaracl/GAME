@@ -42,15 +42,10 @@ import { cilMoney, cilSearch, cilStar, cilWallet } from '@coreui/icons'
 
 import { getUserPoints, getUserWallet } from '../../../api'
 import { extractError } from '../../../utils/errors'
+import { formatDateTime } from '../../../utils/date'
 import { SkeletonText } from '../../../components/Skeleton'
 
 const is404 = (err) => err?.response?.status === 404
-
-const formatDate = (value) => {
-  if (!value) return '-'
-  const d = new Date(value)
-  return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString()
-}
 
 // Points are integers; coins are floats with a small magnitude - show up to
 // two decimals but drop trailing zeros so "12.00" reads as "12".
@@ -324,7 +319,7 @@ const UsersExplorerView = () => {
                     <CTableRow key={tx.id}>
                       <CTableDataCell>
                         <span className="text-medium-emphasis small">
-                          {formatDate(tx.created_at)}
+                          {formatDateTime(tx.created_at)}
                         </span>
                       </CTableDataCell>
                       <CTableDataCell>

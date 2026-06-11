@@ -1,5 +1,5 @@
 """
-Sprint 10 - observability endpoints for custom strategies.
+Observability endpoints for custom strategies.
 
 Exposes the data the backend already collects (via
 :class:`DslExecutionObserver` writing into ``strategyexecutionlog``)
@@ -37,7 +37,7 @@ router = APIRouter(
 @router.get(
     "/{id}/metrics",
     response_model=StrategyMetricsResponse,
-    summary=("Observability metrics for a custom strategy (Sprint 10)"),
+    summary="Observability metrics for a custom strategy",
 )
 @inject
 async def get_strategy_metrics(
@@ -83,7 +83,7 @@ async def get_strategy_metrics(
 @router.get(
     "/compare",
     response_model=StrategyComparisonResponse,
-    summary="Side-by-side A/B comparison of two strategies (Sprint 10)",
+    summary="Side-by-side A/B comparison of two strategies",
 )
 @inject
 async def compare_strategies(

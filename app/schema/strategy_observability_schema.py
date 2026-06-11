@@ -1,5 +1,5 @@
 """
-Pydantic schemas for the Sprint 10 observability endpoints.
+Pydantic schemas for the observability endpoints.
 
 The backend already collects every datapoint via ``DslExecutionObserver``
 (metrics + sampled persistence into ``strategyexecutionlog``). This

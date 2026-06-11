@@ -310,8 +310,8 @@ def is_parent_field_path(path: str) -> bool:
 
 
 def is_known_field_path(path: str) -> bool:
-    """Either a whitelisted analytic/static path, a parent.* path (Sprint 7,
-    context-restricted by validator), or a well-formed data.* key."""
+    """Either a whitelisted analytic/static path, a parent.* path
+    (context-restricted by validator), or a well-formed data.* key."""
     return (
         path in FIELD_RESOLVERS
         or is_parent_field_path(path)

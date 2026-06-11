@@ -13,6 +13,7 @@ import CIcon from '@coreui/icons-react'
 
 import { AppSidebarNav } from './AppSidebarNav'
 import keycloak from '../keycloak'
+import { resolveIsAdmin } from '../hooks/useIsAdmin'
 import { logo } from 'src/assets/brand/logo'
 
 // sidebar nav config
@@ -24,24 +25,11 @@ const AppSidebar = () => {
   const sidebarShow = useSelector((state) => state.sidebarShow)
   const sidebarNav = useSelector((state) => state.sidebarNav) || _nav
   useEffect(() => {
-    // AdministratorGAME is a CLIENT role on the *backend* client
-    // (VITE_KEYCLOAK_API_CLIENT_ID, e.g. game-backend), not on the public
-    // SPA client used for the login flow (VITE_KEYCLOAK_CLIENT_ID,
-    // e.g. game-frontend). The default "client roles" mapper in
-    // Keycloak's roles scope aggregates roles across clients into
-    // resource_access[<client>].roles regardless of which client
-    // requested the token, so the lookup below resolves even when the
-    // user logged in via the public SPA client.
-    const apiClientId =
-      import.meta.env.VITE_KEYCLOAK_API_CLIENT_ID ||
-      import.meta.env.VITE_KEYCLOAK_CLIENT_ID
-    const roles =
-      keycloak.tokenParsed?.resource_access?.[apiClientId]?.roles ?? []
-    if (roles.includes('AdministratorGAME')) {
-      dispatch({ type: 'set', sidebarNav: _nav_administrator })
-    } else {
-      dispatch({ type: 'set', sidebarNav: _nav })
-    }
+    // AdministratorGAME may land under any resource_access bucket depending
+    // on which Keycloak client issued the token; resolveIsAdmin checks them
+    // all (see hooks/useIsAdmin) so this stays in agreement with the gates
+    // in the strategy views.
+    dispatch({ type: 'set', sidebarNav: resolveIsAdmin() ? _nav_administrator : _nav })
   }, [keycloak.authenticated])
 
   return (

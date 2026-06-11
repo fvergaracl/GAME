@@ -39,6 +39,7 @@ import { cilPlus } from '@coreui/icons'
 
 import { listGames } from '../../../api'
 import { extractError } from '../../../utils/errors'
+import { formatDateTime } from '../../../utils/date'
 import { SkeletonTable } from '../../../components/Skeleton'
 import GameFormModal, { PLATFORM_PRESETS } from './GameFormModal'
 import GameDeleteDialog from './GameDeleteDialog'
@@ -48,12 +49,6 @@ const PAGE_SIZE_OPTIONS = [10, 20, 50]
 
 // Closed when ``mode`` is null; create/edit drive GameFormModal.
 const CLOSED_MODAL = { mode: null, gameId: null }
-
-const formatDate = (value) => {
-  if (!value) return '-'
-  const d = new Date(value)
-  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleString()
-}
 
 const GamesManagementView = () => {
   const { t } = useTranslation('management')
@@ -231,7 +226,7 @@ const GamesManagementView = () => {
                     </CTableDataCell>
                     <CTableDataCell>
                       <span className="text-medium-emphasis small">
-                        {formatDate(game.created_at)}
+                        {formatDateTime(game.created_at)}
                       </span>
                     </CTableDataCell>
                     <CTableDataCell className="text-end">
