@@ -392,9 +392,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.model.wallet</span><span class="w"> </span><span class="kn">import</span> <span class="n">Wallet</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.model.wallet_transactions</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletTransactions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.export_audit_log_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExportAuditLogRepository</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.export_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CreateExportAuditLog</span><span class="p">,</span> <span class="n">ExportAuditLogEntry</span><span class="p">,</span>
-                                      <span class="n">ExportDatasetType</span><span class="p">,</span> <span class="n">ExportFilters</span><span class="p">,</span> <span class="n">ExportFormat</span><span class="p">,</span>
-                                      <span class="n">ExportStatus</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.export_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CreateExportAuditLog</span><span class="p">,</span>
+    <span class="n">ExportAuditLogEntry</span><span class="p">,</span>
+    <span class="n">ExportDatasetType</span><span class="p">,</span>
+    <span class="n">ExportFilters</span><span class="p">,</span>
+    <span class="n">ExportFormat</span><span class="p">,</span>
+    <span class="n">ExportStatus</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 
 <span class="c1"># Column order for each dataset. Drives both CSV header row and XLSX columns.</span>

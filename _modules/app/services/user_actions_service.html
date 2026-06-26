@@ -366,10 +366,15 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_actions_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserActionsRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserRepository</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">AddActionDidByUserInTask</span><span class="p">,</span>
-                                    <span class="n">ResponseAddActionDidByUserInTask</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_actions_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CreatedUserActions</span><span class="p">,</span> <span class="n">CreateUserActions</span><span class="p">,</span>
-                                            <span class="n">CreateUserBodyActions</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AddActionDidByUserInTask</span><span class="p">,</span>
+    <span class="n">ResponseAddActionDidByUserInTask</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_actions_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CreatedUserActions</span><span class="p">,</span>
+    <span class="n">CreateUserActions</span><span class="p">,</span>
+    <span class="n">CreateUserBodyActions</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.game_access</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_authorized_game</span>
 

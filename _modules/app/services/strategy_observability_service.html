@@ -389,14 +389,20 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.strategy_execution_log_repository</span><span class="w"> </span><span class="kn">import</span> \
-    <span class="n">StrategyExecutionLogRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.strategy_execution_log_repository</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">StrategyExecutionLogRepository</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.strategy_definition_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionRead</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.strategy_observability_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CaseCount</span><span class="p">,</span> <span class="n">DurationPercentiles</span><span class="p">,</span>
-                                                      <span class="n">ErrorCount</span><span class="p">,</span> <span class="n">HistogramBucket</span><span class="p">,</span>
-                                                      <span class="n">MetricsDelta</span><span class="p">,</span> <span class="n">StatusBreakdown</span><span class="p">,</span>
-                                                      <span class="n">StrategyComparisonResponse</span><span class="p">,</span>
-                                                      <span class="n">StrategyMetricsResponse</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.strategy_observability_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CaseCount</span><span class="p">,</span>
+    <span class="n">DurationPercentiles</span><span class="p">,</span>
+    <span class="n">ErrorCount</span><span class="p">,</span>
+    <span class="n">HistogramBucket</span><span class="p">,</span>
+    <span class="n">MetricsDelta</span><span class="p">,</span>
+    <span class="n">StatusBreakdown</span><span class="p">,</span>
+    <span class="n">StrategyComparisonResponse</span><span class="p">,</span>
+    <span class="n">StrategyMetricsResponse</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_definition_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionService</span>
 
 <span class="c1"># Bucket edges chosen to align with the Prometheus histogram in</span>

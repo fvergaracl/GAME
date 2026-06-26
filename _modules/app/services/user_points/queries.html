@@ -375,13 +375,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotFoundError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.games_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListTasksWithUsers</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseUserFirstAction</span><span class="p">,</span> <span class="n">TasksWithUsers</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_points_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">AllPointsByGame</span><span class="p">,</span> <span class="n">GameDetail</span><span class="p">,</span>
-                                           <span class="n">PointsAssignedToUser</span><span class="p">,</span>
-                                           <span class="n">PointsAssignedToUserDetails</span><span class="p">,</span>
-                                           <span class="n">ResponseGetPointsByGame</span><span class="p">,</span>
-                                           <span class="n">ResponseGetPointsByTask</span><span class="p">,</span>
-                                           <span class="n">ResponsePointsByExternalUserId</span><span class="p">,</span> <span class="n">TaskDetail</span><span class="p">,</span>
-                                           <span class="n">TaskPointsByGame</span><span class="p">,</span> <span class="n">UserGamePoints</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_points_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AllPointsByGame</span><span class="p">,</span>
+    <span class="n">GameDetail</span><span class="p">,</span>
+    <span class="n">PointsAssignedToUser</span><span class="p">,</span>
+    <span class="n">PointsAssignedToUserDetails</span><span class="p">,</span>
+    <span class="n">ResponseGetPointsByGame</span><span class="p">,</span>
+    <span class="n">ResponseGetPointsByTask</span><span class="p">,</span>
+    <span class="n">ResponsePointsByExternalUserId</span><span class="p">,</span>
+    <span class="n">TaskDetail</span><span class="p">,</span>
+    <span class="n">TaskPointsByGame</span><span class="p">,</span>
+    <span class="n">UserGamePoints</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.game_access</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_authorized_game</span><span class="p">,</span> <span class="n">get_authorized_user</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.user_points._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">FANOUT_LIMIT</span><span class="p">,</span> <span class="n">UserPointsContext</span>
 

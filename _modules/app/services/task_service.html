@@ -373,16 +373,29 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.task_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_points_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserPointsRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.user_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserRepository</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CreateTask</span><span class="p">,</span> <span class="n">CreateTaskPost</span><span class="p">,</span>
-                                    <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">,</span> <span class="n">FindTask</span><span class="p">,</span>
-                                    <span class="n">PatchTask</span><span class="p">,</span> <span class="n">ResponseDeleteTask</span><span class="p">,</span> <span class="n">ResponsePatchTask</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.tasks_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CreateTaskParams</span><span class="p">,</span> <span class="n">InsertTaskParams</span><span class="p">,</span>
-                                            <span class="n">UpdateTaskParams</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CreateTask</span><span class="p">,</span>
+    <span class="n">CreateTaskPost</span><span class="p">,</span>
+    <span class="n">CreateTaskPostSuccesfullyCreated</span><span class="p">,</span>
+    <span class="n">FindTask</span><span class="p">,</span>
+    <span class="n">PatchTask</span><span class="p">,</span>
+    <span class="n">ResponseDeleteTask</span><span class="p">,</span>
+    <span class="n">ResponsePatchTask</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.tasks_params_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CreateTaskParams</span><span class="p">,</span>
+    <span class="n">InsertTaskParams</span><span class="p">,</span>
+    <span class="n">UpdateTaskParams</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.game_access</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_authorized_game</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_definition_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionService</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_service</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">StrategyService</span><span class="p">,</span> <span class="n">is_custom_strategy_id</span><span class="p">,</span>
-                                           <span class="n">parse_custom_strategy_id</span><span class="p">,</span> <span class="n">resolve_realm_id</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_service</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">StrategyService</span><span class="p">,</span>
+    <span class="n">is_custom_strategy_id</span><span class="p">,</span>
+    <span class="n">parse_custom_strategy_id</span><span class="p">,</span>
+    <span class="n">resolve_realm_id</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="TaskService">
@@ -559,9 +572,7 @@
         <span class="p">}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">changed_fields</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">params_provided</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ConflictError</span><span class="p">(</span>
-                <span class="n">detail</span><span class="o">=</span><span class="p">(</span>
-                    <span class="s2">"It is not possible to update the task with the same data"</span>
-                <span class="p">)</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">(</span><span class="s2">"It is not possible to update the task with the same data"</span><span class="p">)</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">changed_fields</span><span class="p">:</span>

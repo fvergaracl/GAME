@@ -384,18 +384,28 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BadRequestError</span><span class="p">,</span> <span class="n">ConflictError</span><span class="p">,</span> <span class="n">DuplicatedError</span><span class="p">,</span>
-                                 <span class="n">NotFoundError</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BadRequestError</span><span class="p">,</span>
+    <span class="n">ConflictError</span><span class="p">,</span>
+    <span class="n">DuplicatedError</span><span class="p">,</span>
+    <span class="n">NotFoundError</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.dsl_validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_ast</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.strategy_definition</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">StrategyDefinition</span><span class="p">,</span> <span class="n">StrategyDefinitionStatus</span><span class="p">,</span>
-                                           <span class="n">StrategyDefinitionType</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.model.strategy_definition</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">StrategyDefinition</span><span class="p">,</span>
+    <span class="n">StrategyDefinitionStatus</span><span class="p">,</span>
+    <span class="n">StrategyDefinitionType</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.strategy_definition_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrategyDefinitionRepository</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.strategy_definition_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">StrategyDefinitionCreate</span><span class="p">,</span>
-                                                   <span class="n">StrategyDefinitionPersist</span><span class="p">,</span>
-                                                   <span class="n">StrategyDefinitionRead</span><span class="p">,</span>
-                                                   <span class="n">StrategyDefinitionUpdate</span><span class="p">,</span>
-                                                   <span class="n">StrategyUsageGame</span><span class="p">,</span> <span class="n">StrategyUsageRead</span><span class="p">,</span>
-                                                   <span class="n">StrategyUsageTask</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.strategy_definition_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">StrategyDefinitionCreate</span><span class="p">,</span>
+    <span class="n">StrategyDefinitionPersist</span><span class="p">,</span>
+    <span class="n">StrategyDefinitionRead</span><span class="p">,</span>
+    <span class="n">StrategyDefinitionUpdate</span><span class="p">,</span>
+    <span class="n">StrategyUsageGame</span><span class="p">,</span>
+    <span class="n">StrategyUsageRead</span><span class="p">,</span>
+    <span class="n">StrategyUsageTask</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
 
 <span class="c1"># Kept in sync with ``CUSTOM_STRATEGY_PREFIX`` in</span>

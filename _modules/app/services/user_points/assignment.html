@@ -370,8 +370,11 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">InternalServerError</span><span class="p">,</span> <span class="n">NotFoundError</span><span class="p">,</span>
-                                 <span class="n">PreconditionFailedError</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">InternalServerError</span><span class="p">,</span>
+    <span class="n">NotFoundError</span><span class="p">,</span>
+    <span class="n">PreconditionFailedError</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">AssignedPointsToExternalUserId</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.game_access</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_authorized_game</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.strategy_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_realm_id</span>

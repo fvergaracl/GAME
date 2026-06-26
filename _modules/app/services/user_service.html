@@ -371,11 +371,16 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.wallet_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.wallet_transaction_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WalletTransactionRepository</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.task_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskPointsResponseByUser</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_points_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BaseUserPointsBaseModelWithCaseName</span><span class="p">,</span>
-                                           <span class="n">UserPointsAssigned</span><span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">PostPointsConversionRequest</span><span class="p">,</span>
-                                    <span class="n">ResponsePointsConversion</span><span class="p">,</span> <span class="n">UserPointsTasks</span><span class="p">,</span>
-                                    <span class="n">UserWallet</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_points_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseUserPointsBaseModelWithCaseName</span><span class="p">,</span>
+    <span class="n">UserPointsAssigned</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.user_schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PostPointsConversionRequest</span><span class="p">,</span>
+    <span class="n">ResponsePointsConversion</span><span class="p">,</span>
+    <span class="n">UserPointsTasks</span><span class="p">,</span>
+    <span class="n">UserWallet</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.wallet_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateWallet</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.schema.wallet_transaction_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseWalletTransaction</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.base_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseService</span>
