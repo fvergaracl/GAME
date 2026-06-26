@@ -37,14 +37,32 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict, List, Optional, TypedDict
 
-from app.core.exceptions import (DslExecutionError, DslLimitExceededError,
-                                 DslValidationError)
-from app.engine.dsl_ast import (ALLOWED_ARITH_OPS, ALLOWED_COMPARE_OPS,
-                                ALLOWED_FUNC_NAMES, FUNC_ARITY, NODE_AND, NODE_ARITH,
-                                NODE_ASSIGN_POINTS, NODE_COMPARE, NODE_FIELD,
-                                NODE_FUNC_CALL, NODE_LITERAL, NODE_NOT, NODE_OR,
-                                NODE_RETURN, NODE_SET_CALLBACK_DATA, NODE_SET_CASE_NAME,
-                                NODE_SET_DATA, NODE_SET_POINTS, NODE_VETO)
+from app.core.exceptions import (
+    DslExecutionError,
+    DslLimitExceededError,
+    DslValidationError,
+)
+from app.engine.dsl_ast import (
+    ALLOWED_ARITH_OPS,
+    ALLOWED_COMPARE_OPS,
+    ALLOWED_FUNC_NAMES,
+    FUNC_ARITY,
+    NODE_AND,
+    NODE_ARITH,
+    NODE_ASSIGN_POINTS,
+    NODE_COMPARE,
+    NODE_FIELD,
+    NODE_FUNC_CALL,
+    NODE_LITERAL,
+    NODE_NOT,
+    NODE_OR,
+    NODE_RETURN,
+    NODE_SET_CALLBACK_DATA,
+    NODE_SET_CASE_NAME,
+    NODE_SET_DATA,
+    NODE_SET_POINTS,
+    NODE_VETO,
+)
 from app.engine.dsl_execution_context import ExecutionContext
 
 

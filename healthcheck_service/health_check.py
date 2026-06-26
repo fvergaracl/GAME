@@ -29,12 +29,14 @@ conn = psycopg2.connect(
 
 def check_if_table_exists():
     with conn.cursor() as cur:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT EXISTS (
                 SELECT FROM information_schema.tables
                 WHERE table_name = 'uptimelogs'
             )
-        """)
+        """
+        )
         return cur.fetchone()[0]
 
 

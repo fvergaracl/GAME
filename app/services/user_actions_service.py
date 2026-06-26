@@ -3,10 +3,15 @@ from app.repository.game_repository import GameRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_actions_repository import UserActionsRepository
 from app.repository.user_repository import UserRepository
-from app.schema.task_schema import (AddActionDidByUserInTask,
-                                    ResponseAddActionDidByUserInTask)
-from app.schema.user_actions_schema import (CreatedUserActions, CreateUserActions,
-                                            CreateUserBodyActions)
+from app.schema.task_schema import (
+    AddActionDidByUserInTask,
+    ResponseAddActionDidByUserInTask,
+)
+from app.schema.user_actions_schema import (
+    CreatedUserActions,
+    CreateUserActions,
+    CreateUserBodyActions,
+)
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
 

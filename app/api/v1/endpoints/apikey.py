@@ -7,9 +7,13 @@ from app.core.container import Container
 from app.core.exceptions import ForbiddenError, NotFoundError
 from app.middlewares.auth_context import AuditLogger, audit_log
 from app.middlewares.authentication import auth_oauth2
-from app.schema.apikey_schema import (ApiKeyCreate, ApiKeyCreated,
-                                      ApiKeyCreatedUnitList, ApiKeyPostBody,
-                                      ApiKeyRevoked)
+from app.schema.apikey_schema import (
+    ApiKeyCreate,
+    ApiKeyCreated,
+    ApiKeyCreatedUnitList,
+    ApiKeyPostBody,
+    ApiKeyRevoked,
+)
 from app.services.apikey_service import ApiKeyService
 
 router = APIRouter(

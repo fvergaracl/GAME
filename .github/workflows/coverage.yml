@@ -47,7 +47,7 @@ jobs:
           poetry install
       - name: Run tests with coverage
         run: |
-          poetry run pytest --cov=app --cov-report=xml -m "not e2e_real_http"
+          poetry run pytest --cov=app --cov-report=xml --cov-fail-under=93 -m "not e2e_real_http"
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:

@@ -2,9 +2,12 @@ import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.core.exceptions import NotFoundError
-from app.services.strategy_service import (CUSTOM_STRATEGY_PREFIX, StrategyService,
-                                           is_custom_strategy_id,
-                                           parse_custom_strategy_id)
+from app.services.strategy_service import (
+    CUSTOM_STRATEGY_PREFIX,
+    StrategyService,
+    is_custom_strategy_id,
+    parse_custom_strategy_id,
+)
 
 
 class FakeStrategyDefault:

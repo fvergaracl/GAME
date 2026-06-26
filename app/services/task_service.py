@@ -10,16 +10,29 @@ from app.repository.task_params_repository import TaskParamsRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.repository.user_repository import UserRepository
-from app.schema.task_schema import (CreateTask, CreateTaskPost,
-                                    CreateTaskPostSuccesfullyCreated, FindTask,
-                                    PatchTask, ResponseDeleteTask, ResponsePatchTask)
-from app.schema.tasks_params_schema import (CreateTaskParams, InsertTaskParams,
-                                            UpdateTaskParams)
+from app.schema.task_schema import (
+    CreateTask,
+    CreateTaskPost,
+    CreateTaskPostSuccesfullyCreated,
+    FindTask,
+    PatchTask,
+    ResponseDeleteTask,
+    ResponsePatchTask,
+)
+from app.schema.tasks_params_schema import (
+    CreateTaskParams,
+    InsertTaskParams,
+    UpdateTaskParams,
+)
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
 from app.services.strategy_definition_service import StrategyDefinitionService
-from app.services.strategy_service import (StrategyService, is_custom_strategy_id,
-                                           parse_custom_strategy_id, resolve_realm_id)
+from app.services.strategy_service import (
+    StrategyService,
+    is_custom_strategy_id,
+    parse_custom_strategy_id,
+    resolve_realm_id,
+)
 
 
 class TaskService(BaseService):
@@ -189,9 +202,7 @@ class TaskService(BaseService):
         }
         if not changed_fields and not params_provided:
             raise ConflictError(
-                detail=(
-                    "It is not possible to update the task with the same data"
-                )
+                detail=("It is not possible to update the task with the same data")
             )
 
         if changed_fields:

@@ -24,17 +24,26 @@ from app.core.container import Container
 from app.core.exceptions import ForbiddenError
 from app.engine.dsl_templates.loader import load_user_templates
 from app.engine.dsl_validator import validate_ast
-from app.middlewares.auth_context import (AuditLogger, AuthContext, audit_log,
-                                          get_auth_context)
+from app.middlewares.auth_context import (
+    AuditLogger,
+    AuthContext,
+    audit_log,
+    get_auth_context,
+)
 from app.model.strategy_definition import StrategyDefinitionType
-from app.schema.dsl_schema import (InlineSimulationRequest, SimulationRequest,
-                                   SimulationResponse)
-from app.schema.strategy_definition_schema import (StrategyDefinitionCreate,
-                                                   StrategyDefinitionImport,
-                                                   StrategyDefinitionRead,
-                                                   StrategyDefinitionUpdate,
-                                                   StrategyTemplateRead,
-                                                   StrategyUsageRead)
+from app.schema.dsl_schema import (
+    InlineSimulationRequest,
+    SimulationRequest,
+    SimulationResponse,
+)
+from app.schema.strategy_definition_schema import (
+    StrategyDefinitionCreate,
+    StrategyDefinitionImport,
+    StrategyDefinitionRead,
+    StrategyDefinitionUpdate,
+    StrategyTemplateRead,
+    StrategyUsageRead,
+)
 from app.services.dsl_simulation_service import DslSimulationService
 from app.services.strategy_definition_service import StrategyDefinitionService
 from app.services.strategy_service import StrategyService

@@ -1,9 +1,16 @@
 from datetime import datetime
 from uuid import uuid4
 
-from app.schema.base_schema import (Blank, FindBase, FindDateRange, FindResult,
-                                    ModelBaseInfo, RootEndpoint, SearchOptions,
-                                    SuccesfullyCreated)
+from app.schema.base_schema import (
+    Blank,
+    FindBase,
+    FindDateRange,
+    FindResult,
+    ModelBaseInfo,
+    RootEndpoint,
+    SearchOptions,
+    SuccesfullyCreated,
+)
 
 
 def test_root_endpoint():

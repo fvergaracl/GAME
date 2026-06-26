@@ -15,7 +15,7 @@ Companion module: ``test_default_extend_parity.py`` (S7 control gate
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest

@@ -1,5 +1,8 @@
-from app.schema.tasks_params_schema import (BaseTaskParams, CreateTaskParams,
-                                            InsertTaskParams)
+from app.schema.tasks_params_schema import (
+    BaseTaskParams,
+    CreateTaskParams,
+    InsertTaskParams,
+)
 
 
 def test_base_task_params():

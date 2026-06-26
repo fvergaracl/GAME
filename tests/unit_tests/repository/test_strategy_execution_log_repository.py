@@ -20,8 +20,9 @@ import pytest_asyncio
 # import the ``strategyexecutionlog`` table wouldn't exist.
 import app.model.strategy_execution_log  # noqa: F401
 from app.model.strategy_execution_log import StrategyExecutionLog
-from app.repository.strategy_execution_log_repository import \
-    StrategyExecutionLogRepository
+from app.repository.strategy_execution_log_repository import (
+    StrategyExecutionLogRepository,
+)
 
 
 @pytest_asyncio.fixture

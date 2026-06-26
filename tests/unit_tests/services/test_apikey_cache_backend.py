@@ -14,9 +14,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from app.services.apikey_cache_backend import (InMemoryApiKeyCacheBackend,
-                                               RedisApiKeyCacheBackend,
-                                               build_apikey_cache_backend)
+from app.services.apikey_cache_backend import (
+    InMemoryApiKeyCacheBackend,
+    RedisApiKeyCacheBackend,
+    build_apikey_cache_backend,
+)
 
 
 def _value(prefix: str = "gme_live_xxxxxxxx", active: bool = True):

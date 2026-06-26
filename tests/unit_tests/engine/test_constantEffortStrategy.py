@@ -1,6 +1,5 @@
 # tests/test_constant_effort_strategy.py
 import logging
-from datetime import datetime, timedelta
 from unittest.mock import MagicMock
 
 import pytest

@@ -10,15 +10,25 @@ from app.repository.task_params_repository import TaskParamsRepository
 from app.repository.task_repository import TaskRepository
 from app.repository.user_points_repository import UserPointsRepository
 from app.schema.games_params_schema import CreateGameParams, InsertGameParams
-from app.schema.games_schema import (BaseGameResult, FindGameResult, GameCreated,
-                                     PatchGame, PostCreateGame, ResponsePatchGame)
+from app.schema.games_schema import (
+    BaseGameResult,
+    FindGameResult,
+    GameCreated,
+    PatchGame,
+    PostCreateGame,
+    ResponsePatchGame,
+)
 from app.schema.task_schema import CreateTask
 from app.schema.tasks_params_schema import InsertTaskParams
 from app.services.base_service import BaseService
 from app.services.game_access import get_authorized_game
 from app.services.strategy_definition_service import StrategyDefinitionService
-from app.services.strategy_service import (StrategyService, is_custom_strategy_id,
-                                           parse_custom_strategy_id, resolve_realm_id)
+from app.services.strategy_service import (
+    StrategyService,
+    is_custom_strategy_id,
+    parse_custom_strategy_id,
+    resolve_realm_id,
+)
 from app.util.are_variables_matching import are_variables_matching
 from app.util.is_valid_slug import is_valid_slug
 

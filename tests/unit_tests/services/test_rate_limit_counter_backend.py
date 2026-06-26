@@ -16,9 +16,11 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from app.repository.abuse_limit_counter_repository import AbuseLimitCounterRepository
-from app.services.rate_limit_counter_backend import (DatabaseRateLimitCounterBackend,
-                                                     RedisRateLimitCounterBackend,
-                                                     build_rate_limit_counter_backend)
+from app.services.rate_limit_counter_backend import (
+    DatabaseRateLimitCounterBackend,
+    RedisRateLimitCounterBackend,
+    build_rate_limit_counter_backend,
+)
 
 
 def _window():

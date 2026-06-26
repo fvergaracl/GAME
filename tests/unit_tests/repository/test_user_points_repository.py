@@ -7,8 +7,6 @@ The repository contains a wide range of read paths. Postgres-only methods
 module covers the rest end-to-end against an in-memory aiosqlite engine.
 """
 
-from datetime import datetime, timedelta, timezone
-
 import pytest
 
 from app.model.games import Games

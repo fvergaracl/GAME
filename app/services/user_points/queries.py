@@ -12,13 +12,18 @@ from uuid import UUID
 from app.core.exceptions import NotFoundError
 from app.schema.games_schema import ListTasksWithUsers
 from app.schema.task_schema import BaseUserFirstAction, TasksWithUsers
-from app.schema.user_points_schema import (AllPointsByGame, GameDetail,
-                                           PointsAssignedToUser,
-                                           PointsAssignedToUserDetails,
-                                           ResponseGetPointsByGame,
-                                           ResponseGetPointsByTask,
-                                           ResponsePointsByExternalUserId, TaskDetail,
-                                           TaskPointsByGame, UserGamePoints)
+from app.schema.user_points_schema import (
+    AllPointsByGame,
+    GameDetail,
+    PointsAssignedToUser,
+    PointsAssignedToUserDetails,
+    ResponseGetPointsByGame,
+    ResponseGetPointsByTask,
+    ResponsePointsByExternalUserId,
+    TaskDetail,
+    TaskPointsByGame,
+    UserGamePoints,
+)
 from app.services.game_access import get_authorized_game, get_authorized_user
 from app.services.user_points._base import FANOUT_LIMIT, UserPointsContext
 

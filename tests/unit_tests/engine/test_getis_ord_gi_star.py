@@ -3,8 +3,11 @@ import logging
 import numpy as np
 import pytest
 
-from app.engine.getis_ord_gi_star import (GetisOrdStrategy, compute_getis_ord_gi_star,
-                                          rank_hotspots)
+from app.engine.getis_ord_gi_star import (
+    GetisOrdStrategy,
+    compute_getis_ord_gi_star,
+    rank_hotspots,
+)
 
 
 def test_compute_getis_ord_requires_2d_grid():

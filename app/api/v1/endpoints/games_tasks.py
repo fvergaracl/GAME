@@ -9,10 +9,18 @@ from app.core.container import Container
 from app.core.exceptions import ForbiddenError
 from app.middlewares.auth_context import AuditLogger, audit_log
 from app.middlewares.authentication import auth_api_key_or_oauth2
-from app.schema.task_schema import (CreateTaskPost, CreateTaskPostSuccesfullyCreated,
-                                    CreateTasksPost, CreateTasksPostBulkCreated,
-                                    DuplicateTask, FoundTasks, PatchTask, PostFindTask,
-                                    ResponseDeleteTask, ResponsePatchTask)
+from app.schema.task_schema import (
+    CreateTaskPost,
+    CreateTaskPostSuccesfullyCreated,
+    CreateTasksPost,
+    CreateTasksPostBulkCreated,
+    DuplicateTask,
+    FoundTasks,
+    PatchTask,
+    PostFindTask,
+    ResponseDeleteTask,
+    ResponsePatchTask,
+)
 from app.services.task_service import TaskService
 
 router = APIRouter(

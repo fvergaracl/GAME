@@ -3,8 +3,12 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from app.schema.base_schema import (FindBase, ModelBaseInfo, SearchOptions,
-                                    SuccesfullyCreated)
+from app.schema.base_schema import (
+    FindBase,
+    ModelBaseInfo,
+    SearchOptions,
+    SuccesfullyCreated,
+)
 from app.schema.games_params_schema import CreateGameParams
 from app.schema.strategy_schema import Strategy
 from app.schema.tasks_params_schema import CreateTaskParams, UpdateTaskParams

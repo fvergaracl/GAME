@@ -5,8 +5,10 @@ from uuid import uuid4
 
 import pytest
 
-from app.schema.user_game_config_schema import (CreateUserGameConfig,
-                                                UpdateUserGameConfig)
+from app.schema.user_game_config_schema import (
+    CreateUserGameConfig,
+    UpdateUserGameConfig,
+)
 from app.services.user_game_config_service import UserGameConfigService
 
 

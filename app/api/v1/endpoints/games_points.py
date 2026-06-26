@@ -6,22 +6,29 @@ from uuid import UUID
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Body, Depends, Request
 
-from app.api.v1.endpoints.games_common import (_game_access_kwargs,
-                                               _map_write_exception,
-                                               _resolve_correlation_id,
-                                               _resolve_idempotency_key)
+from app.api.v1.endpoints.games_common import (
+    _game_access_kwargs,
+    _map_write_exception,
+    _resolve_correlation_id,
+    _resolve_idempotency_key,
+)
 from app.core.config import configs
 from app.core.container import Container
 from app.core.exceptions import ForbiddenError, InternalServerError
 from app.middlewares.auth_context import AuditLogger, audit_log
 from app.middlewares.authentication import auth_api_key_or_oauth2, auth_oauth2
-from app.schema.task_schema import (AddActionDidByUserInTask,
-                                    AsignPointsToExternalUserId,
-                                    AssignedPointsToExternalUserId,
-                                    ResponseAddActionDidByUserInTask,
-                                    SimulatedPointsAssignedToUser)
-from app.schema.user_points_schema import (AllPointsByGame, AllPointsByGameWithDetails,
-                                           PointsAssignedToUser)
+from app.schema.task_schema import (
+    AddActionDidByUserInTask,
+    AsignPointsToExternalUserId,
+    AssignedPointsToExternalUserId,
+    ResponseAddActionDidByUserInTask,
+    SimulatedPointsAssignedToUser,
+)
+from app.schema.user_points_schema import (
+    AllPointsByGame,
+    AllPointsByGameWithDetails,
+    PointsAssignedToUser,
+)
 from app.services.abuse_prevention_service import AbusePreventionService
 from app.services.task_service import TaskService
 from app.services.user_actions_service import UserActionsService

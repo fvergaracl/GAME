@@ -7,8 +7,10 @@ from fastapi.security.api_key import APIKeyHeader
 from app.core.config import configs
 from app.core.exceptions import ForbiddenError, NotFoundError
 from app.repository.apikey_repository import ApiKeyRepository
-from app.services.apikey_cache_backend import (ApiKeyCacheBackend,
-                                               InMemoryApiKeyCacheBackend)
+from app.services.apikey_cache_backend import (
+    ApiKeyCacheBackend,
+    InMemoryApiKeyCacheBackend,
+)
 from app.services.base_service import BaseService
 from app.util.generate_api_key import GeneratedApiKey, generate_api_key, hash_api_key
 from app.util.response import Response

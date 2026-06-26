@@ -18,10 +18,12 @@ from app.core.config import configs
 from app.core.exceptions import ForbiddenError
 from app.middlewares.auth_context import AuditLogger, AuthContext
 from app.model.strategy_definition import StrategyDefinitionType
-from app.schema.strategy_definition_schema import (StrategyDefinitionCreate,
-                                                   StrategyDefinitionRead,
-                                                   StrategyDefinitionUpdate,
-                                                   StrategyUsageRead)
+from app.schema.strategy_definition_schema import (
+    StrategyDefinitionCreate,
+    StrategyDefinitionRead,
+    StrategyDefinitionUpdate,
+    StrategyUsageRead,
+)
 
 
 def _auth(*, api_key=None, oauth_user_id=None, is_admin=False) -> AuthContext:
@@ -341,7 +343,9 @@ async def test_create_with_dsl_full_skips_parent_check():
 
 from app.core.exceptions import DslValidationError  # noqa: E402
 from app.schema.strategy_definition_schema import (  # noqa: E402
-    StrategyDefinitionImport, StrategyTemplateRead)
+    StrategyDefinitionImport,
+    StrategyTemplateRead,
+)
 
 
 def _template_stub(**overrides) -> StrategyTemplateRead:

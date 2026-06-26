@@ -1,0 +1,29 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+      - name: Install dependencies
+        run: |
+          poetry install
+      # Each check is its own step so the failing gate is obvious in the UI and
+      # any one failing turns the job (and the PR) red.
+      - name: Ruff (lint)
+        run: poetry run ruff check .
+      - name: Black (format check)
+        run: poetry run black --check .
+      - name: isort (import order check)
+        run: poetry run isort --check-only .

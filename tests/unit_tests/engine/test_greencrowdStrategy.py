@@ -6,11 +6,13 @@ from uuid import uuid4
 import pytest
 
 from app.core.exceptions import InternalServerError
-from app.engine.greencrowdStrategy import (GREENCROWDGamificationStrategy,
-                                           assign_random_scores,
-                                           get_average_values_from_tasks,
-                                           get_dynamic_values_from_tasks,
-                                           get_random_values_from_tasks)
+from app.engine.greencrowdStrategy import (
+    GREENCROWDGamificationStrategy,
+    assign_random_scores,
+    get_average_values_from_tasks,
+    get_dynamic_values_from_tasks,
+    get_random_values_from_tasks,
+)
 from app.schema.task_schema import SimulatedTaskPoints
 
 

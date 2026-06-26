@@ -94,14 +94,40 @@ poetry run pytest --cov=app --cov-report=term-missing
 
 ## Code Style Guidelines 📝
 
-We follow PEP 8 for Python code. Before submitting your pull request, ensure your code is properly formatted.
-
-You can use tools like `black` or `flake8` to check your code for style issues:
+We follow PEP 8 for Python code. Formatting and linting are enforced in CI with
+[`black`](https://black.readthedocs.io/), [`isort`](https://pycqa.github.io/isort/)
+(configured with the `black` profile so the two never disagree) and
+[`ruff`](https://docs.astral.sh/ruff/). Before submitting your pull request, run:
 
 ```bash
-poetry run black .
-poetry run flake8
+poetry run black .                # auto-format
+poetry run isort .                # auto-sort imports
+poetry run ruff check . --fix     # lint (and auto-fix what it safely can)
 ```
+
+To check without modifying files (this is exactly what CI runs):
+
+```bash
+poetry run ruff check .
+poetry run black --check .
+poetry run isort --check-only .
+```
+
+## Required CI checks ✅
+
+The following checks run on every push and pull request and **must pass** before a
+PR can be merged:
+
+| Check | Workflow | What it enforces |
+| --- | --- | --- |
+| **Lint** | `.github/workflows/lint.yml` | `ruff check .`, `black --check .` and `isort --check-only .` all pass. Any failure turns the PR red — formatting and lint are no longer auto-fixed for you. |
+| **Test & Coverage** | `.github/workflows/coverage.yml` | `pytest` passes and total `app/` coverage stays **≥ 93%** (`--cov-fail-under=93`). Deleting tests or adding uncovered code that drops below the floor fails the PR. |
+| **pytest (unit)** | `.github/workflows/pytest.yml` | The unit test suite passes. |
+
+> [!NOTE]
+> CI no longer pushes "Automated Black & Isort" commits to your branch. You are
+> responsible for formatting locally (`black .` + `isort .`) before pushing; the
+> lint check only verifies, it does not modify your code.
 
 
 ## Reporting Issues 🐛

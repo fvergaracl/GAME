@@ -22,9 +22,14 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any, Dict, Mapping, Optional, Set
 
-from app.engine.dsl_ast import (DATA_FIELD_PREFIX, FIELD_RESOLVERS, PARENT_FIELD_PATHS,
-                                enumerate_field_paths, is_parent_field_path,
-                                is_valid_data_path)
+from app.engine.dsl_ast import (
+    DATA_FIELD_PREFIX,
+    FIELD_RESOLVERS,
+    PARENT_FIELD_PATHS,
+    enumerate_field_paths,
+    is_parent_field_path,
+    is_valid_data_path,
+)
 
 
 @dataclass(frozen=True)

@@ -10,8 +10,9 @@ from app.api.v1.endpoints.games import router as game_router
 from app.api.v1.endpoints.kpi import router as kpi_router
 from app.api.v1.endpoints.strategies_custom import router as strategies_custom_router
 from app.api.v1.endpoints.strategy import router as strategy_router
-from app.api.v1.endpoints.strategy_observability import \
-    router as strategy_observability_router
+from app.api.v1.endpoints.strategy_observability import (
+    router as strategy_observability_router,
+)
 from app.api.v1.endpoints.tasks import router as task_router
 from app.api.v1.endpoints.userPoints import router as user_points_router
 from app.api.v1.endpoints.users import router as user_router

@@ -20,12 +20,16 @@ from typing import Optional
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query
 
-from app.api.v1.endpoints.strategies_custom import (_resolve_realm_id,
-                                                    require_authenticated)
+from app.api.v1.endpoints.strategies_custom import (
+    _resolve_realm_id,
+    require_authenticated,
+)
 from app.core.container import Container
 from app.middlewares.auth_context import AuthContext
-from app.schema.strategy_observability_schema import (StrategyComparisonResponse,
-                                                      StrategyMetricsResponse)
+from app.schema.strategy_observability_schema import (
+    StrategyComparisonResponse,
+    StrategyMetricsResponse,
+)
 from app.services.strategy_observability_service import StrategyObservabilityService
 
 router = APIRouter(

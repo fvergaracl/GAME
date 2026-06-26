@@ -7,14 +7,28 @@ import jwt
 from fastapi import HTTPException
 
 from app.api.v1.endpoints import games
-from app.core.exceptions import (DuplicatedError, ForbiddenError, InternalServerError,
-                                 PreconditionFailedError, TooManyRequestsError)
+from app.core.exceptions import (
+    DuplicatedError,
+    ForbiddenError,
+    InternalServerError,
+    PreconditionFailedError,
+    TooManyRequestsError,
+)
 from app.middlewares.auth_context import AuditLogger, AuthContext
-from app.schema.games_schema import (DuplicateGame, PatchGame, PostCreateGame,
-                                     PostFindGame)
-from app.schema.task_schema import (AddActionDidByUserInTask,
-                                    AsignPointsToExternalUserId, CreateTaskPost,
-                                    CreateTasksPost, DuplicateTask, PostFindTask)
+from app.schema.games_schema import (
+    DuplicateGame,
+    PatchGame,
+    PostCreateGame,
+    PostFindGame,
+)
+from app.schema.task_schema import (
+    AddActionDidByUserInTask,
+    AsignPointsToExternalUserId,
+    CreateTaskPost,
+    CreateTasksPost,
+    DuplicateTask,
+    PostFindTask,
+)
 from app.schema.tasks_params_schema import CreateTaskParams
 
 
@@ -950,7 +964,6 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
     async def test_token_absent_paths_cover_non_oauth_branches(self):
         game_id = uuid4()
         api_key_header = self._api_key_header("k-no-token")
-        oauth_service = self._oauth_service(user_exists=True, async_add=True)
 
         get_by_id_service = AsyncMock()
         get_by_id_service.get_by_gameId.return_value = {"id": str(game_id)}
@@ -1122,8 +1135,6 @@ class TestGamesEndpoints(unittest.IsolatedAsyncioTestCase):
     ):
         game_id = uuid4()
         api_key_header = self._api_key_header("k-existing")
-        token = "Bearer existing-user"
-        oauth_service = self._oauth_service(user_exists=True, async_add=True)
 
         schema = PostFindGame(ordering="-created_at", page=1, page_size=10)
         games_list_service = AsyncMock()

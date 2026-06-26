@@ -16,10 +16,13 @@ from app.api.v1.endpoints import strategy_observability as endpoint
 from app.core.config import configs
 from app.core.exceptions import ForbiddenError
 from app.middlewares.auth_context import AuthContext
-from app.schema.strategy_observability_schema import (DurationPercentiles, MetricsDelta,
-                                                      StatusBreakdown,
-                                                      StrategyComparisonResponse,
-                                                      StrategyMetricsResponse)
+from app.schema.strategy_observability_schema import (
+    DurationPercentiles,
+    MetricsDelta,
+    StatusBreakdown,
+    StrategyComparisonResponse,
+    StrategyMetricsResponse,
+)
 
 
 def _auth(*, api_key=None, oauth_user_id=None, is_admin=False) -> AuthContext:

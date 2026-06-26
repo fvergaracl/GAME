@@ -2,9 +2,14 @@ import hashlib
 import string
 import unittest
 
-from app.util.generate_api_key import (DEFAULT_KEY_NAMESPACE, PREFIX_RANDOM_LEN,
-                                       SECRET_RANDOM_LEN, extract_prefix,
-                                       generate_api_key, hash_api_key)
+from app.util.generate_api_key import (
+    DEFAULT_KEY_NAMESPACE,
+    PREFIX_RANDOM_LEN,
+    SECRET_RANDOM_LEN,
+    extract_prefix,
+    generate_api_key,
+    hash_api_key,
+)
 
 
 class TestGenerateApiKey(unittest.TestCase):

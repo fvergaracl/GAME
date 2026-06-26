@@ -1,8 +1,13 @@
 from uuid import uuid4
 
-from app.schema.games_params_schema import (BaseCreateGameParams, BaseFindGameParams,
-                                            BaseGameParams, CreateGameParams,
-                                            InsertGameParams, UpdateGameParams)
+from app.schema.games_params_schema import (
+    BaseCreateGameParams,
+    BaseFindGameParams,
+    BaseGameParams,
+    CreateGameParams,
+    InsertGameParams,
+    UpdateGameParams,
+)
 
 
 def test_base_game_params():

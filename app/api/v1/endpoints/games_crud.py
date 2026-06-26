@@ -8,9 +8,16 @@ from app.api.v1.endpoints.games_common import _game_access_kwargs
 from app.core.container import Container
 from app.middlewares.auth_context import AuditLogger, audit_log
 from app.middlewares.authentication import auth_api_key_or_oauth2
-from app.schema.games_schema import (BaseGameResult, DuplicateGame, FindGameResult,
-                                     GameCreated, PatchGame, PostCreateGame,
-                                     PostFindGame, ResponsePatchGame)
+from app.schema.games_schema import (
+    BaseGameResult,
+    DuplicateGame,
+    FindGameResult,
+    GameCreated,
+    PatchGame,
+    PostCreateGame,
+    PostFindGame,
+    ResponsePatchGame,
+)
 from app.services.game_service import GameService
 
 router = APIRouter(

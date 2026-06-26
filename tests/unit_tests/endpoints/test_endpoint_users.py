@@ -5,8 +5,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from app.api.v1.endpoints import users
 from app.middlewares.auth_context import AuditLogger, AuthContext
 from app.schema.user_actions_schema import CreateUserBodyActions
-from app.schema.user_schema import (PostAssignPointsToUserWithCaseName,
-                                    PostPointsConversionRequest)
+from app.schema.user_schema import (
+    PostAssignPointsToUserWithCaseName,
+    PostPointsConversionRequest,
+)
 
 
 class TestUsersEndpoints(unittest.IsolatedAsyncioTestCase):

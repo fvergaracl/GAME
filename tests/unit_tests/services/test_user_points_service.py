@@ -2,8 +2,11 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
-from app.core.exceptions import (InternalServerError, NotFoundError,
-                                 PreconditionFailedError)
+from app.core.exceptions import (
+    InternalServerError,
+    NotFoundError,
+    PreconditionFailedError,
+)
 from app.schema.user_points_schema import PointsByUserInTask
 from app.services.user_points_service import UserPointsService
 

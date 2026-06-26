@@ -6,7 +6,7 @@ chain. Each test seeds the database via the shared ``db_session`` fixture and
 then drives the repository's async API directly.
 """
 
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import pytest
 

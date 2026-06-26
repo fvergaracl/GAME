@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from app.core.exceptions import ConflictError, NotFoundError
 from app.repository.game_params_repository import GameParamsRepository

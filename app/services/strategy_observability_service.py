@@ -26,14 +26,20 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Optional
 
-from app.repository.strategy_execution_log_repository import \
-    StrategyExecutionLogRepository
+from app.repository.strategy_execution_log_repository import (
+    StrategyExecutionLogRepository,
+)
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
-from app.schema.strategy_observability_schema import (CaseCount, DurationPercentiles,
-                                                      ErrorCount, HistogramBucket,
-                                                      MetricsDelta, StatusBreakdown,
-                                                      StrategyComparisonResponse,
-                                                      StrategyMetricsResponse)
+from app.schema.strategy_observability_schema import (
+    CaseCount,
+    DurationPercentiles,
+    ErrorCount,
+    HistogramBucket,
+    MetricsDelta,
+    StatusBreakdown,
+    StrategyComparisonResponse,
+    StrategyMetricsResponse,
+)
 from app.services.strategy_definition_service import StrategyDefinitionService
 
 # Bucket edges chosen to align with the Prometheus histogram in

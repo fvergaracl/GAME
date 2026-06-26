@@ -7,8 +7,11 @@ and delegates the atomic write to
 
 import logging
 
-from app.core.exceptions import (InternalServerError, NotFoundError,
-                                 PreconditionFailedError)
+from app.core.exceptions import (
+    InternalServerError,
+    NotFoundError,
+    PreconditionFailedError,
+)
 from app.schema.task_schema import AssignedPointsToExternalUserId
 from app.services.game_access import get_authorized_game
 from app.services.strategy_service import resolve_realm_id

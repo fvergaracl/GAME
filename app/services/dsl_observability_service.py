@@ -47,8 +47,9 @@ from typing import Any, Dict, List, Optional
 from app.core import config as _config_module
 from app.engine import dsl_metrics
 from app.model.strategy_execution_log import StrategyExecutionLog
-from app.repository.strategy_execution_log_repository import \
-    StrategyExecutionLogRepository
+from app.repository.strategy_execution_log_repository import (
+    StrategyExecutionLogRepository,
+)
 
 logger = logging.getLogger(__name__)
 

@@ -23,10 +23,13 @@ import pytest
 
 from app.core.exceptions import NotFoundError
 from app.schema.strategy_definition_schema import StrategyDefinitionRead
-from app.services.strategy_observability_service import (StrategyObservabilityService,
-                                                         _duration_histogram,
-                                                         _percentile, _points_histogram,
-                                                         _status_breakdown)
+from app.services.strategy_observability_service import (
+    StrategyObservabilityService,
+    _duration_histogram,
+    _percentile,
+    _points_histogram,
+    _status_breakdown,
+)
 
 
 def _make_strategy(id_: str = "s1", name: str = "demo", version: int = 1):

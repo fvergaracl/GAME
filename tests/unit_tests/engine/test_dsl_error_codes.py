@@ -21,8 +21,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.core.exceptions import (DslExecutionError, DslLimitExceededError,
-                                 DslTimeoutError, DslValidationError)
+from app.core.exceptions import (
+    DslExecutionError,
+    DslLimitExceededError,
+    DslTimeoutError,
+    DslValidationError,
+)
 from app.engine.dsl_execution_context import ExecutionContext
 from app.engine.dsl_interpreter import DslInterpreter
 from app.engine.dsl_validator import validate_ast

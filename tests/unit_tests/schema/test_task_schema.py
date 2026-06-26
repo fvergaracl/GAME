@@ -4,13 +4,24 @@ from uuid import uuid4
 from app.schema.base_schema import SearchOptions
 from app.schema.games_params_schema import CreateGameParams
 from app.schema.strategy_schema import Strategy
-from app.schema.task_schema import (AddActionDidByUserInTask,
-                                    AsignPointsToExternalUserId,
-                                    AssignedPointsToExternalUserId, BaseTask, BaseUser,
-                                    BaseUserFirstAction, CreateTask, CreateTaskPost,
-                                    CreateTaskPostSuccesfullyCreated, FindTask,
-                                    FoundTask, FoundTasks, PatchTask, PostFindTask,
-                                    TaskPointsResponseByUser, TasksWithUsers)
+from app.schema.task_schema import (
+    AddActionDidByUserInTask,
+    AsignPointsToExternalUserId,
+    AssignedPointsToExternalUserId,
+    BaseTask,
+    BaseUser,
+    BaseUserFirstAction,
+    CreateTask,
+    CreateTaskPost,
+    CreateTaskPostSuccesfullyCreated,
+    FindTask,
+    FoundTask,
+    FoundTasks,
+    PatchTask,
+    PostFindTask,
+    TaskPointsResponseByUser,
+    TasksWithUsers,
+)
 from app.schema.tasks_params_schema import CreateTaskParams, UpdateTaskParams
 
 

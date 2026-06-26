@@ -62,14 +62,14 @@ version = ".".join(release.split(".")[:2])
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 extensions = [
-    "sphinx.ext.autodoc",       # pull docstrings from the app package
-    "sphinx.ext.autosummary",   # generate per-module summary tables
-    "sphinx.ext.intersphinx",   # cross-link to Python / Sphinx docs
-    "sphinx.ext.duration",      # report slowest pages at build time
-    "sphinx.ext.doctest",       # execute doctest snippets when present
-    "sphinx.ext.viewcode",      # add "[source]" links next to API entries
-    "sphinx.ext.napoleon",      # parse Google-style docstrings
-    "sphinx.ext.todo",          # surface ``.. todo::`` directives
+    "sphinx.ext.autodoc",  # pull docstrings from the app package
+    "sphinx.ext.autosummary",  # generate per-module summary tables
+    "sphinx.ext.intersphinx",  # cross-link to Python / Sphinx docs
+    "sphinx.ext.duration",  # report slowest pages at build time
+    "sphinx.ext.doctest",  # execute doctest snippets when present
+    "sphinx.ext.viewcode",  # add "[source]" links next to API entries
+    "sphinx.ext.napoleon",  # parse Google-style docstrings
+    "sphinx.ext.todo",  # surface ``.. todo::`` directives
 ]
 
 templates_path = ["_templates"]

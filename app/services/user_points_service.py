@@ -23,8 +23,11 @@ from app.repository.wallet_repository import WalletRepository
 from app.repository.wallet_transaction_repository import WalletTransactionRepository
 from app.services.base_service import BaseService
 from app.services.strategy_service import StrategyService
-from app.services.user_points import (PointsAssignmentMixin, PointsQueryMixin,
-                                      PointsSimulationMixin)
+from app.services.user_points import (
+    PointsAssignmentMixin,
+    PointsQueryMixin,
+    PointsSimulationMixin,
+)
 
 logger = logging.getLogger(__name__)
 

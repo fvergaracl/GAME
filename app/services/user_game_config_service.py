@@ -2,9 +2,11 @@ from typing import Optional
 from uuid import UUID
 
 from app.repository.user_game_config_repository import UserGameConfigRepository
-from app.schema.user_game_config_schema import (CreateUserGameConfig,
-                                                UpdateUserGameConfig,
-                                                UserGameConfigResponse)
+from app.schema.user_game_config_schema import (
+    CreateUserGameConfig,
+    UpdateUserGameConfig,
+    UserGameConfigResponse,
+)
 
 
 class UserGameConfigService:

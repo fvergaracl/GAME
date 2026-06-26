@@ -135,3 +135,15 @@ ignore = ["E501"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
+
+# The standalone isort run (lint.yml / pre-commit) must agree with the black
+# formatter, otherwise the two oscillate: black rewraps multi-line imports
+# one-per-line with a trailing comma, while isort's *default* profile uses a
+# vertical-hanging indent -- so each tool undoes the other and neither
+# `black --check` nor `isort --check-only` can pass at the same time. The
+# "black" profile makes isort emit black-compatible output. known_first_party
+# mirrors the ruff isort config above so grouping is identical regardless of
+# which tool sorts.
+[tool.isort]
+profile = "black"
+known_first_party = ["app"]

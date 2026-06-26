@@ -8,12 +8,19 @@ from app.core.container import Container
 from app.middlewares.auth_context import AuditLogger, audit_log
 from app.middlewares.authentication import auth_api_key_or_oauth2
 from app.schema.user_actions_schema import CreatedUserActions, CreateUserBodyActions
-from app.schema.user_points_schema import (AllPointsByGame, BaseUserPointsBaseModel,
-                                           UserGamePoints, UserPointsAssigned)
-from app.schema.user_schema import (PostAssignPointsToUserWithCaseName,
-                                    PostPointsConversionRequest,
-                                    ResponseConversionPreview, ResponsePointsConversion,
-                                    UserWallet)
+from app.schema.user_points_schema import (
+    AllPointsByGame,
+    BaseUserPointsBaseModel,
+    UserGamePoints,
+    UserPointsAssigned,
+)
+from app.schema.user_schema import (
+    PostAssignPointsToUserWithCaseName,
+    PostPointsConversionRequest,
+    ResponseConversionPreview,
+    ResponsePointsConversion,
+    UserWallet,
+)
 from app.services.user_actions_service import UserActionsService
 from app.services.user_points_service import UserPointsService
 from app.services.user_service import UserService

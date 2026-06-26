@@ -35,18 +35,40 @@ from typing import Any, Dict, Optional
 
 from app.core.config import configs
 from app.core.exceptions import DslValidationError
-from app.engine.dsl_ast import (ALL_NODE_TYPES, ALLOWED_ARITH_OPS, ALLOWED_COMPARE_OPS,
-                                ALLOWED_FUNC_NAMES, CASE_NAME_MAX_LEN,
-                                CONDITION_NODE_TYPES, EXPRESSION_NODE_TYPES, FUNC_ARITY,
-                                NODE_AND, NODE_ARITH, NODE_ASSIGN_POINTS, NODE_COMPARE,
-                                NODE_FIELD, NODE_FUNC_CALL, NODE_LITERAL, NODE_NOT,
-                                NODE_OR, NODE_PROGRAM, NODE_RETURN, NODE_RULE,
-                                NODE_SET_CALLBACK_DATA, NODE_SET_CASE_NAME,
-                                NODE_SET_DATA, NODE_SET_POINTS, NODE_VETO,
-                                PARENT_VARIABLES_KEY, STATEMENT_ALLOWED_CONTEXTS,
-                                STATEMENT_NODE_TYPES, is_known_field_path,
-                                is_parent_field_path, is_valid_case_name,
-                                is_valid_data_path)
+from app.engine.dsl_ast import (
+    ALL_NODE_TYPES,
+    ALLOWED_ARITH_OPS,
+    ALLOWED_COMPARE_OPS,
+    ALLOWED_FUNC_NAMES,
+    CASE_NAME_MAX_LEN,
+    CONDITION_NODE_TYPES,
+    EXPRESSION_NODE_TYPES,
+    FUNC_ARITY,
+    NODE_AND,
+    NODE_ARITH,
+    NODE_ASSIGN_POINTS,
+    NODE_COMPARE,
+    NODE_FIELD,
+    NODE_FUNC_CALL,
+    NODE_LITERAL,
+    NODE_NOT,
+    NODE_OR,
+    NODE_PROGRAM,
+    NODE_RETURN,
+    NODE_RULE,
+    NODE_SET_CALLBACK_DATA,
+    NODE_SET_CASE_NAME,
+    NODE_SET_DATA,
+    NODE_SET_POINTS,
+    NODE_VETO,
+    PARENT_VARIABLES_KEY,
+    STATEMENT_ALLOWED_CONTEXTS,
+    STATEMENT_NODE_TYPES,
+    is_known_field_path,
+    is_parent_field_path,
+    is_valid_case_name,
+    is_valid_data_path,
+)
 
 _LITERAL_TYPES = (bool, int, float, str, type(None))
 _CALLBACK_VALUE_LITERAL_TYPES = (bool, int, float, str, type(None))

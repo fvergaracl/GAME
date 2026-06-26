@@ -15,8 +15,11 @@ from app.api.v1.endpoints import strategies_custom as endpoint
 from app.core.config import configs
 from app.core.exceptions import DslTimeoutError, DslValidationError, ForbiddenError
 from app.middlewares.auth_context import AuditLogger, AuthContext
-from app.schema.dsl_schema import (InlineSimulationRequest, SimulationRequest,
-                                   SimulationResponse)
+from app.schema.dsl_schema import (
+    InlineSimulationRequest,
+    SimulationRequest,
+    SimulationResponse,
+)
 
 
 def _auth(*, api_key=None, oauth_user_id=None, is_admin=False) -> AuthContext:

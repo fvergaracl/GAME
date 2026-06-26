@@ -132,12 +132,6 @@ async def test_get_schema_audits_failure_path():
             )
 
     # The audit logger writes at least one ERROR-level entry on failure.
-    error_calls = [
-        c
-        for c in add_log.await_args_list
-        if c.kwargs.get("level", "").upper() == "ERROR"
-        or (c.args and getattr(c.args[0], "level", "") == "ERROR")
-    ]
     # Be permissive about the audit shape; what we really care about is
     # that *some* logging happened in the error path.
     assert add_log.await_count >= 1

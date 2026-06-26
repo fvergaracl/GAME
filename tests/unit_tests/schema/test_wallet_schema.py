@@ -1,10 +1,15 @@
 from datetime import datetime
 from uuid import uuid4
 
-from app.schema.wallet_schema import (BaseWallet, BaseWalletOnlyUserId, CreateWallet,
-                                      PostPreviewConvertPoints,
-                                      ResponsePreviewConvertPoints, Wallet,
-                                      WalletWithoutUserId)
+from app.schema.wallet_schema import (
+    BaseWallet,
+    BaseWalletOnlyUserId,
+    CreateWallet,
+    PostPreviewConvertPoints,
+    ResponsePreviewConvertPoints,
+    Wallet,
+    WalletWithoutUserId,
+)
 
 
 def test_wallet_without_user_id():

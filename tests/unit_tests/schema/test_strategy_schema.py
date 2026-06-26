@@ -1,8 +1,13 @@
 from datetime import datetime
 from uuid import uuid4
 
-from app.schema.strategy_schema import (BaseStrategy, DataStrategy, RuleBase,
-                                        StaticVariables, Strategy)
+from app.schema.strategy_schema import (
+    BaseStrategy,
+    DataStrategy,
+    RuleBase,
+    StaticVariables,
+    Strategy,
+)
 
 
 def test_strategy():

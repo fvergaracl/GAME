@@ -3,8 +3,10 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from app.engine.greencrowdStrategy import (assign_random_scores,
-                                           get_random_values_from_tasks)
+from app.engine.greencrowdStrategy import (
+    assign_random_scores,
+    get_random_values_from_tasks,
+)
 
 
 def _records_for_random_range():

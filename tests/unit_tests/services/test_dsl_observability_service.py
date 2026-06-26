@@ -15,9 +15,11 @@ import random
 import unittest
 from unittest.mock import AsyncMock
 
-from app.services.dsl_observability_service import (DslExecutionObserver,
-                                                    NoopDslExecutionObserver,
-                                                    _truncate_trace)
+from app.services.dsl_observability_service import (
+    DslExecutionObserver,
+    NoopDslExecutionObserver,
+    _truncate_trace,
+)
 
 
 class _RecordingRepo:

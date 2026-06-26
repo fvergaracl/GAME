@@ -56,7 +56,9 @@ def upgrade():
         # Drop every FK that actually references apikey.apiKey, regardless of
         # name. Earlier migrations created some FKs with op.create_foreign_key(None, ...),
         # so Postgres-assigned names don't always match the canonical pattern.
-        fk_rows = bind.execute(sa.text("""
+        fk_rows = bind.execute(
+            sa.text(
+                """
                 SELECT tc.table_name, tc.constraint_name
                 FROM information_schema.table_constraints AS tc
                 JOIN information_schema.constraint_column_usage AS ccu
@@ -65,7 +67,9 @@ def upgrade():
                 WHERE tc.constraint_type = 'FOREIGN KEY'
                   AND ccu.table_name     = 'apikey'
                   AND ccu.column_name    = 'apiKey'
-                """)).fetchall()
+                """
+            )
+        ).fetchall()
 
         for table_name, constraint_name in fk_rows:
             op.execute(

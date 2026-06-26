@@ -14,12 +14,20 @@ from datetime import datetime, timezone
 from types import SimpleNamespace
 from typing import Dict, List, Optional
 
-from app.core.exceptions import (BadRequestError, ConflictError, DuplicatedError,
-                                 NotFoundError)
-from app.model.strategy_definition import (StrategyDefinitionStatus,
-                                           StrategyDefinitionType)
-from app.schema.strategy_definition_schema import (StrategyDefinitionCreate,
-                                                   StrategyDefinitionUpdate)
+from app.core.exceptions import (
+    BadRequestError,
+    ConflictError,
+    DuplicatedError,
+    NotFoundError,
+)
+from app.model.strategy_definition import (
+    StrategyDefinitionStatus,
+    StrategyDefinitionType,
+)
+from app.schema.strategy_definition_schema import (
+    StrategyDefinitionCreate,
+    StrategyDefinitionUpdate,
+)
 from app.services.strategy_definition_service import StrategyDefinitionService
 
 

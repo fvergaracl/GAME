@@ -7,7 +7,6 @@ which is rendered on SQLite via the conftest ``@compiles`` hook.
 
 import pytest
 
-from app.core.exceptions import NotFoundError
 from app.model.users import Users
 from app.repository.wallet_repository import WalletRepository
 

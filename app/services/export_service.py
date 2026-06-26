@@ -29,9 +29,14 @@ from app.model.users import Users
 from app.model.wallet import Wallet
 from app.model.wallet_transactions import WalletTransactions
 from app.repository.export_audit_log_repository import ExportAuditLogRepository
-from app.schema.export_schema import (CreateExportAuditLog, ExportAuditLogEntry,
-                                      ExportDatasetType, ExportFilters, ExportFormat,
-                                      ExportStatus)
+from app.schema.export_schema import (
+    CreateExportAuditLog,
+    ExportAuditLogEntry,
+    ExportDatasetType,
+    ExportFilters,
+    ExportFormat,
+    ExportStatus,
+)
 from app.services.base_service import BaseService
 
 # Column order for each dataset. Drives both CSV header row and XLSX columns.
