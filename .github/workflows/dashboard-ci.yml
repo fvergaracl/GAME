@@ -1,0 +1,40 @@
+name: Dashboard CI
+
+# Lint + tests + coverage for the React dashboard. Scoped with paths so it
+# only runs when the frontend (or this workflow) changes - backend-only PRs
+# don't pay for a Node build.
+on:
+  push:
+    paths:
+      - 'dashboard/**'
+      - '.github/workflows/dashboard-ci.yml'
+  pull_request:
+    paths:
+      - 'dashboard/**'
+      - '.github/workflows/dashboard-ci.yml'
+
+jobs:
+  dashboard:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./dashboard
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint (eslint)
+        run: npm run lint
+      # `npm run test` is `vitest run`; `-- --coverage` enables the v8 report so
+      # the coverage thresholds in vitest.config.mjs are enforced (the job fails
+      # if coverage drops below the pinned floor) and the report is visible.
+      - name: Test + coverage
+        run: npm run test -- --coverage

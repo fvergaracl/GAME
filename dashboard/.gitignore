@@ -5,7 +5,8 @@
 node_modules/**
 node_modules
 /node_modules
-package-lock.json
+# package-lock.json is committed so CI can `npm ci` against a pinned,
+# reproducible dependency tree (prevents the silent drift that broke tests).
 yarn.lock
 
 # testing

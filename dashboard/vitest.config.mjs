@@ -36,5 +36,29 @@ export default defineConfig({
       // root, so its helper tests need their own top-level glob.
       'src/*.test.{js,jsx}',
     ],
+    // Honest, whole-tree coverage: measure every source file under src/ (not
+    // just the ones that happen to import a tested module) so the baseline
+    // reflects how much of the frontend is actually exercised. Thresholds are
+    // pinned to the measured baseline so coverage can't regress.
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      reportsDirectory: './coverage',
+      include: ['src/**/*.{js,jsx}'],
+      exclude: ['src/**/*.test.{js,jsx}', 'src/test-setup.js'],
+      // Still emit the report when a test fails, otherwise a single red test
+      // hides the coverage signal in CI.
+      reportOnFailure: true,
+      // Floors pinned just below the measured baseline (lines 45.62 / stmts
+      // 44.19 / funcs 36.42 / branches 36.62 as of this sprint). The build
+      // fails if coverage drops below them, so new code can't silently erode
+      // the frontend's test net. Ratchet these up as coverage grows.
+      thresholds: {
+        lines: 45,
+        statements: 44,
+        functions: 36,
+        branches: 36,
+      },
+    },
   },
 })

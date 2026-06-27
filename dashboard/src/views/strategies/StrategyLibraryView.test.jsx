@@ -20,14 +20,7 @@ import React, { Suspense } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { I18nextProvider } from 'react-i18next'
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 
 import i18n from '../../i18n'
 import ToastProvider from '../../components/Toast'
@@ -57,7 +50,9 @@ vi.mock('./StrategyVersionHistoryModal', () => ({
     visible ? (
       <div data-testid="version-history-modal">
         history:{strategyId}
-        <button type="button" onClick={onClose}>close-history</button>
+        <button type="button" onClick={onClose}>
+          close-history
+        </button>
       </div>
     ) : null,
 }))
@@ -67,7 +62,9 @@ vi.mock('./StrategyUsageModal', () => ({
     visible ? (
       <div data-testid="usage-modal">
         usage:{strategyId}:{strategyName}
-        <button type="button" onClick={onClose}>close-usage</button>
+        <button type="button" onClick={onClose}>
+          close-usage
+        </button>
       </div>
     ) : null,
 }))
@@ -158,17 +155,24 @@ const renderView = async ({ isAdmin = false } = {}) => {
   return utils
 }
 
-const flushMicrotasks = () =>
-  new Promise((resolve) => setTimeout(resolve, 0))
+const flushMicrotasks = () => new Promise((resolve) => setTimeout(resolve, 0))
 
-// CDropdown renders every menu item eagerly, so per-row queries must
-// be scoped inside the row that owns the dropdown. ``getRowMenuItem``
-// finds the named row by visible label, then grabs the dropdown item
-// inside its actions cell.
-const getRowMenuItem = (rowLabel, itemLabel) => {
-  const cell = screen.getByText(rowLabel).closest('tr')
-  if (!cell) throw new Error(`Row "${rowLabel}" not found`)
-  return within(cell).getByText(itemLabel)
+// The row actions live in a CDropdown with ``portal`` enabled, so CoreUI
+// renders every row's menu into a document-level portal rather than inside
+// its ``tr`` - scoping per-row by the cell no longer works, and a plain
+// document-wide query matches the same item on every row. ``getRowMenuItem``
+// opens the target row's "Acciones" dropdown and scopes the lookup to the
+// one menu CoreUI marks ``show`` so identically-named items stay unambiguous.
+const getRowMenuItem = async (rowLabel, itemLabel) => {
+  const row = screen.getByText(rowLabel).closest('tr')
+  if (!row) throw new Error(`Row "${rowLabel}" not found`)
+  fireEvent.click(within(row).getByText('Acciones'))
+  const menu = await waitFor(() => {
+    const open = document.querySelector('.dropdown-menu.show')
+    if (!open) throw new Error('Row dropdown did not open')
+    return open
+  })
+  return within(menu).getByText(itemLabel)
 }
 
 // Tests
@@ -284,7 +288,7 @@ describe('StrategyLibraryView', () => {
     const api = await importMockedApi()
     await renderView({ isAdmin: true })
     // Row 1 is a DRAFT - admin should see Publicar in its dropdown.
-    fireEvent.click(getRowMenuItem('Speed bonus', 'Publicar'))
+    fireEvent.click(await getRowMenuItem('Speed bonus', 'Publicar'))
     // Confirmation modal pops; click "Sí, publicar".
     const confirmBtn = await screen.findByRole('button', { name: /Sí, publicar/i })
     await act(async () => {
@@ -296,8 +300,7 @@ describe('StrategyLibraryView', () => {
       // The inline CAlert + the toast both render the same message -
       // assert via ``getAllByText`` so the dual render is intentional.
       expect(
-        screen.getAllByText(/publicada \(v1\)\. Ahora es la versión en producción\./i)
-          .length,
+        screen.getAllByText(/publicada \(v1\)\. Ahora es la versión en producción\./i).length,
       ).toBeGreaterThan(0)
     })
   })
@@ -308,7 +311,7 @@ describe('StrategyLibraryView', () => {
       response: { status: 400, data: { detail: 'AST validation failed.' } },
     })
     await renderView({ isAdmin: true })
-    fireEvent.click(getRowMenuItem('Speed bonus', 'Publicar'))
+    fireEvent.click(await getRowMenuItem('Speed bonus', 'Publicar'))
     const confirmBtn = await screen.findByRole('button', { name: /Sí, publicar/i })
     await act(async () => {
       fireEvent.click(confirmBtn)
@@ -322,14 +325,14 @@ describe('StrategyLibraryView', () => {
 
   it('opens history modal with the correct strategy id', async () => {
     await renderView()
-    fireEvent.click(getRowMenuItem('Onboarding boost', 'Ver historial'))
+    fireEvent.click(await getRowMenuItem('Onboarding boost', 'Ver historial'))
     const modal = await screen.findByTestId('version-history-modal')
     expect(within(modal).getByText('history:strat-2')).toBeInTheDocument()
   })
 
   it('opens "where used" modal with the row id and name', async () => {
     await renderView()
-    fireEvent.click(getRowMenuItem('Speed bonus', '¿Dónde se usa?'))
+    fireEvent.click(await getRowMenuItem('Speed bonus', '¿Dónde se usa?'))
     const modal = await screen.findByTestId('usage-modal')
     expect(within(modal).getByText('usage:strat-1:Speed bonus')).toBeInTheDocument()
   })
