@@ -94,3 +94,39 @@ def test_app_creator_initializes_sentry_when_dsn_is_set(monkeypatch):
         mock_sentry_init.assert_called_once()
     finally:
         main_module.AppCreator._reset_instance()
+
+
+def test_sentry_init_forwards_conservative_privacy_kwargs(monkeypatch):
+    # Demonstrates the wiring end of the privacy guarantee: AppCreator forwards
+    # the (conservative) config values to sentry_sdk.init -- no PII, sub-1.0
+    # trace sampling, and no continuous profiler when it is left disabled.
+    monkeypatch.setattr(main_module.configs, "SENTRY_DSN", "https://dsn.example")
+    monkeypatch.setattr(main_module.configs, "SENTRY_SEND_DEFAULT_PII", False)
+    monkeypatch.setattr(main_module.configs, "SENTRY_TRACES_SAMPLE_RATE", 0.1)
+    monkeypatch.setattr(main_module.configs, "SENTRY_PROFILING_ENABLED", False)
+
+    try:
+        main_module.AppCreator._reset_instance()
+        with patch("app.main.sentry_sdk.init") as mock_sentry_init:
+            main_module.AppCreator()
+        kwargs = mock_sentry_init.call_args.kwargs
+        assert kwargs["send_default_pii"] is False
+        assert kwargs["traces_sample_rate"] < 1.0
+        # Profiling stays off -> the _experiments block is omitted entirely.
+        assert "_experiments" not in kwargs
+    finally:
+        main_module.AppCreator._reset_instance()
+
+
+def test_sentry_init_starts_profiler_only_when_opted_in(monkeypatch):
+    monkeypatch.setattr(main_module.configs, "SENTRY_DSN", "https://dsn.example")
+    monkeypatch.setattr(main_module.configs, "SENTRY_PROFILING_ENABLED", True)
+
+    try:
+        main_module.AppCreator._reset_instance()
+        with patch("app.main.sentry_sdk.init") as mock_sentry_init:
+            main_module.AppCreator()
+        kwargs = mock_sentry_init.call_args.kwargs
+        assert kwargs["_experiments"]["continuous_profiling_auto_start"] is True
+    finally:
+        main_module.AppCreator._reset_instance()

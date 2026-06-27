@@ -209,16 +209,21 @@ class AppCreator:
     def __init__(self):
 
         if configs.SENTRY_DSN:
-            sentry_sdk.init(
-                dsn=configs.SENTRY_DSN,
-                environment=configs.SENTRY_ENVIRONMENT,
-                release=configs.SENTRY_RELEASE,
-                send_default_pii=True,
-                traces_sample_rate=1.0,
-                _experiments={
+            sentry_init_kwargs = {
+                "dsn": configs.SENTRY_DSN,
+                "environment": configs.SENTRY_ENVIRONMENT,
+                "release": configs.SENTRY_RELEASE,
+                "send_default_pii": configs.SENTRY_SEND_DEFAULT_PII,
+                "traces_sample_rate": configs.SENTRY_TRACES_SAMPLE_RATE,
+            }
+            # Continuous profiling is opt-in: it samples the running process and
+            # is both costly and sensitive, so it only starts when explicitly
+            # enabled via SENTRY_PROFILING_ENABLED.
+            if configs.SENTRY_PROFILING_ENABLED:
+                sentry_init_kwargs["_experiments"] = {
                     "continuous_profiling_auto_start": True,
-                },
-            )
+                }
+            sentry_sdk.init(**sentry_init_kwargs)
 
         self.app = FastAPI(
             lifespan=lifespan,

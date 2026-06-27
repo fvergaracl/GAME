@@ -111,6 +111,8 @@ Use GAME only as an **incentive / scoring engine**:
 - Use connection pooling for PostgreSQL.
 - GAME is stateless → supports horizontal scaling behind a load balancer.
 - Manage secrets via environment variables or secret manager (not `.env` in prod).
+- Sentry defaults are privacy-conservative (`SENTRY_SEND_DEFAULT_PII=false`, `SENTRY_TRACES_SAMPLE_RATE=0.1`, profiling off); opt in per env.
+- Data retention / GDPR posture for the `logs` audit table is documented in [docs/DATA_RETENTION.md](docs/DATA_RETENTION.md).
 
 ---
 
@@ -396,7 +398,7 @@ Notes:
 - Runner: `scripts/run_load_test.sh`
 - Default write auth mode is `apikey` (set `--write-auth-mode bearer` to stress bearer path).
 - Setup creates one game + 2 tasks + user pool, and teardown deletes the created game.
-- If setup creates an API key, current API has no revoke/delete endpoint, so that key cannot be automatically removed.
+- If setup creates an API key, teardown revokes it via `DELETE /apikey/{prefix}` (admin bearer token), so the run cleans up after itself. A key supplied via `X_API_KEY` is left untouched.
 
 ---
 

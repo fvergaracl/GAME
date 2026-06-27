@@ -243,6 +243,21 @@ class Configs(BaseSettings):
     SENTRY_DSN: Optional[str] = os.getenv("SENTRY_DSN", None)
     SENTRY_ENVIRONMENT: str = os.getenv("SENTRY_ENVIRONMENT", "dev")
     SENTRY_RELEASE: str = os.getenv("SENTRY_RELEASE", "0.0.0")
+    # Sentry data-collection knobs. Defaults are privacy/cost-conservative so a
+    # production deployment that only sets SENTRY_DSN does NOT ship PII, trace
+    # every request, or run the continuous profiler -- all three were
+    # previously hardcoded on. Opt in per environment via env vars.
+    #   * send_default_pii=False keeps user ids / client IP / request headers
+    #     and bodies out of Sentry events (GDPR-relevant for the citizen
+    #     science deployment).
+    #   * traces_sample_rate<1.0 caps performance-tracing volume/cost; 1.0
+    #     (trace everything) is only appropriate for short local debugging.
+    #   * profiling stays off unless explicitly enabled.
+    SENTRY_SEND_DEFAULT_PII: bool = _env_to_bool("SENTRY_SEND_DEFAULT_PII", False)
+    SENTRY_TRACES_SAMPLE_RATE: float = float(
+        os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0.1")
+    )
+    SENTRY_PROFILING_ENABLED: bool = _env_to_bool("SENTRY_PROFILING_ENABLED", False)
 
     EXTRA_SERVER_URL: Optional[str] = os.getenv("EXTRA_SERVER_URL", None)
     EXTRA_SERVER_DESCRIPTION: Optional[str] = os.getenv(

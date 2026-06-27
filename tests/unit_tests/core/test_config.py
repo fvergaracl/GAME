@@ -180,3 +180,43 @@ def test_secrets_not_required_outside_protected_envs(monkeypatch):
 
     assert reloaded.configs.ENV == "dev"
     assert reloaded.configs.SECRET_KEY == ""
+
+
+def test_sentry_defaults_are_privacy_conservative_in_prod(monkeypatch):
+    # With ENV=prod and no Sentry overrides the app must not ship PII to
+    # Sentry, must sample performance traces below 1.0, and must leave the
+    # continuous profiler off. These feed sentry_sdk.init in app.main.
+    monkeypatch.setenv("ENV", "prod")
+    monkeypatch.setenv("DB_NAME", "game_test_db")
+    monkeypatch.setenv("SECRET_KEY", "real-secret")
+    monkeypatch.setenv("KEYCLOAK_CLIENT_SECRET", "real-kc-secret")
+    for key in (
+        "SENTRY_SEND_DEFAULT_PII",
+        "SENTRY_TRACES_SAMPLE_RATE",
+        "SENTRY_PROFILING_ENABLED",
+    ):
+        monkeypatch.delenv(key, raising=False)
+    _neutralize_dotenv(monkeypatch)
+
+    reloaded = importlib.reload(config_module)
+
+    assert reloaded.configs.SENTRY_SEND_DEFAULT_PII is False
+    assert reloaded.configs.SENTRY_TRACES_SAMPLE_RATE < 1.0
+    assert reloaded.configs.SENTRY_TRACES_SAMPLE_RATE == 0.1
+    assert reloaded.configs.SENTRY_PROFILING_ENABLED is False
+
+
+def test_sentry_settings_honour_env_overrides(monkeypatch):
+    # Operators can opt back into richer (costlier/PII-bearing) collection per
+    # environment without code changes.
+    monkeypatch.setenv("ENV", "dev")
+    monkeypatch.setenv("SENTRY_SEND_DEFAULT_PII", "true")
+    monkeypatch.setenv("SENTRY_TRACES_SAMPLE_RATE", "1.0")
+    monkeypatch.setenv("SENTRY_PROFILING_ENABLED", "yes")
+    _neutralize_dotenv(monkeypatch)
+
+    reloaded = importlib.reload(config_module)
+
+    assert reloaded.configs.SENTRY_SEND_DEFAULT_PII is True
+    assert reloaded.configs.SENTRY_TRACES_SAMPLE_RATE == 1.0
+    assert reloaded.configs.SENTRY_PROFILING_ENABLED is True

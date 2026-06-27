@@ -200,6 +200,9 @@ export function setup() {
   ]);
   xApiKey = xApiKey ? xApiKey.trim() : "";
   let createdApiKey = false;
+  // Public prefix of a setup-created key, captured so teardown can revoke it
+  // via DELETE /apikey/{prefix}. Empty when an external X_API_KEY is reused.
+  let createdApiKeyPrefix = "";
 
   if (!xApiKey) {
     if (!accessToken) {
@@ -211,6 +214,7 @@ export function setup() {
     const apiKeyCreated = createApiKeyForRun(runId, accessToken);
     xApiKey = apiKeyCreated.apiKey;
     createdApiKey = true;
+    createdApiKeyPrefix = apiKeyCreated.apiKey;
   }
 
   const gameAuthHeaders = authHeadersForGames({ xApiKey: xApiKey, accessToken: accessToken });
@@ -292,6 +296,7 @@ export function setup() {
     accessToken: accessToken,
     xApiKey: xApiKey,
     createdApiKey: createdApiKey,
+    createdApiKeyPrefix: createdApiKeyPrefix,
     gameId: gameId,
     externalGameId: externalGameId,
     taskExternalIds: taskExternalIds,
@@ -503,12 +508,31 @@ export function teardown(data) {
     );
   }
 
-  if (data.createdApiKey) {
-    // No public API-key revoke/delete endpoint exists in current API.
-    // Key created in setup may remain active and should be rotated manually.
+  if (data.createdApiKey && data.createdApiKeyPrefix && data.accessToken) {
+    // Revoke the key setup created so the run doesn't leave an active
+    // credential behind. Revoke is by public prefix and requires the admin
+    // bearer token (same one used to create it). 404 is fine (already gone).
+    const revokeRes = requestWithRetry(
+      "DELETE",
+      `${BASE_URL}/apikey/${encodeURIComponent(data.createdApiKeyPrefix)}`,
+      null,
+      {
+        headers: { Authorization: `Bearer ${data.accessToken}` },
+        tags: { phase: "teardown", endpoint: "revoke_apikey" },
+        timeout: REQUEST_TIMEOUT,
+      }
+    );
+    if (!is2xx(revokeRes) && revokeRes.status !== 404) {
+      console.error(
+        `Teardown warning: failed revoking API key ${data.createdApiKeyPrefix}. status=${revokeRes.status} body=${safeBody(
+          revokeRes
+        )}`
+      );
+    }
+  } else if (data.createdApiKey) {
     console.warn(
-      "Teardown limitation: API key created during setup could not be revoked via API " +
-        "(no delete/revoke endpoint available)."
+      "Teardown limitation: API key created during setup could not be revoked " +
+        "(missing prefix or admin access token)."
     );
   }
 }
