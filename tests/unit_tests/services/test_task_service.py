@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
-from app.core.exceptions import ConflictError, NotFoundError
+from app.core.exceptions import BadRequestError, ConflictError, NotFoundError
 from app.repository.game_params_repository import GameParamsRepository
 from app.repository.game_repository import GameRepository
 from app.repository.task_params_repository import TaskParamsRepository
@@ -277,6 +277,18 @@ class TestTaskService(unittest.IsolatedAsyncioTestCase):
             "external-game-1",
             create_query,
         )
+
+    async def test_validate_strategy_assignment_unknown_builtin_raises_not_found(self):
+        # Non-``custom:`` ids are matched against the built-in engine
+        # strategies; an unknown one is a 404.
+        with self.assertRaises(NotFoundError):
+            await self.service._validate_strategy_assignment("no-such-strategy")
+
+    async def test_validate_strategy_assignment_custom_without_registry_raises(self):
+        # A ``custom:`` id needs the StrategyDefinitionService to resolve it;
+        # the service here is built without one, so assignment is rejected.
+        with self.assertRaises(BadRequestError):
+            await self.service._validate_strategy_assignment(f"custom:{uuid4()}")
 
     async def test_create_task_by_game_id_raises_when_game_missing(self):
         self.game_repository.read_by_id.return_value = None
