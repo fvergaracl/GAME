@@ -125,9 +125,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
             SimpleNamespace(id="task-id-1", externalTaskId="task-external-1"),
             SimpleNamespace(id="task-id-2", externalTaskId="task-external-2"),
         ]
-        self.user_points_repository.get_points_and_users_by_taskId.side_effect = [
-            [SimpleNamespace(externalUserId="user_1", points=10)],
-            [SimpleNamespace(externalUserId="user_2", points=20)],
+        self.user_points_repository.get_points_and_users_by_taskIds.return_value = [
+            SimpleNamespace(taskId="task-id-1", externalUserId="user_1", points=10),
+            SimpleNamespace(taskId="task-id-2", externalUserId="user_2", points=20),
         ]
 
         result = await self.service.get_users_points_by_externalGameId(
@@ -352,8 +352,10 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.task_repository.read_by_column.return_value = [
             SimpleNamespace(id="task-1", externalTaskId="task-ext-1")
         ]
-        self.user_points_repository.get_points_and_users_by_taskId.return_value = [
-            SimpleNamespace(externalUserId="user_1", points=10, timesAwarded=3)
+        self.user_points_repository.get_points_and_users_by_taskIds.return_value = [
+            SimpleNamespace(
+                taskId="task-1", externalUserId="user_1", points=10, timesAwarded=3
+            )
         ]
 
         result = await self.service.get_points_by_gameId("game-1")
@@ -362,6 +364,43 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.task[0].externalTaskId, "task-ext-1")
         self.assertEqual(result.task[0].points[0].points, 10)
         self.assertEqual(result.task[0].points[0].timesAwarded, 3)
+
+    async def test_get_points_by_game_id_uses_one_batched_query_no_n_plus_1(self):
+        # N+1 fix: regardless of task count, points are fetched in ONE batched
+        # repository call (was one round-trip per task). Measured via the
+        # await-count of the batched vs the per-task repo method.
+        self.game_repository.read_by_column.return_value = SimpleNamespace(
+            id="game-1",
+            externalGameId="external-game-1",
+            created_at="2026-01-01T00:00:00",
+        )
+        self.task_repository.read_by_column.return_value = [
+            SimpleNamespace(id="task-1", externalTaskId="task-ext-1"),
+            SimpleNamespace(id="task-2", externalTaskId="task-ext-2"),
+            SimpleNamespace(id="task-3", externalTaskId="task-ext-3"),
+        ]
+        self.user_points_repository.get_points_and_users_by_taskIds.return_value = [
+            SimpleNamespace(
+                taskId="task-1", externalUserId="user_1", points=10, timesAwarded=1
+            ),
+            SimpleNamespace(
+                taskId="task-3", externalUserId="user_2", points=5, timesAwarded=2
+            ),
+        ]
+
+        result = await self.service.get_points_by_gameId("game-1")
+
+        # One batched call for THREE tasks; the per-task method is never used.
+        self.user_points_repository.get_points_and_users_by_taskIds.assert_awaited_once()
+        self.user_points_repository.get_points_and_users_by_taskId.assert_not_awaited()
+        # Grouping preserved, including a middle task with no points.
+        self.assertEqual(
+            [t.externalTaskId for t in result.task],
+            ["task-ext-1", "task-ext-2", "task-ext-3"],
+        )
+        self.assertEqual(result.task[0].points[0].externalUserId, "user_1")
+        self.assertEqual(result.task[1].points, [])
+        self.assertEqual(result.task[2].points[0].externalUserId, "user_2")
 
     async def test_get_points_by_game_id_with_details_returns_points_data(self):
         self.game_repository.read_by_column.return_value = SimpleNamespace(
@@ -372,8 +411,9 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.task_repository.read_by_column.return_value = [
             SimpleNamespace(id="task-1", externalTaskId="task-ext-1")
         ]
-        self.user_points_repository.get_points_and_users_by_taskId.return_value = [
+        self.user_points_repository.get_points_and_users_by_taskIds.return_value = [
             SimpleNamespace(
+                taskId="task-1",
                 externalUserId="user_1",
                 points=10,
                 timesAwarded=3,
@@ -420,9 +460,13 @@ class TestUserPointsService(unittest.IsolatedAsyncioTestCase):
         self.task_repository.read_by_column.return_value = [
             SimpleNamespace(id="task-1", externalTaskId="task-ext-1")
         ]
-        self.user_points_repository.get_points_and_users_by_taskId.return_value = [
-            SimpleNamespace(externalUserId="user_1", points=7, timesAwarded=2),
-            SimpleNamespace(externalUserId="user_2", points=100, timesAwarded=10),
+        self.user_points_repository.get_points_and_users_by_taskIds.return_value = [
+            SimpleNamespace(
+                taskId="task-1", externalUserId="user_1", points=7, timesAwarded=2
+            ),
+            SimpleNamespace(
+                taskId="task-1", externalUserId="user_2", points=100, timesAwarded=10
+            ),
         ]
 
         result = await self.service.get_points_of_user_in_game("game-1", "user_1")

@@ -207,6 +207,51 @@ class UserPointsRepository(BaseRepository):
             )
             return (await session.execute(stmt)).all()
 
+    async def get_points_and_users_by_taskIds(self, task_ids):
+        """
+        Batched form of :meth:`get_points_and_users_by_taskId`.
+
+        Aggregates points per (task, user) for **every** task in ``task_ids``
+        in a single ``taskId IN (...)`` query instead of one round-trip per
+        task, eliminating the N+1 the per-game readers used to incur. Each row
+        carries ``taskId`` so callers can group the result back per task. The
+        leading column of ``ix_user_points_task_user_created`` serves the
+        ``IN`` filter and the group-by.
+
+        Args:
+            task_ids: Iterable of internal task identifiers.
+
+        Returns:
+            list: Rows of ``(taskId, externalUserId, points, timesAwarded,
+            pointsData)`` -- the same per (task, user) shape as the single-task
+            method, plus ``taskId``. Empty list when ``task_ids`` is empty.
+        """
+        if not task_ids:
+            return []
+        async with self.session_factory() as session:
+            stmt = (
+                select(
+                    UserPoints.taskId.label("taskId"),
+                    Users.externalUserId.label("externalUserId"),
+                    func.sum(UserPoints.points).label("points"),
+                    func.count(UserPoints.id).label("timesAwarded"),
+                    func.array_agg(
+                        func.json_build_object(
+                            "points",
+                            UserPoints.points,
+                            "caseName",
+                            UserPoints.caseName,
+                            "created_at",
+                            UserPoints.created_at,
+                        )
+                    ).label("pointsData"),
+                )
+                .join(UserPoints, Users.id == UserPoints.userId)
+                .filter(UserPoints.taskId.in_(task_ids))
+                .group_by(UserPoints.taskId, Users.id)
+            )
+            return (await session.execute(stmt)).all()
+
     async def get_task_by_externalUserId(self, externalUserId):
         """
         Return all tasks a user has earned points on.

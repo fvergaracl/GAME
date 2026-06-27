@@ -1,0 +1,133 @@
+name: Load Test (nightly)
+
+# Nightly k6 load test against a throwaway full stack (Postgres + Keycloak +
+# API), enforcing p95 / error-rate thresholds so a performance regression is
+# caught before prod. The k6 summary is published as an artifact.
+#
+# NOTE (must validate via a manual run before relying on it): this brings up
+# Docker services and authenticates against Keycloak, which cannot be dry-run
+# from a laptop. Run it once via "Run workflow" (workflow_dispatch) and adjust
+# the wait/health and the secrets below. Required repo secrets:
+#   LOAD_KEYCLOAK_CLIENT_SECRET   - confidential client secret (gameAPI)
+#   LOAD_KEYCLOAK_ADMIN_PASSWORD  - password for game_admin@example.com (has
+#                                   the AdministratorGAME role in the seeded realm)
+# The committed .env.integrated keeps these as "xxxx" placeholders on purpose.
+
+on:
+  schedule:
+    # 03:17 UTC nightly (off the hour to avoid the cron stampede).
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Load mode (100 or 1000)"
+        default: "100"
+      p95_target_ms:
+        description: "p95 latency threshold (ms)"
+        default: "800"
+      error_rate_threshold:
+        description: "Max http_req_failed rate (0.01 = 1%)"
+        default: "0.01"
+
+# Don't pile up overlapping nightly runs.
+concurrency:
+  group: load-nightly
+  cancel-in-progress: true
+
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      COMPOSE: docker-compose-dev.yml
+      # k6 reads these (see tests/load/game_api_loadtest.js options).
+      ENFORCE_P95: "1"
+      P95_TARGET_MS: ${{ github.event.inputs.p95_target_ms || '800' }}
+      ERROR_RATE_THRESHOLD: ${{ github.event.inputs.error_rate_threshold || '0.01' }}
+      LOAD_MODE: ${{ github.event.inputs.mode || '100' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Write .env for the dev stack + load test
+        # Host-facing values: the load test runs on the runner and reaches the
+        # port-mapped services on localhost; the API container reaches Postgres
+        # via the "localhost" network alias and Keycloak via KEYCLOAK_URL_DOCKER.
+        run: |
+          cat > .env <<EOF
+          ENV=dev
+          DB_ENGINE=postgresql
+          DB_NAME=game_dev_db
+          DB_USER=postgres
+          DB_PASSWORD=changethis
+          DB_HOST=localhost
+          DB_PORT=5432
+          SECRET_KEY=ci-load-secret
+          SENTRY_DSN=
+          KEYCLOAK_ADMIN=admin
+          KEYCLOAK_ADMIN_PASSWORD=admin
+          KEYCLOAK_REALM=gameRealm
+          KEYCLOAK_AUDIENCE=account
+          KEYCLOAK_CLIENT_ID=gameAPI
+          KEYCLOAK_CLIENT_SECRET=${{ secrets.LOAD_KEYCLOAK_CLIENT_SECRET }}
+          KEYCLOAK_URL=http://localhost:8080
+          KEYCLOAK_URL_DOCKER=http://keycloakgame:8080
+          KEYCLOAK_USER_WITH_ROLE_USERNAME=game_admin@example.com
+          KEYCLOAK_USER_WITH_ROLE_PASSWORD=${{ secrets.LOAD_KEYCLOAK_ADMIN_PASSWORD }}
+          KEYCLOAK_ADMIN_USERNAME=game_admin@example.com
+          KEYCLOAK_TOKEN_URL=http://localhost:8080/realms/gameRealm/protocol/openid-connect/token
+          ADMIN_USERNAME=game_admin@example.com
+          ADMIN_PASSWORD=${{ secrets.LOAD_KEYCLOAK_ADMIN_PASSWORD }}
+          BASE_URL=http://localhost:8000/api/v1
+          EOF
+
+      - name: Bring up Postgres + Keycloak + API
+        run: docker compose -f "$COMPOSE" up -d --build postgrespostgres keycloakgame api
+
+      - name: Wait for the API to be ready
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8000/docs >/dev/null 2>&1; then
+              echo "API is up."; exit 0
+            fi
+            echo "waiting for API ($i)..."; sleep 5
+          done
+          echo "API did not become ready in time"; exit 1
+
+      - name: Wait for Keycloak realm to be importable
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS "http://localhost:8080/realms/gameRealm/.well-known/openid-configuration" >/dev/null 2>&1; then
+              echo "Keycloak realm is up."; exit 0
+            fi
+            echo "waiting for Keycloak ($i)..."; sleep 5
+          done
+          echo "Keycloak realm did not become ready in time"; exit 1
+
+      - name: Install k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run k6 load test (fails on p95 / error-rate threshold breach)
+        # run_load_test.sh -> k6; k6 exits non-zero (99) when a threshold fails,
+        # which fails this step and the job.
+        run: |
+          ./scripts/run_load_test.sh \
+            --env-file .env \
+            --mode "$LOAD_MODE" \
+            --summary-export k6-summary.json
+
+      - name: Upload k6 summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-summary-${{ github.run_id }}
+          path: k6-summary.json
+          if-no-files-found: warn
+
+      - name: Dump service logs on failure
+        if: failure()
+        run: docker compose -f "$COMPOSE" logs --no-color --tail=200
+
+      - name: Tear down
+        if: always()
+        run: docker compose -f "$COMPOSE" down -v

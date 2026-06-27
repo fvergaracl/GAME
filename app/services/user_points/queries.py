@@ -28,6 +28,19 @@ from app.services.game_access import get_authorized_game, get_authorized_user
 from app.services.user_points._base import FANOUT_LIMIT, UserPointsContext
 
 
+def _group_points_by_task(rows):
+    """Group batched ``(taskId, ...)`` point rows into ``{str(taskId): [rows]}``.
+
+    Lets the per-game readers fetch every task's points in a single
+    ``get_points_and_users_by_taskIds`` call and then slice them per task in
+    memory, instead of issuing one query per task (the previous N+1).
+    """
+    grouped: dict[str, list] = {}
+    for row in rows or []:
+        grouped.setdefault(str(row.taskId), []).append(row)
+    return grouped
+
+
 class PointsQueryMixin(UserPointsContext):
     async def query_user_points(self, schema) -> Any:
         """
@@ -303,11 +316,14 @@ class PointsQueryMixin(UserPointsContext):
         if not tasks:
             raise NotFoundError(detail=f"Tasks not found by gameId: {game.id}")
         game_points = []
+        points_by_task = _group_points_by_task(
+            await self.user_points_repository.get_points_and_users_by_taskIds(
+                [task.id for task in tasks]
+            )
+        )
         for task in tasks:
             user_points = []
-            points = await self.user_points_repository.get_points_and_users_by_taskId(
-                task.id
-            )
+            points = points_by_task.get(str(task.id), [])
             if points:
 
                 for point in points:
@@ -377,11 +393,14 @@ class PointsQueryMixin(UserPointsContext):
         if not tasks:
             raise NotFoundError(detail=f"Tasks not found by gameId: {game.id}")
         game_points = []
+        points_by_task = _group_points_by_task(
+            await self.user_points_repository.get_points_and_users_by_taskIds(
+                [task.id for task in tasks]
+            )
+        )
         for task in tasks:
             user_points = []
-            points = await self.user_points_repository.get_points_and_users_by_taskId(
-                task.id
-            )
+            points = points_by_task.get(str(task.id), [])
             if points:
 
                 for point in points:
@@ -459,10 +478,13 @@ class PointsQueryMixin(UserPointsContext):
         if not tasks:
             raise NotFoundError(detail=f"Tasks not found by gameId: {game.id}")
         response = []
-        for task in tasks:
-            points = await self.user_points_repository.get_points_and_users_by_taskId(
-                task.id
+        points_by_task = _group_points_by_task(
+            await self.user_points_repository.get_points_and_users_by_taskIds(
+                [task.id for task in tasks]
             )
+        )
+        for task in tasks:
+            points = points_by_task.get(str(task.id), [])
             if points:
                 for point in points:
                     if point.externalUserId == externalUserId:
@@ -507,10 +529,13 @@ class PointsQueryMixin(UserPointsContext):
             )
 
         response = []
-        for task in tasks:
-            points = await self.user_points_repository.get_points_and_users_by_taskId(
-                task.id
+        points_by_task = _group_points_by_task(
+            await self.user_points_repository.get_points_and_users_by_taskIds(
+                [task.id for task in tasks]
             )
+        )
+        for task in tasks:
+            points = points_by_task.get(str(task.id), [])
             response_by_task = []
             if points:
                 for point in points:
