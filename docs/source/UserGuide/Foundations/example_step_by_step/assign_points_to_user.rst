@@ -39,6 +39,6 @@ This response confirms that points were successfully assigned, providing details
 
 
 
-.. image:: ../../../static/images/creation_game_example/assign_points_user_1.png
+.. image:: /static/images/creation_game_example/assign_points_user_1.png
     :alt:  Assign Points to a User in a Game
     :align: center

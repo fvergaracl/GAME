@@ -54,6 +54,6 @@ This body of the request creates a game with the "socio_bee" strategy, where the
 
 **Graphical representation**:
 
-.. image:: ../../../static/images/creation_game_example/new_game.png
+.. image:: /static/images/creation_game_example/new_game.png
     :alt: New Game Figure
     :align: center

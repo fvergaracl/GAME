@@ -121,6 +121,11 @@ intersphinx_disabled_reftypes = ["*"]
 
 # -- Options for HTML output -------------------------------------------------
 
+# The sphinx_material theme injects a callable into ``html_context``; Sphinx
+# 7.4's config cache cannot pickle it and emits a (harmless) warning. Suppress
+# just that category so the build stays warning-free.
+suppress_warnings = ["config.cache"]
+
 html_theme = "sphinx_material"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]

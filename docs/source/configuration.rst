@@ -306,6 +306,17 @@ Errors & extras
    * - ``SENTRY_RELEASE``
      - ``0.0.0``
      - Sentry release tag.
+   * - ``SENTRY_SEND_DEFAULT_PII``
+     - ``false``
+     - When ``false`` (default) Sentry events carry no PII (user ids, client
+       IP, request headers/bodies). Opt in per environment.
+   * - ``SENTRY_TRACES_SAMPLE_RATE``
+     - ``0.1``
+     - Fraction of requests traced for performance. ``< 1.0`` caps cost/volume;
+       ``1.0`` (trace everything) is for short local debugging only.
+   * - ``SENTRY_PROFILING_ENABLED``
+     - ``false``
+     - Starts Sentry's continuous profiler only when ``true``.
    * - ``EXTRA_SERVER_URL`` / ``EXTRA_SERVER_DESCRIPTION``
      - *(unset)*
      - Adds an extra server entry to the OpenAPI schema (handy when the API is

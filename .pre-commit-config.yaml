@@ -1,0 +1,34 @@
+# Local pre-commit hooks that mirror the CI lint gate
+# (.github/workflows/lint.yml) so formatting/lint failures surface before the
+# push instead of in CI. They run in CHECK mode (no autofix) for parity with
+# CI; when a hook fails, fix with `black .`, `isort .` and `ruff check --fix .`.
+#
+#   Install once:   poetry run pre-commit install
+#   Run on demand:  poetry run pre-commit run --all-files
+#
+# Versions are pinned to the same releases the backend pins in pyproject.toml /
+# poetry.lock (ruff 0.15.16, black 24.10.0, isort 5.13.2) so local == CI.
+default_language_version:
+  python: python3.12
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.16
+    hooks:
+      - id: ruff
+        name: ruff (lint, check-only)
+        args: []
+
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 24.10.0
+    hooks:
+      - id: black
+        name: black (format, check-only)
+        args: ["--check"]
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (imports, check-only)
+        args: ["--check-only"]

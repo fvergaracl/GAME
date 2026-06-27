@@ -101,10 +101,13 @@ Error tracking (Sentry)
 Set ``SENTRY_DSN`` to enable Sentry. Configuration (``app/main.py``):
 
 * ``SENTRY_ENVIRONMENT`` and ``SENTRY_RELEASE`` tag events.
-* ``send_default_pii=True`` and ``traces_sample_rate=1.0`` are set; continuous
-  profiling auto-starts. **Review these for your privacy/cost posture** before
-  enabling in production - full-rate tracing and PII capture are convenient in
-  staging but may be too much at scale.
+* Data collection is privacy/cost-conservative by default and configurable per
+  environment: ``SENTRY_SEND_DEFAULT_PII`` (default ``false`` - no user ids,
+  client IP, headers or bodies on events), ``SENTRY_TRACES_SAMPLE_RATE``
+  (default ``0.1``) and ``SENTRY_PROFILING_ENABLED`` (default ``false``). Raise
+  them deliberately - full-rate tracing and PII capture are convenient in
+  staging but may be too much (and a GDPR concern) in production. See
+  :doc:`configuration` for the full list.
 
 Strategy execution traces
 =========================

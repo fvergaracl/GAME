@@ -113,6 +113,21 @@ poetry run black --check .
 poetry run isort --check-only .
 ```
 
+### Pre-commit hooks (recommended)
+
+Install the local hooks once so the lint gate runs automatically on every commit
+and you catch issues before they reach CI:
+
+```bash
+poetry run pre-commit install          # wire up the git hook (one time)
+poetry run pre-commit run --all-files  # run against the whole repo on demand
+```
+
+The hooks in [`.pre-commit-config.yaml`](.pre-commit-config.yaml) mirror the CI
+lint gate exactly — `ruff`, `black` and `isort` in `--check` mode, pinned to the
+same versions as the backend. A failing hook means CI would fail too; fix it with
+the auto-format commands above and re-commit.
+
 ## Required CI checks ✅
 
 The following checks run on every push and pull request and **must pass** before a
@@ -123,6 +138,7 @@ PR can be merged:
 | **Lint** | `.github/workflows/lint.yml` | `ruff check .`, `black --check .` and `isort --check-only .` all pass. Any failure turns the PR red — formatting and lint are no longer auto-fixed for you. |
 | **Test & Coverage** | `.github/workflows/coverage.yml` | `pytest` passes and total `app/` coverage stays **≥ 93%** (`--cov-fail-under=93`). Deleting tests or adding uncovered code that drops below the floor fails the PR. |
 | **pytest (unit)** | `.github/workflows/pytest.yml` | The unit test suite passes. |
+| **Dashboard CI** | `.github/workflows/dashboard-ci.yml` | Frontend only (`dashboard/**`): `npm ci` + ESLint + Vitest with a coverage floor. |
 
 > [!NOTE]
 > CI no longer pushes "Automated Black & Isort" commits to your branch. You are

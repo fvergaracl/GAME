@@ -42,6 +42,6 @@ To begin, it's necessary to know which strategy you will apply to the game you'r
 
 **Graphical representation**:
 
-.. image:: ../../../static/images/creation_game_example/retrieve_all_strategies.png
+.. image:: /static/images/creation_game_example/retrieve_all_strategies.png
     :alt: User Figure
     :align: center
