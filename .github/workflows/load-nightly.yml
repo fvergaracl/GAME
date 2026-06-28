@@ -47,7 +47,7 @@ jobs:
       LOAD_MODE: ${{ github.event.inputs.mode || '100' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Write .env for the dev stack + load test
         # Host-facing values: the load test runs on the runner and reaches the
