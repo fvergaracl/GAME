@@ -31,7 +31,7 @@ def _read_project_metadata() -> dict:
     """Return ``[tool.poetry]`` metadata, or sane defaults on failure."""
     defaults = {
         "version": "0.0.0",
-        "authors": ["fvergaracl <fvergaracl@gmail.com>"],
+        "authors": ["fvergaracl <felipe.vergara@deusto.es>"],
         "license": "Apache-2.0",
     }
     if tomllib is None:
