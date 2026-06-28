@@ -14,12 +14,10 @@ The GAME project uses `pytest` for running both unit and integration tests. All 
 
 ### Steps to Run Tests
 
-1. **Activate the Poetry environment**:
-
-   Before running tests, ensure you are working in the Poetry environment:
+1. **Install dependencies** (if you haven't already):
 
    ```bash
-   poetry shell
+   poetry install
    ```
 
 2. **Run all tests**:

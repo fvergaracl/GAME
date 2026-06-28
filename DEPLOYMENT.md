@@ -20,7 +20,8 @@ Ensure you have the following installed and configured before starting the deplo
 
 ## Local Deployment with Docker 🐳
 
-For local development, Docker Compose simplifies the process of setting up the PostgreSQL database and the FastAPI server in one go.
+For local development the project ships **one-command launchers** that create your
+`.env`, build the images, start the full stack, and wait until the API is healthy.
 
 ### Steps:
 
@@ -31,46 +32,42 @@ For local development, Docker Compose simplifies the process of setting up the P
    cd GAME
    ```
 
-2. **Start the services with Docker Compose**:
+2. **Start the stack** with a single command:
 
-   To spin up both the PostgreSQL database and the FastAPI server, run:
+   **Linux / macOS / WSL** (via the `Makefile`):
+
+   ```bash
+   make dev      # start the dev stack
+   make logs     # follow logs
+   make down     # stop
+   ```
+
+   **Windows** (PowerShell):
+
+   ```powershell
+   .\start.ps1           # start the dev stack
+   .\start.ps1 -Logs     # start and follow logs
+   .\start.ps1 -Down     # stop
+   ```
+
+   Both wrap `docker-compose-dev.yml`. Prefer to drive Compose yourself?
 
    ```bash
    docker-compose -f docker-compose-dev.yml up --build
+   docker-compose -f docker-compose-dev.yml down --remove-orphans
    ```
-
-   This will build the Docker images and start the containers in a local development environment.
 
 3. **Access the application**:
 
-   Once the containers are running, you can access the API at:
-
-   ```bash
-   http://localhost:8000
-   ```
-
-   - For the automatic API documentation (Swagger UI), go to:
-     ```bash
-     http://localhost:8000/docs
-     ```
-
-   - For ReDoc documentation:
-     ```bash
-     http://localhost:8000/redoc
-     ```
-
-4. **Stop the services**:
-
-   To stop the containers, use:
-
-   ```bash
-   docker-compose down
-   ```
+   - API: <http://localhost:8000>
+   - Swagger UI: <http://localhost:8000/docs>
+   - ReDoc: <http://localhost:8000/redocs>
+   - Dashboard: <http://localhost:3000>
 
 
 ## Production Deployment 🚀
 
-For deploying the GAME application in a production environment, use the standard `docker-compose.yml` file. This setup assumes you have Docker installed on your server.
+For deploying the GAME application in a production environment, use the standard `docker-compose.yml` file. This setup assumes you have Docker installed on your server. (On Linux/macOS you can drive it through the `Makefile` as well: `make up FILE=docker-compose.yml` and `make down FILE=docker-compose.yml`. The Windows `start.ps1` launcher targets the **dev** stack only.)
 
 ### Steps:
 

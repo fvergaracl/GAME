@@ -2,6 +2,13 @@
 
 We welcome contributions from developers of all levels! Whether you're fixing a bug, adding a feature, or improving documentation, your contributions are valuable to us.
 
+By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+> **New here?** A great place to start is an issue labeled
+> [`good first issue`](https://github.com/fvergaracl/GAME/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+> Have a question before diving in? Open a thread in
+> [GitHub Discussions](https://github.com/fvergaracl/GAME/discussions) — we're happy to help.
+
 ## How to Contribute
 
 1. **Fork** the repository by clicking the "Fork" button at the top of the repository page.
@@ -46,6 +53,10 @@ We welcome contributions from developers of all levels! Whether you're fixing a 
 
 ### Setting Up the Project
 
+> 💡 The quickest way to bring up the **entire** stack (API + database + Keycloak
+> + dashboard) is the one-command launcher — `make dev` (Linux/macOS/WSL) or
+> `.\start.ps1` (Windows). The steps below set up a backend-only dev loop with Poetry.
+
 1. **Clone the repository**:
 
    ```bash
@@ -59,11 +70,16 @@ We welcome contributions from developers of all levels! Whether you're fixing a 
    poetry install
    ```
 
-3. **Activate the Poetry environment**:
+3. **Set up your environment** (database, secrets, migrations):
 
    ```bash
-   poetry shell
+   cp .env.sample .env
+   # start PostgreSQL, then apply the latest migrations
+   poetry run alembic upgrade head
    ```
+
+   The full local setup (PostgreSQL, Keycloak, environment variables) is covered
+   in the [README Quick Start](README.md#quick-start) and [SETUP.md](SETUP.md).
 
 4. **Start the development server**:
 
@@ -76,7 +92,7 @@ We welcome contributions from developers of all levels! Whether you're fixing a 
 
 ## Writing Tests 🧪
 
-All contributions should include relevant unit and/or integration tests to ensure the stability of the codebase. You can find existing tests in the `tests/` directory.
+All contributions should include relevant unit and/or integration tests to ensure the stability of the codebase. You can find existing tests in the `tests/` directory (`unit_tests/`, `e2e/`, `load/`). The README's [Tests & Coverage](README.md#tests--coverage) section and [TESTING.md](TESTING.md) document the one-command runners (e.g. `./scripts/run_unit_tests.sh`).
 
 To run the tests:
 
@@ -89,6 +105,8 @@ To run tests with code coverage:
 ```bash
 poetry run pytest --cov=app --cov-report=term-missing
 ```
+
+> CI enforces a coverage gate: total `app/` coverage must stay **≥ 93%**.
 
 
 
@@ -157,9 +175,17 @@ If you encounter any bugs or have feature requests, please open an issue in the 
 
 We encourage community discussions on issues, so feel free to comment if you can help resolve a problem!
 
+> [!IMPORTANT]
+> **Found a security vulnerability?** Please do **not** open a public issue.
+> Follow the responsible-disclosure process in our [Security Policy](SECURITY.md) instead.
+
 
 ## Join the Community 💬
 
-If you have any questions, suggestions, or want to discuss potential features, you can reach out to us by creating an issue or starting a discussion on the [GitHub Discussions](https://github.com/fvergaracl/GAME/discussions) page.
+Not sure where to go?
+
+- 💬 **Questions, ideas, or design discussions** → [GitHub Discussions](https://github.com/fvergaracl/GAME/discussions)
+- 🐛 **Bugs and feature requests** → [GitHub Issues](https://github.com/fvergaracl/GAME/issues)
+- 🔒 **Security reports** → [SECURITY.md](SECURITY.md)
 
 Thank you for contributing to GAME!

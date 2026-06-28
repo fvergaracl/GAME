@@ -2,10 +2,31 @@
 
 ## Requirements 🛠️
 
-- Python 3.8+
+- Python 3.12+
 - PostgreSQL
 - Docker and Docker Compose (optional, for local database deployment)
 - Poetry
+
+## Quick start (one command) ⚡
+
+The fastest way to get the full stack (API, database, Keycloak, dashboard,
+observability) running locally:
+
+**Linux / macOS / WSL:**
+
+```bash
+make dev
+```
+
+**Windows (PowerShell):**
+
+```powershell
+.\start.ps1
+```
+
+Both create your `.env` on first run, build the Docker images, and wait until the
+API is healthy. Stop with `make down` (or `.\start.ps1 -Down`). The manual,
+container-free setup is described in the steps below.
 
 ## Project Structure 📂
 
