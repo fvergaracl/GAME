@@ -383,6 +383,8 @@
         </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_points_and_users_by_taskId()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskIds" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_points_and_users_by_taskIds()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_task_by_externalUserId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_task_by_externalUserId()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.repository.user_points_repository.UserPointsRepository.get_task_and_sum_points_by_userId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UserPointsRepository.get_task_and_sum_points_by_userId()</span></code></a>
@@ -545,6 +547,27 @@ summed points and award count per user.</p>
 <dd class="field-even"><p><em>list</em> – Rows of <code class="docutils literal notranslate"><span class="pre">(externalUserId,</span> <span class="pre">points,</span> <span class="pre">timesAwarded,</span>
 <span class="pre">pointsData)</span></code> where <code class="docutils literal notranslate"><span class="pre">pointsData</span></code> aggregates each award’s
 <code class="docutils literal notranslate"><span class="pre">points</span></code>, <code class="docutils literal notranslate"><span class="pre">caseName</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskIds">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_and_users_by_taskIds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/repository/user_points_repository.html#UserPointsRepository.get_points_and_users_by_taskIds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskIds" title="Link to this definition">¶</a></dt>
+<dd><p>Batched form of <a class="reference internal" href="#app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskId" title="app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskId"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_points_and_users_by_taskId()</span></code></a>.</p>
+<p>Aggregates points per (task, user) for <strong>every</strong> task in <code class="docutils literal notranslate"><span class="pre">task_ids</span></code>
+in a single <code class="docutils literal notranslate"><span class="pre">taskId</span> <span class="pre">IN</span> <span class="pre">(...)</span></code> query instead of one round-trip per
+task, eliminating the N+1 the per-game readers used to incur. Each row
+carries <code class="docutils literal notranslate"><span class="pre">taskId</span></code> so callers can group the result back per task. The
+leading column of <code class="docutils literal notranslate"><span class="pre">ix_user_points_task_user_created</span></code> serves the
+<code class="docutils literal notranslate"><span class="pre">IN</span></code> filter and the group-by.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_ids</strong> – Iterable of internal task identifiers.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>list</em> – Rows of <code class="docutils literal notranslate"><span class="pre">(taskId,</span> <span class="pre">externalUserId,</span> <span class="pre">points,</span> <span class="pre">timesAwarded,</span>
+<span class="pre">pointsData)</span></code> – the same per (task, user) shape as the single-task
+method, plus <code class="docutils literal notranslate"><span class="pre">taskId</span></code>. Empty list when <code class="docutils literal notranslate"><span class="pre">task_ids</span></code> is empty.</p>
 </dd>
 </dl>
 </dd></dl>

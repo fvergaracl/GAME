@@ -587,16 +587,21 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_DSN</span><span class="p">:</span>
-            <span class="n">sentry_sdk</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
-                <span class="n">dsn</span><span class="o">=</span><span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_DSN</span><span class="p">,</span>
-                <span class="n">environment</span><span class="o">=</span><span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_ENVIRONMENT</span><span class="p">,</span>
-                <span class="n">release</span><span class="o">=</span><span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_RELEASE</span><span class="p">,</span>
-                <span class="n">send_default_pii</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">traces_sample_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-                <span class="n">_experiments</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">sentry_init_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"dsn"</span><span class="p">:</span> <span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_DSN</span><span class="p">,</span>
+                <span class="s2">"environment"</span><span class="p">:</span> <span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_ENVIRONMENT</span><span class="p">,</span>
+                <span class="s2">"release"</span><span class="p">:</span> <span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_RELEASE</span><span class="p">,</span>
+                <span class="s2">"send_default_pii"</span><span class="p">:</span> <span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_SEND_DEFAULT_PII</span><span class="p">,</span>
+                <span class="s2">"traces_sample_rate"</span><span class="p">:</span> <span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_TRACES_SAMPLE_RATE</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="c1"># Continuous profiling is opt-in: it samples the running process and</span>
+            <span class="c1"># is both costly and sensitive, so it only starts when explicitly</span>
+            <span class="c1"># enabled via SENTRY_PROFILING_ENABLED.</span>
+            <span class="k">if</span> <span class="n">configs</span><span class="o">.</span><span class="n">SENTRY_PROFILING_ENABLED</span><span class="p">:</span>
+                <span class="n">sentry_init_kwargs</span><span class="p">[</span><span class="s2">"_experiments"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s2">"continuous_profiling_auto_start"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="p">},</span>
-            <span class="p">)</span>
+                <span class="p">}</span>
+            <span class="n">sentry_sdk</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="o">**</span><span class="n">sentry_init_kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
             <span class="n">lifespan</span><span class="o">=</span><span class="n">lifespan</span><span class="p">,</span>

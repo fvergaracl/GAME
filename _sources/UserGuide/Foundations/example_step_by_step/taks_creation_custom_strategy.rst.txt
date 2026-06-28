@@ -70,6 +70,6 @@ This method of task creation enhances the flexibility and depth of the gamificat
 
 **Graphical representation**:
 
-.. image:: ../../../static/images/creation_game_example/task_with_custom_strategy.png
+.. image:: /static/images/creation_game_example/task_with_custom_strategy.png
     :alt: Task with Custom Strategy
     :align: center

@@ -391,6 +391,19 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">app.services.user_points._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">FANOUT_LIMIT</span><span class="p">,</span> <span class="n">UserPointsContext</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_group_points_by_task</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Group batched ``(taskId, ...)`` point rows into ``{str(taskId): [rows]}``.</span>
+
+<span class="sd">    Lets the per-game readers fetch every task's points in a single</span>
+<span class="sd">    ``get_points_and_users_by_taskIds`` call and then slice them per task in</span>
+<span class="sd">    memory, instead of issuing one query per task (the previous N+1).</span>
+<span class="sd">    """</span>
+    <span class="n">grouped</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span> <span class="ow">or</span> <span class="p">[]:</span>
+        <span class="n">grouped</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">taskId</span><span class="p">),</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">grouped</span>
+
+
 <div class="viewcode-block" id="PointsQueryMixin">
 <a class="viewcode-back" href="../../../../api/app.services.user_points.queries.html#app.services.user_points.queries.PointsQueryMixin">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PointsQueryMixin</span><span class="p">(</span><span class="n">UserPointsContext</span><span class="p">):</span>
@@ -682,11 +695,14 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Tasks not found by gameId: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">game_points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">points_by_task</span> <span class="o">=</span> <span class="n">_group_points_by_task</span><span class="p">(</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskIds</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="n">user_points</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
-                <span class="n">task</span><span class="o">.</span><span class="n">id</span>
-            <span class="p">)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">points_by_task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="p">[])</span>
             <span class="k">if</span> <span class="n">points</span><span class="p">:</span>
 
                 <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
@@ -759,11 +775,14 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Tasks not found by gameId: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">game_points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">points_by_task</span> <span class="o">=</span> <span class="n">_group_points_by_task</span><span class="p">(</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskIds</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="n">user_points</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
-                <span class="n">task</span><span class="o">.</span><span class="n">id</span>
-            <span class="p">)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">points_by_task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="p">[])</span>
             <span class="k">if</span> <span class="n">points</span><span class="p">:</span>
 
                 <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
@@ -844,10 +863,13 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Tasks not found by gameId: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
-                <span class="n">task</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">points_by_task</span> <span class="o">=</span> <span class="n">_group_points_by_task</span><span class="p">(</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskIds</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">]</span>
             <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">points_by_task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="p">[])</span>
             <span class="k">if</span> <span class="n">points</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">externalUserId</span> <span class="o">==</span> <span class="n">externalUserId</span><span class="p">:</span>
@@ -895,10 +917,13 @@
             <span class="p">)</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskId</span><span class="p">(</span>
-                <span class="n">task</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">points_by_task</span> <span class="o">=</span> <span class="n">_group_points_by_task</span><span class="p">(</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_points_repository</span><span class="o">.</span><span class="n">get_points_and_users_by_taskIds</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">]</span>
             <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">points_by_task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="p">[])</span>
             <span class="n">response_by_task</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="n">points</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>

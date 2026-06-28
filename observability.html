@@ -578,10 +578,13 @@ so a request can be reconstructed from the database, not just the log stream.</p
 <p>Set <code class="docutils literal notranslate"><span class="pre">SENTRY_DSN</span></code> to enable Sentry. Configuration (<code class="docutils literal notranslate"><span class="pre">app/main.py</span></code>):</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">SENTRY_ENVIRONMENT</span></code> and <code class="docutils literal notranslate"><span class="pre">SENTRY_RELEASE</span></code> tag events.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">send_default_pii=True</span></code> and <code class="docutils literal notranslate"><span class="pre">traces_sample_rate=1.0</span></code> are set; continuous
-profiling auto-starts. <strong>Review these for your privacy/cost posture</strong> before
-enabling in production - full-rate tracing and PII capture are convenient in
-staging but may be too much at scale.</p></li>
+<li><p>Data collection is privacy/cost-conservative by default and configurable per
+environment: <code class="docutils literal notranslate"><span class="pre">SENTRY_SEND_DEFAULT_PII</span></code> (default <code class="docutils literal notranslate"><span class="pre">false</span></code> - no user ids,
+client IP, headers or bodies on events), <code class="docutils literal notranslate"><span class="pre">SENTRY_TRACES_SAMPLE_RATE</span></code>
+(default <code class="docutils literal notranslate"><span class="pre">0.1</span></code>) and <code class="docutils literal notranslate"><span class="pre">SENTRY_PROFILING_ENABLED</span></code> (default <code class="docutils literal notranslate"><span class="pre">false</span></code>). Raise
+them deliberately - full-rate tracing and PII capture are convenient in
+staging but may be too much (and a GDPR concern) in production. See
+<a class="reference internal" href="configuration.html"><span class="doc">Configuration Reference</span></a> for the full list.</p></li>
 </ul>
 </section>
 <section id="strategy-execution-traces">

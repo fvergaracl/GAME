@@ -386,34 +386,6 @@
         <li class="md-nav__item"><a href="#app.services.task_service.TaskService.task_params_repository" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.task_params_repository</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#app.services.task_service.TaskService.__init__" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.__init__()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.patch_task_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.patch_task_by_id()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.delete_task_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.delete_task_by_id()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.duplicate_task" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.duplicate_task()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_tasks_list_by_externalGameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_tasks_list_by_externalGameId()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_tasks_list_by_gameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_tasks_list_by_gameId()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_task_by_gameId_externalTaskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_task_by_gameId_externalTaskId()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_task_by_externalGameId_externalTaskId()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.create_task_by_externalGameId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.create_task_by_externalGameId()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.create_task_by_game_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.create_task_by_game_id()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_task_detail_by_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_task_detail_by_id()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_points_by_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_points_by_task_id()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_points_of_user_by_task_id" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_points_of_user_by_task_id()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_points_by_task_id_with_details" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_points_by_task_id_with_details()</span></code></a>
-        </li>
-        <li class="md-nav__item"><a href="#app.services.task_service.TaskService.get_task_params_by_externalTaskId" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">TaskService.get_task_params_by_externalTaskId()</span></code></a>
         </li></ul>
             </nav>
         </li></ul>
@@ -435,10 +407,19 @@
             
   <section id="module-app.services.task_service">
 <span id="app-services-task-service-module"></span><h1 id="api-app-services-task-service--page-root">app.services.task_service module<a class="headerlink" href="#api-app-services-task-service--page-root" title="Link to this heading">¶</a></h1>
+<p>Public entry point for task operations.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TaskService</span></code> composes three focused mixins (see <code class="xref py py-mod docutils literal notranslate"><span class="pre">app.services.task</span></code>)
+so its read, write and points-by-task concerns live in separate modules
+without changing the single DI-injected class that endpoints depend on:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskQueryMixin</span></code> - read-only task lookups and listings.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskMutationMixin</span></code> - the create/patch/delete/duplicate write path.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskPointsMixin</span></code> - points-by-task read queries.</p></li>
+</ul>
 <dl class="py class">
 <dt class="sig sig-object py" id="app.services.task_service.TaskService">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.services.task_service.</span></span><span class="sig-name descname"><span class="pre">TaskService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy_service</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_points_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_params_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_params_repository</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy_definition_service</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="app.services.base_service.html#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="app.services.base_service.html#app.services.base_service.BaseService" title="app.services.base_service.BaseService"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseService</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TaskQueryMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TaskMutationMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TaskPointsMixin</span></code></p>
 <p>Service class for managing tasks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -536,7 +517,7 @@ task parameters.</p>
 </dl>
 <p><code class="docutils literal notranslate"><span class="pre">strategy_definition_service</span></code> is optional so existing call sites
 and tests that don’t exercise <code class="docutils literal notranslate"><span class="pre">custom:</span></code> strategyIds keep
-working. Required for <a class="reference internal" href="#app.services.task_service.TaskService.patch_task_by_id" title="app.services.task_service.TaskService.patch_task_by_id"><code class="xref py py-meth docutils literal notranslate"><span class="pre">patch_task_by_id()</span></code></a> to validate
+working. Required for <code class="xref py py-meth docutils literal notranslate"><span class="pre">patch_task_by_id()</span></code> to validate
 <code class="docutils literal notranslate"><span class="pre">custom:</span></code> ids against the persistent registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -553,322 +534,6 @@ working. Required for <a class="reference internal" href="#app.services.task_ser
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.patch_task_by_id">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_task_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.patch_task_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.patch_task_by_id" title="Link to this definition">¶</a></dt>
-<dd><p>Partially update a task identified by <code class="docutils literal notranslate"><span class="pre">gameId</span></code> + <code class="docutils literal notranslate"><span class="pre">taskId</span></code>.</p>
-<p>Mutable fields: <code class="docutils literal notranslate"><span class="pre">strategyId</span></code>, <code class="docutils literal notranslate"><span class="pre">status</span></code> and <code class="docutils literal notranslate"><span class="pre">params</span></code>. When
-<code class="docutils literal notranslate"><span class="pre">params</span></code> is provided it is treated as the desired full set and
-synced via <code class="xref py py-meth docutils literal notranslate"><span class="pre">_sync_task_params()</span></code> (update existing rows by id,
-create rows without an id, delete rows omitted from the list);
-omit <code class="docutils literal notranslate"><span class="pre">params</span></code> to leave them untouched.</p>
-<p><code class="docutils literal notranslate"><span class="pre">strategyId</span></code> accepts both built-ins and <code class="docutils literal notranslate"><span class="pre">custom:&lt;uuid&gt;</span></code> -
-validated by <code class="xref py py-meth docutils literal notranslate"><span class="pre">_validate_strategy_assignment()</span></code> with the
-caller’s tenant boundary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameId</strong> (<em>UUID</em>)</p></li>
-<li><p><strong>taskId</strong> (<em>UUID</em>)</p></li>
-<li><p><strong>schema</strong> (<em>PatchTask</em>)</p></li>
-<li><p><strong>api_key</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>oauth_user_id</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
-<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>ResponsePatchTask</em></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.delete_task_by_id">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_task_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.delete_task_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.delete_task_by_id" title="Link to this definition">¶</a></dt>
-<dd><p>Delete a task (and its params/points) identified by
-<code class="docutils literal notranslate"><span class="pre">gameId</span></code> + <code class="docutils literal notranslate"><span class="pre">taskId</span></code>.</p>
-<p>Full-stack addition mirroring
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">GameService.delete_game_by_id()</span></code>: the cascade lives in
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">TaskRepository.delete_task_by_id()</span></code> so task params and the
-user-points rows that reference the task go before the task row.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameId</strong> (<em>UUID</em>)</p></li>
-<li><p><strong>taskId</strong> (<em>UUID</em>)</p></li>
-<li><p><strong>api_key</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>oauth_user_id</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
-<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>ResponseDeleteTask</em></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.duplicate_task">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">duplicate_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.duplicate_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.duplicate_task" title="Link to this definition">¶</a></dt>
-<dd><p>Duplicate a task within the same game under a new
-<code class="docutils literal notranslate"><span class="pre">externalTaskId</span></code>.</p>
-<p>Deep-copies the source task’s strategy and params onto the new
-task. Reuses <a class="reference internal" href="#app.services.task_service.TaskService.create_task_by_game_id" title="app.services.task_service.TaskService.create_task_by_game_id"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_task_by_game_id()</span></code></a> for the heavy lifting
-(uniqueness check on the new <code class="docutils literal notranslate"><span class="pre">externalTaskId</span></code>, row + param
-insertion, response shaping) so the duplicate path can’t drift
-from normal task creation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameId</strong> (<em>UUID</em>)</p></li>
-<li><p><strong>taskId</strong> (<em>UUID</em>)</p></li>
-<li><p><strong>externalTaskId</strong> (<em>str</em>)</p></li>
-<li><p><strong>api_key</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>oauth_user_id</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
-<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CreateTaskPostSuccesfullyCreated</em></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_tasks_list_by_externalGameId">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tasks_list_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_tasks_list_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_tasks_list_by_externalGameId" title="Link to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Retrieves a list of tasks associated with a game by its external game</dt><dd><p>ID.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>externalGameId</strong> (<em>str</em>) – The external game ID.</p></li>
-<li><p><strong>find_query</strong> – The query for finding tasks.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>list</em> – A list of tasks associated with the game.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict[str, <em>Any</em>]</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_tasks_list_by_gameId">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tasks_list_by_gameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">find_query</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_tasks_list_by_gameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_tasks_list_by_gameId" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves a list of tasks associated with a game by its game ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
-<li><p><strong>find_query</strong> – The query for finding tasks.</p></li>
-<li><p><strong>api_key</strong> (<em>str</em>)</p></li>
-<li><p><strong>oauth_user_id</strong> (<em>str</em>)</p></li>
-<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
-<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>list</em> – A list of tasks associated with the game.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict[str, <em>Any</em>]</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_by_gameId_externalTaskId">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_by_gameId_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_by_gameId_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_by_gameId_externalTaskId" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves a task by its game ID and external task ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
-<li><p><strong>externalTaskId</strong> (<em>str</em>) – The external task ID.</p></li>
-<li><p><strong>api_key</strong> (<em>str</em>)</p></li>
-<li><p><strong>oauth_user_id</strong> (<em>str</em>)</p></li>
-<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
-<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CreateTaskPostSuccesfullyCreated</em> – The task details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>CreateTaskPostSuccesfullyCreated</em></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_by_externalGameId_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_by_externalGameId_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_by_externalGameId_externalTaskId" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves a task by its game ID and external task ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
-<li><p><strong>externalTaskId</strong> (<em>str</em>) – The external task ID.</p></li>
-<li><p><strong>api_key</strong> (<em>str</em>)</p></li>
-<li><p><strong>oauth_user_id</strong> (<em>str</em>)</p></li>
-<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
-<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CreateTaskPostSuccesfullyCreated</em> – The task details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>CreateTaskPostSuccesfullyCreated</em></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.create_task_by_externalGameId">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_task_by_externalGameId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalGameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.create_task_by_externalGameId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.create_task_by_externalGameId" title="Link to this definition">¶</a></dt>
-<dd><p>Creates a task for a game by its external game ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>externalGameId</strong> (<em>str</em>) – The external game ID.</p></li>
-<li><p><strong>create_query</strong> – The query for creating the task.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CreateTaskPostSuccesfullyCreated</em> – The created task details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>CreateTaskPostSuccesfullyCreated</em></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.create_task_by_game_id">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_task_by_game_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.create_task_by_game_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.create_task_by_game_id" title="Link to this definition">¶</a></dt>
-<dd><p>Creates a task for a game by its game ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
-<li><p><strong>create_query</strong> – The query for creating the task.</p></li>
-<li><p><strong>api_key</strong> (<em>str</em>)</p></li>
-<li><p><strong>oauth_user_id</strong> (<em>str</em>)</p></li>
-<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
-<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>CreateTaskPostSuccesfullyCreated</em> – The created task details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>CreateTaskPostSuccesfullyCreated</em></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_detail_by_id">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_detail_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_detail_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_detail_by_id" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves task details by its ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema</strong> – The schema containing the task ID.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>dict</em> – The task and strategy details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict[str, <em>Any</em>]</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_by_task_id">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_by_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_by_task_id" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves points by task ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
-<li><p><strong>externalTaskId</strong> (<em>str</em>) – The external task ID.</p></li>
-<li><p><strong>api_key</strong> (<em>str</em>)</p></li>
-<li><p><strong>oauth_user_id</strong> (<em>str</em>)</p></li>
-<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
-<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>list</em> – A list of points associated with the task.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>Any</em></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_of_user_by_task_id">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_of_user_by_task_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalUserId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_of_user_by_task_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_of_user_by_task_id" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves points of a user by task ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
-<li><p><strong>externalTaskId</strong> (<em>str</em>) – The external task ID.</p></li>
-<li><p><strong>externalUserId</strong> (<em>str</em>) – The external user ID.</p></li>
-<li><p><strong>api_key</strong> (<em>str</em>)</p></li>
-<li><p><strong>oauth_user_id</strong> (<em>str</em>)</p></li>
-<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
-<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>dict</em> – The user’s points details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>Any</em></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_points_by_task_id_with_details">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points_by_task_id_with_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gameId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oauth_user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_admin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enforce_scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_points_by_task_id_with_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_points_by_task_id_with_details" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves points by task ID with details.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameId</strong> (<em>UUID</em>) – The game ID.</p></li>
-<li><p><strong>externalTaskId</strong> (<em>str</em>) – The external task ID.</p></li>
-<li><p><strong>api_key</strong> (<em>str</em>)</p></li>
-<li><p><strong>oauth_user_id</strong> (<em>str</em>)</p></li>
-<li><p><strong>is_admin</strong> (<em>bool</em>)</p></li>
-<li><p><strong>enforce_scope</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>list</em> – A list of points associated with the task.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>Any</em></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="app.services.task_service.TaskService.get_task_params_by_externalTaskId">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_task_params_by_externalTaskId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">externalTaskId</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app/services/task_service.html#TaskService.get_task_params_by_externalTaskId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.services.task_service.TaskService.get_task_params_by_externalTaskId" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieves task parameters by external task ID.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>externalTaskId</strong> (<em>str</em>) – The external task ID.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>list</em> – A list of task parameters associated with the task.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>Any</em></p>
 </dd>
 </dl>
 </dd></dl>

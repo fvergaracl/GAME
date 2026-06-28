@@ -88,13 +88,18 @@ Guidelines:
   reserve real-infra E2E for integration behavior.
 * Because persistence is abstracted, services run against **SQLite** in tests
   and **PostgreSQL** in production - keep repository queries portable.
-* CI runs the suite with coverage; Codecov tracks the trend.
+* CI enforces quality gates on every PR: a **lint** job (``ruff check``,
+  ``black --check``, ``isort --check-only``), the test suite with a **coverage
+  floor** (``pytest --cov-fail-under``), and a separate **Dashboard CI** job for
+  the React frontend. Codecov tracks the trend.
 
 Code style
 ==========
 
-* **Python 3.12**, PEP 8. Formatting/linting is handled by **Ruff**
-  (``ruff_cache`` is present); run it before pushing.
+* **Python 3.12**, PEP 8. Formatting/linting is handled by **Ruff**, **Black**
+  and **isort** (isort uses the ``black`` profile so the two never disagree);
+  the CI lint gate runs them in ``--check`` mode. Install the local hooks with
+  ``pre-commit install`` to catch the same issues before you push.
 * Public functions and classes get **Google-style docstrings** - they are not
   decoration, they *are* the API reference (:doc:`codebase`) via ``napoleon``.
 * Match the surrounding code: the codebase favors small, well-named functions,

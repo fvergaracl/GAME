@@ -70,6 +70,6 @@ This flexibility in task creation ensures that while tasks can align with the br
 
 **Graphical representation**:
 
-.. image:: ../../../static/images/creation_game_example/task_with_Inherited_strategy.png
+.. image:: /static/images/creation_game_example/task_with_Inherited_strategy.png
     :alt: Task with Inherited Game Strategy
     :align: center

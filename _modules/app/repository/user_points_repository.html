@@ -590,6 +590,54 @@
             <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="UserPointsRepository.get_points_and_users_by_taskIds">
+<a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_points_and_users_by_taskIds">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_points_and_users_by_taskIds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_ids</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Batched form of :meth:`get_points_and_users_by_taskId`.</span>
+
+<span class="sd">        Aggregates points per (task, user) for **every** task in ``task_ids``</span>
+<span class="sd">        in a single ``taskId IN (...)`` query instead of one round-trip per</span>
+<span class="sd">        task, eliminating the N+1 the per-game readers used to incur. Each row</span>
+<span class="sd">        carries ``taskId`` so callers can group the result back per task. The</span>
+<span class="sd">        leading column of ``ix_user_points_task_user_created`` serves the</span>
+<span class="sd">        ``IN`` filter and the group-by.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task_ids: Iterable of internal task identifiers.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Rows of ``(taskId, externalUserId, points, timesAwarded,</span>
+<span class="sd">            pointsData)`` -- the same per (task, user) shape as the single-task</span>
+<span class="sd">            method, plus ``taskId``. Empty list when ``task_ids`` is empty.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">task_ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span>
+                    <span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"taskId"</span><span class="p">),</span>
+                    <span class="n">Users</span><span class="o">.</span><span class="n">externalUserId</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"externalUserId"</span><span class="p">),</span>
+                    <span class="n">func</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"points"</span><span class="p">),</span>
+                    <span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"timesAwarded"</span><span class="p">),</span>
+                    <span class="n">func</span><span class="o">.</span><span class="n">array_agg</span><span class="p">(</span>
+                        <span class="n">func</span><span class="o">.</span><span class="n">json_build_object</span><span class="p">(</span>
+                            <span class="s2">"points"</span><span class="p">,</span>
+                            <span class="n">UserPoints</span><span class="o">.</span><span class="n">points</span><span class="p">,</span>
+                            <span class="s2">"caseName"</span><span class="p">,</span>
+                            <span class="n">UserPoints</span><span class="o">.</span><span class="n">caseName</span><span class="p">,</span>
+                            <span class="s2">"created_at"</span><span class="p">,</span>
+                            <span class="n">UserPoints</span><span class="o">.</span><span class="n">created_at</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">"pointsData"</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">UserPoints</span><span class="p">,</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">UserPoints</span><span class="o">.</span><span class="n">userId</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">task_ids</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="n">UserPoints</span><span class="o">.</span><span class="n">taskId</span><span class="p">,</span> <span class="n">Users</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+
 <div class="viewcode-block" id="UserPointsRepository.get_task_by_externalUserId">
 <a class="viewcode-back" href="../../../api/app.repository.user_points_repository.html#app.repository.user_points_repository.UserPointsRepository.get_task_by_externalUserId">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_task_by_externalUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">):</span>
