@@ -87,7 +87,6 @@ is written for:
 
    integrating
    strategies
-   UserGuide/index
 
 .. toctree::
    :maxdepth: 2

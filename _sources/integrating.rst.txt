@@ -129,8 +129,8 @@ The core write. Report that a user did something worth scoring:
 Response::
 
    {
-     "points": 20,
-     "caseName": "variable_basic_points",
+     "points": 1,
+     "caseName": "BasicEngagement",
      "isACreatedUser": true,
      "gameId": "4ce32be2-...-0520",
      "externalTaskId": "task-login",

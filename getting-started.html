@@ -334,13 +334,6 @@
     </li>
     <li class="md-nav__item">
     
-    
-      <a href="UserGuide/index.html" class="md-nav__link">Foundations</a>
-      
-    
-    </li>
-    <li class="md-nav__item">
-    
       <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
     
     </li>
@@ -565,8 +558,8 @@ poetry<span class="w"> </span>install
 
 <span class="c1"># Keycloak (only required for OAuth2-protected endpoints)</span>
 <span class="na">KEYCLOAK_URL</span><span class="o">=</span><span class="s">http://localhost:8080</span>
-<span class="na">KEYCLOAK_REALM</span><span class="o">=</span><span class="s">game</span>
-<span class="na">KEYCLOAK_CLIENT_ID</span><span class="o">=</span><span class="s">game-api</span>
+<span class="na">KEYCLOAK_REALM</span><span class="o">=</span><span class="s">GameRealm</span>
+<span class="na">KEYCLOAK_CLIENT_ID</span><span class="o">=</span><span class="s">game-backend</span>
 <span class="na">KEYCLOAK_CLIENT_SECRET</span><span class="o">=</span><span class="s">change-me</span>
 
 <span class="c1"># DB pool tuning (recommended under concurrent load)</span>
@@ -657,8 +650,8 @@ its own.</p>
 </div>
 <p>Sample response:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">"points"</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-  <span class="s2">"caseName"</span><span class="p">:</span> <span class="s2">"variable_basic_points"</span><span class="p">,</span>
+  <span class="s2">"points"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s2">"caseName"</span><span class="p">:</span> <span class="s2">"BasicEngagement"</span><span class="p">,</span>
   <span class="s2">"isACreatedUser"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
   <span class="s2">"gameId"</span><span class="p">:</span> <span class="s2">"4ce32be2-...-78dc220f0520"</span><span class="p">,</span>
   <span class="s2">"externalTaskId"</span><span class="p">:</span> <span class="s2">"task-login"</span><span class="p">,</span>

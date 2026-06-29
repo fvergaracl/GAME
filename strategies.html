@@ -56,7 +56,7 @@
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Foundations" href="UserGuide/index.html" />
+    <link rel="next" title="The DSL Strategy Engine" href="dsl-engine.html" />
     <link rel="prev" title="Integrating with GAME" href="integrating.html" />
   
    
@@ -361,13 +361,6 @@
     </li>
     <li class="md-nav__item">
     
-    
-      <a href="UserGuide/index.html" class="md-nav__link">Foundations</a>
-      
-    
-    </li>
-    <li class="md-nav__item">
-    
       <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
     
     </li>
@@ -512,7 +505,7 @@ asks it for two things:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">points</span></code> - the integer reward, and</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">caseName</span></code> - the human-readable label for <em>why</em> that amount was chosen
-(e.g. <code class="docutils literal notranslate"><span class="pre">variable_basic_points</span></code>, <code class="docutils literal notranslate"><span class="pre">PeakPerformerBonus</span></code>). The <code class="docutils literal notranslate"><span class="pre">caseName</span></code>
+(e.g. <code class="docutils literal notranslate"><span class="pre">BasicEngagement</span></code>, <code class="docutils literal notranslate"><span class="pre">PeakPerformerBonus</span></code>). The <code class="docutils literal notranslate"><span class="pre">caseName</span></code>
 flows into responses, analytics, and audit so a decision is always
 explainable.</p></li>
 </ul>
@@ -607,8 +600,11 @@ for any game.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">getis_ord_gi_star</span></code></p></td>
 <td><p>0.0.1</p></td>
-<td><p><strong>Spatial</strong> strategy using the Getis–Ord <span class="math notranslate nohighlight">\(G_i^*\)</span> hot-spot
-statistic to shift incentives toward under-served areas.</p></td>
+<td><p><strong>Spatial, experimental.</strong> The Getis-Ord <span class="math notranslate nohighlight">\(G_i^*\)</span> hot-spot
+computation works standalone, but the strategy is <strong>not yet wired
+into scoring</strong>: <code class="docutils literal notranslate"><span class="pre">GetisOrdStrategy</span></code> does not subclass
+<code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code> and its <code class="docutils literal notranslate"><span class="pre">calculate_points</span></code> is still a stub. Not
+production-ready.</p></td>
 </tr>
 </tbody>
 </table>
@@ -861,12 +857,12 @@ at <code class="docutils literal notranslate"><span class="pre">GET</span> <span
             </a>
           
           
-            <a href="UserGuide/index.html" title="Foundations"
+            <a href="dsl-engine.html" title="The DSL Strategy Engine"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> "Next" </span> Foundations </span>
+                class="md-footer-nav__direction"> "Next" </span> The DSL Strategy Engine </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>

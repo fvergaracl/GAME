@@ -258,13 +258,6 @@
     </li>
     <li class="md-nav__item">
     
-    
-      <a href="../../../UserGuide/index.html" class="md-nav__link">Foundations</a>
-      
-    
-    </li>
-    <li class="md-nav__item">
-    
       <span class="md-nav__link caption"><span class="caption-text">Engine Internals (Contributors)</span></span>
     
     </li>
@@ -634,7 +627,9 @@
 
 <div class="viewcode-block" id="BaseStrategy.calculate_points">
 <a class="viewcode-back" href="../../../api/app.engine.base_strategy.html#app.engine.base_strategy.BaseStrategy.calculate_points">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">calculate_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">calculate_points</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Calculates the points for the strategy.</span>
 
