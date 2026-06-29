@@ -63,8 +63,8 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^29.1.1",
-    "postcss": "^8.4.38",
-    "prettier": "3.8.3",
+    "postcss": "^8.5.16",
+    "prettier": "3.9.1",
     "sass": "^1.77.5",
     "vite": "^8.0.16",
     "vitest": "^4.1.8"
