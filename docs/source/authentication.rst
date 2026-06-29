@@ -60,10 +60,14 @@ one:
    curl -s -X POST "http://localhost:8000/api/v1/apikey/create" \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"client":"my-service"}'
+     -d '{"client":"my-service","description":"orders service key"}'
 
-The response contains the ``apiKey`` string. Store it as a secret; it is the
-bearer of all authority for that ``client``.
+The response returns two fields that matter. ``plaintext`` is the **full
+secret key** (shape ``gme_live_<prefix>.<secret>``); it is shown **only once**
+and never stored, so capture it now and send it as ``X-API-Key`` on every
+request. ``apiKey`` is only the **public prefix** (e.g. ``gme_live_3f6a9e0f``) -
+safe to log, used in audit trails and to revoke the key, but it does **not**
+authenticate on its own.
 
 Using a key
 -----------
@@ -87,11 +91,14 @@ Properties to know:
   builds an audit trail and **scopes** what that key can later read (see
   :doc:`security`).
 
-.. warning::
+Revoking a key
+--------------
 
-   The current API has no key *revoke/delete* endpoint. Treat key issuance as
-   deliberate, and prefer one key per integration/``client`` so you can reason
-   about blast radius.
+Send ``DELETE /api/v1/apikey/{prefix}`` (OAuth2 + admin role) to deactivate a
+key by its **public prefix** - never the secret. Revocation marks the key
+inactive and clears the validation cache, so it stops working on the next
+request after the cache TTL. Prefer one key per integration/``client`` so you
+can revoke with a small blast radius.
 
 OAuth2 with Keycloak
 ====================
@@ -151,7 +158,7 @@ For local development you can use the resource-owner password grant:
      -d "client_id=$KEYCLOAK_CLIENT_ID" \
      -d "client_secret=$KEYCLOAK_CLIENT_SECRET" \
      -d "grant_type=password" \
-     -d "username=game_admin" \
+     -d "username=$KEYCLOAK_USER_WITH_ROLE_USERNAME" \
      -d "password=$KEYCLOAK_USER_WITH_ROLE_PASSWORD" | jq -r '.access_token')
 
 Swagger UI at ``/docs`` is also wired for the OAuth2 authorization-code flow

@@ -388,7 +388,7 @@ Minimal production ``.env`` skeleton
    KEYCLOAK_URL=https://auth.example.com
    KEYCLOAK_URL_DOCKER=https://auth.example.com
    KEYCLOAK_REALM=GameRealm
-   KEYCLOAK_AUDIENCE=account
+   KEYCLOAK_AUDIENCE=game-backend
    KEYCLOAK_CLIENT_ID=game-backend
    KEYCLOAK_CLIENT_SECRET=<from-secret-manager>
 
