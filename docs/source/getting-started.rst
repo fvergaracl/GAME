@@ -98,8 +98,8 @@ A minimal ``.env`` for local development:
 
    # Keycloak (only required for OAuth2-protected endpoints)
    KEYCLOAK_URL=http://localhost:8080
-   KEYCLOAK_REALM=game
-   KEYCLOAK_CLIENT_ID=game-api
+   KEYCLOAK_REALM=GameRealm
+   KEYCLOAK_CLIENT_ID=game-backend
    KEYCLOAK_CLIENT_SECRET=change-me
 
    # DB pool tuning (recommended under concurrent load)
@@ -200,8 +200,8 @@ its own.
 Sample response::
 
    {
-     "points": 20,
-     "caseName": "variable_basic_points",
+     "points": 1,
+     "caseName": "BasicEngagement",
      "isACreatedUser": true,
      "gameId": "4ce32be2-...-78dc220f0520",
      "externalTaskId": "task-login",

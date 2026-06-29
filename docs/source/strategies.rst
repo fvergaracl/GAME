@@ -19,7 +19,7 @@ asks it for two things:
 
 * ``points`` - the integer reward, and
 * ``caseName`` - the human-readable label for *why* that amount was chosen
-  (e.g. ``variable_basic_points``, ``PeakPerformerBonus``). The ``caseName``
+  (e.g. ``BasicEngagement``, ``PeakPerformerBonus``). The ``caseName``
   flows into responses, analytics, and audit so a decision is always
   explainable.
 
@@ -92,8 +92,11 @@ guaranteed stable across class renames:
      - Tuned for the GREENGAGE scenario.
    * - ``getis_ord_gi_star``
      - 0.0.1
-     - **Spatial** strategy using the Getis–Ord :math:`G_i^*` hot-spot
-       statistic to shift incentives toward under-served areas.
+     - **Spatial, experimental.** The Getis-Ord :math:`G_i^*` hot-spot
+       computation works standalone, but the strategy is **not yet wired
+       into scoring**: ``GetisOrdStrategy`` does not subclass
+       ``BaseStrategy`` and its ``calculate_points`` is still a stub. Not
+       production-ready.
 
 Discover them at runtime:
 
