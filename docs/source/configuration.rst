@@ -387,9 +387,9 @@ Minimal production ``.env`` skeleton
 
    KEYCLOAK_URL=https://auth.example.com
    KEYCLOAK_URL_DOCKER=https://auth.example.com
-   KEYCLOAK_REALM=game
-   KEYCLOAK_AUDIENCE=account
-   KEYCLOAK_CLIENT_ID=game-api
+   KEYCLOAK_REALM=GameRealm
+   KEYCLOAK_AUDIENCE=game-backend
+   KEYCLOAK_CLIENT_ID=game-backend
    KEYCLOAK_CLIENT_SECRET=<from-secret-manager>
 
    BACKEND_CORS_ORIGINS=https://app.example.com,https://admin.example.com

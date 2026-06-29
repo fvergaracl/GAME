@@ -60,7 +60,7 @@ def test_base_strategy_variable_mutation_helpers():
 async def test_base_strategy_default_behaviour_methods():
     strategy = BaseStrategy(variable_basic_points=42)
 
-    points = await strategy.calculate_points()
+    points = await strategy.calculate_points("game-1", "task-1", "user-1")
     assert points == 42
     assert strategy.simulate_strategy() is None
 

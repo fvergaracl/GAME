@@ -98,8 +98,8 @@ A minimal ``.env`` for local development:
 
    # Keycloak (only required for OAuth2-protected endpoints)
    KEYCLOAK_URL=http://localhost:8080
-   KEYCLOAK_REALM=game
-   KEYCLOAK_CLIENT_ID=game-api
+   KEYCLOAK_REALM=GameRealm
+   KEYCLOAK_CLIENT_ID=game-backend
    KEYCLOAK_CLIENT_SECRET=change-me
 
    # DB pool tuning (recommended under concurrent load)
@@ -151,13 +151,13 @@ token from Keycloak (see :doc:`authentication` for the realm setup):
      -d "client_id=$KEYCLOAK_CLIENT_ID" \
      -d "client_secret=$KEYCLOAK_CLIENT_SECRET" \
      -d "grant_type=password" \
-     -d "username=game_admin" \
+     -d "username=$KEYCLOAK_USER_WITH_ROLE_USERNAME" \
      -d "password=$KEYCLOAK_USER_WITH_ROLE_PASSWORD" | jq -r '.access_token')
 
    API_KEY=$(curl -s -X POST "http://localhost:8000/api/v1/apikey/create" \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"client":"local-dev"}' | jq -r '.apiKey')
+     -d '{"client":"local-dev","description":"local dev key"}' | jq -r '.plaintext')
 
 2. Create a game
 ----------------
@@ -200,8 +200,8 @@ its own.
 Sample response::
 
    {
-     "points": 20,
-     "caseName": "variable_basic_points",
+     "points": 1,
+     "caseName": "BasicEngagement",
      "isACreatedUser": true,
      "gameId": "4ce32be2-...-78dc220f0520",
      "externalTaskId": "task-login",
