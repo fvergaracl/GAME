@@ -186,12 +186,6 @@ Users, wallets & conversion (``/users``)
      - Path
      - Purpose
    * - ``GET``
-     - ``/users``
-     - List users.
-   * - ``POST``
-     - ``/users``
-     - Create a user.
-   * - ``GET``
      - ``/users/{externalUserId}/points``
      - A user's points everywhere.
    * - ``POST``

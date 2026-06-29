@@ -254,7 +254,9 @@ Worked example: adaptive engagement
 ===================================
 
 A common pattern (from the citizen-science deployments) layers cases by the
-user's measurement count and performance:
+user's measurement count and performance. The ``caseName`` values below are
+the labels *you* assign when authoring the strategy in the DSL - illustrative,
+not a literal dump of the bundled ``default`` built-in's outputs:
 
 .. list-table::
    :header-rows: 1

@@ -151,13 +151,13 @@ token from Keycloak (see :doc:`authentication` for the realm setup):
      -d "client_id=$KEYCLOAK_CLIENT_ID" \
      -d "client_secret=$KEYCLOAK_CLIENT_SECRET" \
      -d "grant_type=password" \
-     -d "username=game_admin" \
+     -d "username=$KEYCLOAK_USER_WITH_ROLE_USERNAME" \
      -d "password=$KEYCLOAK_USER_WITH_ROLE_PASSWORD" | jq -r '.access_token')
 
    API_KEY=$(curl -s -X POST "http://localhost:8000/api/v1/apikey/create" \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"client":"local-dev"}' | jq -r '.apiKey')
+     -d '{"client":"local-dev","description":"local dev key"}' | jq -r '.plaintext')
 
 2. Create a game
 ----------------

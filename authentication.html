@@ -247,6 +247,8 @@
         <li class="md-nav__item"><a href="#issuing-a-key" class="md-nav__link">Issuing a key</a>
         </li>
         <li class="md-nav__item"><a href="#using-a-key" class="md-nav__link">Using a key</a>
+        </li>
+        <li class="md-nav__item"><a href="#revoking-a-key" class="md-nav__link">Revoking a key</a>
         </li></ul>
             </nav>
         </li>
@@ -436,6 +438,8 @@
         <li class="md-nav__item"><a href="#issuing-a-key" class="md-nav__link">Issuing a key</a>
         </li>
         <li class="md-nav__item"><a href="#using-a-key" class="md-nav__link">Using a key</a>
+        </li>
+        <li class="md-nav__item"><a href="#revoking-a-key" class="md-nav__link">Revoking a key</a>
         </li></ul>
             </nav>
         </li>
@@ -530,11 +534,15 @@ one:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"http://localhost:8000/api/v1/apikey/create"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"client":"my-service"}'</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"client":"my-service","description":"orders service key"}'</span>
 </pre></div>
 </div>
-<p>The response contains the <code class="docutils literal notranslate"><span class="pre">apiKey</span></code> string. Store it as a secret; it is the
-bearer of all authority for that <code class="docutils literal notranslate"><span class="pre">client</span></code>.</p>
+<p>The response returns two fields that matter. <code class="docutils literal notranslate"><span class="pre">plaintext</span></code> is the <strong>full
+secret key</strong> (shape <code class="docutils literal notranslate"><span class="pre">gme_live_&lt;prefix&gt;.&lt;secret&gt;</span></code>); it is shown <strong>only once</strong>
+and never stored, so capture it now and send it as <code class="docutils literal notranslate"><span class="pre">X-API-Key</span></code> on every
+request. <code class="docutils literal notranslate"><span class="pre">apiKey</span></code> is only the <strong>public prefix</strong> (e.g. <code class="docutils literal notranslate"><span class="pre">gme_live_3f6a9e0f</span></code>) -
+safe to log, used in audit trails and to revoke the key, but it does <strong>not</strong>
+authenticate on its own.</p>
 </section>
 <section id="using-a-key">
 <h3 id="using-a-key">Using a key<a class="headerlink" href="#using-a-key" title="Link to this heading">¶</a></h3>
@@ -555,12 +563,14 @@ request after the TTL; set <code class="docutils literal notranslate"><span clas
 builds an audit trail and <strong>scopes</strong> what that key can later read (see
 <a class="reference internal" href="security.html"><span class="doc">Security</span></a>).</p></li>
 </ul>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The current API has no key <em>revoke/delete</em> endpoint. Treat key issuance as
-deliberate, and prefer one key per integration/<code class="docutils literal notranslate"><span class="pre">client</span></code> so you can reason
-about blast radius.</p>
-</div>
+</section>
+<section id="revoking-a-key">
+<h3 id="revoking-a-key">Revoking a key<a class="headerlink" href="#revoking-a-key" title="Link to this heading">¶</a></h3>
+<p>Send <code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/api/v1/apikey/{prefix}</span></code> (OAuth2 + admin role) to deactivate a
+key by its <strong>public prefix</strong> - never the secret. Revocation marks the key
+inactive and clears the validation cache, so it stops working on the next
+request after the cache TTL. Prefer one key per integration/<code class="docutils literal notranslate"><span class="pre">client</span></code> so you
+can revoke with a small blast radius.</p>
 </section>
 </section>
 <section id="oauth2-with-keycloak">
@@ -628,7 +638,7 @@ and service-account tokens resolve to a stable subject.</p></li>
 <span class="w">  </span>-d<span class="w"> </span><span class="s2">"client_id=</span><span class="nv">$KEYCLOAK_CLIENT_ID</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s2">"client_secret=</span><span class="nv">$KEYCLOAK_CLIENT_SECRET</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s2">"grant_type=password"</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s2">"username=game_admin"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">"username=</span><span class="nv">$KEYCLOAK_USER_WITH_ROLE_USERNAME</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s2">"password=</span><span class="nv">$KEYCLOAK_USER_WITH_ROLE_PASSWORD</span><span class="s2">"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">'.access_token'</span><span class="k">)</span>
 </pre></div>
 </div>
