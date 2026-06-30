@@ -56,7 +56,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Strategies" href="strategies.html" />
-    <link rel="prev" title="Authentication" href="authentication.html" />
+    <link rel="prev" title="Troubleshooting" href="troubleshooting.html" />
   
    
 
@@ -216,6 +216,18 @@
     </li>
     <li class="md-nav__item">
     
+      <span class="md-nav__link caption"><span class="caption-text">Decision Records</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="decisions/index.html" class="md-nav__link">Decision records</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
       <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
     
     </li>
@@ -230,6 +242,13 @@
     
     
       <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="troubleshooting.html" class="md-nav__link">Troubleshooting</a>
       
     
     </li>
@@ -279,6 +298,14 @@
         <li class="md-nav__item"><a href="#wallets-the-economy" class="md-nav__link">Wallets & the economy</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#corrections-and-reversibility" class="md-nav__link">Corrections and reversibility</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#known-limitations" class="md-nav__link">Known limitations</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#non-atomic-points-to-coins-conversion" class="md-nav__link">Non-atomic points-to-coins conversion</a>
+        </li>
+        <li class="md-nav__item"><a href="#on-a-concurrent-retry-race" class="md-nav__link">409 on a concurrent retry race</a>
         </li></ul>
             </nav>
         </li>
@@ -333,6 +360,13 @@
     
     
       <a href="#wallets-the-economy" class="md-nav__link">Wallets & the economy</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#known-limitations" class="md-nav__link">Known limitations</a>
       
     
     </li>
@@ -473,6 +507,14 @@
         <li class="md-nav__item"><a href="#wallets-the-economy" class="md-nav__link">Wallets & the economy</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#corrections-and-reversibility" class="md-nav__link">Corrections and reversibility</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#known-limitations" class="md-nav__link">Known limitations</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#non-atomic-points-to-coins-conversion" class="md-nav__link">Non-atomic points-to-coins conversion</a>
+        </li>
+        <li class="md-nav__item"><a href="#on-a-concurrent-retry-race" class="md-nav__link">409 on a concurrent retry race</a>
         </li></ul>
             </nav>
         </li>
@@ -665,7 +707,11 @@ persisted</strong> (no points, no wallet movement). See <a class="reference inte
 <p>Supply an idempotency key (request header, surfaced into the event as
 <code class="docutils literal notranslate"><span class="pre">eventId</span></code>) and a retried request will <strong>not</strong> double-award. Pair this with a
 correlation id header to trace a request end to end through the logs. This is
-what makes point assignment safe to retry on network failure.</p>
+what makes point assignment safe to retry on network failure. Under a
+concurrent retry race (two retries with the same key in flight at once) the
+duplicate is still rejected at the database, so no double-award occurs; the
+losing request receives <code class="docutils literal notranslate"><span class="pre">409</span> <span class="pre">Conflict</span></code> instead of the original success body
+(see <a class="reference internal" href="#known-limitations"><span class="std std-ref">Known limitations</span></a>).</p>
 </section>
 <section id="rate-limits">
 <h3 id="rate-limits">Rate limits<a class="headerlink" href="#rate-limits" title="Link to this heading">¶</a></h3>
@@ -760,15 +806,19 @@ balance, governed by a conversion rate (see <a class="reference internal" href="
 </tr>
 </tbody>
 </table>
-<p>Conversions are recorded as <code class="docutils literal notranslate"><span class="pre">WalletTransactions</span></code> with the
-<code class="docutils literal notranslate"><span class="pre">appliedConversionRate</span></code> captured at the time, so a conversion can always be
-traced back to the rate that produced it.</p>
+<p>Each recorded conversion stores the <code class="docutils literal notranslate"><span class="pre">appliedConversionRate</span></code> captured at the
+time, so a recorded conversion can be traced back to the rate that produced it.
+The balance update and its ledger row are written in two separate transactions
+today, so a crash between them can leave a conversion without a recording row
+(see <a class="reference internal" href="#known-limitations"><span class="std std-ref">Known limitations</span></a>).</p>
 <section id="corrections-and-reversibility">
 <h3 id="corrections-and-reversibility">Corrections and reversibility<a class="headerlink" href="#corrections-and-reversibility" title="Link to this heading">¶</a></h3>
-<p>The wallet ledger is <strong>append-only and immutable</strong>. GAME has <strong>no refund or
-reversal operation today</strong>: no endpoint subtracts points already awarded or
-rolls a conversion back, and only two transaction types are ever written -
-<code class="docutils literal notranslate"><span class="pre">AssignPoints</span></code> and <code class="docutils literal notranslate"><span class="pre">ConvertPointsToCoins</span></code>. The other names in the
+<p>The wallet ledger is <strong>append-only and immutable</strong> - existing rows are never
+updated or deleted. (A conversion can currently fail to write its ledger row at
+all under a crash mid-conversion; see <a class="reference internal" href="#known-limitations"><span class="std std-ref">Known limitations</span></a>.) GAME has <strong>no
+refund or reversal operation today</strong>: no endpoint subtracts points already
+awarded or rolls a conversion back, and only two transaction types are ever
+written - <code class="docutils literal notranslate"><span class="pre">AssignPoints</span></code> and <code class="docutils literal notranslate"><span class="pre">ConvertPointsToCoins</span></code>. The other names in the
 <code class="docutils literal notranslate"><span class="pre">WalletTransactions</span></code> model (refunds, transfers, manual adjustments) are
 reserved but unimplemented.</p>
 <p>So “how do I undo a point I awarded by mistake?” has no first-class answer
@@ -781,6 +831,42 @@ or</p></li>
 <p>A ledger-preserving <strong>refund/adjustment</strong> operation is on the roadmap (see
 <code class="docutils literal notranslate"><span class="pre">ROADMAP.md</span></code>). It is planned to add new transaction types rather than mutate
 existing rows, so the audit trail stays intact.</p>
+</section>
+</section>
+<section id="known-limitations">
+<span id="id1"></span><h2 id="known-limitations">Known limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">¶</a></h2>
+<p>GAME is honest about two edge cases in the write path. Neither corrupts data
+under normal sequential use, but both are worth knowing before you build on
+them.</p>
+<section id="non-atomic-points-to-coins-conversion">
+<h3 id="non-atomic-points-to-coins-conversion">Non-atomic points-to-coins conversion<a class="headerlink" href="#non-atomic-points-to-coins-conversion" title="Link to this heading">¶</a></h3>
+<p>Point <strong>assignment</strong> is atomic: the <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code> row, the wallet balance
+change, and the ledger entry commit in a single transaction (see
+<a class="reference internal" href="decisions/0003-atomic-points-write.html"><span class="doc">ADR 0003: Atomic points write</span></a>). The points-to-coins <strong>conversion</strong>
+path is not. <code class="docutils literal notranslate"><span class="pre">UserService.convert_points_to_coins</span></code>
+(<code class="docutils literal notranslate"><span class="pre">app/services/user_service.py</span></code>) writes the new wallet balance and the
+<code class="docutils literal notranslate"><span class="pre">ConvertPointsToCoins</span></code> ledger row in <strong>two separate transactions</strong>. If the
+process dies between them, the coins can move with no ledger row recording the
+movement.</p>
+<p>Consequence: for conversions only, the ledger is not guaranteed to be a
+complete reconstruction of every balance change; assignment history is
+unaffected. Wrapping the conversion in one transaction is a planned fix (see
+<code class="docutils literal notranslate"><span class="pre">ROADMAP.md</span></code>). Until then, treat a missing conversion row as the rare
+crash-window artifact it is, and reconcile from the wallet balance if needed.</p>
+</section>
+<section id="on-a-concurrent-retry-race">
+<h3 id="on-a-concurrent-retry-race">409 on a concurrent retry race<a class="headerlink" href="#on-a-concurrent-retry-race" title="Link to this heading">¶</a></h3>
+<p>Idempotency keys make awards safe to retry
+(<a class="reference internal" href="decisions/0004-idempotency-keys.html"><span class="doc">ADR 0004: Idempotency keys for awards</span></a>). A <strong>sequential</strong> retry with the same
+key returns the original assignment. But two retries with the same key arriving
+<strong>at the same instant</strong> both pass the “does this key already exist?” check
+before either commits, and the database unique constraint then lets exactly one
+win. The loser does <strong>not</strong> double-award - it is rejected with <code class="docutils literal notranslate"><span class="pre">409</span> <span class="pre">Conflict</span></code>
+rather than receiving the original success body.</p>
+<p>Consequence: no double-award ever happens, but a caller that fires concurrent
+retries of the same event must read a <code class="docutils literal notranslate"><span class="pre">409</span></code> on the points endpoint as “the
+award already went through”, not as a hard failure. Spacing retries (or relying
+on the first response) avoids the race entirely.</p>
 </section>
 </section>
 <section id="analytics-kpis-exports">
@@ -838,7 +924,7 @@ existing rows, so the audit trail stays intact.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
           
-            <a href="authentication.html" title="Authentication"
+            <a href="troubleshooting.html" title="Troubleshooting"
                class="md-flex md-footer-nav__link md-footer-nav__link--prev"
                rel="prev">
               <div class="md-flex__cell md-flex__cell--shrink">
@@ -847,7 +933,7 @@ existing rows, so the audit trail stays intact.</p>
               <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
                 <span class="md-flex__ellipsis">
                   <span
-                      class="md-footer-nav__direction"> "Previous" </span> Authentication </span>
+                      class="md-footer-nav__direction"> "Previous" </span> Troubleshooting </span>
               </div>
             </a>
           

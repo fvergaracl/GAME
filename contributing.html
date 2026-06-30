@@ -215,6 +215,18 @@
     </li>
     <li class="md-nav__item">
     
+      <span class="md-nav__link caption"><span class="caption-text">Decision Records</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="decisions/index.html" class="md-nav__link">Decision records</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
       <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
     
     </li>
@@ -229,6 +241,13 @@
     
     
       <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="troubleshooting.html" class="md-nav__link">Troubleshooting</a>
       
     
     </li>
@@ -454,8 +473,9 @@
 <div class="note admonition">
 <p class="admonition-title">Who is this page for?</p>
 <p>Developers changing GAME’s code or docs. The repository’s <code class="docutils literal notranslate"><span class="pre">CONTRIBUTING.md</span></code>
-and <code class="docutils literal notranslate"><span class="pre">TESTING.md</span></code> are the canonical quick references; this page adds the
-architectural and documentation context.</p>
+is the quick reference for the contribution flow; this page is the canonical
+home for the test/coverage workflow and the architectural context behind it
+(the root <code class="docutils literal notranslate"><span class="pre">TESTING.md</span></code> is a thin pointer here).</p>
 </div>
 <section id="development-setup">
 <h2 id="development-setup">Development setup<a class="headerlink" href="#development-setup" title="Link to this heading">¶</a></h2>
@@ -554,9 +574,12 @@ reserve real-infra E2E for integration behavior.</p></li>
 <li><p>Because persistence is abstracted, services run against <strong>SQLite</strong> in tests
 and <strong>PostgreSQL</strong> in production - keep repository queries portable.</p></li>
 <li><p>CI enforces quality gates on every PR: a <strong>lint</strong> job (<code class="docutils literal notranslate"><span class="pre">ruff</span> <span class="pre">check</span></code>,
-<code class="docutils literal notranslate"><span class="pre">black</span> <span class="pre">--check</span></code>, <code class="docutils literal notranslate"><span class="pre">isort</span> <span class="pre">--check-only</span></code>), the test suite with a <strong>coverage
-floor</strong> (<code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--cov-fail-under</span></code>), and a separate <strong>Dashboard CI</strong> job for
-the React frontend. Codecov tracks the trend.</p></li>
+<code class="docutils literal notranslate"><span class="pre">black</span> <span class="pre">--check</span></code>, <code class="docutils literal notranslate"><span class="pre">isort</span> <span class="pre">--check-only</span></code>) and the test suite with a
+<strong>blocking coverage gate</strong> - <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--cov-fail-under</span></code> fails the build (and
+the PR) when coverage drops below the floor. The threshold is set in one
+place, <code class="docutils literal notranslate"><span class="pre">.github/workflows/coverage.yml</span></code>; it is a hard gate, not an
+aspiration. A separate <strong>Dashboard CI</strong> job covers the React frontend, and
+Codecov tracks the trend.</p></li>
 </ul>
 </section>
 <section id="code-style">
@@ -632,8 +655,9 @@ push to <code class="docutils literal notranslate"><span class="pre">main</span>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">docs/dsl/</span></code></p></td>
 <td><p>DSL block reference and runbook (linked from the editor).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">docs/domain-model.md</span></code></p></td>
-<td><p>Canonical Mermaid ERD.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">docs/source/domain-model.rst</span></code></p></td>
+<td><p>The domain model and its rendered entity-relationship diagram
+(<code class="docutils literal notranslate"><span class="pre">docs/domain-model.md</span></code> is now a thin pointer here).</p></td>
 </tr>
 <tr class="row-even"><td><p>Top-level <code class="docutils literal notranslate"><span class="pre">*.md</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">README</span></code>, <code class="docutils literal notranslate"><span class="pre">SETUP</span></code>, <code class="docutils literal notranslate"><span class="pre">DEPLOYMENT</span></code>, <code class="docutils literal notranslate"><span class="pre">TESTING</span></code>, <code class="docutils literal notranslate"><span class="pre">KUBERNETES_SETUP</span></code>

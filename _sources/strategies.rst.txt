@@ -333,6 +333,195 @@ The full decision tree and points table is in the repository's
 ``gd_rule`` blocks with ``gd_compare`` conditions and ``gd_assign_points``
 leaves.
 
+Recipe: scoring a citizen-science field campaign
+================================================
+
+GAME's home turf is European citizen-science (the ``socio_bee``,
+``greencrowd`` and ``greengage`` deployments), not e-commerce. This recipe
+scores an **air-quality measurement campaign** end to end with a **real,
+non-default strategy** and shows the exact output each step produces.
+
+The vehicle is a **custom DSL strategy** (the no-code path) - the same kind a
+campaign designer authors in the Strategy Editor. It rewards three moments a
+field campaign actually cares about:
+
+* a **completed task** - an onboarding award while the task is still new,
+* a **priority-zone bonus** - a measurement taken where coverage is thin, and
+* a **streak** - consecutive days of participation, capped so it cannot run
+  away.
+
+The program
+-----------
+
+A ``DSL_FULL`` strategy is a top-down list of rules (first match wins) plus a
+``default`` fallback. Every field it reads is on the engine whitelist:
+``task.measurements_count`` is an analytics value counted from the database,
+while ``data.priority_zone`` and ``data.streak_days`` are scalars the client
+sends with each measurement event.
+
+.. code-block:: json
+
+   {
+     "type": "program",
+     "rules": [
+       { "type": "rule",
+         "when": {"type": "compare", "op": "<",
+                  "left":  {"type": "field",   "path": "task.measurements_count"},
+                  "right": {"type": "literal", "value": 2}},
+         "then": [{"type": "assign_points",
+                   "value": {"type": "literal", "value": 5},
+                   "case_name": "TaskCompleted-Onboarding"}] },
+       { "type": "rule",
+         "when": {"type": "compare", "op": "==",
+                  "left":  {"type": "field",   "path": "data.priority_zone"},
+                  "right": {"type": "literal", "value": 1}},
+         "then": [{"type": "assign_points",
+                   "value": {"type": "arith", "op": "+",
+                             "left":  {"type": "literal", "value": 10},
+                             "right": {"type": "literal", "value": 15}},
+                   "case_name": "PriorityZoneBonus"}] },
+       { "type": "rule",
+         "when": {"type": "compare", "op": ">=",
+                  "left":  {"type": "field",   "path": "data.streak_days"},
+                  "right": {"type": "literal", "value": 3}},
+         "then": [{"type": "assign_points",
+                   "value": {"type": "func_call", "name": "clamp", "args": [
+                       {"type": "arith", "op": "*",
+                        "left":  {"type": "field",   "path": "data.streak_days"},
+                        "right": {"type": "literal", "value": 5}},
+                       {"type": "literal", "value": 0},
+                       {"type": "literal", "value": 50}]},
+                   "case_name": "StreakBonus"}] }
+     ],
+     "default": {"type": "assign_points",
+                 "value": {"type": "literal", "value": 2},
+                 "case_name": "TaskCompleted"}
+   }
+
+Author it with ``POST /strategies/custom``, publish it, and point a game at the
+resulting ``custom:<uuid>`` id (see `The custom-strategy lifecycle`_ and
+:doc:`integrating`). Then every measurement is a points call carrying the
+campaign's discriminators::
+
+   POST /api/v1/games/{gameId}/tasks/air_quality_measurement/points
+   { "externalUserId": "citizen_ada",
+     "data": { "priority_zone": 1, "streak_days": 0 } }
+
+.. important::
+
+   The DSL has no "missing key defaults to zero" operator: comparing an absent
+   ``data.*`` key against a number raises ``DSL_COMPARE_TYPE_MISMATCH``. A real
+   integration therefore sends every discriminator on every event (here
+   ``priority_zone`` and ``streak_days``, defaulting to ``0``), exactly as a
+   structured measurement payload would.
+
+What it scores
+--------------
+
+Walking the campaign produces these results, captured from a real run (not
+hand-written):
+
+.. list-table::
+   :header-rows: 1
+   :widths: 36 30 16 18
+
+   * - Moment
+     - Event ``data``
+     - ``points``
+     - ``caseName``
+   * - Completed task, task still new
+     - ``{priority_zone: 0, streak_days: 0}``
+     - 5
+     - ``TaskCompleted-Onboarding``
+   * - Priority-zone measurement
+     - ``{priority_zone: 1, streak_days: 0}``
+     - 25
+     - ``PriorityZoneBonus``
+   * - Streak, day 4
+     - ``{priority_zone: 0, streak_days: 4}``
+     - 20
+     - ``StreakBonus``
+   * - Streak, day 20 (capped)
+     - ``{priority_zone: 0, streak_days: 20}``
+     - 50
+     - ``StreakBonus``
+   * - Completed task, has history
+     - ``{priority_zone: 0, streak_days: 0}``
+     - 2
+     - ``TaskCompleted``
+
+The first and last rows send the *same* event yet score differently: the
+onboarding rule only fires while ``task.measurements_count`` is below two, so
+once the task has history the program falls through to its ``default``. That is
+the analytics field doing its job - the same input scores differently as the
+campaign matures.
+
+Run it yourself
+---------------
+
+The recipe is backed by an executable test that wires the **real** engine
+(``validate_ast`` -> ``ExecutionContext`` -> ``DslInterpreter`` ->
+``DslStrategy``) against an isolated SQLite database and asserts every row of
+the table above:
+
+.. code-block:: bash
+
+   poetry run pytest tests/recipes/test_recipe_citizen_science_s31.py -q
+
+Run the same file directly to print the captured output step by step:
+
+.. code-block:: bash
+
+   PYTHONPATH=. poetry run python tests/recipes/test_recipe_citizen_science_s31.py
+
+.. note::
+
+   This recipe uses a DSL strategy so it runs deterministically with no
+   external infrastructure. The bundled ``socio_bee`` / ``greengage`` built-ins
+   target the same domain but reach their bonus branches only after enough
+   timing history has accumulated, which makes them harder to reproduce in a
+   short walkthrough.
+
+Tests as documentation
+======================
+
+The promise that a ``custom:<uuid>`` DSL strategy scores **identically** to its
+built-in twin is not just prose - it is pinned by an executable parity suite.
+These tests *are* the proof; a change that broke the equivalence would fail
+them:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 56 44
+
+   * - Test
+     - What it pins
+   * - ``tests/unit_tests/engine/test_default_dsl_parity.py``
+     - The ``default`` built-in and its JSON-AST twin return identical
+       ``(points, caseName)`` across all eight scoring scenarios.
+   * - ``tests/unit_tests/engine/test_constant_effort_dsl_parity.py``
+     - The same equivalence for ``constantEffortStrategy``, including the
+       ``clamp`` / ``int`` ceiling at 100.
+   * - ``tests/unit_tests/engine/test_default_extend_parity.py``
+     - A ``DSL_EXTEND`` wrapper layered over ``default`` equals the baseline
+       when its rule does not fire, and baseline + bonus when it does.
+   * - ``tests/unit_tests/services/test_user_points_service_dsl.py``
+     - End-to-end wiring: a task bound to a ``custom:<uuid>`` strategy is
+       resolved, executed, and realm-scoped through the service layer.
+
+Run them with the unit suite (see :doc:`contributing`):
+
+.. code-block:: bash
+
+   poetry run pytest \
+     tests/unit_tests/engine/test_default_dsl_parity.py \
+     tests/unit_tests/engine/test_constant_effort_dsl_parity.py \
+     tests/unit_tests/engine/test_default_extend_parity.py \
+     tests/unit_tests/services/test_user_points_service_dsl.py
+
+The interpreter-level view of the same guarantee - the ``DSL_EXTEND`` pipeline
+and the property-style invariants - is in :doc:`dsl-engine`.
+
 Observability
 =============
 

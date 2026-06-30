@@ -53,9 +53,445 @@
     <script src="_static/documentation_options.js?v=1d5c8875"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Getting Started" href="getting-started.html" />
+    <link rel="next" title="Decision records" href="decisions/index.html" />
     <link rel="prev" title="Architecture" href="architecture.html" />
   
    
@@ -299,6 +735,18 @@
     </li>
     <li class="md-nav__item">
     
+      <span class="md-nav__link caption"><span class="caption-text">Decision Records</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="decisions/index.html" class="md-nav__link">Decision records</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
       <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
     
     </li>
@@ -313,6 +761,13 @@
     
     
       <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="troubleshooting.html" class="md-nav__link">Troubleshooting</a>
       
     
     </li>
@@ -467,40 +922,340 @@
 <div class="note admonition">
 <p class="admonition-title">Who is this page for?</p>
 <p>Integrators who need to know what each object means on the wire, and
-contributors who need the schema. The canonical machine-readable ERD
-(Mermaid) lives in <code class="docutils literal notranslate"><span class="pre">docs/domain-model.md</span></code>; this page is the prose
-reference.</p>
+contributors who need the schema. This page is canonical for the domain
+model: the rendered entity-relationship diagram below plus the prose
+reference that follows.</p>
 </div>
 <section id="the-big-picture">
 <h2 id="the-big-picture">The big picture<a class="headerlink" href="#the-big-picture" title="Link to this heading">¶</a></h2>
-<p>GAME’s entities fall into five clusters. Solid arrows below read
-“parent → many children”:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH / ACCESS            CAMPAIGN HIERARCHY
-┌──────────┐             ┌──────────┐
-│OAuthUsers│◄──owns────► │  Games   │──┬──► GameParams   (key/value config)
-└────┬─────┘   ┌────────►└────┬─────┘  └──► Tasks ──► TaskParams
-     │         │              │
-     ▼         │              ▼
-┌──────────┐   │        ┌──────────────┐
-│  ApiKey  │───┘        │UserGameConfig│  (enrolment + experiment group)
-└────┬─────┘            └──────────────┘
-     │ audit trail: every entity records the ApiKey that created it
-     ▼
-PARTICIPATION &amp; SCORING                 ECONOMY
-┌──────────┐                            ┌──────────┐
-│  Users   │──► UserActions             │  Wallet  │──► WalletTransactions
-│          │──► UserInteractions        └────▲─────┘
-│          │──► UserPoints ◄──awards──┐       │ one wallet per user
-│          │──────────────────────────┴───────┘
-└──────────┘
-             STRATEGY                    OBSERVABILITY
-┌────────────────────┐                  ApiRequests · Logs · KpiMetrics
-│ StrategyDefinition │──► versions      UptimeLogs · StrategyExecutionLog
-│ (custom DSL)       │                  AbuseLimitCounter · ExportAuditLog
-└────────────────────┘
-</pre></div>
-</div>
-</section>
+<p>GAME’s entities fall into five clusters - identity/access, the campaign
+hierarchy, participation &amp; scoring, the economy, and strategy/observability.
+The entity-relationship diagram below is the canonical schema: every table in
+<code class="docutils literal notranslate"><span class="pre">app/model/</span></code> with its columns and keys. Solid lines are foreign-key
+relationships; dashed lines are <strong>soft references</strong> resolved by string id
+(<code class="docutils literal notranslate"><span class="pre">strategyId</span></code>), which carry no database foreign key on purpose so a strategy
+can be hard-deleted without cascading away its history.</p>
+<pre class="mermaid">
+        erDiagram
+
+    %% --- Authentication &amp; access control ---
+    OAuthUsers {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      provider
+        string      provider_user_id UK
+        string      status
+        string      apiKey_used      FK
+    }
+    ApiKey {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      apiKey           UK
+        string      client
+        string      description
+        bool        active
+        string      createdBy
+        string      oauth_user_id    FK
+    }
+
+    %% --- Core domain: users ---
+    Users {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      externalUserId   UK
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+
+    %% --- Core domain: campaigns (games &amp; tasks) ---
+    Games {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      externalGameId   UK
+        string      strategyId
+        string      platform
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+    GameParams {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      key
+        string      value
+        UUID        gameId           FK
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+    Tasks {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      externalTaskId
+        UUID        gameId           FK
+        string      strategyId
+        string      status
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+    TaskParams {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      key
+        string      value
+        UUID        taskId           FK
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+
+    %% --- User &lt;-&gt; game participation ---
+    UserGameConfig {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        UUID        userId           FK
+        UUID        gameId           FK
+        string      experimentGroup
+        json        configData
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+    UserActions {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      typeAction
+        jsonb       data
+        string      description
+        UUID        userId           FK
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+    UserInteractions {
+        UUID        id                PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        UUID        userId            FK
+        UUID        taskId            FK
+        string      interactionType
+        string      interactionDetail
+        string      apiKey_used       FK
+        string      oauth_user_id     FK
+    }
+    UserPoints {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        int         points
+        string      caseName
+        string      idempotencyKey
+        jsonb       data
+        string      description
+        UUID        userId           FK
+        UUID        taskId           FK
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+
+    %% --- Wallet &amp; economy ---
+    Wallet {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        float       coinsBalance
+        float       pointsBalance
+        int         conversionRate
+        UUID        userId           FK "UK"
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+    WalletTransactions {
+        UUID        id                    PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      transactionType
+        int         points
+        float       coins
+        jsonb       data
+        float       appliedConversionRate
+        UUID        walletId              FK
+        string      apiKey_used           FK
+        string      oauth_user_id         FK
+    }
+
+    %% --- Strategy authoring (DSL) ---
+    StrategyDefinition {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      realmId
+        string      name
+        string      description
+        string      type
+        string      parentStrategyId
+        jsonb       astJson
+        text        blocklyXml
+        int         version
+        string      status
+        string      createdBy
+        datetime_tz publishedAt
+        string      experimentTag
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+
+    %% --- Observability &amp; operations ---
+    StrategyExecutionLog {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      strategyId
+        int         strategyVersion
+        string      strategyType
+        string      realmId
+        string      externalGameId
+        string      externalTaskId
+        string      externalUserId
+        string      status
+        string      errorCode
+        numeric     points
+        string      caseName
+        numeric     durationMs
+        int         nodesExecuted
+        jsonb       trace
+        bool        sampled
+        string      parentStrategyId
+        text        notes
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+    ApiRequests {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        UUID        userId           FK
+        string      endpoint
+        int         statusCode
+        int         responseTimeMS
+        string      requestType
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+    Logs {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      log_level
+        string      message
+        string      module
+        json        details
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+    KpiMetrics {
+        UUID        id                     PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      day
+        int         totalRequests
+        int         successRate
+        int         avgLatencyMS
+        int         errorRate
+        int         activeUsers
+        int         retentionRate
+        int         avgInteractionsPerUser
+        string      apiKey_used            FK
+        string      oauth_user_id          FK
+    }
+    UptimeLogs {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      status
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+    ExportAuditLog {
+        UUID        id               PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      datasetType
+        string      format
+        jsonb       filters
+        int         rowLimit
+        int         rowCount
+        string      status
+        string      requestedBy
+        string      apiKey_used      FK
+        string      oauth_user_id    FK
+    }
+
+    %% --- Rate limiting ---
+    AbuseLimitCounter {
+        UUID        id          PK
+        datetime_tz created_at
+        datetime_tz updated_at
+        string      scopeType
+        string      scopeValue
+        string      windowName
+        datetime_tz windowStart
+        int         counter
+    }
+
+    %% --- Relationships ---
+    OAuthUsers      ||--o{ ApiKey               : "owns"
+
+    %% ApiKey audit trail: every BaseModel row records the key that wrote it
+    ApiKey          ||--o{ Users                : "audit"
+    ApiKey          ||--o{ Games                : "audit"
+    ApiKey          ||--o{ GameParams           : "audit"
+    ApiKey          ||--o{ Tasks                : "audit"
+    ApiKey          ||--o{ TaskParams           : "audit"
+    ApiKey          ||--o{ UserGameConfig       : "audit"
+    ApiKey          ||--o{ UserActions          : "audit"
+    ApiKey          ||--o{ UserInteractions     : "audit"
+    ApiKey          ||--o{ UserPoints           : "audit"
+    ApiKey          ||--o{ Wallet               : "audit"
+    ApiKey          ||--o{ WalletTransactions   : "audit"
+    ApiKey          ||--o{ StrategyDefinition   : "audit"
+    ApiKey          ||--o{ StrategyExecutionLog : "audit"
+    ApiKey          ||--o{ ApiRequests          : "audit"
+    ApiKey          ||--o{ Logs                 : "audit"
+    ApiKey          ||--o{ KpiMetrics           : "audit"
+    ApiKey          ||--o{ UptimeLogs           : "audit"
+    ApiKey          ||--o{ ExportAuditLog       : "audit"
+
+    %% Campaign hierarchy
+    Games           ||--o{ GameParams           : "parameterized by"
+    Games           ||--o{ Tasks                : "contains"
+    Tasks           ||--o{ TaskParams           : "parameterized by"
+
+    %% User participation
+    Games           ||--o{ UserGameConfig       : "configures"
+    Users           ||--o{ UserGameConfig       : "enrolled in"
+    Users           ||--o{ UserActions          : "performs"
+    Users           ||--o{ UserInteractions     : "has"
+    Tasks           ||--o{ UserInteractions     : "tracked by"
+    Users           ||--o{ UserPoints           : "earns"
+    Tasks           ||--o{ UserPoints           : "awards"
+
+    %% Economy
+    Users           ||--|| Wallet               : "owns"
+    Wallet          ||--o{ WalletTransactions   : "records"
+
+    %% Strategy (soft references by string id, no DB FK)
+    StrategyDefinition ||..o{ StrategyExecutionLog : "executions"
+    StrategyDefinition |o..o{ Games                : "custom strategyId"
+    StrategyDefinition |o..o{ Tasks                : "custom strategyId"
+
+    %% Observability
+    Users           ||--o{ ApiRequests          : "makes"
+    </pre></section>
 <section id="core-entities">
 <h2 id="core-entities">Core entities<a class="headerlink" href="#core-entities" title="Link to this heading">¶</a></h2>
 <section id="identity-access">
@@ -620,8 +1375,10 @@ plus the <code class="docutils literal notranslate"><span class="pre">conversion
 </tr>
 <tr class="row-odd"><td><p><strong>WalletTransactions</strong></p></td>
 <td><p>An append-only ledger of wallet movements (<code class="docutils literal notranslate"><span class="pre">transactionType</span></code>,
-<code class="docutils literal notranslate"><span class="pre">points</span></code>, <code class="docutils literal notranslate"><span class="pre">coins</span></code>, <code class="docutils literal notranslate"><span class="pre">appliedConversionRate</span></code>), so balances are
-always reconstructable.</p></td>
+<code class="docutils literal notranslate"><span class="pre">points</span></code>, <code class="docutils literal notranslate"><span class="pre">coins</span></code>, <code class="docutils literal notranslate"><span class="pre">appliedConversionRate</span></code>). Point assignments
+write the ledger row in the same transaction as the balance change, so
+assignment history is fully reconstructable; conversions currently do
+not (see <a class="reference internal" href="integrating.html#known-limitations"><span class="std std-ref">Known limitations</span></a>).</p></td>
 </tr>
 </tbody>
 </table>
@@ -722,10 +1479,14 @@ your own domain keys and keep GAME loosely coupled to your system.</p></li>
 <ul class="simple">
 <li><p>Point assignment accepts an <strong>idempotency key</strong> (request header, surfaced
 into the event <code class="docutils literal notranslate"><span class="pre">data</span></code> as <code class="docutils literal notranslate"><span class="pre">eventId</span></code>). A repeated request with the same
-key does not create a second <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code> row - safe to retry.</p></li>
-<li><p>Writes are <strong>transactional</strong>; wallet movement and points persistence happen
-together so a partial failure does not leave a points row without its
-wallet effect.</p></li>
+key does not create a second <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code> row - safe to retry. (Two retries
+racing concurrently are still de-duplicated, but the loser receives
+<code class="docutils literal notranslate"><span class="pre">409</span> <span class="pre">Conflict</span></code>; see <a class="reference internal" href="integrating.html#known-limitations"><span class="std std-ref">Known limitations</span></a>.)</p></li>
+<li><p>Point-assignment writes are <strong>transactional</strong>: the <code class="docutils literal notranslate"><span class="pre">UserPoints</span></code> row, the
+wallet balance change, and the ledger entry are committed together, so a
+partial failure never leaves a points row without its wallet effect.
+Points-to-coins conversion is not yet covered by a single transaction (see
+<a class="reference internal" href="integrating.html#known-limitations"><span class="std std-ref">Known limitations</span></a>).</p></li>
 </ul>
 </section>
 <section id="where-to-go-next">
@@ -763,12 +1524,12 @@ and awarding points.</p></li>
             </a>
           
           
-            <a href="getting-started.html" title="Getting Started"
+            <a href="decisions/index.html" title="Decision records"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> "Next" </span> Getting Started </span>
+                class="md-footer-nav__direction"> "Next" </span> Decision records </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>

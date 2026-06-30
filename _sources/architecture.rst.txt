@@ -120,6 +120,26 @@ end (see ``app/api/v1/endpoints/games_points.py``):
    response model. On any exception the endpoint maps it to a structured
    error (preserving the correlation id) and records an audit error.
 
+The same path as a pipeline (solid edges are the happy path; the dashed edge is
+the error path that still exits through CORS):
+
+.. mermaid::
+
+   flowchart TD
+       REQ(["POST /games/{id}/tasks/{externalTaskId}/points"]) --> MW["Middleware: CORS, unhandled-error catcher, metrics"]
+       MW --> AUTH{"Auth: X-API-Key or OAuth2 bearer"}
+       AUTH -->|"invalid"| E401["401 / 403"]
+       AUTH -->|"ok"| AUDIT["Audit context: AuditLogger + correlation id"]
+       AUDIT --> VAL{"Validate body (Pydantic)"}
+       VAL -->|"malformed"| E422["422"]
+       VAL -->|"ok"| ABUSE{"Abuse prevention: per-key / IP / user limits"}
+       ABUSE -->|"over limit"| E429["429"]
+       ABUSE -->|"ok"| SVC["Service: resolve user, load strategy, score, persist points, move wallet - one transaction"]
+       SVC --> ENGINE["Strategy engine: points + caseName (built-in or sandboxed DSL)"]
+       ENGINE --> REPO[("Repository over PostgreSQL: idempotency-keyed writes")]
+       REPO --> RESP(["Response model (serialized domain object)"])
+       SVC -.->|"exception"| ERR["Structured error + audit error (keeps correlation id)"]
+
 The middleware stack (and a subtle ordering bug it fixes)
 =========================================================
 

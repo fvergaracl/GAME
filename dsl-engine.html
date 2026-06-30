@@ -216,6 +216,18 @@
     </li>
     <li class="md-nav__item">
     
+      <span class="md-nav__link caption"><span class="caption-text">Decision Records</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="decisions/index.html" class="md-nav__link">Decision records</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
       <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
     
     </li>
@@ -230,6 +242,13 @@
     
     
       <a href="authentication.html" class="md-nav__link">Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="troubleshooting.html" class="md-nav__link">Troubleshooting</a>
       
     
     </li>
@@ -291,6 +310,8 @@
         </li>
         <li class="md-nav__item"><a href="#observability-hooks" class="md-nav__link">Observability hooks</a>
         </li>
+        <li class="md-nav__item"><a href="#tests-as-documentation" class="md-nav__link">Tests as documentation</a>
+        </li>
         <li class="md-nav__item"><a href="#source-map" class="md-nav__link">Source map</a>
         </li></ul>
             </nav>
@@ -340,6 +361,13 @@
     
     
       <a href="#observability-hooks" class="md-nav__link">Observability hooks</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#tests-as-documentation" class="md-nav__link">Tests as documentation</a>
       
     
     </li>
@@ -446,6 +474,8 @@
         <li class="md-nav__item"><a href="#built-in-strategies-in-code" class="md-nav__link">Built-in strategies in code</a>
         </li>
         <li class="md-nav__item"><a href="#observability-hooks" class="md-nav__link">Observability hooks</a>
+        </li>
+        <li class="md-nav__item"><a href="#tests-as-documentation" class="md-nav__link">Tests as documentation</a>
         </li>
         <li class="md-nav__item"><a href="#source-map" class="md-nav__link">Source map</a>
         </li></ul>
@@ -671,6 +701,53 @@ strategies through the <code class="docutils literal notranslate"><span class="p
 bounded in-process queue, so scoring only pays the enqueue. The full model -
 queue sizing, drop counting, graceful flush on shutdown - is in
 <a class="reference internal" href="observability.html"><span class="doc">Observability</span></a>.</p>
+</section>
+<section id="tests-as-documentation">
+<h2 id="tests-as-documentation">Tests as documentation<a class="headerlink" href="#tests-as-documentation" title="Link to this heading">¶</a></h2>
+<p>The guarantees on this page are enforced by an executable suite - the tests
+are the proof that the DSL path matches the Python path and that the sandbox
+holds:</p>
+<table>
+<colgroup>
+<col style="width: 52.0%"/>
+<col style="width: 48.0%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Test</p></th>
+<th class="head"><p>What it pins</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tests/unit_tests/engine/test_default_dsl_parity.py</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tests/unit_tests/engine/test_constant_effort_dsl_parity.py</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DSL_FULL</span></code> parity: each built-in and its JSON-AST twin agree on
+<code class="docutils literal notranslate"><span class="pre">(points,</span> <span class="pre">caseName)</span></code> across every scenario, and the persisted template
+re-validates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tests/unit_tests/engine/test_dsl_extend.py</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tests/unit_tests/engine/test_default_extend_parity.py</span></code></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">pre</span> <span class="pre">-&gt;</span> <span class="pre">parent</span> <span class="pre">-&gt;</span> <span class="pre">post</span></code> pipeline: <code class="docutils literal notranslate"><span class="pre">set_data</span></code> reaches the parent,
+<code class="docutils literal notranslate"><span class="pre">veto</span></code> skips it, post-rules mutate <code class="docutils literal notranslate"><span class="pre">parent.points</span></code> /
+<code class="docutils literal notranslate"><span class="pre">parent.case_name</span></code>, and <code class="docutils literal notranslate"><span class="pre">parent_variables</span></code> apply to a copy only.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tests/unit_tests/audit/test_adaptive_invariants_property.py</span></code></p></td>
+<td><p>Property-style invariants (Hypothesis-compatible, with a built-in
+fallback when Hypothesis is absent): wallet conversion preserves value
+and never goes negative, full conversion is not double-spendable, and the
+GREENGAGE time-effect helpers stay within bounds.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>tests/unit_tests/engine/test_default_dsl_parity.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>tests/unit_tests/engine/test_constant_effort_dsl_parity.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>tests/unit_tests/engine/test_dsl_extend.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>tests/unit_tests/engine/test_default_extend_parity.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>tests/unit_tests/audit/test_adaptive_invariants_property.py
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="strategies.html"><span class="doc">Strategies</span></a> for the author-facing view and <a class="reference internal" href="contributing.html"><span class="doc">Contributing</span></a> for
+the full testing workflow.</p>
 </section>
 <section id="source-map">
 <h2 id="source-map">Source map<a class="headerlink" href="#source-map" title="Link to this heading">¶</a></h2>

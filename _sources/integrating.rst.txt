@@ -154,7 +154,11 @@ Idempotency
 Supply an idempotency key (request header, surfaced into the event as
 ``eventId``) and a retried request will **not** double-award. Pair this with a
 correlation id header to trace a request end to end through the logs. This is
-what makes point assignment safe to retry on network failure.
+what makes point assignment safe to retry on network failure. Under a
+concurrent retry race (two retries with the same key in flight at once) the
+duplicate is still rejected at the database, so no double-award occurs; the
+losing request receives ``409 Conflict`` instead of the original success body
+(see :ref:`known-limitations`).
 
 Rate limits
 -----------
@@ -233,17 +237,21 @@ balance, governed by a conversion rate (see :doc:`domain-model`).
    * - Execute a conversion
      - ``POST /users/{externalUserId}/convert``
 
-Conversions are recorded as ``WalletTransactions`` with the
-``appliedConversionRate`` captured at the time, so a conversion can always be
-traced back to the rate that produced it.
+Each recorded conversion stores the ``appliedConversionRate`` captured at the
+time, so a recorded conversion can be traced back to the rate that produced it.
+The balance update and its ledger row are written in two separate transactions
+today, so a crash between them can leave a conversion without a recording row
+(see :ref:`known-limitations`).
 
 Corrections and reversibility
 -----------------------------
 
-The wallet ledger is **append-only and immutable**. GAME has **no refund or
-reversal operation today**: no endpoint subtracts points already awarded or
-rolls a conversion back, and only two transaction types are ever written -
-``AssignPoints`` and ``ConvertPointsToCoins``. The other names in the
+The wallet ledger is **append-only and immutable** - existing rows are never
+updated or deleted. (A conversion can currently fail to write its ledger row at
+all under a crash mid-conversion; see :ref:`known-limitations`.) GAME has **no
+refund or reversal operation today**: no endpoint subtracts points already
+awarded or rolls a conversion back, and only two transaction types are ever
+written - ``AssignPoints`` and ``ConvertPointsToCoins``. The other names in the
 ``WalletTransactions`` model (refunds, transfers, manual adjustments) are
 reserved but unimplemented.
 
@@ -257,6 +265,49 @@ yet. Until refunds land, the practical options are:
 A ledger-preserving **refund/adjustment** operation is on the roadmap (see
 ``ROADMAP.md``). It is planned to add new transaction types rather than mutate
 existing rows, so the audit trail stays intact.
+
+.. _known-limitations:
+
+Known limitations
+=================
+
+GAME is honest about two edge cases in the write path. Neither corrupts data
+under normal sequential use, but both are worth knowing before you build on
+them.
+
+Non-atomic points-to-coins conversion
+-------------------------------------
+
+Point **assignment** is atomic: the ``UserPoints`` row, the wallet balance
+change, and the ledger entry commit in a single transaction (see
+:doc:`/decisions/0003-atomic-points-write`). The points-to-coins **conversion**
+path is not. ``UserService.convert_points_to_coins``
+(``app/services/user_service.py``) writes the new wallet balance and the
+``ConvertPointsToCoins`` ledger row in **two separate transactions**. If the
+process dies between them, the coins can move with no ledger row recording the
+movement.
+
+Consequence: for conversions only, the ledger is not guaranteed to be a
+complete reconstruction of every balance change; assignment history is
+unaffected. Wrapping the conversion in one transaction is a planned fix (see
+``ROADMAP.md``). Until then, treat a missing conversion row as the rare
+crash-window artifact it is, and reconcile from the wallet balance if needed.
+
+409 on a concurrent retry race
+------------------------------
+
+Idempotency keys make awards safe to retry
+(:doc:`/decisions/0004-idempotency-keys`). A **sequential** retry with the same
+key returns the original assignment. But two retries with the same key arriving
+**at the same instant** both pass the "does this key already exist?" check
+before either commits, and the database unique constraint then lets exactly one
+win. The loser does **not** double-award - it is rejected with ``409 Conflict``
+rather than receiving the original success body.
+
+Consequence: no double-award ever happens, but a caller that fires concurrent
+retries of the same event must read a ``409`` on the points endpoint as "the
+award already went through", not as a hard failure. Spacing retries (or relying
+on the first response) avoids the race entirely.
 
 Analytics, KPIs & exports
 =========================

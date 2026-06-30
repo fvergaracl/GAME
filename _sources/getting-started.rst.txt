@@ -259,22 +259,7 @@ runner for the full option set.
 Troubleshooting first run
 =========================
 
-.. list-table::
-   :header-rows: 1
-   :widths: 38 62
-
-   * - Symptom
-     - Likely cause / fix
-   * - App won't boot in ``prod``/``stage``
-     - A fail-fast secret check tripped. The error names the missing variable
-       (``SECRET_KEY``, ``KEYCLOAK_CLIENT_SECRET``, ``DB_NAME``). See
-       :doc:`configuration`.
-   * - ``401 Invalid authentication credentials``
-     - No/!invalid ``X-API-Key`` and no valid bearer token. See
-       :doc:`authentication`.
-   * - Dashboard shows "Network Error"
-     - Usually a backend ``500`` whose body CORS dropped. Check API logs for
-       the real traceback (see :doc:`architecture`).
-   * - ``404`` on a freshly created game
-     - You addressed it with your ``externalGameId`` instead of the returned
-       internal ``gameId``. See :doc:`domain-model`.
+Hit an error during any step above? The common first-run problems - boot-time
+secret checks, ``401`` responses, ``command not found: uvicorn``, the
+dashboard's "Network Error", and addressing a game by the wrong id - are
+collected with their fixes in :doc:`troubleshooting`.

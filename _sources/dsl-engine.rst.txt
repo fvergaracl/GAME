@@ -189,6 +189,47 @@ bounded in-process queue, so scoring only pays the enqueue. The full model -
 queue sizing, drop counting, graceful flush on shutdown - is in
 :doc:`observability`.
 
+Tests as documentation
+======================
+
+The guarantees on this page are enforced by an executable suite - the tests
+are the proof that the DSL path matches the Python path and that the sandbox
+holds:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 52 48
+
+   * - Test
+     - What it pins
+   * - ``tests/unit_tests/engine/test_default_dsl_parity.py``,
+       ``tests/unit_tests/engine/test_constant_effort_dsl_parity.py``
+     - ``DSL_FULL`` parity: each built-in and its JSON-AST twin agree on
+       ``(points, caseName)`` across every scenario, and the persisted template
+       re-validates.
+   * - ``tests/unit_tests/engine/test_dsl_extend.py``,
+       ``tests/unit_tests/engine/test_default_extend_parity.py``
+     - The ``pre -> parent -> post`` pipeline: ``set_data`` reaches the parent,
+       ``veto`` skips it, post-rules mutate ``parent.points`` /
+       ``parent.case_name``, and ``parent_variables`` apply to a copy only.
+   * - ``tests/unit_tests/audit/test_adaptive_invariants_property.py``
+     - Property-style invariants (Hypothesis-compatible, with a built-in
+       fallback when Hypothesis is absent): wallet conversion preserves value
+       and never goes negative, full conversion is not double-spendable, and the
+       GREENGAGE time-effect helpers stay within bounds.
+
+.. code-block:: bash
+
+   poetry run pytest \
+     tests/unit_tests/engine/test_default_dsl_parity.py \
+     tests/unit_tests/engine/test_constant_effort_dsl_parity.py \
+     tests/unit_tests/engine/test_dsl_extend.py \
+     tests/unit_tests/engine/test_default_extend_parity.py \
+     tests/unit_tests/audit/test_adaptive_invariants_property.py
+
+See :doc:`strategies` for the author-facing view and :doc:`contributing` for
+the full testing workflow.
+
 Source map
 ==========
 
