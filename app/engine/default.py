@@ -55,16 +55,14 @@ class EnhancedGamificationStrategy(BaseStrategy):  # noqa
             tuple[int, str]: The points to award and the case name describing
             which branch produced them.
         """
-        task_measurements_count = (
-            self.user_points_analytics_service.count_measurements_by_external_task_id(
-                externalTaskId
-            )
+        task_measurements_count = await self.user_points_analytics_service.count_measurements_by_external_task_id(
+            externalTaskId
         )
         self.debug_print(f"task_measurements_count: {task_measurements_count}")
         if task_measurements_count < 2:
             return (self.variable_basic_points, "BasicEngagement")
         user_task_measurements_count = (
-            self.user_points_analytics_service.get_user_task_measurements_count(
+            await self.user_points_analytics_service.get_user_task_measurements_count(
                 externalTaskId, externalUserId
             )
         )
@@ -73,12 +71,12 @@ class EnhancedGamificationStrategy(BaseStrategy):  # noqa
         )
 
         if user_task_measurements_count > 2:
-            user_avg_time_taken = self.user_points_analytics_service.get_avg_time_between_tasks_by_user_and_game_task(  # noqa
+            user_avg_time_taken = await self.user_points_analytics_service.get_avg_time_between_tasks_by_user_and_game_task(  # noqa
                 externalGameId, externalTaskId, externalUserId
             )
             self.debug_print(f"user_avg_time_taken: {user_avg_time_taken}")
 
-            all_avg_time_taken = self.user_points_analytics_service.get_avg_time_between_tasks_for_all_users(  # noqa
+            all_avg_time_taken = await self.user_points_analytics_service.get_avg_time_between_tasks_for_all_users(  # noqa
                 externalGameId, externalTaskId
             )
             self.debug_print(f"all_avg_time_taken: {all_avg_time_taken}")
@@ -91,7 +89,7 @@ class EnhancedGamificationStrategy(BaseStrategy):  # noqa
                     "PerformanceBonus",
                 )
             user_last_window_time_diff = (
-                self.user_points_analytics_service.get_last_window_time_diff(
+                await self.user_points_analytics_service.get_last_window_time_diff(
                     externalTaskId, externalUserId
                 )
             )
@@ -100,7 +98,7 @@ class EnhancedGamificationStrategy(BaseStrategy):  # noqa
             )
 
             user_new_last_window_time_diff = (
-                self.user_points_analytics_service.get_new_last_window_time_diff(
+                await self.user_points_analytics_service.get_new_last_window_time_diff(
                     externalTaskId, externalUserId, externalGameId
                 )
             )

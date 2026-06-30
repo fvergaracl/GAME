@@ -17,14 +17,12 @@ walking the three scoring moments the recipe documents:
 * a priority-zone bonus (driven by the per-event ``data.priority_zone``),
 * a streak bonus (driven by ``data.streak_days``, capped with ``clamp``).
 
-Why a DSL strategy and not socio_bee directly: the built-in
-``SocioBeeStrategy`` (and ``default.py``'s ``EnhancedGamificationStrategy``
-it shares logic with) call the *async* analytics service methods without
-``await``, so they only run against a synchronous mock - against the real
-service they raise ``TypeError: '<' not supported between instances of
-'coroutine' and 'int'``. A DSL strategy resolves the same whitelisted
-analytics fields through ``ExecutionContext.build_for_ast``, which awaits
-them correctly, so it is the reproducible vehicle for a real end-to-end run.
+Why a DSL strategy and not socio_bee directly: a ``DSL_FULL`` program is fully
+data-driven, so it scores deterministically from the event payload with no
+seeded timing history and no live analytics backend. The bundled ``socio_bee``
+/ ``greengage`` built-ins target the same domain but only reach their bonus
+branches once enough measurement history has accumulated, which makes them
+awkward to reproduce in a short, self-contained walkthrough.
 """
 
 from __future__ import annotations

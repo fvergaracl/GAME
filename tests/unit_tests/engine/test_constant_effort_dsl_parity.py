@@ -47,8 +47,8 @@ _AST: Dict = json.loads(_AST_PATH.read_text(encoding="utf-8"))
 
 
 # Same factory shape as ``test_default_dsl_parity.py``: a single dict of
-# analytics return values feeds both Python (sync MagicMock) and DSL
-# (AsyncMock) variants so we can never desync them by accident.
+# analytics return values feeds both the Python and DSL variants. Both paths
+# await the analytics calls, so both mocks are async - they can never desync.
 _ANALYTICS_METHODS = ("get_user_task_measurements_count_the_last_seconds",)
 
 
@@ -57,7 +57,7 @@ def _build_analytics_mocks(returns: Dict[str, int]):
     dsl_mock = MagicMock()
     for method in _ANALYTICS_METHODS:
         value = returns.get(method, 0)
-        getattr(py_mock, method).return_value = value
+        setattr(py_mock, method, AsyncMock(return_value=value))
         setattr(dsl_mock, method, AsyncMock(return_value=value))
     return py_mock, dsl_mock
 

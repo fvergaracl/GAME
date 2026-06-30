@@ -211,7 +211,7 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
         if not isinstance(minutes, int):
             return (-1, "The minutes must be a number equal or greater than 0")
 
-        task_params = self.task_service.get_task_params_by_externalTaskId(
+        task_params = await self.task_service.get_task_params_by_externalTaskId(
             externalTaskId
         )
         self.variable_dimension_complexity = {
@@ -232,7 +232,7 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
 
         points_to_award = self.variable_default_points
 
-        user_has_record_before = self.user_points_analytics_service.user_has_record_before_in_externalTaskId_last_min(
+        user_has_record_before = await self.user_points_analytics_service.user_has_record_before_in_externalTaskId_last_min(
             externalTaskId, externalUserId, self.variable_minutes_to_check
         )
         if minutes == 0:
@@ -240,24 +240,22 @@ class GREENGAGEGamificationStrategy(BaseStrategy):  # noqa
                 return (points_to_award, "Case 1.1 (DP)")
             return (points_to_award / 2, "Case 1.2 (DP/2)")
 
-        count_personal_records_in_game = self.user_points_analytics_service.count_personal_records_by_external_game_id(
+        count_personal_records_in_game = await self.user_points_analytics_service.count_personal_records_by_external_game_id(
             externalGameId, externalUserId
         )
         if count_personal_records_in_game < 2:
             return (points_to_award * 2, "Case 2 (DP x 2)")
 
         global_avg_game = (
-            self.user_points_analytics_service.get_global_avg_by_external_game_id(
+            await self.user_points_analytics_service.get_global_avg_by_external_game_id(
                 externalGameId
             )
         )
         if minutes > global_avg_game:
             return (self.get_BP(points_to_award, minutes), "Case 3 (BP)")
 
-        personal_avg_game = (
-            self.user_points_analytics_service.get_personal_avg_by_external_game_id(
-                externalGameId, externalUserId
-            )
+        personal_avg_game = await self.user_points_analytics_service.get_personal_avg_by_external_game_id(
+            externalGameId, externalUserId
         )
         if minutes > personal_avg_game:
             return (self.get_PBP(points_to_award, minutes), "Case 4.1 (PBP)")

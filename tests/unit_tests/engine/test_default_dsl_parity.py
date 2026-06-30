@@ -12,13 +12,13 @@ Every scenario must agree on ``(points, case_name)`` - if even one
 diverges, ``test_default.py`` and the parity test cannot both be true and
 S6 is blocked by the roadmap's control gate.
 
-Why two mock shapes?  ``EnhancedGamificationStrategy`` calls the analytics
-methods synchronously (``service.method(...)``); ``DslStrategy`` runs them
-through ``ExecutionContext.build_for_ast`` which awaits each one. A single
-analytics service object cannot satisfy both call styles. ``build_analytics_mocks``
-keeps the two in lockstep by reading the same scenario dict and producing
-a ``MagicMock`` for Python plus an ``AsyncMock``-decorated ``MagicMock``
-for the DSL.
+One async mock shape for both.  Both implementations now ``await`` the
+analytics calls - ``EnhancedGamificationStrategy`` awaits them directly, and
+``DslStrategy`` runs them through ``ExecutionContext.build_for_ast`` which
+awaits each one - so an ``AsyncMock`` analytics service satisfies both.
+``_build_analytics_mocks`` keeps the two in lockstep by reading the same
+scenario dict and producing an ``AsyncMock`` per analytics method for each
+strategy.
 
 Defaulting unspecified analytics to ``0``: the rule ordering in the AST
 short-circuits long before unused paths matter (scenario 1 matches rule
@@ -63,15 +63,16 @@ _ANALYTICS_METHODS = (
 
 def _build_analytics_mocks(returns: Dict[str, float]):
     """
-    Build two mocks that resolve every analytic to the same value: a sync
-    ``MagicMock`` for the Python strategy and an ``AsyncMock``-decorated
-    ``MagicMock`` for the DSL strategy. Unspecified methods default to 0.
+    Build two ``AsyncMock`` analytics services that resolve every analytic to
+    the same value - one for the Python strategy, one for the DSL strategy.
+    Both paths ``await`` the analytics calls, so both mocks are async.
+    Unspecified methods default to 0.
     """
     py_mock = MagicMock()
     dsl_mock = MagicMock()
     for method in _ANALYTICS_METHODS:
         value = returns.get(method, 0)
-        getattr(py_mock, method).return_value = value
+        setattr(py_mock, method, AsyncMock(return_value=value))
         setattr(dsl_mock, method, AsyncMock(return_value=value))
     return py_mock, dsl_mock
 

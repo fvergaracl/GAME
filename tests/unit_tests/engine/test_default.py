@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -11,7 +11,8 @@ def strategy():
     instance.debug = False
     instance.task_service = MagicMock()
     instance.user_points_service = MagicMock()
-    instance.user_points_analytics_service = MagicMock()
+    # Analytics methods are async; the strategy awaits them.
+    instance.user_points_analytics_service = AsyncMock()
     return instance
 
 

@@ -47,7 +47,7 @@ class ConstantEffortStrategy(BaseStrategy):  # noqa
             tuple[int, str]: The points to award and the case name describing
             which branch produced them.
         """
-        task_measurements_count = self.user_points_analytics_service.get_user_task_measurements_count_the_last_seconds(
+        task_measurements_count = await self.user_points_analytics_service.get_user_task_measurements_count_the_last_seconds(
             externalTaskId,
             externalUserId,
             self.variable_constant_effort_interval_minutes * 60,

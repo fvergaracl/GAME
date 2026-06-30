@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -8,9 +8,11 @@ from app.engine.greengageStrategy import GREENGAGEGamificationStrategy
 
 @pytest.fixture
 def strategy_bundle():
-    task_service = MagicMock()
+    # get_task_params_by_externalTaskId and the analytics methods are async
+    # and awaited by the strategy, so they need AsyncMock-backed services.
+    task_service = AsyncMock()
     user_points_service = MagicMock()
-    user_points_analytics_service = MagicMock()
+    user_points_analytics_service = AsyncMock()
     with patch(
         "app.engine.greengageStrategy.Container.task_service",
         new=MagicMock(return_value=task_service),

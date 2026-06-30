@@ -52,14 +52,14 @@ _ANALYTICS_METHODS = (
 
 
 def _build_analytics_mocks(returns: Dict[str, int]):
-    """Same factory shape used by ``test_default_dsl_parity`` -
-    sync MagicMock for the Python parent, AsyncMock for the DSL
-    ExecutionContext.precompute calls."""
+    """Same factory shape used by ``test_default_dsl_parity`` - an AsyncMock
+    for the Python parent (which awaits its analytics calls) and one for the
+    DSL ExecutionContext.precompute calls."""
     py_mock = MagicMock()
     dsl_mock = MagicMock()
     for method in _ANALYTICS_METHODS:
         value = returns.get(method, 0)
-        getattr(py_mock, method).return_value = value
+        setattr(py_mock, method, AsyncMock(return_value=value))
         setattr(dsl_mock, method, AsyncMock(return_value=value))
     return py_mock, dsl_mock
 
@@ -220,7 +220,7 @@ async def test_default_extended_with_first_time_bonus_matches_baseline_plus_bonu
 
     py_mock, dsl_mock = _build_analytics_mocks(analytics_returns)
 
-    # Baseline: parent built-in alone, sync MagicMock for analytics.
+    # Baseline: parent built-in alone, AsyncMock for analytics.
     baseline_parent = EnhancedGamificationStrategy()
     baseline_parent.debug = False
     baseline_parent.user_points_analytics_service = py_mock
