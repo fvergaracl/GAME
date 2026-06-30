@@ -429,8 +429,10 @@ Economy
        plus the ``conversionRate`` (points per coin).
    * - **WalletTransactions**
      - An append-only ledger of wallet movements (``transactionType``,
-       ``points``, ``coins``, ``appliedConversionRate``), so balances are
-       always reconstructable.
+       ``points``, ``coins``, ``appliedConversionRate``). Point assignments
+       write the ledger row in the same transaction as the balance change, so
+       assignment history is fully reconstructable; conversions currently do
+       not (see :ref:`known-limitations`).
 
 Strategy & observability
 ------------------------
@@ -508,10 +510,14 @@ Idempotency & concurrency
 
 * Point assignment accepts an **idempotency key** (request header, surfaced
   into the event ``data`` as ``eventId``). A repeated request with the same
-  key does not create a second ``UserPoints`` row - safe to retry.
-* Writes are **transactional**; wallet movement and points persistence happen
-  together so a partial failure does not leave a points row without its
-  wallet effect.
+  key does not create a second ``UserPoints`` row - safe to retry. (Two retries
+  racing concurrently are still de-duplicated, but the loser receives
+  ``409 Conflict``; see :ref:`known-limitations`.)
+* Point-assignment writes are **transactional**: the ``UserPoints`` row, the
+  wallet balance change, and the ledger entry are committed together, so a
+  partial failure never leaves a points row without its wallet effect.
+  Points-to-coins conversion is not yet covered by a single transaction (see
+  :ref:`known-limitations`).
 
 Where to go next
 ================

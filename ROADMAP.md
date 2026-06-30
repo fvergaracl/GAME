@@ -20,7 +20,7 @@ state of `main`; dates are intentionally absent.
 | Subsystem | Status | Notes |
 |---|---|---|
 | Core scoring engine (built-in strategy classes) | **Stable** | `BaseStrategy` + registry; `default` is the recommended baseline. |
-| Points, wallets, points-to-coins conversion | **Stable** | Append-only ledger; conversions record `appliedConversionRate`. |
+| Points, wallets, points-to-coins conversion | **Stable** | Append-only ledger; conversions record `appliedConversionRate`. Point assignment is atomic; the conversion path is not yet single-transaction (a known limitation, see below). |
 | REST API (games, tasks, users, points, exports) | **Stable** | Versioned under `/api/v1`; OpenAPI at `/docs` and `/redocs`. |
 | Authentication (API key + Keycloak OAuth2) | **Stable** | Per-key scoping and rate limiting. |
 | Data exports (CSV-style history) | **Stable** | Recorded in `ExportAuditLog`. |
@@ -42,6 +42,10 @@ state of `main`; dates are intentionally absent.
   `BaseStrategy` and emit points so the Gi\* hot-spot signal can drive scoring.
 - **Transfers between users.** Implement the reserved transfer transaction
   types.
+- **Atomic points-to-coins conversion.** Wrap the conversion balance update and
+  its ledger row in a single transaction, so a crash between them can no longer
+  leave a conversion without a recording row. See "Known limitations" in the
+  integration guide (`docs/source/integrating.rst`).
 
 ## Not planned (today)
 

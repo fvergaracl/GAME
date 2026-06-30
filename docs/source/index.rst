@@ -35,7 +35,8 @@ It runs in two shapes:
    * **I want to integrate GAME into my product** →
      :doc:`integrating` and :doc:`strategies`.
    * **I want to understand how it works** →
-     :doc:`overview`, :doc:`architecture`, :doc:`dsl-engine`.
+     :doc:`overview`, :doc:`architecture`, :doc:`dsl-engine`, and the
+     :doc:`decision records <decisions/index>`.
    * **I run it in production** →
      :doc:`configuration`, :doc:`operations`, :doc:`observability`,
      :doc:`security`.
@@ -73,6 +74,12 @@ is written for:
    overview
    architecture
    domain-model
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Decision Records
+
+   decisions/index
 
 .. toctree::
    :maxdepth: 2
