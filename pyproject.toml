@@ -95,6 +95,7 @@ freezegun = "^1.5.1"
 vulture = "^2.16"
 eralchemy = "^1.7.0"
 fakeredis = "^2.36"
+sphinxcontrib-mermaid = "^2.0.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -147,3 +148,17 @@ known-first-party = ["app"]
 [tool.isort]
 profile = "black"
 known_first_party = ["app"]
+
+# Commitizen drives the conventional-commit changelog and version bumps.
+# It lives here (a config file commitizen actually reads) rather than in the
+# old ``changelog.cz.toml``, whose name is not on commitizen's search path -
+# so that file was inert and the tool ran on bare defaults. ``version_provider
+# = "poetry"`` single-sources the version from ``[tool.poetry].version`` above
+# (no second copy to drift), and ``tag_format`` matches the existing
+# ``vX.Y.ZZZ`` git tags so future ``cz bump`` tags stay consistent.
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_provider = "poetry"
+update_changelog_on_bump = true
+changelog_file = "CHANGELOG.md"

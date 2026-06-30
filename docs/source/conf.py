@@ -70,6 +70,7 @@ extensions = [
     "sphinx.ext.viewcode",  # add "[source]" links next to API entries
     "sphinx.ext.napoleon",  # parse Google-style docstrings
     "sphinx.ext.todo",  # surface ``.. todo::`` directives
+    "sphinxcontrib.mermaid",  # render ``.. mermaid::`` diagrams (ERD, pipelines)
 ]
 
 templates_path = ["_templates"]

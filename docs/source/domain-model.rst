@@ -6,39 +6,342 @@ Domain Model
    :class: note
 
    Integrators who need to know what each object means on the wire, and
-   contributors who need the schema. The canonical machine-readable ERD
-   (Mermaid) lives in ``docs/domain-model.md``; this page is the prose
-   reference.
+   contributors who need the schema. This page is canonical for the domain
+   model: the rendered entity-relationship diagram below plus the prose
+   reference that follows.
 
 The big picture
 ===============
 
-GAME's entities fall into five clusters. Solid arrows below read
-"parent → many children"::
+GAME's entities fall into five clusters - identity/access, the campaign
+hierarchy, participation & scoring, the economy, and strategy/observability.
+The entity-relationship diagram below is the canonical schema: every table in
+``app/model/`` with its columns and keys. Solid lines are foreign-key
+relationships; dashed lines are **soft references** resolved by string id
+(``strategyId``), which carry no database foreign key on purpose so a strategy
+can be hard-deleted without cascading away its history.
 
-   AUTH / ACCESS            CAMPAIGN HIERARCHY
-   ┌──────────┐             ┌──────────┐
-   │OAuthUsers│◄──owns────► │  Games   │──┬──► GameParams   (key/value config)
-   └────┬─────┘   ┌────────►└────┬─────┘  └──► Tasks ──► TaskParams
-        │         │              │
-        ▼         │              ▼
-   ┌──────────┐   │        ┌──────────────┐
-   │  ApiKey  │───┘        │UserGameConfig│  (enrolment + experiment group)
-   └────┬─────┘            └──────────────┘
-        │ audit trail: every entity records the ApiKey that created it
-        ▼
-   PARTICIPATION & SCORING                 ECONOMY
-   ┌──────────┐                            ┌──────────┐
-   │  Users   │──► UserActions             │  Wallet  │──► WalletTransactions
-   │          │──► UserInteractions        └────▲─────┘
-   │          │──► UserPoints ◄──awards──┐       │ one wallet per user
-   │          │──────────────────────────┴───────┘
-   └──────────┘
-                STRATEGY                    OBSERVABILITY
-   ┌────────────────────┐                  ApiRequests · Logs · KpiMetrics
-   │ StrategyDefinition │──► versions      UptimeLogs · StrategyExecutionLog
-   │ (custom DSL)       │                  AbuseLimitCounter · ExportAuditLog
-   └────────────────────┘
+.. mermaid::
+
+   erDiagram
+
+       %% --- Authentication & access control ---
+       OAuthUsers {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      provider
+           string      provider_user_id UK
+           string      status
+           string      apiKey_used      FK
+       }
+       ApiKey {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      apiKey           UK
+           string      client
+           string      description
+           bool        active
+           string      createdBy
+           string      oauth_user_id    FK
+       }
+
+       %% --- Core domain: users ---
+       Users {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      externalUserId   UK
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+
+       %% --- Core domain: campaigns (games & tasks) ---
+       Games {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      externalGameId   UK
+           string      strategyId
+           string      platform
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+       GameParams {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      key
+           string      value
+           UUID        gameId           FK
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+       Tasks {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      externalTaskId
+           UUID        gameId           FK
+           string      strategyId
+           string      status
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+       TaskParams {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      key
+           string      value
+           UUID        taskId           FK
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+
+       %% --- User <-> game participation ---
+       UserGameConfig {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           UUID        userId           FK
+           UUID        gameId           FK
+           string      experimentGroup
+           json        configData
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+       UserActions {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      typeAction
+           jsonb       data
+           string      description
+           UUID        userId           FK
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+       UserInteractions {
+           UUID        id                PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           UUID        userId            FK
+           UUID        taskId            FK
+           string      interactionType
+           string      interactionDetail
+           string      apiKey_used       FK
+           string      oauth_user_id     FK
+       }
+       UserPoints {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           int         points
+           string      caseName
+           string      idempotencyKey
+           jsonb       data
+           string      description
+           UUID        userId           FK
+           UUID        taskId           FK
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+
+       %% --- Wallet & economy ---
+       Wallet {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           float       coinsBalance
+           float       pointsBalance
+           int         conversionRate
+           UUID        userId           FK "UK"
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+       WalletTransactions {
+           UUID        id                    PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      transactionType
+           int         points
+           float       coins
+           jsonb       data
+           float       appliedConversionRate
+           UUID        walletId              FK
+           string      apiKey_used           FK
+           string      oauth_user_id         FK
+       }
+
+       %% --- Strategy authoring (DSL) ---
+       StrategyDefinition {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      realmId
+           string      name
+           string      description
+           string      type
+           string      parentStrategyId
+           jsonb       astJson
+           text        blocklyXml
+           int         version
+           string      status
+           string      createdBy
+           datetime_tz publishedAt
+           string      experimentTag
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+
+       %% --- Observability & operations ---
+       StrategyExecutionLog {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      strategyId
+           int         strategyVersion
+           string      strategyType
+           string      realmId
+           string      externalGameId
+           string      externalTaskId
+           string      externalUserId
+           string      status
+           string      errorCode
+           numeric     points
+           string      caseName
+           numeric     durationMs
+           int         nodesExecuted
+           jsonb       trace
+           bool        sampled
+           string      parentStrategyId
+           text        notes
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+       ApiRequests {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           UUID        userId           FK
+           string      endpoint
+           int         statusCode
+           int         responseTimeMS
+           string      requestType
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+       Logs {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      log_level
+           string      message
+           string      module
+           json        details
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+       KpiMetrics {
+           UUID        id                     PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      day
+           int         totalRequests
+           int         successRate
+           int         avgLatencyMS
+           int         errorRate
+           int         activeUsers
+           int         retentionRate
+           int         avgInteractionsPerUser
+           string      apiKey_used            FK
+           string      oauth_user_id          FK
+       }
+       UptimeLogs {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      status
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+       ExportAuditLog {
+           UUID        id               PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      datasetType
+           string      format
+           jsonb       filters
+           int         rowLimit
+           int         rowCount
+           string      status
+           string      requestedBy
+           string      apiKey_used      FK
+           string      oauth_user_id    FK
+       }
+
+       %% --- Rate limiting ---
+       AbuseLimitCounter {
+           UUID        id          PK
+           datetime_tz created_at
+           datetime_tz updated_at
+           string      scopeType
+           string      scopeValue
+           string      windowName
+           datetime_tz windowStart
+           int         counter
+       }
+
+       %% --- Relationships ---
+       OAuthUsers      ||--o{ ApiKey               : "owns"
+
+       %% ApiKey audit trail: every BaseModel row records the key that wrote it
+       ApiKey          ||--o{ Users                : "audit"
+       ApiKey          ||--o{ Games                : "audit"
+       ApiKey          ||--o{ GameParams           : "audit"
+       ApiKey          ||--o{ Tasks                : "audit"
+       ApiKey          ||--o{ TaskParams           : "audit"
+       ApiKey          ||--o{ UserGameConfig       : "audit"
+       ApiKey          ||--o{ UserActions          : "audit"
+       ApiKey          ||--o{ UserInteractions     : "audit"
+       ApiKey          ||--o{ UserPoints           : "audit"
+       ApiKey          ||--o{ Wallet               : "audit"
+       ApiKey          ||--o{ WalletTransactions   : "audit"
+       ApiKey          ||--o{ StrategyDefinition   : "audit"
+       ApiKey          ||--o{ StrategyExecutionLog : "audit"
+       ApiKey          ||--o{ ApiRequests          : "audit"
+       ApiKey          ||--o{ Logs                 : "audit"
+       ApiKey          ||--o{ KpiMetrics           : "audit"
+       ApiKey          ||--o{ UptimeLogs           : "audit"
+       ApiKey          ||--o{ ExportAuditLog       : "audit"
+
+       %% Campaign hierarchy
+       Games           ||--o{ GameParams           : "parameterized by"
+       Games           ||--o{ Tasks                : "contains"
+       Tasks           ||--o{ TaskParams           : "parameterized by"
+
+       %% User participation
+       Games           ||--o{ UserGameConfig       : "configures"
+       Users           ||--o{ UserGameConfig       : "enrolled in"
+       Users           ||--o{ UserActions          : "performs"
+       Users           ||--o{ UserInteractions     : "has"
+       Tasks           ||--o{ UserInteractions     : "tracked by"
+       Users           ||--o{ UserPoints           : "earns"
+       Tasks           ||--o{ UserPoints           : "awards"
+
+       %% Economy
+       Users           ||--|| Wallet               : "owns"
+       Wallet          ||--o{ WalletTransactions   : "records"
+
+       %% Strategy (soft references by string id, no DB FK)
+       StrategyDefinition ||..o{ StrategyExecutionLog : "executions"
+       StrategyDefinition |o..o{ Games                : "custom strategyId"
+       StrategyDefinition |o..o{ Tasks                : "custom strategyId"
+
+       %% Observability
+       Users           ||--o{ ApiRequests          : "makes"
 
 Core entities
 =============

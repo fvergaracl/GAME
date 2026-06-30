@@ -80,6 +80,7 @@ is written for:
 
    getting-started
    authentication
+   troubleshooting
 
 .. toctree::
    :maxdepth: 2

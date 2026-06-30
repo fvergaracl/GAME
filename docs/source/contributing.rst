@@ -6,8 +6,9 @@ Contributing
    :class: note
 
    Developers changing GAME's code or docs. The repository's ``CONTRIBUTING.md``
-   and ``TESTING.md`` are the canonical quick references; this page adds the
-   architectural and documentation context.
+   is the quick reference for the contribution flow; this page is the canonical
+   home for the test/coverage workflow and the architectural context behind it
+   (the root ``TESTING.md`` is a thin pointer here).
 
 Development setup
 =================
@@ -89,9 +90,12 @@ Guidelines:
 * Because persistence is abstracted, services run against **SQLite** in tests
   and **PostgreSQL** in production - keep repository queries portable.
 * CI enforces quality gates on every PR: a **lint** job (``ruff check``,
-  ``black --check``, ``isort --check-only``), the test suite with a **coverage
-  floor** (``pytest --cov-fail-under``), and a separate **Dashboard CI** job for
-  the React frontend. Codecov tracks the trend.
+  ``black --check``, ``isort --check-only``) and the test suite with a
+  **blocking coverage gate** - ``pytest --cov-fail-under`` fails the build (and
+  the PR) when coverage drops below the floor. The threshold is set in one
+  place, ``.github/workflows/coverage.yml``; it is a hard gate, not an
+  aspiration. A separate **Dashboard CI** job covers the React frontend, and
+  Codecov tracks the trend.
 
 Code style
 ==========
@@ -149,8 +153,9 @@ Where docs live
      - Auto-generated module reference (``sphinx-apidoc`` + ``autodoc``).
    * - ``docs/dsl/``
      - DSL block reference and runbook (linked from the editor).
-   * - ``docs/domain-model.md``
-     - Canonical Mermaid ERD.
+   * - ``docs/source/domain-model.rst``
+     - The domain model and its rendered entity-relationship diagram
+       (``docs/domain-model.md`` is now a thin pointer here).
    * - Top-level ``*.md``
      - ``README``, ``SETUP``, ``DEPLOYMENT``, ``TESTING``, ``KUBERNETES_SETUP``
        - entry points and quick references.

@@ -1,0 +1,32 @@
+name: Docs drift guard
+
+# Fails the build when the documentation drifts from the code it documents:
+# (a) Keycloak identity values in the .rst docs diverge from .env.sample, or
+# (b) a quick-start curl targets an endpoint the live OpenAPI schema lacks.
+# See scripts/check_docs_drift.py for the exact rules.
+
+on: [push, pull_request]
+
+jobs:
+  docs-drift:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    env:
+      ENV: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz graphviz-dev
+      - name: Install Poetry
+        run: curl -sSL https://install.python-poetry.org | python3 -
+      - name: Install dependencies
+        run: poetry install
+      - name: Check docs vs .env.sample and OpenAPI
+        run: poetry run python scripts/check_docs_drift.py
