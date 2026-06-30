@@ -147,5 +147,7 @@ At a glance
 
    * **Interactive API** - every deployment serves Swagger UI at ``/docs``
      and ReDoc at ``/redocs`` generated from the live OpenAPI schema.
+   * **Roadmap** - what is stable, experimental, and planned:
+     `ROADMAP.md <https://github.com/fvergaracl/GAME/blob/main/ROADMAP.md>`_
    * **Source** - https://github.com/fvergaracl/GAME
    * **License** - Apache-2.0

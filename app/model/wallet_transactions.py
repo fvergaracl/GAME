@@ -1,10 +1,15 @@
 """Wallet transaction ledger model.
 
-The ``transactionType`` column is a free-form string; the values used across
-the system, and what each means, are::
+The ``transactionType`` column is a free-form string. Only two values are
+actually written by the engine today::
 
     AssignPoints          Assignment of points to the wallet.
     ConvertPointsToCoins  Conversion of points to coins in the wallet.
+
+The names below are reserved for planned ledger operations (refunds,
+transfers, manual adjustments, purchases). Nothing in ``app/`` emits them yet,
+so treat them as a roadmap, not as behavior you can rely on::
+
     DepositCoins          Deposit of coins into the wallet.
     WithdrawCoins         Withdrawal of coins from the wallet.
     EarnRewards           Earning rewards (points or coins) for activities.

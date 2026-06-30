@@ -1,38 +1,47 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+about: Report a defect in the GAME backend (API, scoring engine, or DSL)
+title: "[bug] "
+labels: bug
 assignees: ''
 
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of what is wrong.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Environment**
+- GAME version / commit: <!-- e.g. v1.3.000, or the git SHA you are running -->
+- Deployment mode: <!-- make dev / docker-compose / Kubernetes / bare Poetry -->
+- Python version (only if running bare): <!-- e.g. 3.12.x -->
+
+**Affected endpoint**
+- Method + path: <!-- e.g. POST /api/v1/games/{gameId}/tasks/{externalTaskId}/points -->
+- Auth used: <!-- X-API-Key or OAuth2 bearer -->
+
+**Strategy involved** (if the bug is scoring-related)
+- Type: <!-- built-in class / DSL (custom:<uuid>) / not applicable -->
+- strategyId: <!-- e.g. default, socio_bee, custom:... -->
+
+**To reproduce**
+Minimal steps or a `curl` that triggers it:
+1.
+2.
 
 **Expected behavior**
-A clear and concise description of what you expected to happen.
+What you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Actual behavior / response**
+The actual HTTP status and response body, if any.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Logs**
+Relevant server output, e.g. `docker logs GAME_API_DEV`. A "Network Error" in
+the dashboard is usually a backend 500 masked by CORS, so please include the
+API logs.
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+```text
+<paste logs here>
+```
 
 **Additional context**
-Add any other context about the problem here.
+Anything else that helps us reproduce or understand the problem.

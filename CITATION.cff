@@ -1,0 +1,86 @@
+cff-version: 1.2.0
+message: "If you use GAME in your research, please cite the software using these metadata."
+title: "GAME (Goals And Motivation Engine): An adaptive gamification engine"
+abstract: "An adaptive, programmable gamification engine that turns user activity into points, coins, and behavioral incentives through programmable scoring strategies."
+type: software
+authors:
+  - family-names: "Vergara-Borge"
+    given-names: "Felipe"
+    email: "felipe.vergara@deusto.es"
+    affiliation: "University of Deusto"
+version: "1.3.0"
+date-released: "2026-06-09"
+license: "Apache-2.0"
+repository-code: "https://github.com/fvergaracl/GAME"
+url: "https://github.com/fvergaracl/GAME"
+keywords:
+  - "gamification"
+  - "adaptive incentives"
+  - "citizen science"
+  - "spatial crowdsourcing"
+  - "scoring engine"
+references:
+  - type: conference-paper
+    title: "Enhancing Citizen Science Engagement Through Gamification: A Case Study of the SOCIO-BEE Project"
+    year: 2024
+    collection-title: "2024 9th International Conference on Smart and Sustainable Technologies (SpliTech)"
+    publisher:
+      name: "IEEE"
+    start: 1
+    end: 7
+    authors:
+      - family-names: "Vergara"
+        given-names: "Felipe"
+      - family-names: "Olivares-Rodríguez"
+        given-names: "Cristian"
+      - family-names: "Guenaga"
+        given-names: "Mariluz"
+      - family-names: "López-De-Ipiña"
+        given-names: "Diego"
+      - family-names: "Puerta-Beldarrain"
+        given-names: "Maite"
+      - family-names: "Sánchez-Corcuera"
+        given-names: "Rubén"
+  - type: article
+    title: "Gamifying Engagement in Spatial Crowdsourcing: An Exploratory Mixed-Methods Study on Gamification Impact among University Students"
+    year: 2025
+    journal: "Systems"
+    volume: 13
+    issue: 7
+    start: 519
+    publisher:
+      name: "MDPI"
+    authors:
+      - family-names: "Vergara-Borge"
+        given-names: "Felipe"
+      - family-names: "López-de-Ipiña"
+        given-names: "Diego"
+      - family-names: "Emaldi"
+        given-names: "Mikel"
+      - family-names: "Olivares-Rodríguez"
+        given-names: "Cristian"
+      - family-names: "Khan"
+        given-names: "Zaheer"
+      - family-names: "Soomro"
+        given-names: "Kamran"
+  - type: conference-paper
+    title: "Stress-Testing Citizen Science at Scale: Performance Insights from the GREENCROWD Platform"
+    year: 2025
+    collection-title: "2025 10th International Conference on Smart and Sustainable Technologies (SpliTech)"
+    publisher:
+      name: "IEEE"
+    start: 1
+    end: 8
+    authors:
+      - family-names: "Vergara Borge"
+        given-names: "Felipe"
+      - family-names: "López-de-Ipiña"
+        given-names: "Diego"
+      - family-names: "Emaldi Manrique"
+        given-names: "Mikel"
+      - family-names: "Olivares-Rodríguez"
+        given-names: "Cristian"
+      - family-names: "Wolosiuk"
+        given-names: "Dawid"
+      - family-names: "Vuckovic"
+        given-names: "Milena"

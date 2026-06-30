@@ -49,6 +49,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      - name: Verify required repo secrets are configured
+        # Fail fast (before the multi-minute build + stack bring-up) with a clear
+        # message when the secrets documented in the header are missing. Without
+        # them the k6 setup() cannot get a token and fails deep into the run.
+        # Secrets can't be read in `if:` conditions, so map them to env first.
+        env:
+          LOAD_KEYCLOAK_CLIENT_SECRET: ${{ secrets.LOAD_KEYCLOAK_CLIENT_SECRET }}
+          LOAD_KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.LOAD_KEYCLOAK_ADMIN_PASSWORD }}
+        run: |
+          missing=0
+          if [ -z "$LOAD_KEYCLOAK_CLIENT_SECRET" ]; then
+            echo "::error::Repo secret LOAD_KEYCLOAK_CLIENT_SECRET is not set"; missing=1
+          fi
+          if [ -z "$LOAD_KEYCLOAK_ADMIN_PASSWORD" ]; then
+            echo "::error::Repo secret LOAD_KEYCLOAK_ADMIN_PASSWORD is not set"; missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            echo "Set them under Settings > Secrets and variables > Actions (see this workflow's header)."
+            exit 1
+          fi
+
       - name: Write .env for the dev stack + load test
         # Host-facing values: the load test runs on the runner and reaches the
         # port-mapped services on localhost. The API container reaches Postgres
