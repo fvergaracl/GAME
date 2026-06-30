@@ -276,7 +276,11 @@
         </li>
         <li class="md-nav__item"><a href="#reading-points" class="md-nav__link">Reading points</a>
         </li>
-        <li class="md-nav__item"><a href="#wallets-the-economy" class="md-nav__link">Wallets & the economy</a>
+        <li class="md-nav__item"><a href="#wallets-the-economy" class="md-nav__link">Wallets & the economy</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#corrections-and-reversibility" class="md-nav__link">Corrections and reversibility</a>
+        </li></ul>
+            </nav>
         </li>
         <li class="md-nav__item"><a href="#analytics-kpis-exports" class="md-nav__link">Analytics, KPIs & exports</a>
         </li>
@@ -466,7 +470,11 @@
         </li>
         <li class="md-nav__item"><a href="#reading-points" class="md-nav__link">Reading points</a>
         </li>
-        <li class="md-nav__item"><a href="#wallets-the-economy" class="md-nav__link">Wallets & the economy</a>
+        <li class="md-nav__item"><a href="#wallets-the-economy" class="md-nav__link">Wallets & the economy</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#corrections-and-reversibility" class="md-nav__link">Corrections and reversibility</a>
+        </li></ul>
+            </nav>
         </li>
         <li class="md-nav__item"><a href="#analytics-kpis-exports" class="md-nav__link">Analytics, KPIs & exports</a>
         </li>
@@ -753,7 +761,27 @@ balance, governed by a conversion rate (see <a class="reference internal" href="
 </tbody>
 </table>
 <p>Conversions are recorded as <code class="docutils literal notranslate"><span class="pre">WalletTransactions</span></code> with the
-<code class="docutils literal notranslate"><span class="pre">appliedConversionRate</span></code> at the time, so the ledger is always reconstructable.</p>
+<code class="docutils literal notranslate"><span class="pre">appliedConversionRate</span></code> captured at the time, so a conversion can always be
+traced back to the rate that produced it.</p>
+<section id="corrections-and-reversibility">
+<h3 id="corrections-and-reversibility">Corrections and reversibility<a class="headerlink" href="#corrections-and-reversibility" title="Link to this heading">¶</a></h3>
+<p>The wallet ledger is <strong>append-only and immutable</strong>. GAME has <strong>no refund or
+reversal operation today</strong>: no endpoint subtracts points already awarded or
+rolls a conversion back, and only two transaction types are ever written -
+<code class="docutils literal notranslate"><span class="pre">AssignPoints</span></code> and <code class="docutils literal notranslate"><span class="pre">ConvertPointsToCoins</span></code>. The other names in the
+<code class="docutils literal notranslate"><span class="pre">WalletTransactions</span></code> model (refunds, transfers, manual adjustments) are
+reserved but unimplemented.</p>
+<p>So “how do I undo a point I awarded by mistake?” has no first-class answer
+yet. Until refunds land, the practical options are:</p>
+<ul class="simple">
+<li><p>award a compensating amount through a strategy that accounts for the error,
+or</p></li>
+<li><p>correct the source data and re-run the affected scoring out of band.</p></li>
+</ul>
+<p>A ledger-preserving <strong>refund/adjustment</strong> operation is on the roadmap (see
+<code class="docutils literal notranslate"><span class="pre">ROADMAP.md</span></code>). It is planned to add new transaction types rather than mutate
+existing rows, so the audit trail stays intact.</p>
+</section>
 </section>
 <section id="analytics-kpis-exports">
 <h2 id="analytics-kpis-exports">Analytics, KPIs &amp; exports<a class="headerlink" href="#analytics-kpis-exports" title="Link to this heading">¶</a></h2>

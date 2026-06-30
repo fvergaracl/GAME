@@ -225,6 +225,8 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#reproducibility-determinism" class="md-nav__link">Reproducibility & determinism</a>
         </li>
+        <li class="md-nav__item"><a href="#evaluating-strategies" class="md-nav__link">Evaluating strategies</a>
+        </li>
         <li class="md-nav__item"><a href="#safety-under-failure" class="md-nav__link">Safety under failure</a>
         </li></ul>
             </nav>
@@ -440,6 +442,8 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#reproducibility-determinism" class="md-nav__link">Reproducibility & determinism</a>
         </li>
+        <li class="md-nav__item"><a href="#evaluating-strategies" class="md-nav__link">Evaluating strategies</a>
+        </li>
         <li class="md-nav__item"><a href="#safety-under-failure" class="md-nav__link">Safety under failure</a>
         </li></ul>
             </nav>
@@ -592,8 +596,26 @@ new version never overwrites the running one until you say so.</p></li>
 a rule matched weeks after the fact.</p></li>
 </ul>
 <p>These properties let GAME double as a <strong>reproducible experimental platform</strong>
-for studying adaptive incentive mechanisms - see the <em>Research &amp; Publications</em>
-section of the project <code class="docutils literal notranslate"><span class="pre">README</span></code> for the papers built on it.</p>
+for studying adaptive incentive mechanisms - the papers built on it are listed
+in <code class="docutils literal notranslate"><span class="pre">CITATION.cff</span></code>.</p>
+</section>
+<section id="evaluating-strategies">
+<h3 id="evaluating-strategies">Evaluating strategies<a class="headerlink" href="#evaluating-strategies" title="Link to this heading">¶</a></h3>
+<p>Because scoring is deterministic and traceable, GAME is suited to <em>comparing</em>
+strategies, not just running them. The data it already captures - points
+issued over time, per-task and per-user distributions, wallet evolution, and
+the <code class="docutils literal notranslate"><span class="pre">caseName</span></code> on every award - lets you study questions like:</p>
+<ul class="simple">
+<li><p>does an adaptive strategy spread participation more evenly than a static one
+(incentive redistribution)?</p></li>
+<li><p>how does activity shift across users, tasks, or regions under a given reward
+shape?</p></li>
+<li><p>how does a candidate strategy compare to a baseline on the same replayed
+inputs?</p></li>
+</ul>
+<p>These are analyses you build <em>on top of</em> GAME’s exports and history endpoints
+(<a class="reference internal" href="integrating.html"><span class="doc">Integrating with GAME</span></a>): GAME provides the deterministic, audited substrate, not a
+built-in statistics package.</p>
 </section>
 <section id="safety-under-failure">
 <h3 id="safety-under-failure">Safety under failure<a class="headerlink" href="#safety-under-failure" title="Link to this heading">¶</a></h3>

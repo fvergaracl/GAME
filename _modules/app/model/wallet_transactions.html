@@ -356,11 +356,16 @@
   <h1 id="modules-app-model-wallet-transactions--page-root">Source code for app.model.wallet_transactions</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Wallet transaction ledger model.</span>
 
-<span class="sd">The ``transactionType`` column is a free-form string; the values used across</span>
-<span class="sd">the system, and what each means, are::</span>
+<span class="sd">The ``transactionType`` column is a free-form string. Only two values are</span>
+<span class="sd">actually written by the engine today::</span>
 
 <span class="sd">    AssignPoints          Assignment of points to the wallet.</span>
 <span class="sd">    ConvertPointsToCoins  Conversion of points to coins in the wallet.</span>
+
+<span class="sd">The names below are reserved for planned ledger operations (refunds,</span>
+<span class="sd">transfers, manual adjustments, purchases). Nothing in ``app/`` emits them yet,</span>
+<span class="sd">so treat them as a roadmap, not as behavior you can rely on::</span>
+
 <span class="sd">    DepositCoins          Deposit of coins into the wallet.</span>
 <span class="sd">    WithdrawCoins         Withdrawal of coins from the wallet.</span>
 <span class="sd">    EarnRewards           Earning rewards (points or coins) for activities.</span>

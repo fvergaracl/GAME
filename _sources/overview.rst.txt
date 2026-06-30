@@ -132,8 +132,27 @@ evaluation of strategies:
   a rule matched weeks after the fact.
 
 These properties let GAME double as a **reproducible experimental platform**
-for studying adaptive incentive mechanisms - see the *Research & Publications*
-section of the project ``README`` for the papers built on it.
+for studying adaptive incentive mechanisms - the papers built on it are listed
+in ``CITATION.cff``.
+
+Evaluating strategies
+---------------------
+
+Because scoring is deterministic and traceable, GAME is suited to *comparing*
+strategies, not just running them. The data it already captures - points
+issued over time, per-task and per-user distributions, wallet evolution, and
+the ``caseName`` on every award - lets you study questions like:
+
+* does an adaptive strategy spread participation more evenly than a static one
+  (incentive redistribution)?
+* how does activity shift across users, tasks, or regions under a given reward
+  shape?
+* how does a candidate strategy compare to a baseline on the same replayed
+  inputs?
+
+These are analyses you build *on top of* GAME's exports and history endpoints
+(:doc:`integrating`): GAME provides the deterministic, audited substrate, not a
+built-in statistics package.
 
 Safety under failure
 --------------------

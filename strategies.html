@@ -266,6 +266,8 @@
         </li>
         <li class="md-nav__item"><a href="#built-in-strategies" class="md-nav__link">Built-in strategies</a>
         </li>
+        <li class="md-nav__item"><a href="#the-python-scoring-contract" class="md-nav__link">The Python scoring contract</a>
+        </li>
         <li class="md-nav__item"><a href="#custom-strategies-the-dsl" class="md-nav__link">Custom strategies (the DSL)</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#authoring-modes" class="md-nav__link">Authoring modes</a>
@@ -312,6 +314,13 @@
     
     
       <a href="#built-in-strategies" class="md-nav__link">Built-in strategies</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#the-python-scoring-contract" class="md-nav__link">The Python scoring contract</a>
       
     
     </li>
@@ -452,6 +461,8 @@
         </li>
         <li class="md-nav__item"><a href="#built-in-strategies" class="md-nav__link">Built-in strategies</a>
         </li>
+        <li class="md-nav__item"><a href="#the-python-scoring-contract" class="md-nav__link">The Python scoring contract</a>
+        </li>
         <li class="md-nav__item"><a href="#custom-strategies-the-dsl" class="md-nav__link">Custom strategies (the DSL)</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#authoring-modes" class="md-nav__link">Authoring modes</a>
@@ -496,6 +507,25 @@
 worth. This is the conceptual + how-to view. The interpreter internals
 (AST, limits, sandbox) are in <a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a>; the per-block editor
 reference lives under <code class="docutils literal notranslate"><span class="pre">docs/dsl/</span></code>.</p>
+</div>
+<div class="important admonition">
+<p class="admonition-title">Which strategy model should I use?</p>
+<p>GAME has <strong>two ways to author a strategy</strong>, aimed at different people:</p>
+<ul class="simple">
+<li><p><strong>Built-in classes (Python).</strong> Subclasses of <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code> registered
+in the engine. This is the <strong>stable, recommended path for engineers</strong> who
+can ship code; <code class="docutils literal notranslate"><span class="pre">default</span></code> is the safe baseline. See
+<a class="reference internal" href="#built-in-strategies">Built-in strategies</a> and <a class="reference internal" href="#the-python-scoring-contract">The Python scoring contract</a> below.</p></li>
+<li><p><strong>The DSL (no-code).</strong> Strategies authored visually in the dashboard and
+stored as <code class="docutils literal notranslate"><span class="pre">custom:&lt;uuid&gt;</span></code>, executed in a sandbox. This is the
+<strong>no-code path for designers</strong>: production-usable but newer, and its
+scoring semantics mirror the <code class="docutils literal notranslate"><span class="pre">default</span></code> built-in. See
+<a class="reference internal" href="#custom-strategies-the-dsl">Custom strategies (the DSL)</a> below.</p></li>
+</ul>
+<p>Rule of thumb: reach for a <strong>built-in class</strong> when the logic is complex,
+performance-critical, or ships with the codebase; reach for the <strong>DSL</strong>
+when a non-engineer needs to tune scoring without a deploy. Both run through
+the same engine and are deterministic given identical inputs.</p>
 </div>
 <section id="what-a-strategy-is">
 <h2 id="what-a-strategy-is">What a strategy is<a class="headerlink" href="#what-a-strategy-is" title="Link to this heading">¶</a></h2>
@@ -626,6 +656,33 @@ the scoring method, and decorate themselves with
 strategies through the <code class="docutils literal notranslate"><span class="pre">game.strategies</span></code> entry-point group - no fork
 required. See <a class="reference internal" href="dsl-engine.html"><span class="doc">The DSL Strategy Engine</span></a> and <a class="reference internal" href="codebase.html"><span class="doc">Codebase Reference</span></a>.</p>
 </div>
+</section>
+<section id="the-python-scoring-contract">
+<h2 id="the-python-scoring-contract">The Python scoring contract<a class="headerlink" href="#the-python-scoring-contract" title="Link to this heading">¶</a></h2>
+<p>A built-in is a class that subclasses <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code>, registers a stable id,
+and implements one coroutine. The signature is the same one <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code>
+declares, so subclasses inherit it without surprises:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.base_strategy</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseStrategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.engine.strategy_registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_strategy</span>
+
+
+<span class="nd">@register_strategy</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"streak_bonus"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StreakBonusStrategy</span><span class="p">(</span><span class="n">BaseStrategy</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">calculate_points</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">externalGameId</span><span class="p">,</span> <span class="n">externalTaskId</span><span class="p">,</span> <span class="n">externalUserId</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="c1"># Return (points, caseName): the reward and why it was chosen.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">data</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"streak"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">"StreakBonus"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"BasicEngagement"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">calculate_points</span></code> returns a <code class="docutils literal notranslate"><span class="pre">(points,</span> <span class="pre">caseName)</span></code> tuple - <code class="docutils literal notranslate"><span class="pre">points</span></code> is the
+integer reward and <code class="docutils literal notranslate"><span class="pre">caseName</span></code> is the label explaining <em>why</em> that amount was
+chosen (it flows into responses, analytics, and audit). A strategy may return
+an optional third element, <code class="docutils literal notranslate"><span class="pre">callbackData</span></code>, to pass structured data back to
+the caller. The bundled <code class="docutils literal notranslate"><span class="pre">default</span></code> strategy
+(<code class="docutils literal notranslate"><span class="pre">app/engine/default.py</span></code>) is the reference implementation of this contract.</p>
 </section>
 <section id="custom-strategies-the-dsl">
 <h2 id="custom-strategies-the-dsl">Custom strategies (the DSL)<a class="headerlink" href="#custom-strategies-the-dsl" title="Link to this heading">¶</a></h2>

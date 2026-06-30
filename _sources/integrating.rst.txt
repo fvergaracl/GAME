@@ -234,7 +234,29 @@ balance, governed by a conversion rate (see :doc:`domain-model`).
      - ``POST /users/{externalUserId}/convert``
 
 Conversions are recorded as ``WalletTransactions`` with the
-``appliedConversionRate`` at the time, so the ledger is always reconstructable.
+``appliedConversionRate`` captured at the time, so a conversion can always be
+traced back to the rate that produced it.
+
+Corrections and reversibility
+-----------------------------
+
+The wallet ledger is **append-only and immutable**. GAME has **no refund or
+reversal operation today**: no endpoint subtracts points already awarded or
+rolls a conversion back, and only two transaction types are ever written -
+``AssignPoints`` and ``ConvertPointsToCoins``. The other names in the
+``WalletTransactions`` model (refunds, transfers, manual adjustments) are
+reserved but unimplemented.
+
+So "how do I undo a point I awarded by mistake?" has no first-class answer
+yet. Until refunds land, the practical options are:
+
+* award a compensating amount through a strategy that accounts for the error,
+  or
+* correct the source data and re-run the affected scoring out of band.
+
+A ledger-preserving **refund/adjustment** operation is on the roadmap (see
+``ROADMAP.md``). It is planned to add new transaction types rather than mutate
+existing rows, so the audit trail stays intact.
 
 Analytics, KPIs & exports
 =========================
