@@ -51,8 +51,11 @@ jobs:
 
       - name: Write .env for the dev stack + load test
         # Host-facing values: the load test runs on the runner and reaches the
-        # port-mapped services on localhost; the API container reaches Postgres
-        # via the "localhost" network alias and Keycloak via KEYCLOAK_URL_DOCKER.
+        # port-mapped services on localhost. The API container reaches Postgres
+        # by the compose service name "postgrespostgres" (a container cannot use
+        # the "localhost" network alias - localhost always resolves to the
+        # container's own loopback via /etc/hosts) and Keycloak via
+        # KEYCLOAK_URL_DOCKER.
         run: |
           cat > .env <<EOF
           ENV=dev
@@ -60,7 +63,7 @@ jobs:
           DB_NAME=game_dev_db
           DB_USER=postgres
           DB_PASSWORD=changethis
-          DB_HOST=localhost
+          DB_HOST=postgrespostgres
           DB_PORT=5432
           SECRET_KEY=ci-load-secret
           SENTRY_DSN=
